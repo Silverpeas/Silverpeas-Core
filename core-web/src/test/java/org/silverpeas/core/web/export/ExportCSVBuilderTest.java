@@ -47,8 +47,8 @@ import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -74,7 +74,7 @@ class ExportCSVBuilderTest {
   void noDataToSend() throws IOException {
     final ExportCSVBuilder builder = new ExportCSVBuilder();
     final String result = getCsvFrom(builder);
-    assertThat(result, isEmptyString());
+    assertThat(result, emptyString());
   }
 
   @Test
@@ -252,7 +252,13 @@ class ExportCSVBuilderTest {
       Mockito.when(response.getWriter()).thenReturn(writer);
       builder.sendTo(mock(HttpServletRequest.class), response);
       writer.flush();
-      return data.toString(Charsets.UTF_8.name());
+      final String string = data.toString(Charsets.UTF_8);
+      // Removing the BOM for assertions
+      if (string.isEmpty()) {
+        return string;
+      }
+      assertThat(string.substring(0 ,1), is("\uFEFF"));
+      return string.substring(1);
     }
   }
 

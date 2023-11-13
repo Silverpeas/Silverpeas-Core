@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.chart.period.PeriodChart;
 import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -390,13 +391,9 @@ public class SilverStatisticsPeasRequestRouter extends
         restoreAccessParam(request, statsSC);
 
         destination = "/silverStatisticsPeas/jsp/viewAccess.jsp";
-      } else if (function.startsWith("ExportAccess.txt")) {
-        // compute result
-        request.setAttribute("FilterIdGroup", statsSC.getAccessFilterIdGroup());
-        request.setAttribute("FilterIdUser", statsSC.getAccessFilterIdUser());
-        request.setAttribute("StatsData", statsSC.getCurrentStats());
-
-        destination = "/silverStatisticsPeas/jsp/exportDataAccess.jsp";
+      } else if (function.startsWith("ExportAccess")) {
+        final ExportCSVBuilder csvBuilder = statsSC.exportCurrentDataAsCSV();
+        destination = csvBuilder.setupRequest(request);
       } else if (function.startsWith("ViewEvolutionAccess")) {
         String entite = request.getParameter("Entite");
         String entiteId = request.getParameter("Id");
