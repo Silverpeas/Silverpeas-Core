@@ -76,7 +76,7 @@ public class IndexSearcher {
 
   private static final String INDEX_SEARCH_ERROR = "Index search failure";
   private static final int DEFAULT_MAX_RESULT = 100;
-  private static final int DEFAULT_FIELDHEADER_BOOST = 3;
+  private static final int DEFAULT_FIELD_HEADER_BOOST = 3;
 
   private QueryParser.Operator defaultOperator;
 
@@ -123,16 +123,17 @@ public class IndexSearcher {
 
     maxNumberResult = settings.getInteger("maxResults", DEFAULT_MAX_RESULT);
 
-    fieldHeaderBoost = settings.getInteger("boost.field.header", DEFAULT_FIELDHEADER_BOOST);
+    fieldHeaderBoost = settings.getInteger("boost.field.header", DEFAULT_FIELD_HEADER_BOOST);
   }
 
   /**
    * Searches the Lucene index for a specific object, by giving the PK of the index entry
    *
-   * @param component
-   * @param objectId
-   * @param objectType
-   * @return MatchingIndexEntry wrapping the result, else null
+   * @param component the unique identifier of the component instance within which the search has
+   * to be scoped.
+   * @param objectId the unique identifier of the contribution to which the search has to be scoped.
+   * @param objectType the type of the contribution.
+   * @return MatchingIndexEntry wrapping the result, else null.
    */
   public MatchingIndexEntry search(String component, String objectId, String objectType)
       throws ParseException {
@@ -218,7 +219,7 @@ public class IndexSearcher {
     TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
     if (!StringUtil.isDefined(query.getQuery()) && !query.isPeriodDefined()) {
       rangeQuery = TermRangeQuery
-            .newStringRange(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01", true, true);
+          .newStringRange(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01", true, true);
     }
     if (rangeQuery != null) {
       rangeClausesBuilder.add(rangeQuery, BooleanClause.Occur.MUST);
@@ -313,9 +314,13 @@ public class IndexSearcher {
 
   /**
    * Generates MultiFieldQuery about one field and all languages.
-   * This generated the following query : (fieldName:queryStr fieldName_en:queryStr fieldName_de:queryStr)
+   * This generated the following query : (fieldName:queryStr fieldName_en:queryStr
+   * fieldName_de:queryStr)
+   * @param fieldName the name of an index field
+   * @param queryStr the text of the query.
+   * @param languages a set of ISO 631-1 language codes.
    * @return a Query limited to given fieldName
-   * @throws ParseException
+   * @throws ParseException if an error occurs while parsing the text of the query.
    */
   private Query getQuery(String fieldName, String queryStr, Set<String> languages)
       throws ParseException {
@@ -435,7 +440,7 @@ public class IndexSearcher {
 
   private void setIndexEntryLanguageData(final MatchingIndexEntry indexEntry, final Document doc) {
     final Collection<String> languages = I18NHelper.getLanguages();
-    for (final String language: languages) {
+    for (final String language : languages) {
       indexEntry.setTitle(doc.get(getFieldName(IndexManager.TITLE, language)), language);
       indexEntry.setPreview(doc.get(getFieldName(IndexManager.PREVIEW, language)), language);
       indexEntry.setKeywords(doc.get(getFieldName(IndexManager.KEYWORDS, language)), language);
@@ -562,7 +567,8 @@ public class IndexSearcher {
     return new PrefixQuery(term);
   }
 
-  private TermRangeQuery getTermRangeQuery(String fieldName, LocalDate beginDate, LocalDate endDate) {
+  private TermRangeQuery getTermRangeQuery(String fieldName, LocalDate beginDate,
+      LocalDate endDate) {
     if (Objects.isNull(beginDate) && Objects.isNull(endDate)) {
       return null;
     }

@@ -91,7 +91,6 @@ public class IndexManager {
   public static final String TITLE = "title";
   public static final String PREVIEW = "preview";
   public static final String KEYWORDS = "keywords";
-  public static final String LANG = "lang";
   public static final String CREATIONDATE = "creationDate";
   public static final String CREATIONUSER = "creationUser";
   public static final String LASTUPDATEDATE = "updateDate";
@@ -128,10 +127,10 @@ public class IndexManager {
   private static int maxFieldLength = DEFAULT_MAX_FIELD_LENGTH;
   private static int mergeFactor = DEFAULT_MERGE_FACTOR_VALUE;
   private static int maxMergeDocs = Integer.MAX_VALUE;
-  private static double defaultRamBufferSizeMb = IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB;
+  private static final double DEFAULT_RAM_BUFFER_SIZE_MB;
   // enable the "Did you mean " indexing
-  private static boolean enableDymIndexing = false;
-  private static String serverName = null;
+  private static final boolean ENABLE_DYM_INDEXING;
+  private static final String SILVERPEAS_SERVER_NAME;
   private final Map<String, IndexWriter> indexWriters = new LinkedHashMap<>();
   @Inject
   private ParserManager parserManager;
@@ -150,12 +149,12 @@ public class IndexManager {
   /**
    * Add an entry index.
    *
-   * @param indexEntry
+   * @param indexEntry the entry to add into the index
    */
   void addIndexEntry(FullIndexEntry indexEntry) {
     final long start = currentTimeMillis();
     try {
-      indexEntry.setServerName(serverName);
+      indexEntry.setServerName(SILVERPEAS_SERVER_NAME);
       String indexPath = getIndexDirectoryPath(indexEntry);
       IndexWriter writer = getIndexWriter(indexPath, indexEntry.getLang());
       removeIndexEntry(writer, indexEntry.getPK());
@@ -187,7 +186,7 @@ public class IndexManager {
           indexingLogger().error("Cannot close index " + path, e);
         }
         // update the spelling index
-        if (enableDymIndexing) {
+        if (ENABLE_DYM_INDEXING) {
           DidYouMeanIndexer.createSpellIndexForAllLanguage(CONTENT, path);
         }
         it.remove();
@@ -202,14 +201,14 @@ public class IndexManager {
       // removing document according to indexEntryPK
       writer.deleteDocuments(term);
     } catch (IOException e) {
-      indexingLogger().error("Index deletion failure: " + indexEntryKey.toString(), e);
+      indexingLogger().error("Index deletion failure: " + indexEntryKey, e);
     }
   }
 
   /**
-   * Remove an entry index .
+   * Remove an entry index.
    *
-   * @param indexEntry
+   * @param indexEntry the index entry to remove.
    */
   void removeIndexEntry(IndexEntryKey indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
@@ -262,7 +261,7 @@ public class IndexManager {
   /**
    * Return the path to the directory where are stored the index for the given index entry.
    *
-   * @param indexEntry
+   * @param indexEntry an index entry
    * @return the path to the directory where are stored the index for the given index entry.
    */
   private String getIndexDirectoryPath(IndexEntryKey indexEntry) {
@@ -273,7 +272,7 @@ public class IndexManager {
    *
    * Return the path to the directory where are stored the index for the given index entry .
    *
-   * @param component
+   * @param component the component instance identifier
    * @return the path to the directory where are stored the index for the given index entry .
    */
   public String getIndexDirectoryPath(String component) {
@@ -295,6 +294,7 @@ public class IndexManager {
   }
 
   /**
+   * Get optionally a reader able to read the content of the specified file in order to index it.
    * @param file a file description
    * @return the optional {@link Reader} specific of the file described by the file description
    */
@@ -304,10 +304,10 @@ public class IndexManager {
         .map(f -> hasMimetypeToBeIgnored(filePath, f) ? null : f)
         .flatMap(parserManager::getParser)
         .map(p -> p.getContext(filePath, file.getEncoding()))
-        .filter(c -> !c.getMetadata().getValue("Content-Type")
+        .filter(c -> c.getMetadata().getValue("Content-Type")
             .map(t -> hasMimetypeToBeIgnored(filePath, t))
             .filter(Boolean.TRUE::equals)
-            .isPresent())
+            .isEmpty())
         .map(Parser.Context::getReader);
   }
 
@@ -339,18 +339,20 @@ public class IndexManager {
    * @return an IndexWriter or null if the index can't be found or create or read.
    */
   private IndexWriter getIndexWriter(String path, String language) {
+    //noinspection resource
     indexWriters.computeIfPresent(path, (s, w) -> w.isOpen() ? w : null);
     return indexWriters.computeIfAbsent(path, p -> {
       try {
         final File file = new File(path);
         if (!file.exists()) {
+          //noinspection ResultOfMethodCallIgnored
           file.mkdirs();
         }
         final LogDocMergePolicy policy = new LogDocMergePolicy();
         policy.setMergeFactor(mergeFactor);
         policy.setMaxMergeDocs(maxMergeDocs);
         final IndexWriterConfig configuration =
-            new IndexWriterConfig(getAnalyzer(language)).setRAMBufferSizeMB(defaultRamBufferSizeMb)
+            new IndexWriterConfig(getAnalyzer(language)).setRAMBufferSizeMB(DEFAULT_RAM_BUFFER_SIZE_MB)
                 .setMergePolicy(policy);
         return new IndexWriter(FSDirectory.open(file.toPath()), configuration);
       } catch (IOException e) {
@@ -361,12 +363,6 @@ public class IndexManager {
     });
   }
 
-  /**
-   * Method declaration
-   *
-   * @param writer
-   * @param indexEntry
-   */
   private void index(IndexWriter writer, FullIndexEntry indexEntry) {
     try {
       Term key = new Term(KEY, indexEntry.getPK().toString());
@@ -377,7 +373,11 @@ public class IndexManager {
   }
 
   /**
-   * Create a lucene Document object with the given indexEntry.
+   * Create a Lucene Document for the indexation from the specified index entry. The document will
+   * contain the data of the resource to index either to retrieve them later (from a search) or
+   * for a search.
+   * @param indexEntry an index entry with all the data to store into the indexes.
+   * @return a {@link Document} containing the data to index.
    */
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
@@ -513,6 +513,12 @@ public class IndexManager {
   }
 
   private void setHeaderFields(final FullIndexEntry indexEntry, final Document doc) {
+    // The index field 'header' is dedicated to the search in which it should have much weight.
+    // This is why the title, the filename (for files), and the keywords are stored in such a field.
+    // The preview (or short description) of a contribution isn't stored into this field to ensure
+    // to not weigh to much in the scoring in a search comparing to the contribution's content
+    // (see bug #13842). Indeed, a preview can contain more than one sentence within which the terms
+    // to search can be drowned.
     if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith(
         ATTACHMENT_PREFIX)) {
       String lang = indexEntry.getLang();
@@ -520,8 +526,6 @@ public class IndexManager {
         doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getTitle(lang),
             TextField.TYPE_NOT_STORED));
       }
-      doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(),
-          TextField.TYPE_NOT_STORED));
       doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(),
           TextField.TYPE_NOT_STORED));
     } else {
@@ -537,10 +541,6 @@ public class IndexManager {
     Iterator<String> languages = indexEntry.getLanguages();
     while (languages.hasNext()) {
       String language = languages.next();
-      if (indexEntry.getPreview(language) != null) {
-        doc.add(new Field(getFieldName(HEADER, language), indexEntry.getPreview(language),
-            TextField.TYPE_NOT_STORED));
-      }
       if (indexEntry.getKeywords(language) != null) {
         doc.add(new Field(getFieldName(HEADER, language), indexEntry.getKeywords(language),
             TextField.TYPE_NOT_STORED));
@@ -635,7 +635,8 @@ public class IndexManager {
     }
     try {
       getReader(fileDescription).ifPresent(r -> {
-        final Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), r, TextField.TYPE_NOT_STORED);
+        final Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), r,
+            TextField.TYPE_NOT_STORED);
         doc.add(field);
       });
     } catch (RuntimeException e) {
@@ -651,9 +652,9 @@ public class IndexManager {
 
     String stringValue = settings.getString("lucene.RAMBufferSizeMB", Double.toString(
         IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB));
-    defaultRamBufferSizeMb = Double.parseDouble(stringValue);
+    DEFAULT_RAM_BUFFER_SIZE_MB = Double.parseDouble(stringValue);
 
-    enableDymIndexing = settings.getBoolean("enableDymIndexing", false);
-    serverName = settings.getString("server.name", "Silverpeas");
+    ENABLE_DYM_INDEXING = settings.getBoolean("enableDymIndexing", false);
+    SILVERPEAS_SERVER_NAME = settings.getString("server.name", "Silverpeas");
   }
 }
