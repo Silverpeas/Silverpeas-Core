@@ -58,7 +58,7 @@ public final class WAAnalyzer extends Analyzer {
    */
   private String stemmer = null;
   private boolean snowballUsed = false;
-  private String language = null;
+  private final String language;
 
   /**
    * The constructor is private
@@ -72,14 +72,15 @@ public final class WAAnalyzer extends Analyzer {
   /**
    * Returns the analyzer to be used with texts of the given language. The analyzers are cached.
    *
-   * @param language
-   * @return
+   * @param language the ISO 631-1 code of the language
+   * @return an analyser of a text written in the given language.
    */
   public static Analyzer getAnalyzer(String language) {
     return ofNullable(languageMap.get(language)).orElseGet(() -> {
       final String computedLanguage = ofNullable(language)
           .filter(l -> l.length() == LANGUAGE_CODE_LENGTH)
-          .orElseGet(() -> settings.getString("analyzer.language.default", I18n.get().getDefaultLanguage()));
+          .orElseGet(() ->
+              settings.getString("analyzer.language.default", I18n.get().getDefaultLanguage()));
       final WAAnalyzer analyzer = languageMap.computeIfAbsent(computedLanguage, WAAnalyzer::new);
       return languageMap.computeIfAbsent(language, l -> analyzer);
     });
@@ -95,7 +96,7 @@ public final class WAAnalyzer extends Analyzer {
     // remove 's and . from token
     TokenStream result = new StandardFilter(source);
     result = new LowerCaseFilter(result);
-    // remove some unexplicit terms
+    // remove some non-explicit terms
     result = new StopFilter(result, FrenchAnalyzer.getDefaultStopSet());
     // remove [cdjlmnst-qu]' from token
     result = new ElisionFilter(result, FrenchAnalyzer.DEFAULT_ARTICLES);
