@@ -79,14 +79,14 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         final String type = p.getPropertyType().getName();
         if (!isTypeValid(type)) {
           SilverLogger.getLogger(this)
-              .warn("as {0} is not a valid type, {1} is not taken into account for {2}", type,
+              .debug("as {0} is not a valid type, {1} is not taken into account for {2}", type,
                   p.getName(), silverpeasBeanClass.getSimpleName());
           return false;
         }
         if (object instanceof Contribution && p.getWriteMethod() == null) {
           // Since some SilverpeasBean implements Contribution, some properties mus be skipped...
           SilverLogger.getLogger(this)
-              .warn(
+              .debug(
                   "as {0} is a method from an interface without SQL table name behind, property " +
                       "is " + "not taken into account for {1}", p.getName(),
                   silverpeasBeanClass.getSimpleName());
