@@ -158,9 +158,9 @@ public class SimpleDocumentService
   public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
     if (settings.getBoolean("attachment.index.separately", true)) {
       String language = I18NHelper.checkLanguage(document.getLanguage());
-      String objectType = ATTACHMENT_TYPE + document.getId() + "_" + language;
-      FullIndexEntry indexEntry = new FullIndexEntry(document.getInstanceId(), objectType, document.
-          getForeignId());
+      String objectType = ATTACHMENT_TYPE + "_" + language;
+      FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(document.getInstanceId(),
+          objectType, document.getId(), document.getForeignId()));
       indexEntry.setLang(language);
       indexEntry.setCreationDate(document.getCreationDate());
       indexEntry.setCreationUser(document.getCreatedBy());
@@ -205,9 +205,9 @@ public class SimpleDocumentService
     if (language == null) {
       language = I18NHelper.DEFAULT_LANGUAGE;
     }
-    String objectType = ATTACHMENT_TYPE + document.getId() + '_' + language;
-    IndexEntryKey indexEntry = new IndexEntryKey(document.getInstanceId(), objectType, document.
-        getForeignId());
+    String objectType = ATTACHMENT_TYPE + '_' + language;
+    IndexEntryKey indexEntry = new IndexEntryKey(document.getInstanceId(), objectType,
+        document.getId(), document.getForeignId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 

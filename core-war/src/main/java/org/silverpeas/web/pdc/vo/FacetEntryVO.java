@@ -25,17 +25,10 @@ package org.silverpeas.web.pdc.vo;
 
 public class FacetEntryVO {
 
-  private String name = "";
-  private String id = "";
-  private int nbElt = 0;
+  private String name;
+  private String id;
+  private int nbElt;
   private boolean selected = false;
-
-  /**
-   * Default constructor
-   */
-  public FacetEntryVO() {
-    super();
-  }
 
   /**
    * Constructor with fields
@@ -105,11 +98,8 @@ public class FacetEntryVO {
     } else if (!id.equals(other.id))
       return false;
     if (name == null) {
-      if (other.name != null)
-        return false;
-    } else if (!name.equals(other.name))
-      return false;
-    return true;
+      return other.name == null;
+    } else return name.equals(other.name);
   }
 
 

@@ -50,7 +50,6 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
@@ -94,7 +93,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   public String getDestination(String function, PdcSearchSessionController pdcSC,
       HttpRequest request) {
 
-    String destination = "";
+    String destination;
     // controller to inform the request
     try {
       if (function.startsWith("GlobalView")) {
@@ -131,7 +130,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         processSelection(pdcSC, request);
 
         String index = request.getParameter("Index");
-        pdcSC.setIndexOfFirstResultToDisplay(index);
+        pdcSC.setIndexOfFirstResultToDisplay(Integer.parseInt(index));
 
         String nbItemsPerPage = request.getParameter("NbItemsPerPage");
         if (StringUtil.isInteger(nbItemsPerPage)) {
@@ -178,7 +177,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         pdcSC.setSortImplemtor(request.getParameter("sortImp"));
 
         String searchType = request.getParameter("searchType");
-        if (searchType != null && !"".equals(searchType)) {
+        if (searchType != null && !searchType.isEmpty()) {
           if ("Normal".equals(searchType)) {
             pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
           } else {
@@ -208,7 +207,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           pdcSC.getSearchContext().addCriteria(criteria);
         }
 
-        pdcSC.search(axisValues, isOnlyInPdcSearch(request));
+        pdcSC.search(axisValues);
 
         if (StringUtil.isDefined(pdcSC.getResultPage())
             && !"globalResult".equals(pdcSC.getResultPage())) {
@@ -251,8 +250,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         }
 
         // launch the search
-        pdcSC.search(null, false);
-        pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_XML);
+        pdcSC.search(null);
+        pdcSC.setIndexOfFirstResultToDisplay(0);
         setDefaultDataToNavigation(true, request, pdcSC);
 
         destination = GLOBAL_RESULT_DEST;
@@ -260,8 +259,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         pdcSC.initXMLSearch(request);
 
         // launch the search
-        pdcSC.search(null, isOnlyInPdcSearch(request));
-        pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_XML);
+        pdcSC.search(null);
+        pdcSC.setIndexOfFirstResultToDisplay(0);
         setDefaultDataToNavigation(true, request, pdcSC);
 
         destination = GLOBAL_RESULT_DEST;
@@ -315,7 +314,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         pdcSC.setResultPage(request.getParameter(RESULT_PAGE));
         pdcSC.setResultPageId(request.getParameter(RESULT_PAGE_ID));
         String searchType = request.getParameter("searchType");
-        if (searchType != null && !"".equals(searchType)) {
+        if (searchType != null && !searchType.isEmpty()) {
           if ("Normal".equals(searchType)) {
             pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
           } else {
@@ -355,7 +354,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         searchParameters.setSpaceIdAndInstanceId(curSpaceId, strComponentIds);
         pdcSC.buildCustomComponentListWhereToSearch(curSpaceId, componentIds);
 
-        pdcSC.search(listAxis, isOnlyInPdcSearch(request));
+        pdcSC.search(listAxis);
 
         if (StringUtil.isDefined(pdcSC.getResultPage())
             && !pdcSC.getResultPage().equals("globalResult")) {
@@ -405,9 +404,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
    *
    * @param request the HTTPServletRequest
    * @param pdcSC the pdcSearchSessionController
-   * @return a new ResultFilterVO which contains data information
    */
-  private ResultFilterVO initSearchFilter(HttpServletRequest request,
+  private void initSearchFilter(HttpServletRequest request,
       PdcSearchSessionController pdcSC) {
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
@@ -442,17 +440,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       }
     }
 
-    pdcSC.setIndexOfFirstResultToDisplay("0");
+    pdcSC.setIndexOfFirstResultToDisplay(0);
     pdcSC.setSelectedFacetEntries(filter);
-
-    return filter;
   }
 
   private List<WAAttributeValuePair> getItemPks(List<GlobalSilverResult> listGR) {
     List<WAAttributeValuePair> itemPKs = new ArrayList<>();
-    Iterator<GlobalSilverResult> itListGR = listGR.iterator();
-    while (itListGR.hasNext()) {
-      GlobalSilverResult gb = itListGR.next();
+    for (GlobalSilverResult gb : listGR) {
       itemPKs.add(new WAAttributeValuePair(gb.getId(), gb.getInstanceId()));
     }
     return itemPKs;
@@ -512,7 +506,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     }
 
     // put search type
-    request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
+    request.setAttribute("SearchType", pdcSC.getSearchType());
     return getDestinationDuringSearch(pdcSC, request);
   }
 
@@ -536,10 +530,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
     request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
 
-    request.setAttribute("IndexOfFirstResult", Integer.valueOf(pdcSC.
-        getIndexOfFirstResultToDisplay()));
-    request.setAttribute("RefreshEnabled", Boolean.valueOf(pdcSC.isRefreshEnabled()));
-    request.setAttribute("ExternalSearchEnabled", Boolean.valueOf(pdcSC.isEnableExternalSearch()));
+    request.setAttribute("IndexOfFirstResult", pdcSC.
+        getIndexOfFirstResultToDisplay());
+    request.setAttribute("RefreshEnabled", pdcSC.isRefreshEnabled());
+    request.setAttribute("ExternalSearchEnabled", pdcSC.isEnableExternalSearch());
 
     request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(sortResults));
     request.setAttribute("UserId", pdcSC.getUserId());
@@ -547,18 +541,18 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // Add result group filter data
     request.setAttribute("ResultGroup", pdcSC.getResultGroupFilter());
 
-    request.setAttribute("NbTotalResults", Integer.valueOf(pdcSC.getTotalResults()));
-    request.setAttribute("PertinenceVisible", Boolean.valueOf(pdcSC.isPertinenceVisible()));
+    request.setAttribute("NbTotalResults", pdcSC.getTotalResults());
+    request.setAttribute("PertinenceVisible", pdcSC.isPertinenceVisible());
 
     request.setAttribute("DisplayParamChoices", pdcSC.getDisplayParamChoices());
-    request.setAttribute("NbResToDisplay", Integer.valueOf(pdcSC.getNbResToDisplay()));
-    request.setAttribute("SortValue", Integer.valueOf(pdcSC.getSortValue()));
+    request.setAttribute("NbResToDisplay", pdcSC.getNbResToDisplay());
+    request.setAttribute("SortValue", pdcSC.getSortValue());
     request.setAttribute("SortOrder", pdcSC.getSortOrder());
 
     // spelling words
     request.setAttribute("spellingWords", pdcSC.getSpellingWords());
 
-    request.setAttribute("ResultsDisplay", Integer.valueOf(pdcSC.getCurrentResultsDisplay()));
+    request.setAttribute("ResultsDisplay", pdcSC.getCurrentResultsDisplay());
     request.setAttribute(RESULT_PAGE_ID, pdcSC.getResultPageId());
     request.setAttribute("XmlFormSortValue", pdcSC.getXmlFormSortValue());
     request.setAttribute("sortImp", pdcSC.getSortImplemtor());
@@ -576,13 +570,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     if (selectedSilverContents == null) {
       selectedSilverContents = new ArrayList<>();
     }
-    for (int i = 0; i < silverContents.size(); i++) {
-      GlobalSilverResult gsr = silverContents.get(i);
-      String objectId = gsr.getId() + "-" + gsr.getInstanceId();
-      if (selectedObjectIds.indexOf(objectId) != -1 && !selectedSilverContents.contains(gsr)) {
+    for (GlobalSilverResult gsr : silverContents) {
+      String id = gsr.isLinked() ? gsr.getLinkedResourceId() : gsr.getId();
+      String objectId = id + "-" + gsr.getInstanceId();
+      if (selectedObjectIds.contains(objectId) && !selectedSilverContents.contains(gsr)) {
         // the silverContent is in the selected objects list
         selectedSilverContents.add(gsr);
-      } else if (selectedObjectIds.indexOf(objectId) == -1) {
+      } else if (!selectedObjectIds.contains(objectId)) {
         selectedSilverContents.remove(gsr);
       }
     }
@@ -593,15 +587,15 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // Ajout d un traitement spécifique pour le cas de l export: je ne change pas la
     // mécanique existante car je crains la régression.
     String notSelectedObjectIds = request.getParameter("notSelectedIds");
-    if (selectedObjectIds != null && selectedObjectIds.length() != 0) {
-      for (int i = 0; i < silverContents.size(); i++) {
-        GlobalSilverResult gsr = silverContents.get(i);
-        String objectId = gsr.getId() + "-" + gsr.getInstanceId();
-        if (selectedObjectIds.indexOf(objectId) != -1) {
+    if (selectedObjectIds != null && !selectedObjectIds.isEmpty()) {
+      for (GlobalSilverResult gsr : silverContents) {
+        String id = gsr.isLinked() ? gsr.getLinkedResourceId() : gsr.getId();
+        String objectId = id + "-" + gsr.getInstanceId();
+        if (selectedObjectIds.contains(objectId)) {
           // the silverContent is in the selected objects list
           gsr.setSelected(true);
         }
-        if (notSelectedObjectIds.indexOf(objectId) != -1) {
+        if (notSelectedObjectIds.contains(objectId)) {
           // the silverContent is in the selected objects list
           gsr.setSelected(false);
         }
@@ -617,56 +611,63 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     pdcSC.setResultPage(request.getParameter(RESULT_PAGE));
     pdcSC.setResultPageId(request.getParameter(RESULT_PAGE_ID));
 
-    if (function.equals("ChangeSearchTypeToSimple")) {
-      pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
-    } else if (function.equals("ChangeSearchTypeToAdvanced")) {
-      pdcSC.setSearchType(PdcSearchSessionController.SEARCH_ADVANCED);
-    } else if (function.equals("ChangeSearchTypeToXml")) {
-      // setting predefined values
-      String templateName = request.getParameter("Template");
-      if (StringUtil.isDefined(templateName)) {
-        pdcSC.setXmlTemplate(templateName);
-      }
-
-      String spaceId = request.getParameter("SpaceId");
-      if (StringUtil.isDefined(spaceId)) {
-        pdcSC.getQueryParameters().setSpaceId(spaceId);
-      }
-
-      String sortImp = request.getParameter(Keys.RequestSortImplementor.value());
-      if (StringUtil.isDefined(templateName)) {
-        pdcSC.setSortImplemtor(sortImp);
-      } else {
-        pdcSC.setSortImplemtor(null);
-      }
-      String sortResXForm = request.getParameter(Keys.RequestSortXformField.value());
-      if (StringUtil.isDefined(templateName)) {
-        pdcSC.setXmlFormSortValue(sortResXForm);
-      } else {
-        pdcSC.setXmlFormSortValue(null);
-      }
-      String sortOrder = request.getParameter("sortOrder");
-      if (StringUtil.isDefined(sortOrder)) {
-        pdcSC.setSortOrder(sortOrder);
-      }
-
-      pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
-    } else {
-      String spaceId = request.getParameter("spaces");
-      String instanceId = request.getParameter("componentSearch");
-      pdcSC.getQueryParameters().setSpaceIdAndInstanceId(spaceId, instanceId);
-
-      if (pdcSC.isPlatformUsesPDC()) {
-        pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
-      } else {
-        // PDC is not used, redirect to simple search
+    switch (function) {
+      case "ChangeSearchTypeToSimple":
+        pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
+        break;
+      case "ChangeSearchTypeToAdvanced":
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_ADVANCED);
-      }
+        break;
+      case "ChangeSearchTypeToXml": {
+        // setting predefined values
+        String templateName = request.getParameter("Template");
+        if (StringUtil.isDefined(templateName)) {
+          pdcSC.setXmlTemplate(templateName);
+        }
 
-      if (isOnlyInPdcSearch(request)) {
-        // Exclusive case to display pertinent classification axis in PDC frame
-        // Advanced search items are useless in this case
-        setAdvancedSearchItems = false;
+        String spaceId = request.getParameter("SpaceId");
+        if (StringUtil.isDefined(spaceId)) {
+          pdcSC.getQueryParameters().setSpaceId(spaceId);
+        }
+
+        String sortImp = request.getParameter(Keys.RequestSortImplementor.value());
+        if (StringUtil.isDefined(templateName)) {
+          pdcSC.setSortImplemtor(sortImp);
+        } else {
+          pdcSC.setSortImplemtor(null);
+        }
+        String sortResXForm = request.getParameter(Keys.RequestSortXformField.value());
+        if (StringUtil.isDefined(templateName)) {
+          pdcSC.setXmlFormSortValue(sortResXForm);
+        } else {
+          pdcSC.setXmlFormSortValue(null);
+        }
+        String sortOrder = request.getParameter("sortOrder");
+        if (StringUtil.isDefined(sortOrder)) {
+          pdcSC.setSortOrder(sortOrder);
+        }
+
+        pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
+        break;
+      }
+      default: {
+        String spaceId = request.getParameter("spaces");
+        String instanceId = request.getParameter("componentSearch");
+        pdcSC.getQueryParameters().setSpaceIdAndInstanceId(spaceId, instanceId);
+
+        if (pdcSC.isPlatformUsesPDC()) {
+          pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
+        } else {
+          // PDC is not used, redirect to simple search
+          pdcSC.setSearchType(PdcSearchSessionController.SEARCH_ADVANCED);
+        }
+
+        if (isOnlyInPdcSearch(request)) {
+          // Exclusive case to display pertinent classification axis in PDC frame
+          // Advanced search items are useless in this case
+          setAdvancedSearchItems = false;
+        }
+        break;
       }
     }
     return setAdvancedSearchItems;
@@ -687,7 +688,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         return pdcSC.getSearchPage();
       } else {
         // put search type
-        request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
+        request.setAttribute("SearchType", pdcSC.getSearchType());
 
         // Add component search type
         request.setAttribute("ComponentSearchType", pdcSC.getSearchTypeConfig());
@@ -704,7 +705,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   }
 
   private void setTabsInfoIntoRequest(PdcSearchSessionController pdcSC, HttpServletRequest request) {
-    request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
+    request.setAttribute("XmlSearchVisible", pdcSC.isXmlSearchVisible());
     request.setAttribute("ExpertSearchVisible", pdcSC.isPlatformUsesPDC());
   }
 }

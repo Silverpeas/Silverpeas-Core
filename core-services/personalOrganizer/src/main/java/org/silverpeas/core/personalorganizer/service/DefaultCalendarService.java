@@ -183,7 +183,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   @Override
   public TodoDetail getTodoDetail(String id) {
     try {
-      TodoDetail detail =  TodoDetail.fromToDoHeader(getToDoHeader(id));
+      TodoDetail detail = TodoDetail.fromToDoHeader(getToDoHeader(id));
       List<Attendee> attendees = new ArrayList<>(getToDoAttendees(id));
       detail.setAttendees(attendees);
       return detail;
@@ -309,7 +309,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       Collection<ToDoHeader> headers = getExternalTodos("useless", componentId, externalId);
       for (ToDoHeader header : headers) {
         if (header != null) {
-         removeToDoAttendee(header.getId(), attendee);
+          removeToDoAttendee(header.getId(), attendee);
         }
       }
     } catch (Exception e) {
@@ -486,7 +486,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
 
   @Override
   public Collection<JournalHeader> getExternalJournalHeadersForUser(String userId) {
-    try(final Connection con = getConnection()) {
+    try (final Connection con = getConnection()) {
       return getJournalDAO().getOutlookJournalHeadersForUser(con, userId);
     } catch (SQLException se) {
       throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, se);
@@ -498,7 +498,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   @Override
   public Collection<JournalHeader> getExternalJournalHeadersForUserAfterDate(String userId,
       java.util.Date startDate) {
-    try(final Connection con = getConnection()) {
+    try (final Connection con = getConnection()) {
       return getJournalDAO().getOutlookJournalHeadersForUserAfterDate(con, userId, startDate);
     } catch (SQLException se) {
       throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, se);
@@ -891,9 +891,9 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   @Override
   public void indexAllJournal() {
     final String selectStatement = "select " + JournalDAO.COLUMNNAMES + " from CalendarJournal";
-    try(final Connection con = DBUtil.openConnection();
-        final Statement prepStmt = con.createStatement();
-        final ResultSet rs = prepStmt.executeQuery(selectStatement)) {
+    try (final Connection con = DBUtil.openConnection();
+         final Statement prepStmt = con.createStatement();
+         final ResultSet rs = prepStmt.executeQuery(selectStatement)) {
       JournalHeader journal;
       while (rs.next()) {
         journal = getJournalDAO().getJournalHeaderFromResultSet(rs);
@@ -912,10 +912,12 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       FullIndexEntry indexEntry;
       if (detail instanceof ToDoHeader) {
-        indexEntry = new FullIndexEntry(IDX_USER_PREFIX + userId + "_todo", "todo", detail.getId());
+        indexEntry = new FullIndexEntry(new IndexEntryKey(IDX_USER_PREFIX + userId + "_todo",
+            "todo", detail.getId()));
       } else {
         indexEntry =
-            new FullIndexEntry(IDX_USER_PREFIX + userId + "_agenda", "agenda", detail.getId());
+            new FullIndexEntry(new IndexEntryKey(IDX_USER_PREFIX + userId + "_agenda", "agenda",
+                detail.getId()));
       }
       indexEntry.setTitle(detail.getName());
       indexEntry.setPreview(detail.getDescription());

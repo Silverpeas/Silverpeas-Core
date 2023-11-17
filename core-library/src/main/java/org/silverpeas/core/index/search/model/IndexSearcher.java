@@ -248,13 +248,13 @@ public class IndexSearcher {
   }
 
   private TermRangeQuery getVisibilityStartQuery() {
-    return TermRangeQuery.newStringRange(IndexManager.STARTDATE, IndexEntry.STARTDATE_DEFAULT,
+    return TermRangeQuery.newStringRange(IndexManager.STARTDATE, IndexEntry.START_DATE_DEFAULT,
         formatDate(LocalDate.now()), true, true);
   }
 
   private TermRangeQuery getVisibilityEndQuery() {
     return TermRangeQuery.newStringRange(IndexManager.ENDDATE, formatDate(LocalDate.now()),
-        IndexEntry.ENDDATE_DEFAULT, true, true);
+        IndexEntry.END_DATE_DEFAULT, true, true);
   }
 
   private Query getPlainTextQuery(QueryDescription query) throws ParseException {
@@ -573,12 +573,12 @@ public class IndexSearcher {
       return null;
     }
 
-    String start = IndexEntry.STARTDATE_DEFAULT;
+    String start = IndexEntry.START_DATE_DEFAULT;
     if (Objects.nonNull(beginDate)) {
       start = DateUtil.formatAsLuceneDate(beginDate);
     }
 
-    String end = IndexEntry.ENDDATE_DEFAULT;
+    String end = IndexEntry.END_DATE_DEFAULT;
     if (Objects.nonNull(endDate)) {
       end = DateUtil.formatAsLuceneDate(endDate);
     }

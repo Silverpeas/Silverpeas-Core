@@ -38,6 +38,8 @@ import java.io.FilenameFilter;
  */
 public class ApplicationDYMIndexer extends AbstractIndexer {
 
+  private static final String CONTENT = "content";
+
   protected ApplicationDYMIndexer() {
   }
 
@@ -46,8 +48,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
   }
 
   /**
-   * Indexes all spelling indexes
-   * @throws Exception whether an exception occurred
+   * Indexes all the indexable data.
    */
   @Override
   protected void indexAllData() {
@@ -57,16 +58,15 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
   }
 
   /**
-   * Indexes one component
+   * Indexes one component instance.
    * @param spaceId space identifier
-   * @param componentId component identifier
-   * @throws Exception whether an exception occurred
+   * @param componentId component instance identifier
    */
   @Override
   public void indexComponent(String spaceId, String componentId) {
     try {
-      String ComponentIndexPath = IndexFileManager.getAbsoluteIndexPath(componentId);
-      DidYouMeanIndexer.createSpellIndexForAllLanguage("content", ComponentIndexPath);
+      String componentIndexPath = IndexFileManager.getAbsoluteIndexPath(componentId);
+      DidYouMeanIndexer.createSpellIndexForAllLanguage(CONTENT, componentIndexPath);
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error("failure while indexing component with id ''{0}''", new String[]{componentId}, e);
@@ -97,7 +97,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
       for (String personalComponentName : paths != null ? paths : new String[0]) {
         String personalComponentIndexPath = IndexFileManager
             .getAbsoluteIndexPath(personalComponentName);
-        DidYouMeanIndexer.createSpellIndex("content", personalComponentIndexPath);
+        DidYouMeanIndexer.createSpellIndex(CONTENT, personalComponentIndexPath);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this)
@@ -112,7 +112,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
   public void indexPdc() {
     SilverLogger.getLogger(this).debug("starting indexation of PDC");
     String pdcIndexPath = IndexFileManager.getAbsoluteIndexPath("pdc");
-    DidYouMeanIndexer.createSpellIndexForAllLanguage("content", pdcIndexPath);
+    DidYouMeanIndexer.createSpellIndexForAllLanguage(CONTENT, pdcIndexPath);
     SilverLogger.getLogger(this).debug("ending indexation of PDC");
   }
 }

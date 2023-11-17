@@ -30,11 +30,10 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.search.model.IndexSearcher;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
@@ -46,8 +45,6 @@ import java.util.List;
 @Bean
 public class UserIndexation {
 
-  @Inject
-  private IndexSearcher searcher;
   public static final String COMPONENT_ID = "users";
   public static final String OBJECT_TYPE = "UserFull";
 
@@ -65,7 +62,8 @@ public class UserIndexation {
     try {
       UserFull user = UserFull.getById(userId);
       if (user != null) {
-        FullIndexEntry indexEntry = new FullIndexEntry(COMPONENT_ID, OBJECT_TYPE, userId);
+        FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(COMPONENT_ID,
+            OBJECT_TYPE, userId));
         indexEntry.setLastModificationDate(new Date());
         indexEntry.setTitle(user.getDisplayedName());
         indexEntry.setPreview(user.geteMail());
@@ -107,7 +105,8 @@ public class UserIndexation {
   }
 
   public void unindexUser(String userId) {
-    FullIndexEntry indexEntry = new FullIndexEntry(COMPONENT_ID, OBJECT_TYPE, userId);
+    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(COMPONENT_ID, OBJECT_TYPE,
+        userId));
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 }

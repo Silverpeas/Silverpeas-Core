@@ -46,51 +46,39 @@ public class PdcSearchRequestRouterHelper {
   private PdcSearchRequestRouterHelper() {
   }
 
-  /**
-   * Retrieve query data from current request and prepare result view.
-   *
-   * @param pdcSC
-   * @param request
-   * @param setPdcInfo
-   * @return a QueryParameters
-   * @throws Exception
-   */
-  public static QueryParameters saveUserChoicesAndSetPdcInfo(
+  public static void saveUserChoicesAndSetPdcInfo(
       PdcSearchSessionController pdcSC, HttpServletRequest request,
       boolean setPdcInfo) {
-    QueryParameters queryParameters = saveUserChoices(pdcSC, request);
+    saveUserChoices(pdcSC, request);
     setUserChoices(request, pdcSC);
     setAttributesAdvancedSearch(pdcSC, request, setPdcInfo);
     if (setPdcInfo) {
       setPertinentAxis(pdcSC, request);
       setContext(pdcSC, request);
     }
-    return queryParameters;
   }
 
-  public static QueryParameters saveFavoriteRequestAndSetPdcInfo(PdcSearchSessionController pdcSC,
+  public static void saveFavoriteRequestAndSetPdcInfo(PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
     String favoriteRequestId = request.getParameter("iCenterId");
-    return saveFavoriteRequestAndSetPdcInfo(pdcSC, request, favoriteRequestId);
+    saveFavoriteRequestAndSetPdcInfo(pdcSC, request, favoriteRequestId);
   }
 
-  public static QueryParameters saveFavoriteRequestAndSetPdcInfo(PdcSearchSessionController pdcSC,
+  public static void saveFavoriteRequestAndSetPdcInfo(PdcSearchSessionController pdcSC,
       HttpServletRequest request, String favoriteRequestId)  {
     // this parameter is for Back Button on result page
     String urlToRedirect = request.getParameter("urlToRedirect");
     request.setAttribute("urlToRedirect", urlToRedirect);
     // load settings of selected Interest center
     Interests ic = pdcSC.loadICenter(favoriteRequestId);
-    QueryParameters queryParameters = saveFavoriteRequest(pdcSC, ic);
+    saveFavoriteRequest(pdcSC, ic);
     setUserChoices(request, pdcSC);
     setAttributesAdvancedSearch(pdcSC, request, true);
     setPertinentAxis(pdcSC, request);
     setContext(pdcSC, request);
-
-    return queryParameters;
   }
 
-  public static QueryParameters saveFavoriteRequest(PdcSearchSessionController pdcSC,
+  public static void saveFavoriteRequest(PdcSearchSessionController pdcSC,
       Interests favoriteRequest)  {
     String query = favoriteRequest.getQuery();
     String spaceId = favoriteRequest.getWorkSpaceID();
@@ -115,8 +103,6 @@ public class PdcSearchRequestRouterHelper {
     queryParameters.setCreatorId(authorSearch);
     queryParameters.setAfterDate(DateUtil.toLocalDate(afterdate));
     queryParameters.setBeforeDate(DateUtil.toLocalDate(beforedate));
-
-    return queryParameters;
   }
 
   /**
@@ -125,10 +111,8 @@ public class PdcSearchRequestRouterHelper {
    *
    * @param pdcSC: the pdcSessionController
    * @param request : the HttpServletRequest
-   * @return a QueryParameters from session updated with data from request
-   * @throws Exception
    */
-  public static QueryParameters saveUserChoices(PdcSearchSessionController pdcSC,
+  public static void saveUserChoices(PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
     final String query = request.getParameter(
         pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_XML ?
@@ -179,7 +163,6 @@ public class PdcSearchRequestRouterHelper {
 
     // Set component search type
     pdcSC.setDataType(request.getParameter("dataType"));
-    return queryParameters;
   }
 
   private static LocalDate getDateFromRequest(String name, String language, HttpServletRequest request) {
@@ -190,14 +173,6 @@ public class PdcSearchRequestRouterHelper {
     return DateUtil.stringToLocalDate(str, language);
   }
 
-  /**
-   * Get user choices from the PdcSearchSessionController and put it in the HTTP request. Prepare
-   * data that will be used in the result view.
-   *
-   * @param request
-   * @param pdcSC
-   * @throws Exception
-   */
   public static void setUserChoices(HttpServletRequest request, PdcSearchSessionController pdcSC) {
     QueryParameters queryParameters = pdcSC.getQueryParameters();
     if (queryParameters != null) {
@@ -210,8 +185,8 @@ public class PdcSearchRequestRouterHelper {
       request.setAttribute("QueryParameters", queryParameters);
     }
     request.setAttribute("DisplayParamChoices", pdcSC.getDisplayParamChoices());
-    request.setAttribute("NbResToDisplay", Integer.valueOf(pdcSC.getNbResToDisplay()));
-    request.setAttribute("SortValue", Integer.valueOf(pdcSC.getSortValue()));
+    request.setAttribute("NbResToDisplay", pdcSC.getNbResToDisplay());
+    request.setAttribute("SortValue", pdcSC.getSortValue());
     request.setAttribute("SortOrder", pdcSC.getSortOrder());
     request.setAttribute("ItemType", pdcSC.getDataType());
 
@@ -225,13 +200,10 @@ public class PdcSearchRequestRouterHelper {
 
     String showAllAxis = request.getParameter("showNotOnlyPertinentAxisAndValues");
     if ("true".equals(showAllAxis)) {
-      pdcSC.setShowOnlyPertinentAxisAndValues(false);
       request.setAttribute("showAllAxis", "true");
-    } else {
-      pdcSC.setShowOnlyPertinentAxisAndValues(true);
     }
     // put search type
-    request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
+    request.setAttribute("SearchType", pdcSC.getSearchType());
   }
 
   /**
@@ -242,7 +214,6 @@ public class PdcSearchRequestRouterHelper {
    * @param request HTTP servlet request
    * @param setSpacesAndComponents if false do nothing, else if add SpaceList and ComponentList
    * attributes into the request
-   * @throws Exception
    */
   public static void setAttributesAdvancedSearch(
       PdcSearchSessionController pdcSC, HttpServletRequest request,
@@ -270,11 +241,11 @@ public class PdcSearchRequestRouterHelper {
   }
 
   /**
-   * put in the request the primary axis and eventually the secondary axis accroding to search
+   * Put in the request the primary axis and eventually the secondary axis according to search
    * context
    *
-   * @param pdcSC
-   * @param request
+   * @param pdcSC the search session controller
+   * @param request the request
    */
   public static void setPertinentAxis(PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
@@ -289,13 +260,6 @@ public class PdcSearchRequestRouterHelper {
     request.setAttribute("ShowSndSearchAxis", pdcSC.getSecondaryAxis());
   }
 
-  /**
-   * put in the request the primary axis and eventually the secondary axis accroding to search
-   * context
-   *
-   * @param pdcSC
-   * @param request
-   */
   public static void setContext(PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
 

@@ -26,7 +26,9 @@ package org.silverpeas.core.node.model;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 
+import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
@@ -35,7 +37,7 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = -6462797069972573255L;
   public static final DataFlavor NodeDetailFlavor = new DataFlavor(NodeDetail.class, "Node");
-  private NodeDetail nodeDetail;
+  private final NodeDetail nodeDetail;
 
   public NodeSelection(NodeDetail node) {
     super();
@@ -44,6 +46,7 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
   }
 
   @Override
+  @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferedData;
@@ -63,7 +66,8 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
   @Override
   public IndexEntry getIndexEntry() {
     NodePK pk = nodeDetail.getNodePK();
-    IndexEntry indexEntry = new IndexEntry(pk.getInstanceId(), "Node", pk.getId());
+    IndexEntry indexEntry = new IndexEntry(new IndexEntryKey(pk.getInstanceId(), "Node",
+        pk.getId()));
     indexEntry.setTitle(nodeDetail.getName());
     return indexEntry;
   }

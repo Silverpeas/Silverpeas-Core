@@ -265,7 +265,7 @@ public class IndexManager {
    * @return the path to the directory where are stored the index for the given index entry.
    */
   private String getIndexDirectoryPath(IndexEntryKey indexEntry) {
-    return getIndexDirectoryPath(indexEntry.getComponent());
+    return getIndexDirectoryPath(indexEntry.getComponentId());
   }
 
   /**
@@ -390,7 +390,7 @@ public class IndexManager {
 
     // fields creation
     doc.add(new StringField(KEY, indexEntry.getPK().toString(), Field.Store.YES));
-    doc.add(new StringField(SCOPE, indexEntry.getPK().getComponent(), Field.Store.YES));
+    doc.add(new StringField(SCOPE, indexEntry.getPK().getComponentId(), Field.Store.YES));
     setTitleField(indexEntry, doc);
     setPreviewAndKeyWordsField(indexEntry, doc);
     setCreationAndUpdateFields(indexEntry, doc);

@@ -1207,7 +1207,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final IndexEntryKey indexEntryKey = entry.getKey();
       aliasIndexEntry.setPK(indexEntryKey);
       aliasIndexEntry.setPaths(entry.getValue());
-      aliasIndexEntry.setAlias(!indexEntryKey.getComponent().equals(pubPK.getInstanceId()));
+      aliasIndexEntry.setAlias(!indexEntryKey.getComponentId().equals(pubPK.getInstanceId()));
       IndexEngineProxy.addIndexEntry(aliasIndexEntry);
     }
   }

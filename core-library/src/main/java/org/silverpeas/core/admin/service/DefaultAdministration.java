@@ -76,6 +76,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerE
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -334,7 +335,8 @@ class DefaultAdministration implements Administration {
   public void createSpaceIndex(SpaceInstLight spaceInst) {
     // Index the space
     String spaceId = spaceInst.getId();
-    FullIndexEntry indexEntry = new FullIndexEntry(INDEX_SPACE_SCOPE, "Space", spaceId);
+    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(INDEX_SPACE_SCOPE, "Space",
+        spaceId));
     // index all translations
     Map<String, SpaceI18N> translations = spaceInst.getTranslations();
     for (Map.Entry<String, SpaceI18N> translation : translations.entrySet()) {
@@ -351,7 +353,8 @@ class DefaultAdministration implements Administration {
   @Override
   public void deleteSpaceIndex(SpaceInst spaceInst) {
     String spaceId = spaceInst.getId();
-    FullIndexEntry indexEntry = new FullIndexEntry(INDEX_SPACE_SCOPE, "Space", spaceId);
+    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(INDEX_SPACE_SCOPE, "Space",
+        spaceId));
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 
@@ -985,7 +988,7 @@ class DefaultAdministration implements Administration {
       // Index the component
       String componentId = instance.getId();
       FullIndexEntry indexEntry =
-          new FullIndexEntry(INDEX_COMPONENT_SCOPE, "Component", componentId);
+          new FullIndexEntry(new IndexEntryKey(INDEX_COMPONENT_SCOPE, "Component", componentId));
 
       if (instance instanceof ComponentInst) {
         setIndexEntry((ComponentInst) instance, indexEntry);
@@ -1022,7 +1025,8 @@ class DefaultAdministration implements Administration {
   }
 
   private void deleteComponentIndex(String componentId) {
-    FullIndexEntry indexEntry = new FullIndexEntry(INDEX_COMPONENT_SCOPE, "Component", componentId);
+    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(INDEX_COMPONENT_SCOPE,
+        "Component", componentId));
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 
@@ -2750,7 +2754,7 @@ class DefaultAdministration implements Administration {
     // Remove the component name to get the table client id
     char[] cBuf = sClientComponentId.toCharArray();
     if (Character.isDigit(cBuf[cBuf.length - 1])) {
-      for (int nI = 0; nI < cBuf.length && sTableClientId.length() == 0; nI++) {
+      for (int nI = 0; nI < cBuf.length && sTableClientId.isEmpty(); nI++) {
         if (Character.isDigit(cBuf[nI])) {
           sTableClientId = sClientComponentId.substring(nI);
         }
@@ -3965,7 +3969,7 @@ class DefaultAdministration implements Administration {
     if (usersIds == null || usersIds.length == 0) {
       return new UserDetail[0];
     }
-    if (sUserLastNameFilter == null || sUserLastNameFilter.length() == 0) {
+    if (sUserLastNameFilter == null || sUserLastNameFilter.isEmpty()) {
       return getUserDetails(usersIds);
     }
     String upperFilter = sUserLastNameFilter.toUpperCase();
@@ -4287,7 +4291,7 @@ class DefaultAdministration implements Administration {
       }
     }
     if (parentId == null && (parentSpecificIds.length > 0 ||
-        (askedParentId != null && askedParentId.length() > 0))) {// We
+        (askedParentId != null && !askedParentId.isEmpty()))) {// We
       // can't add the group (just the same restriction as for the directories...)
       throw new AdminException(
           "Fail to synchronize imported group " + groupKey + " in domain " + domainId);
@@ -4820,7 +4824,7 @@ class DefaultAdministration implements Administration {
     final String specificId = distantUD.getSpecificId();
     try {
       final String silverpeasId = userManager.addUser(distantUD, true, false);
-      if (silverpeasId.equals("")) {
+      if (silverpeasId.isEmpty()) {
         final String message =
             format("problem adding user {0} (specificId:{1}) - Login and LastName must be set !!!",
                 distantUD.getDisplayedName(), specificId);

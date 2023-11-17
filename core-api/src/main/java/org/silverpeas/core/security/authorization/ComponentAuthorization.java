@@ -69,7 +69,7 @@ public interface ComponentAuthorization {
       String userId, final AccessControlOperation... operations);
 
   /**
-   * Representation of a resource in order to filtered by the API implementations.
+   * Representation of a resource in order to be filtered by the API implementations.
    */
   class ComponentResourceReference {
     final String localId;

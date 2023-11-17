@@ -40,6 +40,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Mutable;
@@ -660,7 +661,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @param group
    */
   public void indexGroup(GroupDetail group) {
-    FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", group.getId());
+    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey("groups", "GroupRow",
+        group.getId()));
     indexEntry.setLastModificationDate(new Date());
     indexEntry.setTitle(group.getName());
     indexEntry.setPreview(group.getDescription());
@@ -679,7 +681,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @param groupId
    */
   public void unindexGroup(String groupId) {
-    FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", groupId);
+    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey("groups", "GroupRow",
+        groupId));
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 

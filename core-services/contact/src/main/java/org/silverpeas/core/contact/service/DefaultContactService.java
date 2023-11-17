@@ -454,8 +454,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   private void createIndex(Contact contact) {
     try {
       if (contact != null) {
-        FullIndexEntry indexEntry = new FullIndexEntry(contact.getPK().getComponentName(),
-            "Contact", contact.getPK().getId());
+        FullIndexEntry indexEntry =
+            new FullIndexEntry(new IndexEntryKey(contact.getPK().getComponentName(),
+            "Contact", contact.getPK().getId()));
         String fullName = contact.getFirstName() + " " + contact.getLastName();
         indexEntry.setTitle(fullName);
         indexEntry.setLang(I18NHelper.DEFAULT_LANGUAGE);

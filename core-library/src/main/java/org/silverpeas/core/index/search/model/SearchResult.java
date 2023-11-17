@@ -46,12 +46,14 @@ import static org.silverpeas.core.contribution.indicator.NewContributionIndicato
 public class SearchResult extends AbstractBean {
 
   private String keywords;
-  private LocalDate creationDate;
-  private String creatorId;
-  private LocalDate lastUpdateDate;
+  private final LocalDate creationDate;
+  private final String creatorId;
+  private final LocalDate lastUpdateDate;
   private String lastUpdaterId;
 
-  private ContributionIdentifier cId;
+  private final ContributionIdentifier cId;
+
+  private String linkedResId;
 
   private float score;
   private String serverName;
@@ -77,7 +79,9 @@ public class SearchResult extends AbstractBean {
     this.creatorId = mie.getCreationUser();
     this.lastUpdaterId = mie.getLastModificationUser();
 
-    this.cId = ContributionIdentifier.from(mie.getComponent(), mie.getObjectId(), mie.getObjectType());
+    this.cId = ContributionIdentifier.from(mie.getComponent(), mie.getObjectId(),
+        mie.getObjectType());
+    this.linkedResId = mie.getLinkedObjectId();
 
     this.score = mie.getScore();
     this.serverName = mie.getServerName();
@@ -122,7 +126,8 @@ public class SearchResult extends AbstractBean {
 
     for (String language : gsc.getTranslations().keySet()) {
       SearchResultTranslation translation =
-          new SearchResultTranslation(language, gsc.getName(language), gsc.getDescription(language));
+          new SearchResultTranslation(language, gsc.getName(language),
+              gsc.getDescription(language));
       addTranslation(translation);
     }
 
@@ -135,6 +140,15 @@ public class SearchResult extends AbstractBean {
 
   public static SearchResult fromGlobalSilverContent(GlobalSilverContent gsc) {
     return new SearchResult(gsc);
+  }
+
+  /**
+   * Is the contribution referred by this search result linked to another contribution? For example,
+   * a comment or an attachment is a contribution that is linked usually to a publication.
+   * @return true if the resource referred by this result is linked to another resource.
+   */
+  public boolean isLinkedToAnotherContribution() {
+    return StringUtil.isDefined(this.linkedResId);
   }
 
   private LocalDate getLocalDate(String date) {
@@ -185,6 +199,10 @@ public class SearchResult extends AbstractBean {
     return cId.getType();
   }
 
+  public String getLinkedResourceId() {
+    return linkedResId;
+  }
+
   public float getScore() {
     return score;
   }
@@ -209,6 +227,7 @@ public class SearchResult extends AbstractBean {
    * gets the list of Sortable fields if the content is a form XML
    * @return the sortableXMLFormFields
    */
+  @SuppressWarnings("unused")
   public Map<String, String> getSortableXMLFormFields() {
     return sortableXMLFormFields;
   }

@@ -34,8 +34,8 @@ import java.util.Map;
 public class Facet {
 
   private String name;
-  private String id;
-  private Map<String, FacetEntryVO> entries = new HashMap<>();
+  private final String id;
+  private final Map<String, FacetEntryVO> entries = new HashMap<>();
   private List<FacetEntryVO> sortedEntries;
 
   public Facet(String id, String name) {

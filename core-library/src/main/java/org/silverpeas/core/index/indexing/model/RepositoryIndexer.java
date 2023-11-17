@@ -113,7 +113,7 @@ public class RepositoryIndexer {
     if (ADD_ACTION.equals(action)) {
       // indexer le répertoire
       FullIndexEntry fullIndexEntry =
-          new FullIndexEntry(getComponentId(), "LinkedDir", unixDirectory);
+          new FullIndexEntry(new IndexEntryKey(getComponentId(), "LinkedDir", unixDirectory));
       fullIndexEntry.setTitle(directory.toFile().getName());
       fullIndexEntry.setCreationDate(creationDate);
       fullIndexEntry.setCreationUser(creatorId);
@@ -134,7 +134,7 @@ public class RepositoryIndexer {
 
       // Add file in index
       FullIndexEntry fullIndexEntry =
-          new FullIndexEntry(getComponentId(), "LinkedFile", unixFilePath);
+          new FullIndexEntry(new IndexEntryKey(getComponentId(), "LinkedFile", unixFilePath));
       fullIndexEntry.setTitle(fileName);
 
       boolean haveGotExtension = (fileName.lastIndexOf('.') != -1);

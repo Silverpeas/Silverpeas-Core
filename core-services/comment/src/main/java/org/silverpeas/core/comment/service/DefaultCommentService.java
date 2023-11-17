@@ -27,6 +27,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
@@ -197,23 +198,23 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   }
 
   private void createIndex(final Comment cmt) {
-    int titleLength = 30;
+    User user = cmt.getCreator();
+    String language = user.getUserPreferences().getLanguage();
+    String title = getComponentMessages(language)
+        .getStringWithParams("comment.commentFrom", user.getDisplayedName());
     String commentMessage = cmt.getMessage();
-    String commentTitle = commentMessage;
-    if (commentMessage != null && commentTitle.length() > titleLength) {
-      commentTitle = commentTitle.substring(0, titleLength) + "...";
-    }
 
     String component = cmt.getIdentifier().getComponentInstanceId();
-    String fk = cmt.getResourceReference().getLocalId();
+    String resId = cmt.getResourceReference().getLocalId();
 
     try {
       FullIndexEntry indexEntry =
-          new FullIndexEntry(component, "Comment" + cmt.getIdentifier().getLocalId(), fk);
-      indexEntry.setTitle(commentTitle);
-      indexEntry.setPreview(commentMessage);
+          new FullIndexEntry(new IndexEntryKey(component, "Comment",
+              cmt.getIdentifier().getLocalId(), resId));
       indexEntry.setCreationDate(cmt.getCreationDate());
       indexEntry.setCreationUser(cmt.getCreatorId());
+      indexEntry.setTitle(title);
+      indexEntry.setPreview(commentMessage);
       indexEntry.addTextContent(commentMessage);
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (Exception e) {
@@ -222,10 +223,11 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   }
 
   private void deleteIndex(final Comment comment) {
-    String component = comment.getIdentifier().getComponentInstanceId();
+    String componentId = comment.getIdentifier().getComponentInstanceId();
     try {
       IndexEntryKey indexEntry =
-          new IndexEntryKey(component, "Comment" + comment.getIdentifier().getLocalId(),
+          new IndexEntryKey(componentId, "Comment",
+              comment.getIdentifier().getLocalId(),
               comment.getResourceReference().getLocalId());
       IndexEngineProxy.removeIndexEntry(indexEntry);
     } catch (Exception e) {

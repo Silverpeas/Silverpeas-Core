@@ -23,23 +23,33 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
+import org.silverpeas.core.util.StringUtil;
+
 import java.io.Serializable;
 import java.util.StringTokenizer;
 
 /**
  * An IndexEntryKey uniquely identifies an entry in the indexes. An IndexEntryKey is set at the
- * index entry creation time : when a Silverpeas component adds a new element or document. This
- * IndexEntryKey will be returned later when the document matches a query. A document in Silverpeas
- * is uniquely identified by:
+ * index entry creation time: when a Silverpeas component adds a new document to index.
+ * The document to index refers a contribution or a resource of the specified component. A
+ * contribution can be, for example, a publication or a comment. A resource, on the other side, can
+ * be, for example  a user or a space instance. A component can be a space management service, a
+ * user management service, a Silverpeas application, or any other modular components of which
+ * Silverpeas is made up.
+ * <p>
+ * This IndexEntryKey will be returned later when the document matches a query. A document in
+ * Silverpeas is uniquely identified by:
+ * </p>
  * <ul>
- *  <LI>the space name where the element has been created. This space name may be a user id
- *  when the space is the private working space of this user.</LI>
- * <LI>The component name which handles the element. This component name may be an instance name
- * when
- * several instances of the same component live in the same space.</LI>
- * <LI>The object type. The meaning of this type is uniquely determined by the component which
- * handles the object.</LI>
- * <LI>The object id.</LI>
+ * <LI>The component which handles the contribution or the resource, referred further to as the
+ * object. It can be a transverse service, an administration one or a component instance (a
+ * Silverpeas application).</LI>
+ * <LI>The type of the object (contribution or resource) referred by the document to index. The
+ * meaning of this type is uniquely determined by the component that handles the object.</LI>
+ * <LI>The unique identifier of the object. For example a user
+ * identifier or a contribution identifier.</LI>
+ * <LI>Eventually, if any, the identifier of another object to which the object referred by the
+ * key is linked. For example, a publication is the object to which a comment is linked.</LI>
  * </UL>
  */
 public final class IndexEntryKey implements Serializable {
@@ -51,89 +61,121 @@ public final class IndexEntryKey implements Serializable {
   private static final String SEP = "|";
 
   /**
-   * The three parts of an IndexEntryKey are private and fixed at construction time.
+   * The four parts of an IndexEntryKey are private and fixed at construction time.
    */
   private final String component;
   private final String objectType;
   private final String objectId;
+  private final String linkedObjectId;
 
+  /**
+   * Constructs a new {@link IndexEntryKey} instance.
+   * @param componentId the unique identifier of a component.
+   * @param objectType the type of the object related by the document to index.
+   * @param objectId the unique identifier of the object related by the document to index.
+   */
   public IndexEntryKey(String componentId, String objectType, String objectId) {
-    this.component = componentId;
-    this.objectType = objectType;
-    this.objectId = objectId;
+    this.component = normalize(componentId);
+    this.objectType = normalize(objectType);
+    this.objectId = normalize(objectId);
+    this.linkedObjectId = "";
   }
 
+  /**
+   * Constructs a new {@link IndexEntryKey} instance.
+   * @param componentId the unique identifier of a component.
+   * @param objectType the type of the object related by the document to index.
+   * @param objectId the unique identifier of the object related by the document to index.
+   * @param linkedObjectId the unique identifier of the object to which the object referred by the
+   * key is linked. For example, for a comment, the linked object can be a publication.
+   */
+  public IndexEntryKey(String componentId, String objectType, String objectId,
+      String linkedObjectId) {
+    this.component = normalize(componentId);
+    this.objectType = normalize(objectType);
+    this.objectId = normalize(objectId);
+    this.linkedObjectId = normalize(linkedObjectId);
+  }
+
+  /**
+   * Constructs a new {@link IndexEntryKey} instance from the specified another one.
+   * @param other the {@link IndexEntryKey} instance to copy.
+   */
   IndexEntryKey(final IndexEntryKey other) {
     this.component = other.component;
     this.objectType = other.objectType;
     this.objectId = other.objectId;
+    this.linkedObjectId = other.linkedObjectId;
   }
 
   /**
-   * Create a new IndexEntry from s. We must have :
-   * <PRE>
-   * create(s).toString().equals(s)
-   * </PRE>
+   * Creates a new IndexEntry from the specified formatted text.
+   * @param s the formatted entry key
+   * @return the {@link IndexEntryKey} instance got from the decoding of the given text.
    */
   public static IndexEntryKey create(String s) {
     /*
-     * The Tokenizer must return the separators SEP as a missing field must be parsed correctly :
-     * COMPO|TYPE|ID must give (COMP,TYPE,ID).
+     * The Tokenizer must return the separators SEP as a missing field.
+     * Examples of format:
+     * COMPO|TYPE|ID| must give (COMP,TYPE,ID, "")
+     * COMPO|TYPE|ID|LINKED must give (COMP, TYPE, LINKED)
      */
     final StringTokenizer stk = new StringTokenizer(s, SEP, true);
-    String comp = "";
-    String objType = "";
-    String objId = "";
-    if (stk.hasMoreTokens()) {
-      comp = stk.nextToken();
+    String[] keyParts = new String[]{"", "", "", ""};
+    int i = 0;
+    while (stk.hasMoreElements() && i < 4) {
+      String token = stk.nextToken();
+      if (!token.equals(SEP)) {
+        keyParts[i] = token;
+        if (stk.hasMoreElements()) {
+          stk.nextToken();
+        }
+      }
+      i++;
     }
-    if (comp.equals(SEP)) {
-      comp = "";
-    } else if (stk.hasMoreTokens()) {
-      stk.nextToken(); // skip one SEP
-    }
-    if (stk.hasMoreTokens()) {
-      objType = stk.nextToken();
-    }
-    if (objType.equals(SEP)) {
-      objType = "";
-    } else if (stk.hasMoreTokens()) {
-      stk.nextToken(); // skip one SEP
-    }
-    if (stk.hasMoreTokens()) {
-      objId = stk.nextToken();
-    }
-    return new IndexEntryKey(comp, objType, objId);
+    return new IndexEntryKey(keyParts[0], keyParts[1], keyParts[2], keyParts[3]);
   }
 
   /**
-   * Return the name of the component's instance which handles the object.
+   * Gets the unique identifier of the component instance handling the object referred by this key.
+   * @return the identifier of the component that handles the object related by the
+   * indexed document.
    */
-  public String getComponent() {
+  public String getComponentId() {
     return component;
   }
 
   /**
-   * Return the type of the indexed document. The meaning of this type is uniquely determined by the
-   * component handling the object.
+   * Gets the type of the object referred by this key. The meaning of this type is uniquely
+   * determined by the component handling the object.
+   * @return the type of the object related by the indexed document.
    */
   public String getObjectType() {
     return objectType;
   }
 
   /**
-   * Return the object id.
+   * Gets the identifier of the object referred by this key.
+   * @return the unique identifier of the object related by the indexed document.
    */
   public String getObjectId() {
     return objectId;
   }
 
   /**
-   * Returns a string which can be used later to recontruct the key with the create method.
+   * Gets the identifier of the object to which the object referred by this key is linked.
+   * @return identifier of the linked object or an empty string if no object is linked.
+   */
+  public String getLinkedObjectId() {
+    return linkedObjectId;
+  }
+
+  /**
+   * Returns a string which can be used later to construct the key with the create method.
    */
   @Override
   public String toString() {
-    return getComponent() + SEP + getObjectType() + SEP + getObjectId();
+    return getComponentId() + SEP + getObjectType() + SEP + getObjectId() + SEP + getLinkedObjectId();
   }
 
   /**
@@ -142,6 +184,9 @@ public final class IndexEntryKey implements Serializable {
    */
   @Override
   public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
     if (o instanceof IndexEntryKey) {
       IndexEntryKey k = (IndexEntryKey) o;
       return this.toString().equals(k.toString());
@@ -157,4 +202,9 @@ public final class IndexEntryKey implements Serializable {
   public int hashCode() {
     return toString().hashCode();
   }
+
+  private String normalize(final String raw) {
+    return StringUtil.defaultStringIfNotDefined(raw);
+  }
+
 }

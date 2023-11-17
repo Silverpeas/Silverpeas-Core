@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class SearchTypeConfigurationVO {
 
-  private int configId;
+  private final int configId;
   private String name;
   private Set<String> components;
   private Set<String> types;

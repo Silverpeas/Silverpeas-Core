@@ -26,28 +26,23 @@ package org.silverpeas.web.pdc.vo;
 import java.util.List;
 
 /**
- * ExternalSilverpeasConfigVO represents an external silverpeas server value object
+ * ExternalSilverpeasConfigVO represents an external silverpeas server value object.
+ * Example:
+ * <pre>{@code
  * external.search.server.1.name=INPI
  * external.search.server.1.data.path=D:\\silverpeas\\silverpeas_INPI_prod\\data
  * external.search.server.1.component.filters=kmelia
  * external.search.server.1.url=http://pegase.na.inpi/silverpeas
+ * }</pre>
  */
 public class ExternalSPConfigVO {
 
-  private String name = "";
-  private int configOrder = 0;
-  private String dataPath = "";
-  private List<String> components = null;
-  private String url = "";
+  private final String name;
+  private final int configOrder;
+  private final String dataPath;
+  private final List<String> components;
+  private final String url;
 
-  /**
-   * Contructor using fields
-   * @param name
-   * @param configOrder
-   * @param dataPath
-   * @param components
-   * @param url
-   */
   public ExternalSPConfigVO(String name, int configOrder, String dataPath, List<String> components,
       String url) {
     super();

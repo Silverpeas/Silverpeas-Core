@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A FullIndexEntry is an IndexEntry completed with data usefull uniquely at the index creation time
+ * A FullIndexEntry is an IndexEntry completed with data useful uniquely at the index creation time
  * (mainly all the data contents which must be indexed but which is useless at retrieve time). This
  * extra-content is indexed but not stored in the index.
  */
@@ -49,10 +49,6 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   private List<FileDescription> linkedFileList = null;
   private List<FieldDescription> fields = null;
   private Set<String> linkedFileIdsList = null;
-
-  public FullIndexEntry(String component, String objectType, String objectId) {
-    super(component, objectType, objectId);
-  }
 
   public FullIndexEntry(IndexEntryKey pk) {
     super(pk);
@@ -203,5 +199,15 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
 
   public FullIndexEntry getCopy() {
     return new FullIndexEntry(this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

@@ -226,6 +226,7 @@ public class HtmlSearchResultTag extends TagSupport {
     String sDownloadURL = gsr.getDownloadLink();
     String sLocation = gsr.getLocation();
     String sCreatorName = gsr.getCreatorName();
+    String id = gsr.isLinked() ? gsr.getLinkedResourceId() : gsr.getId();
     String sCreationDate;
     try {
       if (sortValue == 4) {
@@ -255,7 +256,7 @@ public class HtmlSearchResultTag extends TagSupport {
           checked = "checked=\"checked\"";
         }
         result.append("<input class=\"selection\" type=\"checkbox\" ").append(checked)
-            .append(" name=\"resultObjects\" value=\"").append(gsr.getId()).append("-")
+            .append(" name=\"resultObjects\" value=\"").append(id).append("-")
             .append(gsr.getInstanceId()).append("\"/>");
       }
     }

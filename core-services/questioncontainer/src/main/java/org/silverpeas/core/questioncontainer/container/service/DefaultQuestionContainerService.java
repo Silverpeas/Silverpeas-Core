@@ -125,7 +125,8 @@ public class DefaultQuestionContainerService
     QuestionPK questionPK = new QuestionPK(null, questionContainerHeader.getPK());
     Collection<Question> questions;
     try {
-      questions = questionService.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().
+      questions = questionService.getQuestionsByFatherPK(questionPK,
+          questionContainerHeader.getPK().
           getId());
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
@@ -165,7 +166,7 @@ public class DefaultQuestionContainerService
   public Collection<QuestionContainerHeader> getOpenedQuestionContainersAndUserScores(
       QuestionContainerPK questionContainerPK, String userId) {
     try (Connection con = getConnection()) {
-    Collection<QuestionContainerHeader> questionContainerHeaders =
+      Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getOpenedQuestionContainers(con, questionContainerPK);
       List<QuestionContainerHeader> result = new ArrayList<>(questionContainerHeaders.size());
       for (QuestionContainerHeader questionContainerHeader : questionContainerHeaders) {
@@ -267,7 +268,8 @@ public class DefaultQuestionContainerService
     Collection<ScoreDetail> scores;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
     try {
-      scores = scoreService.getBestScoresByFatherId(scorePK, nbBestScores, questionContainerPK.getId());
+      scores = scoreService.getBestScoresByFatherId(scorePK, nbBestScores,
+          questionContainerPK.getId());
       return scores;
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
@@ -280,7 +282,8 @@ public class DefaultQuestionContainerService
     Collection<ScoreDetail> scores;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
     try {
-      scores = scoreService.getWorstScoresByFatherId(scorePK, nbScores, questionContainerPK.getId());
+      scores = scoreService.getWorstScoresByFatherId(scorePK, nbScores,
+          questionContainerPK.getId());
       return scores;
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
@@ -433,11 +436,12 @@ public class DefaultQuestionContainerService
     QuestionResult result;
     Answer answer;
     int participationId =
-        scoreService.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(), userId) + 1;
+        scoreService.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(),
+            userId) + 1;
     int questionUserScore;
     int userScore = 0;
 
-    for (Map.Entry<String, List<String>> entry: reply.entrySet()) {
+    for (Map.Entry<String, List<String>> entry : reply.entrySet()) {
       questionUserScore = 0;
 
       questionPK = new QuestionPK(entry.getKey(), questionContainerPK);
@@ -477,7 +481,8 @@ public class DefaultQuestionContainerService
         newVectorSize = answerIdIndex;
         answerPK = new AnswerPK(answerId, questionContainerPK);
         result =
-            new QuestionResult(null, new ResourceReference(questionPK), answerPK, userId, openedAnswer);
+            new QuestionResult(null, new ResourceReference(questionPK), answerPK, userId,
+                openedAnswer);
         result.setParticipationId(participationId);
         result.setNbPoints(answer.getNbPoints() - penaltyValue);
         saveQuestionResult(result);
@@ -489,7 +494,8 @@ public class DefaultQuestionContainerService
         answer = question.getAnswer(answerId);
         questionUserScore += answer.getNbPoints() - penaltyValue;
         answerPK = new AnswerPK(answerId, questionContainerPK);
-        result = new QuestionResult(null, new ResourceReference(questionPK), answerPK, userId, null);
+        result = new QuestionResult(null, new ResourceReference(questionPK), answerPK, userId,
+            null);
         result.setParticipationId(participationId);
         result.setNbPoints(answer.getNbPoints() - penaltyValue);
         saveQuestionResult(result);
@@ -721,7 +727,8 @@ public class DefaultQuestionContainerService
             questionContainerPK.getComponentName());
 
     try {
-      suggestions = questionResultService.getQuestionResultToQuestion(new ResourceReference(questionPK));
+      suggestions =
+          questionResultService.getQuestionResultToQuestion(new ResourceReference(questionPK));
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
     }
@@ -734,7 +741,8 @@ public class DefaultQuestionContainerService
 
     try {
       suggestion =
-          questionResultService.getUserAnswerToQuestion(userId, new ResourceReference(questionPK), answerPK);
+          questionResultService.getUserAnswerToQuestion(userId, new ResourceReference(questionPK)
+              , answerPK);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
     }
@@ -792,7 +800,8 @@ public class DefaultQuestionContainerService
 
     try {
       nbPart =
-          scoreService.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(), userId);
+          scoreService.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(),
+              userId);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
     }
@@ -840,8 +849,8 @@ public class DefaultQuestionContainerService
 
     if (header != null) {
       // Index the QuestionContainerHeader
-      indexEntry = new FullIndexEntry(header.getPK().getComponentName(), "QuestionContainer",
-          header.getPK().getId());
+      indexEntry = new FullIndexEntry(new IndexEntryKey(header.getPK().getComponentName(),
+          "QuestionContainer", header.getPK().getId()));
       indexEntry.setTitle(header.getTitle());
       indexEntry.setPreview(header.getDescription());
       indexEntry.setCreationDate(header.getCreationDate());
@@ -978,7 +987,7 @@ public class DefaultQuestionContainerService
         // question fermée
         Collection<Answer> answers = question.getAnswers();
         for (Answer answer : answers) {
-          String percent = answer.getPercent(questionContainer.getHeader().getNbVoters())+"%";
+          String percent = answer.getPercent(questionContainer.getHeader().getNbVoters()) + "%";
           CSVRow csvRow = getCSVRow(question.getLabel(), answer.getLabel(), percent, addScore,
               answer.getNbPoints());
           csvRows.add(csvRow);

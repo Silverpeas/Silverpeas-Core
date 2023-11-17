@@ -79,7 +79,7 @@ public class QueryParameters implements java.io.Serializable {
   /**
    * By using this method the spaceId filter is set.
    * The instanceId (if any) is cleared.
-   * @param spaceId
+   * @param spaceId the unique identifier of a space
    */
   public void setSpaceId(String spaceId) {
     setSpaceIdAndInstanceId(spaceId, null);
@@ -93,8 +93,8 @@ public class QueryParameters implements java.io.Serializable {
    * Setting an instanceId while the spaceId is not defined makes no sense here.
    * That's why a spaceId must be passed to the method, if it is null, empty or "*",
    * then no instanceId is set.
-   * @param spaceId
-   * @param instanceId
+   * @param spaceId the unique identifier of a space
+   * @param instanceId the unique identifier of a component instance
    */
   public void setSpaceIdAndInstanceId(String spaceId, String instanceId) {
     this.spaceId = null;
@@ -154,7 +154,7 @@ public class QueryParameters implements java.io.Serializable {
 
   public void addXmlSubQuery(String field, String query) {
     if (xmlQuery == null) {
-      xmlQuery = new HashMap<String, String>();
+      xmlQuery = new HashMap<>();
     }
 
     xmlQuery.put(field, query);
@@ -181,8 +181,8 @@ public class QueryParameters implements java.io.Serializable {
     query.setRequestedUpdatedBefore(getBeforeUpdateDate());
 
     if (xmlQuery != null) {
-      for (String key : xmlQuery.keySet()) {
-        query.addFieldQuery(new FieldDescription(key, xmlQuery.get(key), searchingLanguage));
+      for (var q : xmlQuery.entrySet()) {
+        query.addFieldQuery(new FieldDescription(q.getKey(), q.getValue(), searchingLanguage));
       }
     }
 

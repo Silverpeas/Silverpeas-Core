@@ -70,9 +70,14 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @Singleton
 public class SimpleSearchEngine implements SearchEngine {
 
-  private static final Function<FilterMatchingIndexEntryItem, ComponentResourceReference> itemAsContributionIdentifier = i -> {
+  private static final Function<FilterMatchingIndexEntryItem, ComponentResourceReference>
+      itemAsContributionIdentifier = i -> {
+    // Currently, there is no authorization rules on objects that are linked to another object.
+    // Their access control is in this case performed by the authorization rules on the linked
+    // object in the same component (objects that are linked are handled by the same component).
     final MatchingIndexEntry mie = i.getEntry();
-    return new ComponentResourceReference(mie.getObjectId(), mie.getObjectType(), mie.getComponent());
+    final String id = mie.isLinkedObject() ? mie.getLinkedObjectId() : mie.getObjectId();
+    return new ComponentResourceReference(id, mie.getObjectType(), mie.getComponent());
   };
   @Inject
   private DidYouMeanSearcher didYouMeanSearcher;
