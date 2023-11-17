@@ -70,7 +70,7 @@ public class ResultFilterVO {
 
   public void addFormFieldSelectedFacetEntry(String facetId, String value) {
     if (formFieldFacets == null) {
-      formFieldFacets = new HashMap<String, String>();
+      formFieldFacets = new HashMap<>();
     }
     formFieldFacets.put(facetId, value);
   }
@@ -114,8 +114,8 @@ public class ResultFilterVO {
       str.append(" FileType=").append(filetype);
     }
     if (!isSelectedFormFieldFacetsEmpty()) {
-      for (String facetId : formFieldFacets.keySet()) {
-        str.append(" ").append(facetId).append("=").append(formFieldFacets.get(facetId));
+      for (var facet: formFieldFacets.entrySet()) {
+        str.append(" ").append(facet.getKey()).append("=").append(facet.getValue());
       }
     }
     if (str.length() == 0) {

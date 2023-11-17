@@ -26,6 +26,9 @@ package org.silverpeas.core.admin.component.model;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+
+import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
@@ -53,6 +56,7 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
    * @throws UnsupportedFlavorException if the flavor isn't supported by the selection.
    */
   @Override
+  @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferredData;
@@ -75,7 +79,8 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
   @Override
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry =
-        new IndexEntry(componentInst.getId(), "Component", componentInst.getId());
+        new IndexEntry(new IndexEntryKey(componentInst.getId(), "Component",
+            componentInst.getId()));
     indexEntry.setTitle(componentInst.getLabel());
     return indexEntry;
   }

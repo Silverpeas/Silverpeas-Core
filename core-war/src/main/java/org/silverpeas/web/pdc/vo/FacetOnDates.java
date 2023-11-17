@@ -36,15 +36,14 @@ public class FacetOnDates extends Facet {
     super(id, name);
   }
 
-  public FacetEntryVO addEntry(String d) {
-    return addEntry(DateUtil.toLocalDate(d));
+  public void addEntry(String d) {
+    addEntry(DateUtil.toLocalDate(d));
   }
 
-  public FacetEntryVO addEntry(LocalDate date) {
+  public void addEntry(LocalDate date) {
     String year = String.valueOf(date.getYear());
     FacetEntryVO entry = new FacetEntryVO(year, year);
     super.addEntry(entry);
-    return entry;
   }
 
 }

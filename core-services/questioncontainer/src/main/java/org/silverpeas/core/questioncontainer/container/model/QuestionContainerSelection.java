@@ -27,8 +27,10 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
@@ -39,18 +41,19 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
   public static final DataFlavor QuestionContainerDetailFlavor =
       new DataFlavor(QuestionContainerDetail.class, "QuestionContainer");
 
-  private QuestionContainerDetail m_questionContainer;
+  private final QuestionContainerDetail questionContainer;
 
   /**
    * @param questionContainer a question container detail
    */
   public QuestionContainerSelection(QuestionContainerDetail questionContainer) {
     super();
-    m_questionContainer = questionContainer;
+    this.questionContainer = questionContainer;
     super.addFlavor(QuestionContainerDetailFlavor);
   }
 
   @Override
+  @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferedData;
@@ -58,7 +61,7 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
       if (parFlavor.equals(QuestionContainerDetailFlavor)) {
-        transferedData = m_questionContainer;
+        transferedData = questionContainer;
       } else {
         throw e;
       }
@@ -68,11 +71,11 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
 
   @Override
   public IndexEntry getIndexEntry() {
-    QuestionContainerPK questionContainerPK = m_questionContainer.getHeader().getPK();
+    QuestionContainerPK questionContainerPK = questionContainer.getHeader().getPK();
     IndexEntry indexEntry =
-        new IndexEntry(questionContainerPK.getComponentName(), "QuestionContainer",
-            questionContainerPK.getId());
-    indexEntry.setTitle(m_questionContainer.getHeader().getName());
+        new IndexEntry(new IndexEntryKey(questionContainerPK.getComponentName(),
+            "QuestionContainer", questionContainerPK.getId()));
+    indexEntry.setTitle(questionContainer.getHeader().getName());
     return indexEntry;
   }
 
@@ -80,14 +83,14 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
   public SilverpeasKeyData getKeyData() {
     SilverpeasKeyData keyData = new SilverpeasKeyData();
 
-    keyData.setTitle(m_questionContainer.getHeader().getName());
-    keyData.setAuthor(m_questionContainer.getHeader().getCreatorId());
-    keyData.setCreationDate(m_questionContainer.getHeader().getCreationDate());
+    keyData.setTitle(questionContainer.getHeader().getName());
+    keyData.setAuthor(questionContainer.getHeader().getCreatorId());
+    keyData.setCreationDate(questionContainer.getHeader().getCreationDate());
 
-    keyData.setDesc(m_questionContainer.getHeader().getDescription());
+    keyData.setDesc(questionContainer.getHeader().getDescription());
     try {
-      keyData.setProperty("BEGINDATE", m_questionContainer.getHeader().getBeginDate());
-      keyData.setProperty("ENDDATE", m_questionContainer.getHeader().getEndDate());
+      keyData.setProperty("BEGINDATE", questionContainer.getHeader().getBeginDate());
+      keyData.setProperty("ENDDATE", questionContainer.getHeader().getEndDate());
     } catch (SKDException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

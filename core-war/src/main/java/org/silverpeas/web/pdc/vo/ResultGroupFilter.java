@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.pdc.vo;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class ResultGroupFilter {
   private Facet filetypeFacet = null;
   private Facet lastUpdateFacet = null;
 
-  private List<Facet> formfieldFacets;
+  private List<Facet> formFieldFacets;
 
   /**
    * Default constructor
@@ -61,27 +60,27 @@ public class ResultGroupFilter {
   }
 
   public void setFormFieldFacets(List<Facet> formfields) {
-    this.formfieldFacets = formfields;
+    this.formFieldFacets = formfields;
   }
 
   public List<Facet> getFormFieldFacets() {
-    return formfieldFacets;
+    return formFieldFacets;
   }
 
   public void sortFacetsEntries() {
     EntryComparator comparator = new EntryComparator();
     YearComparator yearComparator = new YearComparator();
-    Collections.sort(authorFacet.getSortedEntries(), comparator);
-    Collections.sort(componentFacet.getSortedEntries(), comparator);
-    Collections.sort(datatypeFacet.getSortedEntries(), comparator);
-    Collections.sort(filetypeFacet.getSortedEntries(), comparator);
-    Collections.sort(lastUpdateFacet.getSortedEntries(), yearComparator);
+    authorFacet.getSortedEntries().sort(comparator);
+    componentFacet.getSortedEntries().sort(comparator);
+    datatypeFacet.getSortedEntries().sort(comparator);
+    filetypeFacet.getSortedEntries().sort(comparator);
+    lastUpdateFacet.getSortedEntries().sort(yearComparator);
 
-    for (Facet formFieldFacet : formfieldFacets) {
+    for (Facet formFieldFacet : formFieldFacets) {
       if (formFieldFacet instanceof FacetOnDates) {
-        Collections.sort(formFieldFacet.getSortedEntries(), yearComparator);
+        formFieldFacet.getSortedEntries().sort(yearComparator);
       } else {
-        Collections.sort(formFieldFacet.getSortedEntries(), comparator);
+        formFieldFacet.getSortedEntries().sort(comparator);
       }
     }
   }
@@ -118,7 +117,7 @@ public class ResultGroupFilter {
       checkSelectedFacetEntries(datatypeFacet, selectedFacetEntries.getDatatype());
       checkSelectedFacetEntries(componentFacet, selectedFacetEntries.getComponentId());
 
-      for (Facet facet : formfieldFacets) {
+      for (Facet facet : formFieldFacets) {
         checkSelectedFacetEntries(facet,
             selectedFacetEntries.getFormFieldSelectedFacetEntry(facet.getId()));
       }
@@ -133,7 +132,7 @@ public class ResultGroupFilter {
     }
   }
 
-  private class EntryComparator implements Comparator<FacetEntryVO>{
+  private static class EntryComparator implements Comparator<FacetEntryVO>{
     @Override
     public int compare(FacetEntryVO o1, FacetEntryVO o2) {
       int comp = o2.getNbElt() - o1.getNbElt();
@@ -145,7 +144,7 @@ public class ResultGroupFilter {
     }
   }
 
-  private class YearComparator implements Comparator<FacetEntryVO>{
+  private static class YearComparator implements Comparator<FacetEntryVO>{
     @Override
     public int compare(FacetEntryVO o1, FacetEntryVO o2) {
       return o2.getName().compareTo(o1.getName());

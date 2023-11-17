@@ -33,8 +33,7 @@ import org.junit.rules.TestRule;
 import org.silverpeas.core.test.unit.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author silveryocha
@@ -44,8 +43,8 @@ import static org.hamcrest.Matchers.isEmptyString;
 @BenchmarkOptions(benchmarkRounds = 100000, warmupRounds = 100000)
 public class IndexEntryKeyTest {
 
-  private static final String INDEX_KEY_AS_STRING = "instanceId|resourceType|resourceId";
-  private static final String EMPTY_INDEX_KEY_AS_STRING = "||";
+  private static final String INDEX_KEY_AS_STRING = "instanceId|resourceType|resourceId|";
+  private static final String EMPTY_INDEX_KEY_AS_STRING = "|||";
 
   @Rule
   public TestRule benchmarkRun = new BenchmarkRule();
@@ -53,14 +52,14 @@ public class IndexEntryKeyTest {
   @Test
   public void createAndToString() {
     IndexEntryKey key = IndexEntryKey.create(INDEX_KEY_AS_STRING);
-    assertThat(key.getComponent(), is("instanceId"));
+    assertThat(key.getComponentId(), is("instanceId"));
     assertThat(key.getObjectType(), is("resourceType"));
     assertThat(key.getObjectId(), is("resourceId"));
     assertThat(key.toString(), is(INDEX_KEY_AS_STRING));
     key = IndexEntryKey.create(EMPTY_INDEX_KEY_AS_STRING);
-    assertThat(key.getComponent(), isEmptyString());
-    assertThat(key.getObjectType(), isEmptyString());
-    assertThat(key.getObjectId(), isEmptyString());
+    assertThat(key.getComponentId(), is(emptyString()));
+    assertThat(key.getObjectType(), is(emptyString()));
+    assertThat(key.getObjectId(), is(emptyString()));
     assertThat(key.toString(), is(EMPTY_INDEX_KEY_AS_STRING));
   }
 }

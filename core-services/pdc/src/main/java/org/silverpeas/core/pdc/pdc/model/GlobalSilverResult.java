@@ -28,6 +28,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.util.StringUtil;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ import java.util.Map;
  * This class allows the result jsp page of the global search to show all features (name,
  * description, location)
  */
-public class GlobalSilverResult implements java.io.Serializable {
+public class GlobalSilverResult implements Serializable {
 
   private final SearchResult result;
   private String titleLink = null;
@@ -67,6 +68,14 @@ public class GlobalSilverResult implements java.io.Serializable {
 
   public String getType() {
     return result.getType();
+  }
+
+  public boolean isLinked() {
+    return result.isLinkedToAnotherContribution();
+  }
+
+  public String getLinkedResourceId() {
+    return result.getLinkedResourceId();
   }
 
   public String getCreatorId() {
@@ -199,22 +208,13 @@ public class GlobalSilverResult implements java.io.Serializable {
   }
 
   public String getAttachmentId() {
-    String id = getType().substring(10); // object type is Attachment1245 or
-    // Attachment1245_en
-    if (id.indexOf('_') != -1) {
-      id = id.substring(0, id.indexOf('_'));
-    }
-    return id;
+    return isAttachment() ? getId() : "";
   }
 
   public String getAttachmentLanguage() {
-    String id = getType().substring(10); // object type is Attachment1245 or
-    // Attachment1245_en
-    String language = I18NHelper.DEFAULT_LANGUAGE;
-    if (id.indexOf('_') != -1) {
-      language = id.substring(id.indexOf('_') + 1);
-    }
-    return language;
+    String type = getType();
+    int idx = type.indexOf('_');
+    return idx != -1 ? type.substring(idx + 1) : I18NHelper.DEFAULT_LANGUAGE;
   }
 
   public void setVersioned(boolean versioned) {

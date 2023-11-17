@@ -27,9 +27,11 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
@@ -50,7 +52,7 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
   public static final DataFlavor PublicationDetailFlavor =
       new DataFlavor(PublicationDetail.class, "Publication");
   private final NodePK fatherPK;
-  private PublicationDetail pub;
+  private final PublicationDetail pub;
 
   /**
    * Constructs a new selection of a single publication in a given component instance.
@@ -71,6 +73,7 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
    * ------------------------------
    */
   @Override
+  @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferedData;
@@ -93,8 +96,8 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry;
     PublicationPK pubPK = pub.getPK();
-    indexEntry = new IndexEntry(pubPK.getComponentName(), "Publication", pub
-        .getPK().getId());
+    indexEntry = new IndexEntry(new IndexEntryKey(pubPK.getComponentName(), "Publication",
+        pub.getPK().getId()));
     indexEntry.setTitle(pub.getName());
     return indexEntry;
   }
@@ -127,7 +130,7 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
   /**
    * The data that is carried in the case of a publication selection.
    */
-  public class TransferData {
+  public static class TransferData {
 
     private final PublicationDetail publication;
     private final NodePK fatherPK;

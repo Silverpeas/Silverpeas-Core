@@ -807,8 +807,8 @@ public class DefaultTreeService implements TreeService {
   private void createIndex(TreeNode node) {
     if (node != null) {
       // Index the Node
-      final FullIndexEntry indexEntry = new FullIndexEntry("pdc", "TreeNode", node.getPK().getId()
-          + "_" + node.getTreeId());
+      final FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey("pdc", "TreeNode",
+          node.getPK().getId() + "_" + node.getTreeId()));
 
       Collection<String> languages = node.getLanguages();
       languages.forEach(l -> {

@@ -888,8 +888,8 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   private void createIndex(NodeDetail nodeDetail, boolean processWysiwygContent) {
     Objects.requireNonNull(nodeDetail);
     final FullIndexEntry indexEntry =
-        new FullIndexEntry(nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail.
-            getNodePK().getId());
+        new FullIndexEntry(new IndexEntryKey(nodeDetail.getNodePK().getComponentName(), "Node",
+            nodeDetail.getNodePK().getId()));
 
     final Collection<String> languages = nodeDetail.getLanguages();
     languages.forEach(l -> {

@@ -26,6 +26,9 @@ package org.silverpeas.core.admin.space;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+
+import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
@@ -35,7 +38,7 @@ public class SpaceSelection extends ClipboardSelection implements Serializable {
   private static final long serialVersionUID = -1717229458481172945L;
   public static final DataFlavor SpaceFlavor = new DataFlavor(SpaceInst.class,
       "Space");
-  private SpaceInst spaceInst;
+  private final SpaceInst spaceInst;
 
   /**
    * @param space the selected space
@@ -47,12 +50,13 @@ public class SpaceSelection extends ClipboardSelection implements Serializable {
   }
 
   /**
-   * Returns the data transfered.
+   * Returns the data transferred.
    * @param parFlavor the DataFlavor.
    * @return the dta copied.
-   * @throws UnsupportedFlavorException
+   * @throws UnsupportedFlavorException if an error occurs
    */
   @Override
+  @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferedData;
@@ -75,7 +79,7 @@ public class SpaceSelection extends ClipboardSelection implements Serializable {
   @Override
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry =
-        new IndexEntry(spaceInst.getId(), "Space", spaceInst.getId());
+        new IndexEntry(new IndexEntryKey(spaceInst.getId(), "Space", spaceInst.getId()));
     indexEntry.setTitle(spaceInst.getName());
     return indexEntry;
   }

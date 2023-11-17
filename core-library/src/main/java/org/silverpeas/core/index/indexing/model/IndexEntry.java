@@ -29,13 +29,7 @@ import org.silverpeas.core.util.StringUtil;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * IndexEntry is the base class for all the entries which are indexed in the Silverpeas indexes. An
@@ -47,10 +41,10 @@ public class IndexEntry implements Serializable {
   private static final long serialVersionUID = -4817004188601716658L;
 
   // The start date defaults to 01/01/1900 so the document is visible as soon as published.
-  public static final String STARTDATE_DEFAULT = "19000101";
+  public static final String START_DATE_DEFAULT = "19000101";
 
   // The end date defaults to 31/12/2400 so the document will be visible for ever.
-  public static final String ENDDATE_DEFAULT = "24001231";
+  public static final String END_DATE_DEFAULT = "24001231";
 
 
   private IndexEntryKey pk;
@@ -78,13 +72,6 @@ public class IndexEntry implements Serializable {
   private List<String> paths = null;
   private boolean alias = false;
 
-  public IndexEntry(String component, String objectType, String objectId) {
-    this(new IndexEntryKey(component, objectType, objectId));
-  }
-
-  /**
-   * The constructor only set the key part of the IndexEntry.
-   */
   public IndexEntry(IndexEntryKey pk) {
     this.pk = pk;
   }
@@ -130,7 +117,7 @@ public class IndexEntry implements Serializable {
    * Return the name of the component's instance which handles the object.
    */
   public String getComponent() {
-    return pk.getComponent();
+    return pk.getComponentId();
   }
 
   /**
@@ -146,6 +133,15 @@ public class IndexEntry implements Serializable {
    */
   public String getObjectId() {
     return pk.getObjectId();
+  }
+
+  /**
+   * Gets the identifier of the object to which the object referred by this index entry is linked.
+   * @return either the identifier of the linked object or an empty string if there is no such
+   * object.
+   */
+  public String getLinkedObjectId() {
+    return pk.getLinkedObjectId();
   }
 
   /**
@@ -339,11 +335,7 @@ public class IndexEntry implements Serializable {
    * date is not set.
    */
   public String getStartDate() {
-    if (startDate != null) {
-      return startDate;
-    } else {
-      return STARTDATE_DEFAULT;
-    }
+    return Objects.requireNonNullElse(startDate, START_DATE_DEFAULT);
   }
 
   /**
@@ -362,11 +354,7 @@ public class IndexEntry implements Serializable {
    * is not set.
    */
   public String getEndDate() {
-    if (endDate != null) {
-      return endDate;
-    } else {
-      return ENDDATE_DEFAULT;
-    }
+    return Objects.requireNonNullElse(endDate, END_DATE_DEFAULT);
   }
 
   /**
@@ -507,6 +495,17 @@ public class IndexEntry implements Serializable {
 
   public void setPK(IndexEntryKey pk) {
     this.pk = pk;
+  }
+
+  /**
+   * Is the object referred by this index entry is linked to another object in Silverpeas? If yes,
+   * then the unique identifier of the object with which it has a link can be got with
+   * {@code #getLinkedObjectId()}.
+   * @return true if the indexed object is in fact linked to another object in the same component
+   * in Silverpeas.
+   */
+  public boolean isLinkedObject() {
+    return StringUtil.isDefined(pk.getLinkedObjectId());
   }
 
   public boolean isAlias() {

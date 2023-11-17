@@ -27,11 +27,7 @@ import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A MatchingIndexEntry is an IndexEntry completed with a score by the search engine.
@@ -86,9 +82,10 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
    *
    * @param sortableXMLFormFields the sortableXMLFormFields to set
    */
-  public void setSortableXMLFormFields(HashMap<String, String> sortableXMLFormFields) {
+  public void setSortableXMLFormFields(Map<String, String> sortableXMLFormFields) {
     this.sortableXMLFormFields = sortableXMLFormFields;
   }
+
   /**
    * The score defaults to 0 as if the entry wasn't a matching entry.
    */
@@ -97,21 +94,14 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
   /**
    * Set the list of all linked attachment in wysiwyg content
    *
-* @param embeddedFileIds attachments ids separated by a blank space
+   * @param embeddedFileIds attachments ids separated by a blank space
    */
   public void setEmbeddedFileIds(String[] embeddedFileIds) {
     if (embeddedFileIds == null) {
-      this.embeddedFileIds = new ArrayList<String>();
+      this.embeddedFileIds = new ArrayList<>();
     } else {
       this.embeddedFileIds = Arrays.asList(embeddedFileIds.clone());
     }
-  }
-
-  /**
-   * List of all linked attachment in wysiwyg content
-   */
-  public List<String> getEmbeddedFileIds() {
-    return embeddedFileIds;
   }
 
   public void setXMLFormFieldsForFacets(Map<String, String> fields) {
@@ -128,5 +118,23 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
 
   public void setExternalResult(final boolean externalResult) {
     this.externalResult = externalResult;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    MatchingIndexEntry that = (MatchingIndexEntry) o;
+    return externalResult == that.externalResult && Float.compare(score, that.score) == 0 &&
+        Objects.equals(embeddedFileIds, that.embeddedFileIds) &&
+        Objects.equals(sortableXMLFormFields, that.sortableXMLFormFields) &&
+        Objects.equals(xmlFormFieldsForFacet, that.xmlFormFieldsForFacet);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), embeddedFileIds, sortableXMLFormFields,
+        xmlFormFieldsForFacet, externalResult, score);
   }
 }

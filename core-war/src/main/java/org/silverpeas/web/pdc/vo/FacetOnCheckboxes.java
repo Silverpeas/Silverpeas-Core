@@ -23,8 +23,6 @@
  */
 package org.silverpeas.web.pdc.vo;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,14 +34,11 @@ public class FacetOnCheckboxes extends Facet {
     super(id, name);
   }
 
-  public List<FacetEntryVO> addEntries(Map<String, String> values) {
-    List<FacetEntryVO> entries = new ArrayList<>();
+  public void addEntries(Map<String, String> values) {
     for (Map.Entry<String, String> entry : values.entrySet()) {
       FacetEntryVO facetEntry = new FacetEntryVO(entry.getValue(), entry.getKey());
-      entries.add(facetEntry);
       super.addEntry(facetEntry);
     }
-    return entries;
   }
 
 }
