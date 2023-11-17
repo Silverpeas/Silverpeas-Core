@@ -28,6 +28,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 import org.silverpeas.core.web.token.SilverpeasWebTokenService;
 import org.silverpeas.core.web.token.SilverpeasWebTokenService.WebToken;
@@ -52,6 +53,12 @@ import static org.silverpeas.core.security.session.SessionManagementProvider.get
 public class SilverpeasUserSessionTokenResource extends RESTWebService {
 
   protected static final String PATH = "session/token";
+
+  @Override
+  public void validateUserAuthentication(final UserPrivilegeValidation validation) {
+    super.validateUserAuthentication(
+        validation.skipLastUserAccessTimeRegistering(getHttpServletRequest()));
+  }
 
   /**
    * Gets a {@link WebToken} value linked to the current user session.
