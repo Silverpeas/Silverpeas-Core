@@ -38,9 +38,4 @@ public class WindowWeb20V5 extends AbstractWindow {
   public WindowWeb20V5() {
     super();
   }
-
-  @Override
-  public String getContextualDiv() {
-    return null;
-  }
 }
