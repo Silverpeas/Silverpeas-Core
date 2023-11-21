@@ -25,6 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.window;
 
 import org.apache.ecs.html.Div;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -49,6 +50,10 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneType;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author neysseri
@@ -190,7 +195,28 @@ public abstract class AbstractWindow implements Window {
     return this.browseBar;
   }
 
-  public abstract String getContextualDiv();
+  public String getContextualDiv() {
+    final String componentId = getGEF().getComponentIdOfCurrentRequest();
+    final OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
+    final String spaceIds = Optional.ofNullable(componentId)
+        .filter(StringUtil::isDefined)
+        .stream()
+        .flatMap(i -> oc.getPathToComponent(i).stream())
+        .map(s -> s.getId() + " ")
+        .collect(Collectors.joining());
+    if (!spaceIds.isEmpty()) {
+      final ComponentInstLight component = oc.getComponentInstLight(componentId);
+      // append all profiles of current user
+      final String userId = User.getCurrentRequester().getId();
+      final String cssProfiles = Optional.ofNullable(oc.getUserProfiles(userId, componentId))
+          .stream()
+          .flatMap(Stream::of)
+          .map(p -> " profile_" + p)
+          .collect(Collectors.joining());
+      return "<div class=\"" + spaceIds + component.getName() + " " + componentId + cssProfiles + "\">";
+    }
+    return null;
+  }
 
   @Override
   public boolean isBrowseBarVisible() {

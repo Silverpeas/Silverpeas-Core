@@ -23,15 +23,6 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.window;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.StringUtil;
-
-import java.util.List;
-
 /**
  * The default implementation of Window interface
  * @author neysseri
@@ -45,36 +36,5 @@ public class WindowWithContextualDiv extends AbstractWindow {
    */
   public WindowWithContextualDiv() {
     super();
-  }
-
-  public String getContextualDiv() {
-    StringBuilder spaceIds = new StringBuilder();
-    String componentId = getGEF().getComponentIdOfCurrentRequest();
-    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    if (StringUtil.isDefined(componentId)) {
-      List<SpaceInstLight> spaces = oc.getPathToComponent(componentId);
-
-      for (SpaceInstLight spaceInst : spaces) {
-        spaceIds.append(spaceInst.getId()).append(" ");
-      }
-    }
-
-    if (spaceIds.length() > 0) {
-      ComponentInstLight component = oc.getComponentInstLight(componentId);
-
-      // append all profiles of current user
-      String userId = User.getCurrentRequester().getId();
-      String[] profiles = oc.getUserProfiles(userId, componentId);
-      StringBuilder profilesStr = new StringBuilder();
-      if (profiles != null) {
-        for (String profile : profiles) {
-          profilesStr.append(" profile_" + profile);
-        }
-      }
-
-      return "<div class=\"" + spaceIds.toString() + component.getName() + " " + componentId +
-          profilesStr + "\">";
-    }
-    return null;
   }
 }

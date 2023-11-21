@@ -47,6 +47,11 @@
       isDisplayAsBars : false,
       colors : [],
       chart : {
+        combine : {
+          color : '#999',
+          threshold : chartPieCombinationThreshold,
+          label : ChartBundle.get("chart.other")
+        },
         axis : {
           x : {
             titleClass : 'axisLabel xaxisLabel',
@@ -65,10 +70,13 @@
         monthNames : dateFormat.monthNamesShort,
         dayNames : dateFormat.dayNamesShort
       },
-      formatToolTipTitle : function(title) {
+      formatToolTipTitle : function(title, item) {
         return title;
       },
       formatToolTipValue : function(value, item) {
+        return value;
+      },
+      formatTickValue : function(value, axis) {
         return value;
       },
       onItemClickHelp : function(item) {
@@ -172,6 +180,14 @@
       params.downloadButton.show();
       return true;
     };
+
+    /**
+     * Get the color set.
+     * @returns {Array<String>} the array of colors.
+     */
+    this.getColorSet = function() {
+      return params.colors;
+    }
   };
 
 
@@ -190,7 +206,7 @@
     } else {
       itemClickHelp = '';
     }
-    return params.formatToolTipValue.call(this, value, item) + itemClickHelp;
+    return params.formatToolTipValue.call(this, value, item.series) + itemClickHelp;
   }
 
   function __periodChartDataToPlotChartData(params) {
@@ -259,8 +275,7 @@
               periodLabel = params.labels.monthNames[d.getMonth()] + ' ' + d.getFullYear();
             break;
           }
-          return "<b>" + params.formatToolTipTitle(periodLabel) + "</b><br/>" +
-              __formatToolTipValue(params, yval, flotItem);
+          return __renderTooltipContent(params, periodLabel, yval, flotItem);
         }
       }
     });
@@ -311,10 +326,16 @@
       extendsObject(plotOptions, {
         yaxis : {
           min : 0,
-          axisLabel : params.chart.axis.y.title},
+          axisLabel : params.chart.axis.y.title,
+          tickFormatter : function(value, axis){
+            return params.formatTickValue(value, axis);
+          }
+        },
         xaxis : {
-          mode : "categories", tickLength : 0,
-          axisLabel : params.chart.axis.x.title},
+          mode : "categories",
+          tickLength : 0,
+          axisLabel : params.chart.axis.x.title
+        },
         series : {
           bars : {
             show : true, barWidth : 0.9, align : "center"
@@ -328,8 +349,7 @@
         },
         tooltip : {
           content : function(label, xval, yval, flotItem) {
-            return "<b>" + params.formatToolTipTitle(xval) + "</b><br/>" +
-                __formatToolTipValue(params, yval, flotItem);
+            return __renderTooltipContent(params, xval, yval, flotItem);
           }
         }
       });
@@ -338,11 +358,7 @@
         series : {
           pie : {
             show : true,
-            combine : {
-              color : '#999',
-              threshold : chartPieCombinationThreshold,
-              label : ChartBundle.get("chart.other")
-            },
+            combine : params.chart.combine,
             radius : 1,
             label : {
               show : true,
@@ -358,8 +374,7 @@
         },
         tooltip : {
           content : function(label, xval, yval, flotItem) {
-            return "<b>" + params.formatToolTipTitle(label) + "</b><br/>" +
-                __formatToolTipValue(params, yval, flotItem);
+            return __renderTooltipContent(params, label, yval, flotItem);
           }
         }
       });
@@ -368,5 +383,14 @@
     return {
       data : plotData, options : plotOptions
     }
+  }
+
+  function __renderTooltipContent(params, label, value, flotItem) {
+    const $container = jQuery('<div>');
+    const $title = jQuery('<strong>').append(params.formatToolTipTitle(label, flotItem.series));
+    $container.append($title);
+    $container.append('<br/>');
+    $container.append(__formatToolTipValue(params, value, flotItem))
+    return $container[0].innerHTML;
   }
 })();

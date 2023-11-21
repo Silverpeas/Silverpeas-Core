@@ -160,9 +160,9 @@ public class Answer implements Serializable {
     return this.questionLink;
   }
 
-  public double getPercent(int nbParticipants) {
+  public BigDecimal getPercent(int nbParticipants) {
     return new BigDecimal(getNbVoters()).multiply(new BigDecimal(100))
-        .divide(new BigDecimal(nbParticipants), 2, RoundingMode.HALF_DOWN).doubleValue();
+        .divide(new BigDecimal(nbParticipants), 2, RoundingMode.HALF_DOWN);
   }
 
   @Override

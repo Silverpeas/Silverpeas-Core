@@ -113,6 +113,40 @@ window.SpVue = new function() {
       })
     };
 
+    /**
+     * Resolves a registered component by its name.
+     * @param name the name of a registered component.
+     * @returns {*}
+     */
+    app.config.globalProperties.$resolveComponent = function(name) {
+      return this.$.appContext.components[name];
+    };
+
+    /**
+     * This method allows to render dynamically (into JS code) a registered component.
+     * @example
+     *      ```
+     *      ...
+     *      const $dock = this.$el.querySelector('#dock-container');
+     *      this.$renderComponent('registered-component', {
+     *        // equivalent of some-prop="hello"
+     *        someProp : 'hello',
+     *        // equivalent of v-on:update="..."
+     *        onUpdate: function() {
+     *        }
+     *      }, $dock);
+     *      ...
+     *      ```
+     * @param name the name of a registered component.
+     * @param props the props data object to give to the component. See example in ordre to see the
+     *     two kind of props attribute.
+     * @param elDock the DOM element into which the component MUST be rendered.
+     */
+    app.config.globalProperties.$renderComponent = function(name, props, elDock) {
+      const cmp= Vue.h(this.$resolveComponent(name), props);
+      Vue.render(cmp, elDock);
+    };
+
     // registering the filters
     app.config.globalProperties.$filters = {};
     __filters.forEach(function(f) {
