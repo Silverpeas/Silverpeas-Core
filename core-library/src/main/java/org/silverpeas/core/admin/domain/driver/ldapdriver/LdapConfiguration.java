@@ -146,6 +146,7 @@ public class LdapConfiguration {
 
   @Override
   public String toString() {
+    //noinspection ImplicitArrayToString
     return "LdapConfiguration{" + "ldapHost=" + ldapHost + ", ldapPort=" + ldapPort + ", username="
         + username + ", password=" + password + ", timeout=" + timeout + ", secure=" + secure + '}';
   }

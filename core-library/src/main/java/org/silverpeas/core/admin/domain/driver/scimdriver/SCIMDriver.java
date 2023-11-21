@@ -48,6 +48,7 @@ import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTI
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_UPDATE_USER;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
+@SuppressWarnings("unused")
 public class SCIMDriver extends AbstractDomainDriver {
 
   private final UserManager userManager;
@@ -82,8 +83,8 @@ public class SCIMDriver extends AbstractDomainDriver {
   }
 
   /**
-   * Called when Admin starts the synchronization
-   * @return
+   * Gets all the actions this driver supports.
+   * @return a bit mask identifying the supported actions.
    */
   @Override
   public long getDriverActions() {
@@ -107,10 +108,6 @@ public class SCIMDriver extends AbstractDomainDriver {
     return null;
   }
 
-  /**
-   * @param ud
-   * @return String
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public String createUser(UserDetail ud) throws AdminException {

@@ -35,9 +35,5 @@ public interface SPGroupRepository extends EntityRepository<SPGroup>, WithSaveAn
 
   SPGroup saveAndFlush(final SPGroup account);
 
-  List<SPGroup> findByName(String name);
-
-  List<SPGroup> findByDescription(String description);
-
   List<SPGroup> listAllRootGroups();
 }

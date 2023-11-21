@@ -44,11 +44,10 @@ public abstract class AbstractDomainDriver implements DomainDriver {
 
   protected int domainId = -1; // The domainId of this instance of domain
   // driver
-  protected List<DomainProperty> domainProperties = new ArrayList<>(); // liste
-  // ordonnée
-  // des properties du bundle domainSP
+  protected List<DomainProperty> domainProperties = new ArrayList<>(); // ordered list of the
+  // properties from the domainSP settings bundle.
   protected String[] keys = null;
-  protected String propertiesl10n = "";
+  protected String propertiesL10n = "";
   protected Map<String, HashMap<String, String>> propertiesLabels = new HashMap<>();
   protected Map<String, HashMap<String, String>> propertiesDescriptions = new HashMap<>();
   protected String[] mapParameters = null;
@@ -56,13 +55,13 @@ public abstract class AbstractDomainDriver implements DomainDriver {
   protected boolean x509Enabled = false;
 
   /**
-   * Initialize the domain driver with the initialization parameter stocked in table This parameter
+   * Initializes the domain driver with the initialization parameter stocked in table This parameter
    * could be a table name or a resource file name or whatever specified by the domain driver
    * Default : resource file name
    * @param domainId id of domain
    * @param initParam name of resource file
    * @param authenticationServer name of the authentication server (no more used yet)
-   * @throws AdminException
+   * @throws AdminException if the initialization fails.
    */
   @Override
   public void init(int domainId, String initParam, String authenticationServer)
@@ -74,7 +73,7 @@ public abstract class AbstractDomainDriver implements DomainDriver {
 
     // Init the domain's users properties
     domainProperties.clear();
-    propertiesl10n = settings.getString("property.ResourceFile");
+    propertiesL10n = settings.getString("property.ResourceFile");
     String s = settings.getString("property.Number", "");
     if (StringUtil.isDefined(s)) {
       nbProps = Integer.parseInt(s);
@@ -82,14 +81,13 @@ public abstract class AbstractDomainDriver implements DomainDriver {
     keys = new String[nbProps];
     mapParameters = new String[nbProps];
     for (int i = 1; i <= nbProps; i++) {
-      s = settings.getString("property_" + Integer.toString(i) + ".Name", "");
+      s = settings.getString("property_" + i + ".Name", "");
       if (!s.trim().isEmpty()) {
-        DomainProperty newElmt = new DomainProperty(settings, String.valueOf(i)); // Retreives all
-        // property's
-        // infos
-        domainProperties.add(newElmt);
-        keys[i - 1] = newElmt.getName();
-        mapParameters[i - 1] = newElmt.getMapParameter();
+        DomainProperty newProp = new DomainProperty(settings, String.valueOf(i)); // Retrieves all
+        // properties
+        domainProperties.add(newProp);
+        keys[i - 1] = newProp.getName();
+        mapParameters[i - 1] = newProp.getMapParameter();
       }
     }
 
@@ -144,21 +142,17 @@ public abstract class AbstractDomainDriver implements DomainDriver {
   public void addPropertiesToImport(List<DomainProperty> props) {
   }
 
-  /**
-   * @param props
-   * @param theDescriptions
-   */
   @Override
   public void addPropertiesToImport(List<DomainProperty> props, Map<String, String> theDescriptions) {
   }
 
   @Override
   public Map<String, String> getPropertiesLabels(String language) {
-    HashMap<String, String> valret = propertiesLabels.get(language);
-    if (valret == null) {
+    HashMap<String, String> labels = propertiesLabels.get(language);
+    if (labels == null) {
       HashMap<String, String> newLabels = new HashMap<>();
       LocalizationBundle msg =
-          ResourceLocator.getLocalizationBundle(propertiesl10n, language);
+          ResourceLocator.getLocalizationBundle(propertiesL10n, language);
       for (String key : keys) {
         try {
           newLabels.put(key, msg.getString(key));
@@ -167,19 +161,19 @@ public abstract class AbstractDomainDriver implements DomainDriver {
         }
       }
       propertiesLabels.put(language, newLabels);
-      valret = newLabels;
+      labels = newLabels;
     }
-    return valret;
+    return labels;
   }
 
   @Override
   public Map<String, String> getPropertiesDescriptions(String language) {
-    Map<String, String> valret = propertiesDescriptions.get(language);
+    Map<String, String> desc = propertiesDescriptions.get(language);
 
-    if (valret == null) {
+    if (desc == null) {
       HashMap<String, String> newDescriptions = new HashMap<>();
       LocalizationBundle msg =
-          ResourceLocator.getLocalizationBundle(propertiesl10n, language);
+          ResourceLocator.getLocalizationBundle(propertiesL10n, language);
       for (String key : keys) {
         try {
           newDescriptions.put(key, msg.getString(key + ".description"));
@@ -188,9 +182,9 @@ public abstract class AbstractDomainDriver implements DomainDriver {
         }
       }
       propertiesDescriptions.put(language, newDescriptions);
-      valret = newDescriptions;
+      desc = newDescriptions;
     }
-    return valret;
+    return desc;
   }
 
   /**
@@ -203,7 +197,8 @@ public abstract class AbstractDomainDriver implements DomainDriver {
   }
 
   /**
-   * Called when Admin starts the synchronization
+   * Gets all the actions this driver supports.
+   * @return a bit mask identifying the supported actions.
    */
   @Override
   public long getDriverActions() {

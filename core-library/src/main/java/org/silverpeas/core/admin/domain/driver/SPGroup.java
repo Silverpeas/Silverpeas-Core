@@ -37,13 +37,12 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "domainsp_group")
-@NamedQueries({
-    @NamedQuery(name = "SPGroup.findByName",
-        query = "SELECT s FROM SPGroup s WHERE s.name = :name"),
-    @NamedQuery(name = "SPGroup.findByDescription",
-        query = "SELECT s FROM SPGroup s WHERE s.description = :description"),
-    @NamedQuery(name = "SPGroup.listAllRootGroups",
-        query = "SELECT s FROM SPGroup s WHERE s.parent is null")})
+@NamedQuery(name = "SPGroup.findByName",
+    query = "SELECT s FROM SPGroup s WHERE s.name = :name")
+@NamedQuery(name = "SPGroup.findByDescription",
+    query = "SELECT s FROM SPGroup s WHERE s.description = :description")
+@NamedQuery(name = "SPGroup.listAllRootGroups",
+    query = "SELECT s FROM SPGroup s WHERE s.parent is null")
 public class SPGroup extends BasicJpaEntity<SPGroup, UniqueIntegerIdentifier>
     implements Serializable {
 

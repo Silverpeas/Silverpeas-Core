@@ -29,7 +29,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityR
 import java.util.List;
 
 /**
- * @author: ebonnet
+ * @author ebonnet
  */
 @Repository
 public class SPUserJpaRepository extends BasicJpaEntityRepository<SPUser>

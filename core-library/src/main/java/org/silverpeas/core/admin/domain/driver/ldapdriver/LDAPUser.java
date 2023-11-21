@@ -66,7 +66,7 @@ public class LDAPUser {
 
   /**
    * Initialize the settings from the read ones
-   * @param driverSettings the settings retreived from the property file
+   * @param driverSettings the settings retrieved from the property file
    */
   public void init(LDAPSettings driverSettings, DomainDriver driverParent,
       LDAPSynchroCache synchroCache) {
@@ -101,7 +101,7 @@ public class LDAPUser {
     int i;
     String theFilter;
 
-    if ((extraFilter != null) && (extraFilter.length() > 0)) {
+    if ((extraFilter != null) && (!extraFilter.isEmpty())) {
       theFilter = "(&" + extraFilter + driverSettings.getUsersFullFilter() + ")";
     } else {
       theFilter = driverSettings.getUsersFullFilter();
@@ -270,7 +270,7 @@ public class LDAPUser {
       final DomainProperty curProp = driverParent.getProperty(key);
       if (DomainProperty.PROPERTY_TYPE_USERID.equals(curProp.getType())) {
         final String subUserDN = getFirstAttributeValue(userEntry, curProp.getMapParameter());
-        if (subUserDN != null && subUserDN.length() > 0) {
+        if (subUserDN != null && !subUserDN.isEmpty()) {
           setUserProperty(userInfos, curProp, subUserDN, spUserIdByUserDN);
         }
       } else if (isRedirection(curProp.getRedirectOU(), curProp.getRedirectAttribute())) {
@@ -294,7 +294,7 @@ public class LDAPUser {
         .flatMap(e -> parameters.stream()
             .map(p -> {
               final String subUserDN = getFirstAttributeValue(e, p);
-              if (subUserDN != null && subUserDN.length() > 0) {
+              if (subUserDN != null && !subUserDN.isEmpty()) {
                 return subUserDN;
               }
               return null;

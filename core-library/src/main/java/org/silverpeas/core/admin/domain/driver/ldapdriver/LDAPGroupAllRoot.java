@@ -26,19 +26,11 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.text.MessageFormat.format;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
@@ -196,7 +188,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     if (StringUtil.isDefined(parentId)) { // ALL ROOT GROUPS
       return new LDAPEntry[0];
     } else {
-      LDAPEntry[] theEntries = null;
+      LDAPEntry[] theEntries;
       String theFilter = driverSettings.getGroupsFullFilter();
 
       if (StringUtil.isDefined(extraFilter)) {
@@ -242,39 +234,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       SilverLogger.getLogger(this).error("GETTING SUBGROUPS FAILED FOR: " + theEntry.getDN(), e);
     }
     return new ArrayList<>();
-  }
-
-  @Override
-  public GroupDetail[] getAllChangedGroups(String lds, String extraFilter) throws AdminException {
-    Map<String, Group> groupsManaged = new HashMap<>();
-    LDAPEntry[] les = getChildGroupsEntry(lds, null, extraFilter);
-
-    List<LDAPEntry> groupsIdsSet = new ArrayList<>(les.length);
-    for (LDAPEntry childGroupEntry : les) {
-      groupsIdsSet.add(childGroupEntry);
-      groupsManaged.put(childGroupEntry.getDN(), translateGroup(lds, childGroupEntry));
-    }
-    // Go recurs to all group's ancestors
-    while (!groupsIdsSet.isEmpty()) {
-      List<LDAPEntry> groupsCur = new ArrayList<>();
-      for ( LDAPEntry theGroup : groupsIdsSet) {
-
-        les = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
-            driverSettings.getScope(), "(&" + driverSettings.getGroupsFullFilter() + "("
-            + driverSettings.getGroupsMemberField() + "=" + theGroup.getDN()
-            + "))", driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
-        for (LDAPEntry childGroupEntry : les) {
-
-          if (!groupsManaged.containsKey(childGroupEntry.getDN())) {
-
-            groupsCur.add(childGroupEntry);
-            groupsManaged.put(childGroupEntry.getDN(), translateGroup(lds, childGroupEntry));
-          }
-        }
-      }
-      groupsIdsSet = groupsCur;
-    }
-    return groupsManaged.values().toArray(new GroupDetail[0]);
   }
 
   private String getGroupId(LDAPEntry entry) {

@@ -36,7 +36,6 @@ public class SQLSettings implements DriverSettings {
 
   // Definitions of max lengths due to limitations on Oracle databases
   public static final int DATABASE_TABLE_NAME_MAX_LENGTH = 30;
-  public static final int DATABASE_COLUMN_NAME_MAX_LENGTH = 30;
 
   // For DB Access
   protected String sqlDataSourceJNDIName = "java:/datasources/silverpeas";
@@ -66,7 +65,7 @@ public class SQLSettings implements DriverSettings {
   protected String sqlUserGroupGIDColumnName = "groupId";
 
   /**
-   * Performs initialization from a properties file. The optional properties are retreive with
+   * Performs initialization from a properties file. The optional properties are retrieve with
    * getSureString.
    * @param rs Properties resource file
    */
@@ -160,11 +159,11 @@ public class SQLSettings implements DriverSettings {
   }
 
   public boolean isUserPasswordAvailable() {
-    return (sqlUserPasswordColumnName.length() > 0);
+    return (!sqlUserPasswordColumnName.isEmpty());
   }
 
   public boolean isUserPasswordValidAvailable() {
-    return (sqlUserPasswordValidColumnName.length() > 0);
+    return (!sqlUserPasswordValidColumnName.isEmpty());
   }
 
   // For Groups

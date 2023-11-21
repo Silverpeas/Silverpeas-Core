@@ -38,11 +38,12 @@ import java.util.List;
 /**
  * A GroupTable object manages the DomainSQL_Group table.
  */
+@SuppressWarnings({"SqlNoDataSourceInspection", "SqlSourceToSinkFlow"})
 public class SQLGroupTable {
   private static final String WHERE = " where ";
   private static final String SELECT = "select ";
   private static final String FROM = " from ";
-  private SQLSettings drvSettings;
+  private final SQLSettings drvSettings;
 
   SQLGroupTable(SQLSettings ds) {
     drvSettings = ds;
@@ -75,7 +76,7 @@ public class SQLGroupTable {
    */
   public int createGroup(Connection c, GroupDetail group) throws AdminException {
     PreparedStatement statement = null;
-    int nextId = 0;
+    int nextId;
     String theQuery = "insert into " + drvSettings.getGroupTableName() + "("
         + getColumns() + ") values (?,?,?,?)";
 
@@ -85,7 +86,7 @@ public class SQLGroupTable {
           .getGroupSpecificIdColumnName());
       statement.setInt(1, nextId);
       String gid = group.getSuperGroupId();
-      if ((gid == null) || (gid.length() <= 0) || (gid.equals("-1")))
+      if ((gid == null) || (gid.isEmpty()) || (gid.equals("-1")))
         statement.setNull(2, Types.INTEGER);
       else
         statement.setInt(2, Integer.parseInt(gid));
@@ -137,7 +138,7 @@ public class SQLGroupTable {
   }
 
   /**
-   * Returns the GroupDetail whith the given id.
+   * Returns the GroupDetail with the given id.
    */
   public GroupDetail getGroup(Connection c, int groupId) throws AdminException {
     ResultSet rs = null;
@@ -162,7 +163,7 @@ public class SQLGroupTable {
   }
 
   /**
-   * Returns the GroupDetail whith the given name.
+   * Returns the GroupDetail with the given name.
    */
   GroupDetail getGroupByName(Connection c, String groupName)
       throws AdminException {
@@ -187,7 +188,7 @@ public class SQLGroupTable {
   }
 
   /**
-   * Returns the User whith the given id.
+   * Returns the User with the given id.
    */
   public List<GroupDetail> getAllGroups(Connection c) throws AdminException {
     ResultSet rs = null;
@@ -211,7 +212,7 @@ public class SQLGroupTable {
   }
 
   /**
-   * Returns the User whith the given id.
+   * Returns the User with the given id.
    */
   List<GroupDetail> getDirectSubGroups(Connection c, int groupId)
       throws AdminException {

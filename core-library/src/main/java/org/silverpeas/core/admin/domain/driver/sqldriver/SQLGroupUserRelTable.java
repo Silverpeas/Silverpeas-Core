@@ -35,12 +35,13 @@ import java.util.List;
 /**
  * A GroupTable object manages the DomainSQL_Group table.
  */
+@SuppressWarnings("SqlNoDataSourceInspection")
 public class SQLGroupUserRelTable {
   private static final String SELECT = "select ";
   private static final String FROM = " from ";
   private static final String WHERE = " where ";
   private static final String DELETE_FROM = "delete from ";
-  private SQLSettings drvSettings;
+  private final SQLSettings drvSettings;
 
   SQLGroupUserRelTable(SQLSettings ds) {
     drvSettings = ds;
@@ -54,16 +55,6 @@ public class SQLGroupUserRelTable {
         SELECT + drvSettings.getRelUIDColumnName() + FROM + drvSettings.getRelTableName() + WHERE +
             drvSettings.getRelGIDColumnName() + " = ?";
     return executeSelectionQuery(c, theQuery, groupId);
-  }
-
-  /**
-   * Returns all the groups in a given userRole (not recursive).
-   */
-  public List<String> getDirectGroupIdsOfUser(Connection c, int userId) throws AdminException {
-    String theQuery =
-        SELECT + drvSettings.getRelGIDColumnName() + FROM + drvSettings.getRelTableName() + WHERE +
-            drvSettings.getRelUIDColumnName() + " = ?";
-    return executeSelectionQuery(c, theQuery, userId);
   }
 
   private List<String> executeSelectionQuery(final Connection c, final String theQuery,
@@ -85,29 +76,30 @@ public class SQLGroupUserRelTable {
   /**
    * Insert a new group row.
    */
-  int createGroupUserRel(Connection c, int groupId, int userId) throws AdminException {
+  void createGroupUserRel(Connection c, int groupId, int userId) throws AdminException {
     final String theQuery =
         "insert into " + drvSettings.getRelTableName() + "(" + drvSettings.getRelGIDColumnName() +
             "," + drvSettings.getRelUIDColumnName() + ") " + " values (?,?)";
-    return executeModificationQuery(c, theQuery, groupId, userId);
+    executeModificationQuery(c, theQuery, groupId, userId);
   }
 
   /**
    * Insert a new group row.
    */
-  int removeGroupUserRel(Connection c, int groupId, int userId) throws AdminException {
+  void removeGroupUserRel(Connection c, int groupId, int userId) throws AdminException {
     final String theQuery = DELETE_FROM + drvSettings.getRelTableName() + WHERE +
         drvSettings.getRelGIDColumnName() + " = ?" + " and " + drvSettings.getRelUIDColumnName() +
         " = ?";
-    return executeModificationQuery(c, theQuery, groupId, userId);
+    executeModificationQuery(c, theQuery, groupId, userId);
   }
 
-  private int executeModificationQuery(final Connection c, final String theQuery, final int groupId,
+  private void executeModificationQuery(final Connection c, final String theQuery,
+      final int groupId,
       final int userId) throws AdminException {
     try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
       statement.setInt(1, groupId);
       statement.setInt(2, userId);
-      return statement.executeUpdate();
+      statement.executeUpdate();
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
     }
@@ -116,47 +108,26 @@ public class SQLGroupUserRelTable {
   /**
    * Insert a new group row.
    */
-  int removeAllUserRel(Connection c, int userId) throws AdminException {
+  void removeAllUserRel(Connection c, int userId) throws AdminException {
     final String theQuery = DELETE_FROM + drvSettings.getRelTableName() + WHERE +
         drvSettings.getRelUIDColumnName() + " = ?";
-    return executeModificationQuery(c, theQuery, userId);
+    executeModificationQuery(c, theQuery, userId);
   }
 
   /**
    * Insert a new group row.
    */
-  int removeAllGroupRel(Connection c, int groupId) throws AdminException {
+  void removeAllGroupRel(Connection c, int groupId) throws AdminException {
     final String theQuery = DELETE_FROM + drvSettings.getRelTableName() + WHERE +
         drvSettings.getRelGIDColumnName() + " = ?";
-    return executeModificationQuery(c, theQuery, groupId);
+    executeModificationQuery(c, theQuery, groupId);
   }
 
-  private int executeModificationQuery(final Connection c, final String theQuery, final int id)
+  private void executeModificationQuery(final Connection c, final String theQuery, final int id)
       throws AdminException {
     try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
       statement.setInt(1, id);
-      return statement.executeUpdate();
-    } catch (SQLException e) {
-      throw new AdminException(e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Tests if a user is in given group (not recursive).
-   */
-  public boolean isUserDirectlyInGroup(Connection c, int userId, int groupId)
-      throws AdminException {
-    final String theQuery =
-        SELECT + drvSettings.getRelUIDColumnName() + FROM + drvSettings.getRelTableName() + WHERE +
-            drvSettings.getRelGIDColumnName() + " = ? AND " +
-            drvSettings.getRelUIDColumnName() + " = ?";
-
-    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
-      statement.setInt(1, groupId);
-      statement.setInt(2, userId);
-      try (final ResultSet rs = statement.executeQuery()) {
-        return rs.next();
-      }
+      statement.executeUpdate();
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
     }

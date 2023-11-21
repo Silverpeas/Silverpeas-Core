@@ -114,10 +114,6 @@ public class SQLDriver extends AbstractDomainDriver {
     return null;
   }
 
-  /**
-   * @param ud
-   * @return String
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public String createUser(UserDetail ud) throws AdminException {
@@ -281,7 +277,7 @@ public class SQLDriver extends AbstractDomainDriver {
   public UserDetail[] getAllUsers() throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       List<UserDetail> users = localUserMgr.getAllUsers(connection);
-      return users.toArray(new UserDetail[users.size()]);
+      return users.toArray(new UserDetail[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all users", ""), e);
     }
@@ -299,7 +295,7 @@ public class SQLDriver extends AbstractDomainDriver {
       try(Connection connection = dataSource.getConnection()) {
         List<UserDetail> users = localUserMgr.getUsersBySpecificProperty(connection,
             property.getMapParameter(), propertyValue);
-        return users.toArray(new UserDetail[users.size()]);
+        return users.toArray(new UserDetail[0]);
       } catch (Exception e) {
         throw new AdminException(failureOnGetting("all users by property", propertyName), e);
       }
@@ -371,8 +367,7 @@ public class SQLDriver extends AbstractDomainDriver {
   public void updateGroup(GroupDetail group) throws AdminException {
     List<String> alAddUsers = new ArrayList<>();
 
-    if (group == null || group.getName().length() == 0 ||
-        group.getSpecificId().length() == 0) {
+    if (group == null || group.getName().isEmpty() || group.getSpecificId().isEmpty()) {
       throw new AdminException(undefined(GROUP));
     }
 
@@ -411,14 +406,14 @@ public class SQLDriver extends AbstractDomainDriver {
   @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail getGroup(String specificId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
-      GroupDetail valret = localGroupMgr.getGroup(connection, idAsInt(specificId));
-      if (valret != null) {
+      GroupDetail group = localGroupMgr.getGroup(connection, idAsInt(specificId));
+      if (group != null) {
         // Get the selected users for this group
         List<String> asUsersId =
             localGroupUserRelMgr.getDirectUserIdsOfGroup(connection, idAsInt(specificId));
-        valret.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
+        group.setUserIds(asUsersId.toArray(new String[0]));
       }
-      return valret;
+      return group;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(GROUP, specificId), e);
     }
@@ -444,10 +439,10 @@ public class SQLDriver extends AbstractDomainDriver {
         // Get the selected users for this group
         List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(connection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
+        theGroup.setUserIds(asUsersId.toArray(new String[0]));
       }
 
-      return ar.toArray(new GroupDetail[ar.size()]);
+      return ar.toArray(new GroupDetail[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("subgroups of group", groupId), e);
     }
@@ -463,10 +458,10 @@ public class SQLDriver extends AbstractDomainDriver {
         // Get the selected users for this group
         List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(connection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
+        theGroup.setUserIds(asUsersId.toArray(new String[0]));
       }
 
-      return ar.toArray(new GroupDetail[ar.size()]);
+      return ar.toArray(new GroupDetail[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all groups", ""), e);
     }
@@ -481,10 +476,10 @@ public class SQLDriver extends AbstractDomainDriver {
         // Get the selected users for this group
         List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(connection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
+        theGroup.setUserIds(asUsersId.toArray(new String[0]));
       }
 
-      return ar.toArray(new GroupDetail[ar.size()]);
+      return ar.toArray(new GroupDetail[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all root groups", ""), e);
     }

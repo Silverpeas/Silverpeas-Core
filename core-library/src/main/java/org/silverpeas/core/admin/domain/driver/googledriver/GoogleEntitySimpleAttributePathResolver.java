@@ -56,7 +56,6 @@ class GoogleEntitySimpleAttributePathResolver {
     throw new IllegalAccessError("Utility class");
   }
 
-  @SuppressWarnings("unchecked")
   private static <T extends GenericJson> Object resolvePath(final T entity,
       final AttributePathDecoder attributePathDecoder, final int pathLevel, final Object data) {
     if (data instanceof GenericJson) {
@@ -68,7 +67,7 @@ class GoogleEntitySimpleAttributePathResolver {
         return decodeResult(subData);
       }
       if (subData instanceof List) {
-        subData = ((List) subData)
+        subData = ((List<?>) subData)
             .stream()
             .map(i -> decodeValue(entity, attributePathDecoder, i))
             .filter(Objects::nonNull)
@@ -76,7 +75,7 @@ class GoogleEntitySimpleAttributePathResolver {
       }
       return resolvePath(entity, attributePathDecoder, pathLevel + 1, subData);
     } else if (data instanceof List) {
-      final Object result = ((List) data)
+      final Object result = ((List<?>) data)
           .stream()
           .flatMap(o -> Stream.of(resolvePath(entity, attributePathDecoder, pathLevel, o)))
           .filter(Objects::nonNull)
@@ -89,7 +88,7 @@ class GoogleEntitySimpleAttributePathResolver {
 
   private static Object decodeResult(Object subData) {
     if (subData instanceof List) {
-      final List list = (List) subData;
+      final List<?> list = (List<?>) subData;
       if (list.size() == 1) {
         subData = list.get(0);
       } else if (list.isEmpty()) {
