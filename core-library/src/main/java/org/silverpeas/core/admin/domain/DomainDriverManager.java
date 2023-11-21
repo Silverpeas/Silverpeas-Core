@@ -93,7 +93,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   private GroupDAO groupDAO;
   @Inject
   private OrganizationSchema organizationSchema;
-  private Map<String, DomainDriver> domainDriverInstances = new ConcurrentHashMap<>();
+  private final Map<String, DomainDriver> domainDriverInstances = new ConcurrentHashMap<>();
 
   protected DomainDriverManager() {
   }
@@ -101,9 +101,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   /**
    * Create a new User.
    *
-   * @param user
-   * @return
-   * @throws AdminException
+   * @param user the user to create
+   * @return the unique identifier of the created user.
+   * @throws AdminException if the creation fails.
    */
   @Override
   public String createUser(UserDetail user) throws AdminException {
@@ -158,10 +158,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
   }
 
-  /**
-* @param user
-* @throws AdminException
-*/
   @Override
   public void updateUserDetail(UserDetail user) throws AdminException {
     try {
@@ -184,10 +180,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return emptyList();
   }
 
-  /**
-* @param user
-* @throws AdminException
-*/
   @Override
   public void updateUserFull(UserFull user) throws AdminException {
     try {
@@ -196,7 +188,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Update User detail in specific domain
       domainDriver.updateUserFull(user);
 
-      // index informations relative to given user
+      // index information relative to given user
       indexUser(user.getId());
     } catch (AdminException e) {
       throw new AdminException(failureOnUpdate("user", user.getId()), e);
@@ -212,7 +204,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "SameParameterValue"})
   private <T extends UserDetail> List<T> loadUserEntities(Collection<String> userIds,
       Class<T> userModelClass) throws AdminException {
     long startTime = currentTimeMillis();
@@ -389,11 +381,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return null;
   }
 
-  /**
-   * @param domainId
-   * @return User[]
-   * @throws AdminException
-   */
   public UserDetail[] getAllUsers(String domainId) throws AdminException {
     UserDetail[] uds;
     try {
@@ -409,9 +396,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Indexing all users information of given domain
-   * @param domainId
-   * @throws AdminException
+   * Indexes all the user of the specified user domain.
+   * @param domainId the unique identifier of a user domain.
+   * @throws AdminException if the indexation fails.
    */
   public void indexAllUsers(String domainId) throws AdminException {
     String[] userIds = getUserIdsOfDomain(domainId);
@@ -488,8 +475,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Update given group in specific domain
-   * @param group
+   * Updates the specified group of users.
+   * @param group the group to update.
    */
   @Override
   public void updateGroup(GroupDetail group) throws AdminException {
@@ -518,9 +505,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * return group with given id (contains list of user ids for this group)
-   * @param specificId
-   * @return GroupDetail
+   * Gets the group of users with the given identifier.
+   * @apiNote The list of the identifiers of the users of the group are loaded.
+   * @param specificId the identifier of the group specific to the user domain to which it belongs.
+   * @return GroupDetail instance.
+   * @throws AdminException if the group cannot be gotten.
    */
   @Override
   public GroupDetail getGroup(String specificId) throws AdminException {
@@ -553,9 +542,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * return group with given group name in domain
-   * @param groupName
-   * @return GroupDetail
+   * Gets the group of users whose name is the specified one in the given user domain.
+   * @param groupName the name of the group to get.
+   * @param domainId the unique identifier of the user domain.
+   * @return GroupDetail instance
    */
   public GroupDetail getGroupByNameInDomain(String groupName, String domainId) throws AdminException {
     try {
@@ -645,9 +635,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Indexing all groups information of given domain
-   * @param domainId
-   * @throws AdminException
+   * Indexes all the groups of users of the specified user domain.
+   * @param domainId the unique identifier of the user domain.
+   * @throws AdminException if the indexation fails.
    */
   public void indexAllGroups(String domainId) throws AdminException {
     List<GroupDetail> groups = getAllGroupOfDomain(domainId);
@@ -657,8 +647,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Indexing a group
-   * @param group
+   * Indexes the specified group of users.
+   * @param group the group to index.
    */
   public void indexGroup(GroupDetail group) {
     FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey("groups", "GroupRow",
@@ -667,7 +657,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     indexEntry.setTitle(group.getName());
     indexEntry.setPreview(group.getDescription());
 
-    // index some group informations
+    // index some group information
     indexEntry.addField("DomainId", group.getDomainId());
     indexEntry.addField("SpecificId", group.getSpecificId());
     indexEntry.addField("SuperGroupId", group.getSuperGroupId());
@@ -677,8 +667,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Unindexing a group
-   * @param groupId
+   * Unindex the specified group of users.
+   * @param groupId the unique identifier of the group to unindex.
    */
   public void unindexGroup(String groupId) {
     FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey("groups", "GroupRow",
@@ -691,12 +681,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return authenticate(sKey, true);
   }
 
-  /**
-   * @param sKey anthentication key
-   * @param removeKey remove after
-   * @return
-   * @throws AdminException
-   */
   public Map<String, String> authenticate(String sKey, boolean removeKey) throws AdminException {
     Map<String, String> loginDomainId = new HashMap<>();
     try {
@@ -709,7 +693,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       loginDomainId.put("login", ksr.login);
       loginDomainId.put("domainId", idAsString(ksr.domainId));
 
-      // Remove key from keytore in database
+      // Remove key from keystore in database
       if (removeKey) {
         getOrganizationSchema().keyStore().removeKeyStoreRecord(idAsInt(sKey));
       }
@@ -721,30 +705,30 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   public Domain[] getAllDomains() throws AdminException {
-    Domain[] valret;
+    Domain[] domains;
     int i;
 
     try {
       // Get the domain information
       DomainRow[] drs = getOrganizationSchema().domain().getAllDomains();
-      if ((drs == null) || (drs.length <= 0)) {
+      if ((drs == null) || (drs.length == 0)) {
         throw new AdminException("No domains found");
       }
 
-      valret = new Domain[drs.length];
+      domains = new Domain[drs.length];
       for (i = 0; i < drs.length; i++) {
-        valret[i] = new Domain();
-        valret[i].setId(java.lang.Integer.toString(drs[i].id));
-        valret[i].setName(drs[i].name);
-        valret[i].setDescription(drs[i].description);
-        valret[i].setDriverClassName(drs[i].className);
-        valret[i].setPropFileName(drs[i].propFileName);
-        valret[i].setAuthenticationServer(drs[i].authenticationServer);
+        domains[i] = new Domain();
+        domains[i].setId(java.lang.Integer.toString(drs[i].id));
+        domains[i].setName(drs[i].name);
+        domains[i].setDescription(drs[i].description);
+        domains[i].setDriverClassName(drs[i].className);
+        domains[i].setPropFileName(drs[i].propFileName);
+        domains[i].setAuthenticationServer(drs[i].authenticationServer);
       }
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("all domains", ""), e);
     }
-    return valret;
+    return domains;
   }
 
   public long getDomainActions(String domainId) throws AdminException {
@@ -791,22 +775,20 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return row;
   }
 
-  public String removeDomain(String domainId) throws AdminException {
+  public void removeDomain(String domainId) throws AdminException {
     try {
       // Remove the domain
       getOrganizationSchema().domain().removeDomain(idAsInt(domainId));
       if (domainDriverInstances.get(domainId) != null) {
         domainDriverInstances.remove(domainId);
       }
-
-      return domainId;
     } catch (SQLException e) {
       throw new AdminException(failureOnDeleting(DOMAIN, domainId), e);
     }
   }
 
   public Domain getDomain(String domainId) throws AdminException {
-    Domain valret;
+    Domain domains;
     try {
       // Get the domain information
       DomainRow dr = getOrganizationSchema().domain().getDomain(idAsInt(domainId));
@@ -814,18 +796,18 @@ public class DomainDriverManager extends AbstractDomainDriver {
         throw new AdminNotFoundException(unknown(DOMAIN, domainId));
       }
 
-      valret = new Domain();
-      valret.setId(Integer.toString(dr.id));
-      valret.setName(dr.name);
-      valret.setDescription(dr.description);
-      valret.setDriverClassName(dr.className);
-      valret.setPropFileName(dr.propFileName);
-      valret.setAuthenticationServer(dr.authenticationServer);
-      valret.setSilverpeasServerURL(dr.silverpeasServerURL);
+      domains = new Domain();
+      domains.setId(Integer.toString(dr.id));
+      domains.setName(dr.name);
+      domains.setDescription(dr.description);
+      domains.setDriverClassName(dr.className);
+      domains.setPropFileName(dr.propFileName);
+      domains.setAuthenticationServer(dr.authenticationServer);
+      domains.setSilverpeasServerURL(dr.silverpeasServerURL);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting(DOMAIN, domainId), e);
     }
-    return valret;
+    return domains;
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = AdminException.class)
@@ -868,9 +850,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   /**
    * Called when Admin starts the synchronization on a particular Domain
    */
-  public void beginSynchronization(String sdomainId) throws AdminException {
+  public void beginSynchronization(String domainId) throws AdminException {
     // Get a DomainDriver instance
-    DomainDriver domainDriver = this.getDomainDriver(sdomainId);
+    DomainDriver domainDriver = this.getDomainDriver(domainId);
     domainDriver.beginSynchronization();
   }
 
@@ -878,9 +860,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * Called when Admin ends the synchronization
    * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
    */
-  public String endSynchronization(String sdomainId, boolean cancelSynchro) throws AdminException {
+  public String endSynchronization(String domainId, boolean cancelSynchro) throws AdminException {
     // Get a DomainDriver instance
-    DomainDriver domainDriver = this.getDomainDriver(sdomainId);
+    DomainDriver domainDriver = this.getDomainDriver(domainId);
     return domainDriver.endSynchronization(cancelSynchro);
   }
 

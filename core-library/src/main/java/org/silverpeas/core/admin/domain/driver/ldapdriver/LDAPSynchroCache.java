@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import java.util.Hashtable;
-
 import com.novell.ldap.LDAPEntry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LDAPSynchroCache {
-  protected Hashtable userSpecificIds = null;
+  protected Map<String, String> userSpecificIds = null;
   protected LDAPSettings driverSettings = null;
 
   public void init(LDAPSettings driverSettings) {
@@ -37,7 +38,7 @@ public class LDAPSynchroCache {
 
   public void beginSynchronization() {
     if (driverSettings.isSynchroCacheEnabled()) {
-      userSpecificIds = new Hashtable();
+      userSpecificIds = new HashMap<>();
     }
     // Else keep it to null
   }
@@ -64,7 +65,7 @@ public class LDAPSynchroCache {
 
   public String getUserId(String theDN) {
     if (userSpecificIds != null) {
-      return (String) (userSpecificIds.get(theDN));
+      return userSpecificIds.get(theDN);
     } else {
       return null;
     }

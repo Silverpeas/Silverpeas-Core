@@ -38,8 +38,9 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * This class manage groups that are described as follows : The group object are root to their
- * childs Method used to retreive users and groups that are direct childs of a given group : GroupG
- * (i.e. childs that have no groups between group node to their node) : 1) Search all child groups
+ * children Method used to retrieve users and groups that are direct children of a given group :
+ * GroupG
+ * (i.e. children that have no groups between group node to their node) : 1) Search all child groups
  * of GroupG 2) Sort the result by DN 3) Remove from the search all the groups that are not
  * directly
  * under GroupG (i.e. there is another group between). Those groups are the direct children of
@@ -48,6 +49,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  * @author tleroi
  */
 
+@SuppressWarnings("unused")
 public class LDAPGroupSubTree extends AbstractLDAPGroup {
 
   private String[] getMemberGroupIds(String lds, String memberId, boolean isGroup)
@@ -104,8 +106,8 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     List<String> userEntries = new ArrayList<>();
     LDAPEntry[] theEntries =
         LDAPUtility.search1000Plus(lds, groupEntry.getDN(), LDAPConnection.SCOPE_ONE,
-        driverSettings.getUsersFullFilter(), driverSettings.getUsersLoginField(),
-        driverSettings.getGroupAttributes());
+            driverSettings.getUsersFullFilter(), driverSettings.getUsersLoginField(),
+            driverSettings.getGroupAttributes());
     for (final LDAPEntry theEntry : theEntries) {
       final String userSpecificId = getSpecificId(lds, theEntry);
       if (userSpecificId != null) {
@@ -121,8 +123,8 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
 
     try {
       String theFilter;
-      if ((parentId != null) && (parentId.length() > 0)) {
-        if ((extraFilter != null) && (extraFilter.length() > 0)) {
+      if ((parentId != null) && (!parentId.isEmpty())) {
+        if ((extraFilter != null) && (!extraFilter.isEmpty())) {
           theFilter = "(&" + extraFilter + driverSettings.getGroupsIdFilter(parentId) + ")";
         } else {
           theFilter = driverSettings.getGroupsIdFilter(parentId);
@@ -148,8 +150,8 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     final String searchDN = getSearchDN(parentEntry);
     final LDAPEntry[] theEntries =
         LDAPUtility.search1000Plus(lds, searchDN, driverSettings.getScope(),
-        driverSettings.getGroupsFullFilter(), driverSettings.getGroupsNameField(),
-        driverSettings.getGroupAttributes());
+            driverSettings.getGroupsFullFilter(), driverSettings.getGroupsNameField(),
+            driverSettings.getGroupAttributes());
     final LDAPEntry[] sortedEntries = sortReversedDN(theEntries);
     String previousDN = "";
     for (final LDAPEntry entry : sortedEntries) {

@@ -77,17 +77,9 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   @Inject
   private SPGroupRepository spGroupRepository;
 
-  /**
-   * Constructor
-   */
   protected SilverpeasDriver() {
   }
 
-  /**
-   * Virtual method that performs extra initialization from a properties file. To overload by the
-   * class who need it.
-   * @throws AdminException
-   */
   @Override
   public void initFromProperties(SettingBundle rs) throws AdminException {
     // no extra initializations are done for this driver
@@ -255,7 +247,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     for (SPUser sPUser : users) {
       details.add(convertToUser(sPUser, new UserDetail()));
     }
-    return details.toArray(new UserDetail[details.size()]);
+    return details.toArray(new UserDetail[0]);
   }
 
   @Override
@@ -288,7 +280,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     for (SPUser spUser : users) {
       userDetails.add(convertToUser(spUser, new UserDetail()));
     }
-    return userDetails.toArray(new UserDetail[userDetails.size()]);
+    return userDetails.toArray(new UserDetail[0]);
   }
 
   @Override
@@ -409,7 +401,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     for (SPGroup spGroup : subGroups) {
       groups.add(convertToGroup(spGroup));
     }
-    return groups.toArray(new GroupDetail[groups.size()]);
+    return groups.toArray(new GroupDetail[0]);
   }
 
   @Override
@@ -420,7 +412,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     for (SPGroup spGroup : groups) {
       result.add(convertToGroup(spGroup));
     }
-    return result.toArray(new GroupDetail[result.size()]);
+    return result.toArray(new GroupDetail[0]);
   }
 
   @Override
@@ -431,7 +423,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     for (SPGroup spGroup : groups) {
       result.add(convertToGroup(spGroup));
     }
-    return result.toArray(new GroupDetail[result.size()]);
+    return result.toArray(new GroupDetail[0]);
   }
 
   @Override
@@ -487,7 +479,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     for (SPUser user : users) {
       userIds.add(String.valueOf(user.getId()));
     }
-    group.setUserIds(userIds.toArray(new String[userIds.size()]));
+    group.setUserIds(userIds.toArray(new String[0]));
     return group;
   }
 
@@ -534,7 +526,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public void resetEncryptedPassword(UserDetail userDetail, String encryptedPassword) throws AdminException {
+  public void resetEncryptedPassword(UserDetail userDetail, String encryptedPassword) {
     SPUser user = spUserRepository.getById(userDetail.getId());
     user.setPassword(encryptedPassword);
     user.setPasswordValid(true);

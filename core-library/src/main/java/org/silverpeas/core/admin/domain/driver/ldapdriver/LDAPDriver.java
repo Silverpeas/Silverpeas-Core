@@ -50,7 +50,7 @@ import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
- * IMPORTANT : For the moment, it is not possible to add, remove or update a group neither add or
+ * IMPORTANT: For the moment, it is not possible to add, remove or update a group neither add or
  * remove an user. However, it is possible to update an user...
  * @author tleroi
  */
@@ -62,10 +62,9 @@ public class LDAPDriver extends AbstractDomainDriver {
   protected AbstractLDAPGroup groupTranslator = null;
 
   /**
-   * Virtual method that performs extra initialization from a properties file. To overload by the
-   * class who need it.
+   * Initializes the driver from the specified settings bundle.
    * @param rs name of resource file
-   * @throws AdminException
+   * @throws AdminException if the initialization fails.
    */
   @Override
   public void initFromProperties(SettingBundle rs) throws AdminException {
@@ -102,8 +101,8 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   /**
-   * Called when Admin starts the synchronization
-   * @return
+   * Gets all the actions this driver supports.
+   * @return a bit mask identifying the supported actions.
    */
   @Override
   public long getDriverActions() {
@@ -153,20 +152,21 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Called when Admin ends the synchronization
    */
+  @SuppressWarnings("unused")
   public String endSynchronization() {
-    StringBuilder valret = new StringBuilder("");
+    StringBuilder report = new StringBuilder();
 
     synchroCache.endSynchronization();
     String result = userTranslator.endSynchronization();
-    if (result != null && result.length() > 0) {
-      valret.append("LDAP Domain User specific errors :\n").append(result).append("\n\n");
+    if (result != null && !result.isEmpty()) {
+      report.append("LDAP Domain User specific errors :\n").append(result).append("\n\n");
     }
     result = groupTranslator.endSynchronization();
-    if (result != null && result.length() > 0) {
-      valret.append("LDAP Domain GroupDetail specific errors :\n").append(result).append("\n\n");
+    if (result != null && !result.isEmpty()) {
+      report.append("LDAP Domain GroupDetail specific errors :\n").append(result).append("\n\n");
     }
     synchroInProcess = false;
-    return valret.toString();
+    return report.toString();
   }
 
   /**
@@ -241,7 +241,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
       // Perform the update
       connection
-          .modify(userFullDN, modifications.toArray(new LDAPModification[modifications.size()]));
+          .modify(userFullDN, modifications.toArray(new LDAPModification[0]));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new AdminException("LDAP access error", ex);
@@ -318,7 +318,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public void updateUserDetail(UserDetail user) throws AdminException {
+  public void updateUserDetail(UserDetail user) {
     // Silverpeas doesn't modify the remote LDAP
   }
 
@@ -326,7 +326,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Retrieve user information from database
    * @param specificId The user id as stored in the database
    * @return The User object that contain new user information
-   * @throws AdminException
+   * @throws AdminException if the user cannot be gotten.
    */
   @Override
   public UserFull getUserFull(String specificId) throws AdminException {
@@ -347,7 +347,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Retrieve user information from database
    * @param specificId The user id as stored in the database
    * @return The User object that contain new user information
-   * @throws AdminException
+   * @throws AdminException if the user cannot be gotten.
    */
   @Override
   public UserDetail getUser(String specificId) throws AdminException {
@@ -367,7 +367,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Retrieve all users from the database
    * @return User[] An array of User Objects that contain users information
-   * @throws AdminException
+   * @throws AdminException if the fetching of the users fails.
    */
   @Override
   public UserDetail[] getAllUsers() throws AdminException {
@@ -392,7 +392,7 @@ public class LDAPDriver extends AbstractDomainDriver {
         String escapedPropertyValue = propertyValue;
         if (StringUtil.isDefined(propertyValue)) {
           // In a first time, as it could exist already LDAP escaped characters into the filter,
-          // an unescaping is done
+          // an unescape is done
           String unescapedPropertyValue = LDAPUtility.unescapeLDAPSearchFilter(propertyValue);
           // Then the escaping is performed
           escapedPropertyValue = LDAPUtility.normalizeFilterValue(unescapedPropertyValue);
@@ -578,7 +578,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws AdminException {
+  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) {
     // Access in read only
   }
 }

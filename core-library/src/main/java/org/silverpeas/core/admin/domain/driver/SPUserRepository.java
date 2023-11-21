@@ -53,6 +53,4 @@ public interface SPUserRepository extends EntityRepository<SPUser>, WithSaveAndF
 
   List<SPUser> findByPosition(String position);
 
-  List<SPUser> findByEmail(String email);
-
 }

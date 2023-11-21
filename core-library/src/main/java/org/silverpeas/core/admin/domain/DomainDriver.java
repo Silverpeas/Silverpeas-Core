@@ -38,8 +38,10 @@ import java.util.Optional;
 
 import static java.util.Optional.empty;
 
+@SuppressWarnings("unused")
 public interface DomainDriver {
 
+  @SuppressWarnings("unused")
   class ActionConstants {
 
     /**
@@ -151,7 +153,7 @@ public interface DomainDriver {
      * All available actions Mask
      * @see #getDriverActions
      */
-    public static final long ACTION_MASK_ALL = 0xFFFFFFFF;
+    public static final long ACTION_MASK_ALL = 0xFFFFFFFFL;
     public static final long ACTION_MASK_RW =
         ACTION_READ_USER | ACTION_READ_GROUP | ACTION_UPDATE_USER | ACTION_UPDATE_GROUP |
             ACTION_CREATE_USER | ACTION_CREATE_GROUP | ACTION_DELETE_USER | ACTION_DELETE_GROUP |
@@ -341,6 +343,7 @@ public interface DomainDriver {
      * @return an array of {@link User}.
      * @throws AdminException in case of validation error.
      */
+    @SuppressWarnings("UnusedReturnValue")
     User[] saveRule(final String rule) throws AdminException;
   }
 }

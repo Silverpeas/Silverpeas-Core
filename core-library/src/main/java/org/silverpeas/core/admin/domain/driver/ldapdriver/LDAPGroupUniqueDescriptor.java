@@ -41,6 +41,7 @@ import java.util.stream.Stream;
  * @author tleroi
  */
 
+@SuppressWarnings("unused")
 public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
 
   private static final String LDAPGROUP_UNIQUE_DESCRIPTOR_GET_CHILD_GROUPS_ENTRY =
@@ -102,7 +103,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
       throws AdminException {
     List<LDAPEntry> entries = new ArrayList<>();
     try {
-      if ((parentId != null) && (parentId.length() > 0)) {
+      if ((parentId != null) && (!parentId.isEmpty())) {
         final LDAPEntry theEntry = getGroupEntry(lds, parentId);
         final String[] stringVals =
             LDAPUtility.getAttributeValues(theEntry, driverSettings.getGroupsMemberField());
@@ -115,7 +116,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         // Retreives the ROOT groups : the groups that are under the base
         // DN but that are not member of another group...
         final String theFilter;
-        if ((extraFilter != null) && (extraFilter.length() > 0)) {
+        if ((extraFilter != null) && (!extraFilter.isEmpty())) {
           theFilter = "(&" + extraFilter + driverSettings.getGroupsFullFilter() + ")";
         } else {
           theFilter = driverSettings.getGroupsFullFilter();
@@ -168,7 +169,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
     final String theFilter;
     final LDAPEntry childGroupEntry;
     try {
-      if ((extraFilter != null) && (extraFilter.length() > 0)) {
+      if ((extraFilter != null) && (!extraFilter.isEmpty())) {
         theFilter = "(&" + extraFilter + driverSettings.getGroupsFullFilter() + ")";
       } else {
         theFilter = driverSettings.getGroupsFullFilter();

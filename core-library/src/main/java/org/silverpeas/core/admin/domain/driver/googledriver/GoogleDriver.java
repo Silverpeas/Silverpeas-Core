@@ -60,7 +60,8 @@ import static org.silverpeas.core.util.StringUtil.likeIgnoreCase;
  */
 public class GoogleDriver extends AbstractDomainDriver {
 
-  private static final String ATTRIBUTE_PATH_MSG_ERROR = "Verify the attribute path to access entity data, it must target a single value";
+  private static final String ATTRIBUTE_PATH_MSG_ERROR = "Verify the attribute path to access " +
+      "entity data, it must target a single value";
   protected SettingBundle settings;
   private UserFilterManager userFilterManager;
 
@@ -76,8 +77,8 @@ public class GoogleDriver extends AbstractDomainDriver {
   }
 
   /**
-   * Called when Admin starts the synchronization
-   * @return the available actions as hexadecimal.
+   * Gets all the actions this driver supports.
+   * @return a bit mask identifying the supported actions.
    */
   @Override
   public long getDriverActions() {
@@ -362,13 +363,13 @@ public class GoogleDriver extends AbstractDomainDriver {
         userFilterManager.getRule());
   }
 
-  private Function<User, UserDetail> userDetailMapper = u -> {
+  private final Function<User, UserDetail> userDetailMapper = u -> {
     final UserDetail user = new UserDetail();
     setCommonUserProps(u, user);
     return user;
   };
 
-  private Function<User, UserFull> userFullMapper = u -> {
+  private final Function<User, UserFull> userFullMapper = u -> {
     final UserFull user = new UserFull(this);
     setCommonUserProps(u, user);
     final String[] specificProps = getPropertiesNames();
@@ -386,9 +387,11 @@ public class GoogleDriver extends AbstractDomainDriver {
     user.setLogin(u.getPrimaryEmail());
     user.setLastName(u.getName().getFamilyName());
     user.setFirstName(u.getName().getGivenName());
-    @SuppressWarnings("unchecked") final List<Map<String, String>> emails = (List) u.getEmails();
+    @SuppressWarnings("unchecked") final List<Map<String, String>> emails =
+        (List<Map<String, String>>) u.getEmails();
     final String email = emails.stream()
-        .filter(m -> "Work".equalsIgnoreCase(m.get("type")) || "Work".equalsIgnoreCase(m.get("customType")))
+        .filter(m -> "Work".equalsIgnoreCase(m.get("type")) || "Work".equalsIgnoreCase(m.get(
+            "customType")))
         .map(m -> m.get("address")).findFirst().orElseGet(u::getPrimaryEmail);
     user.seteMail(email);
     user.setAccessLevel(USER);

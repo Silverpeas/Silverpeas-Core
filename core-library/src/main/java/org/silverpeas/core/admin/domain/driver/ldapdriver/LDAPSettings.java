@@ -44,11 +44,7 @@ import static java.util.stream.Collectors.joining;
  */
 public class LDAPSettings implements DriverSettings {
 
-  public static final String TIME_STAMP_MSAD = "uSNChanged";
-  public static final String TIME_STAMP_MSAD_TT = "whenChanged";
-  public static final String TIME_STAMP_NDS = "modifyTimeStamp";
   private final LdapConfiguration configuration = new LdapConfiguration();
-  private String ldapimpl = null;
   private int ldapProtocolVer = LDAPConnection.LDAP_V3;
   private boolean ldapOpAttributesUsed = false;
   private String ldapUserBaseDN = null;
@@ -91,11 +87,9 @@ public class LDAPSettings implements DriverSettings {
   private String groupsNameField = null;
   private String groupsDescriptionField = null;
   // IHM
-  private boolean ihmImportUsers = true;
-  private boolean ihmImportGroups = true;
 
   /**
-   * Performs initialization from a properties file. The optional properties are retreive with
+   * Performs initialization from a properties file. The optional properties are retrieved with
    * getSureString.
    * @param rs Properties resource file
    */
@@ -103,7 +97,7 @@ public class LDAPSettings implements DriverSettings {
   public void initFromProperties(SettingBundle rs) {
     // Database Settings
     // -----------------
-    ldapimpl = rs.getString("database.LDAPImpl", null);
+    String ldap = rs.getString("database.LDAPImpl", null);
     configuration.setLdapHost(rs.getString("database.LDAPHost", null));
     configuration.setLdapPort(rs.getInteger("database.LDAPPort", configuration.getLdapPort()));
     ldapProtocolVer = rs.getInteger("database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
@@ -127,7 +121,7 @@ public class LDAPSettings implements DriverSettings {
       configuration.setLdapPort(rs.getInteger("database.LDAPPortSecured", 636));
     }
     sortControlSupported = rs.getBoolean("database.SortControlSupported", !"openldap".
-        equalsIgnoreCase(ldapimpl));
+        equalsIgnoreCase(ldap));
     ldapDefaultSearchConstraints = getSearchConstraints(true);
     ldapDefaultConstraints = getConstraints(true);
 
@@ -167,11 +161,6 @@ public class LDAPSettings implements DriverSettings {
     groupsMemberField = rs.getString("groups.MemberField", "");
     groupsNameField = rs.getString("groups.NameField", "");
     groupsDescriptionField = rs.getString("groups.DescriptionField", "");
-
-    // IHM Settings
-    // ------------
-    ihmImportUsers = rs.getBoolean("ihm.importUsers", true);
-    ihmImportGroups = rs.getBoolean("ihm.importGroups", true);
   }
 
   // HOST FIELDS
@@ -194,10 +183,6 @@ public class LDAPSettings implements DriverSettings {
 
   public boolean mustImportUsers() {
     return synchroImportUsers;
-  }
-
-  public String getLDAPImpl() {
-    return ldapimpl;
   }
 
   public String getLDAPHost() {
@@ -228,10 +213,6 @@ public class LDAPSettings implements DriverSettings {
     return ldapUserBaseDN;
   }
 
-  public boolean getLDAPSearchRecurs() {
-    return ldapSearchRecurs;
-  }
-
   public boolean isLDAPSecured() {
     return configuration.isSecure();
   }
@@ -245,10 +226,7 @@ public class LDAPSettings implements DriverSettings {
 
   public LDAPSearchConstraints getSearchConstraints(boolean allocateNew) {
     if (allocateNew) {
-      boolean doReferrals = true;
-      if (ldapMaxNbReferrals == 0) {
-        doReferrals = false;
-      }
+      boolean doReferrals = ldapMaxNbReferrals != 0;
       return new LDAPSearchConstraints(ldapMaxMsClientTimeLimit, ldapMaxSecServerTimeLimit,
           LDAPSearchConstraints.DEREF_NEVER, ldapMaxNbEntryReturned, doReferrals, ldapBatchSize,
           null, ldapMaxNbReferrals);
@@ -258,10 +236,7 @@ public class LDAPSettings implements DriverSettings {
 
   public LDAPConstraints getConstraints(boolean allocateNew) {
     if (allocateNew) {
-      boolean doReferrals = true;
-      if (ldapMaxNbReferrals == 0) {
-        doReferrals = false;
-      }
+      boolean doReferrals = ldapMaxNbReferrals != 0;
       return new LDAPConstraints(ldapMaxMsClientTimeLimit, doReferrals, null, ldapMaxNbReferrals);
     }
     return ldapDefaultConstraints;
@@ -278,14 +253,6 @@ public class LDAPSettings implements DriverSettings {
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
     }
-  }
-
-  public String getUsersClassName() {
-    return usersClassName;
-  }
-
-  public String getUsersFilter() {
-    return usersFilter;
   }
 
   public String getUsersFullFilter() {
@@ -326,28 +293,37 @@ public class LDAPSettings implements DriverSettings {
 
   public String getUsersIdFilter(String value) {
     if (LDAPUtility.isAGuid(getUsersIdField()) && (value != null)) {
-      // Replace all "\\" by "\"
-      StringBuilder singleSlashValue = new StringBuilder(value.length());
-      boolean bIsFirst = true;
-      char[] vca = value.toCharArray();
-
-      for (char aVca : vca) {
-        if (aVca == '\\') {
-          if (bIsFirst) {
-            singleSlashValue.append(aVca);
-          }
-          bIsFirst = !bIsFirst;
-        } else {
-          bIsFirst = true;
-          singleSlashValue.append(aVca);
-        }
-      }
+      String singleSlashValue = parseValue(value);
       return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "=" +
-          singleSlashValue.toString() + "))";
+          singleSlashValue + "))";
     } else {
       return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "=" +
           LDAPUtility.normalizeFilterValue(value) + "))";
     }
+  }
+
+  /**
+   * Replaces all "\\" by "\".
+   * @param value the value to parse for "\\".
+   * @return the result of the value parsing.
+   */
+  private String parseValue(String value) {
+    StringBuilder singleSlashValue = new StringBuilder(value.length());
+    boolean bIsFirst = true;
+    char[] vca = value.toCharArray();
+
+    for (char aVca : vca) {
+      if (aVca == '\\') {
+        if (bIsFirst) {
+          singleSlashValue.append(aVca);
+        }
+        bIsFirst = !bIsFirst;
+      } else {
+        bIsFirst = true;
+        singleSlashValue.append(aVca);
+      }
+    }
+    return singleSlashValue.toString();
   }
 
   public String getUsersManualFilter(Collection<String> values) {
@@ -382,24 +358,12 @@ public class LDAPSettings implements DriverSettings {
     }
   }
 
-  public String getGroupsClassName() {
-    return groupsClassName;
-  }
-
   public boolean isGroupsInheritProfiles() {
     return groupsInheritProfiles;
   }
 
-  public String getGroupsFilter() {
-    return groupsFilter;
-  }
-
-  public int getGroupsNamingDepth() {
-    return groupsNamingDepth;
-  }
-
   public String getGroupsFullFilter() {
-    if (groupsFilter != null && groupsFilter.length() > 0) {
+    if (groupsFilter != null && !groupsFilter.isEmpty()) {
       return "(&(objectClass=" + groupsClassName + ")" + groupsFilter + ")";
     }
     return "(objectClass=" + groupsClassName + ")";
@@ -438,24 +402,9 @@ public class LDAPSettings implements DriverSettings {
 
   public String getGroupsIdFilter(String value) {
     if (LDAPUtility.isAGuid(getGroupsIdField()) && (value != null)) {
-      // Replace all "\\" by "\"
-      StringBuilder singleSlashValue = new StringBuilder(value.length());
-      boolean bIsFirst = true;
-      char[] vca = value.toCharArray();
-
-      for (char aVca : vca) {
-        if (aVca == '\\') {
-          if (bIsFirst) {
-            singleSlashValue.append(aVca);
-          }
-          bIsFirst = !bIsFirst;
-        } else {
-          bIsFirst = true;
-          singleSlashValue.append(aVca);
-        }
-      }
+      String singleSlashValue = parseValue(value);
       return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "=" +
-          singleSlashValue.toString() + "))";
+          singleSlashValue + "))";
     } else {
       return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "=" +
           LDAPUtility.normalizeFilterValue(value) + "))";
@@ -493,14 +442,6 @@ public class LDAPSettings implements DriverSettings {
       return attrs;
     }
     return ArrayUtil.emptyStringArray();
-  }
-
-  public boolean displayImportUsers() {
-    return ihmImportUsers;
-  }
-
-  public boolean displayImportGroups() {
-    return ihmImportGroups;
   }
 
   public boolean isSortControlSupported() {

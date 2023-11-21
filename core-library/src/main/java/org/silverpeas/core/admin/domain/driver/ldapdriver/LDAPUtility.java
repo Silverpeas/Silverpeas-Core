@@ -317,9 +317,7 @@ public class LDAPUtility {
       if (asString.length() > 3) {
         theStr.append("\\\\").append(asString.substring(6));
       } else {
-        if (asString.length() == 0) {
-          theStr.append("\\\\").append("00");
-        } else if (asString.length() == 1) {
+        if (asString.length() == 1) {
           theStr.append("\\\\0").append(asString);
         } else {
           theStr.append("\\\\").append(asString);
@@ -338,14 +336,14 @@ public class LDAPUtility {
 
   /**
    * Escaping DN to prevent LDAP injection. Based on
-   * http://blogs.sun.com/shankar/entry/what_is_ldap_injection
+   * <a href="http://blogs.sun.com/shankar/entry/what_is_ldap_injection">this post.</a>
    *
    * @param name the DN to be espaced.
    * @return the escaped DN.
    */
   static String escapeDN(String name) {
     StringBuilder sb = new StringBuilder();
-    if (name.length() > 0 && (name.charAt(0) == ' ' || name.charAt(0) == '#')) {
+    if (!name.isEmpty() && (name.charAt(0) == ' ' || name.charAt(0) == '#')) {
       sb.append('\\'); // add the leading backslash if needed
     }
     for (int i = 0; i < name.length(); i++) {
@@ -384,7 +382,8 @@ public class LDAPUtility {
 
   /**
    * Escaping search filter to prevent LDAP injection. Based on
-   * http://blogs.sun.com/shankar/entry/what_is_ldap_injection rfc 2254 actually addresses how to fix
+   * <a href="http://blogs.sun.com/shankar/entry/what_is_ldap_injection">this post.</a>.
+   * RFC 2254 actually addresses how to fix
    * these ldap injection bugs in section 4 on page 4 Character ASCII value
    * --------------------------- * 0x2a ( 0x28 ) 0x29 \ 0x5c NUL 0x00
    *
@@ -461,7 +460,7 @@ public class LDAPUtility {
         while (query.getFilter() != null) {
           SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS,
               "Requête sur le domaine LDAP distant (protocole v" + ld.getProtocolVersion() +
-                  "), BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter=" +
+                  "), BaseDN=" + baseDN1 + " scope=" + scope + " Filter=" +
                   query.getFilter());
           internalLdapSearch(ld, query, context, ldapEntries);
         }
@@ -613,7 +612,7 @@ public class LDAPUtility {
 class LDAPConnectInfo {
 
   public static final int MAX_NB_ERROR_CONNECT = 20;
-  private LDAPSettings driverSettings;
+  private final LDAPSettings driverSettings;
   private LDAPConnection connection;
   private int errorCpt;
 
@@ -745,18 +744,16 @@ class LDAPSearchContext {
     return lastException;
   }
 
-  public LDAPSearchContext setLastException(final LDAPException lastException) {
+  public void setLastException(final LDAPException lastException) {
     this.lastException = lastException;
-    return this;
   }
 
   public int getNbReaded() {
     return nbReaded;
   }
 
-  public LDAPSearchContext incNbReaded() {
+  public void incNbReaded() {
     this.nbReaded++;
-    return this;
   }
 
   public boolean isNotTheFirst() {

@@ -45,6 +45,7 @@ import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 /**
  * a DAO to manage the DomainSQL_User table.
  */
+@SuppressWarnings({"SqlNoDataSourceInspection", "SqlSourceToSinkFlow"})
 public class SQLUserTable {
   private static final String WHERE = " where ";
   private static final String UPDATE = "update ";
@@ -53,7 +54,7 @@ public class SQLUserTable {
   private static final String SELECT = "select ";
   private static final String FROM = " from ";
   private static final String WHERE_ID_EQUAL_TO_GIVEN_VALUE = " where id = ?";
-  private SQLSettings drvSettings;
+  private final SQLSettings drvSettings;
 
   SQLUserTable(SQLSettings ds) {
     drvSettings = ds;
@@ -175,14 +176,6 @@ public class SQLUserTable {
   }
 
   /**
-   * Inserts in the database a new user row.
-   */
-  public void updateUserSpecificProperty(Connection c, int userId,
-      DomainProperty dp, boolean value) throws AdminException {
-    updateUserSpecificProperty(c, userId, dp, (value) ? "Y" : "N");
-  }
-
-  /**
    * Returns all the groups in a given userRole (not recursive).
    */
   public List<Integer> getAllUserIds(Connection c) throws AdminException {
@@ -243,7 +236,7 @@ public class SQLUserTable {
   }
 
   /**
-   * Returns the User whith the given id.
+   * Returns the User with the given id.
    */
   public UserDetail getUser(Connection c, int userId) throws AdminException {
     return unique(getUsers(c, singleton(userId)));
@@ -267,7 +260,7 @@ public class SQLUserTable {
   }
 
   /**
-   * Returns the User whith the given id.
+   * Returns the User with the given id.
    */
   String getUserSpecificProperty(Connection c, int userId,
       DomainProperty dp) throws AdminException {
@@ -277,7 +270,7 @@ public class SQLUserTable {
   }
 
   /**
-   * Returns the User whith the given id.
+   * Returns the User with the given id.
    */
   String getUserPassword(Connection c, int userId) throws AdminException {
     if (drvSettings.isUserPasswordAvailable()) {
@@ -307,7 +300,7 @@ public class SQLUserTable {
   }
 
   /**
-   * Returns the User whith the given id.
+   * Returns the User with the given id.
    */
   boolean getUserPasswordValid(Connection c, int userId)
       throws AdminException {
