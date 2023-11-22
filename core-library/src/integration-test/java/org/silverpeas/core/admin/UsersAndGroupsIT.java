@@ -124,7 +124,7 @@ public class UsersAndGroupsIT {
     UserDetail user = new UserDetail();
     user.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     user.setDomainId("0");
-    user.seteMail("nicolas.eysseric@silverpeas.com");
+    user.setEmailAddress("nicolas.eysseric@silverpeas.com");
     user.setFirstName("Nicolas");
     user.setLastName("EYSSERIC");
     user.setLogin("neysseri");
@@ -184,7 +184,7 @@ public class UsersAndGroupsIT {
     assertThat(user.getStateSaveDate(), lessThan(now));
 
     String newEmail = "ney@silverpeas.com";
-    user.seteMail(newEmail);
+    user.setEmailAddress(newEmail);
     user.setAccessLevel(UserAccessLevel.USER);
     user.setTosAcceptanceDate(tosAcceptanceDate);
     user.setLastLoginDate(lastLoginDate);
@@ -194,7 +194,7 @@ public class UsersAndGroupsIT {
     admin.updateUser(user);
 
     user = admin.getUserDetail(updatedUserId);
-    assertThat(user.geteMail(), is(newEmail));
+    assertThat(user.getEmailAddress(), is(newEmail));
     assertThat(user.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(user.isAccessAdmin(), is(false));
     assertThat(user.isAccessDomainManager(), is(false));

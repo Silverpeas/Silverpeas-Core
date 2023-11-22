@@ -120,7 +120,7 @@ public class TestUser implements User {
   }
 
   @Override
-  public String geteMail() {
+  public String getEmailAddress() {
     return null;
   }
 

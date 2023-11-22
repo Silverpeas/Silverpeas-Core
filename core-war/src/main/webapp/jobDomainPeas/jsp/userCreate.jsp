@@ -308,10 +308,10 @@ out.println(window.printBefore());
 			<label class="txtlibform"><fmt:message key="GML.eMail"/></label>
 			<div class="champs">
 				<% if (action.equals("userMS")) { %>
-		<%=userObject.geteMail()%>
+		<%=userObject.getEmailAddress()%>
 		<% } else { %>
                   <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99"
-			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.geteMail())%>" />
+			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getEmailAddress())%>" />
                 <% } %>
 			</div>
 		</div>

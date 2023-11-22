@@ -393,7 +393,7 @@ public class GoogleDriver extends AbstractDomainDriver {
         .filter(m -> "Work".equalsIgnoreCase(m.get("type")) || "Work".equalsIgnoreCase(m.get(
             "customType")))
         .map(m -> m.get("address")).findFirst().orElseGet(u::getPrimaryEmail);
-    user.seteMail(email);
+    user.setEmailAddress(email);
     user.setAccessLevel(USER);
     if (Boolean.TRUE.equals(u.getSuspended())) {
       user.setState(DEACTIVATED);

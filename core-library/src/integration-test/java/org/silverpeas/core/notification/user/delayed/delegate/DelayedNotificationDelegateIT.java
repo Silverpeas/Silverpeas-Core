@@ -353,7 +353,7 @@ public class DelayedNotificationDelegateIT {
       if (userId >= 0) {
         userDetailStub.setFirstName("User");
         userDetailStub.setLastName("" + userId);
-        userDetailStub.seteMail("user" + userId + "@tests.com");
+        userDetailStub.setEmailAddress("user" + userId + "@tests.com");
       }
       return userDetailStub;
     }

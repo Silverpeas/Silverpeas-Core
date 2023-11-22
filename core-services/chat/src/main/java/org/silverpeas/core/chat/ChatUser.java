@@ -224,8 +224,8 @@ public class ChatUser extends UserDetail {
   }
 
   @Override
-  public String geteMail() {
-    return user.geteMail();
+  public String getEmailAddress() {
+    return user.getEmailAddress();
   }
 
   @Override

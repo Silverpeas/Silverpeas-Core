@@ -112,9 +112,9 @@
 	<td class="txtlibform"><%=resource.getString("GML.eMail")%> :</td>
         <td>
 		<%if (updateIsAllowed && updateEmailIsAllowed) {%>
-			<input type="text" name="userEMail" size="50" maxlength="99" value="<%=userFull.geteMail()%>"/>
+			<input type="text" name="userEMail" size="50" maxlength="99" value="<%=userFull.getEmailAddress()%>"/>
 			<%} else {%>
-				<%=userFull.geteMail()%>
+				<%=userFull.getEmailAddress()%>
 			<%}%>
 		</td>
     </tr>

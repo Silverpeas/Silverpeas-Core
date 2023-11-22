@@ -75,7 +75,7 @@ public class JobDomainPeasAjaxServlet extends HttpServlet {
     UserDetail userToCheck = new UserDetail();
     userToCheck.setFirstName(req.getParameter("FirstName"));
     userToCheck.setLastName(req.getParameter("LastName"));
-    userToCheck.seteMail(req.getParameter("Email"));
+    userToCheck.setEmailAddress(req.getParameter("Email"));
     UserDetail user = sc.checkUser(userToCheck);
 
     if (user == null) {

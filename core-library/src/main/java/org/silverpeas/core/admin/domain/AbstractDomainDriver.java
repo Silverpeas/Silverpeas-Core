@@ -42,17 +42,17 @@ import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTI
 
 public abstract class AbstractDomainDriver implements DomainDriver {
 
-  protected int domainId = -1; // The domainId of this instance of domain
+  private int domainId = -1; // The domainId of this instance of domain
   // driver
-  protected List<DomainProperty> domainProperties = new ArrayList<>(); // ordered list of the
+  private final List<DomainProperty> domainProperties = new ArrayList<>(); // ordered list of the
   // properties from the domainSP settings bundle.
-  protected String[] keys = null;
-  protected String propertiesL10n = "";
-  protected Map<String, HashMap<String, String>> propertiesLabels = new HashMap<>();
-  protected Map<String, HashMap<String, String>> propertiesDescriptions = new HashMap<>();
-  protected String[] mapParameters = null;
-  protected boolean synchroInProcess = false;
-  protected boolean x509Enabled = false;
+  private String[] keys = null;
+  private String propertiesL10n = "";
+  private final Map<String, HashMap<String, String>> propertiesLabels = new HashMap<>();
+  private final Map<String, HashMap<String, String>> propertiesDescriptions = new HashMap<>();
+  private String[] mapParameters = null;
+  private boolean synchroInProcess = false;
+  private boolean x509Enabled = false;
 
   /**
    * Initializes the domain driver with the initialization parameter stocked in table This parameter
@@ -83,11 +83,11 @@ public abstract class AbstractDomainDriver implements DomainDriver {
     for (int i = 1; i <= nbProps; i++) {
       s = settings.getString("property_" + i + ".Name", "");
       if (!s.trim().isEmpty()) {
-        DomainProperty newProp = new DomainProperty(settings, String.valueOf(i)); // Retrieves all
+        DomainProperty prop = new DomainProperty(settings, i); // Retrieves all
         // properties
-        domainProperties.add(newProp);
-        keys[i - 1] = newProp.getName();
-        mapParameters[i - 1] = newProp.getMapParameter();
+        domainProperties.add(prop);
+        keys[i - 1] = prop.getName();
+        mapParameters[i - 1] = prop.getMapParameter();
       }
     }
 
@@ -243,7 +243,7 @@ public abstract class AbstractDomainDriver implements DomainDriver {
    */
   @Override
   public void beginSynchronization() {
-    synchroInProcess = true;
+    setSynchroInProcess(true);
   }
 
   @Override
@@ -257,7 +257,7 @@ public abstract class AbstractDomainDriver implements DomainDriver {
    */
   @Override
   public String endSynchronization(boolean cancelSynchro) {
-    synchroInProcess = false;
+    setSynchroInProcess(false);
     return "";
   }
 
@@ -271,5 +271,17 @@ public abstract class AbstractDomainDriver implements DomainDriver {
    */
   protected static String idAsString(int id) {
     return String.valueOf(id);
+  }
+
+  protected int getDomainId() {
+    return domainId;
+  }
+
+  protected void setSynchroInProcess(boolean synchroInProcess) {
+    this.synchroInProcess = synchroInProcess;
+  }
+
+  protected boolean isX509Enabled() {
+    return x509Enabled;
   }
 }

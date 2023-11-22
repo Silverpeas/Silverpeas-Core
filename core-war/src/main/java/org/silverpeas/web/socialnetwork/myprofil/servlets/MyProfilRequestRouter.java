@@ -287,7 +287,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       String userLastName = updateLastNameIsAllowed ? request.getParameter("userLastName") :
           currentUser.getLastName();
       String userEmail =
-          updateEmailIsAllowed ? request.getParameter("userEMail") : currentUser.geteMail();
+          updateEmailIsAllowed ? request.getParameter("userEMail") : currentUser.getEmailAddress();
       String userLoginQuestion = request.getParameter("userLoginQuestion");
       userLoginQuestion =
           (userLoginQuestion != null ? WebEncodeHelper.htmlStringToJavaString(userLoginQuestion) :

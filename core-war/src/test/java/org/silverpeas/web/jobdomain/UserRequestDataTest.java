@@ -141,7 +141,7 @@ public class UserRequestDataTest {
     assertThat(newUser.getLogin(), nullValue());
     assertThat(newUser.getLastName(), isEmptyString());
     assertThat(newUser.getFirstName(), isEmptyString());
-    assertThat(newUser.geteMail(), isEmptyString());
+    assertThat(newUser.getEmailAddress(), isEmptyString());
     assertThat(newUser.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(newUser.getUserManualNotificationUserReceiverLimitValue(), is(0));
     assertThat(newUser.getNotifManualReceiverLimit(), nullValue());
@@ -154,7 +154,7 @@ public class UserRequestDataTest {
     assertThat(newUser.getLogin(), is("user.login"));
     assertThat(newUser.getLastName(), is("user.lastName"));
     assertThat(newUser.getFirstName(), is("user.firstName"));
-    assertThat(newUser.geteMail(), is("user.email"));
+    assertThat(newUser.getEmailAddress(), is("user.email"));
     assertThat(newUser.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(newUser.getUserManualNotificationUserReceiverLimitValue(), is(0));
     assertThat(newUser.getNotifManualReceiverLimit(), nullValue());
@@ -168,7 +168,7 @@ public class UserRequestDataTest {
     assertThat(existingUser.getLogin(), nullValue());
     assertThat(existingUser.getLastName(), isEmptyString());
     assertThat(existingUser.getFirstName(), isEmptyString());
-    assertThat(existingUser.geteMail(), isEmptyString());
+    assertThat(existingUser.getEmailAddress(), isEmptyString());
     assertThat(existingUser.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(existingUser.isPasswordValid(), is(false));
     assertThat(existingUser.getPassword(), isEmptyString());
@@ -183,7 +183,7 @@ public class UserRequestDataTest {
     assertThat(existingUser.getLogin(), nullValue());
     assertThat(existingUser.getLastName(), is("user.lastName"));
     assertThat(existingUser.getFirstName(), is("user.firstName"));
-    assertThat(existingUser.geteMail(), is("user.email"));
+    assertThat(existingUser.getEmailAddress(), is("user.email"));
     assertThat(existingUser.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(existingUser.isPasswordValid(), is(true));
     assertThat(existingUser.getPassword(), is("user.password"));
@@ -199,7 +199,7 @@ public class UserRequestDataTest {
     assertThat(newUser.getLogin(), nullValue());
     assertThat(newUser.getLastName(), isEmptyString());
     assertThat(newUser.getFirstName(), isEmptyString());
-    assertThat(newUser.geteMail(), isEmptyString());
+    assertThat(newUser.getEmailAddress(), isEmptyString());
     assertThat(newUser.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(newUser.getUserManualNotificationUserReceiverLimitValue(), is(5));
     assertThat(newUser.getNotifManualReceiverLimit(), nullValue());
@@ -212,7 +212,7 @@ public class UserRequestDataTest {
     assertThat(newUser.getLogin(), is("user.login"));
     assertThat(newUser.getLastName(), is("user.lastName"));
     assertThat(newUser.getFirstName(), is("user.firstName"));
-    assertThat(newUser.geteMail(), is("user.email"));
+    assertThat(newUser.getEmailAddress(), is("user.email"));
     assertThat(newUser.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(newUser.getUserManualNotificationUserReceiverLimitValue(), is(10));
     assertThat(newUser.getNotifManualReceiverLimit(), is(10));
@@ -228,7 +228,7 @@ public class UserRequestDataTest {
     assertThat(existingUser.getLogin(), nullValue());
     assertThat(existingUser.getLastName(), isEmptyString());
     assertThat(existingUser.getFirstName(), isEmptyString());
-    assertThat(existingUser.geteMail(), isEmptyString());
+    assertThat(existingUser.getEmailAddress(), isEmptyString());
     assertThat(existingUser.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(existingUser.isPasswordValid(), is(false));
     assertThat(existingUser.getPassword(), isEmptyString());
@@ -243,7 +243,7 @@ public class UserRequestDataTest {
     assertThat(existingUser.getLogin(), nullValue());
     assertThat(existingUser.getLastName(), is("user.lastName"));
     assertThat(existingUser.getFirstName(), is("user.firstName"));
-    assertThat(existingUser.geteMail(), is("user.email"));
+    assertThat(existingUser.getEmailAddress(), is("user.email"));
     assertThat(existingUser.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(existingUser.isPasswordValid(), is(true));
     assertThat(existingUser.getPassword(), is("user.password"));
@@ -261,7 +261,7 @@ public class UserRequestDataTest {
     assertThat(newUser.getLogin(), nullValue());
     assertThat(newUser.getLastName(), isEmptyString());
     assertThat(newUser.getFirstName(), isEmptyString());
-    assertThat(newUser.geteMail(), isEmptyString());
+    assertThat(newUser.getEmailAddress(), isEmptyString());
     assertThat(newUser.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(newUser.getUserManualNotificationUserReceiverLimitValue(), is(5));
     assertThat(newUser.getNotifManualReceiverLimit(), nullValue());
@@ -274,7 +274,7 @@ public class UserRequestDataTest {
     assertThat(newUser.getLogin(), is("user.login"));
     assertThat(newUser.getLastName(), is("user.lastName"));
     assertThat(newUser.getFirstName(), is("user.firstName"));
-    assertThat(newUser.geteMail(), is("user.email"));
+    assertThat(newUser.getEmailAddress(), is("user.email"));
     assertThat(newUser.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(newUser.getUserManualNotificationUserReceiverLimitValue(), is(0));
     assertThat(newUser.getNotifManualReceiverLimit(), is(0));
@@ -291,7 +291,7 @@ public class UserRequestDataTest {
     assertThat(existingUser.getLogin(), nullValue());
     assertThat(existingUser.getLastName(), isEmptyString());
     assertThat(existingUser.getFirstName(), isEmptyString());
-    assertThat(existingUser.geteMail(), isEmptyString());
+    assertThat(existingUser.getEmailAddress(), isEmptyString());
     assertThat(existingUser.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(existingUser.isPasswordValid(), is(false));
     assertThat(existingUser.getPassword(), isEmptyString());
@@ -306,7 +306,7 @@ public class UserRequestDataTest {
     assertThat(existingUser.getLogin(), nullValue());
     assertThat(existingUser.getLastName(), is("user.lastName"));
     assertThat(existingUser.getFirstName(), is("user.firstName"));
-    assertThat(existingUser.geteMail(), is("user.email"));
+    assertThat(existingUser.getEmailAddress(), is("user.email"));
     assertThat(existingUser.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(existingUser.isPasswordValid(), is(true));
     assertThat(existingUser.getPassword(), is("user.password"));
@@ -325,7 +325,7 @@ public class UserRequestDataTest {
     assertThat(newAdmin.getLogin(), nullValue());
     assertThat(newAdmin.getLastName(), isEmptyString());
     assertThat(newAdmin.getFirstName(), isEmptyString());
-    assertThat(newAdmin.geteMail(), isEmptyString());
+    assertThat(newAdmin.getEmailAddress(), isEmptyString());
     assertThat(newAdmin.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(newAdmin.getUserManualNotificationUserReceiverLimitValue(), is(0));
     assertThat(newAdmin.getNotifManualReceiverLimit(), nullValue());
@@ -338,7 +338,7 @@ public class UserRequestDataTest {
     assertThat(newAdmin.getLogin(), is("user.login"));
     assertThat(newAdmin.getLastName(), is("user.lastName"));
     assertThat(newAdmin.getFirstName(), is("user.firstName"));
-    assertThat(newAdmin.geteMail(), is("user.email"));
+    assertThat(newAdmin.getEmailAddress(), is("user.email"));
     assertThat(newAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(newAdmin.getUserManualNotificationUserReceiverLimitValue(), is(0));
     assertThat(newAdmin.getNotifManualReceiverLimit(), nullValue());
@@ -354,7 +354,7 @@ public class UserRequestDataTest {
     assertThat(existingAdmin.getLogin(), nullValue());
     assertThat(existingAdmin.getLastName(), isEmptyString());
     assertThat(existingAdmin.getFirstName(), isEmptyString());
-    assertThat(existingAdmin.geteMail(), isEmptyString());
+    assertThat(existingAdmin.getEmailAddress(), isEmptyString());
     assertThat(existingAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(existingAdmin.isPasswordValid(), is(false));
     assertThat(existingAdmin.getPassword(), isEmptyString());
@@ -369,7 +369,7 @@ public class UserRequestDataTest {
     assertThat(existingAdmin.getLogin(), nullValue());
     assertThat(existingAdmin.getLastName(), is("user.lastName"));
     assertThat(existingAdmin.getFirstName(), is("user.firstName"));
-    assertThat(existingAdmin.geteMail(), is("user.email"));
+    assertThat(existingAdmin.getEmailAddress(), is("user.email"));
     assertThat(existingAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(existingAdmin.isPasswordValid(), is(true));
     assertThat(existingAdmin.getPassword(), is("user.password"));
@@ -387,7 +387,7 @@ public class UserRequestDataTest {
     assertThat(newAdmin.getLogin(), nullValue());
     assertThat(newAdmin.getLastName(), isEmptyString());
     assertThat(newAdmin.getFirstName(), isEmptyString());
-    assertThat(newAdmin.geteMail(), isEmptyString());
+    assertThat(newAdmin.getEmailAddress(), isEmptyString());
     assertThat(newAdmin.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(newAdmin.getUserManualNotificationUserReceiverLimitValue(), is(5));
     assertThat(newAdmin.getNotifManualReceiverLimit(), nullValue());
@@ -400,7 +400,7 @@ public class UserRequestDataTest {
     assertThat(newAdmin.getLogin(), is("user.login"));
     assertThat(newAdmin.getLastName(), is("user.lastName"));
     assertThat(newAdmin.getFirstName(), is("user.firstName"));
-    assertThat(newAdmin.geteMail(), is("user.email"));
+    assertThat(newAdmin.getEmailAddress(), is("user.email"));
     assertThat(newAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(newAdmin.getUserManualNotificationUserReceiverLimitValue(), is(0));
     assertThat(newAdmin.getNotifManualReceiverLimit(), nullValue());
@@ -417,7 +417,7 @@ public class UserRequestDataTest {
     assertThat(existingAdmin.getLogin(), nullValue());
     assertThat(existingAdmin.getLastName(), isEmptyString());
     assertThat(existingAdmin.getFirstName(), isEmptyString());
-    assertThat(existingAdmin.geteMail(), isEmptyString());
+    assertThat(existingAdmin.getEmailAddress(), isEmptyString());
     assertThat(existingAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(existingAdmin.isPasswordValid(), is(false));
     assertThat(existingAdmin.getPassword(), isEmptyString());
@@ -432,7 +432,7 @@ public class UserRequestDataTest {
     assertThat(existingAdmin.getLogin(), nullValue());
     assertThat(existingAdmin.getLastName(), is("user.lastName"));
     assertThat(existingAdmin.getFirstName(), is("user.firstName"));
-    assertThat(existingAdmin.geteMail(), is("user.email"));
+    assertThat(existingAdmin.getEmailAddress(), is("user.email"));
     assertThat(existingAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(existingAdmin.isPasswordValid(), is(true));
     assertThat(existingAdmin.getPassword(), is("user.password"));
@@ -451,7 +451,7 @@ public class UserRequestDataTest {
     assertThat(newAdmin.getLogin(), nullValue());
     assertThat(newAdmin.getLastName(), isEmptyString());
     assertThat(newAdmin.getFirstName(), isEmptyString());
-    assertThat(newAdmin.geteMail(), isEmptyString());
+    assertThat(newAdmin.getEmailAddress(), isEmptyString());
     assertThat(newAdmin.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(newAdmin.getUserManualNotificationUserReceiverLimitValue(), is(5));
     assertThat(newAdmin.getNotifManualReceiverLimit(), nullValue());
@@ -464,7 +464,7 @@ public class UserRequestDataTest {
     assertThat(newAdmin.getLogin(), is("user.login"));
     assertThat(newAdmin.getLastName(), is("user.lastName"));
     assertThat(newAdmin.getFirstName(), is("user.firstName"));
-    assertThat(newAdmin.geteMail(), is("user.email"));
+    assertThat(newAdmin.getEmailAddress(), is("user.email"));
     assertThat(newAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(newAdmin.getUserManualNotificationUserReceiverLimitValue(), is(0));
     assertThat(newAdmin.getNotifManualReceiverLimit(), nullValue());
@@ -483,7 +483,7 @@ public class UserRequestDataTest {
     assertThat(existingAdmin.getLogin(), nullValue());
     assertThat(existingAdmin.getLastName(), isEmptyString());
     assertThat(existingAdmin.getFirstName(), isEmptyString());
-    assertThat(existingAdmin.geteMail(), isEmptyString());
+    assertThat(existingAdmin.getEmailAddress(), isEmptyString());
     assertThat(existingAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(existingAdmin.isPasswordValid(), is(false));
     assertThat(existingAdmin.getPassword(), isEmptyString());
@@ -498,7 +498,7 @@ public class UserRequestDataTest {
     assertThat(existingAdmin.getLogin(), nullValue());
     assertThat(existingAdmin.getLastName(), is("user.lastName"));
     assertThat(existingAdmin.getFirstName(), is("user.firstName"));
-    assertThat(existingAdmin.geteMail(), is("user.email"));
+    assertThat(existingAdmin.getEmailAddress(), is("user.email"));
     assertThat(existingAdmin.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(existingAdmin.isPasswordValid(), is(true));
     assertThat(existingAdmin.getPassword(), is("user.password"));

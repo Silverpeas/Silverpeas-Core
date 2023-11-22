@@ -55,7 +55,6 @@ import org.silverpeas.core.test.unit.extention.TestManagedBean;
 import org.silverpeas.core.test.unit.extention.TestManagedBeans;
 import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -112,7 +111,7 @@ class ICal4JExchangeImportTest {
     creator = mock(User.class);
     when(creator.getId()).thenReturn("creatorId");
     when(creator.getDisplayedName()).thenReturn("Creator Test");
-    when(creator.geteMail()).thenReturn("creator.test@silverpeas.org");
+    when(creator.getEmailAddress()).thenReturn("creator.test@silverpeas.org");
     when(UserProvider.get().getUser(creator.getId())).thenReturn(creator);
 
     OperationContext.fromUser("0");
@@ -382,7 +381,7 @@ class ICal4JExchangeImportTest {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
-    when(user.geteMail()).thenReturn("user.test@silverpeas.org");
+    when(user.getEmailAddress()).thenReturn("user.test@silverpeas.org");
     CalendarEvent event = CalendarEventStubBuilder
         .from(Period.between(date("2016-12-14"), date("2016-12-16")))
         .withExternalId("EVENT-UUID-ATTENDEES")
@@ -415,7 +414,7 @@ class ICal4JExchangeImportTest {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
-    when(user.geteMail()).thenReturn("user.test@silverpeas.org");
+    when(user.getEmailAddress()).thenReturn("user.test@silverpeas.org");
     CalendarEvent event = CalendarEventStubBuilder
         .from(Period.between(date("2016-11-30"), date("2016-11-30")))
         .withExternalId("EVENT-UUID-RECURRENCE-ATTENDEES")
@@ -449,7 +448,7 @@ class ICal4JExchangeImportTest {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
-    when(user.geteMail()).thenReturn("user.test@silverpeas.org");
+    when(user.getEmailAddress()).thenReturn("user.test@silverpeas.org");
     when(UserProvider.get().getUser(user.getId())).thenReturn(user);
     final String externalAttendeeId_1 = "external.1@silverpeas.org";
     final String externalAttendeeId_2 = "external.2@silverpeas.org";

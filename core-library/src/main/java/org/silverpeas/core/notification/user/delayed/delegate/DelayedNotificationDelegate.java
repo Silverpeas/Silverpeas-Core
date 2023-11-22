@@ -564,7 +564,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
     notificationData.setTargetChannel(channel.name());
 
     // Set the destination address
-    notificationData.setTargetReceipt(NotifChannel.SMTP.equals(channel) ? receiver.geteMail() :
+    notificationData.setTargetReceipt(NotifChannel.SMTP.equals(channel) ? receiver.getEmailAddress() :
         Integer.toString(syntheses.getUserId()));
 
     // Set the sender name
@@ -576,7 +576,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
     // Set sender in parameters
     notificationData.getTargetParam()
         .put(NotificationParameterNames.FROM.toString(),
-            NotifChannel.SMTP.equals(channel) ? sender.geteMail() : sender.getId());
+            NotifChannel.SMTP.equals(channel) ? sender.getEmailAddress() : sender.getId());
 
     // Set subject parameter
     notificationData.getTargetParam()
@@ -658,7 +658,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
         userDetail = new UserDetail();
         userDetail.setId(Integer.toString(userId));
         userDetail.setLastName(admin.getSilverpeasName());
-        userDetail.seteMail(admin.getSilverpeasEmail());
+        userDetail.setEmailAddress(admin.getSilverpeasEmail());
       }
       if (userDetailCache.size() >= MAX_USER_DETAIL_ITEMS) {
         userDetailCache.remove(userDetailCache.keySet().iterator().next());

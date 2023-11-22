@@ -71,7 +71,7 @@ public abstract class FunctionHandler {
     parameters.setUserName(userDetail.getDisplayedName());
     parameters.setLogin(userDetail.getLogin());
     parameters.setDomainId(userDetail.getDomainId());
-    parameters.setToAddress(userDetail.geteMail());
+    parameters.setToAddress(userDetail.getEmailAddress());
     parameters.setUserLanguage(userDetail.getUserPreferences().getLanguage());
     return parameters;
   }

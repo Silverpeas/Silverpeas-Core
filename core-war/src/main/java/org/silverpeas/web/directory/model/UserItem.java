@@ -82,7 +82,7 @@ public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem
 
   @Override
   public String getMail() {
-    return getUserDetail().geteMail();
+    return getUserDetail().getEmailAddress();
   }
 
   @Override

@@ -281,7 +281,7 @@ public class ICal4JExporter implements ICalendarExporter {
   private Organizer convertOrganizer(final User user) {
     try {
       final Organizer iCalEventOrganizer =
-          isDefined(user.geteMail()) ? new Organizer(MAIL_TO + user.geteMail()) : new Organizer();
+          isDefined(user.getEmailAddress()) ? new Organizer(MAIL_TO + user.getEmailAddress()) : new Organizer();
       iCalEventOrganizer.getParameters().add(new Cn(user.getDisplayedName()));
       return iCalEventOrganizer;
     } catch (URISyntaxException ex) {
@@ -311,8 +311,8 @@ public class ICal4JExporter implements ICalendarExporter {
       if (attendee instanceof InternalAttendee) {
         InternalAttendee internalAttendee = (InternalAttendee) attendee;
         final String displayedName = internalAttendee.getUser().getDisplayedName();
-        iCalEventAttendee = isDefined(internalAttendee.getUser().geteMail()) ?
-            new Attendee(MAIL_TO + internalAttendee.getUser().geteMail()) :
+        iCalEventAttendee = isDefined(internalAttendee.getUser().getEmailAddress()) ?
+            new Attendee(MAIL_TO + internalAttendee.getUser().getEmailAddress()) :
             new Attendee(MAIL_TO + displayedName);
         iCalEventAttendee.getParameters().add(new Cn(displayedName));
       } else {

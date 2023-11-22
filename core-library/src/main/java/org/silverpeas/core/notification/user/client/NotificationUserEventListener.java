@@ -76,7 +76,7 @@ public class NotificationUserEventListener extends CDIResourceEventListener<User
   @Transactional
   public void checkNotificationChannel(UserDetail user) throws SQLException {
     // if user have no email defined, using silvermail by default
-    if (StringUtil.isNotDefined(user.geteMail())) {
+    if (StringUtil.isNotDefined(user.getEmailAddress())) {
       int silverMailChannelId = BuiltInNotifAddress.BASIC_SILVERMAIL.getId();
       var userId = Integer.parseInt(user.getId());
       // check if silvermail channel is used by default in the platform settings

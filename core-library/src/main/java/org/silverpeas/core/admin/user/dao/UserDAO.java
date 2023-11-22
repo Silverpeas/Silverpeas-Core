@@ -95,7 +95,7 @@ public class UserDAO {
         .withInsertParam(FIRST_NAME, user.getFirstName())
         .withInsertParam(LAST_NAME, user.getLastName())
         .withInsertParam("loginMail", "")
-        .withInsertParam("email", user.geteMail())
+        .withInsertParam("email", user.getEmailAddress())
         .withInsertParam(ACCESS_LEVEL, user.getAccessLevel().code())
         .withInsertParam("loginQuestion", user.getLoginQuestion())
         .withInsertParam("loginAnswer", user.getLoginAnswer())
@@ -303,7 +303,7 @@ public class UserDAO {
   public void blankUser(final Connection connection, final UserDetail user) throws SQLException {
     user.setFirstName(BLANK_NAME);
     user.setLastName("");
-    user.seteMail("");
+    user.setEmailAddress("");
     updateUser(connection, user);
   }
 
@@ -322,7 +322,7 @@ public class UserDAO {
         .withUpdateParam(LOGIN, user.getLogin())
         .withUpdateParam(FIRST_NAME, firstName)
         .withUpdateParam(LAST_NAME, user.getLastName())
-        .withUpdateParam("email", user.geteMail())
+        .withUpdateParam("email", user.getEmailAddress())
         .withUpdateParam(ACCESS_LEVEL, user.getAccessLevel().code())
         .withUpdateParam("loginQuestion", user.getLoginQuestion())
         .withUpdateParam("loginAnswer", user.getLoginAnswer())
@@ -567,7 +567,7 @@ public class UserDAO {
     u.setLogin(rs.getString(4));
     u.setFirstName(rs.getString(5));
     u.setLastName(rs.getString(6));
-    u.seteMail(rs.getString(8));
+    u.setEmailAddress(rs.getString(8));
     u.setAccessLevel(UserAccessLevel.fromCode(rs.getString(9)));
     u.setLoginQuestion(rs.getString(10));
     u.setLoginAnswer(rs.getString(11));

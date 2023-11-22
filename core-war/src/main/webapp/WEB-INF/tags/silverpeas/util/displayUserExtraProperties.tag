@@ -94,18 +94,20 @@
 </c:if>
 
 <div class="${listStyle}">
-  <c:if test="${silfn:isDefined(user.eMail) and includeEmail}">
+  <c:if test="${silfn:isDefined(user.emailAddress) and includeEmail}">
     <div class="field" id="email">
       <c:if test="${displayLabels}">
         <label class="txtlibform">${labelEmail}</label>
       </c:if>
-      <div class="champs">${user.eMail}</div>
+      <div class="champs">${user.emailAddress}</div>
     </div>
   </c:if>
   <c:forEach items="${user.propertiesNames}" var="propertyName">
     <c:set var="passwordField" value="${fn:startsWith(propertyName, passwordPrefix)}"/>
     <c:if test="${not passwordField}">
       <c:set var="domainProperty" value="${user.getProperty(propertyName)}"/>
+      <jsp:useBean id="domainProperty"
+                   type="org.silverpeas.core.admin.domain.model.DomainProperty"/>
       <c:set var="propertyValue" value="${user.getValue(propertyName)}"/>
       <c:if test="${(readOnly && not empty propertyValue) || not readOnly}">
       <div class="field" id="${propertyName}">
@@ -167,6 +169,9 @@
               </c:if>
             </c:when>
           </c:choose>
+          <c:if test="${domainProperty.sensitive}">
+            <view:image src="/util/icons/important.gif" alt="important"/>
+          </c:if>
         </div>
       </div>
       </c:if>

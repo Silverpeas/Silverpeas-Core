@@ -4566,8 +4566,8 @@ class DefaultAdministration implements Administration {
     silverpeasUser.setFirstName(distantUser.getFirstName());
     dataUpdated |= !Objects.equals(silverpeasUser.getLastName(), distantUser.getLastName());
     silverpeasUser.setLastName(distantUser.getLastName());
-    dataUpdated |= !Objects.equals(silverpeasUser.geteMail(), distantUser.geteMail());
-    silverpeasUser.seteMail(distantUser.geteMail());
+    dataUpdated |= !Objects.equals(silverpeasUser.getEmailAddress(), distantUser.getEmailAddress());
+    silverpeasUser.setEmailAddress(distantUser.getEmailAddress());
     dataUpdated |= !Objects.equals(silverpeasUser.getLogin(), distantUser.getLogin());
     silverpeasUser.setLogin(distantUser.getLogin());
     if (silverpeasUser.isRemovedState()) {

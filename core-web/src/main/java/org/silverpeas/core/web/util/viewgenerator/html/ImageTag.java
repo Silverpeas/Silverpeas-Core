@@ -104,35 +104,32 @@ public class ImageTag extends SimpleTagSupport {
   }
 
   public String generateHtml() {
-    String imageSrc = "";
-    if (StringUtil.isDefined(getSrc())) {
-      imageSrc = getSrc().trim();
-    }
-    String cssClass = getCss();
-    String id = getId();
-    String type = getType();
-    if (!imageSrc.contains("/jsp/") && !imageSrc.contains("/icons/")) {
+    String imgSrc = StringUtil.isDefined(getSrc()) ? getSrc().trim() : "";
+    String imgCssClass = getCss();
+    String imgId = getId();
+    String imgType = getType();
+    if (!imgSrc.contains("/jsp/") && !imgSrc.contains("/icons/")) {
       String imageSize = getSize();
-      if (!StringUtil.isDefined(imageSize) && StringUtil.isDefined(type)) {
-        imageSize = settings.getString(IMAGE_SIZE_KEY_PREFIX + type.trim());
+      if (!StringUtil.isDefined(imageSize) && StringUtil.isDefined(imgType)) {
+        imageSize = settings.getString(IMAGE_SIZE_KEY_PREFIX + imgType.trim());
       }
-      imageSrc = FileServerUtils.getImageURL(imageSrc, imageSize);
+      imgSrc = FileServerUtils.getImageURL(imgSrc, imageSize);
     }
-    if (!imageSrc.startsWith(getWebContext())) {
-      imageSrc = getWebContext() + imageSrc;
+    if (!imgSrc.startsWith(getWebContext())) {
+      imgSrc = getWebContext() + imgSrc;
     }
-    img img = new img(imageSrc);
+    img img = new img(imgSrc);
     img.setAlt(getAlt());
 
-    if (!StringUtil.isDefined(cssClass)) {
-      if (StringUtil.isDefined(type)) {
-        img.setClass(type);
+    if (!StringUtil.isDefined(imgCssClass)) {
+      if (StringUtil.isDefined(imgType)) {
+        img.setClass(imgType);
       }
     } else {
-      img.setClass(cssClass);
+      img.setClass(imgCssClass);
     }
-    if (StringUtil.isDefined(id)) {
-      img.setID(id);
+    if (StringUtil.isDefined(imgId)) {
+      img.setID(imgId);
     }
     return img.toString();
   }

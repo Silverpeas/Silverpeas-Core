@@ -66,7 +66,7 @@ public class UserIndexation {
             OBJECT_TYPE, userId));
         indexEntry.setLastModificationDate(new Date());
         indexEntry.setTitle(user.getDisplayedName());
-        indexEntry.setPreview(user.geteMail());
+        indexEntry.setPreview(user.getEmailAddress());
         indexEntry.addTextContent(StringUtil.normalizeByRemovingAccent(user.getDisplayedName()));
 
         // index some usefull informations

@@ -137,7 +137,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
       theModifiedUser.setLastName(userLastName);
       theModifiedUser.setFirstName(userFirstName);
-      theModifiedUser.seteMail(userEMail);
+      theModifiedUser.setEmailAddress(userEMail);
       theModifiedUser.setLoginQuestion(userLoginQuestion);
       theModifiedUser.setLoginAnswer(userLoginAnswer);
       // the user didn't set a new password, so no need to change it

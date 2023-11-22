@@ -49,13 +49,13 @@ public class ForgottenPasswordMailManager {
 
   public void sendErrorMail(ForgottenPasswordMailParameters parameters) {
     User admin = User.getMainAdministrator();
-    parameters.setToAddress(admin.geteMail());
+    parameters.setToAddress(admin.getEmailAddress());
     sendMail(parameters, PREFIX_ERROR);
   }
 
   public void sendAdminMail(ForgottenPasswordMailParameters parameters) {
     User admin = User.getMainAdministrator();
-    parameters.setToAddress(admin.geteMail());
+    parameters.setToAddress(admin.getEmailAddress());
     sendMail(parameters, PREFIX_ADMIN);
   }
 

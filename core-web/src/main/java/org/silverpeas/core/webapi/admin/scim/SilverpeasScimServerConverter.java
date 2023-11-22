@@ -72,7 +72,7 @@ class SilverpeasScimServerConverter {
     final String email = scimUser.getPrimaryEmailAddress()
         .map(Email::getValue)
         .orElse(scimUser.getUserName());
-    user.seteMail(email);
+    user.setEmailAddress(email);
     user.setPassword(scimUser.getPassword());
     if (!user.isRemovedState()) {
       if (scimUser.getActive()) {
@@ -100,11 +100,11 @@ class SilverpeasScimServerConverter {
       final UserDetail user = (UserDetail) genericUser;
       scimUser.setExternalId(user.getSpecificId());
       scimUser.setUserName(user.getLogin());
-      if (isDefined(user.geteMail()) && !user.getLogin().equals(user.geteMail())) {
+      if (isDefined(user.getEmailAddress()) && !user.getLogin().equals(user.getEmailAddress())) {
         // putting an email if it exist an other one different from the user name
         scimUser.setEmails(new ArrayList<>(1));
         final Email email = new Email();
-        email.setValue(user.geteMail());
+        email.setValue(user.getEmailAddress());
         email.setPrimary(true);
         scimUser.getEmails().add(email);
       }
