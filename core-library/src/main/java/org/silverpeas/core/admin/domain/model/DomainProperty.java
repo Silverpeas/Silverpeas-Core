@@ -32,8 +32,8 @@ public class DomainProperty {
 
   public static final int DEFAULT_MAX_LENGTH = 50;
 
-  public static final String PROPERTY_UPDATEALLOWED_ADMIN = "A";
-  public static final String PROPERTY_UPDATEALLOWED_USER = "U";
+  public static final String PROPERTY_UPDATE_ALLOWED_ADMIN = "A";
+  public static final String PROPERTY_UPDATE_ALLOWED_USER = "U";
   public static final String PROPERTY_UPDATE_NOT_ALLOWED = "N";
   private static final String PROPERTY = "property_";
 
@@ -41,6 +41,7 @@ public class DomainProperty {
   private String type = PROPERTY_TYPE_STRING;
   private int maxLength = DEFAULT_MAX_LENGTH;
   private String mapParameter = null;
+  private boolean sensitiveProp;
   private boolean usedToImport = false;
   private String redirectOU = null;
   private String redirectAttribute = null;
@@ -52,25 +53,26 @@ public class DomainProperty {
   public DomainProperty() {
   }
 
-  public DomainProperty(SettingBundle rs, String num) {
+  public DomainProperty(SettingBundle rs, int num) {
     String s;
-
-    name = rs.getString(PROPERTY + num + ".Name");
+    String propPrefix = PROPERTY + num;
+    name = rs.getString(propPrefix + ".Name");
     type = PROPERTY_TYPE_STRING;
-    s = rs.getString(PROPERTY + num + ".Type");
-    if ((s != null) && (s.length() > 0)) {
+    s = rs.getString(propPrefix + ".Type");
+    if ((s != null) && (!s.isEmpty())) {
       if (s.equalsIgnoreCase(PROPERTY_TYPE_USERID)) {
         type = PROPERTY_TYPE_USERID;
       } else if (s.equalsIgnoreCase(PROPERTY_TYPE_BOOLEAN)) {
         type = PROPERTY_TYPE_BOOLEAN;
       }
     }
-    maxLength = rs.getInteger(PROPERTY + num + ".MaxLength", DEFAULT_MAX_LENGTH);
-    mapParameter = rs.getString(PROPERTY + num + ".MapParameter", null);
-    usedToImport = rs.getBoolean(PROPERTY + num + ".UsedToImport", false);
-    redirectOU = rs.getString(PROPERTY + num + ".RedirectOU", null);
-    redirectAttribute = rs.getString(PROPERTY + num + ".RedirectAttribute", null);
-    updateAllowedTo = rs.getString(PROPERTY + num + ".UpdateAllowedTo",
+    maxLength = rs.getInteger(propPrefix + ".MaxLength", DEFAULT_MAX_LENGTH);
+    mapParameter = rs.getString(propPrefix + ".MapParameter", null);
+    sensitiveProp = rs.getBoolean(propPrefix + ".Sensitive", false);
+    usedToImport = rs.getBoolean(propPrefix + ".UsedToImport", false);
+    redirectOU = rs.getString(propPrefix + ".RedirectOU", null);
+    redirectAttribute = rs.getString(propPrefix + ".RedirectAttribute", null);
+    updateAllowedTo = rs.getString(propPrefix + ".UpdateAllowedTo",
         PROPERTY_UPDATE_NOT_ALLOWED);
   }
 
@@ -106,6 +108,10 @@ public class DomainProperty {
     return mapParameter;
   }
 
+  public boolean isSensitive() {
+    return sensitiveProp;
+  }
+
   public boolean isUsedToImport() {
     return usedToImport;
   }
@@ -135,11 +141,11 @@ public class DomainProperty {
   }
 
   public boolean isUpdateAllowedToUser() {
-    return PROPERTY_UPDATEALLOWED_USER.equalsIgnoreCase(updateAllowedTo);
+    return PROPERTY_UPDATE_ALLOWED_USER.equalsIgnoreCase(updateAllowedTo);
   }
 
   public boolean isUpdateAllowedToAdmin() {
-    return PROPERTY_UPDATEALLOWED_ADMIN.equalsIgnoreCase(updateAllowedTo);
+    return PROPERTY_UPDATE_ALLOWED_ADMIN.equalsIgnoreCase(updateAllowedTo);
   }
 
 }

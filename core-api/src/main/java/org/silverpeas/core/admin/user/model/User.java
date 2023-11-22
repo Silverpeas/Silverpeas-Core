@@ -152,7 +152,7 @@ public interface User extends Serializable, Comparable<User> {
    * Gets the user email.
    * @return user email as string.
    */
-  String geteMail();
+  String getEmailAddress();
 
   /**
    * Gets the date of the user creation.

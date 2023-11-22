@@ -277,7 +277,7 @@ public class UserManager {
         usersInDomain[i++] = u;
         SynchroDomainReport.debug(USERMANAGER_SYNCHRO_REPORT + usersOfDomain,
             "Utilisateur trouvé no : " + i + ", login : " + u.getLogin() + ", " + u.getFirstName() +
-                ", " + u.getLastName() + ", " + u.geteMail());
+                ", " + u.getLastName() + ", " + u.getEmailAddress());
       }
       SynchroDomainReport.debug(USERMANAGER_SYNCHRO_REPORT + usersOfDomain,
           "Récupération de " + users.size() + " utilisateurs du domaine dans la base");

@@ -95,7 +95,7 @@ class DefaultAdministrationTest {
   void mergeDistantUserIntoSilverpeasUserWithEmailChange() {
     final UserDetail user1 = aUser(1);
     final UserDetail user2 = aUser(1);
-    user2.seteMail("newEmail");
+    user2.setEmailAddress("newEmail");
     final boolean dataChanged = mergeDistantUserIntoSilverpeasUser(user1, user2);
     assertThat(dataChanged, is(true));
   }
@@ -125,7 +125,7 @@ class DefaultAdministrationTest {
     user2.setSpecificId("newSpecificId");
     user2.setFirstName("newFirstName");
     user2.setLastName("newLastName");
-    user2.seteMail("newEmail");
+    user2.setEmailAddress("newEmail");
     user2.setLogin("newLogin");
     user2.setState(UserState.BLOCKED);
     final boolean dataChanged = mergeDistantUserIntoSilverpeasUser(user1, user2);
@@ -209,7 +209,7 @@ class DefaultAdministrationTest {
     user.setSpecificId("specificId_" + i);
     user.setLastName("LastName_" + i);
     user.setFirstName("FirstName_" + i);
-    user.seteMail("email_" + i);
+    user.setEmailAddress("email_" + i);
     user.setLogin("login_" + i);
     user.setState(UserState.VALID);
     return user;

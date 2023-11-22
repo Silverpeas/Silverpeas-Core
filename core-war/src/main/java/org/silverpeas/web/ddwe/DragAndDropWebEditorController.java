@@ -235,7 +235,7 @@ public class DragAndDropWebEditorController extends
       final String currentFileContent = getTemporaryContent(e).getInlinedHtml();
       final LocalizationBundle multilang = context.getMultilang();
       try {
-        final MailAddress me = eMail(context.getUser().geteMail());
+        final MailAddress me = eMail(context.getUser().getEmailAddress());
         WysiwygContentTransformer.on(currentFileContent)
             .toMailContent()
             .prepareMailSendingFrom(me)

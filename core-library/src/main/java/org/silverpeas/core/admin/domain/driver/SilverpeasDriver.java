@@ -139,7 +139,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     oldUser.setFirstname(userFull.getFirstName());
     oldUser.setLastname(userFull.getLastName());
     oldUser.setLogin(userFull.getLogin());
-    oldUser.setEmail(userFull.geteMail());
+    oldUser.setEmail(userFull.getEmailAddress());
 
     oldUser.setTitle(userFull.getValue(TITLE));
     oldUser.setCompany(userFull.getValue(COMPANY));
@@ -225,7 +225,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
         userFull.setValue(CELLULAR_PHONE, u.getCellphone());
         userFull.setValue(ADDRESS, u.getAddress());
         userFull.setLogin(u.getLogin());
-        userFull.seteMail(u.getEmail());
+        userFull.setEmailAddress(u.getEmail());
         userFull.setPassword(u.getPassword());
         userFull.setPasswordValid(u.isPasswordValid());
         userFull.setPasswordAvailable(true);
@@ -497,7 +497,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     user.setFirstname(detail.getFirstName());
     user.setLastname(detail.getLastName());
     user.setLogin(detail.getLogin());
-    user.setEmail(detail.geteMail());
+    user.setEmail(detail.getEmailAddress());
     return user;
   }
 
@@ -506,7 +506,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     detail.setFirstName(user.getFirstname());
     detail.setLastName(user.getLastname());
     detail.setLogin(user.getLogin());
-    detail.seteMail(user.getEmail());
+    detail.setEmailAddress(user.getEmail());
     return detail;
   }
 

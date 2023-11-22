@@ -96,7 +96,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
     user.setId("-1");
     user.setFirstName(firstName);
     user.setLastName(lastName);
-    user.seteMail(email);
+    user.setEmailAddress(email);
     user.setLogin(login);
     user.setDomainId(domainId);
     user.setAccessLevel(accessLevel);

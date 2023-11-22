@@ -713,7 +713,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
         destination =
             getParsedDestination(destination, s_sUserEmail, m_MainSessionCtrl.
             getCurrentUserDetail().
-            geteMail());
+                getEmailAddress());
         destination =
             getParsedDestination(destination, s_sUserFirstName,
             URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getFirstName(), "UTF-8"));

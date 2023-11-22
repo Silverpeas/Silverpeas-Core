@@ -78,29 +78,29 @@ class GoogleDriverTest {
 
     assertThat(allUsers[0].getLogin(), is(allGoogleUsers.get(0).getPrimaryEmail()));
     assertThat(allUsers[0].getLogin(), not(is("a@a.a")));
-    assertThat(allUsers[0].geteMail(), is("a@a.a"));
+    assertThat(allUsers[0].getEmailAddress(), is("a@a.a"));
     assertThat(allUsers[0].isValidState(), is(true));
 
     assertThat(allUsers[2].getLogin(), is(allGoogleUsers.get(2).getPrimaryEmail()));
-    assertThat(allUsers[2].geteMail(), is(allGoogleUsers.get(2).getPrimaryEmail()));
+    assertThat(allUsers[2].getEmailAddress(), is(allGoogleUsers.get(2).getPrimaryEmail()));
     assertThat(allUsers[2].isValidState(), is(true));
 
     assertThat(allUsers[5].getLogin(), is(allGoogleUsers.get(5).getPrimaryEmail()));
-    assertThat(allUsers[5].geteMail(), is(allGoogleUsers.get(5).getPrimaryEmail()));
+    assertThat(allUsers[5].getEmailAddress(), is(allGoogleUsers.get(5).getPrimaryEmail()));
     assertThat(allUsers[5].isValidState(), is(true));
 
     assertThat(allUsers[6].getLogin(), is(allGoogleUsers.get(6).getPrimaryEmail()));
     assertThat(allUsers[6].getLogin(), not(is("g@g.g")));
-    assertThat(allUsers[6].geteMail(), is("g@g.g"));
+    assertThat(allUsers[6].getEmailAddress(), is("g@g.g"));
     assertThat(allUsers[6].isDeactivatedState(), is(true));
 
     assertThat(allUsers[7].getLogin(), is(allGoogleUsers.get(7).getPrimaryEmail()));
     assertThat(allUsers[7].getLogin(), not(is("hh@hh.hh")));
-    assertThat(allUsers[7].geteMail(), is("hh@hh.hh"));
+    assertThat(allUsers[7].getEmailAddress(), is("hh@hh.hh"));
     assertThat(allUsers[7].isValidState(), is(true));
 
     assertThat(allUsers[9].getLogin(), is(allGoogleUsers.get(9).getPrimaryEmail()));
-    assertThat(allUsers[9].geteMail(), is(allGoogleUsers.get(9).getPrimaryEmail()));
+    assertThat(allUsers[9].getEmailAddress(), is(allGoogleUsers.get(9).getPrimaryEmail()));
     assertThat(allUsers[9].isDeactivatedState(), is(true));
   }
 

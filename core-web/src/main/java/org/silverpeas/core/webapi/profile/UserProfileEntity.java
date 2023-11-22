@@ -170,8 +170,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   @Override
   @XmlElement
-  public String geteMail() {
-    return Encode.forHtml(this.user.geteMail());
+  public String getEmailAddress() {
+    return Encode.forHtml(this.user.getEmailAddress());
   }
 
   @Override
@@ -237,8 +237,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   @Override
-  public void seteMail(String seMail) {
-    this.user.seteMail(seMail);
+  public void setEmailAddress(String emailAddress) {
+    this.user.setEmailAddress(emailAddress);
   }
 
   public void setDeletedState(boolean deletedState) {

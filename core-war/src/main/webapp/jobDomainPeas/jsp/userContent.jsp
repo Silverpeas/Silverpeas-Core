@@ -57,14 +57,14 @@
 <c:set var="userInfos" value="${requestScope.userObject}" />
 <jsp:useBean id="userInfos" type="org.silverpeas.core.admin.user.model.UserDetail"/>
 <c:set var="listIndex" value="${requestScope.Index}" />
-
+<jsp:useBean id="listIndex" type="org.silverpeas.core.web.util.ListIndex"/>
 <c:set var="lastName" value="${userInfos.lastName}" />
 <c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>
 <c:set var="firstName" value="${userInfos.firstName}" />
 <c:set var="displayedFirstName"><view:encodeHtml string="${firstName}" /></c:set>
 <c:set var="firstName" value="${userInfos.firstName}" />
 <c:set var="displayedFirstName"><view:encodeHtml string="${firstName}" /></c:set>
-<c:set var="email" value="${userInfos.eMail}" />
+<c:set var="email" value="${userInfos.emailAddress}" />
 <c:set var="displayedEmail"><view:encodeHtml string="${email}" /></c:set>
 <c:set var="login" value="${userInfos.login}" />
 <c:set var="displayedLogin"><view:encodeHtml string="${login}" /></c:set>
@@ -75,7 +75,7 @@
 <fmt:message key="JDP.userDelConfirmHelp" var="userDelConfirmMessageHelp"/>
 
 <c:set var="userObject" value="${requestScope.userObject}" />
-<jsp:useBean id="userObject" type="org.silverpeas.core.admin.user.model.UserDetail"/>
+<jsp:useBean id="userObject" type="org.silverpeas.core.admin.user.model.UserFull"/>
 <c:set var="isUserFull" value="<%=userObject instanceof UserFull%>" />
 <jsp:useBean id="isUserFull" type="java.lang.Boolean"/>
 <c:set var="userGroups" value="${requestScope.UserGroups}" />
@@ -108,7 +108,7 @@
         "domainContent?Iddomain=" + domObject.getId());
   }
 
-  if (groupsPath != null && groupsPath.length() > 0) {
+  if (groupsPath != null && !groupsPath.isEmpty()) {
     browseBar.setPath(groupsPath);
   }
 
@@ -201,7 +201,7 @@
 <view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
   <view:includePlugin name="popup"/>
   <view:includePlugin name="qtip"/>
-  <style type="text/css">
+  <style>
     #deletionFormDialog .complement {
       display: flex;
       padding-top: 5px;
@@ -256,7 +256,7 @@
       larg = "800";
       haut = "800";
       windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-      if (!componentWindow.closed && componentWindow.name == "componentWindow") {
+      if (!componentWindow.closed && componentWindow.name === "componentWindow") {
         componentWindow.close();
       }
       componentWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
@@ -408,7 +408,13 @@ out.println(window.printBefore());
           </c:if>
           <div class="domain"><img class="img-label" src="../../util/icons/component/domainSmall.gif" alt="Domaine" title="Domaine"  />${userInfos.domain.name}</div>
           <div class="access"> <span class="login"><img class="img-label" src="../../util/icons/Login.gif" alt="<fmt:message key="GML.login"/>" title="<fmt:message key="GML.login"/>" />${displayedLogin}</span></div>
-          <div class="email"><img  class="img-label" src="../../admin/jsp/icons/icoOutilsMail.gif" alt="Login" title="Login" /> <a href="mailto:${displayedEmail}">${displayedEmail}</a></div>
+          <div class="email">
+            <img  class="img-label" src="../../admin/jsp/icons/icoOutilsMail.gif" alt="Login" title="Login" />
+            <a href="mailto:${displayedEmail}">${displayedEmail}</a>
+            <c:if test="${userInfos.sensitiveEmail}">
+              <view:image src="/util/icons/important.gif" alt="important"/>
+            </c:if>
+          </div>
           <div class="language"><img  class="img-label" src="../../util/icons/talk2user.gif" alt="<fmt:message key="JDP.userPreferredLanguage"/>" title="<fmt:message key="JDP.userPreferredLanguage"/>" /><viewTags:userPreferredLanguageSelector user="${userInfos}" readOnly="true"/></div>
           <div class="user-zone-id"><img  class="img-label" src="../../util/icons/time-zone.png" alt="<fmt:message key="JDP.userPreferredZoneId"/>" title="<fmt:message key="JDP.userPreferredZoneId"/>" /><viewTags:userPreferredZoneIdSelector user="${userInfos}" readOnly="true"/></div>
         </div>

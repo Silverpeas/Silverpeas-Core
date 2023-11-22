@@ -120,7 +120,7 @@ public class LDAPUser {
       SynchroDomainReport.debug(LDAPUSER_GET_ALL_USERS,
           "Utilisateur trouvé no : " + i + ", login : " + ldapUsers.get(i).getLogin() + ", " +
               ldapUsers.get(i).getFirstName() + ", " + ldapUsers.get(i).getLastName() + ", " +
-              ldapUsers.get(i).geteMail());
+              ldapUsers.get(i).getEmailAddress());
     }
     SynchroDomainReport.debug(LDAPUSER_GET_ALL_USERS,
         "Récupération de " + theEntries.length + " utilisateurs du domaine LDAP distant");
@@ -246,8 +246,10 @@ public class LDAPUser {
         getFirstAttributeValue(ldapUser, driverSettings.getUsersFirstNameField()));
     silverpeasDistantUser.setLastName(
         getFirstAttributeValue(ldapUser, driverSettings.getUsersLastNameField()));
-    silverpeasDistantUser.seteMail(
+    silverpeasDistantUser.setEmailAddress(
         getFirstAttributeValue(ldapUser, driverSettings.getUsersEmailField()));
+    silverpeasDistantUser.setSensitiveEmail(driverSettings.isUsersSensitiveEmail());
+
     silverpeasDistantUser.setAccessLevel(null); // Put the default access level (user)...
   }
 
@@ -370,7 +372,7 @@ public class LDAPUser {
       throw new AdminException(undefined("LDAP user entry"));
     }
 
-    // Set the AdminUser informations
+    // Set the AdminUser information
     translateCommonUserData(userEntry, userInfos);
 
     synchroCache.addUser(userEntry);

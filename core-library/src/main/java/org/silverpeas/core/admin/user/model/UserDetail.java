@@ -93,6 +93,7 @@ public class UserDetail implements User {
   private String firstName = "";
   private String lastName = "";
   private String eMail = "";
+  private boolean sensitiveEmail = false;
   private UserAccessLevel accessLevel = UserAccessLevel.from(null);
   private String loginQuestion = "";
   private String loginAnswer = "";
@@ -167,7 +168,7 @@ public class UserDetail implements User {
     login = toClone.getLogin();
     firstName = toClone.getFirstName();
     lastName = toClone.getLastName();
-    eMail = toClone.geteMail();
+    eMail = toClone.getEmailAddress();
     accessLevel = toClone.getAccessLevel();
     loginQuestion = toClone.getLoginQuestion();
     loginAnswer = toClone.getLoginAnswer();
@@ -181,6 +182,7 @@ public class UserDetail implements User {
     expirationDate = toClone.getExpirationDate();
     state = toClone.getState();
     stateSaveDate = toClone.getStateSaveDate();
+    sensitiveEmail = toClone.isSensitiveEmail();
   }
 
   /**
@@ -382,7 +384,7 @@ public class UserDetail implements User {
 
   /**
    * Set user domain id
-   * @param domainId the identifier of the user domain.
+   * @param domainId the unique identifier of the user domain he belongs to.
    */
   public void setDomainId(String domainId) {
     this.domainId = domainId;
@@ -450,15 +452,23 @@ public class UserDetail implements User {
 
   /**
    * Set user's email
-   * @param seMail the user email address.
+   * @param emailAddress the email address of the user.
    */
-  public void seteMail(String seMail) {
-    this.eMail = Objects.requireNonNullElse(seMail, "");
+  public void setEmailAddress(String emailAddress) {
+    this.eMail = Objects.requireNonNullElse(emailAddress, "");
   }
 
   @Override
-  public String geteMail() {
+  public String getEmailAddress() {
     return this.eMail;
+  }
+
+  public boolean isSensitiveEmail() {
+    return sensitiveEmail;
+  }
+
+  public void setSensitiveEmail(boolean sensitiveEmail) {
+    this.sensitiveEmail = sensitiveEmail;
   }
 
   @Override
@@ -472,7 +482,6 @@ public class UserDetail implements User {
    */
   public void setAccessLevel(UserAccessLevel accessLevel) {
     this.accessLevel = Objects.requireNonNullElse(accessLevel, UserAccessLevel.USER);
-
   }
 
   /**
@@ -608,6 +617,12 @@ public class UserDetail implements User {
     return anonymousUser;
   }
 
+  /**
+   * Gets the API token of the user. Each user in Silverpeas has a token with which he can
+   * access some services or web resources available out of Silverpeas; the token serves to
+   * authenticate and to identify him among those services or web resources in order to use them.
+   * @return the API token of the user.
+   */
   public String getToken() {
     try {
       UserReference ref = UserReference.fromUser(this);
@@ -627,7 +642,7 @@ public class UserDetail implements User {
           areStringEquals(login, cmpUser.getLogin()) &&
           areStringEquals(firstName, cmpUser.getFirstName()) &&
           areStringEquals(lastName, cmpUser.getLastName()) &&
-          areStringEquals(eMail, cmpUser.geteMail()) &&
+          areStringEquals(eMail, cmpUser.getEmailAddress()) &&
           accessLevel.equals(cmpUser.getAccessLevel());
     }
     return false;

@@ -72,7 +72,7 @@ public class SQLUserTable {
       statement.setInt(1, nextId);
       statement.setString(2, drvSettings.trunc(user.getFirstName(), 100));
       statement.setString(3, drvSettings.trunc(user.getLastName(), 100));
-      statement.setString(4, drvSettings.trunc(user.geteMail(), 100));
+      statement.setString(4, drvSettings.trunc(user.getEmailAddress(), 100));
       statement.setString(5, drvSettings.trunc(user.getLogin(), 50));
       statement.executeUpdate();
       return nextId;
@@ -103,7 +103,7 @@ public class SQLUserTable {
     try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
       statement.setString(1, drvSettings.trunc(ud.getFirstName(), 100));
       statement.setString(2, drvSettings.trunc(ud.getLastName(), 100));
-      statement.setString(3, drvSettings.trunc(ud.geteMail(), 100));
+      statement.setString(3, drvSettings.trunc(ud.getEmailAddress(), 100));
       statement.setString(4, drvSettings.trunc(ud.getLogin(), 50));
       statement.setInt(5, Integer.parseInt(ud.getSpecificId()));
       statement.executeUpdate();
@@ -341,7 +341,7 @@ public class SQLUserTable {
     u.setSpecificId(Integer.toString(rs.getInt(1)));
     u.setFirstName(rs.getString(2));
     u.setLastName(rs.getString(3));
-    u.seteMail(rs.getString(4));
+    u.setEmailAddress(rs.getString(4));
     u.setLogin(rs.getString(5));
     u.setAccessLevel(UserAccessLevel.USER);
     return u;

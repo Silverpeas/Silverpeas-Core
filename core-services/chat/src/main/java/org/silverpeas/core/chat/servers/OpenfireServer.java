@@ -79,8 +79,8 @@ public class OpenfireServer implements ChatServer {
         o.put("username", chatUser.getChatLogin())
             .put("password", chatUser.getChatPassword())
             .put("name", chatUser.getDisplayedName());
-        if (StringUtil.isDefined(chatUser.geteMail())) {
-          o.put("email", chatUser.geteMail());
+        if (StringUtil.isDefined(chatUser.getEmailAddress())) {
+          o.put("email", chatUser.getEmailAddress());
         }
         return o;
       });

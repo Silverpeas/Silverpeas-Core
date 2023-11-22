@@ -122,7 +122,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
       request.setAttribute("isThatUserMustFillEmailAddressOnFirstLogin",
           isThatUserMustFillEmailAddressOnFirstLogin);
       if (isThatUserMustFillEmailAddressOnFirstLogin && getUser() != null) {
-        request.setAttribute("emailAddress", getUser().geteMail());
+        request.setAttribute("emailAddress", getUser().getEmailAddress());
       }
     }
     return otherSettings.getString("passwordChangeOnFirstLoginURL") + "?ErrorCode=" + errorCode;

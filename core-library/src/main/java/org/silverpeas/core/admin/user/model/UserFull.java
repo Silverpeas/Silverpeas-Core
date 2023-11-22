@@ -40,7 +40,7 @@ import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 public class UserFull extends UserDetail {
 
   private static final long serialVersionUID = 1L;
-  private HashMap<String, String> infos = null;
+  private final HashMap<String, String> infos;
   private transient DomainDriver domainDriver = null;
   private String password = "";
   private boolean isPasswordValid = false;
@@ -151,7 +151,7 @@ public class UserFull extends UserDetail {
     if (domainDriver != null) {
       return domainDriver.getPropertiesLabels(language);
     }
-    return null;
+    return Map.of();
   }
 
   public String getSpecificLabel(String language, String propertyName) {

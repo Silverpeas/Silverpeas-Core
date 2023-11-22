@@ -252,7 +252,7 @@ out.println(board.printBefore());
 
 		ArrayCellLink cell = line.addArrayCellLink(user.getLastName(), "javaScript:viewUser('"+user.getSpecificId()+"');");
 		line.addArrayCellText(user.getFirstName());
-		line.addArrayCellText(user.geteMail());
+		line.addArrayCellText(user.getEmailAddress());
 		line.addArrayCellText(user.getLogin());
 		line.addArrayCellText("<input type=\"checkbox\" "+usedCheck+" name=\"specificIds\" value=\""+user.getSpecificId()+"\"/>");
         }

@@ -167,7 +167,7 @@ public class SCIMDriver extends AbstractDomainDriver {
   @Transactional(Transactional.TxType.MANDATORY)
   public List<UserDetail> listUsers(final Collection<String> specificIds) throws AdminException {
     final List<UserDetail> users = userManager
-        .getUsersBySpecificIdsAndDomainId(specificIds, String.valueOf(domainId));
+        .getUsersBySpecificIdsAndDomainId(specificIds, String.valueOf(getDomainId()));
     if (users.size() != specificIds.size()) {
       throw new AdminException("not enough or too many users referenced to same identifier");
     }
@@ -199,7 +199,7 @@ public class SCIMDriver extends AbstractDomainDriver {
   @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail[] getAllUsers() throws AdminException {
     // In this driver, returning silverpeas data
-    return userManager.getAllUsersInDomain(String.valueOf(domainId), false);
+    return userManager.getAllUsersInDomain(String.valueOf(getDomainId()), false);
   }
 
   @Override

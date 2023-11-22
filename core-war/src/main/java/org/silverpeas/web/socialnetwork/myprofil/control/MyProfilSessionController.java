@@ -142,7 +142,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
       theModifiedUser.setLastName(userLastName);
       theModifiedUser.setFirstName(userFirstName);
-      theModifiedUser.seteMail(userEMail);
+      theModifiedUser.setEmailAddress(userEMail);
       theModifiedUser.setLoginQuestion(userLoginQuestion);
       theModifiedUser.setLoginAnswer(userLoginAnswer);
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas

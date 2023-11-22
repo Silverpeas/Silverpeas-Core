@@ -183,13 +183,13 @@ public class LDAPUtility {
    * values, only the first is returned
    *
    * @param theEntry the LDAP entry
-   * @param attributeName the name of the attribute to retreive
+   * @param attributeName the name of the attribute to retrieve
    * @return the first value as a string
    */
   public static String getFirstAttributeValue(LDAPEntry theEntry, String attributeName) {
-    String[] stringVals = getAttributeValues(theEntry, attributeName);
-    if (stringVals != null && stringVals.length > 0) {
-      return stringVals[0];
+    String[] values = getAttributeValues(theEntry, attributeName);
+    if (values != null && values.length > 0) {
+      return values[0];
     }
     return "";
   }

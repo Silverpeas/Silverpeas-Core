@@ -434,7 +434,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
     // Add code here in order to send an email notification
     if (userRequestData.isPasswordValid() && userRequestData.isSendEmail() &&
-        isDefined(user.geteMail()) &&
+        isDefined(user.getEmailAddress()) &&
         isDefined(userRequestData.getPassword())) {
 
       // Send an email notification
@@ -2181,7 +2181,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     for (UserDetail existingUser : existingUsers) {
       if (userToCheck.getLastName().equalsIgnoreCase(existingUser.getLastName())
           && userToCheck.getFirstName().equalsIgnoreCase(existingUser.getFirstName())
-          && userToCheck.geteMail().equalsIgnoreCase(existingUser.geteMail())) {
+          && userToCheck.getEmailAddress().equalsIgnoreCase(existingUser.getEmailAddress())) {
         return existingUser;
       }
     }

@@ -313,7 +313,7 @@ class ChatUserRegistrationTest {
     user.setLogin(firstName + "." + lastName);
     user.setFirstName(firstName);
     user.setLastName(lastName);
-    user.seteMail(user.getLogin() + "@silverpeas.org");
+    user.setEmailAddress(user.getLogin() + "@silverpeas.org");
     when(userProvider.getUser(id)).thenReturn(user);
     return user;
   }

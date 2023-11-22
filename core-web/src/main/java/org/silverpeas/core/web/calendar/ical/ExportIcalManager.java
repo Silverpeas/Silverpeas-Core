@@ -238,7 +238,7 @@ public class ExportIcalManager {
         UserDetail user = OrganizationControllerProvider
             .getOrganisationController().getUserDetail(attendee.getUserId());
         if (user != null) {
-          String email = user.geteMail();
+          String email = user.getEmailAddress();
           if (StringUtil.isDefined(email)) {
             event.getAttendees().add(email);
           }

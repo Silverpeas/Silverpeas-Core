@@ -106,7 +106,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    */
   @Override
   public long getDriverActions() {
-    if (x509Enabled) {
+    if (isX509Enabled()) {
       return ACTION_MASK_RO | ACTION_X509_USER | ACTION_UPDATE_USER;
     } else {
       return ACTION_MASK_RO | ACTION_UPDATE_USER;
@@ -143,7 +143,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    */
   @Override
   public void beginSynchronization() {
-    synchroInProcess = true;
+    setSynchroInProcess(true);
     synchroCache.beginSynchronization();
     userTranslator.beginSynchronization();
     groupTranslator.beginSynchronization();
@@ -165,7 +165,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     if (result != null && !result.isEmpty()) {
       report.append("LDAP Domain GroupDetail specific errors :\n").append(result).append("\n\n");
     }
-    synchroInProcess = false;
+    setSynchroInProcess(false);
     return report.toString();
   }
 
@@ -265,7 +265,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     attribute = getLDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
     modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
 
-    attribute = getLDAPAttribute(driverSettings.getUsersEmailField(), user.geteMail());
+    attribute = getLDAPAttribute(driverSettings.getUsersEmailField(), user.getEmailAddress());
     modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
   }
 
@@ -337,7 +337,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   public List<UserFull> listUserFulls(final Collection<String> specificIds) throws AdminException {
     final String ld = LDAPUtility.openConnection(driverSettings);
     try {
-      return userTranslator.listUserFulls(ld, specificIds, this.domainId);
+      return userTranslator.listUserFulls(ld, specificIds, this.getDomainId());
     } finally {
       LDAPUtility.closeConnection(ld);
     }

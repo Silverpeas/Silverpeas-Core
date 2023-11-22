@@ -175,7 +175,7 @@ public class UserRequestData {
   private void setCommonDataToUser(UserDetail user) {
     user.setLastName(getLastName());
     user.setFirstName(getFirstName());
-    user.seteMail(getEmail());
+    user.setEmailAddress(getEmail());
     user.setAccessLevel(getAccessLevel());
     user.setUserManualNotificationUserReceiverLimit(getUserManualNotifReceiverLimitValue());
   }

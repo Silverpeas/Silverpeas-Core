@@ -108,7 +108,7 @@ class ICal4JExporterTest {
     creator = mock(User.class);
     when(creator.getId()).thenReturn("creatorId");
     when(creator.getDisplayedName()).thenReturn("Creator Test");
-    when(creator.geteMail()).thenReturn("creator.test@silverpeas.org");
+    when(creator.getEmailAddress()).thenReturn("creator.test@silverpeas.org");
     when(UserProvider.get()
         .getUser(creator.getId())).thenReturn(creator);
 
@@ -491,7 +491,7 @@ class ICal4JExporterTest {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
-    when(user.geteMail()).thenReturn("user.test@silverpeas.org");
+    when(user.getEmailAddress()).thenReturn("user.test@silverpeas.org");
     when(UserProvider.get()
         .getUser(user.getId())).thenReturn(user);
     CalendarEvent event =
@@ -519,7 +519,7 @@ class ICal4JExporterTest {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
-    when(user.geteMail()).thenReturn("user.test@silverpeas.org");
+    when(user.getEmailAddress()).thenReturn("user.test@silverpeas.org");
     when(UserProvider.get()
         .getUser(user.getId())).thenReturn(user);
     CalendarEvent event =
@@ -577,7 +577,7 @@ class ICal4JExporterTest {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
-    when(user.geteMail()).thenReturn("user.test@silverpeas.org");
+    when(user.getEmailAddress()).thenReturn("user.test@silverpeas.org");
     when(UserProvider.get()
         .getUser(user.getId())).thenReturn(user);
     final String externalAttendeeId_1 = "external.1@silverpeas.org";
@@ -620,7 +620,7 @@ class ICal4JExporterTest {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
-    when(user.geteMail()).thenReturn("user.test@silverpeas.org");
+    when(user.getEmailAddress()).thenReturn("user.test@silverpeas.org");
     when(UserProvider.get()
         .getUser(user.getId())).thenReturn(user);
     final String externalAttendeeId_1 = "external.1@silverpeas.org";

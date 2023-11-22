@@ -545,7 +545,7 @@ public class AuthenticationService {
 
     // Set email
     if (StringUtil.isDefined(email)) {
-      userFull.seteMail(email);
+      userFull.setEmailAddress(email);
     }
 
     // Persisting user data changes.

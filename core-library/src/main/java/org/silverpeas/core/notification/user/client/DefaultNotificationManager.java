@@ -579,7 +579,7 @@ public class DefaultNotificationManager
     String valret = "";
     User user = getUser(userId);
     if (user != null) {
-      valret = user.geteMail();
+      valret = user.getEmailAddress();
     }
     return valret;
   }

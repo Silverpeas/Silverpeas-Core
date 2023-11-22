@@ -594,7 +594,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     UserDetail user = getAdminController().getUserDetail(searchField);
     if (null != user) {
       String nom = user.getDisplayedName();
-      String desc = user.geteMail();
+      String desc = user.getEmailAddress();
       List<String> listEmplacement = getListPathUser(user);
 
       String url = "openUser('" + user.getId() + "')";

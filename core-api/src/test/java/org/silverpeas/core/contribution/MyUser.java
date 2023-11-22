@@ -92,7 +92,7 @@ public class MyUser implements User {
   }
 
   @Override
-  public String geteMail() {
+  public String getEmailAddress() {
     return firstName + "." + lastName + "@silverpeas.io";
   }
 
