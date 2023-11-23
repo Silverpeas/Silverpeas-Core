@@ -64,8 +64,8 @@ public abstract class AbstractComponentSessionController implements ComponentSes
    * The default character encoded supported by Silverpeas.
    */
   private static final String CHARACTER_ENCODING = "UTF-8";
-  protected ComponentContext context = null;
-  private MainSessionController controller = null;
+  protected ComponentContext context;
+  private final MainSessionController controller;
   private String rootName = null;
   private LocalizationBundle message = null;
   private SettingBundle icon = null;
