@@ -70,8 +70,6 @@ import static org.silverpeas.core.admin.service.OrganizationControllerProvider.g
 @Bean
 public class SilverpeasSessionOpener {
 
-  private static final int HTTP_DEFAULT_PORT = 80;
-
   SilverpeasSessionOpener() {
   }
 
@@ -283,14 +281,6 @@ public class SilverpeasSessionOpener {
     HttpSession session = request.getSession(false);
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    // Init server name and server port
-    String serverName = request.getServerName();
-    int serverPort = request.getServerPort();
-    String port = "";
-    if (serverPort != HTTP_DEFAULT_PORT) {
-      port = String.valueOf(serverPort);
-    }
-    controller.initServerProps(serverName, port);
 
     // Retrieve personal workspace
     String personalWs = controller.getPersonalization().getPersonalWorkSpaceId();
@@ -332,6 +322,7 @@ public class SilverpeasSessionOpener {
     if (request.isSecure()) {
       absoluteUrl.append("https://");
     } else {
+      //noinspection HttpUrlsUsage
       absoluteUrl.append("http://");
     }
     absoluteUrl.append(request.getServerName()).append(':');

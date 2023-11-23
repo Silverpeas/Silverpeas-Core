@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -36,7 +35,6 @@ import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.service.Clipboard;
 import org.silverpeas.core.clipboard.service.MainClipboard;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcSettings;
@@ -71,7 +69,7 @@ import static org.silverpeas.core.admin.service.AdministrationServiceProvider.ge
 public class MainSessionController implements Clipboard, SessionCloseable, Serializable {
 
   public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
-  private transient Clipboard clipboard = ServiceProvider.getService(Clipboard.class,
+  private final transient Clipboard clipboard = ServiceProvider.getService(Clipboard.class,
       new AnnotationLiteral<MainClipboard>() {});
   private final UserPreferences userPreferences;
   private transient PdcManager pdcManager = null;
@@ -83,16 +81,13 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   private ZoneId userZoneId = null;
   private transient Selection selection = null;
   private String userSpace = null;
-  private String serverName = null;
-  private String serverPort = null;
   private transient SubscriptionContext subscriptionContext = null;
   /**
    * Maintenance Mode *
    */
   private static boolean appInMaintenance = false;
-  private static List<String> spacesInMaintenance = new ArrayList<>();
+  private static final List<String> spacesInMaintenance = new ArrayList<>();
   // Last results from search engine
-  private transient List<GlobalSilverContent> lastResults = null;
   private boolean allowPasswordChange;
 
   /**
@@ -128,9 +123,7 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
         spacesInMaintenance.add(checkedSpaceId);
       }
     } else {
-      if (spacesInMaintenance.contains(checkedSpaceId)) {
-        spacesInMaintenance.remove(spacesInMaintenance.indexOf(checkedSpaceId));
-      }
+      spacesInMaintenance.remove(checkedSpaceId);
     }
   }
 
@@ -140,7 +133,7 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
    */
   private String checkSpaceId(String spaceId) {
     if (spaceId != null && spaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
-      return spaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length(), spaceId.length());
+      return spaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length());
     }
     return spaceId;
   }
@@ -284,10 +277,6 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
     return userSpace;
   }
 
-  public synchronized void setFavoriteSpace(String newSpace) {
-    userSpace = newSpace;
-  }
-
   /**
    * Return the user's favorite language
    */
@@ -312,7 +301,7 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   }
 
   /**
-   * Return the user accesslevel of the cuurent user
+   * Return the user access level of the current user
    */
   public UserAccessLevel getUserAccessLevel() {
     return getCurrentUserDetail().getAccessLevel();
@@ -331,24 +320,10 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   }
 
   /**
-   * Return the parameters for the given component
-   */
-  public List<Parameter> getComponentParameters(String sComponentId) {
-    return getAdminService().getComponentParameters(sComponentId);
-  }
-
-  /**
    * Return the value of the parameter for the given component and the given name of parameter
    */
   public String getComponentParameterValue(String sComponentId, String parameterName) {
     return getAdminService().getComponentParameterValue(sComponentId, parameterName);
-  }
-
-  /**
-   * Return the root spaces ids available for the current user
-   */
-  public String[] getUserAvailRootSpaceIds() {
-    return getOrganisationController().getAllRootSpaceIds(this.getUserId());
   }
 
   /**
@@ -357,19 +332,6 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   public String[] getUserAvailComponentIds() {
     try {
       return getAdminService().getAvailCompoIds(getUserId());
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return new String[0];
-    }
-  }
-
-  /**
-   * Return the spaces ids available for the current user
-   */
-  public String[] getUserAvailSpaceIds() {
-
-    try {
-      return getAdminService().getClientSpaceIds(getAdminService().getUserSpaceIds(userId));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new String[0];
@@ -401,7 +363,7 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   }
 
   public boolean isPDCBackOfficeVisible() {
-    if (!PdcSettings.delegationEnabled) {
+    if (PdcSettings.isDelegationNotEnabled()) {
       return false;
     }
 
@@ -470,41 +432,6 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
               new String[]{spaceId, componentInstanceId}, e);
     }
     return componentContext;
-  }
-
-  public void initServerProps(String sName, String sPort) {
-    serverName = sName;
-    serverPort = sPort;
-  }
-
-  public String getServerName() {
-    return serverName;
-  }
-
-  public String getServerPort() {
-    return serverPort;
-  }
-
-  public String getServerNameAndPort() {
-    if (!StringUtil.isDefined(serverPort)) {
-      return serverName;
-    } else {
-      return serverName + ":" + serverPort;
-    }
-  }
-
-  /**
-   * @return a List of GlobalSilverResult corresponding to the last search
-   */
-  public List<GlobalSilverContent> getLastResults() {
-    return lastResults;
-  }
-
-  /**
-   * @param list
-   */
-  public void setLastResults(List<GlobalSilverContent> list) {
-    lastResults = list;
   }
 
   public void setAllowPasswordChange(boolean flag) {

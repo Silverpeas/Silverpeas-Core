@@ -402,25 +402,11 @@ public class SpaceInstManager {
     try {
       List<SpaceRow> rows = organizationSchema.space().getDirectSubSpaces(spaceLocalId);
 
-      return spaceRows2SpaceInstLights(rows.toArray(new SpaceRow[rows.size()]));
+      return spaceRows2SpaceInstLights(rows.toArray(new SpaceRow[0]));
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("subspaces of space", String.valueOf(spaceLocalId)),
           e);
-    }
-  }
-
-  public List<Integer> getRootSpaceIds() throws AdminException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-
-      return spaceDAO.getRootSpaceIds(con);
-
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("root spaces", ""), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -454,24 +440,6 @@ public class SpaceInstManager {
       spaces.add(spaceLight);
     }
     return spaces;
-  }
-
-  /**
-   * Get all the space profiles of a space
-   */
-  public String[] getAllSpaceProfileIds(int spaceLocalId) throws AdminException {
-    try {
-      String[] asSpaceProfileIds = organizationSchema.spaceUserRole().
-          getAllSpaceUserRoleIdsOfSpace(spaceLocalId);
-      if (asSpaceProfileIds != null) {
-        return asSpaceProfileIds;
-      } else {
-        return ArrayUtil.emptyStringArray();
-      }
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("profiles of space", String.valueOf(spaceLocalId)),
-          e);
-    }
   }
 
   /*
@@ -649,7 +617,7 @@ public class SpaceInstManager {
    *
    * @param spaceLocalId the local id of the space
    * @return true if the given space instance name is an existing space.
-   * @throws AdminException
+   * @throws AdminException if an error occurs while checking the existence of the space
    */
   public boolean isSpaceInstExist(int spaceLocalId) throws
       AdminException {
@@ -726,7 +694,7 @@ public class SpaceInstManager {
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
+    if (id == null || id.isEmpty()) {
       return -1; // the null id.
     }
     try {

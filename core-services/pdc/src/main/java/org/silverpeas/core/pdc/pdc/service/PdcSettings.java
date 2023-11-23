@@ -28,10 +28,21 @@ import org.silverpeas.core.util.SettingBundle;
 
 public class PdcSettings {
 
-  public static boolean delegationEnabled = false;
+  private PdcSettings() {
+  }
+
+  private static final boolean DELEGATION_ENABLED;
 
   static {
     SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.pdc.pdc");
-    delegationEnabled = settings.getBoolean("EnableDelegation", false);
+    DELEGATION_ENABLED = settings.getBoolean("EnableDelegation", false);
+  }
+
+  public static boolean isDelegationEnabled() {
+    return DELEGATION_ENABLED;
+  }
+
+  public static boolean isDelegationNotEnabled() {
+    return !isDelegationEnabled();
   }
 }
