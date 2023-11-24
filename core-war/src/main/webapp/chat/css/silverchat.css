@@ -801,20 +801,20 @@ Converse.js
 }
 
 
-.conversejs #muc-invite-modal .modal-body {
+.conversejs muc-invite-modal .modal-body {
   overflow: hidden !important;
 }
 
-.conversejs #muc-invite-modal .single-line {
+.conversejs muc-invite-modal .single-line {
   display: inline-flex;
   width: 100%;
 }
 
-.conversejs #muc-invite-modal .suggestion-box__input{
+.conversejs muc-invite-modal .suggestion-box__input{
   width: calc(100% - 40px);
 }
 
-.conversejs #muc-invite-modal .caret {
+.conversejs muc-invite-modal .caret {
   display: inline-block;
   width: 0;
   height: 0;
@@ -826,27 +826,27 @@ Converse.js
   border-left: 4px solid transparent;
 }
 
-.conversejs #muc-invite-modal .suggestion-box__results--below{
+.conversejs muc-invite-modal .suggestion-box__results--below{
   top: 50px;
   max-height: 140px;
   overflow-y: auto;
   background-color: white;
 }
 
-.conversejs #muc-invite-modal .plus{
+.conversejs muc-invite-modal .plus{
   margin-left: 5px;
 }
 
-.conversejs #muc-invite-modal .selected-jids {
+.conversejs muc-invite-modal .selected-jids {
   width: 100%;
   display: inline-block;
 }
 
-.conversejs #muc-invite-modal .selected-jids li {
+.conversejs muc-invite-modal .selected-jids li {
   float: left;
   margin-right: 5px;
 }
 
-.conversejs #muc-invite-modal .delete-button {
+.conversejs muc-invite-modal .delete-button {
   vertical-align: -4px;
 }

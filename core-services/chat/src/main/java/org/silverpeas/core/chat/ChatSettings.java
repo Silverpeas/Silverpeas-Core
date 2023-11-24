@@ -91,7 +91,9 @@ public class ChatSettings {
    * @return a threshold as integer.
    */
   public int getMaxCachedMsgThresholdPerRoom() {
-    return settings.getInteger(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".maxCachedMsgThresholdPerRoom", 200);
+    return settings.getInteger(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".maxCachedMsgThresholdPerRoom",
+        200);
   }
 
   /**
@@ -103,7 +105,9 @@ public class ChatSettings {
    * @return a boolean.
    */
   public boolean clearMessagesOnReconnection() {
-    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".clearMessagesOnReconnection", true);
+    return settings.getBoolean(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".clearMessagesOnReconnection",
+        true);
   }
 
   /**
@@ -130,11 +134,29 @@ public class ChatSettings {
   }
 
   /**
+   * If true, the user will automatically join a chatroom on invite without any confirm. Also
+   * inviting users won’t be prompted for a reason.
+   * <p>
+   *   Please see
+   *   <a href="https://conversejs.org/docs/html/configuration.html#auto-join-on-invite">auto-register-muc-nickname</a>
+   *   for more information
+   * </p>
+   * @return a boolean.
+   */
+  public boolean autoJoinOnInvite() {
+    return settings.getBoolean(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".autoJoinOnInvite",
+        Boolean.TRUE);
+  }
+
+  /**
    * Indicates if the 'reply to' message is enabled.
    * @return true of enabled, false otherwise.
    */
   public boolean isReplyToEnabled() {
-    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".replyTo.enabled", true);
+    return settings.getBoolean(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".replyTo.enabled",
+        true);
   }
 
   /**
@@ -142,7 +164,9 @@ public class ChatSettings {
    * @return true of enabled, false otherwise.
    */
   public boolean isReactionToEnabled() {
-    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".reactionTo.enabled", true);
+    return settings.getBoolean(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".reactionTo.enabled",
+        true);
   }
 
   /**
@@ -150,7 +174,9 @@ public class ChatSettings {
    * @return true of enabled, false otherwise.
    */
   public boolean isVisioEnabled() {
-    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.enabled", true);
+    return settings.getBoolean(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.enabled",
+        true);
   }
 
   /**
@@ -171,7 +197,9 @@ public class ChatSettings {
    */
   public String getVisioDomainServer() {
     if (isVisioEnabled()) {
-      return settings.getString(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.domainServer", "meet.jit.si");
+      return settings.getString(
+          CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.domainServer",
+          "meet.jit.si");
     }
     return EMPTY;
   }
@@ -182,7 +210,9 @@ public class ChatSettings {
    */
   public String getVisioJwt() {
     if (isVisioEnabled()) {
-      return settings.getString(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.jwt", "");
+      return settings.getString(
+          CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.jwt",
+          "");
     }
     return EMPTY;
   }
@@ -192,7 +222,9 @@ public class ChatSettings {
    * @return true of enabled, false otherwise.
    */
   public boolean isScreencastEnabled() {
-    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".screencast.enabled", true);
+    return settings.getBoolean(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".screencast.enabled",
+        true);
   }
 
   /**
