@@ -30,7 +30,7 @@ import java.util.Date;
 
 public class ContactItem extends AbstractDirectoryItem {
 
-  private CompleteContact contact;
+  private final CompleteContact contact;
 
   public ContactItem(CompleteContact contact) {
     this.contact = contact;
@@ -53,7 +53,7 @@ public class ContactItem extends AbstractDirectoryItem {
 
   @Override
   public DirectoryItem.ITEM_TYPE getType() {
-    return DirectoryItem.ITEM_TYPE.Contact;
+    return DirectoryItem.ITEM_TYPE.CONTACT;
   }
 
   @Override
@@ -83,5 +83,15 @@ public class ContactItem extends AbstractDirectoryItem {
   @Override
   public String getFax() {
     return getContact().getFax();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

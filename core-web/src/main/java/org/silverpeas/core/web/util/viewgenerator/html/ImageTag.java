@@ -45,6 +45,7 @@ public class ImageTag extends SimpleTagSupport {
 
   private String src;
   private String alt;
+  private String title;
   private String type;
   private String size;
   private String css;
@@ -98,6 +99,10 @@ public class ImageTag extends SimpleTagSupport {
     this.id = id;
   }
 
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
   @Override
   public void doTag() throws JspException, IOException {
     println(generateHtml());
@@ -130,6 +135,9 @@ public class ImageTag extends SimpleTagSupport {
     }
     if (StringUtil.isDefined(imgId)) {
       img.setID(imgId);
+    }
+    if (StringUtil.isDefined(title)) {
+      img.setTitle(title);
     }
     return img.toString();
   }

@@ -39,11 +39,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class ImageProfil {
+public class ImageProfile {
 
-  private String photoFileName;
+  private final String photoFileName;
 
-  public ImageProfil(String photo) {
+  public ImageProfile(String photo) {
     this.photoFileName = photo;
   }
 
@@ -70,9 +70,9 @@ public class ImageProfil {
   }
 
   /**
-   * In case of unit upload
-   * @param data
-   * @throws IOException
+   * Saves the image in the specified input stream.
+   * @param data an input stream on an image data.
+   * @throws IOException if an error occurs while reading the input stream and saving the image.
    */
   public void saveImage(InputStream data) throws IOException {
     SilverpeasFile image = SilverpeasFileProvider.newFile(getImagePath());

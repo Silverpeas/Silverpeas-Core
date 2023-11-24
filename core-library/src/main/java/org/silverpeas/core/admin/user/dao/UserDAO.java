@@ -34,6 +34,7 @@ import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,7 +62,7 @@ public class UserDAO {
       + "login,firstName,lastName,loginMail,email,accessLevel,"
       + "loginQuestion,loginAnswer,st_user.creationDate,st_user.saveDate,version,tosAcceptanceDate,"
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
-      + "st_user.state,st_user.stateSaveDate, notifManualReceiverLimit";
+      + "st_user.state,st_user.stateSaveDate, notifManualReceiverLimit, sensitiveData";
   private static final String STATE_CRITERION = "state = ?";
   private static final String ID_CRITERION = "id = ?";
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";
@@ -226,12 +227,16 @@ public class UserDAO {
     final JdbcSqlQuery query = JdbcSqlQuery.select(USER_COLUMNS)
         .from(USER_TABLE)
         .where(STATE_CRITERION, UserState.REMOVED);
+    filterOnDomainIds(query, domainIds);
+    return query.executeWith(connection, UserDAO::fetchUser);
+  }
+
+  private static void filterOnDomainIds(JdbcSqlQuery query, String[] domainIds) {
     final List<Integer> requestedDomainIds =
         Stream.of(domainIds).map(Integer::parseInt).collect(Collectors.toList());
     if (!requestedDomainIds.isEmpty()) {
       query.and(DOMAIN_ID).in(requestedDomainIds);
     }
-    return query.executeWith(connection, UserDAO::fetchUser);
   }
 
   /**
@@ -242,19 +247,35 @@ public class UserDAO {
    * @return a list of user details.
    * @throws SQLException if an error while requesting the users.
    */
-  public List<UserDetail> getNonBlankedDeletedUsers(final Connection connection, final String... domainIds)
-      throws SQLException {
+  public List<UserDetail> getNonBlankedDeletedUsers(final Connection connection,
+      final String... domainIds) throws SQLException {
     Objects.requireNonNull(connection);
     Objects.requireNonNull(domainIds);
     final JdbcSqlQuery query = JdbcSqlQuery.select(USER_COLUMNS)
         .from(USER_TABLE)
         .where(STATE_CRITERION, UserState.DELETED)
         .and("firstName <> ?", BLANK_NAME);
-    final List<Integer> requestedDomainIds =
-        Stream.of(domainIds).map(Integer::parseInt).collect(Collectors.toList());
-    if (!requestedDomainIds.isEmpty()) {
-      query.and(DOMAIN_ID).in(requestedDomainIds);
-    }
+    filterOnDomainIds(query, domainIds);
+    return query.executeWith(connection, UserDAO::fetchUser);
+  }
+
+  /**
+   * Gets all the users in the specified user domains that have sensitive information.
+   * @param connection a connection to the data source.
+   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
+   * are passed, then all the domains are taken by the request.
+   * @return a list of user details.
+   * @throws SQLException if an error while requesting the users.
+   */
+  public List<UserDetail> getUsersWithSensitiveData(@Nonnull final Connection connection,
+      @Nonnull final String... domainIds) throws SQLException {
+    Objects.requireNonNull(connection);
+    Objects.requireNonNull(domainIds);
+    JdbcSqlQuery query = JdbcSqlQuery.select(USER_COLUMNS)
+        .from(USER_TABLE)
+        .where("sensitiveData = ?", true)
+        .and(STATE).notIn(UserState.REMOVED, UserState.DELETED);
+    filterOnDomainIds(query, domainIds);
     return query.executeWith(connection, UserDAO::fetchUser);
   }
 
@@ -274,24 +295,6 @@ public class UserDAO {
         .from(USER_TABLE)
         .where("email = ?", email)
         .executeUniqueWith(connection, row -> row.getInt(1)) > 1;
-  }
-
-  /**
-   * Get all the domains id in which a user with the specified login exists.
-   *
-   * @param connection the connection with the data source to use.
-   * @param login the login for which we want the domains.
-   * @return a list of domain ids.
-   * @throws SQLException if an error occurs while getting the user details from the data source.
-   */
-  public List<String> getDomainsContainingLogin(Connection connection, String login) throws
-      SQLException {
-    return JdbcSqlQuery.select("DISTINCT(domainId) AS domain")
-        .from(USER_TABLE)
-        .where(STATE).notIn(UserState.DELETED)
-        .and("login = ?", login)
-        .orderBy(DOMAIN_ID)
-        .executeWith(connection, row -> row.getString("domain"));
   }
 
   /**
@@ -337,6 +340,7 @@ public class UserDAO {
         .withUpdateParam(STATE, user.getState())
         .withUpdateParam(STATE_SAVE_DATE, toInstance(user.getStateSaveDate()))
         .withUpdateParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
+        .withUpdateParam("sensitiveData", user.hasSensitiveData())
         .where(ID_CRITERION, Integer.parseInt(user.getId()))
         .executeWith(connection);
   }
@@ -584,6 +588,7 @@ public class UserDAO {
     if (StringUtil.isInteger(rs.getString(22))) {
       u.setNotifManualReceiverLimit(rs.getInt(22));
     }
+    u.setSensitiveData(rs.getBoolean(23));
     return u;
   }
 

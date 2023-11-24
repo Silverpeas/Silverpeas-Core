@@ -152,7 +152,12 @@ public class JobDomainPeasRequestRouter extends
   public String getAdminDestination(String function, JobDomainPeasSessionController jobDomainSC,
       HttpRequest request) {
     String destination = "";
+    String filterOnUserState = request.getParameter("state");
+    if (StringUtil.isDefined(filterOnUserState)) {
+      request.setAttribute("currentUserState", filterOnUserState);
+    }
 
+    request.setAttribute("ADMIN_SCOPE", true);
 
     try {
       // 1) Performs the action
@@ -174,12 +179,16 @@ public class JobDomainPeasRequestRouter extends
         }
       }
 
-      if ("blankUsers".equals(function)) {
+      if ("blankUsers".equals(function) || "disableDataSensitivity".equals(function)) {
         jobDomainSC.checkCurrentDomainAccessGranted(false);
         final List<String> userIds = new ArrayList<>();
         request.mergeSelectedItemsInto(userIds);
         if (!userIds.isEmpty()) {
-          jobDomainSC.blankDeletedUsers(userIds);
+          if (function.startsWith("blank")) {
+            jobDomainSC.blankDeletedUsers(userIds);
+          } else {
+            jobDomainSC.disableUsersSensitivityData(userIds);
+          }
         }
         function = DOMAIN_CONTENT_FCT;
       }
@@ -232,6 +241,8 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.deleteGroup(group);
         }
         destination = getDestination(DISPLAY_REMOVED_GROUPS_DEST, jobDomainSC, request);
+      } else if ("filterByUserState".equals(function)) {
+        destination = DOMAIN_CONTENT_DEST;
       } else if (function.startsWith("user")) {
         // USER Actions --------------------------------------------
         String userId = request.getParameter("Iduser");
@@ -292,6 +303,10 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.removeUser(userId);
         } else if (function.startsWith("userAvatarDelete")) {
           jobDomainSC.deleteUserAvatar(userId);
+        } else if (function.startsWith("userSensitiveDataProtect")) {
+          jobDomainSC.hideUserSensitiveData(userId);
+        } else if (function.startsWith("userSensitiveDataUnprotect")) {
+          jobDomainSC.showUserSensitiveData(userId);
         } else if ("userViewRights".equals(function)) {
           request.setAttribute("UserProfiles", jobDomainSC.getCurrentProfiles());
         } else if (function.startsWith("userMS")) {
@@ -406,7 +421,7 @@ public class JobDomainPeasRequestRouter extends
           // user
           jobDomainSC.setTargetUser(userId);
         }
-        if (destination.length() <= 0) {
+        if (destination.isEmpty()) {
           if (jobDomainSC.getTargetUserDetail() != null) {
             destination = USER_CONTENT_DEST;
           } else {
@@ -537,7 +552,7 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute("GroupProfiles", jobDomainSC.getCurrentProfiles());
         }
 
-        if (destination.length() <= 0) {
+        if (destination.isEmpty()) {
           if (jobDomainSC.getTargetGroup() != null) {
             if (bHaveToRefreshDomain) {
               reloadDomainNavigation(request);
@@ -644,7 +659,7 @@ public class JobDomainPeasRequestRouter extends
             destination = GO_BACK_DEST;
           }
 
-          if (destination.length() <= 0) {
+          if (destination.isEmpty()) {
             if (jobDomainSC.getTargetDomain() != null) {
               destination = DOMAIN_CONTENT_DEST;
             } else {
@@ -793,6 +808,12 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
           request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
           destination = "deletedUsers.jsp";
+        } else if (function.startsWith("displayUsersWithSensitiveData")) {
+            final List<UserDetail> users = jobDomainSC.getUsersWithSensitiveData();
+            request.setAttribute("usersWithSensitiveData", users);
+            request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
+            request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
+            destination = "usersWithSensitiveData.jsp";
         } else if (function.startsWith(DISPLAY_REMOVED_GROUPS_DEST)) {
           final List<GroupDetail> allRemovedGroups = jobDomainSC.getRemovedGroups();
           final SilverpeasList<GroupDetail> removedGroups = SilverpeasList.wrap(allRemovedGroups);
@@ -830,7 +851,7 @@ public class JobDomainPeasRequestRouter extends
         // traitement de la pagination : passage des parametres
         String index = request.getParameter("Pagination_Index");
 
-        if (index != null && index.length() > 0) {
+        if (index != null && !index.isEmpty()) {
           jobDomainSC.setIndexOfFirstItemToDisplay(index);
         }
         // retour a l'album courant
@@ -870,7 +891,11 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute(DOMAIN_OBJECT_ATTR, jobDomainSC.getTargetDomain());
       }
       if (DOMAIN_CONTENT_DEST.equals(destination)) {
-        jobDomainSC.refresh();
+        if (StringUtil.isDefined(filterOnUserState)) {
+          jobDomainSC.setFilterOnUserState(filterOnUserState);
+        } else {
+          jobDomainSC.refresh();
+        }
         long domainRight = jobDomainSC.getDomainActions();
         request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));
@@ -1012,7 +1037,6 @@ public class JobDomainPeasRequestRouter extends
     jobDomainSC.setListSelectedUsers(memSelected);
   }
 
-  @SuppressWarnings("unchecked")
   private HashMap<String, String> getExtraPropertyValues(HttpServletRequest request) {
     // process extra properties
     HashMap<String, String> properties = new HashMap<>();
@@ -1021,7 +1045,7 @@ public class JobDomainPeasRequestRouter extends
       String parameterName = parameters.nextElement();
       if (parameterName.startsWith("prop_")) {
         // remove "prop_"
-        String property = parameterName.substring(5, parameterName.length());
+        String property = parameterName.substring(5);
         properties.put(property, request.getParameter(parameterName));
       }
     }

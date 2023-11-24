@@ -27,29 +27,29 @@ import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.constant.GroupState;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
- * Group passed in the constructor MUST BE A {@link GroupState#VALID} GROUP (with Id, etc...)
- * @t.leroi
+ * This class manage the information needed for groups navigation and browsing.
+ * REQUIREMENT: the Group passed in the constructor MUST BE A {@link GroupState#VALID} GROUP
+ * (with Id, etc...)
+ * @author t.leroi
  */
 public class NavigationStock {
-  Group[] m_SubGroups = null;
-  UserDetail[] m_SubUsers = null;
-  int m_FirstDisplayedUser = 0;
-  int m_FirstDisplayedGroup = 0;
-  AdminController m_adc = null;
+  protected Group[] subGroups = null;
+  protected UserDetail[] subUsers = null;
+  protected AdminController adminController;
+  protected UserState userStateFilter;
 
   public NavigationStock(AdminController adc) {
-    m_adc = adc;
-    m_FirstDisplayedUser = 0;
-    m_FirstDisplayedGroup = 0;
+    adminController = adc;
   }
 
   public static Group[] filterGroupsToGroupManager(final List<String> manageableGroupIds,
@@ -73,40 +73,32 @@ public class NavigationStock {
         }
       }
     }
-    return manageableGroups.toArray(new Group[manageableGroups.size()]);
+    return manageableGroups.toArray(new Group[0]);
   }
 
-  protected void verifIndexes() {
-    if (m_SubUsers.length <= m_FirstDisplayedUser) {
-      if (m_SubUsers.length > 0) {
-        m_FirstDisplayedUser = m_SubUsers.length - 1;
-      } else {
-        m_FirstDisplayedUser = 0;
-      }
-    }
-    if (m_SubGroups.length <= m_FirstDisplayedGroup) {
-      if (m_SubGroups.length > 0) {
-        m_FirstDisplayedGroup = m_SubGroups.length - 1;
-      } else {
-        m_FirstDisplayedGroup = 0;
-      }
+  public void filterOnUserState(final UserState userState) {
+    if (userState != UserState.UNKNOWN) {
+      this.userStateFilter = userState;
     }
   }
 
-  public UserDetail[] getAllUserPage() {
-    return m_SubUsers;
+  public void unsetFilterOnUserState() {
+    filterOnUserState(null);
   }
 
-  public UserDetail[] getUserPage() {
-    return m_SubUsers;
+  public boolean isUserStateFiltered() {
+    return this.userStateFilter != null;
   }
 
-  public Group[] getAllGroupPage() {
-    return m_SubGroups;
+  public final UserDetail[] getUserPage() {
+    return userStateFilter == null ? subUsers :
+        Arrays.stream(subUsers)
+            .filter(u -> u.getState() == userStateFilter)
+            .toArray(UserDetail[]::new);
   }
 
-  public Group[] getGroupPage() {
-    return m_SubGroups;
+  public final Group[] getGroupPage() {
+    return subGroups;
   }
 
 }

@@ -273,6 +273,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
             user.setState(u.getState());
             user.setStateSaveDate(u.getStateSaveDate());
             user.setNotifManualReceiverLimit(u.getNotifManualReceiverLimit());
+            user.setSensitiveData(u.hasSensitiveData());
             if (isUserFull) {
               user.setLoginQuestion(u.getLoginQuestion());
               user.setLoginAnswer(u.getLoginAnswer());

@@ -40,7 +40,7 @@ import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 public class UserFull extends UserDetail {
 
   private static final long serialVersionUID = 1L;
-  private final HashMap<String, String> infos;
+  private final Map<String, String> infos;
   private transient DomainDriver domainDriver = null;
   private String password = "";
   private boolean isPasswordValid = false;

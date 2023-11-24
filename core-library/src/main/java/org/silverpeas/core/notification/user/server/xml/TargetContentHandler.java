@@ -40,9 +40,9 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class TargetContentHandler extends DefaultHandler {
 
-  private NotificationData data;
-  private ContentHandler parent;
-  private XMLReader parser;
+  private final NotificationData data;
+  private final ContentHandler parent;
+  private final XMLReader parser;
 
   public TargetContentHandler(NotificationData data, ContentHandler parent, XMLReader parser) {
     this.data = data;
@@ -54,27 +54,27 @@ public class TargetContentHandler extends DefaultHandler {
   public void startElement(String uri, String localName, String qName, Attributes attributes)
       throws SAXException {
     NotificationTag tag = NotificationTag.valueOf(qName);
-    ContentHandler child = null;
+    ContentHandler child;
     switch (tag) {
-      case TARGET: {
+      case TARGET:
+        child = null;
         data.setTargetChannel(attributes.getValue(NotificationTag.CHANNEL.toString()));
         break;
-      }
-      case NAME: {
+      case NAME:
         child = new TargetNameContentHandler(data, this, parser);
         parser.setContentHandler(child);
         break;
-      }
-      case RECEIPT: {
+      case RECEIPT:
         child = new TargetReceiptContentHandler(data, this, parser);
         parser.setContentHandler(child);
         break;
-      }
-      case PARAM: {
+      case PARAM:
         child = new TargetParamContentHandler(data, this, parser);
         parser.setContentHandler(child);
         break;
-      }
+      default:
+        child = null;
+        break;
     }
     if (child != null) {
       parser.setContentHandler(child);

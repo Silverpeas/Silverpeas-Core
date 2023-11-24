@@ -68,19 +68,10 @@ public interface RecordSet {
   /**
    * Index the given DataRecord into the indexEntry. formName looks like allFields (ie template
    * filename allFields.xml without extension)
-   * @throws FormException
+   * @throws FormException if an error occurs
    */
   void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
       throws FormException;
-
-  /**
-   * Deletes the given DataRecord and its associated data in all languages.
-   * @deprecated use delete(String objectId) instead
-   * @throw FormException when the record doesn't have the required template.
-   * @throw FormException when the record has an unknown id.
-   * @throw FormException when the delete fail.
-   */
-  void delete(DataRecord record) throws FormException;
 
   /**
    * Deletes all form data for the given objectId in all languages

@@ -23,71 +23,42 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-/**
- * Class declaration
- * @author
- */
-public class ArrayPaneStatusBean {
+import java.io.Serializable;
+
+public class ArrayPaneStatusBean implements Serializable {
+
+  private static final long serialVersionUID = 3843467312364061296L;
+
   private int firstVisibleLine = 0;
   private int maximumVisibleLine = 10;
   private boolean maximumSetByPerPage = false;
   private int sortColumn = 0; // no column is sorted by default
 
-  /**
-   * Method declaration
-   * @param firstVisibleLine
-   * @see
-   */
   public void setFirstVisibleLine(int firstVisibleLine) {
     this.firstVisibleLine = firstVisibleLine;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public int getFirstVisibleLine() {
     return firstVisibleLine;
   }
 
-  /**
-   * Method declaration
-   * @param maximumVisibleLine
-   * @see
-   */
   public void setMaximumVisibleLine(int maximumVisibleLine, boolean fromItemsPerPageAction) {
     if (fromItemsPerPageAction || !maximumSetByPerPage) {
       this.maximumVisibleLine = maximumVisibleLine;
     }
     if (fromItemsPerPageAction) {
-      maximumSetByPerPage = fromItemsPerPageAction;
+      maximumSetByPerPage = true;
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public int getMaximumVisibleLine() {
     return maximumVisibleLine;
   }
 
-  /**
-   * Method declaration
-   * @param sortColumn
-   * @see
-   */
   public void setSortColumn(int sortColumn) {
     this.sortColumn = sortColumn;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public int getSortColumn() {
     return sortColumn;
   }

@@ -269,24 +269,9 @@ public interface ArrayPane extends SimpleGraphicElement {
    */
   void init(String name, PageContext pageContext);
 
-  /**
-   * Constructor declaration
-   * @param name
-   * @param request
-   * @param session
-   *
-   */
   void init(String name, javax.servlet.ServletRequest request,
       HttpSession session);
 
-  /**
-   * Constructor declaration
-   * @param name
-   * @param url
-   * @param request
-   * @param session
-   *
-   */
   void init(String name, String url,
       javax.servlet.ServletRequest request, HttpSession session);
 
@@ -368,52 +353,39 @@ public interface ArrayPane extends SimpleGraphicElement {
   void setRoutingAddress(String address);
 
   /**
-   * Get global array columns behaviour for sort. By default, all colums are sortable.
+   * Get global array columns behaviour for sort. By default, all columns are sortable.
    * @return True, if the array is sortable, false if not.
    */
   boolean getSortable();
 
   /**
-   * Set all array columns to be sortable or not. By default, all colums are sortable.
+   * Set all array columns to be sortable or not. By default, all columns are sortable.
    * @param sortable Set sortable to false if you want all the table to be unsortable.
    */
   void setSortable(boolean sortable);
 
   /**
-   * Get the sort mode for all columns.
-   * @return The sort mode.
-   * @deprecated
+   * Sets a Javascript function to call when one or more lines of the array are moved between them.
+   * @param callback a function to invoke.
    */
-  @Deprecated
-  int getSortMode();
+  void setLineMoveCallback(String callback);
 
   /**
-   * Change the sort mode for all columns that could handle this mode.
-   * @param mode The new sort mode.
-   * @deprecated
+   * Gets a summary about the content of the array pane.
+   * @return the summary.
    */
-  @Deprecated
-  void setSortMode(int mode);
-
-  /**
-   * Change presentation parameters for cells. Allows for more compact lines if need be.
-   * @deprecated
-   */
-  @Deprecated
-  void setCellsConfiguration(int spacing, int padding, int borderWidth);
-
-  void setPaginationJavaScriptCallback(String callback);
-
   String getSummary();
 
+  /**
+   * Sets the array pane summary.
+   * @param summary a summary.
+   */
   void setSummary(String summary);
-
-  void setXHTML(boolean isXHTML);
 
   /**
    * @return true if the current array pane can be exported, false else if
    */
-  boolean getExportData();
+  boolean isExportData();
 
   /**
    * @param export enable/disable export data from array pane
@@ -430,7 +402,10 @@ public interface ArrayPane extends SimpleGraphicElement {
    */
   void setExportDataURL(String exportDataURL);
 
-  void setSortableLines(boolean sortableLines);
+  /**
+   * Indicates if the lines of the array can be moved, reordered by hand by the user.
+   * @param movableLines true if the lines can be moved.
+   */
+  void setMovableLines(boolean movableLines);
 
-  void setUpdateSortJavascriptCallback(String callback);
 }

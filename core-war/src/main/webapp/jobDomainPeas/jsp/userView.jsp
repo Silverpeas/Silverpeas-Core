@@ -38,6 +38,7 @@
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
 
 <c:set var="userInfos" value="${requestScope.UserFull}" />
+<jsp:useBean id="userInfos" class="org.silverpeas.core.admin.user.model.UserFull"/>
 
 <c:set var="lastName" value="${userInfos.lastName}" />
 <c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>
@@ -45,7 +46,7 @@
 <c:set var="displayedFirstName"><view:encodeHtml string="${firstName}" /></c:set>
 <c:set var="firstName" value="${userInfos.firstName}" />
 <c:set var="displayedFirstName"><view:encodeHtml string="${firstName}" /></c:set>
-<c:set var="email" value="${userInfos.eMail}" />
+<c:set var="email" value="${userInfos.emailAddress}" />
 <c:set var="displayedEmail"><view:encodeHtml string="${email}" /></c:set>
 <c:set var="login" value="${userInfos.login}" />
 <c:set var="displayedLogin"><view:encodeHtml string="${login}" /></c:set>

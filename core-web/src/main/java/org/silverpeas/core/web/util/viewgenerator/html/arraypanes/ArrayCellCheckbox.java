@@ -23,153 +23,74 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-/**
- * Class declaration
- * @author
- */
-public class ArrayCellCheckbox extends ArrayCell implements SimpleGraphicElement {
+public class ArrayCellCheckbox extends ActionableArrayCell implements SimpleGraphicElement {
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Attributs
-  // -----------------------------------------------------------------------------------------------------------------
-  private String name;
-  private String value = null;
-  private boolean checked = false;
-  private String cellAlign = null;
-
+  private final boolean checked;
+  private boolean readOnly = false;
   private String syntax = "";
+  private final String value;
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Constructeur
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Constructor declaration
-   * @param name
-   * @param value
-   * @param checked
-   * @param line
-   * @see
-   */
   public ArrayCellCheckbox(String name, String value, boolean checked,
       ArrayLine line) {
-    super(line);
-    this.name = name;
+    super(name, line);
     this.value = value;
     this.checked = checked;
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Méthodes
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getCellAlign() {
-    return cellAlign;
-  }
-
-  /**
-   * Method declaration
-   * @param cellAlign
-   * @see
-   */
-  public void setCellAlign(String cellAlign) {
-    this.cellAlign = cellAlign;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getValue() {
     return value;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public boolean getChecked() {
+  public boolean isChecked() {
     return checked;
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Ecriture de l'input en fonction de son type, de sa valeur et de son nom
-  // -----------------------------------------------------------------------------------------------------------------
+  public boolean isReadOnly() {
+    return readOnly;
+  }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  public void setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
+  }
+
+  @Override
   public String getSyntax() {
 
     syntax += " <input type=\"checkbox\" name=\"";
 
     // param name
-    if (getName() == null) {
+    if (StringUtil.isNotDefined(getName())) {
       syntax += "checkbox\" value=\"";
     } else {
       syntax += getName() + "\" value=\"";
     }
 
     // param value
-    if (getValue() == null) {
+    if (StringUtil.isNotDefined(getValue())) {
       syntax += "checkbox\"";
     } else {
       syntax += getValue() + "\"";
     }
 
+    if (isReadOnly()) {
+      syntax += " disabled";
+    }
+
     // param activate
-    if (getChecked() == true) {
+    if (isChecked()) {
       syntax += " checked";
+    }
+
+    if (StringUtil.isDefined(getAction())) {
+      syntax += " " + getAction();
     }
 
     syntax += ">";
 
     return syntax;
-  }
-
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String print() {
-    String result = "<td ";
-
-    if (getCellAlign() != null) {
-      if (getCellAlign().equalsIgnoreCase("center")
-          || getCellAlign().equalsIgnoreCase("right")) {
-        result += " align=\"" + getCellAlign() + "\"";
-      }
-    }
-
-    result += " >";
-
-    result += getSyntax();
-
-    result += "</td>\n";
-    return result;
   }
 
 }

@@ -25,96 +25,28 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-/**
- * Class declaration
- * @author
- */
 public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
-
-  // -----------------------------------------------------------------------------------------------------------------
-  // Attributs
-  // -----------------------------------------------------------------------------------------------------------------
-  private String name;
-  private String value = null;
-  private boolean activate = true;
-  private String cellAlign = null;
+  private final boolean activate;
 
   private String syntax = "";
+  private final String value;
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Constructeur
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Constructor declaration
-   * @param name
-   * @param value
-   * @param activate
-   * @param line
-   * @see
-   */
   public ArrayCellButton(String name, String value, boolean activate,
       ArrayLine line) {
-    super(line);
-    this.name = name;
+    super(name,  line);
     this.value = value;
     this.activate = activate;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getCellAlign() {
-    return cellAlign;
-  }
-
-  /**
-   * Method declaration
-   * @param cellAlign
-   * @see
-   */
-  public void setCellAlign(String cellAlign) {
-    this.cellAlign = cellAlign;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getValue() {
     return value;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public boolean getActivate() {
+  public boolean isActivated() {
     return activate;
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Ecriture de l'input en fonction de son type, de sa valeur et de son nom
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  @Override
   public String getSyntax() {
 
     syntax += " <input style=\"background-color:#D8D8D8;\" type=\"button\" name=\"";
@@ -134,38 +66,13 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
     }
 
     // param activate
-    if (getActivate() == false) {
+    if (!isActivated()) {
       syntax += " disabled";
     }
 
     syntax += "\">";
 
     return syntax;
-  }
-
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String print() {
-    String result = "<td ";
-
-    if (getCellAlign() != null) {
-      if (getCellAlign().equalsIgnoreCase("center")
-          || getCellAlign().equalsIgnoreCase("right")) {
-        result += " align=\"" + getCellAlign() + "\"";
-      }
-    }
-
-    result += " >";
-
-    result += getSyntax();
-
-    result += "</td>\n";
-    return result;
   }
 
 }

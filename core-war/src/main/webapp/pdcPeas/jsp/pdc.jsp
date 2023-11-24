@@ -174,11 +174,12 @@ ArrayLine arrayLine = null;
 
             arrayLine = arrayPane.addArrayLine();
 
-			arrayLine.addArrayCellLink("<div align=center><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" alt=\""+resource.getString("pdcPeas.viewAxis")+" : "+WebEncodeHelper.javaStringToHtmlString(name)+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+WebEncodeHelper.javaStringToHtmlString(name)+"\"/></div>", "ViewAxis?Id="+axisId).setValignement("top");
+			arrayLine.addArrayCellLink("<div align=center><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" alt=\""+resource.getString("pdcPeas.viewAxis")+" : "+WebEncodeHelper.javaStringToHtmlString(name)+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+WebEncodeHelper.javaStringToHtmlString(name)+"\"/></div>", "ViewAxis?Id="+axisId);
 		arrayLine.addArrayCellText("<a href=\"ViewAxis?Id="+axisId+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+
-        WebEncodeHelper.javaStringToHtmlString(name)+"\"><span class=\"textePetitBold\">"+WebEncodeHelper.javaStringToHtmlString(name)+"</span></a>").setValignement("top");
+        WebEncodeHelper.javaStringToHtmlString(name)+"\"><span class=\"textePetitBold\">"+WebEncodeHelper.javaStringToHtmlString(name)+"</span></a>");
 
-			arrayLine.addArrayCellText("<span class=\"textePetitBold\">"+ WebEncodeHelper.javaStringToHtmlParagraphe(description)+"</span>").setValignement("top");
+			arrayLine.addArrayCellText("<span class=\"textePetitBold\">"+
+					WebEncodeHelper.javaStringToHtmlParagraphe(description)+"</span>");
 
 			if (isAdmin)
 			{

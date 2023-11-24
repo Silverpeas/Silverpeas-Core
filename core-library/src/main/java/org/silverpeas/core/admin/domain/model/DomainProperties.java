@@ -38,6 +38,9 @@ public class DomainProperties {
   public static final int DVIS_ONE = 1;
   public static final int DVIS_EACH = 2;
 
+  private DomainProperties() {
+  }
+
   public static boolean isDefaultDomain(String domainId) {
     return DEFAULT_DOMAIN_ID.equals(domainId);
   }

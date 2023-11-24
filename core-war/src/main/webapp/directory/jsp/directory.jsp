@@ -100,7 +100,7 @@
       const lastChar = term.substring(term.length - 1, term.length);
       // Lucene cannot parse a query starting with '*' or '?'. This characters are not allowed as first character in WildcardQuery.
       // Lucene cannot parse a query ending with '!'. This characters are not allowed as last character in WildcardQuery.
-      return firstCharacter != "*" && firstCharacter != "?" && lastChar != "!";
+      return firstCharacter !== "*" && firstCharacter !== "?" && lastChar !== "!";
     }
 
     function search() {
@@ -144,7 +144,7 @@
     function showAutoHelp() {
       const helpCookieName = "Silverpeas_Directory_Help";
       const helpCookieValue = $.cookie(helpCookieName);
-      if ("IKnowIt" != helpCookieValue) {
+      if ("IKnowIt" !== helpCookieValue) {
         $("#help-message").dialog({
           modal : true,
           resizable : false,
@@ -358,10 +358,10 @@
           <div class="inlineMessage">
             <fmt:message key="directory.result.none"/>
           </div>
-          <br clear="all"/>
+          <br/>
         </c:when>
         <c:otherwise>
-          <div class="ArrayNavigation" align="center">
+          <div class="ArrayNavigation">
             <fmt:message key="directory.result.some" var="paginationCounterSuffix">
               <fmt:param value="${fn:length(fragments)}"/>
             </fmt:message>
@@ -375,7 +375,7 @@
               <view:listItems items="${fragments}" var="fragment">
                 <li class="intfdcolor ${fragment.type} showActionsOnMouseOver" id="user-${fragment.userId}">
                     ${fragment.fragment}
-                  <br clear="all"/>
+                  <br/>
                 </li>
               </view:listItems>
             </ol>

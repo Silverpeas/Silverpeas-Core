@@ -37,8 +37,9 @@ import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
- * A conjonction of criteria in the search of user details.
+ * A conjunction of criteria in the search of user details.
  */
+@SuppressWarnings("UnusedReturnValue")
 public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
 
   public static final String[] ANY_GROUPS = Constants.ANY;

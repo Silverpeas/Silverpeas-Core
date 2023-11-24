@@ -82,7 +82,7 @@
 
         </p>
 
-        <br clear="all" />
+        <br />
 	</div><!-- /info  -->
 
 </div><!-- /profilPublicFiche  -->

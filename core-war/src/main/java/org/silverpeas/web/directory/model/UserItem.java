@@ -29,66 +29,68 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.directory.control.DirectoryUserFullRequestCache;
 
+import javax.annotation.Nonnull;
 import java.util.Date;
-import java.util.Optional;
+import java.util.Objects;
 
 public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem {
 
-  private User userDetail;
-  private UserFull userFull = null;
+  private final User user;
 
-  public UserItem(User user) {
-    this.userDetail = user;
+  public UserItem(@Nonnull User user) {
+    Objects.requireNonNull(user);
+    this.user = user;
   }
 
   @Override
   public String getFirstName() {
-    return userDetail.getFirstName();
+    return user.getFirstName();
   }
 
   @Override
   public String getLastName() {
-    return userDetail.getLastName();
+    return user.getLastName();
   }
 
   @Override
   public String getAvatar() {
-    return userDetail.getAvatar();
+    return user.getAvatar();
   }
 
   @Override
   public DirectoryItem.ITEM_TYPE getType() {
-    return DirectoryItem.ITEM_TYPE.User;
+    return DirectoryItem.ITEM_TYPE.USER;
   }
 
   @Override
   public String getDomainId() {
-    return userDetail.getDomainId();
+    return user.getDomainId();
   }
 
   @Override
   public Date getCreationDate() {
-    return userDetail.getCreationDate();
+    return user.getCreationDate();
   }
 
   @Override
   public String getOriginalId() {
-    return userDetail.getId();
+    return user.getId();
   }
 
   public String getAccessLevel() {
-    return userDetail.getAccessLevel().code();
+    return user.getAccessLevel().code();
   }
 
   @Override
   public String getMail() {
-    return getUserDetail().getEmailAddress();
+    return user.getEmailAddress();
   }
 
   @Override
   public String getPhone() {
-    if (getUserFull() != null) {
-      String phone = getUserFull().getValue("phone");
+    UserFull userFull = getUserFull();
+    if (userFull != null) {
+      String phone = userFull.getValue("phone");
       if (StringUtil.isDefined(phone)) {
         return phone;
       }
@@ -98,8 +100,9 @@ public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem
 
   @Override
   public String getFax() {
-    if (getUserFull() != null) {
-      String fax = getUserFull().getValue("fax");
+    UserFull userFull = getUserFull();
+    if (userFull != null) {
+      String fax = userFull.getValue("fax");
       if (StringUtil.isDefined(fax)) {
         return fax;
       }
@@ -114,27 +117,16 @@ public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem
    * instance is reached from persistence.
    */
   public UserDetail getUserDetail() {
-    return Optional.ofNullable(userDetail)
-        .filter(UserDetail.class::isInstance)
-        .map(UserDetail.class::cast)
-        .orElseGet(() -> {
-          final UserDetail fromId = UserDetail.getById(getOriginalId());
-          if (fromId != null) {
-            userDetail = fromId;
-          }
-          return fromId;
-        });
+    return user instanceof UserDetail ? (UserDetail) user :
+        UserDetail.getById(user.getId());
   }
 
   /**
    * Gets full data of the user associated to the item.
    * @return a {@link UserFull} instance.
    */
-  public UserFull getUserFull(){
-    if (userFull == null) {
-      userFull = DirectoryUserFullRequestCache.get().getUserFull(this);
-    }
-    return userFull;
+  public UserFull getUserFull() {
+    return DirectoryUserFullRequestCache.get().getUserFull(this);
   }
 
   /**

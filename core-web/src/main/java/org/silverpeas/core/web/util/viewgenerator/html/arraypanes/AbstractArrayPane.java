@@ -51,44 +51,36 @@ public class AbstractArrayPane implements ArrayPane {
   private List<ArrayLine> lines;
   private String title = null;
   private String summary = null;
-  private boolean xhtml = false;
-  private String alignement = null;
   private String name;
   private ArrayPaneStatusBean state = null;
-  private String updateSortJavascriptCallback = null;
   private ServletRequest request = null;
   private HttpSession session = null;
   private int mSortMode = 0;
   private int maxCountOfPaginationList = -1;
   private Pagination pagination;
-  /**
-   * configurable values for cells spacing and padding (of the internal table).
-   */
-  private int mCellsSpacing = DEFAULT_SPACING;
-  private int mCellsPadding = DEFAULT_PADDING;
-  private int mCellsBorderWidth = 0;
+
   /**
    * In some cases, it may be preferable to specify the routing address
    *
    * @see ArrayColumn#setRoutingAddress(String)
    */
   private String mRoutingAddress = null;
-  private String paginationJavaScriptCallback = null;
   /**
    * Parameter attribute to enable/disable ArrayPane export feature
    */
   private boolean exportData = false;
   private String exportDataURL = null;
-  private boolean sortableLines = false;
+  private boolean movableLines = false;
+  private String lineMoveCallback = null;
 
   static <O> O getOrderByFrom(final ArrayPaneStatusBean state, final String columnIndex,
-      final Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
+      final Map<Integer, Pair<O, O>> orderByColumnIndex) {
     O result = null;
     final int currentSortColumn = state.getSortColumn();
     final boolean fromRequest = StringUtil.isInteger(columnIndex);
     int columnSort = fromRequest ? Integer.parseInt(columnIndex) : currentSortColumn;
     if (columnSort != 0) {
-      Pair<O, O> orderBy = orderBiesByColumnIndex.get(abs(columnSort));
+      Pair<O, O> orderBy = orderByColumnIndex.get(abs(columnSort));
       if (orderBy != null) {
         int sortColumn = fromRequest && abs(columnSort) == abs(currentSortColumn)
             ? currentSortColumn * -1
@@ -100,7 +92,7 @@ public class AbstractArrayPane implements ArrayPane {
         }
       }
     } else {
-      Pair<O, O> orderBy = orderBiesByColumnIndex.get(null);
+      Pair<O, O> orderBy = orderByColumnIndex.get(null);
       result = orderBy != null ? orderBy.getLeft() : null;
     }
     return result;
@@ -166,7 +158,7 @@ public class AbstractArrayPane implements ArrayPane {
   private void initNbLinesPerPage() {
     String nbLines = request.getParameter("ItemsPerPage");
     if (StringUtil.isDefined(nbLines)) {
-      state.setMaximumVisibleLine(Integer.valueOf(nbLines), true);
+      state.setMaximumVisibleLine(Integer.parseInt(nbLines), true);
     }
     String index = request.getParameter(INDEX_PARAMETER_NAME);
     state.setFirstVisibleLine(Integer.parseInt(index));
@@ -247,10 +239,10 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   /**
-   * This method sets the routing address. This is actually the URL of the page to which requests
+   * Sets the routing address. This is actually the URL of the page to which requests
    * will be routed when the user clicks on a column header link.
    *
-   * @param address
+   * @param address the URI to which routing any requests from this pane.
    */
   @Override
   public void setRoutingAddress(String address) {
@@ -259,77 +251,34 @@ public class AbstractArrayPane implements ArrayPane {
 
   @Override
   public boolean getSortable() {
-    return getSortMode() == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT;
+    return mSortMode == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT;
   }
 
   /**
-   * Set all array columns to be sortable or not. By default, all colums are sortable.
+   * Set all array columns to be sortable or not. By default, all columns are sortable.
    *
-   * @param sortable Set sortable to false if you want all the table to be unsortable.
+   * @param sortable Set sortable to false if you want all the table to be non sortable.
    */
   @Override
   public void setSortable(boolean sortable) {
     if (sortable) {
-      setSortMode(ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
+      mSortMode = ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT;
     } else {
-      setSortMode(ArrayColumn.COLUMN_BEHAVIOUR_NO_TRIGGER);
+      mSortMode = ArrayColumn.COLUMN_BEHAVIOUR_NO_TRIGGER;
     }
   }
 
   @Override
-  public int getSortMode() {
-    return mSortMode;
-  }
-
-  /**
-   * This methods sets the sort mode for all columns. The columns cells may or may not take this
-   * value into account.
-   */
-  @Override
-  public void setSortMode(int mode) {
-    mSortMode = mode;
-  }
-
-  /**
-   * This method allows for the change of cell presentation values. A negative value means 'do not
-   * change this value'
-   *
-   * @param spacing
-   * @param padding
-   * @param borderWidth
-   */
-  @Override
-  public void setCellsConfiguration(int spacing, int padding, int borderWidth) {
-    if (spacing >= 0) {
-      mCellsSpacing = spacing;
-    }
-    if (padding >= 0) {
-      mCellsPadding = padding;
-    }
-    if (borderWidth >= 0) {
-      mCellsBorderWidth = borderWidth;
-    }
+  public void setLineMoveCallback(String callback) {
+    this.lineMoveCallback = callback;
   }
 
   public int getCellSpacing() {
-    return mCellsSpacing;
+    return DEFAULT_SPACING;
   }
 
   public int getCellPadding() {
-    return mCellsPadding;
-  }
-
-  public int getCellBorderWidth() {
-    return mCellsBorderWidth;
-  }
-
-  public String getPaginationJavaScriptCallback() {
-    return paginationJavaScriptCallback;
-  }
-
-  @Override
-  public void setPaginationJavaScriptCallback(String callback) {
-    paginationJavaScriptCallback = callback;
+    return DEFAULT_PADDING;
   }
 
   @Override
@@ -342,17 +291,8 @@ public class AbstractArrayPane implements ArrayPane {
     this.summary = summary;
   }
 
-  public boolean isXHTML() {
-    return xhtml;
-  }
-
   @Override
-  public void setXHTML(boolean xhtml) {
-    this.xhtml = xhtml;
-  }
-
-  @Override
-  public boolean getExportData() {
+  public boolean isExportData() {
     return exportData;
   }
 
@@ -387,13 +327,13 @@ public class AbstractArrayPane implements ArrayPane {
     return exportUrl.toString();
   }
 
-  public boolean isSortableLines() {
-    return sortableLines;
+  public boolean isMovableLines() {
+    return movableLines;
   }
 
   @Override
-  public void setSortableLines(boolean sortableLines) {
-    this.sortableLines = sortableLines;
+  public void setMovableLines(boolean movableLines) {
+    this.movableLines = movableLines;
   }
 
   public String getUrl() {
@@ -402,7 +342,7 @@ public class AbstractArrayPane implements ArrayPane {
     if (mRoutingAddress == null) {
       String address = ((HttpServletRequest) getRequest()).getRequestURI();
       // only get a relative http address
-      address = address.substring(address.lastIndexOf('/') + 1, address.length());
+      address = address.substring(address.lastIndexOf('/') + 1);
       // if the previous request had parameters, remove them
       if (address.lastIndexOf('?') >= 0) {
         address = address.substring(0, address.lastIndexOf('?'));
@@ -415,14 +355,6 @@ public class AbstractArrayPane implements ArrayPane {
 
   public String getIconsPath() {
     return GraphicElementFactory.getIconsPath();
-  }
-
-  public String getAlignement() {
-    return alignement;
-  }
-
-  public void setAlignement(String alignement) {
-    this.alignement = alignement;
   }
 
   public List<ArrayLine> getLines() {
@@ -453,20 +385,12 @@ public class AbstractArrayPane implements ArrayPane {
     sb.append("cursor: \"move\",");
     sb.append("forcePlaceholderSize: true,");
     sb.append("helper: fixArrayPaneWidthHelper,");
-    if (StringUtil.isDefined(getUpdateSortJavascriptCallback())) {
-      sb.append("update: function(e, ui){").append(getUpdateSortJavascriptCallback()).append(";}");
+    if (StringUtil.isDefined(lineMoveCallback)) {
+      sb.append("update: function(e, ui){").append(lineMoveCallback).append(";}");
     }
     sb.append("}).disableSelection();");
     sb.append("</script>");
     return sb.toString();
-  }
-
-  public String getUpdateSortJavascriptCallback() {
-    return updateSortJavascriptCallback;
-  }
-
-  public void setUpdateSortJavascriptCallback(String callback) {
-    this.updateSortJavascriptCallback = callback;
   }
 
   /**
@@ -475,7 +399,7 @@ public class AbstractArrayPane implements ArrayPane {
    * <p>For now, the elements of the pagination are not used, only max items is used</p>
    * @param paginationList the pagination list.
    */
-  void setPaginationList(final SilverpeasList paginationList) {
+  void setPaginationList(final SilverpeasList<?> paginationList) {
     this.maxCountOfPaginationList = (int) paginationList.originalListSize();
   }
 
@@ -498,7 +422,7 @@ public class AbstractArrayPane implements ArrayPane {
   /**
    * Gets the current pagination.
    * @return the {@link Pagination} instance.
-   * @param nbItems
+   * @param nbItems number of items to render in a page.
    */
   Pagination getPagination(final int nbItems) {
     if (pagination == null) {

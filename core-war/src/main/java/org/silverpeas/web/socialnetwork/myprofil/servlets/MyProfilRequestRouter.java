@@ -49,7 +49,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.socialnetwork.user.model.SNFullUser;
-import org.silverpeas.web.directory.servlets.ImageProfil;
+import org.silverpeas.web.directory.servlets.ImageProfile;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -218,7 +218,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     List<FileItem> parameters = request.getFileItems();
     String removeImageFile = FileUploadUtil.getParameter(parameters, "removeImageFile");
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
-    ImageProfil img = new ImageProfil(nameAvatar);
+    ImageProfile img = new ImageProfile(nameAvatar);
     if (file != null && StringUtil.isDefined(file.getName())) {// Create or Update
       // extension
       String extension = FileRepositoryManager.getFileExtension(file.getName());

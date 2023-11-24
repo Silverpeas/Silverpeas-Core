@@ -26,6 +26,7 @@ package org.silverpeas.web.directory.model;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contact.model.CompleteContact;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -72,12 +73,6 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
     super.add(new ContactItem(contact));
   }
 
-  public void addContacts(List<CompleteContact> contacts) {
-    for (CompleteContact contact : contacts) {
-      add(contact);
-    }
-  }
-
   public void addContactItems(DirectoryItemList contactItems) {
     super.addAll(contactItems);
   }
@@ -87,6 +82,7 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
   }
 
   @Override
+  @Nonnull
   public DirectoryItemList subList(int fromIndex, int toIndex) {
     return new DirectoryItemList(super.subList(fromIndex, toIndex));
   }

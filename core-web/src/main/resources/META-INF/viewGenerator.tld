@@ -67,6 +67,15 @@
     </attribute>
     <attribute>
       <description>
+        An explanation of the image that will be rendered when hovered by the mouse.
+      </description>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
         An explicit size of the targeted image. This attribute is applied over the type one. It is
         predominant over the type attribute. The path of the image is then computed according to
         this size. The size should be in the form of WIDTHxHEIGH with WIDTH the width in pixels of
@@ -1088,15 +1097,8 @@
       <type>boolean</type>
     </attribute>
     <attribute>
-      <description>URL to be used to export data.</description>
-      <name>exportURL</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <description>Defines if lines can be explicitly sorted</description>
-      <name>sortableLines</name>
+      <description>Defines if the lines can be explicitly reordered by hand.</description>
+      <name>movableLines</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
@@ -1109,8 +1111,11 @@
       <type>java.lang.Integer</type>
     </attribute>
     <attribute>
-      <description>Defines the javascript callback to call on a line move action</description>
-      <name>moveLineJsCallback</name>
+      <description>
+        Defines the javascript callback to call on a line move action, when the lines are reordered
+        by hand by the user.
+      </description>
+      <name>onLineMove</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
@@ -1306,8 +1311,23 @@
       <type>java.lang.Boolean</type>
     </attribute>
     <attribute>
-      <description>Permits to define css classes</description>
+      <description>Allows to define css classes</description>
       <name>classes</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>readonly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Javascript action to perform on some events. For example: onchange='doSomething(this)'
+      </description>
+      <name>action</name>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>

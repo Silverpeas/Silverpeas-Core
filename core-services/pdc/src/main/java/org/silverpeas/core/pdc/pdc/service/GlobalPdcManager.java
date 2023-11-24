@@ -26,12 +26,7 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverpeasContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.*;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
@@ -59,15 +54,7 @@ import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -2222,8 +2209,8 @@ public class GlobalPdcManager implements PdcManager {
               if (contentP != null) {
                 // we are going to search only SilverContent of this instanceId
                 final SilverpeasContentManager contentManager = contentP.getContentManager();
-                //noinspection removal
-                final List<SilverContentInterface> localSilverContents =
+                //noinspection
+                final var localSilverContents =
                     contentManager.getSilverContentByReference(references, userId);
                 if (localSilverContents != null) {
                   final GlobalSilverContentProcessor processor =

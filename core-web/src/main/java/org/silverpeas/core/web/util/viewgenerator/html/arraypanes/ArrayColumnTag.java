@@ -40,7 +40,7 @@ public class ArrayColumnTag extends BodyTagSupport {
   private static final long serialVersionUID = 1L;
   private String title;
   private Boolean sortable;
-  private LambdaExpression compareOn;
+  private transient LambdaExpression compareOn;
   private String width;
 
   @Override
@@ -97,7 +97,7 @@ public class ArrayColumnTag extends BodyTagSupport {
       this.compareOn = compareOn;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void configure() {
       if (compareOn != null) {
         compareOn.setELContext(tag.pageContext.getELContext());

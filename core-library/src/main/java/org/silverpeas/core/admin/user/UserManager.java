@@ -25,11 +25,7 @@ package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
-import org.silverpeas.core.admin.persistence.GroupUserRoleTable;
-import org.silverpeas.core.admin.persistence.OrganizationSchema;
-import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
-import org.silverpeas.core.admin.persistence.UserRoleRow;
+import org.silverpeas.core.admin.persistence.*;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.UserAlreadyExistsAdminException;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
@@ -64,7 +60,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_X509_USER;
@@ -106,51 +101,6 @@ public class UserManager {
    */
   public static UserManager get() {
     return ServiceProvider.getService(UserManager.class);
-  }
-
-  /**
-   * Gets all the domains in which there is a user with the specified login.
-   *
-   * @param login the login of a user in a domain.
-   * @return the list of domain identifiers in which there is a user with the given login.
-   * @throws AdminException if the getting of the domains fails.
-   */
-  public List<String> getDomainsByUserLogin(String login) throws AdminException {
-    try (Connection connection = DBUtil.openConnection()) {
-      return userDAO.getDomainsContainingLogin(connection, login);
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("domains having user login", login), e);
-    }
-  }
-
-  /**
-   * Is the user with the specified identifier exists in Silverpeas?
-   * @param id the unique identifier of the user to check its existance.
-   * @return true if such a user exist or false otherwise.
-   */
-  public boolean isUserExisting(final String id) throws AdminException {
-    try (Connection connection = DBUtil.openConnection()) {
-      return userDAO.isUserByIdExists(connection, id);
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("the existence of user", id), e);
-    }
-  }
-
-  /**
-   * Gets the number of users in the specified domain.
-   * @param domainId the unique identifier of the domain.
-   * @return the user count in the given domain.
-   * @throws AdminException if an error occurs while counting the user in the domain.
-   */
-  public int getNumberOfUsersInDomain(String domainId) throws
-      AdminException {
-    try (Connection connection = DBUtil.openConnection()) {
-      return userDAO.getUserCountByCriteria(connection,
-          new UserDetailsSearchCriteria().onDomainIds(domainId)
-              .onUserStatesToExclude(UserState.REMOVED));
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("user count in domain", domainId), e);
-    }
   }
 
   /**
@@ -224,7 +174,7 @@ public class UserManager {
 
   public List<String> getDirectUserIdsInRole(final String roleId, final boolean includeRemoved)
       throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUserIdsByUserRole(connection, roleId, includeRemoved);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in role", roleId), e);
@@ -233,18 +183,10 @@ public class UserManager {
 
   public List<String> getDirectUserIdsInSpaceRole(final String spaceRoleId,
       final boolean includeRemoved) throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUserIdsBySpaceUserRole(connection, spaceRoleId, includeRemoved);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in space role", spaceRoleId), e);
-    }
-  }
-
-  public List<String> getDirectUserIdsInGroupRole(final String groupRoleId) throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
-      return userDAO.getDirectUserIdsByGroupUserRole(connection, groupRoleId, false);
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("users in group role", groupRoleId), e);
     }
   }
 
@@ -290,7 +232,7 @@ public class UserManager {
   /**
    * Gets the identifier of all the users that belong to the specified domain.
    * @param sDomainId the unique identifier of the domain in Silverpeas.
-   * @return an array with all the user identifiers.
+   * @return a list with all the user identifiers.
    * @throws AdminException if the getting of the user identifiers fails.
    */
   public List<String> getAllUserIdsInDomain(String sDomainId) throws
@@ -325,7 +267,7 @@ public class UserManager {
    * @throws AdminException if the getting of the user identifiers fails.
    */
   public String[] getUserIdsByDomainAndByAccessLevel(String sDomainId,
-          UserAccessLevel accessLevel) throws AdminException {
+      UserAccessLevel accessLevel) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       List<String> userIds =
           userDAO.getUserIdsByAccessLevelInDomain(connection, accessLevel, sDomainId);
@@ -359,7 +301,7 @@ public class UserManager {
 
   /**
    * Gets the identifier of all the users in Silverpeas.
-   * @return an array with the identifier of all the users in Silverpeas.
+   * @return a list with the identifier of all the users in Silverpeas.
    * @throws AdminException if an error occurs while getting all the user identifiers.
    */
   public List<String> getAllUsersIds() throws AdminException {
@@ -466,7 +408,7 @@ public class UserManager {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUsersBySpecificIds(connection, domainId, specificIds);
     } catch (Exception e) {
-      String sSpecificIds = specificIds.stream().collect(Collectors.joining(", "));
+      String sSpecificIds = String.join(", ", specificIds);
       throw new AdminException(
           failureOnGetting("users with specific ids " + sSpecificIds, IN_DOMAIN + domainId), e);
     }
@@ -558,7 +500,7 @@ public class UserManager {
       return "";
     }
 
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       SynchroDomainReport.debug(USERMANAGER_SYNCHRO_REPORT + addUser,
           "Ajout de l'utilisateur " + userDetail.getSpecificId() + " dans la base...");
       final String alreadyExistingUserId = userDAO
@@ -668,7 +610,7 @@ public class UserManager {
   public String deleteUser(UserDetail user, boolean onlyInSilverpeas)
       throws AdminException {
     final String deleteUser = ".deleteUser()";
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       // Send the delayed notifications of the user to delete
       delayedNotificationOfUserDeletion(user);
 
@@ -721,7 +663,7 @@ public class UserManager {
       throw new AdminException(
           "The user " + user.getId() + " cannot be blanked because it is not deleted!");
     }
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       userDAO.blankUser(connection, user);
     } catch (SQLException e) {
       throw new AdminException("Cannot blank the user " + user.getId(), e);
@@ -763,7 +705,8 @@ public class UserManager {
     SpaceUserRoleRow[] spaceRoles =
         organizationSchema.spaceUserRole().getDirectSpaceUserRolesOfUser(userIdAsInt);
     for (SpaceUserRoleRow spaceRole : spaceRoles) {
-      organizationSchema.spaceUserRole().removeUserFromSpaceUserRole(userIdAsInt, spaceRole.getId());
+      organizationSchema.spaceUserRole().removeUserFromSpaceUserRole(userIdAsInt,
+          spaceRole.getId());
     }
 
     GroupUserRoleTable groupUserRoleTable = OrganizationSchema.get().groupUserRole();
@@ -807,7 +750,7 @@ public class UserManager {
    * @throws AdminException if an error occurs while updating the user.
    */
   public String updateUser(UserDetail user, final boolean indexation) throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       // update the user node in Silverpeas
       SynchroDomainReport.debug("UserManager.updateUser()",
           "Maj de l'utilisateur " + user.getSpecificId() + " dans la base...");
@@ -835,7 +778,7 @@ public class UserManager {
    * @throws AdminException if the update fails.
    */
   public String updateUserFull(UserFull userFull) throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       domainDriverManager.updateUserFull(userFull);
       userDAO.updateUser(connection, userFull);
       return userFull.getId();
@@ -934,6 +877,25 @@ public class UserManager {
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("deleted users in domains", String.join(", ", domainIds)), e);
+    }
+  }
+
+  /**
+   * Gets all the users in the specified user domains that have sensitive information.
+   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
+   * are passed, then all the domains are taken by the request.
+   * @return a list of user details.
+   * @throws AdminException if the users with sensitive data cannot be fetched or in an unexpected
+   * exception is thrown.
+   */
+  public List<UserDetail> getUsersWithSensitiveData(final String... domainIds)
+      throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return userDAO.getUsersWithSensitiveData(connection, domainIds);
+    } catch (Exception e) {
+      throw new AdminException(
+          failureOnGetting("Users with sensitive data in domains",
+              String.join(", ", domainIds)), e);
     }
   }
 

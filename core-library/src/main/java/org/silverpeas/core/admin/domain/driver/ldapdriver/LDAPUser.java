@@ -248,7 +248,6 @@ public class LDAPUser {
         getFirstAttributeValue(ldapUser, driverSettings.getUsersLastNameField()));
     silverpeasDistantUser.setEmailAddress(
         getFirstAttributeValue(ldapUser, driverSettings.getUsersEmailField()));
-    silverpeasDistantUser.setSensitiveEmail(driverSettings.isUsersSensitiveEmail());
 
     silverpeasDistantUser.setAccessLevel(null); // Put the default access level (user)...
   }

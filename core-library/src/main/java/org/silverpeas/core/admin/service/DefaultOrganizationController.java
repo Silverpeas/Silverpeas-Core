@@ -21,57 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/*
- * @author Norbert CHAIX
- * @version 1.0
- * date 14/09/2000
- */
 package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.component.model.ToolInstance;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.GroupDetail;
-import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
-import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.ListSlice;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.SilverpeasArrayList;
-import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,22 +46,9 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
 
-/**
- * This object is used by all the admin jsp such as SpaceManagement, UserManagement,
- * etc... It provides access functions to query and modify the domains as well as the company
- * organization It should be used only by a client that has the administrator rights. The
- * OrganizationController extends {@link AdministrationServiceProvider]} that maintains a static
- * reference to an {@link Administration} instance. During the initialization of the Admin
- * instance, some computations require services published by the underlying IoC container. So,
- * an instance of OrganizationController is created by the IoC container and published under the
- * name 'organizationController' so that the initialization of the static Admin instance can be
- * performed correctly within the execution context of IoC container.
- */
 @Service
 @Singleton
 public class DefaultOrganizationController implements OrganizationController {
-
-  private static final long serialVersionUID = 3435241972671610107L;
 
   @Inject
   private Administration admin;
@@ -175,7 +129,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public String[] getAvailCompoIdsAtRoot(String sClientSpaceId, String sUserId) {
     try {
-     return getAdminService().getAvailCompoIdsAtRoot(sClientSpaceId, sUserId);
+      return getAdminService().getAvailCompoIdsAtRoot(sClientSpaceId, sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return ArrayUtil.emptyStringArray();
@@ -236,7 +190,8 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
       final Collection<String> componentIds, final Collection<String> paramNames) {
-    return getAdminService().getParameterValuesByComponentIdThenByParamName(componentIds, paramNames);
+    return getAdminService().getParameterValuesByComponentIdThenByParamName(componentIds,
+        paramNames);
   }
 
   // -------------------------------------------------------------------
@@ -285,7 +240,8 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public UserFull getUserFull(String sUserId) {
     try {
-      return getAdminService().getUserFull(sUserId);
+      User requester = User.getCurrentRequester();
+      return removeSensitiveData(getAdminService().getUserFull(sUserId), requester);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -295,7 +251,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public List<UserFull> getUserFulls(final Collection<String> userIds) {
     try {
-      return getAdminService().getUserFulls(userIds);
+      return removeSensitiveData(getAdminService().getUserFulls(userIds));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return emptyList();
@@ -306,7 +262,8 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public UserDetail getUserDetail(String sUserId) {
     try {
-      return getAdminService().getUserDetail(sUserId);
+      User requester = User.getCurrentRequester();
+      return removeSensitiveData(getAdminService().getUserDetail(sUserId), requester);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -317,7 +274,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public UserDetail[] getUserDetails(String[] asUserIds) {
     try {
-      return getAdminService().getUserDetails(asUserIds);
+      return removeSensitiveData(getAdminService().getUserDetails(asUserIds));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new UserDetail[0];
@@ -329,7 +286,7 @@ public class DefaultOrganizationController implements OrganizationController {
   public UserDetail[] getAllUsers(String componentId) {
     try {
       if (componentId != null) {
-        return getAdminService().getUsers(true, null, componentId);
+        return removeSensitiveData(getAdminService().getUsers(true, null, componentId));
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
@@ -342,7 +299,7 @@ public class DefaultOrganizationController implements OrganizationController {
   public UserDetail[] getAllUsersInDomain(String domainId) {
     try {
       if (domainId != null) {
-        return getAdminService().getUsersOfDomain(domainId);
+        return removeSensitiveData(getAdminService().getUsersOfDomain(domainId));
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
@@ -354,7 +311,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public <T extends User> List<T> getUsersOfDomains(List<String> domainIds) {
     try {
-      return (List<T>) getAdminService().getUsersOfDomains(domainIds);
+      return (List<T>) removeSensitiveData(getAdminService().getUsersOfDomains(domainIds));
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -365,7 +322,8 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public <T extends User> List<T> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) {
     try {
-      return (List<T>) getAdminService().getUsersOfDomainsFromNewestToOldest(domainIds);
+      return (List<T>) removeSensitiveData(
+          getAdminService().getUsersOfDomainsFromNewestToOldest(domainIds));
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -376,7 +334,8 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public <T extends User> SilverpeasList<T> searchUsers(final UserDetailsSearchCriteria criteria) {
     try {
-      final SilverpeasList<UserDetail> userDetails = getAdminService().searchUsers(criteria);
+      final SilverpeasList<UserDetail> userDetails = SilverpeasList.wrap(
+          removeSensitiveData(getAdminService().searchUsers(criteria)));
       return (SilverpeasList<T>) userDetails;
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
@@ -401,7 +360,8 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public UserDetail[] getFilteredDirectUsers(String sGroupId, String sUserLastNameFilter) {
     try {
-      return getAdminService().getFilteredDirectUsers(sGroupId, sUserLastNameFilter);
+      return removeSensitiveData(
+          getAdminService().getFilteredDirectUsers(sGroupId, sUserLastNameFilter));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new UserDetail[0];
@@ -455,7 +415,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public UserDetail[] getAllUsers() {
     try {
-      return getAdminService().getAllUsers().toArray(new UserDetail[0]);
+      return removeSensitiveData(getAdminService().getAllUsers().toArray(new UserDetail[0]));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new UserDetail[0];
@@ -468,7 +428,7 @@ public class DefaultOrganizationController implements OrganizationController {
     try {
       UserDetail[] aUserDetail = null;
       if (componentId != null) {
-        aUserDetail = getAdminService().getUsers(false, profile, componentId);
+        aUserDetail = removeSensitiveData(getAdminService().getUsers(false, profile, componentId));
       }
       return aUserDetail;
     } catch (Exception e) {
@@ -564,7 +524,8 @@ public class DefaultOrganizationController implements OrganizationController {
   public Map<String, List<String>> getUserObjectProfiles(final String userId,
       final String componentId, final ProfiledObjectType profiledObjectType) {
     try {
-      return getAdminService().getProfilesByObjectTypeAndUserId(profiledObjectType, componentId, userId);
+      return getAdminService().getProfilesByObjectTypeAndUserId(profiledObjectType, componentId,
+          userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return Collections.emptyMap();
@@ -618,13 +579,13 @@ public class DefaultOrganizationController implements OrganizationController {
   @SuppressWarnings("unchecked")
   @Override
   public Group[] getGroups(String[] groupsId) {
-    Group[] retour = null;
+    Group[] groups = null;
     try {
-      retour = getAdminService().getGroups(groupsId);
+      groups = getAdminService().getGroups(groupsId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return retour;
+    return groups;
   }
 
   @SuppressWarnings("unchecked")
@@ -656,7 +617,7 @@ public class DefaultOrganizationController implements OrganizationController {
   public UserDetail[] getAllUsersOfGroup(String groupId) {
 
     try {
-      return getAdminService().getAllUsersOfGroup(groupId);
+      return removeSensitiveData(getAdminService().getAllUsersOfGroup(groupId));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new UserDetail[0];
@@ -748,7 +709,8 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName) {
+  public List<SpaceInstLight> getRootSpacesContainingComponent(String userId,
+      String componentName) {
     try {
       return getAdminService().getRootSpacesContainingComponent(userId, componentName);
     } catch (AdminException e) {
@@ -860,7 +822,8 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailableToUser(ProfiledObjectId objectId, String componentId, String userId) {
+  public boolean isObjectAvailableToUser(ProfiledObjectId objectId, String componentId,
+      String userId) {
     try {
       return getAdminService().isObjectAvailableToUser(componentId, objectId, userId);
     } catch (Exception e) {
@@ -870,7 +833,8 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailableToGroup(ProfiledObjectId objectId, String componentId, String groupId) {
+  public boolean isObjectAvailableToGroup(ProfiledObjectId objectId, String componentId,
+      String groupId) {
     try {
       return getAdminService().isObjectAvailableToGroup(componentId, objectId, groupId);
     } catch (Exception e) {
@@ -953,7 +917,8 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId, List<String> profileNames) {
+  public String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId,
+      List<String> profileNames) {
     return getUsersIdsByRoleNames(componentId, objectId, profileNames, false);
   }
 
@@ -973,7 +938,8 @@ public class DefaultOrganizationController implements OrganizationController {
         return ArrayUtil.emptyStringArray();
       } // else return all users !!
 
-      List<String> userIds = getAdminService().searchUserIdsByProfile(profileIds, includeRemovedUsersAndGroups);
+      List<String> userIds = getAdminService().searchUserIdsByProfile(profileIds,
+          includeRemovedUsersAndGroups);
       return userIds.toArray(new String[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
@@ -1034,11 +1000,6 @@ public class DefaultOrganizationController implements OrganizationController {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return ArrayUtil.emptyStringArray();
     }
-  }
-
-  @Override
-  public boolean isAnonymousAccessActivated() {
-    return UserDetail.isAnonymousUserExist();
   }
 
   @Override
@@ -1173,5 +1134,47 @@ public class DefaultOrganizationController implements OrganizationController {
       return getPathToSpace(componentInstance.get().getSpaceId());
     }
     return new ArrayList<>();
+  }
+
+  private UserDetail[] removeSensitiveData(final UserDetail[] userDetails) {
+    List<UserDetail> results = removeSensitiveData(Arrays.asList(userDetails));
+    return results.toArray(new UserDetail[0]);
+  }
+
+  private <T extends UserDetail> List<T> removeSensitiveData(final List<T> users) {
+    User requester = User.getCurrentRequester();
+    if (!users.isEmpty() && requester != null) {
+      users.replaceAll(u -> removeSensitiveData(u, requester));
+    }
+    return users;
+  }
+
+  private <T extends UserDetail> T removeSensitiveData(T user, final User requester) {
+    if (user != null && requester != null && !requester.getId().equals(user.getId()) &&
+        hasNotDomainAdminRights(requester, user.getDomainId())) {
+      return removeSensitiveDataForNonAdmin(user);
+    }
+    return user;
+  }
+
+  private <T extends UserDetail> T removeSensitiveDataForNonAdmin(T user) {
+    if (user.hasSensitiveData()) {
+      user.setEmailAddress("");
+      if (user instanceof UserFull) {
+        UserFull userFull = (UserFull) user;
+        String[] properties = userFull.getPropertiesNames();
+        Stream.of(properties)
+            .map(userFull::getProperty)
+            .filter(DomainProperty::isSensitive)
+            .forEach(p -> userFull.setValue(p.getName(), null));
+      }
+    }
+    return user;
+  }
+
+  private boolean hasNotDomainAdminRights(User user, String domainId) {
+    return !((user.isAccessAdmin() ||
+        (user.isAccessDomainManager() && user.getDomainId().equals(domainId))) &&
+        (!user.isDomainRestricted() || !user.isDomainAdminRestricted()));
   }
 }

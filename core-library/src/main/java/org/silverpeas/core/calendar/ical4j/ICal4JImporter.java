@@ -38,12 +38,7 @@ import net.fortuna.ical4j.util.CompatibilityHints;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.calendar.CalendarComponent;
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.CalendarEventOccurrenceBuilder;
-import org.silverpeas.core.calendar.Recurrence;
-import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
@@ -64,12 +59,7 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -177,7 +167,7 @@ public class ICal4JImporter implements ICalendarImporter {
       Mutable<String> icsContent = Mutable.of(IOUtils.toString(descriptor.getInputStream(),
           Charsets.UTF_8));
       Arrays.stream(replacements.split(";")).map(r -> {
-        String[] replacement = r.split("[/]");
+        String[] replacement = r.split("/");
         return Pair.of(replacement[0], replacement[1]);
       }).forEach(r -> {
         String previous = icsContent.get();
@@ -221,9 +211,8 @@ public class ICal4JImporter implements ICalendarImporter {
     // Categories
     if (vEvent.getProperty(Property.CATEGORIES) != null) {
       Categories categories = vEvent.getProperty(Property.CATEGORIES);
-      Iterator<String> categoriesIt = categories.getCategories().iterator();
-      while (categoriesIt.hasNext()) {
-        event.getCategories().add(categoriesIt.next());
+      for (String s : categories.getCategories()) {
+        event.getCategories().add(s);
       }
     }
 

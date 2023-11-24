@@ -270,13 +270,13 @@ public class CompleteContact implements Contact, Serializable {
 
   public void removeForm() throws PublicationTemplateException, FormException {
     if (isFormDefined()) {
-      // recuperation des donnees du formulaire (via le DataRecord)
+      // fetch the form data (through the DataRecord)
       PublicationTemplate pubTemplate =
           PublicationTemplateManager.getInstance().getPublicationTemplate(
               getFullTemplateId());
       RecordSet recordSet = pubTemplate.getRecordSet();
       DataRecord data = recordSet.getRecord(getPK().getId());
-      recordSet.delete(data);
+      recordSet.delete(data.getId());
     }
   }
 

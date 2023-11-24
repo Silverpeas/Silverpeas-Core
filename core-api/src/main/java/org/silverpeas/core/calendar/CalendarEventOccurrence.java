@@ -154,17 +154,8 @@ public class CalendarEventOccurrence
    * @param occurrenceStartDate a start date.
    * @return the computed occurrence identifier.
    */
-  public static Optional<CalendarEventOccurrence> getBy(CalendarEvent event, String occurrenceStartDate) {
-    return getBy(event, getDate(occurrenceStartDate));
-  }
-
-  /**
-   * Gets optionally an event occurrence from the specified data.
-   * @param event an event.
-   * @param occurrenceStartDate a start date.
-   * @return the computed occurrence identifier.
-   */
-  public static Optional<CalendarEventOccurrence> getBy(CalendarEvent event, Temporal occurrenceStartDate) {
+  public static Optional<CalendarEventOccurrence> getBy(CalendarEvent event,
+      Temporal occurrenceStartDate) {
     Temporal startDate = occurrenceStartDate;
     if (startDate instanceof OffsetDateTime) {
       startDate = ((OffsetDateTime) occurrenceStartDate).atZoneSameInstant(ZoneOffset.UTC)

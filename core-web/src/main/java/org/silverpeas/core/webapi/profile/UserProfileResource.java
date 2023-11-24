@@ -95,8 +95,9 @@ public class UserProfileResource extends RESTWebService {
   private RelationShipService relationShipService;
 
   /**
-   * Gets the profile of the user whose the API token is either passed in the {@code Authorization} HTTP header (Bearer
-   * authentication scheme, IETF RFC 6750) or with the query parameter {@code access_token} (see IETF RFC 6750).
+   * Gets the profile of the user whose the API token is either passed in the {@code
+   * Authorization} HTTP header (Bearer authentication scheme, IETF RFC 6750) or with the query
+   * parameter {@code access_token} (see IETF RFC 6750).
    * <p>
    * This endpoint works also with a basic authentication instead of a bearer one.
    * </p>
@@ -173,7 +174,8 @@ public class UserProfileResource extends RESTWebService {
     if (getUser().isDomainRestricted()) {
       effectiveDomainIds = Collections.singletonList(getUser().getDomainId());
     }
-    UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
+    UserProfilesSearchCriteriaBuilder criteriaBuilder =
+        UserProfilesSearchCriteriaBuilder.aSearchCriteria()
         .withDomainIds(effectiveDomainIds.toArray(new String[0]))
         .withGroupIds(groupIds.toArray(new String[0]))
         .withName(name)
@@ -189,9 +191,10 @@ public class UserProfileResource extends RESTWebService {
     // Users to exclude by their state
     setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
 
-    SilverpeasList<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
+    SilverpeasList<UserDetail> users =
+        getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
-        asWebEntity(users, locatedAt(getUri().getAbsolutePath()))).
+            asWebEntity(users, locatedAt(getUri().getAbsolutePath()))).
         header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, users.originalListSize()).build();
   }
@@ -289,7 +292,8 @@ public class UserProfileResource extends RESTWebService {
     if (getUser().isDomainRestricted()) {
       domainIds = Collections.singletonList(getUser().getDomainId());
     }
-    UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
+    UserProfilesSearchCriteriaBuilder criteriaBuilder =
+        UserProfilesSearchCriteriaBuilder.aSearchCriteria()
         .withDomainIds(domainIds.toArray(new String[0]))
         .withComponentInstanceId(instanceId)
         .withRoles(roleNames, matchingAllRoles)
@@ -301,10 +305,11 @@ public class UserProfileResource extends RESTWebService {
     // Users to exclude by their state
     setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
 
-    SilverpeasList<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
+    SilverpeasList<UserDetail> users =
+        getOrganisationController().searchUsers(criteriaBuilder.build());
     URI usersUri = getUri().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
-        asWebEntity(users, locatedAt(usersUri))).
+            asWebEntity(users, locatedAt(usersUri))).
         header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, users.originalListSize()).build();
   }
@@ -356,7 +361,8 @@ public class UserProfileResource extends RESTWebService {
     String[] contactIds = getContactIds(theUser.getId());
     SilverpeasList<UserDetail> contacts;
     if (contactIds.length > 0) {
-      UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
+      UserProfilesSearchCriteriaBuilder criteriaBuilder =
+          UserProfilesSearchCriteriaBuilder.aSearchCriteria()
           .withComponentInstanceId(instanceId)
           .withDomainIds(domainId)
           .withRoles(roleNames, matchingAllRoles)
@@ -374,7 +380,7 @@ public class UserProfileResource extends RESTWebService {
     }
     URI usersUri = getUri().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
-        asWebEntity(contacts, locatedAt(usersUri))).
+            asWebEntity(contacts, locatedAt(usersUri))).
         header(RESPONSE_HEADER_USERSIZE, contacts.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, contacts.originalListSize()).build();
   }
@@ -430,7 +436,7 @@ public class UserProfileResource extends RESTWebService {
         equals(getUser().getDomainId())) {
       Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
           + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
-            userId});
+          userId});
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

@@ -32,10 +32,15 @@ public class ArrayCellCheckboxTag extends AbstractArrayCellTag {
   private String name;
   private String value;
   private boolean checked;
+  private boolean readOnly = false;
+  private String action = "";
 
   @Override
   ArrayCell doCreateCell() {
-    return getArrayLine().addArrayCellCheckbox(name, getContentValue(value), checked);
+    ArrayCellCheckbox checkbox = getArrayLine().addArrayCellCheckbox(name, getContentValue(value),
+        action, checked);
+    checkbox.setReadOnly(readOnly);
+    return checkbox;
   }
 
   public void setName(final String name) {
@@ -48,5 +53,17 @@ public class ArrayCellCheckboxTag extends AbstractArrayCellTag {
 
   public void setChecked(final boolean checked) {
     this.checked = checked;
+  }
+
+  public void setReadonly(boolean readOnly) {
+    this.readOnly = readOnly;
+  }
+
+  public String getAction() {
+    return action;
+  }
+
+  public void setAction(String action) {
+    this.action = action;
   }
 }

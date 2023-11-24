@@ -250,7 +250,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       final ExportCSVBuilder csvBuilder = directorySC.export();
       return csvBuilder.setupRequest(request);
     } catch (Exception e) {
-      throw new DirectoryException("DirectoryRequestRouter", "CSV export error", e);
+      throw new DirectoryException("CSV export error", e);
     }
   }
 
@@ -265,10 +265,6 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     }
   }
 
-  /**
-   * do pagination
-   * @param request
-   */
   private String doPagination(HttpRequest request, DirectoryItemList users,
       DirectorySessionController directorySC) {
     boolean doNotUseExtraForm = request.getParameterAsBoolean("DoNotUseExtraForm");

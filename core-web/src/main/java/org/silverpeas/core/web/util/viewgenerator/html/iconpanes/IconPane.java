@@ -41,51 +41,17 @@ import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
  */
 public interface IconPane extends SimpleGraphicElement {
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public Icon addIcon();
+  Icon addIcon();
 
   /**
    * Return an icon using the 1px image
    * @return an Icon
    *
    */
-  public Icon addEmptyIcon();
+  Icon addEmptyIcon();
 
-  /**
-   * Method declaration
-   *
-   */
-  public void setVerticalPosition();
+  void setSpacing(String space);
 
-  /**
-   * Method declaration
-   * @param width
-   *
-   */
-  public void setVerticalWidth(String width);
-
-  /**
-   * Method declaration
-   *
-   */
-  public void setHorizontalPosition();
-
-  /**
-   * Method declaration
-   * @param space
-   *
-   */
-  public void setSpacing(String space);
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String print();
+  String print();
 
 }

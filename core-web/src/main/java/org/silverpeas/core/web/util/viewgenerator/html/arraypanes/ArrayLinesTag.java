@@ -51,16 +51,15 @@ public class ArrayLinesTag extends ForEachTag {
     final ArrayPane arrayPane = getArrayPane();
     if (items instanceof List && arrayPane instanceof ArrayPaneSilverpeasV5) {
       final ArrayPaneSilverpeasV5 spArrayPane = (ArrayPaneSilverpeasV5) arrayPane;
-      optimize(spArrayPane, (List) items);
+      optimize(spArrayPane, (List<?>) items);
     } else {
       super.setItems(items);
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private void optimize(final ArrayPaneSilverpeasV5 spArrayPane, final List list)
+  private void optimize(final ArrayPaneSilverpeasV5 spArrayPane, final List<?> list)
       throws JspTagException {
-    final SilverpeasList silverpeasList = SilverpeasList.wrap(list);
+    final SilverpeasList<?> silverpeasList = SilverpeasList.wrap(list);
     final HttpRequest httpRequest = HttpRequest.decorate(pageContext.getRequest());
     final boolean isAjaxExportAction = httpRequest.getParameterAsBoolean(AJAX_EXPORT_PARAMETER_NAME);
     if (silverpeasList.isSlice()) {
@@ -87,7 +86,7 @@ public class ArrayLinesTag extends ForEachTag {
         // Getting (and initializing) the pagination
         final Pagination pagination = spArrayPane.getPagination(list.size());
         // Computing the paginated list
-        final SilverpeasList paginatedList = pagination.getPaginatedListFrom(silverpeasList);
+        final SilverpeasList<?> paginatedList = pagination.getPaginatedListFrom(silverpeasList);
         // Set the new paginated list as items provider
         spArrayPane.setPaginationList(paginatedList);
         super.setItems(paginatedList);
@@ -95,13 +94,13 @@ public class ArrayLinesTag extends ForEachTag {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private void sort(final ArrayPaneSilverpeasV5 spArrayPane, final List list) {
+  private void sort(final ArrayPaneSilverpeasV5 spArrayPane, final List<?> list) {
     List<ArrayColumn> columns = spArrayPane.getColumns();
     final int columnToSort = spArrayPane.getColumnToSort();
     final int columnIndex = Math.abs(columnToSort) - 1;
     if (0 <= columnIndex && columnIndex < columns.size()) {
-      final BiFunction compareOn = columns.get(columnIndex).getCompareOn();
+      final BiFunction<Object, Integer, Comparable<Object>> compareOn =
+          columns.get(columnIndex).getCompareOn();
       if (compareOn != null) {
         boolean asc = columnToSort >= 0;
         list.sort(new OptimizedLineComparator(columnIndex, asc, compareOn));
@@ -117,12 +116,12 @@ public class ArrayLinesTag extends ForEachTag {
     private static final long serialVersionUID = 8089102273880269806L;
 
     final int columnIndex;
-    final List<BiFunction<Object, Integer, Comparable>> compareOnList;
+    final transient List<BiFunction<Object, Integer, Comparable<Object>>> compareOnList;
     final boolean asc;
 
     @SafeVarargs
     private OptimizedLineComparator(final int columnIndex, final boolean asc,
-        final BiFunction<Object, Integer, Comparable>... compareOnList) {
+        final BiFunction<Object, Integer, Comparable<Object>>... compareOnList) {
       super();
       this.columnIndex = columnIndex;
       this.compareOnList = Arrays.stream(compareOnList).collect(Collectors.toList());

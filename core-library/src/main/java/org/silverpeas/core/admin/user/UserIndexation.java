@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.user;
 
+import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
@@ -66,23 +67,28 @@ public class UserIndexation {
             OBJECT_TYPE, userId));
         indexEntry.setLastModificationDate(new Date());
         indexEntry.setTitle(user.getDisplayedName());
-        indexEntry.setPreview(user.getEmailAddress());
+        if (! user.hasSensitiveData()) {
+          indexEntry.setPreview(user.getEmailAddress());
+        }
         indexEntry.addTextContent(StringUtil.normalizeByRemovingAccent(user.getDisplayedName()));
 
-        // index some usefull informations
+        // index some useful information
         indexEntry.addField("FirstName", user.getFirstName());
         indexEntry.addField("LastName", user.getLastName());
         indexEntry.addField("DomainId", user.getDomainId());
         indexEntry.addField("AccessLevel", user.getAccessLevel().code());
 
-        // index extra informations
+        // index extra information
         String[] propertyNames = user.getPropertiesNames();
         StringBuilder extraValues = new StringBuilder(50);
         for (String propertyName : propertyNames) {
-          String extraValue = user.getValue(propertyName);
-          indexEntry.addField(propertyName, extraValue);
-          extraValues.append(extraValue);
-          extraValues.append(" ");
+          DomainProperty property = user.getProperty(propertyName);
+          if (! property.isSensitive()) {
+            String extraValue = user.getValue(propertyName);
+            indexEntry.addField(propertyName, extraValue);
+            extraValues.append(extraValue);
+            extraValues.append(" ");
+          }
         }
         indexEntry.addTextContent(extraValues.toString());
 

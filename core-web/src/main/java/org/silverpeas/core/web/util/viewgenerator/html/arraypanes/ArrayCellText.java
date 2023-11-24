@@ -27,39 +27,28 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
+import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
-/**
- * Class declaration
- * @author
- */
-public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Comparable {
+public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
+    Comparable<Object> {
 
   private String text;
   private Object lazyInstance;
   private Function<Object, String> lazyText;
-  private String alignement = null;
   private String color = null;
-  private String valignement = null;
-  private boolean noWrap = false;
 
-  private Comparable compareOn = null;
+  private Comparable<?> compareOn = null;
 
-  /**
-   * Constructor declaration
-   * @param text
-   * @param line
-   * @see
-   */
   public ArrayCellText(String text, ArrayLine line) {
-    super(line);
+    super(text, line);
     this.text = text;
   }
 
   /**
-   * The text of the cell is computed from a {@link Function<T,String>} applied to the given
+   * The text of the cell is computed from a {@link Function} applied to the given
    * instance parameter.<br>
    * The function takes in input the given instance and the result must be a {@link String}.<br>
    * The advantage of this way of use is that the text is computed only when the line is displayed.
@@ -72,14 +61,11 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
    */
   @SuppressWarnings("unchecked")
   public <T> ArrayCellText(T instance, Function<T, String> lazyText, ArrayLine line) {
-    super(line);
+    super(null, line);
     this.lazyInstance = instance;
-    this.lazyText = (Function) lazyText;
+    this.lazyText = (Function<Object, String>) lazyText;
   }
 
-  /**
-   * @return
-   */
   public String getText() {
     if (text == null && lazyInstance != null && lazyText != null) {
       text = defaultStringIfNotDefined(
@@ -88,89 +74,16 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
     return text;
   }
 
-  /**
-   * @return
-   */
-  public String getAlignement() {
-    return alignement;
-  }
-
-  /**
-   * @param alignement
-   */
-  public void setAlignement(String alignement) {
-    this.alignement = alignement;
-  }
-
-  /**
-   * @return
-   */
-  public boolean getNoWrap() {
-    return noWrap;
-  }
-
-  /**
-   * @param noWrap
-   */
-  public void setNoWrap(boolean noWrap) {
-    this.noWrap = noWrap;
-  }
-
-  /**
-   * @return
-   */
   public String getColor() {
     return color;
   }
 
-  /**
-   * @param color
-   */
   public void setColor(String color) {
     this.color = color;
   }
 
-  public String getValignement() {
-    return valignement;
-  }
-
-  /**
-   * @param valignement
-   */
-  public void setValignement(String valignement) {
-    this.valignement = valignement;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String print() {
+  public String getSyntax() {
     StringBuilder result = new StringBuilder();
-
-    result.append("<td ");
-
-    if (getAlignement() != null) {
-      if (getAlignement().equalsIgnoreCase("center")
-          || getAlignement().equalsIgnoreCase("right")) {
-        result.append(" align=\"").append(getAlignement()).append("\"");
-      }
-    }
-
-    if (getValignement() != null) {
-      if (getValignement().equalsIgnoreCase("bottom")
-          || getValignement().equalsIgnoreCase("top")
-          || getValignement().equalsIgnoreCase("baseline")) {
-        result.append(" valign=\"").append(getValignement()).append("\"");
-      }
-    }
-
-    if (getNoWrap()) {
-      result.append(" nowrap=\"nowrap\"");
-    }
-
-    result.append(" class=\"").append(getStyleSheet()).append("\">");
 
     if (getColor() != null) {
       result.append(" <font color=\"").append(getColor()).append("\">");
@@ -180,35 +93,19 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
       result.append(getText());
     }
 
-    result.append("</td>\n");
     return result.toString();
   }
 
-  /**
-   * Method declaration
-   * @param object
-   * @see
-   */
-  public void setCompareOn(Comparable object) {
-    this.compareOn = object;
+  public void setCompareOn(Comparable<?> comparable) {
+    this.compareOn = comparable;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public Comparable getCompareOn() {
-    return this.compareOn;
+  @SuppressWarnings("unchecked")
+  public Comparable<Object> getCompareOn() {
+    return (Comparable<Object>) this.compareOn;
   }
 
-  /**
-   * Method declaration
-   * @param other
-   * @return
-   * @see
-   */
-  public int compareTo(final java.lang.Object other) {
+  public int compareTo(@Nonnull final Object other) {
     if (other instanceof ArrayEmptyCell) {
       return 1;
     }
@@ -219,7 +116,9 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
 
     if (getCompareOn() != null && tmp.getCompareOn() != null && getCompareOn().getClass().equals(
         tmp.getCompareOn().getClass())) {
-      return getCompareOn().compareTo(tmp.getCompareOn());
+      Comparable<Object> otherComparable = tmp.getCompareOn();
+      Comparable<Object> thisComparable = getCompareOn();
+      return thisComparable.compareTo(otherComparable);
     }
 
     if (this.getText() != null && tmp.getText() != null) {

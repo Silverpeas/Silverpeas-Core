@@ -299,7 +299,7 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     return calendar;
   }
 
-  private Calendar prepareSynchronizedCalendar() throws MalformedURLException, ImportException  {
+  private Calendar prepareSynchronizedCalendar() throws MalformedURLException, ImportException {
     Calendar calendar = prepareCalendarWithExternal(externalUrl);
     calendar.synchronize();
     return calendar;

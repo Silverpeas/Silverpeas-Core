@@ -30,9 +30,11 @@
      <li class="userType">
 	$type$
      </li>
+     $if(mail)$
      <li class="userMail">
-	<a href="#" onclick="OpenPopup($user.id$,'$user.lastName$ $user.firstName$')">$mail$</a>
+        <a href="mailto:$mail$">$mail$</a>
      </li>
+     $endif$
      <li class="extra">
 	$if(extra.title)$
 	  $extra.title$<br/>

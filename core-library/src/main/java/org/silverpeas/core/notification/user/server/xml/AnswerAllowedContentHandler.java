@@ -40,10 +40,10 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 class AnswerAllowedContentHandler extends DefaultHandler {
 
-  private NotificationData data;
-  private ContentHandler parent;
-  private XMLReader parser;
-  private CharArrayWriter buffer = new CharArrayWriter();
+  private final NotificationData data;
+  private final ContentHandler parent;
+  private final XMLReader parser;
+  private final CharArrayWriter buffer = new CharArrayWriter();
 
   public AnswerAllowedContentHandler(NotificationData data, ContentHandler parent, XMLReader parser) {
     this.data = data;
@@ -60,7 +60,7 @@ class AnswerAllowedContentHandler extends DefaultHandler {
   public void endElement(String uri, String localName, String qName) throws SAXException {
     NotificationTag tag = NotificationTag.valueOf(qName);
     if (tag == NotificationTag.ANSWERALLOWED) {
-      data.setAnswerAllowed(Boolean.valueOf(buffer.toString()));
+      data.setAnswerAllowed(Boolean.parseBoolean(buffer.toString()));
       parser.setContentHandler(parent);
     }
   }

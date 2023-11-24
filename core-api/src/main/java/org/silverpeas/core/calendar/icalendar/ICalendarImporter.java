@@ -56,7 +56,7 @@ public interface ICalendarImporter
    * @param descriptor the import descriptor that describes how the import has to be done.
    * @param consumer the consumer that takes the resource that was decoded. It ends the import
    * process by, for example, saving it into Silverpeas.
-   * @throws ImportException
+   * @throws ImportException if the import of the events fails.
    */
   @Override
   void imports(final ImportDescriptor descriptor,

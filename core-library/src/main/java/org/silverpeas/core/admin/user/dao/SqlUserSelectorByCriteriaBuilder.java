@@ -158,6 +158,7 @@ public class SqlUserSelectorByCriteriaBuilder {
           .in(Stream.of(userIds).map(Integer::parseInt).collect(Collectors.toList()));
     }
     if (criteria.isCriterionOnUserSpecificIdsSet()) {
+      //noinspection ConfusingArgumentToVarargsMethod
       query.and("st_user.specificId").in(criteria.getCriterionOnUserSpecificIds());
     }
   }

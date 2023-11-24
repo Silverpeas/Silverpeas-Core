@@ -51,7 +51,6 @@ import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -942,10 +941,10 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   private void setProfileLabel(String sComponentName, String profileName, ProfileInst profile) {
-    String label = adminController.getProfileLabelfromName(sComponentName, profileName,
+    String label = adminController.getProfileLabelByName(sComponentName, profileName,
         getLanguage());
     if (!StringUtil.isDefined(label)) {
-      label = adminController.getProfileLabelfromName(sComponentName, profileName,
+      label = adminController.getProfileLabelByName(sComponentName, profileName,
           DisplayI18NHelper.getDefaultLanguage());
     }
     if (StringUtil.isDefined(label)) {

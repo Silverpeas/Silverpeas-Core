@@ -811,7 +811,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @Override
   public CalendarEvent planOn(final Calendar calendar) {
-    CalendarEvent event = Transaction.getTransaction().perform(() -> {
+    CalendarEvent event = Transaction.performInOne(() -> {
       if (!isPersisted()) {
         CalendarEventRepository repository = CalendarEventRepository.get();
         setCalendar(calendar);

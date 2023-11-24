@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.jsp.JspException;
@@ -42,13 +41,11 @@ public class ArrayPaneTag extends TagSupport {
   private String var;
   private String title;
   private String summary;
-  private String isXHTML;
   private String routingAddress;
   private boolean export;
-  private String exportDataURL;
-  private boolean sortableLines;
+  private String lineMoveCallback;
+  private boolean movableLines;
   private int numberLinesPerPage;
-  private String moveLineJsCallback;
 
   public ArrayPaneTag() {
     this.init();
@@ -58,13 +55,8 @@ public class ArrayPaneTag extends TagSupport {
     var = null;
     title = null;
     summary = null;
-    isXHTML = null;
     routingAddress = null;
-    export = false;
-    exportDataURL = null;
-    sortableLines = false;
     numberLinesPerPage = 10;
-    moveLineJsCallback = null;
   }
 
   @Override
@@ -86,16 +78,10 @@ public class ArrayPaneTag extends TagSupport {
     if (summary != null) {
       arrayPane.setSummary(summary);
     }
-    if (StringUtil.isDefined(isXHTML)) {
-      arrayPane.setXHTML(isXHTML.equalsIgnoreCase("true"));
-    }
     arrayPane.setExportData(export);
-    if (export) {
-      arrayPane.setExportDataURL(exportDataURL);
-    }
-    arrayPane.setSortableLines(sortableLines);
     arrayPane.setVisibleLineNumber(numberLinesPerPage);
-    arrayPane.setUpdateSortJavascriptCallback(moveLineJsCallback);
+    arrayPane.setMovableLines(movableLines);
+    arrayPane.setLineMoveCallback(lineMoveCallback);
     pageContext.setAttribute(ARRAY_PANE_PAGE_ATT, arrayPane);
     return EVAL_BODY_INCLUDE;
   }
@@ -126,8 +112,8 @@ public class ArrayPaneTag extends TagSupport {
   }
 
   /**
-   * The name of the HttpSession attribute that contains the ArrayPane.
-   * @param name
+   * The name of the session attribute that contains the ArrayPane.
+   * @param name the name of the session attribute
    */
   public void setVar(final String name) {
     this.var = name;
@@ -141,23 +127,24 @@ public class ArrayPaneTag extends TagSupport {
     this.summary = summary;
   }
 
+
   public void setExport(boolean export) {
     this.export = export;
-  }
-
-  public void setExportURL(String exportURL) {
-    this.exportDataURL = exportURL;
-  }
-
-  public void setSortableLines(boolean sortable) {
-    this.sortableLines = sortable;
   }
 
   public void setNumberLinesPerPage(int numberLinesPerPage) {
     this.numberLinesPerPage = numberLinesPerPage;
   }
 
-  public void setMoveLineJsCallback(final String moveLineJsCallback) {
-    this.moveLineJsCallback = moveLineJsCallback;
+  @SuppressWarnings("unused")
+  // the method is used by JSTL and the tag attribute is used in JSPs
+  public void setMovableLines(boolean movable) {
+    this.movableLines = movable;
+  }
+
+  @SuppressWarnings("unused")
+  // the method is used by JSTL and the tag attribute is used in JSPs
+  public void setOnLineMove(String callback) {
+    this.lineMoveCallback = callback;
   }
 }

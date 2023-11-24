@@ -40,9 +40,9 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class LoginContentHandler extends DefaultHandler {
 
-  private NotificationData data;
-  private ContentHandler parent;
-  private XMLReader parser;
+  private final NotificationData data;
+  private final ContentHandler parent;
+  private final XMLReader parser;
 
   public LoginContentHandler(NotificationData data, ContentHandler parent, XMLReader parser) {
     this.data = data;
@@ -54,18 +54,19 @@ public class LoginContentHandler extends DefaultHandler {
   public void startElement(String uri, String localName, String qName, Attributes attributes)
       throws SAXException {
     NotificationTag tag = NotificationTag.valueOf(qName);
-    ContentHandler child = null;
+    ContentHandler child;
     switch (tag) {
-      case USER: {
+      case USER:
         child = new UserContentHandler(data, this, parser);
         parser.setContentHandler(child);
         break;
-      }
-      case PASSWORD: {
+      case PASSWORD:
         child = new PasswordContentHandler(data, this, parser);
         parser.setContentHandler(child);
         break;
-      }
+      default:
+        child = null;
+        break;
     }
     if (child != null) {
       parser.setContentHandler(child);

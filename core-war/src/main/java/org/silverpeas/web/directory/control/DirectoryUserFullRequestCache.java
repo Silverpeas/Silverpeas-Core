@@ -28,11 +28,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.web.directory.model.UserItem;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class permits to handles {@link UserFull} caches.

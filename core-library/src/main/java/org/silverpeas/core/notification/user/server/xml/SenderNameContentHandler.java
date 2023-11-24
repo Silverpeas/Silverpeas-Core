@@ -40,10 +40,10 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 class SenderNameContentHandler extends DefaultHandler {
 
-  private NotificationData data;
-  private ContentHandler parent;
-  private XMLReader parser;
-  private CharArrayWriter buffer = new CharArrayWriter();
+  private final NotificationData data;
+  private final ContentHandler parent;
+  private final XMLReader parser;
+  private final CharArrayWriter buffer = new CharArrayWriter();
 
   public SenderNameContentHandler(NotificationData data, ContentHandler parent, XMLReader parser) {
     this.data = data;

@@ -30,336 +30,182 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @author jboulet
- * @version
- */
+public class ArrayCellSelect extends ActionableArrayCell implements SimpleGraphicElement {
 
-public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
-
-  // -----------------------------------------------------------------------------------------------------------------
-  // Attributs
-  // -----------------------------------------------------------------------------------------------------------------
-  private String name;
-  private ArrayList<String> values = new ArrayList<String>();
+  private final ArrayList<String> values = new ArrayList<>();
   private String size = null;
-  private ArrayList<String> labels = new ArrayList<String>();
-  private ArrayList<Integer> selected = new ArrayList<Integer>();
-  private String cellAlign = null;
+  private final ArrayList<String> labels = new ArrayList<>();
+  private final ArrayList<Integer> selected = new ArrayList<>();
   private String color = null;
   private String bgcolor = null;
   private String textAlign = null;
   private boolean readOnly = false;
   private boolean multiselect = false;
-  private String action = null; // Action javaScript
-  private StringBuffer syntax = new StringBuffer();
+  private final StringBuilder syntax = new StringBuilder();
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Constructeur
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Constructor declaration
-   * @param strName
-   * @param astrLabels
-   * @param astrValues
-   * @param line
-   * @see
-   */
-  public ArrayCellSelect(String strName, String[] astrLabels,
-      String[] astrValues, ArrayLine line) {
-    super(line);
-    name = strName;
-    values.addAll(Arrays.asList(astrValues));
-    labels.addAll(Arrays.asList(astrLabels));
+  public ArrayCellSelect(String name, String[] labels,
+      String[] values, ArrayLine line) {
+    super(name, line);
+    this.values.addAll(Arrays.asList(values));
+    this.labels.addAll(Arrays.asList(labels));
   }
 
-  public ArrayCellSelect(String strName, List<String> values, ArrayLine line) {
-    super(line);
-    name = strName;
+  public ArrayCellSelect(String name, List<String> values, ArrayLine line) {
+    super(name, line);
     this.values.addAll(values);
     labels.addAll(values);
   }
 
-  /**
-   * @return
-   */
-  public String getCellAlign() {
-    return cellAlign;
-  }
-
-  /**
-   * @param cellAlign
-   */
-  public void setCellAlign(String cellAlign) {
-    this.cellAlign = cellAlign;
-  }
-
-  /**
-   * @return
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * @return
-   */
   public String[] getSelectedValues() {
-    ArrayList<String> selectedValues = new ArrayList<String>();
+    ArrayList<String> selectedValues = new ArrayList<>();
 
     for (Integer aSelected : selected) {
-      selectedValues.add(values.get(aSelected.intValue()));
+      selectedValues.add(values.get(aSelected));
     }
 
-    return selectedValues.toArray(new String[selectedValues.size()]);
+    return selectedValues.toArray(new String[0]);
   }
 
-  /**
-   * @return
-   */
-  public void setSelectedValues(String[] astrSelectedValues) {
+  public void setSelectedValues(String[] selectedValues) {
     selected.clear();
     // Verify that the provided values exist among all values
-    for (String astrSelectedValue : astrSelectedValues) {
-      int index = values.indexOf(astrSelectedValue);
+    for (String selectedValue : selectedValues) {
+      int index = values.indexOf(selectedValue);
       if (index != -1) {
         selected.add(index);
       }
     }
   }
 
-  /**
-   * @return
-   */
   public String getSize() {
     return size;
   }
 
-  /**
-   * @param strSize
-   */
   public void setSize(String strSize) {
     size = strSize;
   }
 
-  /**
-   * @return
-   */
-  public boolean getMultiselect() {
+  public boolean isMultiselect() {
     return multiselect;
   }
 
-  /**
-   * @param fMultiselect
-   */
   public void setMultiselect(boolean fMultiselect) {
     multiselect = fMultiselect;
   }
 
-  /**
-   * @return
-   */
   public String getColor() {
     return color;
   }
 
-  /**
-   * @param strColor
-   */
   public void setColor(String strColor) {
     color = strColor;
   }
 
-  /**
-   * @return
-   */
   public String getBgcolor() {
     return bgcolor;
   }
 
-  /**
-   * @param strBgcolor
-   */
   public void setBgcolor(String strBgcolor) {
     bgcolor = strBgcolor;
   }
 
-  /**
-   * @return
-   */
   public String getTextAlign() {
     return textAlign;
   }
 
-  /**
-   * @param strTextAlign
-   */
   public void setTextAlign(String strTextAlign) {
     textAlign = strTextAlign;
   }
 
-  /**
-   * @return
-   */
-  public String getAction() {
-    return action;
-  }
-
-  /**
-   * @param strAction
-   */
-  public void setAction(String strAction) {
-    action = strAction;
-  }
-
-  /**
-   * @return
-   */
-  public boolean getReadOnly() {
+  public boolean isReadOnly() {
     return readOnly;
   }
 
-  /**
-   * @param fReadOnly
-   */
   public void setReadOnly(boolean fReadOnly) {
     readOnly = fReadOnly;
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Ecriture de l'input en fonction de son type, de sa valeur et de son nom
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  @Override
   public String getSyntax() {
-    Iterator<Integer> iterSelected = selected.iterator();
-    int iSelected = -1;
-
-    syntax.setLength(0);
-
     syntax.append(" <select name=\"");
-
     // param name
     if (getName() == null) {
       syntax.append("selectfield\"");
     } else {
-      syntax.append(getName());
-      syntax.append("\"");
+      syntax.append(getName()).append("\"");
     }
 
     // param size
     if (getSize() != null) {
-      syntax.append(" size=\"");
-      syntax.append(getSize());
-      syntax.append("\"");
+      syntax.append(" size=\"").append(getSize()).append("\"");
     }
 
     // set Style
     syntax.append(" style=\"");
 
     // param likeText
-    if (getReadOnly() == true) {
+    if (isReadOnly()) {
       syntax.append("border: 1 solid rgb(255,255,255); ");
     }
 
     // param textAlign
     if (getTextAlign() != null) {
-      syntax.append("text-align:");
-      syntax.append(getTextAlign());
-      syntax.append(";");
+      syntax.append("text-align:").append(getTextAlign()).append(";");
     }
 
     // param color
     if (getColor() != null) {
-      syntax.append(" color:");
-      syntax.append(getColor());
-      syntax.append(";");
+      syntax.append(" color:").append(getColor()).append(";");
     }
 
     // param background color
     if (getBgcolor() != null) {
-      syntax.append(" background-color:");
-      syntax.append(getBgcolor());
-      syntax.append(";");
+      syntax.append(" background-color:").append(getBgcolor()).append(";");
     }
 
     syntax.append("\"");
 
     // param action JavaScript
     if (getAction() != null) {
-      syntax.append(" ");
-      syntax.append(getAction());
+      syntax.append(" ").append(getAction());
     }
 
     // readOnly ???
-    if (getReadOnly() == true) {
+    if (isReadOnly()) {
       syntax.append(" readOnly");
     }
 
     // multiple ???
-    if (getMultiselect() == true) {
+    if (isMultiselect()) {
       syntax.append(" multiple");
     }
 
     syntax.append(">");
 
     // Options
-    if (iterSelected.hasNext())
-      iSelected = iterSelected.next();
-
-    for (int i = 0; i < labels.size(); i++) {
-      syntax.append("\n<option value=\"");
-      syntax.append(values.get(i));
-      syntax.append("\"");
-
-      if (i == iSelected) {
-        syntax.append(" selected");
-
-        if (iterSelected.hasNext())
-          iSelected = iterSelected.next();
-      }
-
-      syntax.append(">");
-      syntax.append(labels.get(i));
-      syntax.append("</option>");
-    }
+    generateOptions(syntax);
 
     syntax.append("\n</select>");
     return syntax.toString();
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
+  private void generateOptions(StringBuilder output) {
+    int iSelected = -1;
+    Iterator<Integer> iterSelected = selected.iterator();
+    if (iterSelected.hasNext())
+      iSelected = iterSelected.next();
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String print() {
-    StringBuilder result = new StringBuilder("<td ");
+    for (int i = 0; i < labels.size(); i++) {
+      output.append("\n<option value=\"").append(values.get(i)).append("\"");
 
-    if (getCellAlign() != null) {
-      if (getCellAlign().equalsIgnoreCase("center")
-          || getCellAlign().equalsIgnoreCase("right")) {
-        result.append(" align=\"");
-        result.append(getCellAlign());
-        result.append("\"");
+      if (i == iSelected) {
+        output.append(" selected");
+
+        if (iterSelected.hasNext())
+          iSelected = iterSelected.next();
       }
+
+      output.append(">").append(labels.get(i)).append("</option>");
     }
-
-    result.append(" class=\"");
-    result.append(getStyleSheet());
-    result.append("\">");
-
-    result.append(getSyntax());
-
-    result.append("</td>\n");
-    return result.toString();
   }
-
 }

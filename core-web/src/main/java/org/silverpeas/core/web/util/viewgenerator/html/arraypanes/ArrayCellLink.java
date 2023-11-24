@@ -26,111 +26,43 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-/**
- * Class declaration
- * @author
- */
-public class ArrayCellLink extends ArrayCell
-    implements SimpleGraphicElement, Comparable {
+import javax.annotation.Nonnull;
 
-  private String text = null;
-  private String alignement = null;
-  private String valignement = null;
+public class ArrayCellLink extends ArrayCell
+    implements SimpleGraphicElement, Comparable<SimpleGraphicElement> {
+
   private String color = null;
-  private String link = null;
+  private final String link;
   private String info = null;
   private String target = null;
 
-  /**
-   * Constructor declaration
-   * @param text
-   * @param link
-   * @param line
-   * @see
-   */
   public ArrayCellLink(String text, String link, ArrayLine line) {
-    super(line);
-    this.text = text;
+    super(text, line);
     this.link = link;
   }
 
-  /**
-   * Constructor declaration
-   * @param text
-   * @param link
-   * @param info
-   * @param line
-   * @see
-   */
   public ArrayCellLink(String text, String link, String info, ArrayLine line) {
-    super(line);
-    this.text = text;
+    super(text, line);
     this.link = link;
     this.info = info;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getText() {
-    return text;
+    return getName();
   }
 
-  /**
-   * @return
-   */
-  public String getAlignement() {
-    return alignement;
-  }
-
-  /**
-   * @param alignement
-   */
-  public void setAlignement(String alignement) {
-    this.alignement = alignement;
-  }
-
-  public String getValignement() {
-    return valignement;
-  }
-
-  /**
-   * @param valignement
-   */
-  public void setValignement(String valignement) {
-    this.valignement = valignement;
-  }
-
-  /**
-   * @return
-   */
   public String getColor() {
     return color;
   }
 
-  /**
-   * @param color
-   */
   public void setColor(String color) {
     this.color = color;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getLink() {
     return link;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getInfo() {
     return info;
   }
@@ -143,7 +75,7 @@ public class ArrayCellLink extends ArrayCell
     this.target = target;
   }
 
-  public int compareTo(final java.lang.Object other) {
+  public int compareTo(@Nonnull final SimpleGraphicElement other) {
     if (other instanceof ArrayEmptyCell) {
       return 1;
     }
@@ -152,7 +84,6 @@ public class ArrayCellLink extends ArrayCell
     }
     ArrayCellLink tmp = (ArrayCellLink) other;
 
-    // return this.getText().compareTo(tmp.getText());
     return this.getText().compareToIgnoreCase(tmp.getText());
   }
 
@@ -174,31 +105,9 @@ public class ArrayCellLink extends ArrayCell
     return new HashCodeBuilder().append(getText()).hashCode();
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String print() {
-    StringBuilder result = new StringBuilder();
-    result.append("<td");
-
-    if (getAlignement() != null) {
-      if (getAlignement().equalsIgnoreCase("center")
-          || getAlignement().equalsIgnoreCase("right")) {
-        result.append(" align=\"").append(getAlignement()).append("\"");
-      }
-    }
-
-    if (getValignement() != null) {
-      if (getValignement().equalsIgnoreCase("bottom")
-          || getValignement().equalsIgnoreCase("top")
-          || getValignement().equalsIgnoreCase("baseline")) {
-        result.append(" valign=\"").append(getValignement()).append("\"");
-      }
-    }
-
-    result.append(" class=\"").append(getStyleSheet()).append("\">");
+  @Override
+  public String getSyntax() {
+   StringBuilder result = new StringBuilder();
 
     if (getColor() != null) {
       result.append(" <font color=\"").append(getColor()).append("\">");
@@ -217,8 +126,6 @@ public class ArrayCellLink extends ArrayCell
     if (getColor() != null) {
       result.append("</font>");
     }
-
-    result.append("</td>\n");
     return result.toString();
   }
 

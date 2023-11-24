@@ -52,20 +52,10 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
     // initialisation is made in init methods
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   private String printPseudoColumn() {
     return "<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\" alt=\"\"/></td>";
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   @Override
   public String print() {
     GraphicElementFactory gef = (GraphicElementFactory) getSession()
@@ -74,9 +64,6 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
     Pagination pagination = getPagination(getNbItems());
 
     String sep = "&";
-    if (isXHTML()) {
-      sep = "&amp;";
-    }
 
     String baseUrl = getUrl();
     StringBuilder url = new StringBuilder(baseUrl);
@@ -103,8 +90,8 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
     }
     StringBuilder result = new StringBuilder();
     result.append("<div class=\"arrayPane\">\n").append("<table width=\"100%\" cellspacing=\"");
-    result.append(getCellSpacing()).append("\" cellpadding=\"").append(getCellPadding());
-    result.append("\" border=\"").append(getCellBorderWidth()).append("\"");
+    result.append(getCellSpacing()).append("\" cellpadding=\"").append(getCellPadding())
+        .append("\"");
     result.append(" id=\"").append(getName()).append("\" class=\"tableArrayPane\"");
     result.append(" summary=\"").append(getSummary()).append("\">");
     if (getTitle() != null) {
@@ -124,48 +111,68 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
       result.append(printPseudoColumn());
     }
     for (ArrayColumn column : getColumns()) {
-      result.append(column.print(isXHTML()));
+      result.append(column.print());
       if (getCellSpacing() == 0) {
         result.append(printPseudoColumn());
       }
     }
     result.append("</tr>\n").append("</thead>\n").append("<tbody>\n");
+    appendArrayPaneLines(result, pagination);
+    result.append("</tbody>\n");
+
+    appendPaginationAndExport(result, columnsCount, pagination, gef);
+
+    result.append("</table>\n");
+    result.append("</div>\n");
+
+    if (isMovableLines()) {
+      result.append(printSortJavascriptFunction());
+    }
+
+    return result.toString();
+  }
+
+  private void appendArrayPaneLines(StringBuilder result, Pagination pagination) {
     final boolean ajaxExport = getBooleanValue(getRequest().getParameter(AJAX_EXPORT_PARAMETER_NAME));
     if (getLines().isEmpty() || ajaxExport) {
       result.append("<tr><td>&nbsp;</td></tr>\n");
     } else {
-
       // No need pagination
-      if (getState().getMaximumVisibleLine() == -1) {
-        for (ArrayLine curLine : getLines()) {
-          printArrayPaneLine(result, curLine);
-        }
+      appendArrayPaneLinesToRender(result, pagination);
+    }
+  }
+
+  private void appendArrayPaneLinesToRender(StringBuilder result, Pagination pagination) {
+    if (getState().getMaximumVisibleLine() == -1) {
+      for (ArrayLine curLine : getLines()) {
+        printArrayPaneLine(result, curLine);
+      }
+    } else {
+      // Paginate ArrayPane result
+      getState().setFirstVisibleLine(pagination.getIndexForCurrentPage());
+      if (isPaginationOptimized()) {
+        getLines().forEach(l -> printArrayPaneLine(result, l));
       } else {
-        // Paginate ArrayPane result
-        getState().setFirstVisibleLine(pagination.getIndexForCurrentPage());
-        if (isPaginationOptimized()) {
-          getLines().forEach(l -> printArrayPaneLine(result, l));
-        } else {
-          final Pair<Integer, Integer> indexes = pagination.getStartLastIndexes();
-          final int firstIndex = indexes.getLeft();
-          final int lastIndex = indexes.getRight();
-          for (int i = firstIndex; i < lastIndex; i++) {
-            printArrayPaneLine(result, getLines().get(i));
-          }
+        final Pair<Integer, Integer> indexes = pagination.getStartLastIndexes();
+        final int firstIndex = indexes.getLeft();
+        final int lastIndex = indexes.getRight();
+        for (int i = firstIndex; i < lastIndex; i++) {
+          printArrayPaneLine(result, getLines().get(i));
         }
       }
     }
-    result.append("</tbody>\n");
+  }
 
+  private void appendPaginationAndExport(StringBuilder result, int columnsCount, Pagination pagination, GraphicElementFactory gef) {
     boolean paginationVisible = -1 != getState().getMaximumVisibleLine();
 
-    if (paginationVisible || getExportData()) {
+    if (paginationVisible || isExportData()) {
       result.append("<tfoot class=\"footerNav\">");
       result.append("<td colspan=\"").append(columnsCount).append("\">\n");
       if (paginationVisible) {
-        result.append(pagination.printIndex(getPaginationJavaScriptCallback()));
+        result.append(pagination.printIndex(""));
       }
-      if (getExportData()) {
+      if (isExportData()) {
         // Add export data GUI
         result.append("<div class=\"exportlinks\">");
         result.append("<a href=\"").append(getExportUrl()).append(
@@ -182,15 +189,6 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
       result.append("</td>\n");
       result.append("</tfoot>");
     }
-
-    result.append("</table>\n");
-    result.append("</div>\n");
-
-    if (isSortableLines()) {
-      result.append(printSortJavascriptFunction());
-    }
-
-    return result.toString();
   }
 
   /**

@@ -28,6 +28,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -567,11 +568,16 @@ public class DefaultNotificationManager
   }
 
   private User getUser(final String userId) {
-    User user = UserDetail.getById(userId);
-    if (user != null && !user.isSystem()) {
-      return user;
-    } else {
-      SilverLogger.getLogger(this).warn("No user with id " + userId);
+    try {
+      User user = Administration.get().getUserDetail(userId);
+      if (user != null && !user.isSystem()) {
+        return user;
+      } else {
+        SilverLogger.getLogger(this).warn("No user with id " + userId);
+        return null;
+      }
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error(e.getMessage());
       return null;
     }
   }
@@ -879,7 +885,7 @@ public class DefaultNotificationManager
 
     nd.setSenderName(senderName);
 
-    if (theExtraParams.size() > 0) {
+    if (!theExtraParams.isEmpty()) {
       nd.setTargetParam(theExtraParams);
     }
 
