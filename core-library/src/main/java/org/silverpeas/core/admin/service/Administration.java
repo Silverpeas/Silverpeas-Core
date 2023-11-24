@@ -26,15 +26,7 @@ package org.silverpeas.core.admin.service;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.Parameter;
-import org.silverpeas.core.admin.component.model.PasteDetail;
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
-import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
@@ -42,14 +34,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.constant.GroupState;
-import org.silverpeas.core.admin.user.model.GroupDetail;
-import org.silverpeas.core.admin.user.model.GroupProfileInst;
-import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
-import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
@@ -149,13 +134,6 @@ public interface Administration {
   void updateSpaceOrderNum(String spaceId, int orderNum) throws AdminException;
 
   /**
-   * Tests if a space with given space id exists.
-   * @param spaceId if of space to be tested
-   * @return true if the given space instance name is an existing space
-   */
-  boolean isSpaceInstExist(String spaceId) throws AdminException;
-
-  /**
    * Return all the root spaces Ids available in Silverpeas.
    * @return all the root spaces Ids available in Silverpeas.
    * @throws AdminException if an error occurs
@@ -244,13 +222,6 @@ public interface Administration {
    * @throws AdminException if an error occurs
    */
   ComponentInstLight getComponentInstLight(String componentId) throws AdminException;
-
-  /**
-   * Get the parameters for the given component.
-   * @param componentId the component instance identifier
-   * @return the parameters for the given component.
-   */
-  List<Parameter> getComponentParameters(String componentId);
 
   /**
    * Return the value of the parameter for the given component and the given name of parameter
@@ -429,18 +400,11 @@ public interface Administration {
 
   String addSpaceProfileInst(SpaceProfileInst spaceProfile, String userId) throws AdminException;
 
-  String deleteSpaceProfileInst(String sSpaceProfileId, String userId) throws AdminException;
+  void deleteSpaceProfileInst(String sSpaceProfileId, String userId) throws AdminException;
 
   String updateSpaceProfileInst(SpaceProfileInst newSpaceProfile, String userId)
       throws AdminException;
 
-  /**
-   * Get the group names corresponding to the given group ids.
-   * @param groupIds one or more identifiers of user groups.
-   * @return the name of the specified groups.
-   * @throws AdminException if an error occurs
-   */
-  String[] getGroupNames(String[] groupIds) throws AdminException;
 
   /**
    * Get the group name corresponding to the given group id.
@@ -577,11 +541,11 @@ public interface Administration {
    */
   GroupProfileInst getGroupProfileInst(String groupId) throws AdminException;
 
-  String addGroupProfileInst(GroupProfileInst spaceProfileInst) throws AdminException;
+  void addGroupProfileInst(GroupProfileInst spaceProfileInst) throws AdminException;
 
-  String deleteGroupProfileInst(String groupId) throws AdminException;
+  void deleteGroupProfileInst(String groupId) throws AdminException;
 
-  String updateGroupProfileInst(GroupProfileInst groupProfileInstNew) throws AdminException;
+  void updateGroupProfileInst(GroupProfileInst groupProfileInstNew) throws AdminException;
 
   void indexAllGroups() throws AdminException;
 
@@ -710,6 +674,16 @@ public interface Administration {
   void activateUser(String userId) throws AdminException;
 
   /**
+   * Sets some data of the specified user as or not sensitive information. The data to be
+   * potentially sensitive are defined in the user domain to which the user belongs.
+   * @param userId the unique identifier of the user.
+   * @param sensitive a boolean indicating whether the data potentially sensitive are actually
+   * sensitive or not.
+   * @throws AdminException if the setting fails.
+   */
+  void setUserSensitiveData(String userId, boolean sensitive) throws AdminException;
+
+  /**
    * Updates the acceptance date of a user from its id.
    * @param userId the unique identifier of the user
    * @throws AdminException if an error occurs
@@ -807,13 +781,6 @@ public interface Administration {
    * @return an array with all the user domains in Silverpeas
    */
   Domain[] getAllDomains() throws AdminException;
-
-  /**
-   * Get all domain ids for the specified login.
-   * @param login a user login
-   * @return a list of all domains for which the given user login exists
-   */
-  List<String> getAllDomainIdsForLogin(String login) throws AdminException;
 
   /**
    * Get a domain with given id
@@ -981,14 +948,6 @@ public interface Administration {
    * @throws AdminException if an error occurs
    */
   String[] getUserManageableSpaceIds(String sUserId) throws AdminException;
-
-  /**
-   * Get the spaces roots ids manageable by given user id
-   * @param sUserId the unique identifier of a user
-   * @return an array of identifiers of root spaces.
-   * @throws AdminException if an error occurs
-   */
-  String[] getUserManageableSpaceRootIds(String sUserId) throws AdminException;
 
   /**
    * Get the subspace manageable by given user id in given space
@@ -1279,15 +1238,6 @@ public interface Administration {
   int getAllSubUsersNumber(String sGroupId) throws AdminException;
 
   /**
-   * This method gets number user in domain. If domain id is null, it returns number user of all
-   * domain.
-   * @param domainId the unique identifier of a user domain.
-   * @return the number of users in the given domain
-   * @throws AdminException if an error occurs
-   */
-  int getUsersNumberOfDomain(String domainId) throws AdminException;
-
-  /**
    * Get the identifiers of the administrators accessible by the given user.
    * @param fromUserId the identifier of a user
    * @return an array with the identifier of all the administrators that can be contacted by the
@@ -1308,11 +1258,6 @@ public interface Administration {
    * @return the name to use when the system (Silverpeas) sends notifications to users.
    */
   String getSilverpeasName();
-
-  /**
-   * Get the administrator email
-   */
-  String getDAPIGeneralAdminId();
 
   // -------------------------------------------------------------------
   // RE-INDEXATION
@@ -1515,6 +1460,15 @@ public interface Administration {
   List<UserDetail> getNonBlankedDeletedUsers(String... domainIds) throws AdminException;
 
   /**
+   * Gets all the users in the specified domains having sensitive data.
+   * @param domainIds the unique identifiers of the domains.
+   * @return a list of users or an empty list if there is no users with sensitive data in the
+   * specified domains.
+   * @throws AdminException if an error occurs.
+   */
+  List<UserDetail> getUsersWithSensitiveData(final String... domainIds) throws AdminException;
+
+  /**
    * Blanks the specified users in the specified domain. The users have to be deleted in Silverpeas,
    * otherwise an {@link AdminException} exception is thrown.
    * @param targetDomainId the unique identifier of the domain.
@@ -1522,4 +1476,18 @@ public interface Administration {
    * @throws AdminException if an error occurs while blanking the deleted users.
    */
   void blankDeletedUsers(String targetDomainId, List<String> userIds) throws AdminException;
+
+  /**
+   * Disables the privacy of the data marked as potentially sensitive for the specified users in
+   * the given domain. The data that can be sensitive are defined in the user domain of the users.
+   * This is why users from different domains can have different sensitive data. By default,
+   * those data aren't sensitive, but their privacy can be enabled and disabled per user.
+   * @param domainId the unique identifier of a user domain.
+   * @param userIds a list of unique identifiers of users in the given domain for which the
+   * sensitivity of their data should be disabled.
+   * @throws AdminException if an error occurs while disabling the sensitivity of the data for
+   * the users in the given user domain.
+   */
+  void disableDataSensitivity(final String domainId,
+      final List<String> userIds) throws AdminException;
 }

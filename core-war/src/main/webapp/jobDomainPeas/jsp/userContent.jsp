@@ -53,7 +53,11 @@
 <fmt:message key="GML.delete" var="labelDelete"/>
 <fmt:message key="JDP.userManualNotifReceiverLimitValue" var="userManualNotifReceiverLimitValueLabel"><fmt:param value="${USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_DEFAULT_VALUE}"/></fmt:message>
 <fmt:message key="JDP.user.avatar.delete.confirm" var="labelDeleteAvatar"/>
+<fmt:message key="JDP.potentialSensitiveData" var="potentialSensitiveData"/>
+<fmt:message key="JDP.effectivelySensitiveData" var="sensitiveData"/>
 
+<c:set var="domain" value="${requestScope.domainObject}"/>
+<jsp:useBean id="domain" type="org.silverpeas.core.admin.domain.model.Domain"/>
 <c:set var="userInfos" value="${requestScope.userObject}" />
 <jsp:useBean id="userInfos" type="org.silverpeas.core.admin.user.model.UserDetail"/>
 <c:set var="listIndex" value="${requestScope.Index}" />
@@ -68,6 +72,7 @@
 <c:set var="displayedEmail"><view:encodeHtml string="${email}" /></c:set>
 <c:set var="login" value="${userInfos.login}" />
 <c:set var="displayedLogin"><view:encodeHtml string="${login}" /></c:set>
+<c:set var="isLdapDomain" value="${domain != null && domain.driverClassName eq 'org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver'}"/>
 <fmt:message key="GML.user.account.state.${userInfos.state.name}" var="stateLabel"/>
 <fmt:message key="JDP.user.state.${userInfos.state.name}" var="stateIcon" bundle="${icons}"/>
 <fmt:message key="JDP.userRemConfirm" var="userRemConfirmMessage"/>
@@ -75,7 +80,15 @@
 <fmt:message key="JDP.userDelConfirmHelp" var="userDelConfirmMessageHelp"/>
 
 <c:set var="userObject" value="${requestScope.userObject}" />
-<jsp:useBean id="userObject" type="org.silverpeas.core.admin.user.model.UserFull"/>
+<c:set var="sensitiveInfo" value="${potentialSensitiveData}"/>
+<c:set var="sensitiveCssClass" value="sensitive_no_active"/>
+<c:set var="sensitivePicto" value="/util/icons/bulle-attention.png"/>
+<c:if test="${userInfos.hasSensitiveData()}">
+  <c:set var="sensitiveInfo" value="${sensitiveData}"/>
+  <c:set var="sensitiveCssClass" value="sensitive_active"/>
+  <c:set var="sensitivePicto" value="/util/icons/info-sensible.png"/>
+</c:if>
+<jsp:useBean id="userObject" type="org.silverpeas.core.admin.user.model.UserDetail"/>
 <c:set var="isUserFull" value="<%=userObject instanceof UserFull%>" />
 <jsp:useBean id="isUserFull" type="java.lang.Boolean"/>
 <c:set var="userGroups" value="${requestScope.UserGroups}" />
@@ -85,7 +98,6 @@
 
 <%@ include file="check.jsp" %>
 <%
-  Domain domObject = (Domain) request.getAttribute("domainObject");
   String groupsPath = (String) request.getAttribute("groupsPath");
   boolean isDomainRW = (Boolean) request.getAttribute("isDomainRW");
   boolean isDomainSync = (Boolean) request.getAttribute("isDomainSync");
@@ -103,10 +115,12 @@
   boolean updatableUser = false;
   boolean avatarDefined = userObject.isAvatarDefined();
 
-  if (domObject != null) {
-    browseBar.setComponentName(getDomainLabel(domObject, resource),
-        "domainContent?Iddomain=" + domObject.getId());
+  if (domain != null) {
+    browseBar.setComponentName(getDomainLabel(domain, resource),
+        "domainContent?Iddomain=" + domain.getId());
   }
+  boolean isLdapDomain = domain != null &&
+          domain.getDriverClassName().equals("org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver");
 
   if (groupsPath != null && !groupsPath.isEmpty()) {
     browseBar.setPath(groupsPath);
@@ -174,6 +188,16 @@
     } else {
       operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.remove"),
           "javascript:removeUser()");
+    }
+    operationPane.addLine();
+    if (isLdapDomain) {
+      if (userInfos.hasSensitiveData()) {
+        operationPane.addOperation("useless", resource.getString("JDP.disableDataSensitivity"),
+                "userSensitiveDataUnprotect?Iduser=" + thisUserId);
+      } else {
+        operationPane.addOperation("useless", resource.getString("JDP.enableDataSensitivity"),
+                "userSensitiveDataProtect?Iduser=" + thisUserId);
+      }
     }
   }
   operationPane.addLine();
@@ -343,9 +367,20 @@
 out.println(window.printBefore());
 %>
 <view:frame>
-  <c:if test="${userInfos.state == USER_STATE_BLOCKED || userInfos.state == USER_STATE_DEACTIVATED}">
+  <c:if test="${userInfos.state == USER_STATE_BLOCKED ||
+                userInfos.state == USER_STATE_DEACTIVATED ||
+                userInfos.hasSensitiveData()}">
     <div class="inlineMessage">
-      <fmt:message key="JDP.user.state.${userInfos.state.name}" />
+      <c:if test="${userInfos.state == USER_STATE_BLOCKED ||
+                    userInfos.state == USER_STATE_DEACTIVATED}">
+        <div><fmt:message key="JDP.user.state.${userInfos.state.name}" /></div>
+      </c:if>
+      <c:if test="${userInfos.hasSensitiveData()}">
+        <div>
+          <view:image src="${sensitivePicto}" css="${sensitiveCssClass}" alt="${sensitiveInfo}" />
+          <fmt:message key="JDP.userWithSensitiveDataMessage" />
+        </div>
+      </c:if>
     </div>
   </c:if>
   <viewTags:displayIndex nbItems="${listIndex.nbItems}" index="${listIndex.currentIndex}" linkSuffix="User"/>
@@ -389,7 +424,7 @@ out.println(window.printBefore());
             </c:choose>
           </div>
           <c:if test="${not empty userInfos.lastLoginDate || not empty userInfos.creationDate}">
-            <div class="lastConnection">
+          <div class="lastConnection">
               <c:if test="${not empty userInfos.lastLoginDate}">
                 <fmt:message key="GML.user.lastConnection"/> <view:formatDateTime value="${userInfos.lastLoginDate}"/>
               </c:if>
@@ -399,21 +434,28 @@ out.println(window.printBefore());
               <c:if test="${not empty userInfos.creationDate}">
                 <fmt:message key="GML.creationDate"/> <view:formatDateTime value="${userInfos.creationDate}"/>
               </c:if>
-            </div>
+          </div>
+          </c:if>
+          <c:if test="${isLdapDomain}">
+          <div class="sensitiveData">
+            <view:image src="${sensitivePicto}" css="${sensitiveCssClass}"
+                        alt="${sensitiveInfo}"/>
+            ${sensitiveInfo}
+         </div>
           </c:if>
           <c:if test="${not empty userInfos.tosAcceptanceDate}">
-            <div class="tosAcceptanceDate">
-              <fmt:message key="GML.user.tosAcceptanceDate"/> <view:formatDateTime value="${userInfos.tosAcceptanceDate}"/>
-            </div>
+          <div class="tosAcceptanceDate">
+            <fmt:message key="GML.user.tosAcceptanceDate"/> <view:formatDateTime value="${userInfos.tosAcceptanceDate}"/>
+          </div>
           </c:if>
           <div class="domain"><img class="img-label" src="../../util/icons/component/domainSmall.gif" alt="Domaine" title="Domaine"  />${userInfos.domain.name}</div>
           <div class="access"> <span class="login"><img class="img-label" src="../../util/icons/Login.gif" alt="<fmt:message key="GML.login"/>" title="<fmt:message key="GML.login"/>" />${displayedLogin}</span></div>
           <div class="email">
             <img  class="img-label" src="../../admin/jsp/icons/icoOutilsMail.gif" alt="Login" title="Login" />
-            <a href="mailto:${displayedEmail}">${displayedEmail}</a>
-            <c:if test="${userInfos.sensitiveEmail}">
-              <view:image src="/util/icons/important.gif" alt="important"/>
+            <c:if test="${isLdapDomain and (not empty displayedEmail or not userInfos.hasSensitiveData())}">
+              <view:image src="${sensitivePicto}" css="${sensitiveCssClass}" alt="${sensitiveInfo}" title="${sensitiveInfo}"/>
             </c:if>
+            <a href="mailto:${displayedEmail}">${displayedEmail}</a>
           </div>
           <div class="language"><img  class="img-label" src="../../util/icons/talk2user.gif" alt="<fmt:message key="JDP.userPreferredLanguage"/>" title="<fmt:message key="JDP.userPreferredLanguage"/>" /><viewTags:userPreferredLanguageSelector user="${userInfos}" readOnly="true"/></div>
           <div class="user-zone-id"><img  class="img-label" src="../../util/icons/time-zone.png" alt="<fmt:message key="JDP.userPreferredZoneId"/>" title="<fmt:message key="JDP.userPreferredZoneId"/>" /><viewTags:userPreferredZoneIdSelector user="${userInfos}" readOnly="true"/></div>

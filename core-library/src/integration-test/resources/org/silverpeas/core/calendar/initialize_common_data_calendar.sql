@@ -13,7 +13,7 @@ INSERT INTO st_accesslevel (id, name) VALUES
 INSERT INTO st_user
   (id, domainId, specificId, firstName, lastName, login, accessLevel, state, stateSaveDate, notifManualReceiverLimit)
 VALUES
-  (0, 0, '0', NULL, 'Administrateur', 'SilverAdmin', 'A', 'VALID', '2012-01-01 00:00:00.000', 0),
+  (0, 0, '0', NULL, 'Administrateur', 'SilverAdmitn', 'A', 'VALID', '2012-01-01 00:00:00.000', 0),
   (1, 0, '1', 'Toto', 'Chez-les-Papoos', 'toto', 'U', 'VALID', '2012-01-01 00:00:00.000', 0),
   (2, 0, '2', 'Gustave', 'Eiffel', 'gustave', 'U', 'VALID', '2012-01-01 00:00:00.000', 0);
 

@@ -54,8 +54,8 @@
 <div id="link-list${prefix}">
   <input type="hidden" name="mode"/>
   <view:arrayPane var="linkList${prefix}" routingAddress="ViewLinks"
-                  sortableLines="true" numberLinesPerPage="-1"
-                  moveLineJsCallback="saveArrayLinesOrder(e, ui)">
+                  movableLines="true" numberLinesPerPage="-1"
+                  onLineMove="saveArrayLinesOrder(e, ui)">
     <fmt:message key="GML.nom" var="tmpLabel"/>
     <view:arrayColumn title="${tmpLabel}" sortable="false"/>
     <fmt:message key="GML.description" var="tmpLabel"/>

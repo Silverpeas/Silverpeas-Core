@@ -45,12 +45,7 @@ import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.status.StatusService;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
@@ -60,11 +55,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.Collator;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getUserManualNotificationRecipientLimit;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isUserManualNotificationRecipientLimitEnabled;
@@ -83,7 +74,7 @@ public class UserDetail implements User {
           .getString("avatar.property", DEFAULT_AVATAR_PROPERTY);
   private static final String AVATAR_EXTENSION =
       ResourceLocator.getGeneralSettingBundle().getString("avatar.extension", "jpg");
-  private static final String AVATAR_BASEURI = "/display/avatar/";
+  private static final String AVATAR_BASE_URI = "/display/avatar/";
   private static final SettingBundle generalSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
   private String id = null;
@@ -93,7 +84,6 @@ public class UserDetail implements User {
   private String firstName = "";
   private String lastName = "";
   private String eMail = "";
-  private boolean sensitiveEmail = false;
   private UserAccessLevel accessLevel = UserAccessLevel.from(null);
   private String loginQuestion = "";
   private String loginAnswer = "";
@@ -109,6 +99,7 @@ public class UserDetail implements User {
   private Date stateSaveDate = null;
   private Integer notifManualReceiverLimit;
   private UserPreferences preferences = null;
+  private boolean sensitiveData;
 
   /**
    * Gets a {@link UserDetail} form of the specified user.
@@ -160,29 +151,50 @@ public class UserDetail implements User {
   public UserDetail() {
   }
 
-  @SuppressWarnings("CopyConstructorMissesField")
-  public UserDetail(UserDetail toClone) {
-    id = toClone.getId();
-    specificId = toClone.getSpecificId();
-    domainId = toClone.getDomainId();
-    login = toClone.getLogin();
-    firstName = toClone.getFirstName();
-    lastName = toClone.getLastName();
-    eMail = toClone.getEmailAddress();
-    accessLevel = toClone.getAccessLevel();
-    loginQuestion = toClone.getLoginQuestion();
-    loginAnswer = toClone.getLoginAnswer();
-    creationDate = toClone.getCreationDate();
-    saveDate = toClone.getSaveDate();
-    version = toClone.getVersion();
-    tosAcceptanceDate = toClone.getTosAcceptanceDate();
-    lastLoginDate = toClone.getLastLoginDate();
-    nbSuccessfulLoginAttempts = toClone.getNbSuccessfulLoginAttempts();
-    lastLoginCredentialUpdateDate = toClone.getLastLoginCredentialUpdateDate();
-    expirationDate = toClone.getExpirationDate();
-    state = toClone.getState();
-    stateSaveDate = toClone.getStateSaveDate();
-    sensitiveEmail = toClone.isSensitiveEmail();
+  public UserDetail(UserDetail otherUser) {
+    id = otherUser.getId();
+    specificId = otherUser.getSpecificId();
+    domainId = otherUser.getDomainId();
+    login = otherUser.getLogin();
+    firstName = otherUser.getFirstName();
+    lastName = otherUser.getLastName();
+    eMail = otherUser.getEmailAddress();
+    accessLevel = otherUser.getAccessLevel();
+    loginQuestion = otherUser.getLoginQuestion();
+    loginAnswer = otherUser.getLoginAnswer();
+    creationDate = otherUser.getCreationDate();
+    saveDate = otherUser.getSaveDate();
+    version = otherUser.getVersion();
+    tosAcceptanceDate = otherUser.getTosAcceptanceDate();
+    lastLoginDate = otherUser.getLastLoginDate();
+    nbSuccessfulLoginAttempts = otherUser.getNbSuccessfulLoginAttempts();
+    lastLoginCredentialUpdateDate = otherUser.getLastLoginCredentialUpdateDate();
+    expirationDate = otherUser.getExpirationDate();
+    state = otherUser.getState();
+    stateSaveDate = otherUser.getStateSaveDate();
+    notifManualReceiverLimit = otherUser.getNotifManualReceiverLimit();
+    sensitiveData = otherUser.hasSensitiveData();
+    preferences = otherUser.preferences; // attribute to avoid the eager loading of preferences
+  }
+
+  /**
+   * Does this user have sensitive data? User data that could be sensitive are defined in the
+   * descriptor of the domain to which this user belongs.
+   * @return true if some of the user data are sensitive. False otherwise
+   */
+  public boolean hasSensitiveData() {
+    return sensitiveData;
+  }
+
+  /**
+   * Sets some of the user data as sensitive or not. The potential data that can be sensitive are
+   * defined in the descriptor of the domain to which this user belongs.
+   * @param sensitive a boolean indicating whether the data declared as potentially sensitive in the
+   * user domain descriptor have to be marked as such: true and the data are marked as sensitive,
+   * false and the data are declared as not being actually sensitive.
+   */
+  public void setSensitiveData(boolean sensitive) {
+    this.sensitiveData = sensitive;
   }
 
   /**
@@ -463,14 +475,6 @@ public class UserDetail implements User {
     return this.eMail;
   }
 
-  public boolean isSensitiveEmail() {
-    return sensitiveEmail;
-  }
-
-  public void setSensitiveEmail(boolean sensitiveEmail) {
-    this.sensitiveEmail = sensitiveEmail;
-  }
-
   @Override
   public UserAccessLevel getAccessLevel() {
     return accessLevel;
@@ -694,7 +698,7 @@ public class UserDetail implements User {
   public String getAvatar() {
     File avatar = getAvatarFile();
     if (avatar.exists() && avatar.isFile()) {
-      return AVATAR_BASEURI + avatar.getName();
+      return AVATAR_BASE_URI + avatar.getName();
     }
     return User.DEFAULT_AVATAR_PATH;
   }
@@ -702,7 +706,7 @@ public class UserDetail implements User {
   @Override
   public String getSmallAvatar() {
     String avatar = getAvatar();
-    if (avatar.startsWith(AVATAR_BASEURI)) {
+    if (avatar.startsWith(AVATAR_BASE_URI)) {
       return FileServerUtils.getImageURL(avatar, "image.size.avatar.profil");
     }
     return avatar;

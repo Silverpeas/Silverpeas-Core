@@ -46,25 +46,24 @@ public abstract class AbstractListener implements INotificationServerChannel {
   }
 
   /**
-   * Process a message received on NotificationServer JMS message queue : extract the message
+   * Process a message received on NotificationServer JMS message queue: extract the message
    * content to be sent.
    *
-   * @param msg the message to be proccessed.
-   * @throws NotificationServerException
+   * @param msg the message to be processed.
+   * @throws NotificationServerException if the decoding and the sending of the specified message
+   * fails.
    */
   protected void processMessage(Message msg) throws NotificationServerException {
     extractData(msg);
     NotificationData nd = NotificationServerUtil.convertXMLToNotificationData(payLoad);
-    if (nd != null) {
-      nd.traceObject();
-    }
+    nd.traceObject();
     send(nd);
   }
 
   /**
    * Extract the data from the header of the JMS message
    * @param msg : the message to extract the notification data from.
-   * @throws NotificationServerException
+   * @throws NotificationServerException if the extraction of the message content fails.
    */
   private void extractData(Message msg) throws NotificationServerException {
     TextMessage tm = (TextMessage) msg;

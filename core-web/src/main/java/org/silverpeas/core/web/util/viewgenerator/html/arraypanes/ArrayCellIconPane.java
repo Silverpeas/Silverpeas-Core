@@ -26,68 +26,21 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
 
-/**
- * Class declaration
- * @author
- */
 public class ArrayCellIconPane extends ArrayCell implements SimpleGraphicElement {
 
-  private IconPane iconPane;
-  private String alignement;
+  private final IconPane iconPane;
 
-  /**
-   * Constructor declaration
-   * @param iconPane
-   * @param line
-   *
-   */
   public ArrayCellIconPane(IconPane iconPane, ArrayLine line) {
-    super(line);
+    super(null, line);
     this.iconPane = iconPane;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public IconPane getIconPane() {
     return iconPane;
   }
 
-  /**
-   * @return
-   */
-  public String getAlignement() {
-    return alignement;
+  @Override
+  public String getSyntax() {
+    return getIconPane().print();
   }
-
-  /**
-   * @param textAlign
-   */
-  public void setAlignement(String alignement) {
-    this.alignement = alignement;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String print() {
-    String result = "<td";
-
-    if (getAlignement() != null) {
-      if (getAlignement().equalsIgnoreCase("center")
-          || getAlignement().equalsIgnoreCase("right")) {
-        result += " align=\"" + getAlignement() + "\"";
-      }
-    }
-
-    result += ">";
-    result += getIconPane().print();
-    result += "</td>";
-    return result;
-  }
-
 }

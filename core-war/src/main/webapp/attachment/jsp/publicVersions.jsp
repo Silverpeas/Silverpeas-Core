@@ -202,7 +202,6 @@
       }
       ArrayCellText cell =
           arrayLine.addArrayCellText(resources.getOutputDateAndHour(publicVersion.getLastUpdateDate()));
-      cell.setNoWrap(true);
 
       String xtraData = "";
       if (StringUtil.isDefined(publicVersion.getXmlFormId())) {

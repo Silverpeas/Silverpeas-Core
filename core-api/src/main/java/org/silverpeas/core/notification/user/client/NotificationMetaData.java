@@ -258,7 +258,7 @@ public class NotificationMetaData implements java.io.Serializable {
       String messageFooter =
           templateMessageFooter.applyFileTemplate("messageFooter" + '_' + language)
               .replaceAll(BREAK_LINE_REGEXP, "");
-      if (messageFooter.length() > 0) {
+      if (!messageFooter.isEmpty()) {
         result.append(messageFooter);
       }
     }
@@ -482,19 +482,6 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   /**
-   * Set message user recipients to exclude
-   * @param users the user ids that must not receive this message
-   */
-  public void setUserRecipientsToExclude(Collection<UserRecipient> users) {
-    this.userRecipientsToExclude.clear();
-    if (users != null) {
-      for(UserRecipient recipient: users) {
-        addUserRecipient(recipient);
-      }
-    }
-  }
-
-  /**
    * Get message user recipients to exclude
    * @return the message user recipients
    */
@@ -510,33 +497,13 @@ public class NotificationMetaData implements java.io.Serializable {
     userRecipientsToExclude.add(user);
   }
 
-  /**
-   * Add a user recipient to user recipients to exclude
-   * @param users recipient that must not be notified
-   */
-  public void addUserRecipientsToExclude(UserRecipient[] users) {
-    if (users != null) {
-      this.userRecipientsToExclude.addAll(Arrays.asList(users));
-    }
-  }
-
-  /**
-   * Add a user recipient to user recipients to exclude
-   * @param users recipient that must not be notified
-   */
-  public void addUserRecipientsToExclude(Collection<UserRecipient> users) {
-    if (users != null) {
-      this.userRecipientsToExclude.addAll(users);
-    }
-  }
-
   public String getExternalLanguage() {
     return Optional.ofNullable(externalLanguage).orElse(DisplayI18NHelper.getDefaultLanguage());
   }
 
   /**
    * Sets language to use for external receivers.
-   * @param externalLanguage a lenguage as string.
+   * @param externalLanguage a language as string.
    */
   public void setExternalLanguage(final String externalLanguage) {
     this.externalLanguage = externalLanguage;
@@ -717,7 +684,6 @@ public class NotificationMetaData implements java.io.Serializable {
   public Set<UserRecipient> getAllUserRecipients(boolean updateInternalUserRecipientsToExclude)
       throws NotificationException {
 
-    Set<UserRecipient> allUniqueUserRecipients = new HashSet<>();
     Collection<UserRecipient> users = getUserRecipients();
     Collection<GroupRecipient> groups = getGroupRecipients();
     Collection<UserRecipient> usersToExclude =
@@ -725,7 +691,7 @@ public class NotificationMetaData implements java.io.Serializable {
             new HashSet<>(getUserRecipientsToExclude());
 
     // First get direct users
-    allUniqueUserRecipients.addAll(users);
+    Set<UserRecipient> allUniqueUserRecipients = new HashSet<>(users);
 
     // Then get users included in groups
     final NotificationManager notificationManager = getNotificationManager();
@@ -742,8 +708,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   private Set<UserRecipient> getUsersForReceiverBlock()
       throws NotificationException {
-    HashSet<UserRecipient> usersSet = new HashSet<>();
-    usersSet.addAll(getUserRecipients());
+    HashSet<UserRecipient> usersSet = new HashSet<>(getUserRecipients());
     final NotificationManager notificationManager = getNotificationManager();
     for (GroupRecipient group : getGroupRecipients()) {
       if (!displayGroup(group.getGroupId())) {

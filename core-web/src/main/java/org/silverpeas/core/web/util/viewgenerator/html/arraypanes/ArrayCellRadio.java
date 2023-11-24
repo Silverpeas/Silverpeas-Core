@@ -25,107 +25,28 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-/**
- * Class declaration
- * @author
- */
-public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
+public class ArrayCellRadio extends ActionableArrayCell implements SimpleGraphicElement {
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Attributs
-  // -----------------------------------------------------------------------------------------------------------------
-  private String name;
-  private String value = null;
-  private boolean checked = false;
-  private String cellAlign = null;
-  private String action = null; // Action javaScript
-
+  private final boolean checked;
   private String syntax = "";
+  private final String value;
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Constructeur
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Constructor declaration
-   * @param name
-   * @param value
-   * @param checked
-   * @param line
-   * @see
-   */
   public ArrayCellRadio(String name, String value, boolean checked,
       ArrayLine line) {
-    super(line);
-    this.name = name;
+    super(name, line);
     this.value = value;
     this.checked = checked;
   }
 
-  public String getCellAlign() {
-    return cellAlign;
+  public boolean isChecked() {
+    return checked;
   }
 
-  /**
-   * Method declaration
-   * @param cellAlign
-   * @see
-   */
-  public void setCellAlign(String cellAlign) {
-    this.cellAlign = cellAlign;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getValue() {
     return value;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public boolean getChecked() {
-    return checked;
-  }
-
-  /**
-   * Get the JavaScript action
-   */
-  public String getAction() {
-    return action;
-  }
-
-  /**
-   * Set the JavaScript action e.g. "onLoad=doOnLoad();"
-   * @param strAction the event name and the action
-   */
-  public void setAction(String strAction) {
-    action = strAction;
-  }
-
-  // -----------------------------------------------------------------------------------------------------------------
-  // Ecriture de l'input en fonction de son type, de sa valeur et de son nom
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  @Override
   public String getSyntax() {
 
     syntax += " <input style=\"background-color:#FFFFFF;\" type=\"radio\" name=\"";
@@ -150,38 +71,13 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
     }
 
     // param activate
-    if (getChecked() == true) {
+    if (isChecked()) {
       syntax += " checked";
     }
 
     syntax += "/>";
 
     return syntax;
-  }
-
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String print() {
-    String result = "<td ";
-
-    if (getCellAlign() != null) {
-      if (getCellAlign().equalsIgnoreCase("center")
-          || getCellAlign().equalsIgnoreCase("right")) {
-        result += " align=\"" + getCellAlign() + "\"";
-      }
-    }
-
-    result += " >";
-
-    result += getSyntax();
-
-    result += "</td>\n";
-    return result;
   }
 
 }

@@ -175,6 +175,7 @@ CREATE TABLE ST_User
     state                         VARCHAR(30)         NOT NULL,
     stateSaveDate                 TIMESTAMP           NOT NULL,
     notifManualReceiverLimit      INT,
+    sensitiveData                 BOOLEAN DEFAULT FALSE NOT NULL,
     CONSTRAINT PK_User PRIMARY KEY (id),
     CONSTRAINT UN_User_1 UNIQUE (specificId, domainId),
     CONSTRAINT UN_User_2 UNIQUE (login, domainId),

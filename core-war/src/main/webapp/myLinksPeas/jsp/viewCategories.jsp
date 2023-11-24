@@ -105,8 +105,8 @@
         <view:areaOfOperationOfCreation/>
         <div id="category-list">
           <view:arrayPane var="categoryList" routingAddress="ViewCategories"
-                          sortableLines="true" numberLinesPerPage="-1"
-                          moveLineJsCallback="saveArrayLinesOrder(e, ui)">
+                          movableLines="true" numberLinesPerPage="-1"
+                          onLineMove="saveArrayLinesOrder(e, ui)">
             <fmt:message key="GML.nom" var="tmpLabel"/>
             <view:arrayColumn title="${tmpLabel}" sortable="false"/>
             <fmt:message key="GML.description" var="tmpLabel"/>

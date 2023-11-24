@@ -32,11 +32,7 @@ import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.*;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig;
@@ -95,7 +91,7 @@ public class ICalendarEventSynchronization implements Initialization {
    */
   public static final String REPORT_NAMESPACE = "silverpeas.core.calendar.synchronization";
   private static final String CALENDAR_SETTINGS = "org.silverpeas.calendar.settings.calendar";
-  private static final String SYNCHRONIZATION_ERRO_MSG = "Synchronize error on calendar {0} of instance {1} -> {2}";
+  private static final String SYNCHRONIZATION_ERROR_MSG = "Synchronize error on calendar {0} of instance {1} -> {2}";
 
   @Inject
   private ICalendarEventImportProcessor importer;
@@ -162,28 +158,32 @@ public class ICalendarEventSynchronization implements Initialization {
     }
     try {
       InputStream source = (InputStream) calendar.getExternalCalendarUrl().getContent();
-      return Transaction.performInOne(() -> {
-        final Instant synchronizationDateTime = Instant.now();
-        calendar.setLastSynchronizationDate(synchronizationDateTime);
-        Calendar syncCalendar = Calendar.getById(calendar.getId());
-        syncCalendar.setLastSynchronizationDate(synchronizationDateTime);
-        syncCalendar.save();
-
-        ICalendarImportResult result =
-            importer.importInto(syncCalendar, ImportDescriptor.withInputStream(source));
-
-        removeDeletedEvents(syncCalendar, result);
-        return result;
-      });
+      return synchronizeCalendarFrom(calendar, source);
     } catch (IOException e) {
-      final String message = format(SYNCHRONIZATION_ERRO_MSG, calendar.getId(),
+      final String message = format(SYNCHRONIZATION_ERROR_MSG, calendar.getId(),
           calendar.getComponentInstanceId(), "no data found from the synchronization link");
       throw new ImportException(new LightExceptionMessage(this, e).singleLineWith(message));
     } catch (Exception e) {
-      final String message = format(SYNCHRONIZATION_ERRO_MSG, calendar.getId(),
+      final String message = format(SYNCHRONIZATION_ERROR_MSG, calendar.getId(),
           calendar.getComponentInstanceId(), e.getMessage());
       throw new ImportException(message, e);
     }
+  }
+
+  private ICalendarImportResult synchronizeCalendarFrom(Calendar calendar, InputStream source) {
+    return Transaction.performInOne(() -> {
+      final Instant synchronizationDateTime = Instant.now();
+      calendar.setLastSynchronizationDate(synchronizationDateTime);
+      Calendar syncCalendar = Calendar.getById(calendar.getId());
+      syncCalendar.setLastSynchronizationDate(synchronizationDateTime);
+      syncCalendar.save();
+
+      ICalendarImportResult result =
+          importer.importInto(syncCalendar, ImportDescriptor.withInputStream(source));
+
+      removeDeletedEvents(syncCalendar, result);
+      return result;
+    });
   }
 
   /**
@@ -264,33 +264,32 @@ public class ICalendarEventSynchronization implements Initialization {
       synchroDate = "N/A";
     }
 
-    return new StringBuilder("Report of the synchronization of calendar ").append(calendar.getId())
-        .append(" ('")
-        .append(calendar.getTitle())
-        .append("')\n")
-        .append("author: ")
-        .append(calendar.getCreator().getDisplayedName())
-        .append(" (id '")
-        .append(calendar.getCreator().getDisplayedName())
-        .append("')")
-        .append("\n")
-        .append("Synchronization date: ")
-        .append(synchroDate)
-        .append("\n")
-        .append("Synchronization duration: ")
-        .append(duration)
-        .append(" seconds")
-        .append("\n")
-        .append("Number of events added: ")
-        .append(result.added())
-        .append("\n")
-        .append("Number of events updated: ")
-        .append(result.updated())
-        .append("\n")
-        .append("Number of events deleted: ")
-        .append(result.deleted())
-        .append("\n")
-        .toString();
+    return "Report of the synchronization of calendar " + calendar.getId() +
+        " ('" +
+        calendar.getTitle() +
+        "')\n" +
+        "author: " +
+        calendar.getCreator().getDisplayedName() +
+        " (id '" +
+        calendar.getCreator().getDisplayedName() +
+        "')" +
+        "\n" +
+        "Synchronization date: " +
+        synchroDate +
+        "\n" +
+        "Synchronization duration: " +
+        duration +
+        " seconds" +
+        "\n" +
+        "Number of events added: " +
+        result.added() +
+        "\n" +
+        "Number of events updated: " +
+        result.updated() +
+        "\n" +
+        "Number of events deleted: " +
+        result.deleted() +
+        "\n";
   }
 
   /**

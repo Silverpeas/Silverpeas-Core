@@ -29,7 +29,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 @Service
 public class UserNotificationManager {

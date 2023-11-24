@@ -24,7 +24,6 @@
 
 <%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%@ tag import="org.silverpeas.core.admin.user.model.UserFull" %>
-<%@ tag import="org.silverpeas.core.util.logging.SilverLogger" %>
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -34,8 +33,9 @@
 <%@ taglib prefix="plugins" tagdir="/WEB-INF/tags/silverpeas/plugins" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<c:set var="_language" value="${requestScope.resources.language}"/>
-<fmt:setLocale value="${_language}"/>
+<c:set var="language" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
 <c:url var="iconUser" value="/util/icons/user.gif"/>
@@ -66,15 +66,28 @@
 
 <c:set var="isCurrentUserAdmin" value="<%=UserDetail.getCurrentRequester().isAccessAdmin() %>"/>
 <c:set var="isCurrentUserDomainManager" value="<%=UserDetail.getCurrentRequester().isAccessDomainManager() %>"/>
+<c:set var="isAdminScope" value="${requestScope.ADMIN_SCOPE}"/>
 
 <view:setConstant var="propertyTypeUser" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_USERID"/>
 <view:setConstant var="propertyTypeString" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_STRING"/>
 <view:setConstant var="propertyTypeBoolean" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_BOOLEAN"/>
 
+<fmt:message key="JDP.potentialSensitiveData" var="potentialSensitiveData"/>
+<fmt:message key="JDP.effectivelySensitiveData" var="sensitiveData"/>
+
 <c:set var="passwordPrefix" value="password"/>
 
 <c:if test="<%=!(user instanceof UserFull)%>">
   <c:set var="user" value="<%=UserFull.getById(user.getId())%>"/>
+</c:if>
+
+<c:set var="sensitiveInfo" value="${potentialSensitiveData}"/>
+<c:set var="sensitiveCssClass" value="sensitive_no_active"/>
+<c:set var="sensitivePicto" value="/util/icons/bulle-attention.png"/>
+<c:if test="${user.hasSensitiveData()}">
+  <c:set var="sensitiveInfo" value="${sensitiveData}"/>
+  <c:set var="sensitiveCssClass" value="sensitive_active"/>
+  <c:set var="sensitivePicto" value="/util/icons/info-sensible.png"/>
 </c:if>
 
 <c:if test="${allFieldsUpdatable == null}">
@@ -95,12 +108,41 @@
 
 <div class="${listStyle}">
   <c:if test="${silfn:isDefined(user.emailAddress) and includeEmail}">
-    <div class="field" id="email">
-      <c:if test="${displayLabels}">
-        <label class="txtlibform">${labelEmail}</label>
-      </c:if>
-      <div class="champs">${user.emailAddress}</div>
-    </div>
+    <c:choose>
+      <c:when test="${isAdminScope and user.hasSensitiveData()}">
+        <div class="field sensitive_active" id="email">
+          <c:if test="${displayLabels}">
+            <label class="txtlibform">${labelEmail}</label>
+          </c:if>
+          <view:image src="${sensitivePicto}" css="${sensitiveCssClass}" alt="${sensitiveInfo}" title="${sensitiveInfo}"/>
+          <div class="champs">${user.emailAddress}</div>
+        </div>
+      </c:when>
+      <c:when test="${isAdminScope}">
+        <div class="field sensitive_no_active" id="email">
+          <c:if test="${displayLabels}">
+            <label class="txtlibform">
+                ${labelEmail}
+                <view:image src="${sensitivePicto}" css="${sensitiveCssClass}" alt="${sensitiveInfo}" title="${sensitiveInfo}"/>
+            </label>
+          </c:if>
+          <c:if test="${not displayLabels}">
+          <label class="txtlibform">
+              <view:image src="${sensitivePicto}" css="${sensitiveCssClass}" alt="${sensitiveInfo}" title="${sensitiveInfo}"/>
+          </label>
+          </c:if>
+          <div class="champs">${user.emailAddress}</div>
+        </div>
+      </c:when>
+      <c:otherwise>
+        <div class="field" id="email">
+          <c:if test="${displayLabels}">
+            <label class="txtlibform">${labelEmail}</label>
+          </c:if>
+          <div class="champs">${user.emailAddress}</div>
+        </div>
+      </c:otherwise>
+    </c:choose>
   </c:if>
   <c:forEach items="${user.propertiesNames}" var="propertyName">
     <c:set var="passwordField" value="${fn:startsWith(propertyName, passwordPrefix)}"/>
@@ -110,13 +152,46 @@
                    type="org.silverpeas.core.admin.domain.model.DomainProperty"/>
       <c:set var="propertyValue" value="${user.getValue(propertyName)}"/>
       <c:if test="${(readOnly && not empty propertyValue) || not readOnly}">
-      <div class="field" id="${propertyName}">
-        <c:if test="${displayLabels}">
-          <label class="txtlibform">
-            ${user.getSpecificLabel(_language, propertyName)}
-          </label>
-        </c:if>
+
+      <c:set var="displaySensitivePictoInChamps" value="${false}"/>
+      <c:choose>
+        <c:when test="${isAdminScope and domainProperty.sensitive and user.hasSensitiveData()}">
+          <c:set var="displaySensitivePictoInChamps" value="${true}"/>
+          <div class="field sensitive_data" id="${propertyName}">
+          <c:if test="${displayLabels}">
+            <label class="txtlibform">
+              ${user.getSpecificLabel(language, propertyName)}
+            </label>
+          </c:if>
+        </c:when>
+        <c:when test="${isAdminScope and domainProperty.sensitive}">
+          <div class="field sensitive_no_active" id="${propertyName}">
+          <c:if test="${displayLabels}">
+            <label class="txtlibform">
+              ${user.getSpecificLabel(language, propertyName)}
+              <view:image src="${sensitivePicto}" css="${sensitiveCssClass}" alt="${sensitiveInfo}" title="${sensitiveInfo}"/>
+            </label>
+          </c:if>
+          <c:if test="${not displayLabels}">
+            <label>
+              <view:image src="${sensitivePicto}" css="${sensitiveCssClass}" alt="${sensitiveInfo}" title="${sensitiveInfo}"/>
+            </label>
+          </c:if>
+        </c:when>
+        <c:otherwise>
+          <div class="field" id="${propertyName}">
+          <c:if test="${displayLabels}">
+            <label class="txtlibform">
+                ${user.getSpecificLabel(language, propertyName)}
+            </label>
+          </c:if>
+        </c:otherwise>
+      </c:choose>
+
         <div class="champs">
+          <c:if test="${displaySensitivePictoInChamps}">
+            <view:image src="${sensitivePicto}" css="${sensitiveCssClass}" alt="${sensitiveInfo}" title="${sensitiveInfo}"/>
+          </c:if>
           <c:set var="propertyUpdatable" value="${not readOnly and (allFieldsUpdatable or ((isCurrentUserAdmin or isCurrentUserDomainManager) and user.isPropertyUpdatableByAdmin(propertyName)) or user.isPropertyUpdatableByUser(propertyName))}"/>
           <c:choose>
             <c:when test="${user.getPropertyType(propertyName) eq propertyTypeString}">
@@ -169,9 +244,6 @@
               </c:if>
             </c:when>
           </c:choose>
-          <c:if test="${domainProperty.sensitive}">
-            <view:image src="/util/icons/important.gif" alt="important"/>
-          </c:if>
         </div>
       </div>
       </c:if>

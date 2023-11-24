@@ -34,7 +34,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.iconpanes;
 
 import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  * The default implementation of IconPane interface
@@ -43,84 +43,30 @@ import java.util.Vector;
  */
 public class IconPaneWA extends AbstractIconPane {
 
-  /**
-   * Constructor declaration
-   *
-   */
   public IconPaneWA() {
     super();
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String horizontalPrint() {
+  public String print() {
     StringBuilder result = new StringBuilder();
-    Vector icons = getIcons();
+    List<Icon> icons = getIcons();
     String spacing = getSpacing();
 
-    result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
-    if (icons.size() > 0) {
+    result.append("<table><tr>");
+    if (!icons.isEmpty()) {
       result.append("<td>");
-      result.append(((Icon) icons.elementAt(0)).print());
+      result.append((icons.get(0)).print());
       result.append("</td>");
     }
     for (int i = 1; i < icons.size(); i++) {
       result.append("<td width=\"").append(spacing).append("\">&nbsp;</td>");
       result.append("<td>");
-      result.append(((Icon) icons.elementAt(i)).print());
+      result.append((icons.get(i)).print());
       result.append("</td>");
     }
     result.append("</tr></table>");
 
     return result.toString();
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String verticalPrint() {
-    StringBuilder result = new StringBuilder();
-    Vector icons = getIcons();
-    String verticalWidth = getVerticalWidth();
-    String spacing = getSpacing();
-
-    result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"")
-        .append(verticalWidth)
-        .append("\">");
-    if (icons.size() > 0) {
-      result.append("<tr><td>");
-      result.append(((Icon) icons.elementAt(0)).print());
-      result.append("</td></tr>");
-    }
-    for (int i = 1; i < icons.size(); i++) {
-      result.append("<tr><td height=\"" + spacing + "\">&nbsp;</td></tr>");
-      result.append("<tr><td>");
-      result.append(((Icon) icons.elementAt(i)).print());
-      result.append("</td></tr>");
-    }
-    result.append("</table>");
-
-    return result.toString();
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String print() {
-    int viewType = getViewType();
-
-    if (viewType == VERTICAL_PANE) {
-      return verticalPrint();
-    } else {
-      return horizontalPrint();
-    }
   }
 
 }

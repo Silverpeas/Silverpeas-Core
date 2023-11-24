@@ -43,7 +43,8 @@ public class EffectiveChangePasswordHandler extends ChangePasswordFunctionHandle
 
   private final AuthenticationService authenticator =
       AuthenticationServiceProvider.getService();
-  private ForcePasswordChangeHandler forcePasswordChangeHandler = new ForcePasswordChangeHandler();
+  private final ForcePasswordChangeHandler forcePasswordChangeHandler =
+      new ForcePasswordChangeHandler();
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -53,25 +54,29 @@ public class EffectiveChangePasswordHandler extends ChangePasswordFunctionHandle
     try {
       String userId = getAdminService().identify(key, session.getId(), false, false);
       UserDetail ud = getAdminService().getUserDetail(userId);
-      try {
-        String login = ud.getLogin();
-        String domainId = ud.getDomainId();
-        String oldPassword = request.getParameter("oldPassword");
-        String newPassword = request.getParameter("newPassword");
-        AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
-            .withAsPassword(oldPassword).withAsDomainId(domainId);
-        authenticator.changePassword(credential, newPassword);
-
-        return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId="
-            + domainId;
-      } catch (AuthenticationException e) {
-        SilverLogger.getLogger(this).error(e);
-        return performUrlChangePasswordError(request, forcePasswordChangeHandler.doAction(request),
-            ud);
-      }
+      return changePassword(request, ud);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
       return forcePasswordChangeHandler.doAction(request);
+    }
+  }
+
+  private String changePassword(HttpServletRequest request, UserDetail ud) {
+    try {
+      String login = ud.getLogin();
+      String domainId = ud.getDomainId();
+      String oldPassword = request.getParameter("oldPassword");
+      String newPassword = request.getParameter("newPassword");
+      AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
+          .withAsPassword(oldPassword).withAsDomainId(domainId);
+      authenticator.changePassword(credential, newPassword);
+
+      return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId="
+          + domainId;
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).error(e);
+      return performUrlChangePasswordError(request, forcePasswordChangeHandler.doAction(request),
+          ud);
     }
   }
 }

@@ -31,52 +31,48 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.List;
 
 /**
- * This class manage the informations needed for domains navigation and browse PRE-REQUIRED : the
- * Domain passed in the constructor MUST BE A VALID DOMAIN (with Id, etc...)
- * @t.leroi
+ * This class manage the information needed for domains navigation and browsing.
+ * REQUIREMENT: the Domain passed in the constructor MUST BE A VALID DOMAIN (with Id, etc...)
+ * @author t.leroi
  */
 public class DomainNavigationStock extends NavigationStock {
-  Domain m_NavDomain = null;
-  String m_DomainId = null;
-  List<String> manageableGroupIds = null;
+  private Domain domain = null;
+  private final String domainId;
+  private final List<String> manageableGroupIds;
 
   public DomainNavigationStock(String navDomain, AdminController adc,
       List<String> manageableGroupIds) {
     super(adc);
-    m_DomainId = navDomain;
+    domainId = navDomain;
     this.manageableGroupIds = manageableGroupIds;
     refresh();
   }
 
   public void refresh() {
-    m_NavDomain = m_adc.getDomain(m_DomainId);
-    m_SubUsers = m_adc.getUsersOfDomain(m_NavDomain.getId());
-    if (m_SubUsers == null) {
-      m_SubUsers = new UserDetail[0];
+    userStateFilter = null;
+    domain = adminController.getDomain(domainId);
+    subUsers = adminController.getUsersOfDomain(domain.getId());
+    if (subUsers == null) {
+      subUsers = new UserDetail[0];
     }
-    JobDomainSettings.sortUsers(m_SubUsers);
-    m_SubGroups = m_adc.getRootGroupsOfDomain(m_NavDomain.getId());
-    if (m_SubGroups == null) {
-      m_SubGroups = new Group[0];
+    JobDomainSettings.sortUsers(subUsers);
+    subGroups = adminController.getRootGroupsOfDomain(domain.getId());
+    if (subGroups == null) {
+      subGroups = new Group[0];
     }
 
     if (manageableGroupIds != null)
-      m_SubGroups = filterGroupsToGroupManager(manageableGroupIds, m_SubGroups);
+      subGroups = filterGroupsToGroupManager(manageableGroupIds, subGroups);
 
-    JobDomainSettings.sortGroups(m_SubGroups);
-    verifIndexes();
+    JobDomainSettings.sortGroups(subGroups);
   }
 
   public Domain getThisDomain() {
-    return m_NavDomain;
+    return domain;
   }
 
-  static public boolean isDomainValid(Domain dom) {
-    return dom != null && StringUtil.isDefined(dom.getId());
-  }
 }

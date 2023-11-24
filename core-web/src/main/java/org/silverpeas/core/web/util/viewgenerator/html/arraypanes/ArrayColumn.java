@@ -32,24 +32,25 @@ import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPa
 
 /**
  * @author squere
- * @version
  */
 public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * This behaviour is set when a column header is not sortable. No hyperlink will be anchored
    * around the title of the column.
-   * @see #setBehaviour(int behaviour)
    */
   public static final int COLUMN_BEHAVIOUR_NO_TRIGGER = 1;
+  /**
+   * Default behaviour in which the column header is sortable. An hyperlink will be anchored
+   * around the title of the column.
+   */
   public static final int COLUMN_BEHAVIOUR_DEFAULT = 0;
-  protected String title;
-  protected String alignement;
-  protected int columnNumber;
-  protected ArrayPane pane;
-  protected int m_Behaviour = COLUMN_BEHAVIOUR_DEFAULT;
-  protected String width = null;
-  private BiFunction compareOn;
+  private String title;
+  private final int columnNumber;
+  private final ArrayPane pane;
+  private int sortBehaviour = COLUMN_BEHAVIOUR_DEFAULT;
+  private String width = null;
+  private BiFunction<Object, Integer, Comparable<Object>> compareOn;
 
   /**
    * In some cases, it may be preferable to specify the routing address (via
@@ -58,39 +59,21 @@ public class ArrayColumn implements SimpleGraphicElement {
    * string <strong>arraypane:</strong>, in which case a javascript:doArrayPane() URL is issued
    * instead of a standard URL.
    */
-  protected String m_RoutingAddress = null;
+  protected String routingAddress = null;
 
-  /**
-   * Constructor declaration
-   * @param title
-   * @param columnNumber
-   * @param pane
-   * @see
-   */
   public ArrayColumn(String title, int columnNumber, ArrayPane pane) {
     this.title = title;
     this.columnNumber = columnNumber;
     this.pane = pane;
-    this.alignement = null;
-  }
-
-  /**
-   * standard method that returns the CVS-managed version string
-   * @return
-   */
-  public static String getVersion() {
-    String v = "$Id: ArrayColumn.java,v 1.6 2008/04/16 14:45:06 neysseri Exp $";
-
-    return (v);
   }
 
   /**
    * This method sets the routing address. This is actually the URL of the page to which requests
    * will be routed when the user clicks on a column header link.
-   * @param address
+   * @param address the address of the service for processing the requests.
    */
   public void setRoutingAddress(String address) {
-    m_RoutingAddress = address;
+    routingAddress = address;
   }
 
   /**
@@ -100,93 +83,37 @@ public class ArrayColumn implements SimpleGraphicElement {
    */
   public void setSortable(boolean sortable) {
     if (sortable) {
-      setBehaviour(ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
+      sortBehaviour = ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT;
     } else {
-      setBehaviour(ArrayColumn.COLUMN_BEHAVIOUR_NO_TRIGGER);
+      sortBehaviour = ArrayColumn.COLUMN_BEHAVIOUR_NO_TRIGGER;
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public boolean getSortable() {
+  public boolean isSortable() {
     if (pane.getSortable()) {
-      return (m_Behaviour == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
+      return (sortBehaviour == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
     } else {
       return false;
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public <T, V> BiFunction<T, Integer, Comparable<V>> getCompareOn() {
+  public BiFunction<Object, Integer, Comparable<Object>> getCompareOn() {
     return compareOn;
   }
 
-  public <T, V> void setCompareOn(final BiFunction<T, Integer, Comparable<V>> compareOn) {
+  public void setCompareOn(final BiFunction<Object, Integer, Comparable<Object>> compareOn) {
     setSortable(true);
     this.compareOn = compareOn;
   }
 
-  /**
-   * This method changes the column behaviour, if the argument behaviour is valid
-   * @param behaviour
-   * @deprecated
-   */
-  @Deprecated
-  public void setBehaviour(int behaviour) {
-    switch (behaviour) {
-      case COLUMN_BEHAVIOUR_NO_TRIGGER:
-      case COLUMN_BEHAVIOUR_DEFAULT:
-        m_Behaviour = behaviour;
-        break;
-      default:
-        break;
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param title
-   * @see
-   */
   public void setTitle(String title) {
     this.title = title;
   }
 
-  /**
-   * Method declaration
-   * @param alignement
-   * @see
-   */
-  public void setAlignement(String alignement) {
-    this.alignement = alignement;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getTitle() {
     return title;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getAlignement() {
-    return alignement;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public int getColumnNumber() {
     return columnNumber;
   }
@@ -199,107 +126,27 @@ public class ArrayColumn implements SimpleGraphicElement {
     return width;
   }
 
-  /**
-   * Method declaration
-   * @param address
-   * @return
-   * @see
-   */
   protected boolean isArrayPaneURL(String address) {
     return (address != null && address.trim().toLowerCase().startsWith("arraypane:"));
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
+ @Override
   public String print() {
-    return print(false);
-  }
+   StringBuilder result = new StringBuilder();
+   boolean isAP = false;
 
-  public String print(boolean xhtml) {
-    StringBuilder result = new StringBuilder();
-    boolean isAP = false;
-    String JSStartString = "";
-    String JSEndString = "";
+   result.append("<th scope=\"col\"");
 
-    result.append("<th scope=\"col\"");
+   if (getWidth() != null) {
+     result.append(" width=\"").append(getWidth()).append("\" ");
+   }
 
-    // column alignement. By default, alignement is on the left
-    if (alignement != null &&
-        (alignement.equalsIgnoreCase("center") || alignement.equalsIgnoreCase("right"))) {
-      if (alignement.equalsIgnoreCase("center")) {
-        result.append(" align=\"center\"");
-      } else {
-        result.append(" align=\"right\"");
-      }
-    }
+   if (title != null) {
+     result.append(" class=\"ArrayColumn\">");
 
-    if (getWidth() != null) {
-      result.append(" width=\"").append(getWidth()).append("\" ");
-    }
-
-    if (title != null) {
-      result.append(" class=\"ArrayColumn\">");
-
-      if (getSortable()) {
-        String address = null;
-
-        // routing address computation. By default, route to the short name for
-        // the calling page
-        if (m_RoutingAddress == null) {
-          address = ((HttpServletRequest) pane.getRequest()).getRequestURI();
-          // only get a relative http address
-          address = address.substring(address.lastIndexOf('/') + 1, address.length());
-          // if the previous request had parameters, remove them
-          if (address.lastIndexOf('?') >= 0) {
-            address = address.substring(0, address.lastIndexOf('?'));
-          }
-        } else {
-          address = m_RoutingAddress;
-          isAP = isArrayPaneURL(address);
-          if (isAP) {
-            address = "javascript:doArrayPane";
-            JSStartString = "(";
-            JSEndString = ");";
-          }
-        }
-
-
-
-        String sep = "&";
-        if (xhtml) {
-          sep = "&amp;";
-        }
-
-        StringBuilder href = new StringBuilder();
-        href.append(address).append(JSStartString);
-
-        // standard non-javascript url. Add parameters to the url
-        if (isAP == false) {
-          String temp = result.toString();
-          if (temp.indexOf('?') >= 0 || href.indexOf("?") >= 0) {// there are already some
-            // parameters
-            href.append(sep);
-          } else {
-            // there are no parameters
-            href.append("?");
-          }
-          href.append(ACTION_PARAMETER_NAME).append("=Sort").append(sep);
-          href.append(TARGET_PARAMETER_NAME).append('=').append(pane.getName());
-          href.append(sep).append(COLUMN_PARAMETER_NAME).append('=').append(getColumnNumber());
-        } // arraypane javascript function. Pass it parameters.
-        else {
-          href.append("'").append(pane.getName()).append("',").append(getColumnNumber());
-        }
-        href.append(JSEndString);
-        result.append("<a class=\"ArrayColumn\" href=\"").append(href);
-        result.append("\">").append(title).append("</a>");
-
-        result.append("</th>");
-      } // behaviour 'no trigger'
+     if (isSortable()) {
+       setHeaderHref(isAP, result);
+     } // behaviour 'no trigger'
       else {
         result.append(title).append("</th>");
       }
@@ -307,5 +154,60 @@ public class ArrayColumn implements SimpleGraphicElement {
       result.append(" class=\"ArrayColumn\">&nbsp;</th>");
     }
     return result.toString();
+  }
+
+  private void setHeaderHref(boolean isAP, StringBuilder result) {
+    String address;
+    String jsStartString = "";
+    String jsEndString = "";
+
+    // routing address computation. By default, route to the short name for
+    // the calling page
+    if (routingAddress == null) {
+      address = ((HttpServletRequest) pane.getRequest()).getRequestURI();
+      // only get a relative http address
+      address = address.substring(address.lastIndexOf('/') + 1);
+      // if the previous request had parameters, remove them
+      if (address.lastIndexOf('?') >= 0) {
+        address = address.substring(0, address.lastIndexOf('?'));
+      }
+    } else {
+      address = routingAddress;
+      isAP = isArrayPaneURL(address);
+      if (isAP) {
+        address = "javascript:doArrayPane";
+        jsStartString = "(";
+        jsEndString = ");";
+      }
+    }
+
+    String sep = "&";
+
+
+    StringBuilder href = new StringBuilder();
+    href.append(address).append(jsStartString);
+
+    // standard non-javascript url. Add parameters to the url
+    if (!isAP) {
+      String temp = result.toString();
+      if (temp.indexOf('?') >= 0 || href.indexOf("?") >= 0) {// there are already some
+        // parameters
+        href.append(sep);
+      } else {
+        // there are no parameters
+        href.append("?");
+      }
+      href.append(ACTION_PARAMETER_NAME).append("=Sort").append(sep);
+      href.append(TARGET_PARAMETER_NAME).append('=').append(pane.getName());
+      href.append(sep).append(COLUMN_PARAMETER_NAME).append('=').append(getColumnNumber());
+    } // arraypane javascript function. Pass it parameters.
+    else {
+      href.append("'").append(pane.getName()).append("',").append(getColumnNumber());
+    }
+    href.append(jsEndString);
+    result.append("<a class=\"ArrayColumn\" href=\"").append(href);
+    result.append("\">").append(title).append("</a>");
+
+    result.append("</th>");
   }
 }

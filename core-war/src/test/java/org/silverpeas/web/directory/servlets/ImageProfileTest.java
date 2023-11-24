@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnableSilverTestEnv
-class ImageProfilTest {
+class ImageProfileTest {
 
   @AfterEach
   public void prepareDir() throws Exception {
@@ -47,25 +47,25 @@ class ImageProfilTest {
 
   @Test
   void testIsImage() {
-    ImageProfil imageProfil = new ImageProfil("nidale.jpg");
-    assertEquals(true, imageProfil.isImage());
-    imageProfil = new ImageProfil("nidale.bmp");
-    assertEquals(true, imageProfil.isImage());
-    imageProfil = new ImageProfil("nidale.jpeg");
-    assertEquals(true, imageProfil.isImage());
-    imageProfil = new ImageProfil("nidale.gif");
-    assertEquals(true, imageProfil.isImage());
-    imageProfil = new ImageProfil("nidale.txt");
-    assertEquals(false, imageProfil.isImage());
+    ImageProfile imageProfile = new ImageProfile("nidale.jpg");
+    assertEquals(true, imageProfile.isImage());
+    imageProfile = new ImageProfile("nidale.bmp");
+    assertEquals(true, imageProfile.isImage());
+    imageProfile = new ImageProfile("nidale.jpeg");
+    assertEquals(true, imageProfile.isImage());
+    imageProfile = new ImageProfile("nidale.gif");
+    assertEquals(true, imageProfile.isImage());
+    imageProfile = new ImageProfile("nidale.txt");
+    assertEquals(false, imageProfile.isImage());
   }
 
   @Test
   void testExtractImage() throws IOException {
-    ImageProfil imageProfil = new ImageProfil("SilverAdmin.jpg");
+    ImageProfile imageProfile = new ImageProfile("SilverAdmin.jpg");
     try (InputStream fis = this.getClass().getResourceAsStream("/SilverAdmin.jpg")) {
-      imageProfil.saveImage(fis);
+      imageProfile.saveImage(fis);
     }
-    try (InputStream image = imageProfil.getImage();
+    try (InputStream image = imageProfile.getImage();
          InputStream fis = this.getClass().getResourceAsStream("/SilverAdmin.jpg")) {
       assertTrue(IOUtils.contentEquals(fis, image));
     }

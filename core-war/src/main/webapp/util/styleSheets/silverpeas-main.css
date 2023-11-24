@@ -6918,12 +6918,14 @@ ul.sm-map {
 }
 
 .admin-user .profile .lastConnection,
+.admin-user .profile .sensitiveData,
 .admin-user .profile .tosAcceptanceDate,
 .admin-user .profile .access,
-.admin-user .profile .email{
+.admin-user .profile .email {
   margin-bottom:1em;
 }
 .admin-user .profile .lastConnection,
+.admin-user .profile .sensitiveData,
 .admin-user .profile .tosAcceptanceDate {
   font-style:italic;
   color:#666;
@@ -7569,4 +7571,18 @@ input.dateToPick,
 #popupHelperContainer .txtlibform {
   width: 110px;
   height: 20px;
+}
+
+/************ User profile information  */
+#identity-profil .email {
+  position:relative;
+}
+#identity-profil .email img.sensitive_no_active {
+  position: absolute;
+  top: 0;
+  left: 12px;
+}
+
+#identity-extra label .sensitive_no_active {
+  margin: -1em 0 0 -0.25em;
 }

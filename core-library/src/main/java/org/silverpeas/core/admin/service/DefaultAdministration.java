@@ -28,11 +28,7 @@ import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.RightProfile;
-import org.silverpeas.core.admin.component.ApplicationResourcePasting;
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
-import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
-import org.silverpeas.core.admin.component.WAComponentRegistry;
+import org.silverpeas.core.admin.component.*;
 import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
@@ -49,21 +45,12 @@ import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.cache.AdminCache;
 import org.silverpeas.core.admin.service.cache.TreeCache;
-import org.silverpeas.core.admin.space.SpaceI18N;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.space.SpaceProfileInstManager;
-import org.silverpeas.core.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.space.*;
 import org.silverpeas.core.admin.space.model.Space;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.core.admin.user.GroupManager;
-import org.silverpeas.core.admin.user.ProfileInstManager;
-import org.silverpeas.core.admin.user.ProfiledObjectManager;
-import org.silverpeas.core.admin.user.UserIndexation;
-import org.silverpeas.core.admin.user.UserManager;
+import org.silverpeas.core.admin.user.*;
 import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -333,7 +320,6 @@ class DefaultAdministration implements Administration {
 
   @Override
   public void createSpaceIndex(SpaceInstLight spaceInst) {
-    // Index the space
     String spaceId = spaceInst.getId();
     FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(INDEX_SPACE_SCOPE, "Space",
         spaceId));
@@ -709,15 +695,6 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public boolean isSpaceInstExist(String spaceId) throws AdminException {
-    try {
-      return spaceManager.isSpaceInstExist(getDriverSpaceId(spaceId));
-    } catch (AdminException e) {
-      throw new AdminException(e.getMessage(), e);
-    }
-  }
-
-  @Override
   public String[] getAllRootSpaceIds() throws AdminException {
     try {
       String[] driverSpaceIds = spaceManager.getAllRootSpaceIds();
@@ -908,16 +885,6 @@ class DefaultAdministration implements Administration {
       return componentManager.copy(componentInst);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(COMPONENT, String.valueOf(componentId)), e);
-    }
-  }
-
-  @Override
-  public List<Parameter> getComponentParameters(String componentId) {
-    try {
-      return componentManager.getParameters(getDriverComponentId(componentId));
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
-      return Collections.emptyList();
     }
   }
 
@@ -1868,7 +1835,7 @@ class DefaultAdministration implements Administration {
   public String addSpaceProfileInst(SpaceProfileInst spaceProfile, String userId)
       throws AdminException {
     try {
-      Integer spaceId = getDriverComponentId(spaceProfile.getSpaceFatherId());
+      int spaceId = getDriverComponentId(spaceProfile.getSpaceFatherId());
       String sSpaceProfileId = spaceProfileManager.createSpaceProfileInst(spaceProfile, spaceId);
       spaceProfile.setId(sSpaceProfileId);
       if (StringUtil.isDefined(userId)) {
@@ -1913,29 +1880,27 @@ class DefaultAdministration implements Administration {
    * Delete the given space profile from Silverpeas
    */
   @Override
-  public String deleteSpaceProfileInst(String sSpaceProfileId, String userId)
+  public void deleteSpaceProfileInst(String sSpaceProfileId, String userId)
       throws AdminException {
     SpaceProfileInst spaceProfileInst =
         spaceProfileManager.getSpaceProfileInst(sSpaceProfileId, true);
-    if (spaceProfileInst == null) {
-      return sSpaceProfileId;
-    }
-    try {
-      spaceProfileManager.deleteSpaceProfileInst(spaceProfileInst);
-      cache.opRemoveSpaceProfile(spaceProfileInst);
-      spaceProfileInst.removeAllGroups();
-      spaceProfileInst.removeAllUsers();
-      Integer spaceId = getDriverComponentId(spaceProfileInst.getSpaceFatherId());
-      if (StringUtil.isDefined(userId)) {
-        SpaceInst spaceInstFather = getSpaceInstById(spaceId);
-        spaceInstFather.setUpdaterUserId(userId);
-        updateSpaceInst(spaceInstFather);
-      }
-      spreadInheritedSpaceProfile(spaceProfileInst, spaceId);
+    if (spaceProfileInst != null) {
+      try {
+        spaceProfileManager.deleteSpaceProfileInst(spaceProfileInst);
+        cache.opRemoveSpaceProfile(spaceProfileInst);
+        spaceProfileInst.removeAllGroups();
+        spaceProfileInst.removeAllUsers();
+        int spaceId = getDriverComponentId(spaceProfileInst.getSpaceFatherId());
+        if (StringUtil.isDefined(userId)) {
+          SpaceInst spaceInstFather = getSpaceInstById(spaceId);
+          spaceInstFather.setUpdaterUserId(userId);
+          updateSpaceInst(spaceInstFather);
+        }
+        spreadInheritedSpaceProfile(spaceProfileInst, spaceId);
 
-      return sSpaceProfileId;
-    } catch (Exception e) {
-      throw new AdminException(failureOnDeleting(SPACE_PROFILE, sSpaceProfileId), e);
+      } catch (Exception e) {
+        throw new AdminException(failureOnDeleting(SPACE_PROFILE, sSpaceProfileId), e);
+      }
     }
   }
 
@@ -2125,17 +2090,6 @@ class DefaultAdministration implements Administration {
   // -------------------------------------------------------------------------
   // GROUP RELATED FUNCTIONS
   // -------------------------------------------------------------------------
-  @Override
-  public String[] getGroupNames(String[] groupIds) throws AdminException {
-    if (groupIds == null) {
-      return ArrayUtil.emptyStringArray();
-    }
-    String[] asGroupNames = new String[groupIds.length];
-    for (int nI = 0; nI < groupIds.length; nI++) {
-      asGroupNames[nI] = getGroupName(groupIds[nI]);
-    }
-    return asGroupNames;
-  }
 
   @Override
   public String getGroupName(String sGroupId) throws AdminException {
@@ -2330,40 +2284,37 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public String addGroupProfileInst(GroupProfileInst groupProfileInst) throws AdminException {
+  public void addGroupProfileInst(GroupProfileInst groupProfileInst) throws AdminException {
     try {
       // Create the space profile instance
       GroupDetail group = getGroup(groupProfileInst.getGroupId());
       String sProfileId =
           groupProfileManager.createGroupProfileInst(groupProfileInst, group.getId());
       groupProfileInst.setId(sProfileId);
-      return sProfileId;
     } catch (Exception e) {
       throw new AdminException(failureOnAdding(GROUP_PROFILE, groupProfileInst.getName()), e);
     }
   }
 
   @Override
-  public String deleteGroupProfileInst(String groupId) throws AdminException {
+  public void deleteGroupProfileInst(String groupId) throws AdminException {
     // Get the SpaceProfile to delete
     GroupProfileInst groupProfileInst = groupProfileManager.getGroupProfileInst(groupId, true);
-    if (groupProfileInst == null) {
-      return groupId;
-    }
-    try {
-      // Delete the Profile in tables
-      groupProfileManager.deleteGroupProfileInst(groupProfileInst);
-      return groupId;
-    } catch (Exception e) {
-      throw new AdminException(failureOnDeleting(GROUP_PROFILE, groupId), e);
+    if (groupProfileInst != null) {
+      try {
+        // Delete the Profile in tables
+        groupProfileManager.deleteGroupProfileInst(groupProfileInst);
+      } catch (Exception e) {
+        throw new AdminException(failureOnDeleting(GROUP_PROFILE, groupId), e);
+      }
     }
   }
 
   @Override
-  public String updateGroupProfileInst(GroupProfileInst groupProfileInstNew) throws AdminException {
+  public void updateGroupProfileInst(GroupProfileInst groupProfileInstNew) throws AdminException {
     String sSpaceProfileNewId = groupProfileInstNew.getId();
     if (!StringUtil.isDefined(sSpaceProfileNewId)) {
-      sSpaceProfileNewId = addGroupProfileInst(groupProfileInstNew);
+      addGroupProfileInst(groupProfileInstNew);
     } else {
       try {
         GroupProfileInst oldSpaceProfile =
@@ -2374,8 +2325,6 @@ class DefaultAdministration implements Administration {
         throw new AdminException(failureOnUpdate(GROUP_PROFILE, groupProfileInstNew.getId()), e);
       }
     }
-    return sSpaceProfileNewId;
-
   }
 
   @Override
@@ -2437,7 +2386,7 @@ class DefaultAdministration implements Administration {
     } else {
       ud = optionalUser.get();
     }
-    return ud;
+    return ud == null ? null : new UserDetail(ud);
   }
 
   @Override
@@ -2574,9 +2523,22 @@ class DefaultAdministration implements Administration {
     updateUserState(userId, UserState.VALID);
   }
 
+  @Override
+  public void setUserSensitiveData(String userId, boolean sensitive) throws AdminException {
+    try {
+      UserDetail user = getUserDetail(userId);
+      user.setSensitiveData(sensitive);
+      updateUser(user);
+    } catch (Exception e) {
+      String msg = sensitive ? "Some data as sensitive for user " : "Some data as non " +
+          "sensitive for user ";
+      throw new AdminException(failureOnUpdate(msg, userId), e);
+    }
+  }
+
   private void updateUserState(String userId, UserState state) throws AdminException {
     try {
-      UserDetail user = UserDetail.getById(userId);
+      UserDetail user = getUserDetail(userId);
       user.setState(state);
       user.setStateSaveDate(new Date());
       updateUser(user);
@@ -2589,7 +2551,7 @@ class DefaultAdministration implements Administration {
   @Override
   public void userAcceptsTermsOfService(String userId) throws AdminException {
     try {
-      UserDetail user = UserDetail.getById(userId);
+      UserDetail user = getUserDetail(userId);
       user.setTosAcceptanceDate(DateUtil.getNow());
       updateUser(user);
     } catch (Exception e) {
@@ -2737,9 +2699,9 @@ class DefaultAdministration implements Administration {
     return asClientSpaceIds;
   }
 
-  private Integer getDriverComponentId(String sClientComponentId) {
+  private int getDriverComponentId(String sClientComponentId) {
     if (sClientComponentId == null) {
-      return null;
+      return -1;
     }
 
     return getTableClientComponentIdFromClientComponentId(sClientComponentId);
@@ -2748,7 +2710,7 @@ class DefaultAdministration implements Administration {
   /**
    * @return 23 for parameter kmelia23
    */
-  private Integer getTableClientComponentIdFromClientComponentId(String sClientComponentId) {
+  private int getTableClientComponentIdFromClientComponentId(String sClientComponentId) {
     String sTableClientId = "";
 
     // Remove the component name to get the table client id
@@ -2861,11 +2823,6 @@ class DefaultAdministration implements Administration {
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all domains", "in Silverpeas"), e);
     }
-  }
-
-  @Override
-  public List<String> getAllDomainIdsForLogin(String login) throws AdminException {
-    return userManager.getDomainsByUserLogin(login);
   }
 
   @Override
@@ -3300,6 +3257,12 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
+  public List<UserDetail> getUsersWithSensitiveData(final String... domainIds)
+      throws AdminException{
+    return userManager.getUsersWithSensitiveData(domainIds);
+  }
+
+  @Override
   public void blankDeletedUsers(final String targetDomainId, final List<String> userIds)
       throws AdminException {
     final UserDetail[] users = getUserDetails(userIds.toArray(new String[0]));
@@ -3309,6 +3272,18 @@ class DefaultAdministration implements Administration {
         userManager.blankUser(user);
         cache.opUpdateUser(userManager.getUserDetail(user.getId()));
         SilverLogger.getLogger(this).info("User " + userName + " blanked");
+      }
+    }
+  }
+
+  @Override
+  public void disableDataSensitivity(final String domainId,
+      final List<String> userIds) throws AdminException {
+    var users = getUserDetails(userIds.toArray(new String[0]));
+    for (UserDetail user : users) {
+      if (user.getDomainId().equals(domainId) && user.hasSensitiveData()) {
+        user.setSensitiveData(false);
+        updateUser(user);
       }
     }
   }
@@ -3434,27 +3409,6 @@ class DefaultAdministration implements Administration {
       return result;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("spaces manageable by user", sUserId), e);
-    }
-  }
-
-  @Override
-  public String[] getUserManageableSpaceRootIds(String sUserId) throws AdminException {
-    try {
-      // Get user manageable space ids from database
-      List<String> groupIds = getAllGroupsOfUser(sUserId);
-      Integer[] asManageableSpaceIds = userManager.getManageableSpaceIds(sUserId, groupIds);
-
-      // retain only root spaces
-      List<String> manageableRootSpaceIds = new ArrayList<>();
-      for (Integer asManageableSpaceId : asManageableSpaceIds) {
-        Optional<SpaceInstLight> space = treeCache.getSpaceInstLight(asManageableSpaceId);
-        space.filter(SpaceInstLight::isRoot)
-            .ifPresent(s -> manageableRootSpaceIds.add(asManageableSpaceId.toString()));
-      }
-      return manageableRootSpaceIds.toArray(new String[0]);
-
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("root spaces manageable by user", sUserId), e);
     }
   }
 
@@ -3994,21 +3948,6 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public int getUsersNumberOfDomain(String domainId) throws AdminException {
-    try {
-      if (!StringUtil.isDefined(domainId)) {
-        return userManager.getUserCount();
-      }
-      if ("-1".equals(domainId)) {
-        return 0;
-      }
-      return userManager.getNumberOfUsersInDomain(domainId);
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("user count in domain", domainId), e);
-    }
-  }
-
-  @Override
   public String[] getAdministratorUserIds(String fromUserId) throws AdminException {
     return userManager.getAllAdminIds(getUserDetail(fromUserId));
   }
@@ -4021,11 +3960,6 @@ class DefaultAdministration implements Administration {
   @Override
   public String getSilverpeasName() {
     return senderName;
-  }
-
-  @Override
-  public String getDAPIGeneralAdminId() {
-    return "0";
   }
 
 

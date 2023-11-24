@@ -26,34 +26,27 @@ package org.silverpeas.core.admin.service;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.GroupDetail;
-import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
-import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-public interface OrganizationController extends java.io.Serializable {
+/**
+ * The organization controller is the gateway for accessing the organizational resources of
+ * Silverpeas: spaces, component instances, users, groups, roles, and so one.
+ * It performs additional controls and treatments on these resources according to some
+ * authorization and privacy rules before returning them. This is why their access have to be
+ * centralized to this controller.
+ * For organizational resources management or for technical transverse services (like the user
+ * notification service for example), prefer to use directly the {@link Administration} service.
+ */
+public interface OrganizationController {
 
   /**
    * Gets an object satisfying the {@link OrganizationController} interface.
@@ -695,14 +688,6 @@ public interface OrganizationController extends java.io.Serializable {
    * @return an array  with the identifier of all the groups the user is concerned.
    */
   String[] getAllGroupIdsOfUser(String userId);
-
-  /**
-   * Is the anonymous access is activated for the running Silverpeas? When the anonymous access is
-   * activated, then a specific user for anonymous access should be set; all anonymous accesses to
-   * the running Silverpeas are done with this user profile.
-   * @return true if the anonymous access is activated, false otherwise.
-   */
-  boolean isAnonymousAccessActivated();
 
   /**
    * Gets all the component instances in Silverpeas allowed to be accessed by the specified user.

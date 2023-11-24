@@ -182,8 +182,6 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         .append(getCellSpacing())
         .append("\" cellpadding=\"")
         .append(getCellPadding())
-        .append("\" border=\"")
-        .append(getCellBorderWidth())
         .append("\">");
     if (getTitle() != null) {
       result.append("<tr>");
@@ -345,8 +343,6 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         .append(getCellSpacing())
         .append("\" cellpadding=\"")
         .append(getCellPadding())
-        .append("\" border=\"")
-        .append(getCellBorderWidth())
         .append("\">");
     if (getTitle() != null) {
       result.append("<tr>");
@@ -357,7 +353,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     }
     result.append("<tr>");
     for (ArrayColumn column : getColumns()) {
-      result.append(column.print(isXHTML()));
+      result.append(column.print());
       if (getCellSpacing() == 0) {
         result.append(printPseudoColumn());
       }

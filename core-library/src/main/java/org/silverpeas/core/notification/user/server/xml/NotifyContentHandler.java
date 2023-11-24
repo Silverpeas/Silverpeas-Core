@@ -36,8 +36,8 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class NotifyContentHandler extends DefaultHandler {
 
-  private NotificationData data;
-  private XMLReader parser;
+  private final NotificationData data;
+  private final XMLReader parser;
 
   public NotifyContentHandler(NotificationData data, XMLReader parser) {
     this.data = data;
@@ -48,32 +48,29 @@ public class NotifyContentHandler extends DefaultHandler {
   public void startElement(String uri, String localName, String qName, Attributes attributes)
       throws SAXException {
     NotificationTag tag = NotificationTag.valueOf(qName);
-    ContentHandler child = null;
+    ContentHandler child;
     switch (tag) {
-      case LOGIN: {
+      case LOGIN:
         child = new LoginContentHandler(data, this, parser);
         break;
-      }
-      case MESSAGE: {
+      case MESSAGE:
         child = new MessageContentHandler(data, this, parser);
         break;
-      }
-      case SENDER: {
+      case SENDER:
         child = new SenderContentHandler(data, this, parser);
         break;
-      }
-      case COMMENT: {
+      case COMMENT:
         child = new CommentContentHandler(data, this, parser);
         break;
-      }
-      case TARGET: {
+      case TARGET:
         child = new TargetContentHandler(data, this, parser);
         break;
-      }
-      case PRIORITY: {
+      case PRIORITY:
         child = new PriorityContentHandler(data, this, parser);
         break;
-      }
+      default:
+        child = null;
+        break;
     }
     if (child != null) {
       parser.setContentHandler(child);

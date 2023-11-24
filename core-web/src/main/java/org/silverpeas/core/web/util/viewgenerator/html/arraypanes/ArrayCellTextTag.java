@@ -31,7 +31,7 @@ public class ArrayCellTextTag extends AbstractArrayCellTag {
 
   private static final long serialVersionUID = -719577480679901247L;
   private String text;
-  private Comparable toCompare;
+  private transient Comparable<?> toCompare;
 
   @Override
   ArrayCell doCreateCell() {
@@ -46,7 +46,7 @@ public class ArrayCellTextTag extends AbstractArrayCellTag {
     this.text = text;
   }
 
-  public void setCompareOn(final Comparable toCompare) {
+  public void setCompareOn(final Comparable<?> toCompare) {
     this.toCompare = toCompare;
   }
 }

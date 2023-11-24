@@ -13,7 +13,8 @@ CREATE TABLE ST_Domain
     className            varchar(100)               NOT NULL,
     authenticationServer varchar(100)               NOT NULL,
     theTimeStamp         varchar(100) DEFAULT ('0') NOT NULL,
-    silverpeasServerURL  varchar(400)               NULL
+    silverpeasServerURL  varchar(400)               NULL,
+    sensitive            boolean      DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE ST_User
@@ -39,7 +40,8 @@ CREATE TABLE ST_User
     expirationDate                TIMESTAMP,
     state                         VARCHAR(30)          NOT NULL,
     stateSaveDate                 TIMESTAMP            NOT NULL,
-    notifManualReceiverLimit      INT
+    notifManualReceiverLimit      INT,
+    sensitiveData                 BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE st_delayednotifusersetting (

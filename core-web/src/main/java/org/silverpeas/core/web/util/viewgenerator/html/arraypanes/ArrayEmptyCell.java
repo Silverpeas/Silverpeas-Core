@@ -26,19 +26,14 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-/**
- * Class declaration
- * @author
- */
-public class ArrayEmptyCell implements Comparable, SimpleGraphicElement {
+import javax.annotation.Nonnull;
 
-  /**
-   * Method declaration
-   * @param other
-   * @return
-   * @see
-   */
-  public int compareTo(final java.lang.Object other) {
+public class ArrayEmptyCell implements Comparable<Object>, SimpleGraphicElement {
+
+
+  @SuppressWarnings("ComparatorMethodParameterNotUsed")
+  @Override
+  public int compareTo(@Nonnull final Object other) {
     if (!(other instanceof ArrayEmptyCell)) {
       return -1;
     }
@@ -47,7 +42,7 @@ public class ArrayEmptyCell implements Comparable, SimpleGraphicElement {
 
   @Override
   public boolean equals(Object other) {
-    return other != null && other instanceof ArrayEmptyCell;
+    return other instanceof ArrayEmptyCell;
   }
 
   @Override
@@ -55,11 +50,6 @@ public class ArrayEmptyCell implements Comparable, SimpleGraphicElement {
     return new HashCodeBuilder().append(ArrayEmptyCell.class.toString()).toHashCode();
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String print() {
     return "<td>&nbsp;</td>";
   }

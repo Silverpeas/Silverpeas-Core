@@ -41,7 +41,7 @@ public class ImageDisplay extends HttpServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res) {
     SilverLogger logger = SilverLogger.getLogger(this);
     String avatarPath = getAvatar(req);
-    ImageProfil profile = new ImageProfil(avatarPath);
+    ImageProfile profile = new ImageProfile(avatarPath);
     if (!profile.exist()) {
       logger.warn("The image {0} doesn't exist", avatarPath);
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);

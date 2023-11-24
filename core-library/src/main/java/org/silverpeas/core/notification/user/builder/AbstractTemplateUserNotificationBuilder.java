@@ -223,7 +223,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   }
 
   private SilverpeasTemplate createTemplate() {
-    final Boolean fromComponent = getRootTemplatePath().getFirst();
+    final boolean fromComponent = getRootTemplatePath().getFirst();
     final String templatePath = getRootTemplatePath().getSecond();
     if (fromComponent) {
       return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(templatePath);
@@ -268,7 +268,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   /**
    * Handles the date formats into notification building context.
    */
-  public class NotificationTemporal {
+  public static class NotificationTemporal {
     final Temporal temporal;
     final ZoneId zoneIdReference;
     final String language;
@@ -309,6 +309,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
      * If the zone id is not the same of the platform, the zone id is also filled.
      * @return a string.
      */
+    @SuppressWarnings("unused")
     public String getFullDate() {
       return toLocalized(temporal, zoneIdReference, language);
     }
@@ -337,6 +338,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
      * Gets the time data if the temporal supports such a chronology unit.
      * @return a string.
      */
+    @SuppressWarnings("unused")
     public String getZonedDayTime() {
       String hour = "";
       if (isTimeExisting()) {

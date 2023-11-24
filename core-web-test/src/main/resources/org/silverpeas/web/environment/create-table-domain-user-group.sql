@@ -106,7 +106,8 @@ CREATE TABLE ST_User (
   expirationDate                TIMESTAMP,
   state                         VARCHAR(30)          NOT NULL,
   stateSaveDate                 TIMESTAMP            NOT NULL,
-  notifManualReceiverLimit      INT
+  notifManualReceiverLimit      INT,
+  sensitiveData                 BOOLEAN DEFAULT FALSE NOT NULL
 );
 ALTER TABLE ST_User ADD CONSTRAINT PK_User PRIMARY KEY (id);
 ALTER TABLE ST_User ADD CONSTRAINT UN_User_1 UNIQUE (specificId, domainId);

@@ -25,27 +25,80 @@ package org.silverpeas.web.directory.model;
 
 import java.util.Date;
 
+/**
+ * An item in a directory of persons. An item in a directory identifies a given person with his
+ * communication data (email, phone, and so one).
+ */
 public interface DirectoryItem extends Comparable<DirectoryItem> {
 
-  enum ITEM_TYPE {User, Contact}
+  enum ITEM_TYPE {
+    /**
+     * The item in the directory refers a user in Silverpeas
+     */
+    USER,
+    /**
+     * The item in the directory refers a contact of a user.
+     */
+    CONTACT
+  }
 
+  /**
+   * Gets the first name of the person.
+   * @return the first name.
+   */
   String getFirstName();
 
+  /**
+   * Gets the last name of the person.
+   * @return th last name.
+   */
   String getLastName();
 
+  /**
+   * Gets the URL of the person avatar.
+   * @return the avatar image.
+   */
   String getAvatar();
 
+  /**
+   * Gets the main email address.
+   * @return the email address.
+   */
   String getMail();
 
+  /**
+   * Gets the phone number.
+   * @return a phone number.
+   */
   String getPhone();
 
+  /**
+   * Gets the Fax number.
+   * @return the Fax number
+   */
   String getFax();
 
+  /**
+   * Gets the type of this item.
+   * @return the type of this item.
+   */
   ITEM_TYPE getType();
 
+  /**
+   * Gets the date at which this item has been created into the directory.
+   * @return the item creation date.
+   */
   Date getCreationDate();
 
+  /**
+   * Gets the unique identifier of the person referred by this item.
+   * @return the unique identifier of the person.
+   */
   String getOriginalId();
 
+  /**
+   * Gets the unique identifier of this item in the directory.
+   * @return the unique identifier of the item.
+   */
   String getUniqueId();
 }

@@ -32,7 +32,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 public class IconPaneTag extends TagSupport {
 
-  static public final String ICONPANE_PAGE_ATT = "pageContextIconPane";
+  public static final String ICONPANE_PAGE_ATT = "pageContextIconPane";
   private static final long serialVersionUID = -942309015545358248L;
 
   private String orientation = "horizontal";

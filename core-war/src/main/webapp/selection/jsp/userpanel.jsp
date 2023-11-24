@@ -181,7 +181,7 @@
                     <span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span>
                     <span ng-show="user.removedState"> (${REMOVED_SHORT_LABEL})</span>
                   </span>
-                  <span class="mail_user">{{ user.eMail }}</span>
+                  <span class="mail_user">{{ user.emailAddress }}</span>
                   <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
                   <a href="#" ng-show="isUserSelectable(user)" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
                 </li>
@@ -233,7 +233,7 @@
                     <span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span>
                     <span ng-show="user.removedState"> (${REMOVED_SHORT_LABEL})</span>
                   </span>
-                  <span class="mail_user">{{ user.eMail }}</span>
+                  <span class="mail_user">{{ user.emailAddress }}</span>
                   <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
                   <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
                 </li>

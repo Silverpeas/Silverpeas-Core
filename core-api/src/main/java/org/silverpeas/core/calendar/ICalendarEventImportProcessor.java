@@ -39,11 +39,7 @@ import org.silverpeas.core.util.StringUtil;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.silverpeas.core.calendar.CalendarComponent.DESCRIPTION_MAX_LENGTH;
 import static org.silverpeas.core.calendar.CalendarComponent.TITLE_MAX_LENGTH;
@@ -192,8 +188,9 @@ public class ICalendarEventImportProcessor {
         }
         final EventOperationResult result = importEventOnly(calendar, event);
         if (!occurrences.isEmpty()) {
+          CalendarEvent resultEvent = Objects.requireNonNull(EventImportResult.eventFrom(result));
           EventOperationResult occurrenceImportResult =
-              importOccurrencesOnly(EventImportResult.eventFrom(result), occurrences);
+              importOccurrencesOnly(resultEvent, occurrences);
           adjustOccurrenceImportResult(occurrenceImportResult, result);
         }
         return result;
@@ -206,12 +203,12 @@ public class ICalendarEventImportProcessor {
   private void adjustOccurrenceImportResult(final EventOperationResult occurrenceImportResult,
       final EventOperationResult result) {
     occurrenceImportResult.updated().ifPresent(e -> {
-      if (!result.created().isPresent()) {
+      if (result.created().isEmpty()) {
         result.withUpdated(e);
       }
     });
     occurrenceImportResult.instance().ifPresent(i -> {
-      if (!result.created().isPresent() && !result.updated().isPresent()) {
+      if (result.created().isEmpty() && result.updated().isEmpty()) {
         result.withUpdated(i.getCalendarEvent());
       }
     });
@@ -237,8 +234,8 @@ public class ICalendarEventImportProcessor {
   }
 
   private EventOperationResult importEventOnly(final Calendar calendar, final CalendarEvent event) {
-    EventOperationResult result;
     Optional<CalendarEvent> persistedEvent = getExistingCalendarEvent(calendar, event);
+    EventOperationResult result;
     if (persistedEvent.isPresent()) {
       final CalendarEvent existingEvent = persistedEvent.get();
       result = new EventImportResult().withExisting(existingEvent);
@@ -299,7 +296,7 @@ public class ICalendarEventImportProcessor {
   private Optional<CalendarEvent> getExistingCalendarEvent(final Calendar calendar,
       final CalendarEvent event) {
     Optional<CalendarEvent> optionalPersistedEvent = calendar.externalEvent(event.getExternalId());
-    if (!optionalPersistedEvent.isPresent()) {
+    if (optionalPersistedEvent.isEmpty()) {
       // If none, searching the existence of the event on its id
       optionalPersistedEvent = calendar.event(event.getExternalId());
     }

@@ -66,6 +66,7 @@
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
   List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
+  boolean isDomainLdap = "org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver".equals(domObject.getDriverClassName());
   boolean isDomainSql = "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
   boolean isDomainScim = "org.silverpeas.core.admin.domain.driver.scimdriver.SCIMDriver".equals(domObject.getDriverClassName());
   boolean isDomainGoogle = "org.silverpeas.core.admin.domain.driver.googledriver.GoogleDriver".equals(domObject.getDriverClassName());
@@ -83,7 +84,11 @@
 	    if (!mixedDomain) {
 	      operationPane.addOperation(resource.getIcon("JDP.removedUserAccess"), resource.getString("JDP.removedUserAccess"), "displayRemovedUsers");
 	      operationPane.addOperation(resource.getIcon("JDP.deletedUserAccess"), resource.getString("JDP.deletedUserAccess"), "displayDeletedUsers");
-		    operationPane.addLine();
+        if (isDomainLdap) {
+          operationPane.addOperation("useless", resource.getString("JDP.usersWithSensitiveDataAccess"),
+                  "displayUsersWithSensitiveData");
+        }
+        operationPane.addLine();
 		if(isDomainSql) {
 		        operationPane.addOperation(resource.getIcon("JDP.domainSqlUpdate"),resource.getString("JDP.domainSQLUpdate"),"displayDomainSQLModify");
 		        operationPane.addOperation(resource.getIcon("JDP.domainSqlDel"),resource.getString("JDP.domainSQLDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.domainDelConfirm")+"','domainSQLDelete')");
@@ -178,6 +183,7 @@
 
 <c:set var="mixedDomain" value="<%=mixedDomain%>"/>
 <c:set var="groupList" value="<%=Arrays.asList(subGroups)%>"/>
+<c:set var="ldapDomain" value="<%=isDomainLdap%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -194,12 +200,12 @@ function ConfirmAndSend(textToDisplay, targetURL) {
 
 function DomainSQLSynchro(){
 	SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=<%=Level.DEBUG%>', 'SynchroDomainReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
-  sp.formConfig("domainSQLSynchro").submit();
+  sp.formRequest("domainSQLSynchro").submit();
 }
 
 function jumpToUser(selectionUserAPI) {
-  var userIds = selectionUserAPI.getSelectedUserIds();
-  var groupIds = selectionUserAPI.getSelectedGroupIds();
+  const userIds = selectionUserAPI.getSelectedUserIds();
+  const groupIds = selectionUserAPI.getSelectedGroupIds();
   if (userIds.length) {
     sp.navRequest("userContent").withParam("Iduser", userIds[0]).go();
   } else if (groupIds.length) {
@@ -207,7 +213,7 @@ function jumpToUser(selectionUserAPI) {
   }
 }
 
-var arrayBeforeAjaxRequest = function () {
+let arrayBeforeAjaxRequest = function () {
   if (${isGroupHandled ? fn:length(groupList) : 0} > 25) {
     spProgressMessage.show();
   }
@@ -227,7 +233,7 @@ out.println(window.printBefore());
 
   <% if (isUserDomainQuotaFull) { %>
   <div class="inlineMessage-nok"><fmt:message key="JDP.userDomainQuotaFull" /></div>
-  <br clear="all" />
+  <br />
   <% } %>
 
   <c:if test="${not mixedDomain}">
@@ -336,24 +342,67 @@ out.println(window.printBefore());
                 resource.getString("GML.user.account.state." + userState.getName())));
       }
     %>
+
+    <fmt:message var="allUserStateLabel" key="JDP.user.state.label.ALL"/>
+    <fmt:message var="validUserStateLabel" key="JDP.user.state.label.VALID"/>
+    <fmt:message var="blockedUserStateLabel" key="JDP.user.state.label.BLOCKED"/>
+    <fmt:message var="disabledUserStateLabel" key="JDP.user.state.label.DEACTIVATED"/>
+    <view:setConstant var="BLOCKED"
+                      constant="org.silverpeas.core.admin.user.constant.UserState.BLOCKED"/>
+    <view:setConstant var="DEACTIVATED"
+                      constant="org.silverpeas.core.admin.user.constant.UserState.DEACTIVATED"/>
+    <view:setConstant var="VALID"
+                      constant="org.silverpeas.core.admin.user.constant.UserState.VALID"/>
+    <jsp:useBean id="userStateFilter" class="java.util.LinkedHashMap"/>
+    <c:set target="${userStateFilter}" property="${allUserStateLabel}" value="${''}"/>
+    <c:set target="${userStateFilter}" property="${validUserStateLabel}"
+           value="${VALID.name()}"/>
+    <c:set target="${userStateFilter}" property="${blockedUserStateLabel}"
+           value="${BLOCKED.name()}"/>
+    <c:set target="${userStateFilter}" property="${disabledUserStateLabel}"
+           value="${DEACTIVATED.name()}"/>
+
+    <c:set var="currentUserState" value="${requestScope.currentUserState}"/>
+    <c:set var="currentStateQuery" value="?state=${currentUserState}"/>
+    <c:if test="${empty currentUserState}">
+      <c:set var="currentStateQuery" value=""/>
+    </c:if>
     <c:set var="bundleCache" value="<%=bundleCache%>"/>
     <c:set var="userList" value="<%=subUsers%>"/>
     <c:set var="lastConnectionColumnEnabled" value="<%=JobDomainSettings.lastConnectionColumnEnabled%>"/>
     <c:set var="userCommonLinkPart" value="${requestScope.myComponentURL}userContent?Iduser="/>
-    <fmt:message var="userArrayTitle" key="GML.users"/>
-    <fmt:message var="userStateLabel" key="JDP.userState"/>
-    <fmt:message var="lastNameLabel" key="GML.lastName"/>
-    <fmt:message var="surnameLabel" key="GML.surname"/>
+    <fmt:message var="userArrayTitle"      key="GML.users"/>
+    <fmt:message var="userStateLabel"      key="JDP.userState"/>
+    <fmt:message var="lastNameLabel"       key="GML.lastName"/>
+    <fmt:message var="surnameLabel"        key="GML.surname"/>
+    <fmt:message var="privacyLabel"        key="JDP.dataSensitivity"/>
     <fmt:message var="lastConnectionLabel" key="GML.user.lastConnection"/>
+    <fmt:message var="sensitivityEnabled"  key="JDP.dataSensitivityEnabled"/>
     <div id="dynamic-user-container">
+      <div id="filter">
+        <div id="stateFilter">
+          <label for="selectedState">${userStateLabel}</label>
+          <select id="selectedState">
+            <c:forEach var="userState" items="${userStateFilter.entrySet()}">
+              <c:set var="stateValue" value="${userState.value}"/>
+              <c:set var="selected"
+                     value="${stateValue eq currentUserState ? 'selected' : ''}"/>
+              <option value="${stateValue}" ${selected}>${userState.key}</option>
+            </c:forEach>
+          </select>
+        </div>
+      </div>
       <view:arrayPane var="_dc_users"
-                      routingAddress="domainContent.jsp"
+                      routingAddress="domainContent.jsp${currentStateQuery}"
                       numberLinesPerPage="<%=JobDomainSettings.m_UsersByPage%>"
                       title="${userArrayTitle} (${fn:length(userList)})"
                       export="true">
         <view:arrayColumn title="${userStateLabel}" compareOn="${u -> u.state.name}"/>
         <view:arrayColumn title="${lastNameLabel}" compareOn="${u ->u.lastName}"/>
         <view:arrayColumn title="${surnameLabel}" compareOn="${u ->u.firstName}"/>
+        <c:if test="${ldapDomain}">
+          <view:arrayColumn title="${privacyLabel}" compareOn="${u -> u.hasSensitiveData()}"/>
+        </c:if>
         <c:if test="${lastConnectionColumnEnabled}">
           <view:arrayColumn title="${lastConnectionLabel}" compareOn="${u -> u.lastLoginDate}"/>
         </c:if>
@@ -363,6 +412,9 @@ out.println(window.printBefore());
             <view:arrayCellText><view:icon iconName="${iconAndLabel.left}" altText="${iconAndLabel.right}"/></view:arrayCellText>
             <view:arrayCellText><view:a href="${userCommonLinkPart}${user.id}">${silfn:escapeHtml(user.lastName)}</view:a></view:arrayCellText>
             <view:arrayCellText text="${silfn:escapeHtml(user.firstName)}"/>
+            <c:if test="${ldapDomain}">
+              <view:arrayCellText text="${user.hasSensitiveData() ? sensitivityEnabled : '-'}"/>
+            </c:if>
             <c:if test="${lastConnectionColumnEnabled}">
               <view:arrayCellText text="${silfn:formatDateAndHour(user.lastLoginDate, userLanguage)}"/>
             </c:if>
@@ -370,8 +422,21 @@ out.println(window.printBefore());
         </view:arrayLines>
       </view:arrayPane>
       <script type="text/javascript">
+        var arrayPaneAjaxControl;
+
+        function filterByUserState() {
+          const state = $("#selectedState").val();
+          const ajaxRequest = sp.ajaxRequest("filterByUserState").byPostMethod();
+          ajaxRequest.withParam("state", state);
+          ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        }
+
+        $("#selectedState").change(function() {
+          filterByUserState(this);
+        }).bind();
+
         whenSilverpeasReady(function() {
-          sp.arrayPane.ajaxControls('#dynamic-user-container', {
+          arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#dynamic-user-container', {
             before : arrayBeforeAjaxRequest
           });
         });

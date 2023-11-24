@@ -24,7 +24,7 @@
 /*
  * IconPaneWA.java
  *
- * Created on 12 decembre 2000, 11:47
+ * Created on 12 december 2000, 11:47
  */
 
 package org.silverpeas.core.web.util.viewgenerator.html.iconpanes;
@@ -33,7 +33,8 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
 import org.silverpeas.core.web.util.viewgenerator.html.icons.IconWA;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The default implementation of IconPane interface
@@ -42,31 +43,17 @@ import java.util.Vector;
  */
 public abstract class AbstractIconPane implements IconPane {
 
-  private Vector icons = null;
-  private String verticalWidth = "50";
+  private final List<Icon> icons;
   private String spacing = "20";
-  public final static int VERTICAL_PANE = 1;
-  public final static int HORIZONTAL_PANE = 2;
 
-  private int viewType = HORIZONTAL_PANE;
-
-  /**
-   * Constructor declaration
-   *
-   */
   public AbstractIconPane() {
-    icons = new Vector();
+    icons = new ArrayList<>();
   }
 
   private String getIconsPath() {
     return GraphicElementFactory.getIconsPath();
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   @Override
   public Icon addIcon() {
     Icon icon = new IconWA();
@@ -82,94 +69,16 @@ public abstract class AbstractIconPane implements IconPane {
     return icon;
   }
 
-  /**
-   * Method declaration
-   *
-   */
-  public void setVerticalPosition() {
-    viewType = VERTICAL_PANE;
-  }
-
-  /**
-   * Method declaration
-   * @param width
-   *
-   */
-  public void setVerticalWidth(String width) {
-    verticalWidth = width;
-  }
-
-  /**
-   * Method declaration
-   *
-   */
-  public void setHorizontalPosition() {
-    viewType = HORIZONTAL_PANE;
-  }
-
-  /**
-   * Method declaration
-   * @param space
-   *
-   */
   public void setSpacing(String space) {
     this.spacing = space;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public Vector getIcons() {
+  public List<Icon> getIcons() {
     return this.icons;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public int getViewType() {
-    return this.viewType;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getSpacing() {
     return this.spacing;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String getVerticalWidth() {
-    return this.verticalWidth;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public abstract String horizontalPrint();
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public abstract String verticalPrint();
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public abstract String print();
 }

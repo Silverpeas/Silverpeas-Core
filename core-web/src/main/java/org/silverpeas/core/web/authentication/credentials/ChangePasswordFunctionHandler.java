@@ -37,10 +37,10 @@ public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunc
 
   /**
    * Handle bad credential error.
-   * @param request
-   * @param originalUrl
-   * @param credential
-   * @return destination url
+   * @param request the incoming request.
+   * @param originalUrl the original URL targeted by the request.
+   * @param credential the credentials of the requester.
+   * @return destination url the new URL at which redirect the user.
    */
   protected String performUrlChangePasswordError(HttpServletRequest request, String originalUrl,
       AuthenticationCredential credential) {
@@ -51,10 +51,10 @@ public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunc
 
   /**
    * Handle bad credential error.
-   * @param request
-   * @param originalUrl
-   * @param user
-   * @return destination url
+   * @param request the incoming request.
+   * @param originalUrl the original URL targeted by the request.
+   * @param user the requester.
+   * @return destination url the new URL at which redirect the user.
    */
   protected String performUrlChangePasswordError(HttpServletRequest request, String originalUrl,
       UserDetail user) {

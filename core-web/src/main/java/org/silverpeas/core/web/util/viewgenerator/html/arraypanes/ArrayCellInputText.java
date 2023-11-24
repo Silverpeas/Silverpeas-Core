@@ -23,202 +23,85 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-/**
- * @author jboulet
- * @version
- */
+public class ArrayCellInputText extends ActionableArrayCell implements SimpleGraphicElement {
 
-public class ArrayCellInputText extends ArrayCell implements SimpleGraphicElement {
-
-  // -----------------------------------------------------------------------------------------------------------------
-  // Attributs
-  // -----------------------------------------------------------------------------------------------------------------
-  private String name;
-  private String value = null;
   private String size = null;
   private String maxlength = null;
-
-  private String cellAlign = null;
-
   private String color = null;
   private String bgcolor = null;
   private String textAlign = null;
   private boolean readOnly = false;
-  private String action = null; // Action javaScript
+
+  private final String value;
 
   private String syntax = "";
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Constructeur
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Constructor declaration
-   * @param name
-   * @param value
-   * @param line
-   *
-   */
   public ArrayCellInputText(String name, String value, ArrayLine line) {
-    super(line);
-    this.name = name;
+    super(name, line);
     this.value = value;
   }
 
-  /**
-   * @return
-   */
-  public String getCellAlign() {
-    return cellAlign;
-  }
-
-  /**
-   * @param CellAlign
-   */
-  public void setCellAlign(String cellAlign) {
-    this.cellAlign = cellAlign;
-  }
-
-  /**
-   * @return
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * @return
-   */
   public String getValue() {
     return value;
   }
 
-  /**
-   * @return
-   */
   public String getSize() {
     return size;
   }
 
-  /**
-   * @param size
-   */
   public void setSize(String size) {
     this.size = size;
   }
 
-  /**
-   * @return
-   */
   public String getMaxlength() {
     return maxlength;
   }
 
-  /**
-   * @param maxlength
-   */
   public void setMaxlength(String maxlength) {
     this.maxlength = maxlength;
   }
 
-  /**
-   * @return
-   */
   public String getColor() {
     return color;
   }
 
-  /**
-   * @param maxlength
-   */
   public void setColor(String color) {
     this.color = color;
   }
 
-  /**
-   * @return
-   */
-  public String getBgcolor() {
+  public String getBgColor() {
     return bgcolor;
   }
 
-  /**
-   * @param bgcolor
-   */
-  public void setBgcolor(String bgcolor) {
+  public void setBgColor(String bgcolor) {
     this.bgcolor = bgcolor;
   }
 
-  /**
-   * @return
-   */
   public String getTextAlign() {
     return textAlign;
   }
 
-  /**
-   * @param textAlign
-   */
   public void setTextAlign(String textAlign) {
     this.textAlign = textAlign;
   }
 
-  /**
-   * @return
-   */
-  public String getAction() {
-    return action;
-  }
-
-  /**
-   * @param action
-   */
-  public void setAction(String action) {
-    this.action = action;
-  }
-
-  /**
-   * @return
-   */
-  public boolean getReadOnly() {
+  public boolean isReadOnly() {
     return readOnly;
   }
 
-  /**
-   * @param likeText
-   */
   public void setReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Ecriture de l'input en fonction de son type, de sa valeur et de son nom
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
+  @Override
   public String getSyntax() {
 
-    syntax += " <input type=\"text\" name=\"";
-
-    // param name
-    if (getName() == null) {
-      syntax += "textfield\" value=\"";
-    } else {
-      syntax += getName() + "\" value=\"";
-    }
-
-    // param value
-    if (getValue() == null) {
-      syntax += "\"";
-    } else {
-      syntax += getValue() + "\"";
-    }
+    syntax += " <input type=\"text\" name=\"" +
+        (StringUtil.isNotDefined(getName()) ? "textfield" : getName()) + "\" value=\"" +
+        (StringUtil.isNotDefined(getValue()) ? "" : getValue()) + "\"";
 
     // param size
     if (getSize() != null) {
@@ -234,7 +117,7 @@ public class ArrayCellInputText extends ArrayCell implements SimpleGraphicElemen
     syntax += " style=\"";
 
     // param likeText
-    if (getReadOnly() == true) {
+    if (isReadOnly()) {
       syntax += "border: 1 solid rgb(255,255,255);";
     }
 
@@ -249,8 +132,8 @@ public class ArrayCellInputText extends ArrayCell implements SimpleGraphicElemen
     }
 
     // param background color
-    if (getBgcolor() != null) {
-      syntax += " background-color:" + getBgcolor() + ";";
+    if (getBgColor() != null) {
+      syntax += " background-color:" + getBgColor() + ";";
     }
 
     syntax += "\"";
@@ -261,38 +144,13 @@ public class ArrayCellInputText extends ArrayCell implements SimpleGraphicElemen
     }
 
     // readOnly ???
-    if (getReadOnly() == true) {
+    if (isReadOnly()) {
       syntax += " readOnly";
     }
 
     syntax += "/>";
 
     return syntax;
-  }
-
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String print() {
-    String result = "<td ";
-
-    if (getCellAlign() != null) {
-      if (getCellAlign().equalsIgnoreCase("center")
-          || getCellAlign().equalsIgnoreCase("right")) {
-        result += " align=\"" + getCellAlign() + "\"";
-      }
-    }
-
-    result += " class=\"" + getStyleSheet() + "\">";
-
-    result += getSyntax();
-
-    result += "</td>\n";
-    return result;
   }
 
 }

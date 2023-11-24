@@ -167,7 +167,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private List<Domain> currentDomains;
   private SpaceInstLight currentSpace;
   private SilverpeasComponentInstance currentComponent;
-  private transient RelationShipService relationShipService;
+  private final transient RelationShipService relationShipService;
   private String currentQuery;
   private String initSort = SORT_ALPHA;
   private String currentSort = SORT_ALPHA;
@@ -176,7 +176,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private transient PublicationTemplate xmlTemplate = null;
   private DataRecord xmlData = null;
   private boolean xmlTemplateLoaded = false;
-  private transient PagesContext extraFormContext =
+  private final transient PagesContext extraFormContext =
       new PagesContext("useless", "useless", getLanguage(), getUserId());
 
   private transient SilverpeasTemplate template;
@@ -209,12 +209,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return null;
   };
 
-  /**
-   * Standard Session Controller Constructeur
-   * @param mainSessionCtrl The user's profile
-   * @param componentContext The component's profile
-   *
-   */
   public DirectorySessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.directory.multilang.DirectoryBundle",
@@ -252,7 +246,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastAllListUsersCalled = getUsersOfDomainsSorted(getDomainSources());
 
     final DirectorySource selectedSource = getSelectedSource();
-    if (!isDoNotUseContacts() && (selectedSource == null || selectedSource.isContactsComponent())) {
+    if (isUseContacts() && (selectedSource == null || selectedSource.isContactsComponent())) {
       //add contacts only in a global view or a component view
       DirectoryItemList contacts = getContacts();
       if (!contacts.isEmpty()) {
@@ -310,11 +304,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * get all users corresponding to search request
+   * get all users corresponding from the search request.
    * @param queryDescription the search request
    * @param globalSearch true if it's a search outside directory (direct from URL)
-   * @throws DirectoryException
-   *
+   * @throws DirectoryException if an error occurs while searching users.
    */
   public DirectoryItemList getUsersByQuery(QueryDescription queryDescription,
       boolean globalSearch) throws DirectoryException {
@@ -345,7 +338,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         }
       }
     } catch (Exception e) {
-      throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH", e);
+      throw new DirectoryException(e);
     }
     lastListUsersCalled = results;
     return lastListUsersCalled;
@@ -549,8 +542,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastAllListUsersCalled = new DirectoryItemList();
     List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
     for (String contactId : contactsIds) {
-      lastAllListUsersCalled.add(
-          new UserItem(getOrganisationController().getUserDetail(contactId)));
+      lastAllListUsersCalled.add(new UserItem(User.getById(contactId)));
     }
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
@@ -565,20 +557,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()),
             Integer.parseInt(userId));
     for (String contactId : contactsIds) {
-      lastAllListUsersCalled.add(
-          new UserItem(getOrganisationController().getUserDetail(contactId)));
+      lastAllListUsersCalled.add(new UserItem(User.getById(contactId)));
     }
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
   }
 
-  /**
-   * @param compoId
-   * @param txtTitle
-   * @param txtMessage
-   * @param selectedUsers
-   * @throws NotificationException
-   */
   public void sendMessage(String compoId, String txtTitle, String txtMessage,
       UserRecipient[] selectedUsers) throws NotificationException {
     NotificationSender notifSender = new NotificationSender(compoId);
@@ -797,7 +781,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       if (getCurrentSort().equals(SORT_ALPHA)) {
         Collections.sort(list);
       } else if (getCurrentSort().equals(SORT_NEWEST)) {
-        Collections.sort(list, new CreationDateComparator());
+        list.sort(new CreationDateComparator());
       }
     }
   }
@@ -835,9 +819,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private DirectoryItem getDirectoryItem(final DirectoryItemList allUsers,
       final MatchingIndexEntry result) {
     String objectId = result.getObjectId();
-    String itemId = DirectoryItem.ITEM_TYPE.User.toString() + objectId;
+    String itemId = DirectoryItem.ITEM_TYPE.USER + objectId;
     if ("Contact".equals(result.getObjectType())) {
-      itemId = DirectoryItem.ITEM_TYPE.Contact.toString() + objectId;
+      itemId = DirectoryItem.ITEM_TYPE.CONTACT + objectId;
     }
     return allUsers.getItemByUniqueId(itemId);
   }
@@ -908,7 +892,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       queryDescription.addComponent(getCurrentComponent().getId());
     } else {
       queryDescription.addComponent("users");
-      if (!isDoNotUseContacts()) {
+      if (isUseContacts()) {
         for (String appId : getContactComponentIds()) {
           queryDescription.addComponent(appId);
         }
@@ -947,7 +931,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     try {
       Field field = xmlData.getField(fieldName);
       String fieldValue = field.getStringValue();
-      if (fieldValue != null && fieldValue.trim().length() > 0) {
+      if (fieldValue != null && !fieldValue.trim().isEmpty()) {
         String fieldQuery = fieldValue.trim();
         if (fieldValue.contains("##")) {
           String operator = FileUploadUtil.getParameter(items,fieldName+"Operator");
@@ -1050,7 +1034,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       }
     }
 
-    if (!isDoNotUseContacts()) {
+    if (isUseContacts()) {
       List<SilverpeasComponentInstance> components = getContactComponents();
       for (SilverpeasComponentInstance component : components) {
         addSource(component);
@@ -1109,7 +1093,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     for (DirectorySource source : directorySources) {
       if (source.isDomain()) {
         if (source.isSelected()) {
-          return Arrays.asList(source.getId());
+          return Collections.singletonList(source.getId());
         }
         ids.add(source.getId());
       }
@@ -1129,8 +1113,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     this.doNotUseContactsComponents = doNotUse;
   }
 
-  private boolean isDoNotUseContacts() {
-    return doNotUseContactsComponents;
+  private boolean isUseContacts() {
+    return !doNotUseContactsComponents;
   }
 
   public void setReferer(String referer) {

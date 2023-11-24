@@ -40,9 +40,9 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class PriorityContentHandler extends DefaultHandler {
 
-  private NotificationData data;
-  private ContentHandler parent;
-  private XMLReader parser;
+  private final NotificationData data;
+  private final ContentHandler parent;
+  private final XMLReader parser;
 
   public PriorityContentHandler(NotificationData data, ContentHandler parent, XMLReader parser) {
     this.data = data;
@@ -54,11 +54,8 @@ public class PriorityContentHandler extends DefaultHandler {
   public void startElement(String uri, String localName, String qName, Attributes attributes)
       throws SAXException {
     NotificationTag tag = NotificationTag.valueOf(qName);
-    switch (tag) {
-      case PRIORITY: {
+    if (tag == NotificationTag.PRIORITY) {
         data.setPrioritySpeed(attributes.getValue(NotificationTag.SPEED.toString()));
-        break;
-      }
     }
   }
 

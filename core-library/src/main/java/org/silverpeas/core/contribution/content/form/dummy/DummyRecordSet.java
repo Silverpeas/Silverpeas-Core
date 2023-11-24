@@ -38,7 +38,7 @@ import java.util.Map;
  * A dummy record set.
  */
 public class DummyRecordSet implements RecordSet {
-  private DummyRecordTemplate recordTemplate = null;
+  private final DummyRecordTemplate recordTemplate;
 
   /**
    * The no parameters constructor.
@@ -61,7 +61,7 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * Returns an empty DataRecord built on the RecordTemplate.
-   * @throws FormException
+   * @throws FormException if an error occurs
    */
   @Override
   public DataRecord getEmptyRecord() throws FormException {
@@ -70,7 +70,7 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * This dummy record set always return a dummy record.
-   * @throws FormException
+   * @throws FormException if an error occurs
    */
   @Override
   public DataRecord getRecord(String recordId) throws FormException {
@@ -82,56 +82,52 @@ public class DummyRecordSet implements RecordSet {
     return recordTemplate.getEmptyRecord();
   }
 
-  public List<DataRecord> getRecords(String fieldName, String fieldValue) throws FormException {
+  public List<DataRecord> getRecords(String fieldName, String fieldValue) {
     return Collections.emptyList();
   }
 
-  /**
-   * This dummy record set simply do nothing.
-   * @throws FormException
-   */
   @Override
   public void save(DataRecord record) throws FormException {
-  }
-
-  /**
-   * This dummy record set simply do nothing.
-   * @throws FormException
-   */
-  @Override
-  public void delete(DataRecord record) throws FormException {
+    // dummy
   }
 
   @Override
   public void delete(String objectId) throws FormException {
+    // dummy
   }
 
   @Override
   public void delete(String objectId, String language) throws FormException {
+    // dummy
   }
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
       String cloneComponentId, Map<String, String> attachmentIds) throws FormException {
+    // dummy
   }
 
   @Override
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
       String toComponentId, Map<String, String> attachmentIds) throws FormException {
+    // dummy
   }
 
   @Override
   public void indexRecord(String recordId, String formName,
       FullIndexEntry indexEntry) throws FormException {
+    // dummy
   }
 
   @Override
   public void copy(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate,
       Map<String, String> attachmentIds) throws FormException {
+    // dummy
   }
 
   @Override
   public void move(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate)
       throws FormException {
+    // dummy
   }
 }

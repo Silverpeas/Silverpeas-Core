@@ -38,54 +38,55 @@ import java.util.List;
 /**
  * This class manage the information needed for groups navigation and browse PRE-REQUIRED : the
  * Group passed in the constructor MUST BE A {@link GroupState#VALID} GROUP (with Id, etc...)
- * @t.leroi
+ * @author t.leroi
  */
 public class GroupNavigationStock extends NavigationStock {
-  Group m_NavGroup = null;
-  String m_GroupId = null;
-  List<String> manageableGroupIds = null;
+  private Group group = null;
+  private final String groupId;
+  private final List<String> manageableGroupIds;
 
   public GroupNavigationStock(String navGroup, AdminController adc,
       List<String> manageableGroupIds) {
     super(adc);
-    m_GroupId = navGroup;
+    groupId = navGroup;
     this.manageableGroupIds = manageableGroupIds;
     refresh();
   }
 
   public void refresh() {
     String[] subUsersIds;
-    m_NavGroup = m_adc.getGroupById(m_GroupId);
-    subUsersIds = m_NavGroup.getUserIds();
+    userStateFilter = null;
+    group = adminController.getGroupById(groupId);
+    subUsersIds = group.getUserIds();
     if (subUsersIds == null) {
-      m_SubUsers = new UserDetail[0];
+      subUsers = new UserDetail[0];
     } else {
-      m_SubUsers = m_adc.getUserDetails(subUsersIds);
+      subUsers = adminController.getUserDetails(subUsersIds);
     }
-    JobDomainSettings.sortUsers(m_SubUsers);
+    JobDomainSettings.sortUsers(subUsers);
 
-    m_SubGroups = m_adc.getAllSubGroups(m_NavGroup.getId());
+    subGroups = adminController.getAllSubGroups(group.getId());
     if (manageableGroupIds != null) {
-      m_SubGroups = filterGroupsToGroupManager(manageableGroupIds, m_SubGroups);
+      subGroups = filterGroupsToGroupManager(manageableGroupIds, subGroups);
     }
 
-    JobDomainSettings.sortGroups(m_SubGroups);
-    verifIndexes();
+    JobDomainSettings.sortGroups(subGroups);
   }
 
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
   public boolean isThisGroup(String grId) {
     if (StringUtil.isDefined(grId)) {
-      return (grId.equals(m_NavGroup.getId()));
+      return (grId.equals(group.getId()));
     } else {
-      return (isGroupValid(m_NavGroup) == false);
+      return !isGroupValid(group);
     }
   }
 
   public Group getThisGroup() {
-    return m_NavGroup;
+    return group;
   }
 
-  static public boolean isGroupValid(Group gr) {
+  public static boolean isGroupValid(Group gr) {
     return gr != null && StringUtil.isDefined(gr.getId());
   }
 }

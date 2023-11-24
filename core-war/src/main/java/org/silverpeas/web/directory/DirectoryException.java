@@ -23,80 +23,18 @@
  */
 package org.silverpeas.web.directory;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
  * Thrown by the directory service
  */
 public class DirectoryException extends SilverpeasException {
 
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * Returns the module name.
-   */
-  public String getModule() {
-    return "directory";
+  public DirectoryException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Set the caller and the error message
-   */
-  public DirectoryException(String caller, String message) {
-    super(caller, SilverpeasException.ERROR, message);
-  }
-
-  /**
-   * Set the caller, the error message and the nested exception.
-   */
-  public DirectoryException(String caller, String message, Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, nestedException);
-  }
-
-  /**
-   * Set the caller, infos and the error message
-   */
-  public DirectoryException(String caller, String message, String infos) {
-    super(caller, SilverpeasException.ERROR, message, infos);
-  }
-
-  /**
-   * Set the caller, the error message, infos and the nested exception.
-   */
-  public DirectoryException(String caller, String message, String infos,
-      Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, infos, nestedException);
-  }
-
-  /**
-   * Set the caller, the level and the error message. Used only by the FatalFormException
-   */
-  protected DirectoryException(String caller, int level, String message) {
-    super(caller, level, message);
-  }
-
-  /**
-   * Set the caller, the level, the error message and the nested exception. Used only by the
-   * FatalFormException
-   */
-  protected DirectoryException(String caller, int level, String message,
-      Exception nestedException) {
-    super(caller, level, message, nestedException);
-  }
-
-  /**
-   * Set the caller, the level, the error message and infos. Used only by the FatalFormException
-   */
-  protected DirectoryException(String caller, int level, String message, String infos) {
-    super(caller, level, message);
-  }
-
-  /**
-   * Set the caller, the level, the error message, infos and the nested exception. Used only by the
-   * FatalFormException
-   */
-  protected DirectoryException(String caller, int level, String message,
-      String infos, Exception nestedException) {
-    super(caller, level, message, nestedException);
+  public DirectoryException(Throwable cause) {
+    super(cause);
   }
 }

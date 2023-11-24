@@ -23,46 +23,24 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-/**
- * Class declaration
- * @author
- */
-public class ArrayCell {
-  final static public int CELLSORT_CASE_INSENSITIVE = 1;
-  final static public int CELLSORT_CASE_SENSITIVE = 2;
+import org.silverpeas.core.util.StringUtil;
 
-  /**
-   * the default sort mode, that may or may not be interpreted by the descendants of this class,
-   * depending on their contents. They could define other modes, but the most common sould
-   * reasonnably be put in here
-   */
-  protected int m_SortMode = CELLSORT_CASE_SENSITIVE;
-  private ArrayLine line;
+public abstract class ArrayCell {
+  private final ArrayLine line;
+
+  private final String name;
+
   private String css = null;
 
-  /**
-   * Constructor declaration
-   * @param line
-   *
-   */
-  public ArrayCell(ArrayLine line) {
+  public ArrayCell(String name, ArrayLine line) {
+    this.name = name;
     this.line = line;
   }
 
-  /**
-   * Method declaration
-   * @param css
-   *
-   */
   public void setStyleSheet(String css) {
     this.css = css;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getStyleSheet() {
     if (css != null) {
       return css;
@@ -73,13 +51,21 @@ public class ArrayCell {
     return "ArrayCell";
   }
 
-  /**
-   * Method declaration
-   * @param mode
-   *
-   */
-  public void setSortMode(int mode) {
-    m_SortMode = mode;
+  public String getName() {
+    return name;
+  }
+
+  public abstract String getSyntax();
+
+  public final String print() {
+    String result = "<td";
+    if (StringUtil.isDefined(getStyleSheet())) {
+      result += " class=\"" + getStyleSheet() + "\"";
+    }
+    result += ">";
+    result += getSyntax();
+    result += "</td>\n";
+    return result;
   }
 
 }

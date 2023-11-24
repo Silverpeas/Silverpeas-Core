@@ -260,7 +260,7 @@ public class NotificationServerUtil {
         keyValue = DATE_TYPEID + date.getTime();
         success = true;
       } catch (ClassCastException cce) {
-        success = false;
+        // ignore
       }
     }
 
@@ -271,19 +271,20 @@ public class NotificationServerUtil {
         keyValue = BOOLEAN_TYPEID + bool;
         success = true;
       } catch (ClassCastException cce) {
-        success = false;
+        // ignore
       }
     }
 
     if (!success) {
       try {
+        //noinspection unchecked
         Collection<String> collection = (Collection<String>) keyValues.get(theKey);
         if (!collection.isEmpty()) {
-          keyValue = LIST_TYPEID + collection.stream().collect(Collectors.joining(","));
+          keyValue = LIST_TYPEID + String.join(",", collection);
           success = true;
         }
       } catch (ClassCastException cce) {
-        success = false;
+        // ignore
       }
     }
 

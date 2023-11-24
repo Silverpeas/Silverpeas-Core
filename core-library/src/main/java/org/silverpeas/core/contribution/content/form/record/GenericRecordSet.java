@@ -56,12 +56,13 @@ import java.util.Optional;
 /**
  * The GenericRecordSet manage DataRecord built on a RecordTemplate and saved by the
  * GenericRecordSetManager.
+ *
  * @see DataRecord
  */
 public class GenericRecordSet implements RecordSet, Serializable {
 
   private static final long serialVersionUID = 1L;
-  private IdentifiedRecordTemplate recordTemplate;
+  private final IdentifiedRecordTemplate recordTemplate;
 
   /**
    * The generic record set is built upon a RecordTemplate.
@@ -72,6 +73,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the RecordTemplate shared by all the DataRecord of this RecordSet.
+   *
    * @return the RecordTemplate shared by all the DataRecord of this RecordSet.
    */
   @Override
@@ -83,8 +85,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
    * Returns an empty DataRecord built on the RecordTemplate. This record is not yet managed by this
    * RecordSet. This is only an empty record which must be filled and saved in order to become a
    * DataRecord of this RecordSet.
+   *
    * @return an empty DataRecord.
-   * @throws FormException
+   * @throws FormException if an error occurs
    */
   @Override
   public DataRecord getEmptyRecord() throws FormException {
@@ -93,6 +96,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
+   *
    * @return the DataRecord with the given id.
    * @throws FormException when the id is unknown.
    */
@@ -103,6 +107,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
+   *
    * @return the DataRecord with the given id.
    * @throws FormException when the id is unknown.
    */
@@ -117,8 +122,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Inserts the given DataRecord and set its id.
-   * @throws FormException when the record doesn't have the required template or when the record
-   * has a not null id or when the insert fail.
+   *
+   * @throws FormException when the record doesn't have the required template or when the record has
+   * a not null id or when the insert fail.
    */
   private void insert(DataRecord record) throws FormException {
     recordTemplate.checkDataRecord(record);
@@ -127,8 +133,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Updates the given DataRecord.
-   * @throws FormException when the record doesn't have the required template or when the record
-   * has a null or unknown id or when the update fail.
+   *
+   * @throws FormException when the record doesn't have the required template or when the record has
+   * a null or unknown id or when the update fail.
    */
   private void update(DataRecord record) throws FormException {
     recordTemplate.checkDataRecord(record);
@@ -138,6 +145,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
   /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this
    * RecordSet. Else the record is updated.
+   *
    * @throws FormException when the record doesn't have the required , when the record has an
    * unknown id, when the insert or update fail.
    */
@@ -153,41 +161,45 @@ public class GenericRecordSet implements RecordSet, Serializable {
   private void indexRecord(String recordId, String formName,
       FullIndexEntry indexEntry, String language) throws FormException {
     DataRecord data = getRecord(recordId, language);
-    if (data != null) {
-      String[] fieldNames = data.getFieldNames();
-      Field field;
-      for (String fieldName : fieldNames) {
-        field = data.getField(fieldName);
-        if (field != null) {
-          FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
-          if (fieldTemplate != null) {
-            String fieldType = fieldTemplate.getTypeName();
-            String fieldDisplayerName = fieldTemplate.getDisplayerName();
-            try {
-              if (!StringUtil.isDefined(fieldDisplayerName)) {
-                fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
-              }
-              FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
-                  fieldType, fieldDisplayerName);
-              if (fieldDisplayer != null) {
-                String key = formName + "$$" + fieldName;
-                if (fieldTemplate.isRepeatable()) {
-                  for (int i=0; i<fieldTemplate.getMaximumNumberOfOccurrences(); i++) {
-                    field.setStringValue(data.getField(fieldName, i).getStringValue());
-                    fieldDisplayer.index(indexEntry, key, fieldName, field, language,
-                        fieldTemplate.isUsedAsFacet());
-                  }
-                } else {
-                  fieldDisplayer.index(indexEntry, key, fieldName, field, language,
-                      fieldTemplate.isUsedAsFacet());
-                }
-              }
-            } catch (Exception e) {
-              SilverLogger.getLogger(this).error(e);
-            }
+    if (data == null) {
+      return;
+    }
+    String[] fieldNames = data.getFieldNames();
+    Field field;
+    for (String fieldName : fieldNames) {
+      field = data.getField(fieldName);
+      FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
+      if (field != null && fieldTemplate != null) {
+        index(formName, indexEntry, language, fieldName, fieldTemplate, field, data);
+      }
+    }
+  }
+
+  private void index(String formName, FullIndexEntry indexEntry, String language,
+      String fieldName, FieldTemplate fieldTemplate, Field field, DataRecord data) {
+    String fieldType = fieldTemplate.getTypeName();
+    String fieldDisplayerName = fieldTemplate.getDisplayerName();
+    try {
+      if (!StringUtil.isDefined(fieldDisplayerName)) {
+        fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
+      }
+      FieldDisplayer<Field> fieldDisplayer = TypeManager.getInstance().getDisplayer(
+          fieldType, fieldDisplayerName);
+      if (fieldDisplayer != null) {
+        String key = formName + "$$" + fieldName;
+        if (fieldTemplate.isRepeatable()) {
+          for (int i = 0; i < fieldTemplate.getMaximumNumberOfOccurrences(); i++) {
+            field.setStringValue(data.getField(fieldName, i).getStringValue());
+            fieldDisplayer.index(indexEntry, key, fieldName, field, language,
+                fieldTemplate.isUsedAsFacet());
           }
+        } else {
+          fieldDisplayer.index(indexEntry, key, fieldName, field, language,
+              fieldTemplate.isUsedAsFacet());
         }
       }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -206,28 +218,16 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
 
   /**
-   * Deletes the given DataRecord and its associated data in all languages.
-   * @deprecated use delete(String objectId) instead.
-   * @param record the record to delete entirely.
-   * @throws FormException when the record doesn't have the required template., when the record has
-   * an unknown id, when the delete fail.
-   */
-  @Override
-  public void delete(DataRecord record) throws FormException {
-    if (record != null) {
-      delete(record.getId());
-    }
-  }
-
-  /**
    * Deletes the given DataRecord and its associated data in the given language.
    */
   private void delete(DataRecord record, String language) throws FormException {
     if (record != null) {
-      ResourceReference resourceReference = new ResourceReference(record.getId(), recordTemplate.getInstanceId());
+      ResourceReference resourceReference = new ResourceReference(record.getId(),
+          recordTemplate.getInstanceId());
 
       // remove files managed by WYSIWYG fields
-      WysiwygFCKFieldDisplayer.removeContents(resourceReference, getWYSIWYGFieldNames(record), language);
+      WysiwygFCKFieldDisplayer.removeContents(resourceReference, getWYSIWYGFieldNames(record),
+          language);
 
       // remove form documents registered into record but stored into JCR
       List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService()
@@ -265,31 +265,33 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
 
   private List<String> getWYSIWYGFieldNames(DataRecord data) {
-    List<String> wysiwygFieldNames = new ArrayList<String>();
-    if (data != null) {
-      String[] fieldNames = data.getFieldNames();
-      for (String fieldName : fieldNames) {
-        try {
-          Field field = data.getField(fieldName);
-          if (field != null) {
-            FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
-            if (fieldTemplate != null) {
-              String fieldDisplayerName = fieldTemplate.getDisplayerName();
-              if ("wysiwyg".equals(fieldDisplayerName)) {
-                wysiwygFieldNames.add(fieldName);
-              }
+    List<String> wysiwygFieldNames = new ArrayList<>();
+    if (data == null) {
+      return wysiwygFieldNames;
+    }
+    String[] fieldNames = data.getFieldNames();
+    for (String fieldName : fieldNames) {
+      try {
+        Field field = data.getField(fieldName);
+        if (field != null) {
+          FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
+          if (fieldTemplate != null) {
+            String fieldDisplayerName = fieldTemplate.getDisplayerName();
+            if ("wysiwyg".equals(fieldDisplayerName)) {
+              wysiwygFieldNames.add(fieldName);
             }
           }
-        } catch (FormException fe) {
-          SilverLogger.getLogger(this).error(fe);
         }
+      } catch (FormException fe) {
+        SilverLogger.getLogger(this).error(fe);
       }
     }
     return wysiwygFieldNames;
   }
-  
+
   @Override
-  public void move(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate)
+  public void move(ResourceReference fromPK, ResourceReference toPK,
+      RecordTemplate toRecordTemplate)
       throws FormException {
 
     // move WYSIWYG fields
@@ -308,7 +310,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
 
     // update data stored in database
-    List<String> languages = getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, fromPK.getId());
+    List<String> languages = getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate,
+        fromPK.getId());
     for (String lang : languages) {
       GenericDataRecord record = (GenericDataRecord) getRecord(fromPK.getId(), lang);
       if (record != null) {
@@ -320,7 +323,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
 
   @Override
-  public void copy(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate,
+  public void copy(ResourceReference fromPK, ResourceReference toPK,
+      RecordTemplate toRecordTemplate,
       Map<String, String> oldAndNewFileIds) throws FormException {
 
     // clone WYSIWYG fields content
@@ -346,7 +350,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
 
     // copy data stored in database
-    List<String> languages = getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, fromPK.getId());
+    List<String> languages = getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate,
+        fromPK.getId());
     for (String lang : languages) {
       GenericDataRecord record = (GenericDataRecord) getRecord(fromPK.getId(), lang);
       if (record != null) {
@@ -422,10 +427,12 @@ public class GenericRecordSet implements RecordSet, Serializable {
     ResourceReference fromPK = new ResourceReference(fromExternalId, fromComponentId);
     ResourceReference toPK = new ResourceReference(toExternalId, toComponentId);
     try {
-      Map<String, String> ids = AttachmentServiceProvider.getAttachmentService().mergeDocuments(toPK,
-          fromPK, DocumentType.form);
-      Map<String, String> videoIds = AttachmentServiceProvider.getAttachmentService().mergeDocuments(
-          toPK, fromPK, DocumentType.video);
+      Map<String, String> ids =
+          AttachmentServiceProvider.getAttachmentService().mergeDocuments(toPK,
+              fromPK, DocumentType.form);
+      Map<String, String> videoIds =
+          AttachmentServiceProvider.getAttachmentService().mergeDocuments(
+              toPK, fromPK, DocumentType.video);
       ids.putAll(videoIds);
       replaceIds(ids, fromRecord);
     } catch (AttachmentException e) {
@@ -483,6 +490,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Gets an instance of a GenericRecordSet objects manager.
+   *
    * @return a GenericRecordSetManager instance.
    */
   private GenericRecordSetManager getGenericRecordSetManager() {

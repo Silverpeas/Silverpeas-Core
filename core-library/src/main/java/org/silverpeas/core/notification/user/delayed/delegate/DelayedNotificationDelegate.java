@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.user.delayed.delegate;
 
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.User;
@@ -53,6 +54,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -652,7 +654,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
     UserDetail userDetail = userDetailCache.get(userId);
     if (userDetail == null) {
       if ((userId >= 0)) {
-        userDetail = UserDetail.getById(Integer.toString(userId));
+        userDetail = getUserDetail(Integer.toString(userId));
       } else {
         Administration admin = AdministrationServiceProvider.getAdminService();
         userDetail = new UserDetail();
@@ -666,6 +668,17 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
       userDetailCache.put(userId, userDetail);
     }
     return userDetail;
+  }
+
+  private UserDetail getUserDetail(final String userId) {
+    // we use the Administration service to get all the user personal data, even those sensitive
+    // like the email address.
+    try {
+      return Administration.get().getUserDetail(userId);
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return null;
+    }
   }
 
   /**

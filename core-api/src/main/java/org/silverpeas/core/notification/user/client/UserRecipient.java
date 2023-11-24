@@ -27,14 +27,14 @@ import org.silverpeas.core.admin.user.model.User;
 
 public class UserRecipient {
 
-  private String userId;
+  private final String userId;
 
   public UserRecipient(String userId) {
     this.userId = userId;
   }
 
-  public UserRecipient(User userDetail) {
-    this.userId = userDetail.getId();
+  public UserRecipient(User user) {
+    this.userId = user.getId();
   }
 
   public String getUserId() {

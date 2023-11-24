@@ -27,7 +27,7 @@ public class UserFragmentVO {
 
   private String userId;
   private String fragment;
-  private DirectoryItem.ITEM_TYPE type;
+  private final DirectoryItem.ITEM_TYPE type;
 
   public UserFragmentVO(String userId, String fragment, DirectoryItem.ITEM_TYPE type) {
     super();
