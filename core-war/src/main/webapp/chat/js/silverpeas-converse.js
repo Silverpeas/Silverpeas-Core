@@ -63,6 +63,8 @@
                 model._sp_vcard_init = true;
                 _force = true;
               }
+            } else if (!model) {
+              return Promise.resolve({});
             }
             return __superGetFn.call(this, model, _force).then(function(vCard) {
               for (let key in vCard) {
@@ -452,7 +454,7 @@
           'nickname' : __settings.vcard.fn,
           'auto_register_muc_nickname' : __settings.autoRegisterMucNickname,
           'notify_all_room_messages' : true,
-          'auto_join_on_invite' : false,
+          'auto_join_on_invite' : __settings.autoJoinOnInvite,
           'roster_groups' : false,
           'allow_adhoc_commands' : false,
           'allow_contact_removal' : false,

@@ -82,6 +82,7 @@
             nbMsgMaxCachedPerRoom : ${chatSettings.maxCachedMsgThresholdPerRoom},
             clearMessagesOnReconnection : ${chatSettings.clearMessagesOnReconnection()},
             autoRegisterMucNickname : ${chatSettings.autoRegisterMucNickname()},
+            autoJoinOnInvite : ${chatSettings.autoJoinOnInvite()},
             replyToEnabled : ${chatSettings.replyToEnabled},
             reactionToEnabled : ${chatSettings.reactionToEnabled},
             visioEnabled : ${chatSettings.visioEnabled},
