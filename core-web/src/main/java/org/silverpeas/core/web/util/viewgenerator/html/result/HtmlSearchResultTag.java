@@ -36,6 +36,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayerProvider;
 import org.silverpeas.core.web.search.ResultSearchRendererUtil;
@@ -48,6 +49,10 @@ import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
+
+import static java.lang.String.format;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * Tag to display result search element (GlobalSilverResult) object. Add extra information from
@@ -243,7 +248,8 @@ public class HtmlSearchResultTag extends TagSupport {
     result.append("<li class=\"lineResult ").append(gsr.getSpaceId()).append(" ");
     result.append(componentName).append(" ");
     result.append(gsr.getInstanceId()).append(" ");
-    result.append(gsr.getType()).append(" ");
+    final String indexType = gsr.getType();
+    result.append(indexType).append(" ");
     if (gsr.isNew()) {
       result.append("new-contribution ");
     }
@@ -270,7 +276,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (StringUtil.isDefined(gsr.getThumbnailURL())) {
       result.append("<div class=\"thumb\">");
-      if ("UserFull".equals(gsr.getType())) {
+      if ("UserFull".equals(indexType)) {
         result.append("<img class=\"avatar\" src=\"").append(URLUtil.getApplicationURL())
             .append(gsr.getThumbnailURL()).append("\" border=\"0\" />");
       } else {
@@ -282,15 +288,20 @@ public class HtmlSearchResultTag extends TagSupport {
       result.append("</div>");
     }
 
-    if (gsr.getType() != null &&
-        (gsr.getType().startsWith("Attachment") || gsr.getType().startsWith("Versioning") ||
-            gsr.getType().equals("LinkedFile"))) {
-      String fileType = FilenameUtils.getExtension(gsr.getAttachmentFilename());
-      String fileIcon = FileRepositoryManager.getFileIcon(fileType);
-      if (!StringUtil.isDefined(sName)) {
-        sName = gsr.getAttachmentFilename();
+    if (indexType != null) {
+      sName = adjustResultName(resources, sName, indexType);
+      if (indexType.startsWith("Attachment") || indexType.startsWith("Versioning") ||
+          indexType.equals("LinkedFile")) {
+        String fileType = FilenameUtils.getExtension(gsr.getAttachmentFilename());
+        String fileIcon = FileRepositoryManager.getFileIcon(fileType);
+        if (!StringUtil.isDefined(sName)) {
+          sName = gsr.getAttachmentFilename();
+        }
+        sName = "<img src=\"" + fileIcon + "\" class=\"fileIcon\"/>" + sName;
+      } else if (indexType.equals("Comment")) {
+        final String commentIcon = URLUtil.getApplicationURL() + "/util/icons/talk2user.gif";
+        sName = "<img src=\"" + commentIcon + "\" class=\"fileIcon\"/>" + sName;
       }
-      sName = "<img src=\"" + fileIcon + "\" class=\"fileIcon\"/>" + sName;
     }
 
     result.append("<div class=\"locationTitle\">");
@@ -421,4 +432,26 @@ public class HtmlSearchResultTag extends TagSupport {
     this.resources = resources;
   }
 
+  /**
+   * Adjusting the name data of the result by getting when necessary a default label linked to
+   * the type of the index.
+   * @param bundle the bundle which is not yet initialized. It is initialized at first use.
+   * @param name the current computed result name.
+   * @param indexType the type of the index used to initialize the result.
+   * @return the adjusted result name according to given parameters.
+   */
+  private String adjustResultName(final MultiSilverpeasBundle bundle, final String name,
+      final String indexType) {
+    String adjustedName = name;
+    if (isNotDefined(name)) {
+      final int idx = indexType.indexOf('_');
+      final String type = idx > 0 ? indexType.substring(0, idx) : indexType;
+      try {
+        adjustedName = bundle.getString(format("result.type.%s.label.default", type));
+      } catch (MissingResourceException e) {
+        SilverLogger.getLogger(this).silent(e);
+      }
+    }
+    return adjustedName;
+  }
 }

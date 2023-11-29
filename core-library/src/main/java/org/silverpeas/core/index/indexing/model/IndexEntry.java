@@ -29,7 +29,14 @@ import org.silverpeas.core.util.StringUtil;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * IndexEntry is the base class for all the entries which are indexed in the Silverpeas indexes. An
@@ -170,17 +177,7 @@ public class IndexEntry implements Serializable {
   }
 
   public String getTitle(String lang) {
-    String title = getTitles().get(I18NHelper.checkLanguage(lang));
-    if (!StringUtil.isDefined(title)) {
-      Set<String> languages = I18NHelper.getAllSupportedLanguages();
-      for (String language : languages) {
-        title = getTitles().get(language);
-        if (StringUtil.isDefined(title)) {
-          return title;
-        }
-      }
-    }
-    return title;
+    return getTranslation(getTitles(), lang);
   }
 
   /**
@@ -207,17 +204,7 @@ public class IndexEntry implements Serializable {
   }
 
   public String getKeywords(String lang) {
-    String keywords = getAllKeywords().get(I18NHelper.checkLanguage(lang));
-    if (!StringUtil.isDefined(keywords)) {
-      Set<String> languages = I18NHelper.getAllSupportedLanguages();
-      for (String language : languages) {
-        keywords = getAllKeywords().get(language);
-        if (StringUtil.isDefined(keywords)) {
-          return keywords;
-        }
-      }
-    }
-    return keywords;
+    return getTranslation(getAllKeywords(), lang);
   }
 
   /**
@@ -246,17 +233,7 @@ public class IndexEntry implements Serializable {
   }
 
   public String getPreview(String lang) {
-    String preview = getPreviews().get(I18NHelper.checkLanguage(lang));
-    if (!StringUtil.isDefined(preview)) {
-      Set<String> languages = I18NHelper.getAllSupportedLanguages();
-      for (String language : languages) {
-        preview = getPreviews().get(language);
-        if (StringUtil.isDefined(preview)) {
-          return preview;
-        }
-      }
-    }
-    return preview;
+    return getTranslation(getPreviews(), lang);
   }
 
   /**
@@ -527,4 +504,17 @@ public class IndexEntry implements Serializable {
     return DateUtil.formatAsLuceneDate(date);
   }
 
+  private String getTranslation(final Map<String, String> translations, final String lang) {
+    String preview = translations.get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(preview)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        preview = translations.get(language);
+        if (StringUtil.isDefined(preview)) {
+          return preview;
+        }
+      }
+    }
+    return preview;
+  }
 }
