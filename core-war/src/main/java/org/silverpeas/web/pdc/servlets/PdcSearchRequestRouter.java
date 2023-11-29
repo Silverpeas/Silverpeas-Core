@@ -447,7 +447,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   private List<WAAttributeValuePair> getItemPks(List<GlobalSilverResult> listGR) {
     List<WAAttributeValuePair> itemPKs = new ArrayList<>();
     for (GlobalSilverResult gb : listGR) {
-      itemPKs.add(new WAAttributeValuePair(gb.getId(), gb.getInstanceId()));
+      final String id = gb.isLinked() ? gb.getLinkedResourceId() : gb.getId();
+      itemPKs.add(new WAAttributeValuePair(id, gb.getInstanceId()));
     }
     return itemPKs;
   }

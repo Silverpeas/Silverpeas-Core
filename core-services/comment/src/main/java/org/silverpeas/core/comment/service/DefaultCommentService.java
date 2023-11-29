@@ -27,7 +27,6 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
@@ -42,6 +41,7 @@ import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -198,22 +198,16 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   }
 
   private void createIndex(final Comment cmt) {
-    User user = cmt.getCreator();
-    String language = user.getUserPreferences().getLanguage();
-    String title = getComponentMessages(language)
-        .getStringWithParams("comment.commentFrom", user.getDisplayedName());
     String commentMessage = cmt.getMessage();
-
     String component = cmt.getIdentifier().getComponentInstanceId();
     String resId = cmt.getResourceReference().getLocalId();
-
     try {
       FullIndexEntry indexEntry =
           new FullIndexEntry(new IndexEntryKey(component, "Comment",
               cmt.getIdentifier().getLocalId(), resId));
       indexEntry.setCreationDate(cmt.getCreationDate());
       indexEntry.setCreationUser(cmt.getCreatorId());
-      indexEntry.setTitle(title);
+      indexEntry.setTitle(StringUtil.EMPTY);
       indexEntry.setPreview(commentMessage);
       indexEntry.addTextContent(commentMessage);
       IndexEngineProxy.addIndexEntry(indexEntry);
