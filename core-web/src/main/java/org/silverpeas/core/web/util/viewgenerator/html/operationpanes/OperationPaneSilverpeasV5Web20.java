@@ -147,13 +147,15 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result.append("oMenu.subscribe(\"show\", oMenu.focus);");
 
     result
-        .append(
-            "YAHOO.util.Event.addListener(\"menutoggle\", \"mouseover\", oMenu.show, null, oMenu);");
+        .append("YAHOO.util.Event.addListener(\"menutoggle\", \"mouseover\", oMenu.show, null, oMenu);")
+        .append("const $menuToggle = document.querySelector('#menutoggle');")
+        .append("const $whatNextMenu = document.querySelector('#whatNextMenu');")
+        .append("oMenu.cfg.addProperty('__sp__clicktohide_not_elts', {value:[$whatNextMenu, $menuToggle]});");
 
     result
         .append(
             "if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) ")
-        .append("$('#whatNextMenu').bind('touchstart', function() { oMenu.show(); });");
+        .append("$($whatNextMenu).bind('touchstart', function() { oMenu.show(); });");
 
     if (highlightCreationItems()) {
       result.append(

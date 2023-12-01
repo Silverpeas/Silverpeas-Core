@@ -310,7 +310,10 @@ version: 2.8.0r4
                             !(oMenu instanceof YAHOO.widget.MenuBar) &&
                             oMenu.cfg.getProperty(_POSITION) == _DYNAMIC) {
 
+                          const excep = oMenu.cfg.getProperty('__sp__clicktohide_not_elts');
+                          if ((!Array.isArray(excep) && excep !== oElement) || excep.indexOf(oElement) < 0) {
                             oMenu.hide();
+                          }
 
 							//	In IE when the user mouses down on a focusable
 							//	element that element will be focused and become
