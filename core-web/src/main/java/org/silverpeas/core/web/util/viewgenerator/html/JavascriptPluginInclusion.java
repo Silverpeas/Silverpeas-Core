@@ -964,6 +964,7 @@ public class JavascriptPluginInclusion {
         xhtml.addElement(script(converseDir + "converse.min.js"));
         xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-commons.min.js"));
         xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-invitations.min.js"));
+        xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-destroy.min.js"));
         xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-sp-permalink.min.js"));
         if (chatSettings.isReplyToEnabled() || chatSettings.isReactionToEnabled()) {
           xhtml.addElement(script(chatDir + "converse-plugins/actions.min.js"));
