@@ -377,6 +377,7 @@
       __settings = extendsObject(__settings, chatOptions);
       __settings.whitelisted_plugins.push('silverpeas-commons');
       __settings.whitelisted_plugins.push('silverpeas-muc-invitations');
+      __settings.whitelisted_plugins.push('silverpeas-muc-destroy');
       if (window.spWindow) {
         __settings.whitelisted_plugins.push('silverpeas-sp-permalink');
       }
