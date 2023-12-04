@@ -296,6 +296,52 @@
   }
 
   /**
+   * Setups maximize all addons.
+   * Maximize all views when double clicking on the collapse box background.
+   * @private
+   */
+  function __setupMaximizeAll(chatOptions) {
+    if (!window.spLayout) {
+      return;
+    }
+    chatOptions.whitelisted_plugins.push('silverpeas-maximize-all');
+    converse.plugins.add('silverpeas-maximize-all', {
+      dependencies: ["converse-minimize", "silverpeas-commons"],
+      initialize : function() {
+        const _converse = this._converse;
+        const __maximizeAll = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          _converse.chatboxes.models.forEach(function(model) {
+            setTimeout(function() {
+              if (typeof model.setChatState === 'function') {
+                _converse.minimize.maximize(model);
+              } else if (model.get('closed')) {
+                const $toggle = document.querySelector('converse-controlbox-toggle a');
+                if ($toggle) {
+                  $toggle.click();
+                }
+              }
+            }, 0);
+          });
+          setTimeout(function() {
+            const views = _converse.chatboxviews.getAll().filter(function(view) {
+              const model = view.model;
+              return typeof model.setChatState === 'function';
+            });
+            if (views.length > 0) {
+              views[0].focus();
+            }
+          }, 0);
+        };
+        _converse.api.listen.once('controlBoxOpened', function() {
+          document.querySelector('converse-minimized-chats').addEventListener('dblclick', __maximizeAll);
+        });
+      }
+    });
+  }
+
+  /**
    * Setups the common stuffs in order to get the chat working into Silverpeas.
    * @private
    */
@@ -397,6 +443,7 @@
       __setupChatboxesAddons(__settings);
       __setupNotificationAddons(__settings);
       __setupMinimizeAll(__settings);
+      __setupMaximizeAll(__settings);
       return this;
     };
     this.start = function() {
