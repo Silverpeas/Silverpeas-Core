@@ -80,6 +80,7 @@
             userAvatarUrl : webContext + '/<%=FileServerUtils.getImageURL(chatUser.getAvatar(), "60x60")%>',
             notificationLogo : (window.SilverChatSettings ? window.SilverChatSettings.get('un.d.i.u') : ''),
             nbMsgMaxCachedPerRoom : ${chatSettings.maxCachedMsgThresholdPerRoom},
+            clearCacheOnLogout : ${chatSettings.clearCacheOnLogout()},
             clearMessagesOnReconnection : ${chatSettings.clearMessagesOnReconnection()},
             autoRegisterMucNickname : ${chatSettings.autoRegisterMucNickname()},
             autoJoinOnInvite : ${chatSettings.autoJoinOnInvite()},

@@ -432,6 +432,7 @@
           'theme' : 'default',
           'dark_theme' : 'default',
           'prune_messages_above' : __settings.nbMsgMaxCachedPerRoom,
+          'clear_cache_on_logout' : __settings.clearCacheOnLogout,
           'clear_messages_on_reconnection' : __settings.clearMessagesOnReconnection,
           'view_mode' : __settings.viewMode,
           'loglevel' : __settings.debug ? 'debug' : 'error',
@@ -481,7 +482,10 @@
       });
     };
     this.stop = function() {
-      __converse.off();
+      const $controlBoxCloseButton = document.querySelector('.chatbox-btn.close-chatbox-button');
+      if ($controlBoxCloseButton) {
+        $controlBoxCloseButton.click();
+      }
       return __converse.api.user.logout();
     };
     this.gui = new function() {
