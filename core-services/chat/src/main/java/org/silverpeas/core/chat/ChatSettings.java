@@ -97,6 +97,16 @@ public class ChatSettings {
   }
 
   /**
+   * Allows clearing the cache linked to ConverseJS on user logout.
+   * @return a boolean true to clear the cache on logout, false otherwise (by default).
+   */
+  public boolean clearCacheOnLogout() {
+    return settings.getBoolean(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".clearCacheOnLogout",
+        false);
+  }
+
+  /**
    * Indicates if messages MUST be cleared after a user reconnection.
    * <p>
    *   It can avoid getting a huge history on WEB browser clients and improve the time access to
