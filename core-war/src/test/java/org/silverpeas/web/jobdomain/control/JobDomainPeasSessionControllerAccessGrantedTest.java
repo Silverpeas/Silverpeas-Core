@@ -334,9 +334,9 @@ class JobDomainPeasSessionControllerAccessGrantedTest {
     controller.setTargetDomain(MIXED_DOMAIN_ID);
     assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, true));
     assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, false));
-    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, true));
+    controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, true);
     assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, false));
-    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, true));
+    controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, true);
     assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, false));
     // target domain is the one of the admin
     controller.setTargetDomain(LOGGED_USER_DOMAIN_ID);
@@ -353,6 +353,49 @@ class JobDomainPeasSessionControllerAccessGrantedTest {
     assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, true));
     assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, false));
     controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, true);
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, false));
+  }
+
+  @DisplayName("When user has domain access level, DATA from mixed domain can be read but not written")
+  @Test
+  void groupManagerOnMixedDomainOnlyHasUserReadOnlyAccessGranted() {
+    controller.setManageableGroupIds(GROUP_ID_ON_MIXED_DOMAIN);
+    assertGroupManagerOnMixedDomainHasUserAccessGranted();
+    controller.setManageableSpaceIds("3");
+    assertGroupManagerOnMixedDomainHasUserAccessGranted();
+  }
+
+  private void assertGroupManagerOnMixedDomainHasUserAccessGranted() {
+    controller.setTargetDomain(null);
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, false));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, false));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, false));
+    // target domain is the mixed one
+    controller.setTargetDomain(MIXED_DOMAIN_ID);
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, false));
+    controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, true);
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, false));
+    controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, true);
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, false));
+    // target domain is the one of the admin
+    controller.setTargetDomain(LOGGED_USER_DOMAIN_ID);
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, false));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, false));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, false));
+    // target domain is not the one of the admin
+    controller.setTargetDomain(OTHER_DOMAIN_ID);
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_MIXED_DOMAIN_EVEN_IF_NOT_POSSIBLE, false));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, true));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_DOMAIN_OF_LOGGED_USER_ID, false));
+    assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, true));
     assertForbidden(() -> controller.checkUserAccessGranted(USER_ID_ON_OTHER_DOMAIN, false));
   }
 

@@ -219,11 +219,16 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   public void checkUserAccessGranted(final String userId, final boolean readOnly) {
     final User user = getUserDetail(userId);
     if (user == null || getTargetDomain() == null ||
-        !getTargetDomain().getId().equals(user.getDomainId()) ||
-        getTargetDomain().getId().equals(Domain.MIXED_DOMAIN_ID)) {
+        Domain.MIXED_DOMAIN_ID.equals(user.getDomainId())) {
       throwForbiddenError();
     } else {
-      checkAccessGranted(user.getDomainId(), new UserAccessContext(user), readOnly);
+      if (getTargetDomain().getId().equals(Domain.MIXED_DOMAIN_ID)) {
+        checkDomainAccessGranted(Domain.MIXED_DOMAIN_ID, readOnly);
+      } else if (getTargetDomain().getId().equals(user.getDomainId())) {
+        checkAccessGranted(user.getDomainId(), new UserAccessContext(user), readOnly);
+      } else {
+        throwForbiddenError();
+      }
     }
   }
 
