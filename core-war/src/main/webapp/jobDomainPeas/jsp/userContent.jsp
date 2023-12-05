@@ -82,6 +82,9 @@
 <c:set var="userManageableSpaces" value="${requestScope.UserManageableSpaces}" />
 <c:set var="userManageableGroups" value="${requestScope.UserManageableGroups}" />
 <c:set var="userProfiles" value="${requestScope.UserProfiles}" />
+<c:if test="${not empty userProfiles}">
+  <jsp:useBean id="userProfiles" type="java.util.List<org.silverpeas.web.jobdomain.LocalizedComponentInstProfiles>"/>
+</c:if>
 
 <%@ include file="check.jsp" %>
 <%

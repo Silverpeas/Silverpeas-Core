@@ -27,21 +27,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ComponentProfilesList extends ArrayList<ComponentProfiles> {
+public class LocalizedComponentInstProfilesList extends ArrayList<LocalizedComponentInstProfiles> {
   private static final long serialVersionUID = 5012329059821756668L;
 
-  private transient Map<Integer, ComponentProfiles> profilesByLocalComponentInstanceIds = new HashMap<>();
+  private final transient Map<Integer, LocalizedComponentInstProfiles> profilesByLocalComponentInstanceIds = new HashMap<>();
 
-  public ComponentProfilesList() {
+  public LocalizedComponentInstProfilesList() {
     super();
   }
 
-  public ComponentProfiles getByLocalComponentInstanceId(int localComponentInstanceId) {
+  public LocalizedComponentInstProfiles getByLocalComponentInstanceId(int localComponentInstanceId) {
     return profilesByLocalComponentInstanceIds.get(localComponentInstanceId);
   }
 
   @Override
-  public boolean add(final ComponentProfiles componentProfiles) {
+  public boolean add(final LocalizedComponentInstProfiles componentProfiles) {
     if (profilesByLocalComponentInstanceIds.putIfAbsent(componentProfiles.getComponent().getLocalId(), componentProfiles) == null) {
      return super.add(componentProfiles);
     }

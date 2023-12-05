@@ -49,6 +49,9 @@
 <jsp:useBean id="groupData" type="org.silverpeas.core.admin.user.model.Group"/>
 <c:set var="manageableSpaces" value="${requestScope.ManageableSpaces}" />
 <c:set var="groupProfiles" value="${requestScope.GroupProfiles}" />
+<c:if test="${not empty groupProfiles}">
+  <jsp:useBean id="groupProfiles" type="java.util.List<org.silverpeas.web.jobdomain.LocalizedComponentInstProfiles>"/>
+</c:if>
 
 <fmt:message key="JDP.groupRemConfirm" var="groupRemConfirmMessage"/>
 <fmt:message key="JDP.groupDelConfirm" var="groupDelConfirmMessage"/>

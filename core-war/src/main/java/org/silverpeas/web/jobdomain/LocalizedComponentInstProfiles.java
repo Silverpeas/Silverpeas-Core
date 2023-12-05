@@ -24,20 +24,31 @@
 package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.LocalizedProfile;
+import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class ComponentProfiles {
+import static java.util.Optional.ofNullable;
+
+public class LocalizedComponentInstProfiles {
 
   private final ComponentInstLight component;
-  private SpaceInstLight space;
+  private final LocalizedWAComponent localizedWAComponent;
+  private final String language;
   private final List<String> profilesName = new ArrayList<>();
+  private SpaceInstLight space;
 
-  public ComponentProfiles(ComponentInstLight component) {
+  public LocalizedComponentInstProfiles(ComponentInstLight component,
+      LocalizedWAComponent localizedWAComponent, final String language) {
     this.component = component;
+    this.localizedWAComponent = localizedWAComponent;
+    this.language = language;
   }
 
   public ComponentInstLight getComponent() {
@@ -56,5 +67,28 @@ public class ComponentProfiles {
     if (!profilesName.contains(profile.getName())) {
       profilesName.add(profile.getName());
     }
+  }
+
+  public String getLocalizedProfilesName() {
+    return profilesName.stream()
+        .map(p -> ofNullable(localizedWAComponent)
+            .map(l -> l.getProfile(p))
+            .map(LocalizedProfile::getLabel)
+            .orElse(p))
+        .collect(Collectors.joining(", "));
+  }
+
+  public String getLocalizedSpaceLabel() {
+    return space.getName(language);
+  }
+
+  public String getLocalizedInstanceLabel() {
+    return component.getLabel(language);
+  }
+
+  public String getLocalizedComponentLabel() {
+    return ofNullable(localizedWAComponent)
+        .map(LocalizedWAComponent::getLabel)
+        .orElse(StringUtil.EMPTY);
   }
 }

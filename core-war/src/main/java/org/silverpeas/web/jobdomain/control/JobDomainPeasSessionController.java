@@ -2316,8 +2316,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
    * @return list of (array[space name, component id, component label, component name, profile
    * name])
    */
-  public ComponentProfilesList getCurrentProfiles() {
-    ComponentProfilesList allProfiles = new ComponentProfilesList();
+  public LocalizedComponentInstProfilesList getCurrentProfiles() {
+    LocalizedComponentInstProfilesList allProfiles = new LocalizedComponentInstProfilesList();
     Stream<String> profileIds = Stream.empty();
     if (isDefined(targetUserId)) {
       profileIds = Stream.concat(profileIds, Stream.of(adminCtrl.getProfileIds(targetUserId)));
@@ -2336,13 +2336,13 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         .map(i -> adminCtrl.getProfileInst(i))
         .forEach(p -> {
       Objects.requireNonNull(p);
-      ComponentProfiles componentProfiles = allProfiles.getByLocalComponentInstanceId(p.getComponentFatherId());
+      LocalizedComponentInstProfiles componentProfiles = allProfiles.getByLocalComponentInstanceId(p.getComponentFatherId());
       if (componentProfiles == null) {
         ComponentInstLight currentComponent =
             adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
         if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
           LocalizedWAComponent localizedWAComponent = getLocalizedComponent(currentComponent.getName());
-          componentProfiles = new ComponentProfiles(currentComponent);
+          componentProfiles = new LocalizedComponentInstProfiles(currentComponent, localizedWAComponent, getLanguage());
           SpaceInstLight space = adminCtrl.getSpaceInstLight(currentComponent.getSpaceId());
           componentProfiles.setSpace(space);
           allProfiles.add(componentProfiles);
@@ -2352,10 +2352,10 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         componentProfiles.addProfile(p);
       }
     });
-    allProfiles.sort(new AbstractComplexComparator<ComponentProfiles>() {
+    allProfiles.sort(new AbstractComplexComparator<LocalizedComponentInstProfiles>() {
       private static final long serialVersionUID = 6776408278128213038L;
       @Override
-      protected ValueBuffer getValuesToCompare(final ComponentProfiles object) {
+      protected ValueBuffer getValuesToCompare(final LocalizedComponentInstProfiles object) {
         return new ValueBuffer().append(object.getSpace().getName(getLanguage()))
             .append(object.getComponent().getName(getLanguage()));
       }
