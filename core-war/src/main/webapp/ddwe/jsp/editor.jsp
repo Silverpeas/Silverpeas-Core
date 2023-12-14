@@ -167,20 +167,20 @@
             .go();
       }
       function validate() {
-        performUrl('${validateUrl}');
+        performUrl('${validateUrl}', true);
       }
       function cancel() {
         __applyRequestCommonParams(sp.ajaxRequest(webContext + '/Rddwe/jsp/rstTmpContent'))
           .byPostMethod()
           .send()
           .then(function() {
-            performUrl('${cancelUrl}');
+            performUrl('${cancelUrl}', false);
           });
       }
       function goBack(url) {
-        performUrl(url);
+        performUrl(url, false);
       }
-      function performUrl(url) {
+      function performUrl(url, byPostMethod) {
         if (url) {
           vm.editorManager.whenStoreProcessHasFinished(function() {
             if (spWindow) {
@@ -189,7 +189,11 @@
                 return;
               }
             }
-            sp.navRequest(url).go();
+            if (byPostMethod) {
+              sp.formRequest(url).byPostMethod().submit();
+            } else {
+              sp.navRequest(url).go();
+            }
           });
         }
       }
