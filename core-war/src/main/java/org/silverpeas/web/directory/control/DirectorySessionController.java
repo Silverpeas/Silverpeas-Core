@@ -483,13 +483,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param directoryItems the list of directory items that will be filled.
    */
   public void mergeUsersIntoDirectoryItemList(User[] users, DirectoryItemList directoryItems) {
-    final Predicate<User> userPredicate = directoryItems::containsUserItemWith;
+    final HashSet<DirectoryItem> indexedItems = new HashSet<>(directoryItems);
+    final Predicate<User> userPredicate = u -> indexedItems.contains(new UserItem(u));
     Stream.of(users).filter(userPredicate.negate()).forEach(directoryItems::add);
   }
 
   public void mergeUserItemsIntoDirectoryItemList(DirectoryItemList userItems,
       DirectoryItemList directoryItems) {
-    final Predicate<DirectoryItem> itemPredicate = directoryItems::contains;
+    final HashSet<DirectoryItem> indexedItems = new HashSet<>(directoryItems);
+    final Predicate<DirectoryItem> itemPredicate = indexedItems::contains;
     userItems.stream().filter(itemPredicate.negate()).forEach(directoryItems::add);
   }
 
