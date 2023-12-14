@@ -68,10 +68,6 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
     }
   }
 
-  public boolean containsUserItemWith(final User user) {
-    return contains(new UserItem(user));
-  }
-
   public void add(CompleteContact contact) {
     super.add(new ContactItem(contact));
   }
