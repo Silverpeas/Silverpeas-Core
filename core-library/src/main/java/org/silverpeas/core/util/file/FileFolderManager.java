@@ -268,7 +268,7 @@ public class FileFolderManager {
       final Path fileToRename = directory.resolve(name);
       if (fileToRename.toFile().isFile()) {
         try {
-          Files.move(directory, directory.resolve(newName));
+          Files.move(fileToRename, directory.resolve(newName));
         } catch (IOException e) {
           throw new UtilException(e);
         }
