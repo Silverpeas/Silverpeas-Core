@@ -515,11 +515,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public boolean isAnonymousAccessActivated() {
-    return false;
-  }
-
-  @Override
   public String[] getAllowedComponentIds(final String userId) {
     return new String[0];
   }
