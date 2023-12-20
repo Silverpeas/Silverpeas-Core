@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.silverpeas.core.util.StringUtil.normalizeByRemovingAccent;
+
 /**
  * A Silverpeas user with an account in a Chat service. The Silverpeas Chat Engine uses the services
  * of an external chat server; so each user in Silverpeas has also an account in the chat server and
@@ -99,7 +101,7 @@ public class ChatUser extends UserDetail {
    */
   public String getChatLogin() {
     // take into account some aspects of the RFC-7622 defining the JID format
-    String chatLogin = getLogin().toLowerCase();
+    String chatLogin = normalizeByRemovingAccent(getLogin().toLowerCase());
     int idx = chatLogin.indexOf("@");
     if (idx > 0) {
       ChatSettings.JidFormatPolicy policy = ChatSettings.get().getJidFormatPolicy();

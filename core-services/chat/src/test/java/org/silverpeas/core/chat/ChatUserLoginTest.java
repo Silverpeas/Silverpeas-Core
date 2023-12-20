@@ -82,6 +82,13 @@ class ChatUserLoginTest {
   }
 
   @Test
+  @DisplayName("The chat login of a user must not contain any accented characters")
+  void chatLoginMustNotContainAnyAccentedCharacters() {
+    final ChatUser user = getChatUserWithLogin("Élodie.Léaûx-Fõntäiné");
+    assertThat(user.getChatLogin(), is("elodie.leaux-fontaine"));
+  }
+
+  @Test
   @DisplayName("The chat login of a user should be in lower case even with an email-like address")
   void chatLoginShouldBeAlwaysInLowerCaseInAnyCircumstances() {
     when(chatSettings.getJidFormatPolicy()).thenReturn(ChatSettings.JidFormatPolicy.REMOVED);
