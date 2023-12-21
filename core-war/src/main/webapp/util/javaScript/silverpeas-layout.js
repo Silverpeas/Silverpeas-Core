@@ -130,7 +130,11 @@
       var timeElapsedSinceLastShowInMs = new Date().getTime() - transverseContext.lastShowTime;
       var showSurely = timeElapsedSinceLastShowInMs < transverseContext.showSurelyTimeout;
       if (!transverseContext.showSurely || !showSurely) {
-        this.getContainer().style.display = 'none';
+        if (options && options.fade) {
+          sp.anim.fadeOut(this.getContainer());
+        } else {
+          this.getContainer().style.display = 'none';
+        }
         this.dispatchEvent("hide");
       }
     },
@@ -142,7 +146,11 @@
       var hideSurely = timeElapsedSinceLastHideInMs < transverseContext.hideSurelyTimeout;
       if (!transverseContext.hideSurely || !hideSurely) {
         transverseContext.hideSurely = false;
-        this.getContainer().style.display = '';
+        if (options && options.fade) {
+          sp.anim.fadeIn(this.getContainer());
+        } else {
+          this.getContainer().style.display = '';
+        }
         this.dispatchEvent("show");
       }
     },
@@ -282,14 +290,15 @@
               __logDebug("... initializing the context of body part instance");
             this.rootLayout = $mainWindow.document.querySelector(this.partSelectors.bodyNavigationAndContentLayout);
             this.resize();
-            this.togglePart = new BodyTogglePart(this.getMainLayout(), this.partSelectors.bodyToggles);
             this.navigationPart = new BodyNavigationPart(this.getMainLayout(), this.partSelectors.bodyNavigation);
             this.contentPart = new BodyContentPart(this.getMainLayout(), this.partSelectors.bodyContent);
+            this.togglePart = new BodyTogglePart(this.getMainLayout(), this.partSelectors.bodyToggles);
             this.contentFrame = this.getContent().getContainer().querySelector('iframe');
             this.contentFrame.setAttribute('webkitallowfullscreen', 'true');
             this.contentFrame.setAttribute('mozallowfullscreen', 'true');
             this.contentFrame.setAttribute('allowfullscreen', 'true');
             this.contentFrame.addEventListener("load", function() {
+              this.getToggles().refreshToggleDisplay();
               __logDebug("body content part loaded");
               if (typeof this.getContent().notifyReady === 'function') {
                 __logDebug("resolving promise of body content load");
@@ -332,39 +341,92 @@
     }
   });
 
+  const ToggleWidget = function(bodyTogglePart, id, label) {
+    const $toggleContainer = document.createElement('div');
+    $toggleContainer.setAttribute('id', id);
+    const $toggle = document.createElement('a');
+    $toggle.setAttribute('href', 'javascript:void(0)');
+    this.addEventListener = function() {
+      $toggleContainer.addEventListener.apply($toggleContainer, arguments);
+    };
+    let reduced = false;
+    this.hide = function() {
+      $toggle.style.display = 'none';
+    };
+    this.show = function() {
+      $toggle.style.display = '';
+    };
+    this.reduce = function() {
+      reduced = true;
+      __render();
+    };
+    this.enlarge = function() {
+      reduced = false;
+      __render();
+    };
+    const __render = function() {
+      const title = LayoutBundle.get(reduced ? 'l.l.e' : 'l.l.r');
+      $toggle.setAttribute('title', title + ' ' + label.toLowerCase());
+      $toggleContainer.classList.add(reduced ? 'reduced' : 'enlarged');
+      $toggleContainer.classList.remove(!reduced ? 'reduced' : 'enlarged');
+      $toggle.innerHTML = '<span><span>' + title + '</span>' + label + '</span>';
+      $toggle.blur();
+    };
+    this.hide();
+    __render();
+    $toggleContainer.appendChild($toggle);
+    bodyTogglePart.getContainer().appendChild($toggleContainer);
+  };
+
   // Toggle Part
   const BodyTogglePart = Part.extend({
     initialize : function(mainLayout, partSelector) {
       this.name = 'bodyTogglePart';
       this._super(mainLayout, partSelector);
-      this.headerToggle = $mainWindow.document.querySelector("#header-toggle");
-      this.navigationToggle = $mainWindow.document.querySelector("#navigation-toggle");
+      this.getContainer().innerHTML = '';
+      this.navigationToggle = new ToggleWidget(this, 'navigation-toggle', LayoutBundle.get('l.l.m'));
+      this.headerToggle = new ToggleWidget(this, 'header-toggle', LayoutBundle.get('l.l.h'));
+      this.headerToggle.show();
 
       this.headerToggle.addEventListener('click', this.toggleHeader.bind(this), '__click__BodyTogglePart');
       this.navigationToggle.addEventListener('click', this.toggleNavigation.bind(this), '__click__BodyTogglePart');
     },
-    toggleHeader : function() {
-      var icon = this.headerToggle.querySelector('img');
+    refreshToggleDisplay : function() {
       if (this.getMainLayout().getHeader().isShown()) {
-        this.getMainLayout().getHeader().hide();
-        icon.src = "icons/silverpeasV5/extendTopBar.gif";
+        this.headerToggle.show();
       } else {
-        this.getMainLayout().getHeader().show();
-        icon.src = "icons/silverpeasV5/reductTopBar.gif";
+        this.headerToggle.hide();
       }
-      icon.blur();
+      if (this.getMainLayout().getBody().getNavigation().isShown()) {
+        this.navigationToggle.show();
+      } else {
+        this.navigationToggle.hide();
+      }
+    },
+    toggleHeader : function() {
+      const fade = {
+        fade : $mainWindow.LayoutSettings.get('layout.header.toggle.fade')
+      };
+      if (this.getMainLayout().getHeader().isShown()) {
+        this.getMainLayout().getHeader().hide(fade);
+        this.headerToggle.reduce();
+      } else {
+        this.getMainLayout().getHeader().show(fade);
+        this.headerToggle.enlarge();
+      }
       this.forceDisplayUpdate();
     },
     toggleNavigation : function() {
-      var icon = this.navigationToggle.querySelector('img');
+      const fade = {
+        fade : $mainWindow.LayoutSettings.get('layout.body.navigation.toggle.fade')
+      };
       if (this.getMainLayout().getBody().getNavigation().isShown()) {
-        this.getMainLayout().getBody().getNavigation().hide();
-        icon.src = "icons/silverpeasV5/extend.gif";
+        this.getMainLayout().getBody().getNavigation().hide(fade);
+        this.navigationToggle.reduce();
       } else {
-        this.getMainLayout().getBody().getNavigation().show();
-        icon.src = "icons/silverpeasV5/reduct.gif";
+        this.getMainLayout().getBody().getNavigation().show(fade);
+        this.navigationToggle.enlarge();
       }
-      icon.blur();
       this.forceDisplayUpdate();
     },
     addEventListener : function(eventName, listener, listenerId) {
@@ -379,11 +441,11 @@
       }
     },
     hideNavigationToggle : function() {
-      this.navigationToggle.style.display = 'none';
+      this.navigationToggle.hide();
       this.dispatchEvent("hide-navigation-toggle");
     },
     showNavigationToggle : function() {
-      this.navigationToggle.style.display = '';
+      this.navigationToggle.show();
       this.dispatchEvent("show-navigation-toggle");
     }
   });
@@ -953,7 +1015,7 @@
           }, __context.error.retryTimeout);
         }
       };
-      serverEventSource.__spOpenHandler = function(e) {
+      serverEventSource.__spOpenHandler = function() {
         clearTimeout(__context.error.retryTimeoutInstance);
         clearTimeout(__context.error.retryTimeoutReconnectInstance);
         __context.error = __initContextError();

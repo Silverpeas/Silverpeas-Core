@@ -1240,8 +1240,10 @@ public class JavascriptPluginInclusion {
       includeQTip(xhtml, lookHelper.getLanguage());
       xhtml.addElement(scriptContent(settingVariableName("LayoutSettings")
             .add("layout.header.url", getApplicationURL() + layout.getHeaderURL())
+            .add("layout.header.toggle.fade", layout.isHeaderToggleFade())
             .add("layout.body.url", getApplicationURL() + layout.getBodyURL())
             .add("layout.body.navigation.url", getApplicationURL() + layout.getBodyNavigationURL())
+            .add("layout.body.navigation.toggle.fade", layout.isBodyNavigationFade())
             .add("layout.pdc.activated", lookHelper.displayPDCFrame())
             .add("layout.pdc.baseUrl", getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
@@ -1260,6 +1262,12 @@ public class JavascriptPluginInclusion {
             .produce()));
       xhtml.addElement(scriptContent(settingVariableName("WindowSettings")
           .add("permalink.parts", PermalinkRegistry.get().streamAllUrlParts(), true)
+          .produce()));
+      xhtml.addElement(scriptContent(bundleVariableName("LayoutBundle")
+          .add("l.l.r", lookHelper.getString("lookSilverpeasV5.layout.reduce"))
+          .add("l.l.e", lookHelper.getString("lookSilverpeasV5.layout.enlarge"))
+          .add("l.l.m", lookHelper.getString("lookSilverpeasV5.layout.menu"))
+          .add("l.l.h", lookHelper.getString("lookSilverpeasV5.layout.header"))
           .produce()));
       xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-window.js"));
       xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LAYOUT));

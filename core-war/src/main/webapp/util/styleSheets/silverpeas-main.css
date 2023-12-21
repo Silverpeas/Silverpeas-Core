@@ -849,6 +849,78 @@ Style Utilise par le ViewGenerator
   z-index:100;
 }
 
+/**** TOGGLE CSS OLD STYLE *********/
+/**** MUST BE UPDATED INTO LOOK PROJECTS *********/
+
+#sp-layout-body-part-layout {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+#sp-layout-body-part-layout-navigation-part {
+  position: relative;
+  overflow: auto;
+  width: 260px;
+}
+
+#sp-layout-body-part-layout-content-part {
+  flex: 1;
+  height: 100%;
+}
+
+#sp-layout-body-part-layout-toggle-part {
+  display: table;
+}
+
+#sp-layout-body-part-layout-toggle-part div {
+  margin: 0;
+  padding: 0 2px 0 0;
+  border: none;
+  display: table-cell;
+  cursor: pointer;
+}
+
+
+#sp-layout-body-part-layout-toggle-part div a span{
+  display:none;
+}
+
+#navigation-toggle.reduced a:before{
+  content:' ';
+  display:inline-block;
+  width:16px;
+  height:16px;
+  background:transparent url(../../admin/jsp/icons/silverpeasV5/extend.gif) 0 0 no-repeat;
+}
+
+#navigation-toggle.enlarged a:before{
+  content:' ';
+  display:inline-block;
+  width:16px;
+  height:16px;
+  background:transparent url(../../admin/jsp/icons/silverpeasV5/reduct.gif) 0 0 no-repeat;
+}
+
+#header-toggle.reduced a:before{
+  content:' ';
+  display:inline-block;
+  width:16px;
+  height:16px;
+  background:transparent url(../../admin/jsp/icons/silverpeasV5/extendTopBar.gif) 0 0 no-repeat;
+}
+
+#header-toggle.enlarged a:before{
+  content:' ';
+  display:inline-block;
+  width:16px;
+  height:16px;
+  background:transparent url(../../admin/jsp/icons/silverpeasV5/reductTopBar.gif) 0 0 no-repeat;
+}
+
+/**** END TOGGLE CSS OLD STYLE *********/
+
 #recherche {
   background:url(../icons/design/recherche.jpg) no-repeat;
   margin-bottom: 10px;
