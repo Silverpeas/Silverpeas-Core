@@ -48,6 +48,11 @@ public class DefaultLayoutConfiguration implements LayoutConfiguration {
   }
 
   @Override
+  public boolean isHeaderToggleFade() {
+    return settings.getBoolean("layout.header.toggle.fade", false);
+  }
+
+  @Override
   public String getBodyURL() {
     return defaultStringIfNotDefined(bodyURL,
         settings.getString("layout.body.url", "/admin/jsp/silverpeas-body-part.jsp"));
@@ -57,6 +62,11 @@ public class DefaultLayoutConfiguration implements LayoutConfiguration {
   public String getBodyNavigationURL() {
     return defaultStringIfNotDefined(bodyNavigationURL,
         settings.getString("layout.body.navigation.url", "/admin/jsp/silverpeas-navigation-part.jsp"));
+  }
+
+  @Override
+  public boolean isBodyNavigationFade() {
+    return settings.getBoolean("layout.body.navigation.toggle.fade", false);
   }
 
   public void setHeaderURL(String url) {

@@ -1577,6 +1577,34 @@ if (typeof window.sp === 'undefined') {
           }
         });
       }
+      /**
+       * Performs a fadeOut animation.
+       * @param element the element on which to perform the fadeOut.
+       * @param [callback] an optional callback which MUST be executed just before the animation.
+       * @param [options] an optional object containing options as 'duration' for now.
+       */
+      this.fadeOut = function(element) {
+        const $element = sp.element.asVanillaOne(element);
+        const params = __decodeParams.apply(element, arguments);
+        const options = extendsObject({
+          duration : 400
+        }, params.options);
+        if (params.callback) {
+          params.callback.call(element);
+        }
+        const start = window.performance.now();
+        $element.style.opacity = 1.0;
+        window.requestAnimationFrame(function __fadeOut(now) {
+          const progress = now - start;
+          let opacity = 1.0 - (progress / options.duration);
+          $element.style.opacity = opacity < 0.0 ? 0.0 : opacity;
+          if (progress < options.duration) {
+            window.requestAnimationFrame(__fadeOut)
+          } else if ($element.style.display === '') {
+            $element.style.display = 'none';
+          }
+        });
+      }
     },
     object : new function() {
       this.asEnum = function(initValues) {

@@ -28,10 +28,32 @@ package org.silverpeas.core.web.look;
  */
 public interface LayoutConfiguration {
 
-  public String getHeaderURL();
+  /**
+   * Gets the URL of the header part of the layout in order to load the header content.
+   * @return a string representing the URL into the application context.
+   */
+  String getHeaderURL();
 
-  public String getBodyURL();
+  /**
+   * @return true if a fade out MUST be applied on the header part when toggling its display.
+   */
+  boolean isHeaderToggleFade();
 
-  public String getBodyNavigationURL();
+  /**
+   * Gets the URL of the body part of the layout in order to load the body content.
+   * @return a string representing the URL into the application context.
+   */
+  String getBodyURL();
 
+  /**
+   * Gets the URL of the body navigation part of the layout in order to load the body navigation
+   * content.
+   * @return a string representing the URL into the application context.
+   */
+  String getBodyNavigationURL();
+
+  /**
+   * @return true if a fade out MUST be applied on the header part when toggling its display.
+   */
+  boolean isBodyNavigationFade();
 }

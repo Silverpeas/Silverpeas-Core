@@ -37,8 +37,6 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <view:setBundle basename="org.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
 
-<fmt:message var="redExtLabel" key="lookSilverpeasV5.reductExtend" />
-
 <%
 String strGoToNew 	= (String) session.getAttribute("gotoNew");
 String spaceId 		= request.getParameter("SpaceId");
@@ -129,10 +127,7 @@ session.removeAttribute("RedirectToSpaceId");
     cursor: pointer;
   }
 </style>
-<div id="sp-layout-body-part-layout-toggle-part" style="display: none">
-  <div id="navigation-toggle"><img src="icons/silverpeasV5/reduct.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
-  <div id="header-toggle"><img src="icons/silverpeasV5/reductTopBar.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
-</div>
+<div id="sp-layout-body-part-layout-toggle-part" style="display: none"></div>
 <div id="sp-layout-body-part-layout">
   <div id="sp-layout-body-part-layout-navigation-part"></div>
   <div id="sp-layout-body-part-layout-content-part">
