@@ -57,7 +57,8 @@ public class DefaultSortResults implements SortResults {
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
         String string1 = StringUtil.defaultStringIfNotDefined(o1.getName(language));
         String string2 = StringUtil.defaultStringIfNotDefined(o2.getName(language));
-        return string1.compareToIgnoreCase(string2);
+        final int result = string1.compareToIgnoreCase(string2);
+        return result != 0 ? result : Boolean.compare(o2.isAlias(), o1.isAlias());
       }
     };
 
