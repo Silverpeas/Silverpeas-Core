@@ -908,8 +908,6 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
     userRequestData.applyDataOnExistingUser(theModifiedUser);
 
-    notifyUserAccount(userRequestData, theModifiedUser, req, false);
-
     // process extra properties
     for (Map.Entry<String, String> entry : properties.entrySet()) {
       theModifiedUser.setValue(entry.getKey(), entry.getValue());
@@ -924,6 +922,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     } catch (AdminException e) {
       throw new JobDomainPeasException(failureOnUpdate("user", userRequestData.getId()), e);
     }
+    notifyUserAccount(userRequestData, theModifiedUser, req, false);
     refresh();
     setTargetUser(idRet);
 
