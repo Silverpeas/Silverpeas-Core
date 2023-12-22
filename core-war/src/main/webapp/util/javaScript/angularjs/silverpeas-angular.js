@@ -215,3 +215,29 @@ function updateHtmlContainingAngularDirectives($target, html) {
     window.console.log('Silverpeas Angular - Compile directive has not been loaded, so the directives included into the result of HTML Ajax loading have not been performed...');
   }
 }
+
+/**
+ * Common directive to force anchor link working when using 'ng-bind-html' directive.
+ * For example :
+ * <p ng-bind-html="$ctrl.ceo.content | trustedHTML" sp-bind-anchors></p>
+ */
+angular.module('silverpeas.directives').directive('spBindAnchors', [function() {
+  return {
+    link : function postLink($scope, $el, $attrs) {
+      $scope.$watch(
+          function() {
+            return $el[0].childNodes.length;
+          },
+          function(newValue, oldValue) {
+            if (newValue !== oldValue && newValue) {
+              angular.element('a', $el).each(function(index, $a) {
+                const targetId = StringUtil.defaultStringIfNotDefined($a.getAttribute('href'));
+                if (targetId.startsWith('#') && !$a.getAttribute('target')) {
+                  $a.setAttribute('target', '_self');
+                }
+              });
+            }
+          });
+    }
+  };
+}]);
