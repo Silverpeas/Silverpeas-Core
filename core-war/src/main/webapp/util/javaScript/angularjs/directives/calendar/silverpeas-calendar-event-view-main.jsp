@@ -75,9 +75,9 @@
   </div>
 </div>
 <div class="occurrence-description" ng-if="$ctrl.ceo.description">
-  <p ng-if="$ctrl.ceo.calendarSync" ng-bind-html="$ctrl.ceo.description | trustedHTML"></p>
+  <p ng-if="$ctrl.ceo.calendarSync" ng-bind-html="$ctrl.ceo.description | trustedHTML" sp-bind-anchors></p>
   <p ng-if="!$ctrl.ceo.calendarSync" ng-bind-html="$ctrl.ceo.description | noHTML | newlines"></p>
 </div>
 <div class="occurrence-content rich-content" ng-if="$ctrl.ceo.content">
-  <p ng-bind-html="$ctrl.ceo.content | trustedHTML"></p>
+  <p ng-bind-html="$ctrl.ceo.content | trustedHTML" sp-bind-anchors></p>
 </div>
