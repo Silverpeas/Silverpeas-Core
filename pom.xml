@@ -24,13 +24,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>silverpeas-project</artifactId>
-    <version>1.5</version>
+    <version>1.6-JR-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas</groupId>
@@ -57,7 +59,7 @@
       <id>Silverpeas</id>
       <layout>default</layout>
       <name>Silverpeas Repository</name>
-      <url>https://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <url>https://nexus3.silverpeas.org/repository/silverpeas</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -71,7 +73,7 @@
     <pluginRepository>
       <id>Silverpeas</id>
       <name>Silverpeas Maven 3.x Repository</name>
-      <url>https://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <url>https://nexus3.silverpeas.org/repository/silverpeas</url>
     </pluginRepository>
   </pluginRepositories>
 
