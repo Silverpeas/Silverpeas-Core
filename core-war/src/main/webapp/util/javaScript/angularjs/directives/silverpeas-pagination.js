@@ -24,6 +24,8 @@
 
 (function() {
 
+  const NB_PAGE_THRESHOLD = window.PaginationSettings ? window.PaginationSettings.get('p.n.p.t') : 6;
+
   /**
    * Directives to generate an HTML paginator. It depends on the JQuery plugin smartpaginator.
    *
@@ -48,7 +50,7 @@
       },
       replace: true,
       link: function postLink(scope, element, attrs) {
-        var $pagination = angular.element(element);
+        const $pagination = angular.element(element);
 
         function renderPagination() {
           if (scope.itemsSize > scope.pageSize) {
@@ -58,7 +60,7 @@
               display: 'single',
               totalrecords: scope.itemsSize,
               recordsperpage: scope.pageSize,
-              length: 6,
+              length: NB_PAGE_THRESHOLD,
               next: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowRight.png'}),
               prev: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowLeft.png'}),
               first: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowDoubleLeft.png'}),
