@@ -40,9 +40,21 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
@@ -67,7 +79,10 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
@@ -97,6 +112,9 @@ public class RepositoriesTypeManager {
 
   public static final CharSequenceTranslator ESCAPE_ISO8859_1 = new LookupTranslator(
       EntityArrays.ISO8859_1_ESCAPE);
+
+  private static final String MAIL_TEMPLATE_NAME = "mail";
+  private static final String BODY_XML_FIELD_NAME = "body";
 
   @Inject
   private PdcImportExport pdcImportExport;
@@ -396,7 +414,7 @@ public class RepositoriesTypeManager {
       // save mail data into dedicated form
       String content = mail.getBody();
       PublicationContentType pubContent = new PublicationContentType();
-      XMLModelContentType modelContent = new XMLModelContentType("mail");
+      XMLModelContentType modelContent = new XMLModelContentType(MAIL_TEMPLATE_NAME);
       pubContent.setXMLModelContentType(modelContent);
       List<XMLField> fields = new ArrayList<>();
       modelContent.setFields(fields);
@@ -404,7 +422,7 @@ public class RepositoriesTypeManager {
       XMLField subject = new XMLField("subject", mail.getSubject());
       fields.add(subject);
 
-      XMLField body = new XMLField("body", ESCAPE_ISO8859_1.translate(content));
+      XMLField body = new XMLField(BODY_XML_FIELD_NAME, ESCAPE_ISO8859_1.translate(content));
       fields.add(body);
 
       XMLField date = new XMLField("date", DateUtil.getOutputDateAndHour(mail.getDate(), "fr"));
@@ -444,7 +462,7 @@ public class RepositoriesTypeManager {
         List<AttachmentDetail> documents =
             extractAttachmentsFromMail(componentId, userDetail, extractor);
         // ... and save them
-        saveAttachments(componentId, pubDetail, documents, userDetail, gedIE, isVersioningUsed);
+        saveMailAttachments(componentId, pubDetail, documents, userDetail, gedIE, isVersioningUsed);
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
@@ -465,6 +483,7 @@ public class RepositoriesTypeManager {
         attDetail.setAuthor(userDetail.getId());
         attDetail.setSize(attachment.getSize());
         attDetail.setPK(pk);
+        attDetail.setMailContentID(attachment.getContentID());
 
         documents.add(attDetail);
       }
@@ -472,20 +491,85 @@ public class RepositoriesTypeManager {
     return documents;
   }
 
-  private void saveAttachments(final String componentId, final PublicationDetail pubDetail,
+  private void saveMailAttachments(final String componentId, final PublicationDetail pubDetail,
       final List<AttachmentDetail> documents, final UserDetail userDetail,
       final GEDImportExport gedIE, final boolean isVersioningUsed) throws IOException {
+    final List<Pair<AttachmentDetail, SimpleDocument>> importedDocuments;
     if (isVersioningUsed) {
       // versioning mode
       VersioningImport versioningIE = new VersioningImport(userDetail);
-      versioningIE.importDocuments(pubDetail.getPK().getId(), componentId, documents,
-          pubDetail.isIndexable());
+      importedDocuments = versioningIE.importDocuments(pubDetail.getPK().getId(), componentId,
+          documents, pubDetail.isIndexable());
     } else {
       // classic mode
       AttachmentImportExport attachmentIE =
           new AttachmentImportExport(gedIE.getCurrentUserDetail());
-      attachmentIE.importAttachments(pubDetail.getPK().getId(), componentId, documents,
-          pubDetail.isIndexable());
+      importedDocuments = attachmentIE.importAttachments(pubDetail.getPK().getId(), componentId,
+          documents, pubDetail.isIndexable());
+    }
+    try {
+      adjustAttachmentUrlIntoContent(componentId, pubDetail, importedDocuments);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Adjusts the URL of attachment images into mail content.
+   * <p>
+   *   This method MUST be invoked after the attachment have been created.
+   * </p>
+   * <p>
+   *   Notice that this method is implemented by taking the fact that managed XML content is
+   *   "mail" template.
+   * </p>
+   * @param componentId identifier of the component instance.
+   * @param pubDetail registered publication instance.
+   * @param importedDocuments list of imported attachments.
+   * @throws FormException in case of technical error with publication template services.
+   * @throws PublicationTemplateException in case of technical error with publication template
+   * services.
+   */
+  private void adjustAttachmentUrlIntoContent(final String componentId,
+      final PublicationDetail pubDetail,
+      final List<Pair<AttachmentDetail, SimpleDocument>> importedDocuments)
+      throws FormException, PublicationTemplateException {
+    if (!importedDocuments.isEmpty()) {
+      PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+      final String templateId = componentId + ":" + MAIL_TEMPLATE_NAME;
+      PublicationTemplate pubTemplateFrom = templateManager.getPublicationTemplate(templateId);
+      RecordSet set = pubTemplateFrom.getRecordSet();
+      DataRecord data = set.getRecord(pubDetail.getId());
+      final Field body = data.getField(BODY_XML_FIELD_NAME);
+      if (body != null) {
+        FieldTemplate fieldTemplate = pubTemplateFrom.getRecordTemplate().getFieldTemplate(
+            BODY_XML_FIELD_NAME);
+        if (fieldTemplate != null) {
+          PagesContext formContext = new PagesContext();
+          formContext.setComponentId(componentId);
+          formContext.setObjectId(pubDetail.getId());
+          formContext.setContentLanguage(pubDetail.getLanguage());
+          FieldDisplayer<Field> fieldDisplayer = TypeManager.getInstance()
+              .getDisplayer(body.getTypeName(), fieldTemplate.getDisplayerName());
+          final String bodyValue = WysiwygFCKFieldDisplayer.getContentFromFile(
+              formContext.getComponentId(), formContext.getObjectId(), BODY_XML_FIELD_NAME,
+              formContext.getContentLanguage());
+          final Mutable<String> mailContent = Mutable.of(bodyValue);
+          importedDocuments.stream()
+              .filter(p -> StringUtil.isDefined(p.getFirst().getMailContentID()))
+              .forEach(p -> {
+                final SimpleDocument document = p.getSecond();
+                final String url = URLUtil.getApplicationURL() + document.getAttachmentURL();
+                final String contentID = p.getFirst().getMailContentID();
+                final String pattern = "src=\"cid:" + contentID.replaceAll("[<>]", "") + "\"";
+                final String replacement = "src=\"" + url + "\"";
+                mailContent.set(mailContent.get().replace(pattern, replacement));
+              });
+          if (!bodyValue.equals(mailContent.get())) {
+            fieldDisplayer.update(mailContent.get(), body, fieldTemplate, formContext);
+          }
+        }
+      }
     }
   }
 
