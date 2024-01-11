@@ -37,14 +37,16 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <view:setBundle basename="org.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
 
+<c:set var="helper" value="<%=LookHelper.getLookHelper(session)%>"/>
+<c:if test="${helper != null}">
+  <jsp:useBean id="helper" type="org.silverpeas.core.web.look.LookHelper"/>
+
 <%
 String strGoToNew 	= (String) session.getAttribute("gotoNew");
 String spaceId 		= request.getParameter("SpaceId");
 String subSpaceId 	= request.getParameter("SubSpaceId");
 String componentId	= request.getParameter("ComponentId");
 String login		= request.getParameter("Login");
-
-LookHelper helper = LookHelper.getLookHelper(session);
 
 String navigationWidth = helper.getSettings("domainsBarFramesetWidth", "255") + "px";
 
@@ -141,3 +143,5 @@ session.removeAttribute("RedirectToSpaceId");
     });
   })();
 </script>
+
+</c:if>
