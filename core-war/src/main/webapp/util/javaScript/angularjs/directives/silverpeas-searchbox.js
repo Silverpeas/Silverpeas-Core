@@ -24,6 +24,8 @@
 
 (function() {
 
+  const INPUT_QUERY_MIN_CHARS = window.PaginationSettings ? window.PaginationSettings.get('i.q.m.c') : 6;
+
   /**
    * silverpeas-search is an HTML element to render a search box by using the AngularJS framework.
    *
@@ -79,7 +81,7 @@
             box.val(scope.label);
             inInit = false;
           } else if (newValue !== oldValue) {
-            search(newValue, 3);
+            search(newValue, INPUT_QUERY_MIN_CHARS);
           }
         });
         scope.$watch('ngModel', function(value) {

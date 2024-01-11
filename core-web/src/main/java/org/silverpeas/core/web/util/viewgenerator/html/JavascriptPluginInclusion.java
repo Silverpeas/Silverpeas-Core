@@ -561,12 +561,13 @@ public class JavascriptPluginInclusion {
     }
     xhtml.addElement(scriptContent(settingVariableName("PaginationSettings")
         .add("p.i.p", settings.getString("IconsPath"))
-        .add("p.n.o.p.a", settings.getInteger("Pagination.NumberOfPagesAround", 3))
+        .add("p.n.p.t", settings.getInteger("Pagination.NbPageThreshold", 6))
         .add("p.i.t", settings.getInteger("Pagination.IndexThreshold", 5))
         .add("p.n.p.p.t", settings.getInteger("Pagination.NumberPerPageThreshold", 25))
         .add("p.j.t", settings.getInteger("Pagination.JumperThreshold", 12))
         .add("p.n.i.p.p", nbItemsPerPage, false)
         .add("p.p.a.t", settings.getInteger("Pagination.PaginationAllThreshold", 500))
+        .add("i.q.m.c", settings.getInteger("input.query.min.chars", 3))
         .produce()));
     xhtml.addElement(link(JQUERY_CSS_PATH + PAGINATION_TOOL + ".css"));
     xhtml.addElement(script(JQUERY_PATH + PAGINATION_TOOL + ".js"));
@@ -1329,10 +1330,12 @@ public class JavascriptPluginInclusion {
     includeSelectize(xhtml);
     includePopup(xhtml);
     includeQTip(xhtml, language);
+    final SettingBundle gefSettings = GraphicElementFactory.getSettings();
     xhtml.addElement(scriptContent(settingVariableName("UserGroupListSettings")
         .add("u.m.n.u.r.l.v", userManualNotificationUserReceiverLimitValue)
         .add("d.r", domainRestricted)
         .add("d.nb", OrganizationController.get().getAllDomains().length)
+        .add("i.q.m.c", gefSettings.getInteger("input.query.min.chars", 3))
         .produce()));
     xhtml.addElement(scriptContent(bundleVariableName("UserGroupListBundle")
         .add(ResourceLocator.getGeneralLocalizationBundle(language),

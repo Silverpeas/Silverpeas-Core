@@ -28,7 +28,7 @@
       webContext + '/util/javaScript/vuejs/components/silverpeas-pagination-templates.jsp');
 
   const ICON_PATH = webContext + PaginationSettings.get("p.i.p");
-  const NUMBER_OF_PAGES_AROUND = PaginationSettings.get('p.n.o.p.a');
+  const NB_PAGE_THRESHOLD = PaginationSettings.get('p.n.p.t');
   const INDEX_THRESHOLD = PaginationSettings.get('p.i.t');
   const NUMBER_PER_PAGE_THRESHOLD = PaginationSettings.get('p.n.p.p.t');
   const JUMPER_THRESHOLD = PaginationSettings.get('p.j.t');
@@ -184,7 +184,7 @@
         },
         computed : {
           displayPageOn : function() {
-            return NUMBER_OF_PAGES_AROUND < this.page.nbPages;
+            return (NB_PAGE_THRESHOLD / 2) < this.page.nbPages;
           },
           displayGotoPage : function() {
             return JUMPER_THRESHOLD < this.page.nbPages;
@@ -242,7 +242,7 @@
               display: 'single',
               totalrecords: this.page.nbAllItems,
               recordsperpage: this.page.nbItemsPerPage,
-              length: 6,
+              length: NB_PAGE_THRESHOLD,
               initval : this.page.numPage,
               first: __createImage(ICON_PATH + '/arrows/arrowDoubleLeft.png', sp.i18n.get('g.p.f')),
               prev: __createImage(ICON_PATH + '/arrows/arrowLeft.png', sp.i18n.get('g.p.p')),

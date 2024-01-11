@@ -66,10 +66,6 @@
 <c:set var="selectedUserLimit"       value="${selection.selectedUserLimit}"/>
 <c:set var="hidingDeactivatedState" value="${selection.filterOnDeactivatedState}"/>
 
-<c:url var="userProfileUrl"          value="/util/javaScript/angularjs/services/silverpeas-profile.js"/>
-<c:url var="silverpeasSearchUrl"     value="/util/javaScript/angularjs/directives/silverpeas-searchbox.js"/>
-<c:url var="selectionUrl"            value="/selection/jsp/javaScript/selection.js"/>
-
 <c:set var="selectionScope"          value=""/>
 <c:if test="${selection.elementSelectable}">
   <c:set var="selectionScope"        value="user"/>
@@ -115,9 +111,9 @@
     <view:looknfeel />
     <view:includePlugin name="breadcrumb"/>
     <view:includePlugin name="pagination"/>
-    <script type="text/javascript" src="${userProfileUrl}"></script>
-    <script type="text/javascript" src="${silverpeasSearchUrl}"></script>
-    <script type="text/javascript" src="${selectionUrl}"></script>
+    <view:script src="/util/javaScript/angularjs/services/silverpeas-profile.js"/>
+    <view:script src="/util/javaScript/angularjs/directives/silverpeas-searchbox.js"/>
+    <view:script src="/selection/jsp/javaScript/selection.js"/>
     <title><fmt:message key="selection.UserSelectionPanel"/></title>
     <style  type="text/css" >
       html, body {height:100%; overflow:hidden; margin:0px; padding:0px}
