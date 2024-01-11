@@ -40,6 +40,7 @@ import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -68,11 +69,12 @@ public class VersioningImport {
     this.user = user;
   }
 
-  public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
+  public List<Pair<AttachmentDetail, SimpleDocument>> importDocuments(String objectId,
+      String componentId, List<AttachmentDetail> attachments,
       boolean indexIt) throws IOException {
-
+    final List<Pair<AttachmentDetail, SimpleDocument>> createdDocuments = new ArrayList<>(
+        attachments.size());
     int versionType = DocumentVersion.TYPE_PUBLIC_VERSION;
-    int nbFilesProcessed = 0;
     AttachmentImportExport attachmentImportExport = new AttachmentImportExport(user);
     ResourceReference pubPK = new ResourceReference(objectId, componentId);
 
@@ -111,8 +113,8 @@ public class VersioningImport {
                 attachment.getAuthor(), copy);
         version.setPublicDocument(versionType == DocumentVersion.TYPE_PUBLIC_VERSION);
         version.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-        AttachmentServiceProvider.getAttachmentService()
-            .createAttachment(version, content, indexIt);
+        createdDocuments.add(Pair.of(attachment, AttachmentServiceProvider.getAttachmentService()
+            .createAttachment(version, content, indexIt)));
       }
 
       if (attachment.isRemoveAfterImport()) {
@@ -123,9 +125,8 @@ public class VersioningImport {
               .getAttachmentFile(attachment));
         }
       }
-      nbFilesProcessed++;
     }
-    return nbFilesProcessed;
+    return createdDocuments;
   }
 
   private SimpleDocument isDocumentExist(List<SimpleDocument> documents, AttachmentDetail attachment) {

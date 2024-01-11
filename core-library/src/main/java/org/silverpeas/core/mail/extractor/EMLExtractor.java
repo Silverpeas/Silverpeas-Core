@@ -32,6 +32,7 @@ import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.mail.Message;
@@ -49,9 +50,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 public class EMLExtractor implements MailExtractor {
 
@@ -159,26 +166,44 @@ public class EMLExtractor implements MailExtractor {
         Multipart mContent = (Multipart) content;
         return processMultipart(mContent, attachments);
       } else if (attachments != null) {
-        String fileName = getFileName(part);
-        if (fileName != null) {
-          MailAttachment attachment = new MailAttachment(fileName);
-          String dir = FileRepositoryManager.getTemporaryPath() + "mail" + System
-              .currentTimeMillis();
-          File file = new File(dir, fileName);
-          FileUtils.copyInputStreamToFile(part.getInputStream(), file);
-          attachment.setPath(file.getAbsolutePath());
-          attachment.setSize(file.length());
-          attachments.add(attachment);
-        }
+        processMailAttachmentPart(part, attachments);
       }
     } else {
-      if (part.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
+      if (part.getContentType().contains(MimeTypes.HTML_MIME_TYPE)) {
         return (String) part.getContent();
-      } else if (part.getContentType().indexOf(MimeTypes.PLAIN_TEXT_MIME_TYPE) >= 0) {
+      } else if (part.getContentType().contains(MimeTypes.PLAIN_TEXT_MIME_TYPE)) {
         return WebEncodeHelper.javaStringToHtmlParagraphe((String) part.getContent());
       }
     }
     return "";
+  }
+
+  private void processMailAttachmentPart(final Part part, final List<MailAttachment> attachments)
+      throws MessagingException, IOException {
+    final String contentID = getContentID(part);
+    String fileName = getFileName(part);
+    if (fileName == null && contentID != null) {
+      fileName = contentID.replaceAll("[<>]", "");
+    }
+    if (fileName != null) {
+      MailAttachment attachment = new MailAttachment(fileName);
+      String dir = FileRepositoryManager.getTemporaryPath() + "mail" + System.currentTimeMillis();
+      File file = new File(dir, fileName);
+      FileUtils.copyInputStreamToFile(part.getInputStream(), file);
+      if (isNotDefined(getExtension(fileName))) {
+        final String fileExtension = new ContentType(
+            FileUtil.getMimeType(file.getAbsolutePath())).getSubType();
+        final String fileNameWithExtension = fileName + "." + fileExtension;
+        final File fileWithExtension = new File(dir, fileNameWithExtension);
+        Files.move(file.toPath(), fileWithExtension.toPath());
+        file = fileWithExtension;
+        attachment.setName(fileNameWithExtension);
+      }
+      attachment.setPath(file.getAbsolutePath());
+      attachment.setSize(file.length());
+      attachment.setContentID(contentID);
+      attachments.add(attachment);
+    }
   }
 
   private boolean isTextPart(Part part) throws MessagingException {
@@ -219,5 +244,13 @@ public class EMLExtractor implements MailExtractor {
       }
     }
     return fileName;
+  }
+
+  private String getContentID(Part part) throws MessagingException {
+    return ofNullable(part.getHeader("Content-ID"))
+        .stream()
+        .flatMap(Stream::of)
+        .findFirst()
+        .orElse(null);
   }
 }
