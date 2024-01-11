@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -71,8 +72,10 @@ public class AttachmentImportExport {
     this.user = user;
   }
 
-  public List<AttachmentDetail> importAttachments(String pubId, String componentId,
-      List<AttachmentDetail> attachments, boolean indexIt) throws FileNotFoundException {
+  public List<Pair<AttachmentDetail, SimpleDocument>> importAttachments(String pubId,
+      String componentId, List<AttachmentDetail> attachments, boolean indexIt) {
+    final List<Pair<AttachmentDetail, SimpleDocument>> createdDocuments = new ArrayList<>(
+        attachments.size());
     FormTemplateImportExport xmlIE = null;
     for (AttachmentDetail attDetail : attachments) {
       attDetail.setAuthor(this.user.getId());
@@ -83,7 +86,8 @@ public class AttachmentImportExport {
       }
       // Store xml content
       try (final InputStream input = getAttachmentContent(attDetail)) {
-        this.addAttachmentToPublication(pubId, componentId, attDetail, input, indexIt);
+        createdDocuments.add(Pair.of(attDetail,
+            this.addAttachmentToPublication(pubId, componentId, attDetail, input, indexIt)));
         if (xmlContent != null) {
           if (xmlIE == null) {
             xmlIE = new FormTemplateImportExport();
@@ -104,7 +108,7 @@ public class AttachmentImportExport {
         }
       }
     }
-    return attachments;
+    return createdDocuments;
   }
 
   /**

@@ -70,6 +70,7 @@ public final class AttachmentDetail implements Serializable {
   private String xmlForm = null;
   @XmlElement(name = "xmlModel")
   private XMLModelContentType xmlModelContentType = null;
+  private String mailContentID = null;
 
   public AttachmentDetail() {
   }
@@ -244,5 +245,13 @@ public final class AttachmentDetail implements Serializable {
 
   public String getOriginalPath() {
     return originalPath;
+  }
+
+  public String getMailContentID() {
+    return mailContentID;
+  }
+
+  public void setMailContentID(final String mailContentID) {
+    this.mailContentID = mailContentID;
   }
 }
