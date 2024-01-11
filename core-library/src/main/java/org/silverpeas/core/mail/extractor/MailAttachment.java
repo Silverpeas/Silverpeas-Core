@@ -28,6 +28,7 @@ public class MailAttachment {
   private String name;
   private String path;
   private long size;
+  private String contentID;
 
   public MailAttachment(String name) {
     this.name = name;
@@ -57,4 +58,11 @@ public class MailAttachment {
     return size;
   }
 
+  public String getContentID() {
+    return contentID;
+  }
+
+  public void setContentID(final String contentID) {
+    this.contentID = contentID;
+  }
 }

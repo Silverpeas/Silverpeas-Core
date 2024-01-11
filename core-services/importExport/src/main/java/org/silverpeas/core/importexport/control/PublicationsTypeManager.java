@@ -70,6 +70,7 @@ import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
@@ -747,29 +748,28 @@ public class PublicationsTypeManager {
                   }
                 }
 
-                List<AttachmentDetail> copiedAttachments;
+                final List<Pair<AttachmentDetail, SimpleDocument>> importedDocuments;
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
-                  copiedAttachments = attachmentsSizeOk;
-                  versioningIE.importDocuments(pubDetail.getId(), componentId, attachmentsSizeOk,
-                      pubDetail.isIndexable());
+                  importedDocuments = versioningIE.importDocuments(pubDetail.getId(), componentId,
+                      attachmentsSizeOk, pubDetail.isIndexable());
                 } else {
                   // Ajout des attachments
-                  copiedAttachments = attachmentIE
+                  importedDocuments = attachmentIE
                       .importAttachments(pubDetail.getId(), componentId, attachmentsSizeOk,
                           pubDetail.isIndexable());
-                  if (copiedAttachments.size() != attachmentsSizeOk.size()) {
-                    unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-                  }
+                }
+                if (importedDocuments.size() != attachmentsSizeOk.size()) {
+                  unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
                 }
                 reportManager.
-                    addNumberOfFilesProcessed(copiedAttachments.size());
+                    addNumberOfFilesProcessed(importedDocuments.size());
                 reportManager
-                    .addNumberOfFilesNotImported(attachments.size() - copiedAttachments.size());
+                    .addNumberOfFilesNotImported(attachments.size() - importedDocuments.size());
 
                 // On additionne la taille des fichiers importés au niveau du rapport
-                for (AttachmentDetail attdetail : copiedAttachments) {
-                  reportManager.addImportedFileSize(attdetail.getSize(), componentId);
-                }
+                importedDocuments.stream()
+                    .map(Pair::getFirst)
+                    .forEach(d -> reportManager.addImportedFileSize(d.getSize(), componentId));
               }
               if (CollectionUtil.isNotEmpty(documents)) {
                 // Get number of versions
