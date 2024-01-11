@@ -145,7 +145,8 @@
                     if (totalpages > settings.length) {
                         if (currentPage > 0) { btnPrev.css('display', ''); }
                         else { btnPrev.css('display', 'none'); }
-                        if (currentPage > settings.length / 2 - 1) { btnFirst.css('display', ''); }
+                        const offset = (settings.length % 2) !== 0 ? 0 : 1;
+                        if (currentPage > settings.length / 2 - offset) { btnFirst.css('display', ''); }
                         else { btnFirst.css('display', 'none'); }
 
                         if (currentPage == totalpages - 1) { btnNext.css('display', 'none'); }

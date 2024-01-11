@@ -56,6 +56,7 @@
   const USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE = UserGroupListSettings.get("u.m.n.u.r.l.v");
   const DOMAIN_RESTRICTION = UserGroupListSettings.get("d.r");
   const NB_DOMAINS = UserGroupListSettings.get("d.nb");
+  const INPUT_QUERY_MIN_CHARS = UserGroupListSettings.get("i.q.m.c");
 
   const USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_MESSAGE = sp.i18n.get("n.m.r.l.m.w");
   const LABEL_GROUPS = sp.i18n.get("GML.group_s");
@@ -628,7 +629,7 @@
         this.context.searchInput.processQuery = function(value, callback) {
           let __value = (value || "").toLowerCase();
           __value = __value.trim();
-          if (__value && __value.length > 2) {
+          if (__value && __value.length >= INPUT_QUERY_MIN_CHARS) {
             if (!__queryRunning) {
               __performSearch(__value, callback);
             } else {

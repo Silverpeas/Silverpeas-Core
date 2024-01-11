@@ -47,7 +47,9 @@ public abstract class AbstractPagination implements Pagination {
   private String altPreviousPage = "";
   private String altNextPage = "";
   private String baseURL = null;
-  private int nbPagesAround = -1;
+  private int nbPageThreshold = -1;
+  private int nbPagesOnLeft = -1;
+  private int nbPagesOnRight = -1;
   private LocalizationBundle multilang;
 
   protected AbstractPagination() {
@@ -200,12 +202,32 @@ public abstract class AbstractPagination implements Pagination {
     this.altNextPage = text;
   }
 
-  protected int getNumberOfPagesAround() {
-    if (nbPagesAround == -1) {
-      nbPagesAround =
-          Integer.parseInt(getSettings().getString("Pagination.NumberOfPagesAround", "3"));
+  protected int getNumberPageThreshold() {
+    if (nbPageThreshold == -1) {
+      nbPageThreshold =
+          Integer.parseInt(getSettings().getString("Pagination.NbPageThreshold", "6"));
+      nbPagesOnRight = nbPageThreshold / 2;
     }
-    return nbPagesAround;
+    return nbPageThreshold;
+  }
+
+  protected int getNumberPageOnCurrentLeft(int currentPage) {
+    if (nbPagesOnLeft == -1) {
+      final int threshold = getNumberPageThreshold();
+      nbPagesOnLeft = threshold / 2;
+      nbPagesOnLeft = (threshold % 2) == 0 ? nbPagesOnLeft - 1 : nbPagesOnLeft;
+    }
+    int offset = getNbPage() - currentPage;
+    offset = offset < nbPagesOnRight ? nbPagesOnRight - offset : 0;
+    return nbPagesOnLeft + offset;
+  }
+
+  protected int getNumberPageOnCurrentRight(int currentPage) {
+    if (nbPagesOnRight == -1) {
+      nbPagesOnRight = getNumberPageThreshold() / 2;
+    }
+    final int offset = currentPage <= nbPagesOnLeft ? Math.abs(currentPage - nbPagesOnLeft - 1) : 0;
+    return nbPagesOnRight + offset;
   }
 
   protected boolean displayTotalNumberOfPages() {
