@@ -76,7 +76,7 @@ public class BeanTranslation implements ResourceTranslation, Serializable {
   }
 
   public final void setId(String id) {
-    this.id = id;
+    this.id = id != null ? id : "-1";
   }
 
   public final String getLanguage() {
