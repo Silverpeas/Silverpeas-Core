@@ -40,6 +40,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 
@@ -139,14 +140,23 @@ public class JDBCCommentDAO implements CommentDAO {
   @Override
   public int getCommentsCountByForeignKey(final String resourceType,
       final ResourceReference resourceRef) {
-    int publicationCommentsCount = 0;
     try (Connection con = openConnection()) {
-      JDBCCommentRequester requester = getRequester();
-      publicationCommentsCount = requester.getCommentsCount(con, resourceType, resourceRef);
+      final JDBCCommentRequester requester = getRequester();
+      return requester.getCommentsCount(con, resourceType, resourceRef);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
-    return publicationCommentsCount;
+  }
+
+  @Override
+  public Map<ResourceReference, Integer> getCommentCountIndexedByResource(
+      final String resourceType, final String instanceId) {
+    try (Connection con = openConnection()) {
+      final JDBCCommentRequester requester = getRequester();
+      return requester.getCommentCountIndexedByResource(con, resourceType, instanceId);
+    } catch (Exception e) {
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
+    }
   }
 
   @Override
