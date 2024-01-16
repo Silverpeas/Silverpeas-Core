@@ -48,6 +48,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A service that provide the features to handle the comments in Silverpeas. Such features are, for
@@ -177,6 +178,12 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   @Override
   public int getCommentsCountOnResource(final String resourceType, final ResourceReference ref) {
     return getCommentDAO().getCommentsCountByForeignKey(resourceType, ref);
+  }
+
+  @Override
+  public Map<ResourceReference, Integer> getCommentCountIndexedByResource(
+      final String resourceType, final String instanceId) {
+    return getCommentDAO().getCommentCountIndexedByResource(resourceType, instanceId);
   }
 
   @Override

@@ -28,10 +28,11 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Data Access Object that provides an access to Comment objects persisted within a data source.
@@ -91,10 +92,21 @@ public interface CommentDAO {
    * specified foreign key.
    *
    * @param resourceType type of the commented publication.
-   * @param resourceRef  the foreign key refering the publication.
+   * @param resourceRef  the foreign key referring the publication.
    * @return the number of the publication comments.
    */
   int getCommentsCountByForeignKey(final String resourceType, final ResourceReference resourceRef);
+
+  /**
+   * Gets the number of comments by resources of resource type and hosted by the specified
+   * component instance.
+   *
+   * @param resourceType type of the commented publication.
+   * @param instanceId identifier of aimed component instance.
+   * @return a map containing the number of comments by resources.
+   */
+  Map<ResourceReference, Integer> getCommentCountIndexedByResource(final String resourceType,
+      final String instanceId);
 
   /**
    * Among all the publications identified by the resource type and the specified primary keys, gets

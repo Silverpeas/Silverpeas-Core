@@ -34,6 +34,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: ehugonnet Date: 21/03/11 Time: 09:54
@@ -196,6 +197,17 @@ public interface CommentService {
    * @return the number of comments on the resource.
    */
   int getCommentsCountOnResource(final String resourceType, ResourceReference resourceRef);
+
+  /**
+   * Gets the number of comments by resources of resource type and hosted by the specified
+   * component instance.
+   *
+   * @param resourceType type of the commented publication.
+   * @param instanceId identifier of aimed component instance.
+   * @return a map containing the number of comments by resources.
+   */
+  Map<ResourceReference, Integer> getCommentCountIndexedByResource(final String resourceType,
+      final String instanceId);
 
   /**
    * Indexes all the comments on the resource identified by the resource type and the specified
