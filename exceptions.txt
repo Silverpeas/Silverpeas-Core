@@ -81,9 +81,9 @@ Zope Public License 2.0
     Due to the many variants of some of the above licenses, we
     require that any version follow the 2003 version of the Free
     Software Foundation's Free Software Definition
-    (http://www.gnu.org/philosophy/free-sw.html) or version 1.9 of
+    (https://www.gnu.org/philosophy/free-sw.html) or version 1.9 of
     the Open Source Definition by the Open Source Initiative
-    (http://www.opensource.org/docs/definition.php).
+    (https://www.opensource.org/docs/definition.php).
 
  3. Definitions
 
