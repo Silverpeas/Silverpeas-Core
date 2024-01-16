@@ -34,6 +34,7 @@ import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -46,7 +47,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -276,6 +279,32 @@ public class JDBCCommentRequester {
     }
 
     return commentsCount;
+  }
+
+  public Map<ResourceReference, Integer> getCommentCountIndexedByResource(Connection con,
+      String resourceType, String instanceId) throws SQLException {
+    final List<Object> params = new ArrayList<>();
+    final StringBuilder selectQuery = new StringBuilder(
+        "SELECT resourceId, COUNT(commentId) AS nb_comment FROM sb_comment_comment");
+    performQueryAndParams(selectQuery, params, resourceType,
+        new ResourceReference(null, instanceId));
+    selectQuery.append(" GROUP BY resourceId");
+    final List<Pair<ResourceReference, Integer>> results = new LinkedList<>();
+    try (final PreparedStatement prepStmt = con.prepareStatement(selectQuery.toString())) {
+      int indexParam = 1;
+      for (Object param : params) {
+        prepStmt.setString(indexParam++, (String) param);
+      }
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          results.add(Pair.of(new ResourceReference(rs.getString(RESOURCE_ID), instanceId),
+              rs.getInt(COMMENT_COUNT)));
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+    return results.stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
   }
 
   public List<Comment> getAllComments(Connection con, String resourceType,
