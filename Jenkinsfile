@@ -54,7 +54,8 @@ pipeline {
                   -Dsonar.pullrequest.base=master \\
                   -Dsonar.pullrequest.provider=github \\
                   -Dsonar.host.url=${SONAR_HOST_URL} \\
-                  -Dsonar.login=${SONAR_AUTH_TOKEN}
+                  -Dsonar.login=${SONAR_AUTH_TOKEN} \\
+                  -Dsonar.scanner.force-deprecated-java-version=true
                 """
           }
           timeout(time: 30, unit: 'MINUTES') {
