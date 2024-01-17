@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
-    Copyright (C) 2000 - 2022 Silverpeas
+    Copyright (C) 2000 - 2024 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
 <!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Nicolas EYSSERIC (Silverpeas) -->
@@ -48,7 +48,7 @@
 				</xsd:element>
 				<xsd:element name="pdc" type="sp:PlanDeClassementType" minOccurs="0">
 					<xsd:annotation>
-						<xsd:documentation>le Plan de Classement est associÃ© aux publications dans le fichier d'Ã©change</xsd:documentation>
+						<xsd:documentation>le Plan de Classement est associé aux publications dans le fichier d'échange</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element name="topicTrees" minOccurs="0">
@@ -106,7 +106,7 @@
 		<xsd:sequence>
 			<xsd:element name="publicationHeader" type="sp:PublicationHeaderType" minOccurs="0">
 				<xsd:annotation>
-					<xsd:documentation>le Header de la publication est optionnel. Si homis alors les rÃ¨gles de gestion font l'importation par dÃ©faut</xsd:documentation>
+					<xsd:documentation>le Header de la publication est optionnel. Si homis alors les règles de gestion font l'importation par défaut</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="publicationContent" type="sp:PublicationContentType" minOccurs="0"/>
@@ -409,7 +409,7 @@
 	<!-- FIN Import Kmax -->
 	<xsd:simpleType name="MassiveImportType">
 		<xsd:annotation>
-			<xsd:documentation>type possible pour l'importation massive (0 : non rÃ©cursif, 1 : rÃ©cursif sans rÃ©plication de l__arborescence de rÃ©pertoire ou 2 : rÃ©cursif avec rÃ©plication)</xsd:documentation>
+			<xsd:documentation>type possible pour l'importation massive (0 : non récursif, 1 : récursif sans réplication de l__arborescence de répertoire ou 2 : récursif avec réplication)</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="NO_RECURSIVE"/>

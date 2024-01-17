@@ -1,7 +1,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
-    Copyright (C) 2000 - 2022 Silverpeas
+    Copyright (C) 2000 - 2024 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
 <% if (shownInNewWindow) {
