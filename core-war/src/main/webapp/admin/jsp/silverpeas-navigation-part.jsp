@@ -240,7 +240,7 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
       </form>
     </div>
         <div id="bodyRecherche">
-            <a href="javascript:advancedSearchEngine()"><fmt:message key="lookSilverpeasV5.AdvancedSearch" /></a> | <a href="javascript:lastResultsSearchEngine()"><fmt:message key="lookSilverpeasV5.LastSearchResults" /></a> | <a href="#" onclick="javascript:SP_openWindow('<%=m_sContext%>/RpdcSearch/jsp/help.jsp', 'Aide', '700', '270','scrollbars=yes, resizable, alwaysRaised');"><fmt:message key="lookSilverpeasV5.Help" /></a>
+            <a href="javascript:advancedSearchEngine()"><fmt:message key="lookSilverpeasV5.AdvancedSearch" /></a> | <a href="javascript:lastResultsSearchEngine()"><fmt:message key="lookSilverpeasV5.LastSearchResults" /></a> | <a href="javascript:void(0)" onclick="sp.search.helpOn(this, '#query')"><fmt:message key="lookSilverpeasV5.Help" /></a>
     </div>
     </div>
   <div id="spaceTransverse"></div>
