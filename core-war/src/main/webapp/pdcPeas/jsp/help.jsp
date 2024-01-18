@@ -34,38 +34,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.apache.lucene.queryparser.classic.QueryParser"%>
 <%@ page import="org.silverpeas.core.index.search.model.IndexSearcher"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
-
-Window 		window 		= gef.getWindow();
-BrowseBar 	browseBar 	= window.getBrowseBar();
-Frame 		frame 		= gef.getFrame();
-Board		board		= gef.getBoard();
 
 QueryParser.Operator defaultOperand = IndexSearcher.get().getDefaultOperator();
 
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
-</head>
-<body>
-<view:browseBar path='<%=resource.getString("pdcPeas.SearchEngine") + " > " + resource.getString("pdcPeas.AideContent") %>'/>
-<view:window popup="true">
-<view:board>
 		<table border="0" width="100%"><tr><td valign="top" width="30%">
 		<%=resource.getString("pdcPeas.helpCol1Header")%><br/><br/>
 		<%=resource.getString("pdcPeas.helpCol1Content1")%><br/>
@@ -90,7 +69,3 @@ QueryParser.Operator defaultOperand = IndexSearcher.get().getDefaultOperator();
 		<%=resource.getString("pdcPeas.helpCol3Content4")%><br/>
 		</td>
 		</tr></table>
-</view:board>
-</view:window>
-</body>
-</html>
