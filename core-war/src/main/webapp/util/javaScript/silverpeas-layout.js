@@ -226,6 +226,7 @@
     },
     addEventListener : function(eventName, listener, listenerId) {
       switch (eventName) {
+        case 'click':
         case 'blur':
         case 'focus':
           const normalizedEventName = this.normalizeEventName(eventName);
@@ -317,6 +318,9 @@
                 }.bind(this));
                 contentWindow.addEventListener('focus', function() {
                   this.dispatchEvent("focus");
+                }.bind(this));
+                contentWindow.addEventListener('click', function() {
+                  this.dispatchEvent("click");
                 }.bind(this));
               } catch (e) {
                 sp.log.error(e);

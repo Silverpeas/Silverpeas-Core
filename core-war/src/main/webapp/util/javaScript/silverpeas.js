@@ -2895,6 +2895,42 @@ if (typeof window.sp === 'undefined') {
       }
     },
     search : {
+      /**
+       * Must be called from an event of an HTML element.
+       * @param elt HTML element instance from which the method is called.
+       * @param cssSelectorOrElement the css selector or the vanilla instance of query search input.
+       * @returns {Promise<qTip API instance>}
+       */
+      helpOn : function(elt, cssSelectorOrElement) {
+        const promises = [];
+        const $help = typeof cssSelectorOrElement === 'string'
+            ? document.querySelector(cssSelectorOrElement)
+            : cssSelectorOrElement;
+        let spSearchHelpApi = $help.spSearchHelpApi;
+        if (!spSearchHelpApi) {
+          promises.push(sp.ajaxRequest(webContext + '/RpdcSearch/jsp/help.jsp').send().then(
+              function(response) {
+                spSearchHelpApi = TipManager.simpleHelp($help, response.response);
+                spSearchHelpApi.set('style.classes', spSearchHelpApi.get('style.classes') + ' search-query-help-qtip');
+                spSearchHelpApi.set('show.event', false);
+                spSearchHelpApi.set('hide.event', 'unfocus');
+                spLayout.getBody().addEventListener('click', function() {
+                  spSearchHelpApi.hide();
+                }, '__sp_search_help');
+                const muteEvent = function(e) {
+                  e.stopPropagation();
+                  e.preventDefault();
+                };
+                jQuery(elt).bind('mousedown', muteEvent);
+                jQuery(elt).bind('mouseup', muteEvent);
+                $help.spSearchHelpApi = spSearchHelpApi;
+              }));
+        }
+        return sp.promise.whenAllResolved(promises).then(function() {
+          spSearchHelpApi.toggle();
+          return spSearchHelpApi;
+        });
+      },
       on : function(queryDescription) {
         if (typeof queryDescription === 'string') {
           queryDescription = {query : queryDescription};

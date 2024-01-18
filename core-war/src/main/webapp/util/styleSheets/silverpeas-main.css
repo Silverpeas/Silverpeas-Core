@@ -957,6 +957,10 @@ Style Utilise par le ViewGenerator
   color: #666;
 }
 
+.qtip.search-query-help-qtip {
+  max-width: none;
+}
+
 #domainsBar #tabDivId {
   margin:0;
   padding:0;
