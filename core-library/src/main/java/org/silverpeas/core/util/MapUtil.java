@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.util;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,8 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
+ * Utility methods on {@link Map}s.
  * @author Yohann Chastagnier
  */
 public class MapUtil {
@@ -43,44 +44,23 @@ public class MapUtil {
 
   }
 
-  /**
-   * Centralizes the map adding that containing collections
-   *
-   * @param <K>
-   * @param <V>
-   * @param map
-   * @param key
-   * @param values
-   * @return
-   */
-  public static <K, V> Collection<V> putAddAll(final Class<? extends Collection> collectionClass,
+  public static <K, V> Collection<V> putAddAll(final Supplier<? extends Collection<V>> factory,
       Map<K, Collection<V>> map, final K key, final Collection<V> values) {
     Collection<V> result = null;
 
     if (values != null && !values.isEmpty()) {
       for (V value : values) {
-        result = putAdd(collectionClass, map, key, value);
+        result = putAdd(factory, map, key, value);
       }
     } else {
-      result = putAdd(collectionClass, map, key, null);
+      result = putAdd(factory, map, key, null);
     }
 
     // map result (never null)
     return result;
   }
 
-  /**
-   * Centralizes the map adding that containing collections
-   *
-   * @param <K>
-   * @param <V>
-   * @param map
-   * @param key
-   * @param value
-   * @return
-   */
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public static <K, V> Collection<V> putAdd(final Class<? extends Collection> collectionClass,
+  public static <K, V> Collection<V> putAdd(final Supplier<? extends Collection<V>> factory,
       Map<K, Collection<V>> map, final K key, final V value) {
 
     if (map == null) {
@@ -88,16 +68,7 @@ public class MapUtil {
     }
 
     // Old value
-    Collection<V> result = map.get(key);
-    if (result == null) {
-      try {
-        Constructor<? extends Collection> constructor = collectionClass.getDeclaredConstructor();
-        result = constructor.newInstance();
-      } catch (final Exception myException) {
-        throw new IllegalArgumentException(myException);
-      }
-      map.put(key, result);
-    }
+    Collection<V> result = map.computeIfAbsent(key, k -> factory.get());
 
     // adding the value
     result.add(value);
@@ -106,100 +77,41 @@ public class MapUtil {
     return result;
   }
 
-  /**
-   * Centralizes the map adding that containing list collections
-   *
-   * @param <K>
-   * @param <V>
-   * @param map
-   * @param key
-   * @param values
-   * @return
-   */
   public static <K, V> List<V> putAddAllList(Map<K, List<V>> map, final K key,
       final Collection<V> values) {
-    return putAddAllList(ArrayList.class, map, key, values);
+    return putAddAllList(ArrayList::new, map, key, values);
   }
 
-  /**
-   * Centralizes the map adding that containing list collections
-   * @param <K>
-   * @param <V>
-   * @param map
-   * @param key
-   * @param value
-   * @return
-   */
   public static <K, V> List<V> putAddList(Map<K, List<V>> map, final K key, final V value) {
-    return putAddList(ArrayList.class, map, key, value);
+    return putAddList(ArrayList::new, map, key, value);
   }
 
-  /**
-   * Centralizes the map adding that containing list collections
-   * @param <K>
-   * @param <V>
-   * @param map
-   * @param key
-   * @param values
-   * @return
-   */
   public static <K, V> Set<V> putAddAllSet(Map<K, Set<V>> map, final K key,
       final Collection<V> values) {
-    return putAddAllSet(HashSet.class, map, key, values);
+    return putAddAllSet(HashSet::new, map, key, values);
   }
 
-  /**
-   * Centralizes the map adding that containing set collections
-   * @param <K>
-   * @param <V>
-   * @param map
-   * @param key
-   * @param value
-   * @return
-   */
   public static <K, V> Set<V> putAddSet(Map<K, Set<V>> map, final K key, final V value) {
-    return putAddSet(HashSet.class, map, key, value);
+    return putAddSet(HashSet::new, map, key, value);
   }
 
-  /**
-   * Centralizes the map adding that containing list collections
-   * @param <K>
-   * @param <V>
-   * @param listClass
-   * @param map
-   * @param key
-   * @param values
-   * @return
-   */
-  public static <K, V> List<V> putAddAllList(final Class<? extends List> listClass,
+  public static <K, V> List<V> putAddAllList(final Supplier<? extends List<V>> factory,
       Map<K, List<V>> map, final K key, final Collection<V> values) {
     List<V> result = null;
 
     if (values != null && !values.isEmpty()) {
       for (V value : values) {
-        result = putAddList(listClass, map, key, value);
+        result = putAddList(factory, map, key, value);
       }
     } else {
-      result = putAddList(listClass, map, key, null);
+      result = putAddList(factory, map, key, null);
     }
 
     // map result (never null)
     return result;
   }
 
-  /**
-   * Centralizes the map adding that containing list collections
-   *
-   * @param <K>
-   * @param <V>
-   *   @param listClass
-   * @param map
-   * @param key
-   * @param value
-   * @return
-   */
-  @SuppressWarnings("unchecked")
-  public static <K, V> List<V> putAddList(final Class<? extends List> listClass,
+  public static <K, V> List<V> putAddList(final Supplier<? extends List<V>> factory,
       Map<K, List<V>> map, final K key, final V value) {
 
     if (map == null) {
@@ -207,16 +119,7 @@ public class MapUtil {
     }
 
     // Old value
-    List<V> result = map.get(key);
-    if (result == null) {
-      try {
-        Constructor<? extends List> constructor = listClass.getDeclaredConstructor();
-        result = constructor.newInstance();
-      } catch (final Exception myException) {
-        throw new IllegalArgumentException(myException);
-      }
-      map.put(key, result);
-    }
+    List<V> result = map.computeIfAbsent(key, k -> factory.get());
 
     // adding the value
     result.add(value);
@@ -225,45 +128,25 @@ public class MapUtil {
     return result;
   }
 
-  /**
-   * Centralizes the map adding that containing list collections
-   * @param <K>
-   * @param <V>
-   * @param setClass
-   * @param map
-   * @param key
-   * @param values
-   * @return
-   */
-  public static <K, V> Set<V> putAddAllSet(final Class<? extends Set> setClass, Map<K, Set<V>> map,
+  public static <K, V> Set<V> putAddAllSet(final Supplier<? extends Set<V>> factory,
+      Map<K, Set<V>> map,
       final K key, final Collection<V> values) {
     Set<V> result = null;
 
     if (values != null && !values.isEmpty()) {
       for (V value : values) {
-        result = putAddSet(setClass, map, key, value);
+        result = putAddSet(factory, map, key, value);
       }
     } else {
-      result = putAddSet(setClass, map, key, null);
+      result = putAddSet(factory, map, key, null);
     }
 
     // map result (never null)
     return result;
   }
 
-  /**
-   * Centralizes the map adding that containing set collections
-   *
-   * @param <K>
-   * @param <V>
-   * @param setClass
-   * @param map
-   * @param key
-   * @param value
-   * @return
-   */
-  @SuppressWarnings("unchecked")
-  public static <K, V> Set<V> putAddSet(final Class<? extends Set> setClass, Map<K, Set<V>> map,
+  public static <K, V> Set<V> putAddSet(final Supplier<? extends Set<V>> factory,
+      Map<K, Set<V>> map,
       final K key, final V value) {
 
     if (map == null) {
@@ -271,16 +154,7 @@ public class MapUtil {
     }
 
     // Old value
-    Set<V> result = map.get(key);
-    if (result == null) {
-      try {
-        Constructor<? extends Set> constructor = setClass.getDeclaredConstructor();
-        result = constructor.newInstance();
-      } catch (final Exception myException) {
-        throw new IllegalArgumentException(myException);
-      }
-      map.put(key, result);
-    }
+    Set<V> result = map.computeIfAbsent(key, k -> factory.get());
 
     // adding the value
     result.add(value);
@@ -289,16 +163,6 @@ public class MapUtil {
     return result;
   }
 
-  /**
-   * Centralizes the map removing that containing list collections
-   *
-   * @param <K>
-   * @param <V>
-   * @param map
-   * @param key
-   * @param value
-   * @return
-   */
   public static <K, V> List<V> removeValueList(final Map<K, List<V>> map, final K key, final V value) {
     List<V> result = null;
     if (map != null) {
@@ -313,16 +177,6 @@ public class MapUtil {
     return result;
   }
 
-  /**
-   * Centralizes the map removing that containing set collections
-   *
-   * @param <K>
-   * @param <V>
-   * @param map
-   * @param key
-   * @param value
-   * @return
-   */
   public static <K, V> Set<V> removeValueSet(final Map<K, Set<V>> map,
       final K key, final V value) {
 
