@@ -72,12 +72,12 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
   }
 
   /**
-   * This method must fill user roles into the given container by taking in account the other
+   * This method must fill user roles into the given container by taking into account the other
    * parameters.
-   * @param userRoles
-   * @param context
-   * @param userId
-   * @param object
+   * @param userRoles the container to fill.
+   * @param context the context of the access to resource
+   * @param userId the unique identifier of the user accessing the resource.
+   * @param object the resource accessed by the user.
    */
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, T object) {
@@ -87,9 +87,9 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
 
   /**
    * Build a unique key for user role cache.
-   * @param userId
-   * @param object
-   * @return
+   * @param userId the unique identifier of a user
+   * @param object the object accessed by the user
+   * @return the cache key.
    */
   private String buildUserRoleCacheKey(AccessControlContext context, String userId, T object) {
     StringBuilder cacheKey = new StringBuilder(getClass().getName()).append("@#@");

@@ -50,11 +50,11 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
 public class SimpleDocumentAccessController extends AbstractAccessController<SimpleDocument>
     implements SimpleDocumentAccessControl {
 
-  private ComponentAccessControl componentAccessController;
+  private final ComponentAccessControl componentAccessController;
 
-  private NodeAccessControl nodeAccessController;
+  private final NodeAccessControl nodeAccessController;
 
-  private PublicationAccessControl publicationAccessController;
+  private final PublicationAccessControl publicationAccessController;
 
   @Inject
   SimpleDocumentAccessController(final ComponentAccessControl componentAccessController,
@@ -120,15 +120,6 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     return componentAccessAuthorized && isUserAuthorizedByContext(false, userId, object, context, componentUserRoles, userId);
   }
 
-  /**
-   * @param isNodeAttachmentCase
-   * @param userId
-   * @param object
-   * @param context
-   * @param userRoles
-   * @param foreignUserAuthor corresponds to the user id that is the contribution author
-   * @return
-   */
   private boolean isUserAuthorizedByContext(final boolean isNodeAttachmentCase, String userId,
       SimpleDocument object, final AccessControlContext context, Set<SilverpeasRole> userRoles,
       String foreignUserAuthor) {

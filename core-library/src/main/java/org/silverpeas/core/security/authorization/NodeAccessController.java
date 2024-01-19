@@ -67,7 +67,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
 
   private static final String DATA_MANAGER_CONTEXT_KEY = "NodeAccessControllerDataManager";
 
-  private ComponentAccessControl componentAccessController;
+  private final ComponentAccessControl componentAccessController;
 
   @Inject
   NodeAccessController(final ComponentAccessControl componentAccessController) {
@@ -159,7 +159,6 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
           }
         } catch (Exception e) {
           SilverLogger.getLogger(this).warn(e);
-          authorized = false;
         }
       }
     }
@@ -221,8 +220,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   static class DataManager {
 
     private final AccessControlContext context;
-    private OrganizationController controller;
-    private NodeService nodeService;
+    private final OrganizationController controller;
+    private final NodeService nodeService;
     Map<String, NodeDetail> nodeDetailCache = null;
     Map<Pair<String, String>, Set<String>> userProfiles = null;
 
@@ -267,8 +266,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
       } else {
         final Pair<Map<String, NodeDetail>, Map<Pair<String, String>, Set<String>>> caches =
             loadNodesAndUserProfiles(userId, instanceIdsWithRightsOnTopic);
-        caches.getFirst().forEach((k, v) -> nodeDetailCache.put(k, v));
-        caches.getSecond().forEach((k, v) -> userProfiles.put(k, v));
+        nodeDetailCache.putAll(caches.getFirst());
+        userProfiles.putAll(caches.getSecond());
       }
     }
 

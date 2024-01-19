@@ -33,11 +33,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.MemoizedBooleanSupplier;
-import org.silverpeas.core.util.MemoizedSupplier;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -59,7 +55,6 @@ import java.util.stream.Stream;
 import static java.util.Collections.*;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static org.apache.commons.collections.MapUtils.isNotEmpty;
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.*;
 
@@ -74,9 +69,9 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
   private static final String DATA_MANAGER_CONTEXT_KEY = "PublicationAccessControllerDataManager";
 
-  private ComponentAccessControl componentAccessController;
+  private final ComponentAccessControl componentAccessController;
 
-  private NodeAccessControl nodeAccessController;
+  private final NodeAccessControl nodeAccessController;
 
   @Inject
   PublicationAccessController(final ComponentAccessControl componentAccessController,
@@ -171,8 +166,10 @@ public class PublicationAccessController extends AbstractAccessController<Public
       authorized.set(noSpecificRightsAndCanPutInTrash || specificRightsAndAdminOrAuthorNotUser);
     } else {
       // Verifying simple access
-      authorized.filter(a -> a && publicationDetail != null && !canPublicationBePersistedOrDeleted.getAsBoolean())
-                .ifPresent(a -> authorized.set(publicationDetail.isValid() && publicationDetail.isVisible()));
+      authorized.filter(a -> a
+              && publicationDetail != null
+              && !canPublicationBePersistedOrDeleted.getAsBoolean())
+          .ifPresent(a -> authorized.set(publicationDetail.isValid() && publicationDetail.isVisible()));
       // Verifying sharing
       authorized.filter(a -> a && isSharingActionFrom(operations))
                 .ifPresent(a -> {
@@ -349,7 +346,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
   static class DataManager {
     private final AccessControlContext context;
     private final Collection<AccessControlOperation> operations;
-    private PublicationService publicationService;
+    private final PublicationService publicationService;
     private MemoizedSupplier<List<Location>> allLocations = null;
     private MemoizedSupplier<Optional<Location>> lastMainLocation = null;
     private PublicationDetail lastPublicationDetail = null;
@@ -381,9 +378,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
       }
       lotOfDataMode = true;
       loadPublicationCacheByPks(pks);
-      final Collection<PublicationPK> pubRefs = isNotEmpty(publicationCache) ?
-          publicationCache.entrySet().stream()
-              .map(Map.Entry::getValue)
+      final Collection<PublicationPK> pubRefs = MapUtil.isNotEmpty(publicationCache) ?
+          publicationCache.values().stream()
               .filter(not(DataManager::isItAClone))
               .map(PublicationDetail::getPK)
               .collect(Collectors.toList()) :
