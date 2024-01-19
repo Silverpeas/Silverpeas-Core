@@ -97,7 +97,7 @@ public abstract class SimulationElementLister {
   @SuppressWarnings("unchecked")
   protected void addElement(SimulationElement<?> element) {
     if (element != null && element.getElement() != null) {
-      MapUtil.putAddList(LinkedList.class, elements,
+      MapUtil.putAddList(LinkedList::new, elements,
           (Class<SimulationElement<?>>) element.getClass(), element);
     }
   }
