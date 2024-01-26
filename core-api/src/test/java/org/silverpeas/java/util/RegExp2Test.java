@@ -29,7 +29,6 @@ import com.carrotsearch.junitbenchmarks.annotation.BenchmarkMethodChart;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,10 +56,8 @@ public class RegExp2Test {
   @Test
   public void benchFetchNamespaceByStringSplit() {
     String p = NAME;
-    if (p.endsWith(SUFFIX)) {
-      String[] path = p.split(SUFFIX);
-      p = path[0];
-    }
+    String[] path = p.split(SUFFIX);
+    p = path[0];
     assertThat(p, is(EXPECTED_NAME));
   }
 
@@ -77,9 +74,7 @@ public class RegExp2Test {
   @Test
   public void benchFetchNamespaceBySubstring() {
     String p = NAME;
-    if (p.endsWith(SUFFIX)) {
-      p = p.substring(0, p.indexOf(SUFFIX));
-    }
+    p = p.substring(0, p.indexOf(SUFFIX));
     assertThat(p, is(EXPECTED_NAME));
   }
   

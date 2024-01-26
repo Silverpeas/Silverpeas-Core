@@ -29,7 +29,7 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 
 /**
@@ -40,9 +40,8 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
   /**
    * @param searchResult the SearchResultContentVO which encapsulates result data
    * @param componentTemplate the silverpeas template where we set attributes
-   * @return a SilverpeasTemplate with additional common attributes.
    */
-  protected SilverpeasTemplate setCommonAttributes(SearchResultContentVO searchResult,
+  protected void setCommonAttributes(SearchResultContentVO searchResult,
       SilverpeasTemplate componentTemplate) {
 
     GlobalSilverResult silverResult = searchResult.getGsr();
@@ -107,7 +106,6 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
     componentTemplate.setAttribute("exportEnabled", searchResult.getExportEnabled());
     componentTemplate.setAttribute("type", silverResult.getType());
 
-    return componentTemplate;
   }
 
   /**

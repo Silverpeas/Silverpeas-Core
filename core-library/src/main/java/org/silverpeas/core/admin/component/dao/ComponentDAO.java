@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

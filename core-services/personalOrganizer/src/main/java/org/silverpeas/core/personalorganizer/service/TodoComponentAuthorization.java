@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.inject.Inject;
 import java.util.Collection;

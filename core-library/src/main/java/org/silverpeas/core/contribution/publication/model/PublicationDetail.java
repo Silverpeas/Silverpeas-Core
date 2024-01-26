@@ -76,9 +76,9 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.xml.DateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -103,8 +103,8 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.contribution.indicator.NewContributionIndicator.isNewContribution;
 import static org.silverpeas.core.date.TemporalConverter.asDate;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.split;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.split;
 
 /**
  * This object contains the description of a publication
@@ -692,7 +692,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   private FormTemplateService getFormTemplateBm() {
     try {
-      return ServiceProvider.getSingleton(FormTemplateService.class);
+      return ServiceProvider.getService(FormTemplateService.class);
     } catch (Exception e) {
       throw new PublicationRuntimeException(e);
     }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.selection.servlets;
 
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -32,7 +32,7 @@ import org.silverpeas.web.selection.control.SelectionPeasWrapperSessionControlle
 
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * A simple wrapper for the userpanel.

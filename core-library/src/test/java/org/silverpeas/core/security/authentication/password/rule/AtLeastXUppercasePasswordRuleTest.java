@@ -35,11 +35,11 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class AtLeastXUppercasePasswordRuleTest
+class AtLeastXUppercasePasswordRuleTest
     extends AbstractPasswordRuleTest<AtLeastXUppercasePasswordRule> {
 
   @Test
-  public void testCommons() {
+  void testCommons() {
     AtLeastXUppercasePasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_X_UPPERCASE));
     assertThat(rule.check("003123150131;,:!*ù^$=)àç_è-('\"é&@\\~#{}][|`"), is(false));

@@ -8,17 +8,17 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * A wrapper of a {@link org.silverpeas.core.notification.user.UserNotification} object with

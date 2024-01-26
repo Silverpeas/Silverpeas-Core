@@ -29,8 +29,8 @@ import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

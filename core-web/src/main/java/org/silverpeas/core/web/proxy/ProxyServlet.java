@@ -25,10 +25,10 @@ package org.silverpeas.core.web.proxy;
 
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +49,7 @@ import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.MediaType.WILDCARD;
 import static javax.ws.rs.core.UriBuilder.fromUri;
 import static org.silverpeas.core.util.HttpUtil.*;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * This servlet plays the role of a light proxy.

@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.webapi.wbe;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.rs.ProtectedWebResource;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.rs.UserPrivilegeValidation.HTTP_ACCESS_TOKEN;
 import static org.silverpeas.core.web.rs.UserPrivilegeValidation.HTTP_AUTHORIZATION;
 

@@ -24,10 +24,10 @@
 package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.List;
 import java.util.Optional;

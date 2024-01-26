@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Exception that is thrown when a property of a business object isn't found.

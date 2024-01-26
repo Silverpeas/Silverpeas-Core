@@ -28,12 +28,12 @@ package org.silverpeas.core.variables;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.test.extension.EnableSilverTestEnv;
-import org.silverpeas.core.test.extension.RequesterProvider;
-import org.silverpeas.core.test.extension.TestManagedMock;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,20 +48,20 @@ class VariableTest {
   @TestManagedMock
   VariablesRepository variablesRepository;
 
-  @RequesterProvider
-  User getCurrentUser() {
+  @BeforeEach
+  void setUpMocks() {
     User user = mock(User.class);
     when(user.getId()).thenReturn("1");
     when(user.getFirstName()).thenReturn("John");
     when(user.getLastName()).thenReturn("Doo");
-    return user;
-  }
 
-  @BeforeEach
-  void setUpMocks() {
+    UserProvider userProvider = mock(UserProvider.class);
+    when(userProvider.getCurrentRequester()).thenReturn(user);
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(userProvider, UserProvider.class);
+
     Transaction transaction = new Transaction();
-    when(TestBeanContainer.getMockedBeanContainer()
-        .getBeanByType(Transaction.class)).thenReturn(transaction);
+    feeder.manageBean(transaction, Transaction.class);
   }
 
   @Test

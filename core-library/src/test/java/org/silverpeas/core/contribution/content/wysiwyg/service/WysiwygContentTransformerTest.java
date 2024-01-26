@@ -42,12 +42,13 @@ import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.io.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.test.unit.TestBeanContainer;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.SettingBundleStub;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.SettingBundleStub;
 
 import javax.activation.FileDataSource;
 import javax.inject.Singleton;
@@ -58,6 +59,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static java.util.Collections.singletonList;
@@ -66,9 +68,9 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public class WysiwygContentTransformerTest {
 
   private static final String ODT_NAME = "LibreOffice.odt";
@@ -85,6 +87,9 @@ public class WysiwygContentTransformerTest {
 
   @RegisterExtension
   static SettingBundleStub mailSettings = new SettingBundleStub("org.silverpeas.mail.mail");
+
+  @TestManagedMock
+  private AttachmentService attachmentService;
 
   @TestManagedBean
   private MailContentProcess.WysiwygCkeditorMediaLinkUrlToDataSourceScanner ckScanner;
@@ -110,9 +115,9 @@ public class WysiwygContentTransformerTest {
     urlSettings.put("mail.mime.multipart", "relative");
     filesWithResize = new ArrayList<>();
     mailSettings.put("image.resize.min-width", "0");
-    originalOdt = new File(getClass().getResource("/" + ODT_NAME).getPath());
+    originalOdt = new File(Objects.requireNonNull(getClass().getResource("/" + ODT_NAME)).getPath());
     assertThat(originalOdt.exists(), is(true));
-    originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
+    originalImage = new File(Objects.requireNonNull(getClass().getResource("/" + IMAGE_NAME)).getPath());
     assertThat(originalImage.exists(), is(true));
     addFileIntoContextWithWidth(100);
 
@@ -122,18 +127,13 @@ public class WysiwygContentTransformerTest {
     processors.clear();
     SilverpeasFileProvider.addProcessor(new AttachmentUrlLinkProcessor());
 
-    // The mock instance
-    AttachmentService mockAttachmentService = mock(AttachmentService.class);
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(AttachmentService.class))
-        .thenReturn(mockAttachmentService);
-
     /*
     Mocking methods of attachment service instance
      */
 
     // searchDocumentById returns always a simple document which the PK is the one specified
     // from method parameters.
-    when(mockAttachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
+    when(attachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
         .then(invocation -> {
           SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
           SimpleDocument simpleDocument = mock(SimpleDocument.class);
@@ -274,7 +274,7 @@ public class WysiwygContentTransformerTest {
 
   private synchronized static String getContentOfDocumentNamed(final String name) {
     try {
-      return FileUtil.readFileToString(getDocumentNamed(name));
+      return FileUtil.readFileToString(Objects.requireNonNull(getDocumentNamed(name)));
     } catch (IOException e) {
       return null;
     }
@@ -283,7 +283,7 @@ public class WysiwygContentTransformerTest {
   private synchronized static File getDocumentNamed(final String name) {
     final URL documentLocation = WysiwygContentTransformerTest.class.getResource(name);
     try {
-      return new File(documentLocation.toURI());
+      return new File(Objects.requireNonNull(documentLocation).toURI());
     } catch (URISyntaxException e) {
       return null;
     }

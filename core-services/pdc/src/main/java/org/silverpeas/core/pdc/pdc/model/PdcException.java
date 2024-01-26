@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class PdcException extends SilverpeasException implements java.io.Serializable {
 

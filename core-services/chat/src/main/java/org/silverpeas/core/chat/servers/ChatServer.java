@@ -28,7 +28,7 @@ import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * This interface represents a Chat server. An implementation of this interface has to implement the

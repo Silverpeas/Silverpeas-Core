@@ -28,7 +28,7 @@ import org.apache.commons.io.comparator.NameFileComparator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.UtilException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;

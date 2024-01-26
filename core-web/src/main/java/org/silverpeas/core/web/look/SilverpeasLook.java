@@ -30,7 +30,8 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.annotation.Nullable;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
@@ -39,13 +40,10 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * It is a singleton that represents the current look of the running Silverpeas. Its single object
@@ -92,6 +90,7 @@ public class SilverpeasLook {
    * @return the URL of the wallpaper image or null if both no wallpaper is set for the specified
    * space and for any of its parent spaces.
    */
+  @Nullable
   public String getWallpaperOfSpace(String spaceId) {
     return getCachedSpaceReversedPath(spaceId).stream()
         .map(s -> getWallPaperURL(s.getId()))
@@ -171,13 +170,16 @@ public class SilverpeasLook {
 
   @SuppressWarnings("unchecked")
   private List<SpaceInstLight> getCachedSpaceReversedPath(final String spaceId) {
-    return getThreadCacheAccessor().getCache().computeIfAbsent(REVERSED_SPACE_PATH_CACHE_PREFIX + spaceId, List.class, () -> {
+    var spacePath = getThreadCacheAccessor().getCache()
+        .computeIfAbsent(REVERSED_SPACE_PATH_CACHE_PREFIX + spaceId, List.class, () -> {
       final List<SpaceInstLight> path = organizationController.getPathToSpace(spaceId);
       Collections.reverse(path);
       return path;
     });
+    return Objects.requireNonNull(spacePath);
   }
 
+  @SuppressWarnings("unused")
   public String getCSSOfSpaceLook(String spaceId) {
     return Optional.ofNullable(getSpaceLook(spaceId))
         .map(GraphicElementFactory::getCSSOfLook)

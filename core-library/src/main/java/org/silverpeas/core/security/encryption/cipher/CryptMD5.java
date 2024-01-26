@@ -24,7 +24,7 @@
 package org.silverpeas.core.security.encryption.cipher;
 
 import org.apache.commons.codec.binary.Hex;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.File;

@@ -30,7 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.web.test.stub.TestHttpResponse;

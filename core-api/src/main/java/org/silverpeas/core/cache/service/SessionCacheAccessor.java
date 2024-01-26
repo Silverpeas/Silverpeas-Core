@@ -24,7 +24,9 @@
 package org.silverpeas.core.cache.service;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.service.CacheAccessor;
+import org.silverpeas.kernel.cache.service.InMemoryCache;
 
 /**
  * Accessor to a session scoped cache.
@@ -34,7 +36,7 @@ import org.silverpeas.core.cache.model.SimpleCache;
  * a session cache belongs to a given user and should be initialized at the user session opening.
  * @author mmoquillon
  */
-public class SessionCacheAccessor implements CacheAccessor {
+public class SessionCacheAccessor implements CacheAccessor<SimpleCache> {
 
   private static final String CURRENT_REQUESTER_KEY = User.class.getName() + "_CURRENT_REQUESTER";
   private static final String CURRENT_SESSION_KEY = "@SessionCache@";
@@ -98,7 +100,6 @@ public class SessionCacheAccessor implements CacheAccessor {
    * @return the current session cache.
    * @see SessionCacheAccessor#getCurrentSessionCache()
    */
-  @SuppressWarnings("unchecked")
   @Override
   public SimpleCache getCache() {
     return getCurrentSessionCache();

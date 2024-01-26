@@ -24,7 +24,7 @@
 package org.silverpeas.core.security.authentication.verifier;
 
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

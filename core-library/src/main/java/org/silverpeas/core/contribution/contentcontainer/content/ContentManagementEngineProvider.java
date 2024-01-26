@@ -42,6 +42,6 @@ public class ContentManagementEngineProvider {
    * @return a ContentManagementEngine instance (managed by the IoC container).
    */
   public static ContentManagementEngine getContentManagementEngine() {
-    return ServiceProvider.getSingleton(ContentManagementEngine.class);
+    return ServiceProvider.getService(ContentManagementEngine.class);
   }
 }

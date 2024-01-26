@@ -47,7 +47,7 @@ public class MyLinksResourceURIs {
   public static final String MYLINKS_CATEGORY_URI_PART = "categories";
 
   public static MyLinksResourceURIs get() {
-    return ServiceProvider.getSingleton(MyLinksResourceURIs.class);
+    return ServiceProvider.getService(MyLinksResourceURIs.class);
   }
 
   /**

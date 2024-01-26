@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.wbe;
 
-import org.silverpeas.core.NotFoundException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;

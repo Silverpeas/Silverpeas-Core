@@ -51,7 +51,7 @@ public class SubscriptionCategoryWebManager {
       SubscriptionCategoryWebManager.class.getSimpleName() + "#getCategories";
 
   public static SubscriptionCategoryWebManager get() {
-    return ServiceProvider.getSingleton(SubscriptionCategoryWebManager.class);
+    return ServiceProvider.getService(SubscriptionCategoryWebManager.class);
   }
 
   /**

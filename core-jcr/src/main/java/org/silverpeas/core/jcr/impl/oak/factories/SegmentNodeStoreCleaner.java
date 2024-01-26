@@ -35,7 +35,7 @@ import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -48,7 +48,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 import static java.text.MessageFormat.format;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This implementation is in charge of the management of cleaning the segment data which is

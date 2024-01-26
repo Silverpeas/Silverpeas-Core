@@ -36,9 +36,9 @@ import org.silverpeas.core.reminder.DateTimeReminder;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.reminder.ReminderProcessName;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
@@ -72,8 +72,8 @@ import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.get
 import static org.silverpeas.core.reminder.Reminder.getByContributionAndUser;
 import static org.silverpeas.core.reminder.ReminderSettings.getMessagesIn;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.reminder.ReminderEntity.fromReminder;
 import static org.silverpeas.core.webapi.reminder.ReminderResourceURIs.REMINDER_BASE_URI;
 

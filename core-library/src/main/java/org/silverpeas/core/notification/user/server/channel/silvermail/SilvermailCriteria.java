@@ -25,7 +25,7 @@ package org.silverpeas.core.notification.user.server.channel.silvermail;
 
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;

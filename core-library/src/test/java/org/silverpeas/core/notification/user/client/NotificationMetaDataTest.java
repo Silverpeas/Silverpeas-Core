@@ -33,10 +33,11 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +47,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class NotificationMetaDataTest {
 
   private static final String USER_SENDER = "2406";

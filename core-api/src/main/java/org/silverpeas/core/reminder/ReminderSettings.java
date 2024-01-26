@@ -26,9 +26,9 @@ package org.silverpeas.core.reminder;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.Arrays;
 import java.util.stream.Stream;

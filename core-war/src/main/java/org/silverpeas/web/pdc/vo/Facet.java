@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.pdc.vo;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

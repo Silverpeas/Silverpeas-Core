@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.thread.task;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.concurrent.Callable;
 

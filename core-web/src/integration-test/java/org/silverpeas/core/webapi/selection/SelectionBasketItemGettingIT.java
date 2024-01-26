@@ -37,7 +37,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.selection.SelectionBasket;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.web.test.AuthId;
 import org.silverpeas.web.test.ResourceGettingTest;
 

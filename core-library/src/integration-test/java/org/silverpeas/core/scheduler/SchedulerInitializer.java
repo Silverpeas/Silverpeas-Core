@@ -26,7 +26,7 @@ package org.silverpeas.core.scheduler;
 import org.silverpeas.core.scheduler.quartz.PersistentQuartzScheduler;
 import org.silverpeas.core.scheduler.quartz.VolatileQuartScheduler;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Default;

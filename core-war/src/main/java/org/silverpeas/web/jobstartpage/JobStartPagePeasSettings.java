@@ -23,8 +23,8 @@
  */
 package org.silverpeas.web.jobstartpage;
 
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
  * This class manage the informations needed for job start page

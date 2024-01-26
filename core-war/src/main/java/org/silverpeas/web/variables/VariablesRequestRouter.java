@@ -24,7 +24,7 @@
 package org.silverpeas.web.variables;
 
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

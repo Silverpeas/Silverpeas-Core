@@ -30,9 +30,9 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.wbe.WbeHostManager;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
@@ -42,7 +42,7 @@ import java.io.IOException;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.isDisplayableAsContentForComponentInstanceId;
-import static org.silverpeas.core.util.StringUtil.NEWLINE;
+import static org.silverpeas.kernel.util.StringUtil.NEWLINE;
 import static org.silverpeas.core.web.util.viewgenerator.html.TagUtil.formatForDomId;
 
 /**

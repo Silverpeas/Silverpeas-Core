@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.model.LocalizedProfile;
 import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;

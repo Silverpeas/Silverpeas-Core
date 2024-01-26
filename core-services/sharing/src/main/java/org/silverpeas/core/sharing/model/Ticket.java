@@ -29,7 +29,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareableResource;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import javax.persistence.AttributeOverride;

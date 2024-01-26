@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.personalization.servlets;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * The different actions a user can do when parametrizing its notification reception.

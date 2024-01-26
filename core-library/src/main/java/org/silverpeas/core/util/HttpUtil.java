@@ -25,7 +25,8 @@
 package org.silverpeas.core.util;
 
 import com.google.api.client.util.SslUtils;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.util.SystemWrapper;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.net.ssl.SSLContext;
 import java.net.InetSocketAddress;
@@ -77,8 +78,8 @@ public class HttpUtil {
     if (sslContext != null) {
       builder = builder.sslContext(sslContext);
     }
-    final String proxyHost = SystemWrapper.get().getProperty("http.proxyHost");
-    final String proxyPort = SystemWrapper.get().getProperty("http.proxyPort");
+    final String proxyHost = SystemWrapper.getInstance().getProperty("http.proxyHost");
+    final String proxyPort = SystemWrapper.getInstance().getProperty("http.proxyPort");
     if (StringUtil.isDefined(proxyHost) && StringUtil.isInteger(proxyPort)) {
       builder = builder.proxy(ProxySelector.of(new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort))));
     }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.encryption;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;

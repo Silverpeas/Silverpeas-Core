@@ -29,7 +29,8 @@ import com.google.api.services.directory.model.User;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -43,7 +44,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @Disabled
 class GoogleDirectoryRequesterTest {
 

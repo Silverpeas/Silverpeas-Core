@@ -27,8 +27,8 @@ package org.silverpeas.core.webapi.admin.scim;
 import edu.psu.swe.scim.server.exception.UnableToResolveIdException;
 import edu.psu.swe.scim.server.provider.SelfIdResolver;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.security.Principal;
 

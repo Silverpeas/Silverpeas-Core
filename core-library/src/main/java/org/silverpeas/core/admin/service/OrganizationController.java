@@ -31,7 +31,8 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -53,7 +54,7 @@ public interface OrganizationController {
    * @return an {@link OrganizationController} object.
    */
   static OrganizationController get() {
-    return ServiceProvider.getSingleton(OrganizationController.class);
+    return ServiceProvider.getService(OrganizationController.class);
   }
 
   /**
@@ -789,7 +790,8 @@ public interface OrganizationController {
    * @return a list of space instances ordered from the root space to the specified one, each of
    * them representing a node of the path.
    */
-  List<SpaceInstLight> getPathToSpace(String spaceId);
+  @NonNull
+  List<SpaceInstLight> getPathToSpace(@NonNull String spaceId);
 
   /**
    * Gets the path of the specified component instance in the organizational tree of Silverpeas.

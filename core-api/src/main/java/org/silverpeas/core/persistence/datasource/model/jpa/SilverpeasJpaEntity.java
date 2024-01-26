@@ -30,7 +30,7 @@ import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.util.ArgumentAssertion;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;

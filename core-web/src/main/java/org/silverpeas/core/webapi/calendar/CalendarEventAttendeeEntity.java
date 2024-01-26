@@ -32,7 +32,7 @@ import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.calendar.Attendee.PresenceStatus;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;

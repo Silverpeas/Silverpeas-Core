@@ -38,8 +38,8 @@ import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

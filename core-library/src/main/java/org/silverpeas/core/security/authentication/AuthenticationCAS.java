@@ -26,7 +26,7 @@ package org.silverpeas.core.security.authentication;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

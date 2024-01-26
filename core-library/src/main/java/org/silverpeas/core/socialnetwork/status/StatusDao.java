@@ -26,7 +26,7 @@ package org.silverpeas.core.socialnetwork.status;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

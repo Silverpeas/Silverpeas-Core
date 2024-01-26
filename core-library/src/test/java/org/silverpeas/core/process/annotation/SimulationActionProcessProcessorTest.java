@@ -30,15 +30,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.management.ProcessManagement;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ import static org.silverpeas.core.process.annotation.SimulationActionProcessProc
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SimulationActionProcessProcessorTest {
 
   private static final String TARGET_INSTANCE_ID = "kmelia26";

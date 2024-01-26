@@ -27,9 +27,9 @@ package org.silverpeas.core.documenttemplate;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.DeletingPathVisitor;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,8 +49,8 @@ import java.util.stream.Stream;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
-import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralSettingBundle;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 /**
  * This {@link DocumentTemplateRepository} implementation registers the document templates into

@@ -34,7 +34,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface NodeAccessControl extends AccessController<NodePK>{
 
   static NodeAccessControl get() {
-    return ServiceProvider.getSingleton(NodeAccessControl.class);
+    return ServiceProvider.getService(NodeAccessControl.class);
   }
 
   /**

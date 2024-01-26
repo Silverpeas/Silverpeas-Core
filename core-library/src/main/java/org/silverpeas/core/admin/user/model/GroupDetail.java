@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class GroupDetail implements Group {
 

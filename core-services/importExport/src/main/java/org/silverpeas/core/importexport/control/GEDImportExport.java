@@ -69,14 +69,14 @@ import org.silverpeas.core.node.importexport.NodePositionType;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -127,7 +127,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   private FormTemplateService getFormTemplateService() {
     if (formTemplateService == null) {
-      formTemplateService = ServiceProvider.getSingleton(FormTemplateService.class);
+      formTemplateService = ServiceProvider.getService(FormTemplateService.class);
     }
     return formTemplateService;
   }

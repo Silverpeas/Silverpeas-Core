@@ -41,7 +41,7 @@ import static java.text.MessageFormat.format;
 import static java.util.Arrays.stream;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
 import static org.silverpeas.core.webapi.admin.scim.ScimServerFilter
     .PUSH_SILVERPEAS_AUTHORIZED_ADMIN_IDS_PROP_KEY;

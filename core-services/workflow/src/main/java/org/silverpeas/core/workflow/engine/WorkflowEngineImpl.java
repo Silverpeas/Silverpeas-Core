@@ -25,7 +25,7 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;

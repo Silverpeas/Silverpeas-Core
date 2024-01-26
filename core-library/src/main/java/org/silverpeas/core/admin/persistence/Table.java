@@ -63,7 +63,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
 * A Table object manages a table in a database.

@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.List;

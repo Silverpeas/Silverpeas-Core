@@ -24,7 +24,7 @@
 package org.silverpeas.web.token;
 
 import org.silverpeas.core.security.token.Token;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.token.TokenSettingTemplate;
 import org.silverpeas.core.web.token.TokenSettingTemplate.Parameter;

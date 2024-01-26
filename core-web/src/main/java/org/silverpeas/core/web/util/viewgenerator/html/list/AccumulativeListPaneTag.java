@@ -32,7 +32,7 @@ import javax.servlet.jsp.JspException;
 import java.io.Serializable;
 
 import static java.lang.String.format;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.INDEX_PARAMETER_NAME;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.ITEMS_PER_PAGE_PARAM;
 

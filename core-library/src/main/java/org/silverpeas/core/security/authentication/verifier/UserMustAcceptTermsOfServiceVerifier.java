@@ -25,10 +25,10 @@ package org.silverpeas.core.security.authentication.verifier;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.kernel.cache.model.Cache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 

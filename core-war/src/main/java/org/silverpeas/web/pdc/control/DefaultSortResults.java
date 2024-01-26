@@ -29,7 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Named;
 

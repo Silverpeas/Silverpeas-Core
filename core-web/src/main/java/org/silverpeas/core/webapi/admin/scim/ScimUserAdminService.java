@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.*;
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.USER;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
 import static org.silverpeas.core.webapi.admin.scim.SilverpeasScimServerConverter.*;
 

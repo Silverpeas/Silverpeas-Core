@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
 
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 public class TagCloudDAO {
   private static final int INITIAL_CAPACITY = 100;

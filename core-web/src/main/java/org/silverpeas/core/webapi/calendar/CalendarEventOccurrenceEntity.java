@@ -31,7 +31,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.xml.bind.annotation.XmlAccessType;

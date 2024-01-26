@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.core.NotFoundException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.admin.component.model.ComponentInstPath;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;

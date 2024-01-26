@@ -28,8 +28,8 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.runner.Description;
-import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import java.io.InputStream;
 import java.sql.Connection;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.quota.exception;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.quota.model.Quota;
 
 

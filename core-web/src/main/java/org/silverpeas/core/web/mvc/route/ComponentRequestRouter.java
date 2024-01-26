@@ -36,11 +36,11 @@ import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
@@ -68,8 +68,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A request router for a given Silverpeas component instance. The user must be authenticated to
@@ -403,7 +403,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   @SuppressWarnings("UnusedParameters")
   public static String[] getComponentId(HttpServletRequest request,
       MainSessionController mainSessionCtrl) {
-    SilverpeasWebUtil webUtil = ServiceProvider.getSingleton(SilverpeasWebUtil.class);
+    SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
     return webUtil.getComponentId(request);
   }
 

@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="org.silverpeas.core.util.StringUtil"%>
+<%@page import="org.silverpeas.kernel.util.StringUtil"%>
 <%
 	String url = (String) request.getAttribute("urlToReload");
 	String reloadOpener = (String) request.getAttribute("ReloadOpener");

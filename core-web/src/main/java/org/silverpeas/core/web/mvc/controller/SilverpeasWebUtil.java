@@ -35,7 +35,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * @author ehugonnet
@@ -55,7 +55,7 @@ public class SilverpeasWebUtil {
   private OrganizationController organizationController;
 
   public static SilverpeasWebUtil get() {
-    return ServiceProvider.getSingleton(SilverpeasWebUtil.class);
+    return ServiceProvider.getService(SilverpeasWebUtil.class);
   }
 
   protected SilverpeasWebUtil() {

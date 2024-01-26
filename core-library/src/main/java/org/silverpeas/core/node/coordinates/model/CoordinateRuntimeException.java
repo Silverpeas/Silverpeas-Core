@@ -26,7 +26,7 @@
 
 package org.silverpeas.core.node.coordinates.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class CoordinateRuntimeException extends SilverpeasRuntimeException {
 

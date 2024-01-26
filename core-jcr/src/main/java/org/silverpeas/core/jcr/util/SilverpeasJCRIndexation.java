@@ -56,7 +56,7 @@ public interface SilverpeasJCRIndexation {
    * @return the single instance of SilverpeasJCRIndexation.
    */
   static SilverpeasJCRIndexation get() {
-    return ServiceProvider.getSingleton(SilverpeasJCRIndexation.class);
+    return ServiceProvider.getService(SilverpeasJCRIndexation.class);
   }
 
   /**

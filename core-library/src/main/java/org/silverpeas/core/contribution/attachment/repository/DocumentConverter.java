@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -57,7 +57,7 @@ import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfEditableSimultaneously;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 
 /**

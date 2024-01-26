@@ -32,7 +32,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * @author Yohann Chastagnier

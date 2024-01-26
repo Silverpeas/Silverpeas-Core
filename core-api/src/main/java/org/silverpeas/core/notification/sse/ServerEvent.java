@@ -27,8 +27,8 @@ import org.silverpeas.core.admin.user.model.User;
 
 import java.io.IOException;
 
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * An event implying data the server has to push to client without the client requesting

@@ -44,7 +44,7 @@ import java.util.stream.Stream;
 public interface StatisticService {
 
   static StatisticService get() {
-    return ServiceProvider.getSingleton(StatisticService.class);
+    return ServiceProvider.getService(StatisticService.class);
   }
 
   void addStat(String userId, ResourceReference resourceReference, int action, String objectType);

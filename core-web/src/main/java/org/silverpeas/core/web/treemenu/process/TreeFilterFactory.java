@@ -26,9 +26,9 @@ package org.silverpeas.core.web.treemenu.process;
 import org.silverpeas.core.web.treemenu.model.MenuRuntimeException;
 import org.silverpeas.core.web.treemenu.model.TreeFilter;
 import org.silverpeas.core.web.treemenu.model.TreeFilterDefault;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * Allows getting a TreeFilter implementation

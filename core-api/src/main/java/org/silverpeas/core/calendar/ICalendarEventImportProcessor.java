@@ -33,8 +33,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
 import org.silverpeas.core.security.html.HtmlSanitizer;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import java.io.InputStream;

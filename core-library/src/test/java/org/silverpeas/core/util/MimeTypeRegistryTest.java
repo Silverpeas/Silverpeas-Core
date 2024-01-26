@@ -25,8 +25,11 @@
 package org.silverpeas.core.util;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.MimeTypes.MimeTypeRegistry;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
 
 import java.text.MessageFormat;
 import java.util.Set;
@@ -40,7 +43,7 @@ import static org.silverpeas.core.util.MimeTypes.MimeTypeRegistry.ADDITIONAL_PRE
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class MimeTypeRegistryTest {
 
   private static final Pair<String, String> DEFAULT_MIME_TYPE = Pair.of(".def", "default-mime-type");

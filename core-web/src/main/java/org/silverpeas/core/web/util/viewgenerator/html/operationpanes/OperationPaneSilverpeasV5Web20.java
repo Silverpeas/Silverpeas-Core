@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
 import org.apache.ecs.html.LI;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
 

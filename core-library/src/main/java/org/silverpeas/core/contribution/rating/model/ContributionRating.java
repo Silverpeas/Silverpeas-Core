@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.rating.model;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.io.Serializable;

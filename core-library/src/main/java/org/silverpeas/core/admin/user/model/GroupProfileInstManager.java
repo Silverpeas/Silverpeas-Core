@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

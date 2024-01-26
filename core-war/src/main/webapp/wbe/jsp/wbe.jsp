@@ -41,7 +41,7 @@
 
 <c:set var="isEnabled" value="${requestScope['isEnabled']}"/>
 <c:set var="clientAdministrationAccesses" value="${requestScope['clientAdministrationAccesses']}"/>
-<jsp:useBean id="clientAdministrationAccesses" type="java.util.List<org.silverpeas.core.util.Pair<java.lang.String, java.lang.String>>"/>
+<jsp:useBean id="clientAdministrationAccesses" type="java.util.List<org.silverpeas.kernel.util.Pair<java.lang.String, java.lang.String>>"/>
 <c:set var="allUsers" value="${requestScope['AllUsers']}"/>
 <jsp:useBean id="allUsers" type="org.silverpeas.core.util.SilverpeasList<org.silverpeas.core.wbe.WbeUser>"/>
 <c:set var="allFiles" value="${requestScope['AllFiles']}"/>

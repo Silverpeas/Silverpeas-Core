@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Centralization of common behavior around the contribution implementations.

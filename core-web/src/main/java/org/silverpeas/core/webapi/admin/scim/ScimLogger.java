@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * A Silverpeas's logger dedicated to SCIM features.

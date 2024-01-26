@@ -24,8 +24,9 @@
 package org.silverpeas.core.security.authentication.password.rule;
 
 import org.junit.jupiter.api.AfterEach;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
@@ -34,7 +35,7 @@ import java.lang.reflect.ParameterizedType;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public abstract class AbstractPasswordRuleTest<T extends PasswordRule> {
   protected final static int NB_LOOP = 1000;
 
@@ -97,6 +98,7 @@ public abstract class AbstractPasswordRuleTest<T extends PasswordRule> {
 
   private Class<T> getRuleClass() {
     final ParameterizedType paramType = (ParameterizedType) getClass().getGenericSuperclass();
+    //noinspection unchecked
     return (Class<T>) paramType.getActualTypeArguments()[0];
   }
 }

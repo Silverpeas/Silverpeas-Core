@@ -42,10 +42,10 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -81,7 +81,7 @@ public class ComponentInstManager {
   private OrganizationSchema organizationSchema;
 
   public static ComponentInstManager get() {
-    return ServiceProvider.getSingleton(ComponentInstManager.class);
+    return ServiceProvider.getService(ComponentInstManager.class);
   }
 
   protected ComponentInstManager() {

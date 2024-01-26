@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Processes operation on WYSIWYG content and returning a typed result.

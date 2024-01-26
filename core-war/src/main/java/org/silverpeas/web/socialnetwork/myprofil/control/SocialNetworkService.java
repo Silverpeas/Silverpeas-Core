@@ -31,7 +31,7 @@ import org.silverpeas.core.socialnetwork.status.Status;
 import org.silverpeas.core.socialnetwork.status.StatusService;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;

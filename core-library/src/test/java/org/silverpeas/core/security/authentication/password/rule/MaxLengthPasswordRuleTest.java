@@ -34,10 +34,10 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class MaxLengthPasswordRuleTest extends AbstractPasswordRuleTest<MaxLengthPasswordRule> {
+class MaxLengthPasswordRuleTest extends AbstractPasswordRuleTest<MaxLengthPasswordRule> {
 
   @Test
-  public void testCommons() {
+  void testCommons() {
     MaxLengthPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getType(), is(PasswordRuleType.MAX_LENGTH));
     assertThat(rule.random(), is(""));
@@ -56,12 +56,12 @@ public class MaxLengthPasswordRuleTest extends AbstractPasswordRuleTest<MaxLengt
     assertThat(rule.check("123456789012345678901"), is(false));
   }
 
-  @Disabled
+  @Disabled("Doesn't apply in this test class")
   @Override
   public void testDefinedMoreThanOnePropertyValues() {
   }
 
-  @Disabled
+  @Disabled("Doesn't apply in this test class")
   @Override
   public void testCombinationDefinedMoreThanOnePropertyValues() {
   }

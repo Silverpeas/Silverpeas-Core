@@ -25,8 +25,8 @@ package org.silverpeas.core.notification.sse;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;

@@ -39,7 +39,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * User notification from "My Diary" application.

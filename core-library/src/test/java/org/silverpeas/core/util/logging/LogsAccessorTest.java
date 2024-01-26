@@ -25,46 +25,47 @@ package org.silverpeas.core.util.logging;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.util.MavenTestEnv;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.test.TestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit tests on the LogAccessor instances.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
-public class LogsAccessorTest {
+@EnableSilverTestEnv(context = JEETestContext.class)
+class LogsAccessorTest {
 
   private static final String LOG_FILE = "jboss_output.log";
   private static final int LOG_FILE_LINE_COUNT = 1058;
 
-  private LogsAccessor logsAccessor = new LogsAccessor();
+  private final LogsAccessor logsAccessor = new LogsAccessor();
 
   @BeforeEach
-  public void initEnvVariables(MavenTestEnv mavenTestEnv) {
-    SystemWrapper.get()
-        .setProperty("SILVERPEAS_LOG", mavenTestEnv.getResourceTestDirFile().getPath());
+  public void initEnvVariables() {
+    SystemWrapper.getInstance().setProperty("SILVERPEAS_LOG",
+        TestContext.getInstance().getPathOfTestResources().toString());
   }
 
   @Test
-  public void testListAllLogs() throws IOException {
+  void testListAllLogs() throws IOException {
     Set<String> logs = logsAccessor.getAllLogs();
     assertThat(logs.size(), is(1));
     assertThat(logs.iterator().next(), is(LOG_FILE));
   }
 
   @Test
-  public void readAllLogRecords() throws SilverpeasException {
+  void readAllLogRecords() throws SilverpeasException {
     List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, 0);
     assertThat(content, hasSize(LOG_FILE_LINE_COUNT));
     assertThat(content.get(0), is("========================================================================="));
@@ -77,7 +78,7 @@ public class LogsAccessorTest {
   }
 
   @Test
-  public void readThe1LastLogRecord() throws SilverpeasException {
+  void readThe1LastLogRecord() throws SilverpeasException {
     final int COUNT = 1;
     List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
     assertThat(content, hasSize(COUNT));
@@ -85,7 +86,7 @@ public class LogsAccessorTest {
   }
 
   @Test
-  public void readThe100LastLogRecords() throws SilverpeasException {
+  void readThe100LastLogRecords() throws SilverpeasException {
     final int COUNT = 100;
     List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
     assertThat(content, hasSize(COUNT));
@@ -94,7 +95,7 @@ public class LogsAccessorTest {
   }
 
   @Test
-  public void askForMuchMoreLogRecordsThatThereIsInLog()
+  void askForMuchMoreLogRecordsThatThereIsInLog()
       throws SilverpeasException {
     final int COUNT = 2000;
     List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);

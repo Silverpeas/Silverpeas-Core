@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.message;
 
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 
 import java.text.MessageFormat;
 import java.time.temporal.Temporal;

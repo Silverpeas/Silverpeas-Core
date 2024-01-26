@@ -23,47 +23,35 @@
  */
 package org.silverpeas.core.ui;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPIRule;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.util.Reflections;
 
-import static org.silverpeas.core.ui.DisplayI18NHelper.getDefaultLanguage;
-import static org.silverpeas.core.ui.DisplayI18NHelper.verifyLanguage;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.silverpeas.core.ui.DisplayI18NHelper.getDefaultLanguage;
+import static org.silverpeas.core.ui.DisplayI18NHelper.verifyLanguage;
 
-public class DisplayI18NHelperTest {
-
-  @Rule
-  public CommonAPIRule commonAPIRule = new CommonAPIRule();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
-  @Before
-  public void setup() {
-    reflectionRule.setField(DisplayI18NHelper.class, asList("fr", "en", "de"), "languages");
-    reflectionRule.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
-  }
+@UnitTest
+class DisplayI18NHelperTest {
 
   @Test
-  public void verifyLanguageByGivingNullOne() {
-    assertThat(getDefaultLanguage(), is("en"));
+  void verifyLanguageByGivingNullOne() {
+    assertThat(getDefaultLanguage(), is("fr"));
     assertThat(verifyLanguage(null), is(getDefaultLanguage()));
   }
 
   @Test
-  public void verifyLanguageByGivingNotHandledOne() {
-    assertThat(getDefaultLanguage(), is("en"));
+  void verifyLanguageByGivingNotHandledOne() {
+    assertThat(getDefaultLanguage(), is("fr"));
     assertThat(verifyLanguage("ru"), is(getDefaultLanguage()));
   }
 
   @Test
-  public void verifyLanguageByGivingHandledOne() {
-    assertThat(getDefaultLanguage(), is("en"));
+  void verifyLanguageByGivingHandledOne() {
+    assertThat(getDefaultLanguage(), is("fr"));
     assertThat(verifyLanguage("de"), is("de"));
   }
 }

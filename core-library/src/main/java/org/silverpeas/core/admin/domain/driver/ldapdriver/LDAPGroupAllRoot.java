@@ -27,8 +27,8 @@ import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.*;
 
@@ -123,8 +123,9 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
   @SuppressWarnings("unchecked")
   private List<String> getUserSpecificIds(String lds, LDAPEntry groupEntry) {
-    final Set<String> processedGroups = getThreadCacheAccessor().getCache().computeIfAbsent(GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY, Set.class, HashSet::new);
-    final boolean isFirstCall = processedGroups.isEmpty();
+    final Set<String> processedGroups = getThreadCacheAccessor().getCache()
+        .computeIfAbsent(GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY, Set.class, HashSet::new);
+    final boolean isFirstCall = Objects.requireNonNull(processedGroups).isEmpty();
     final List<String> users = new ArrayList<>();
     try {
       if (!processedGroups.add(groupEntry.getDN())) {

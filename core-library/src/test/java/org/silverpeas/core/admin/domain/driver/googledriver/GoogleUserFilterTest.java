@@ -28,9 +28,10 @@ import com.google.api.client.json.GenericJson;
 import com.google.api.services.directory.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleUserFilter.UserFilterException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ import static org.silverpeas.core.util.CollectionUtil.asList;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class GoogleUserFilterTest {
   private static final List<User> allGoogleUsers = new ArrayList<>();
   private static final User USER_A = aUser("A", "/").withEmail("a@a.a", "work").build();

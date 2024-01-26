@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.media;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.html.SupportedWebPlugin;
 import org.silverpeas.core.io.file.SilverpeasFile;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -39,8 +39,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * From a Servlet or a Web Service, this class handles the forwarding of the request to the media

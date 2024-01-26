@@ -31,8 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.exception.FileHandlerException;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.Closeable;
@@ -65,7 +66,7 @@ import static org.silverpeas.core.process.io.file.DelayedExecutor.in;
  * @author Yohann Chastagnier
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class TestFileHandler extends AbstractHandledFileTest {
 
   private static final Duration ONE_SECOND = Duration.of(1, ChronoUnit.SECONDS);

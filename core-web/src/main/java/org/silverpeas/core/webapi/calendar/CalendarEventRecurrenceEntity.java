@@ -52,7 +52,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * It represents the state of a recurrence in a calendar event as transmitted within the

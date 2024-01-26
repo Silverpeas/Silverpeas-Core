@@ -24,11 +24,11 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.io.temp.TemporaryDataManagementSetting;
 import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import java.io.File;
@@ -40,7 +40,7 @@ import java.util.concurrent.Semaphore;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
-import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
+import static org.silverpeas.kernel.logging.SilverLogger.getLogger;
 import static org.silverpeas.core.viewer.model.ViewerSettings.nbMaxConversionsAtSameInstant;
 
 /**

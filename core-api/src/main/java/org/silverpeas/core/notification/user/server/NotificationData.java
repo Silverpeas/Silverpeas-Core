@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.util.Map;

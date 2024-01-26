@@ -2,7 +2,7 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
 import org.silverpeas.core.workflow.api.instance.ActionStatus;

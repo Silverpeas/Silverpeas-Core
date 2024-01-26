@@ -29,9 +29,9 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import org.silverpeas.core.template.renderer.DateRenderer;
 import org.silverpeas.core.template.renderer.StringRenderer;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;

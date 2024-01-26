@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.jstl.util;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;

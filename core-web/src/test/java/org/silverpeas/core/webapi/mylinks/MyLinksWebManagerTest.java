@@ -35,14 +35,14 @@ import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationService;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.LocalizationBundleStub;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LocalizationBundleStub;
 import org.silverpeas.core.test.unit.extention.RequesterProvider;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 
 import javax.ws.rs.WebApplicationException;
-
 import java.time.ZoneId;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.writeDeclaredField;
@@ -52,15 +52,15 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class MyLinksWebManagerTest {
 
   private static final String CURRENT_USER_ID = "26";
-  private static final String FR = "fr";
+  private static final String FR = LocalizationBundleStub.LANGUAGE_FR;
 
   @RegisterExtension
   static LocalizationBundleStub bundle = new LocalizationBundleStub(
-      "org.silverpeas.mylinks.multilang.myLinksBundle");
+      "org.silverpeas.mylinks.multilang.myLinksBundle", FR);
 
   @TestManagedMock
   private PersonalizationService personalizationService;

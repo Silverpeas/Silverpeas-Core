@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.indicator;
 
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import java.time.Instant;
 

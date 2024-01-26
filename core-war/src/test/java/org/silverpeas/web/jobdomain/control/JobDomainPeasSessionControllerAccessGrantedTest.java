@@ -35,10 +35,11 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestedBean;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 
 import java.util.List;
@@ -54,7 +55,7 @@ import static org.silverpeas.core.admin.user.constant.UserAccessLevel.USER;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class JobDomainPeasSessionControllerAccessGrantedTest {
 
   private static final String LOGGED_USER_DOMAIN_ID = "26";

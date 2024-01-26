@@ -30,7 +30,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface CmisFilePathProvider {
 
   static CmisFilePathProvider get() {
-    return ServiceProvider.getSingleton(CmisFilePathProvider.class);
+    return ServiceProvider.getService(CmisFilePathProvider.class);
   }
 
   CmisFilePath getPath(final CmisFile file);

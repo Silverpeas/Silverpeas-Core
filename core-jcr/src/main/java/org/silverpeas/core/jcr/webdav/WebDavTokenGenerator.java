@@ -25,9 +25,9 @@
 package org.silverpeas.core.jcr.webdav;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.kernel.cache.model.Cache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.text.MessageFormat;
 import java.util.UUID;

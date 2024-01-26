@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

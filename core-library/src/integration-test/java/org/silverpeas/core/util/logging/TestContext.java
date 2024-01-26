@@ -1,12 +1,14 @@
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.kernel.logging.Level;
+
 import java.util.Arrays;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import static org.silverpeas.core.util.logging.SilverLoggerProvider.ROOT_NAMESPACE;
+import static org.silverpeas.kernel.logging.SilverLoggerProvider.ROOT_NAMESPACE;
 
 /**
  * Context for the tests on the logging in Silverpeas

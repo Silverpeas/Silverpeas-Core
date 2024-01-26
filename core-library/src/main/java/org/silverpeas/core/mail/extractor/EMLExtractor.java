@@ -29,11 +29,11 @@ import org.apache.commons.text.translate.EntityArrays;
 import org.apache.commons.text.translate.LookupTranslator;
 import org.silverpeas.core.mail.MailException;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -58,7 +58,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 public class EMLExtractor implements MailExtractor {
 

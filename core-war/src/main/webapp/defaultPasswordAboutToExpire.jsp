@@ -26,8 +26,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ include file="headLog.jsp" %>
 
 <%

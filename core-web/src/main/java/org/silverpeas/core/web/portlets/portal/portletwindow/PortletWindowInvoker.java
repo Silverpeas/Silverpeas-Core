@@ -28,8 +28,8 @@ import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowErrorCode;
 import com.sun.portal.portletcontainer.invoker.WindowInvoker;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.ServletContext;
@@ -45,7 +45,7 @@ import java.util.MissingResourceException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * PortletWindowInvoker, is dervied from the abstract base class WindowInvoker.

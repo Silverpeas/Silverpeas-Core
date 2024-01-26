@@ -32,8 +32,8 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationBadCr
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountBlockedException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountDeactivatedException;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 
 /**

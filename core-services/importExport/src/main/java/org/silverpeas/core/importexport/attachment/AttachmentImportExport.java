@@ -34,15 +34,15 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,8 +55,8 @@ import java.util.List;
 
 import static java.text.MessageFormat.format;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.normalize;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.normalize;
 
 /**
  * A non-versioned attachment importer/exporter. Import and export are performed by a user and then
@@ -118,7 +118,7 @@ public class AttachmentImportExport {
    *
    * @param pubId - id de la publication dans laquelle creer l'attachment
    * @param componentId - id du composant contenant la publication
-   * @param attachment
+   * @param attachment the attachment
    * @return AttachmentDetail cree
    */
   private SimpleDocument addAttachmentToPublication(String pubId, String componentId,
@@ -192,7 +192,7 @@ public class AttachmentImportExport {
    * @param pk - PrimaryKey de l'obijet dont on veut les attachments?
    * @param exportPath - Repertoire dans lequel copier les fichiers
    * @param relativeExportPath chemin relatif du fichier copie
-   * @param extensionFilter
+   * @param extensionFilter the filter
    * @return une liste des attachmentDetail trouves
    */
   public List<AttachmentDetail> getAttachments(ResourceReference pk, String exportPath,

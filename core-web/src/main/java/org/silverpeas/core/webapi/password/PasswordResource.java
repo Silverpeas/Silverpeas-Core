@@ -25,8 +25,8 @@ package org.silverpeas.core.webapi.password;
 
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 

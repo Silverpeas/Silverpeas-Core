@@ -41,7 +41,7 @@ import static java.util.Collections.emptySet;
 import static org.silverpeas.core.admin.space.SpaceInst.SPACE_KEY_PREFIX;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.MODIFICATION;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * Check the access to a space for a user.

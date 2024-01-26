@@ -25,11 +25,12 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.SilverpeasWebResource;
 
 import java.util.Optional;
@@ -93,9 +94,9 @@ class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRou
     if (componentName != null) {
       try {
         componentRoutingMap.set(ServiceProvider
-            .getServiceByComponentInstanceAndNameSuffix(componentName,
+            .getService(componentName,
                 ComponentInstanceRoutingMap.NAME_SUFFIX));
-      } catch (IllegalStateException e) {
+      } catch (SilverpeasRuntimeException e) {
         SilverLogger.getLogger(ComponentInstanceRoutingMap.class).silent(e);
       }
     }

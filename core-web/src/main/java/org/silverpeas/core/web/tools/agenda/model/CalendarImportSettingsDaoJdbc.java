@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.tools.agenda.model;
 
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 
 import javax.inject.Singleton;

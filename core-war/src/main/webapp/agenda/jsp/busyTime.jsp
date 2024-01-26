@@ -33,11 +33,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.personalorganizer.model.Schedulable"%>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.personalorganizer.model.JournalHeader" %>
 <%@ page import="org.silverpeas.core.personalorganizer.model.Attendee" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
+<%@ page import="org.silverpeas.kernel.bundle.SettingBundle" %>
 
 <%@ include file="checkAgenda.jsp" %>
 <%

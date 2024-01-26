@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.notification.sse.behavior.AfterSentToAllContexts;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
@@ -35,8 +35,8 @@ import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.ManagedThreadPoolException;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;

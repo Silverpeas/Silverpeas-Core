@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.web.export;
 
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.core.web.http.HttpRequest;

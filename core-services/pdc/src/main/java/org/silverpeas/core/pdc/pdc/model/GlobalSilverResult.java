@@ -26,7 +26,7 @@ package org.silverpeas.core.pdc.pdc.model;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.search.model.SearchResult;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serializable;
 import java.time.LocalDate;

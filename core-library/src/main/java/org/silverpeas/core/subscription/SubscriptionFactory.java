@@ -32,7 +32,7 @@ import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -60,7 +60,7 @@ public class SubscriptionFactory {
   private final Map<String, SubscriptionConstructor> subscriptionConstructorRegistry = new ConcurrentHashMap<>();
 
   public static SubscriptionFactory get() {
-    return ServiceProvider.getSingleton(SubscriptionFactory.class);
+    return ServiceProvider.getService(SubscriptionFactory.class);
   }
 
   @PostConstruct

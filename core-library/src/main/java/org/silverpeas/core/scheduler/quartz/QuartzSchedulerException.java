@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Exception thrown when the Quartz scheduler cannot be created.

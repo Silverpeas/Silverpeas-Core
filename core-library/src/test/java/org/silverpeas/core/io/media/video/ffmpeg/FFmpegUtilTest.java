@@ -28,15 +28,16 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import java.io.File;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public class FFmpegUtilTest {
 
   private static final String OS_KEY = "os.name";
@@ -45,7 +46,7 @@ public class FFmpegUtilTest {
 
   @BeforeEach
   public void computeRealSystem() {
-    realSystem = SystemWrapper.get().getProperty(OS_KEY);
+    realSystem = SystemWrapper.getInstance().getProperty(OS_KEY);
   }
 
   @AfterEach

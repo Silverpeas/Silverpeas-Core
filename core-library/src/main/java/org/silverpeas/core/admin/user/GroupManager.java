@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
@@ -51,7 +51,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -64,7 +64,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.model.Domain.MIXED_DOMAIN_ID;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 @Service
 @Singleton
@@ -103,7 +103,7 @@ public class GroupManager {
   }
 
   public static GroupManager get() {
-    return ServiceProvider.getSingleton(GroupManager.class);
+    return ServiceProvider.getService(GroupManager.class);
   }
 
   /**

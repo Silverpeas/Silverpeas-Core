@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.annotation.ClassAnnotationUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
 
@@ -45,15 +45,10 @@ import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.mvc.webcomponent.NavigationContext.NavigationStep.PREVIOUS_PAGE_FULL_URI_ID;
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.hasProduced;
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.navigateTo;
@@ -71,8 +66,8 @@ public class WebComponentManager {
       new ConcurrentHashMap<>();
 
   private org.silverpeas.core.web.mvc.webcomponent.Path defaultPath = null;
-  private Map<String, HttpMethodPaths> httpMethodPaths = new HashMap<>();
-  private Map<String, Method> invokables = new HashMap<>();
+  private final Map<String, HttpMethodPaths> httpMethodPaths = new HashMap<>();
+  private final Map<String, Method> invokables = new HashMap<>();
 
   /**
    * This method must be called before all treatments in order to initilize the Web Component
@@ -332,7 +327,7 @@ public class WebComponentManager {
     // Retrieving the web component request context
     R webComponentRequestContext = (R) CacheAccessorProvider.getThreadCacheAccessor().getCache()
             .get(WebComponentRequestContext.class.getName());
-    webComponentRequestContext.setController(webComponentController);
+    Objects.requireNonNull(webComponentRequestContext).setController(webComponentController);
 
     // Just after the instantiation of the Web Controller
     if (!webComponentController.onCreationCalled) {

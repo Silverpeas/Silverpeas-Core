@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.converter;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Exception thrown when an error occurs while converting a document to another format.

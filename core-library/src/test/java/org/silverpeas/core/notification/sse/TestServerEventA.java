@@ -28,7 +28,7 @@ package org.silverpeas.core.notification.sse;
  */
 public class TestServerEventA extends AbstractServerEventTest {
 
-  private static ServerEventName EVENT_NAME = () -> "EVENT_A";
+  private static final ServerEventName EVENT_NAME = () -> "EVENT_A";
 
   @Override
   public ServerEventName getName() {

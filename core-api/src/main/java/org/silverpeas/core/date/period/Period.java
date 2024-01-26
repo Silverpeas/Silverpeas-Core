@@ -24,7 +24,7 @@
 package org.silverpeas.core.date.period;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.TimeUnit;

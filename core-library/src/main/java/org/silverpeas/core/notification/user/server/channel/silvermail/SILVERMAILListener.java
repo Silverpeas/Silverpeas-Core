@@ -27,8 +27,8 @@ import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

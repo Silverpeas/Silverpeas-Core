@@ -32,12 +32,13 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.notification.NotificationException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,7 +46,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.notification.user.client.CurrentUserNotificationContext.getCurrentUserNotificationContext;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
+@TestManagedMocks(NotificationManager.class)
 class CurrentUserNotificationContextTest {
 
   @RegisterExtension
@@ -58,7 +60,7 @@ class CurrentUserNotificationContextTest {
   public void setup(@TestManagedMock OrganizationController ctrl) {
     currentUser = spy(new UserDetail());
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(currentUser);
+    CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(currentUser);
     mockedSettings =
         mocker.mockField(NotificationManagerSettings.class, SettingBundle.class, "settings");
     // By default, a user is not an anonymous one
@@ -87,11 +89,11 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationEnabled() {
-    assertThrows(NullPointerException.class, () -> {
-      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
-      enableLimitationAt(1);
-      getCurrentUserNotificationContext().checkManualUserNotification(null);
-    });
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    enableLimitationAt(1);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NullPointerException.class, () ->
+        notifCtx.checkManualUserNotification(null));
   }
 
   @Test
@@ -124,11 +126,11 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimit() {
-    assertThrows(NotificationException.class, () -> {
-      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
-      enableLimitationAt(3);
-      getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(4));
-    });
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    enableLimitationAt(3);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NotificationException.class,
+        () -> notifCtx.checkManualUserNotification(getManualUserOne(4)));
   }
 
   @Test
@@ -151,12 +153,11 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAdminUserAndLimitationEnabled() {
-    assertThrows(NullPointerException.class, () -> {
-      currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
-      assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
-      enableLimitationAt(1);
-      getCurrentUserNotificationContext().checkManualUserNotification(null);
-    });
+    currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
+    assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
+    enableLimitationAt(1);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NullPointerException.class, () -> notifCtx.checkManualUserNotification(null));
   }
 
   @Test
@@ -212,12 +213,11 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentDomainAdminUserAndLimitationEnabled() {
-    assertThrows(NullPointerException.class, () -> {
-      currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
-      assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
-      enableLimitationAt(1);
-      getCurrentUserNotificationContext().checkManualUserNotification(null);
-    });
+    currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
+    assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
+    enableLimitationAt(1);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NullPointerException.class, () -> notifCtx.checkManualUserNotification(null));
   }
 
   @Test
@@ -273,12 +273,11 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentPdcAdminUserAndLimitationEnabled() {
-    assertThrows(NullPointerException.class, () -> {
-      currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
-      assertThat(UserDetail.getCurrentRequester().isAccessPdcManager(), is(true));
-      enableLimitationAt(1);
-      getCurrentUserNotificationContext().checkManualUserNotification(null);
-    });
+    currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
+    assertThat(UserDetail.getCurrentRequester().isAccessPdcManager(), is(true));
+    enableLimitationAt(1);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NullPointerException.class, () -> notifCtx.checkManualUserNotification(null));
   }
 
   @Test
@@ -335,12 +334,11 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentUserAndLimitationEnabled() {
-    assertThrows(NullPointerException.class, () -> {
-      currentUser.setAccessLevel(UserAccessLevel.USER);
-      assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
-      enableLimitationAt(1);
-      getCurrentUserNotificationContext().checkManualUserNotification(null);
-    });
+    currentUser.setAccessLevel(UserAccessLevel.USER);
+    assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
+    enableLimitationAt(1);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NullPointerException.class, () -> notifCtx.checkManualUserNotification(null));
   }
 
   @Test
@@ -406,12 +404,11 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentGuestUserAndLimitationEnabled() {
-    assertThrows(NullPointerException.class, () -> {
-      currentUser.setAccessLevel(UserAccessLevel.GUEST);
-      assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
-      enableLimitationAt(1);
-      getCurrentUserNotificationContext().checkManualUserNotification(null);
-    });
+    currentUser.setAccessLevel(UserAccessLevel.GUEST);
+    assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
+    enableLimitationAt(1);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NullPointerException.class, () -> notifCtx.checkManualUserNotification(null));
   }
 
   @Test
@@ -477,12 +474,11 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAnonymousUserAndLimitationEnabled() {
-    assertThrows(NullPointerException.class, () -> {
-      doReturn(true).when(currentUser).isAnonymous();
-      assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
-      enableLimitationAt(1);
-      getCurrentUserNotificationContext().checkManualUserNotification(null);
-    });
+    doReturn(true).when(currentUser).isAnonymous();
+    assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
+    enableLimitationAt(1);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NullPointerException.class, () -> notifCtx.checkManualUserNotification(null));
   }
 
   @Test
@@ -519,12 +515,12 @@ class CurrentUserNotificationContextTest {
 
   @Test
   void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabledAndNbReceiversOverLimit() {
-    assertThrows(NotificationException.class, () -> {
-      doReturn(true).when(currentUser).isAnonymous();
-      assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
-      enableLimitationAt(3);
-      getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(4));
-    });
+    doReturn(true).when(currentUser).isAnonymous();
+    assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
+    enableLimitationAt(3);
+    var notifCtx = getCurrentUserNotificationContext();
+    assertThrows(NotificationException.class,
+        () -> notifCtx.checkManualUserNotification(getManualUserOne(4)));
   }
 
   @Test

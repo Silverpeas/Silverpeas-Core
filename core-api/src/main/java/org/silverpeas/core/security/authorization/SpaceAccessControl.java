@@ -33,7 +33,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface SpaceAccessControl extends AccessController<String> {
 
   static SpaceAccessControl get() {
-    return ServiceProvider.getSingleton(SpaceAccessControl.class);
+    return ServiceProvider.getService(SpaceAccessControl.class);
   }
 
   @Override

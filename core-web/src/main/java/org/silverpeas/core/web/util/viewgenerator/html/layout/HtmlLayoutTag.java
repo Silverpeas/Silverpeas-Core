@@ -25,7 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.layout;
 
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.html;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;

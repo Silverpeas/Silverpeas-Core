@@ -1,6 +1,6 @@
 package org.silverpeas.core.util.annotation;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;

@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.template.form.dao;
 
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;

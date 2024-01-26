@@ -38,7 +38,7 @@ import java.util.List;
 public class PdcSubscriptionManager {
 
   public static PdcSubscriptionManager getInstance() {
-    return ServiceProvider.getSingleton(PdcSubscriptionManager.class);
+    return ServiceProvider.getService(PdcSubscriptionManager.class);
   }
 
   @Inject

@@ -42,15 +42,15 @@ if (response.isCommitted() == false) {
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="org.silverpeas.core.exception.SilverpeasTrappedException"%>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil" %>
 <%@ page import="java.io.PrintWriter" %>
 <%@ page import="org.silverpeas.core.security.authorization.ForbiddenRuntimeException" %>
 <%@ page import="javax.ws.rs.WebApplicationException" %>
-<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
+<%@ page import="org.silverpeas.kernel.logging.SilverLogger" %>
 <%@ page import="org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet" %>
-<%@ page import="org.silverpeas.core.NotFoundException" %>
+<%@ page import="org.silverpeas.kernel.exception.NotFoundException" %>
 
 <%@ include file="import.jsp" %>
 

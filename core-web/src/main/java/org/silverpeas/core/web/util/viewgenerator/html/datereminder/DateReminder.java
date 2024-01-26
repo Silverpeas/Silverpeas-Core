@@ -25,8 +25,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.datereminder;
 
 import java.util.Date;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;

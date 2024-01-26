@@ -24,7 +24,7 @@
 package org.silverpeas.web.ddwe;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.wbe.WbeEdition;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 
@@ -36,7 +36,7 @@ import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.READER;
 import static org.silverpeas.core.admin.user.model.User.getCurrentRequester;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.web.rs.UserPrivilegeValidation.HTTP_ACCESS_TOKEN;
 
 /**

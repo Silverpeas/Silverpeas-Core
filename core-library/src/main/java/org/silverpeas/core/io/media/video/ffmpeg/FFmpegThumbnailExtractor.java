@@ -27,7 +27,7 @@ import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.time.Duration;
 
 import java.io.File;

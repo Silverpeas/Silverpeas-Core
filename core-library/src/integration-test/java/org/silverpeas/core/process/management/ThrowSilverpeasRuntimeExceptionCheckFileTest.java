@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.process.management;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.io.file.FileHandler;
 

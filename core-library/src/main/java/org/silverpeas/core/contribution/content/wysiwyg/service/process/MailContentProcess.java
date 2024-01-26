@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
-import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentMailAttachedFile;
 import org.silverpeas.core.contribution.content.AbstractLocalhostLinkUrlDataSourceScanner;
@@ -36,11 +36,11 @@ import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailContent;
 import org.silverpeas.core.mail.MailContent.AttachedFile;
 import org.silverpeas.core.mail.MailSending;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.StringDataExtractor;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;

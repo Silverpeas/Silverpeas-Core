@@ -25,7 +25,7 @@ package org.silverpeas.core.notification.sse;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.IOException;
 import java.util.Collections;

@@ -36,8 +36,8 @@
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>

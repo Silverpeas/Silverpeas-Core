@@ -28,7 +28,7 @@ import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.node.importexport.NodeTreeType;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;

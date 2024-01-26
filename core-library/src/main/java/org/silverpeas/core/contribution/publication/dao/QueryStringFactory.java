@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.dao;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 public class QueryStringFactory {
 

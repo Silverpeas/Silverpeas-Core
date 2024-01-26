@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.jdbc.sql;
 
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
@@ -41,7 +41,7 @@ class JdbcSqlExecutorProvider {
   private JdbcSqlExecutor jdbcSqlExecutor;
 
   private static JdbcSqlExecutorProvider getProvider() {
-    return ServiceProvider.getSingleton(JdbcSqlExecutorProvider.class);
+    return ServiceProvider.getService(JdbcSqlExecutorProvider.class);
   }
 
   /**

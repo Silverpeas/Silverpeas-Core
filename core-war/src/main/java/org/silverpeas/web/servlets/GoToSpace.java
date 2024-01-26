@@ -26,7 +26,7 @@ package org.silverpeas.web.servlets;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.servlet.GoTo;

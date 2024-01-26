@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.attachment.permalinks.PermalinkServicePr
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 

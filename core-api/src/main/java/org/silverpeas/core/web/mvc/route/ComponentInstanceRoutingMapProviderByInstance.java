@@ -33,7 +33,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface ComponentInstanceRoutingMapProviderByInstance {
 
   static ComponentInstanceRoutingMapProviderByInstance get() {
-    return ServiceProvider.getSingleton(ComponentInstanceRoutingMapProviderByInstance.class);
+    return ServiceProvider.getService(ComponentInstanceRoutingMapProviderByInstance.class);
   }
 
   /**

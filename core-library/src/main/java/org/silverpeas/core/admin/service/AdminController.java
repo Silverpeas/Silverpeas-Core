@@ -37,9 +37,9 @@ import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

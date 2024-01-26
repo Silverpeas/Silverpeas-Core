@@ -26,7 +26,7 @@ package org.silverpeas.web.socialnetwork.myprofil.servlets;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;

@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.notification.message;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPIRule;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,25 +41,23 @@ import static org.hamcrest.Matchers.*;
  * User: Yohann Chastagnier
  * Date: 08/11/13
  */
-public class MessageManagerTest {
+@EnableSilverTestEnv
+class MessageManagerTest {
 
-  @Rule
-  public CommonAPIRule commonAPIRule = new CommonAPIRule();
-
-  @Before
+  @BeforeEach
   public void setup() {
     MessageManager.initialize();
     assertThat(getMessageContainer().getMessages(), emptyIterable());
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     MessageManager.clear(MessageManager.getRegistredKey());
     MessageManager.destroy();
   }
 
   @Test
-  public void getLanguage() {
+  void getLanguage() {
     assertThat(MessageManager.getLanguage(), is(DisplayI18NHelper.getDefaultLanguage()));
     String otherLanguage = "otherLanguage";
     MessageManager.setLanguage(otherLanguage);
@@ -69,7 +66,7 @@ public class MessageManagerTest {
   }
 
   @Test
-  public void getResourceLocator() {
+  void getResourceLocator() {
     LocalizationBundle locator =
         MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n");
     LocalizationBundle utilLocator =
@@ -108,12 +105,12 @@ public class MessageManagerTest {
     LocalizationBundle locatorEn =
         MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n");
 
-    assertThat(locator.getString("language_fr"), is("Fran\u00e7ais"));
+    assertThat(locator.getString("language_fr"), is("Français"));
     assertThat(locatorEn.getString("language_fr"), is("French"));
   }
 
   @Test
-  public void getResourceLocatorVerifyAfterTrash() {
+  void getResourceLocatorVerifyAfterTrash() {
     getResourceLocator();
     MessageManager.destroy();
     assertThat(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n"),
@@ -128,7 +125,7 @@ public class MessageManagerTest {
   }
 
   @Test
-  public void addError() {
+  void addError() {
     MessageManager.addError("errorMessage");
     assertThat(getMessageContainer().getMessages(), hasSize(1));
     Message test = getMessageContainer().getMessages().iterator().next();
@@ -138,7 +135,7 @@ public class MessageManagerTest {
   }
 
   @Test
-  public void addWarning() {
+  void addWarning() {
     MessageManager.addWarning("warningMessage");
     assertThat(getMessageContainer().getMessages(), hasSize(1));
     Message test = getMessageContainer().getMessages().iterator().next();
@@ -148,7 +145,7 @@ public class MessageManagerTest {
   }
 
   @Test
-  public void addSuccess() {
+  void addSuccess() {
     MessageManager.addSuccess("successMessage");
     assertThat(getMessageContainer().getMessages(), hasSize(1));
     Message test = getMessageContainer().getMessages().iterator().next();
@@ -158,7 +155,7 @@ public class MessageManagerTest {
   }
 
   @Test
-  public void addInfo() {
+  void addInfo() {
     MessageManager.addInfo("infosMessage");
     assertThat(getMessageContainer().getMessages(), hasSize(1));
     Message test = getMessageContainer().getMessages().iterator().next();
@@ -168,7 +165,7 @@ public class MessageManagerTest {
   }
 
   @Test
-  public void addSeveralMessages() {
+  void addSeveralMessages() {
     MessageManager.addError("errorMessage");
     MessageManager.addWarning("warningMessage");
     MessageManager.addSuccess("successMessage");
@@ -177,7 +174,7 @@ public class MessageManagerTest {
   }
 
   @Test
-  public void addListener() {
+  void addListener() {
     final List<Object> counterLanguage = new LinkedList<>();
     final List<Object> counterBefore = new LinkedList<>();
     final List<Object> counterAfter = new LinkedList<>();

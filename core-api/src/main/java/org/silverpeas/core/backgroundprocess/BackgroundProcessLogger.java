@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.backgroundprocess;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * Logger provider for background processes. The logger is here initialized and wrapped in order to be used in

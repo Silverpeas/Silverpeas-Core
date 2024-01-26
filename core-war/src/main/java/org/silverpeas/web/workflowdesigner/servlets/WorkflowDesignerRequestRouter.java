@@ -25,7 +25,7 @@ package org.silverpeas.web.workflowdesigner.servlets;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.publication.dao;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 import java.util.HashSet;

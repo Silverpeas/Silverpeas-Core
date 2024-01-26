@@ -28,7 +28,7 @@ package org.silverpeas.core.pdc.tree.model;
 
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

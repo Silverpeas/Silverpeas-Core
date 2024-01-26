@@ -29,7 +29,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

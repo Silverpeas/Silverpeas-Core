@@ -27,8 +27,8 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.SilverpeasWebSocketContext;
 import org.silverpeas.core.notification.sse.SseLogger;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;

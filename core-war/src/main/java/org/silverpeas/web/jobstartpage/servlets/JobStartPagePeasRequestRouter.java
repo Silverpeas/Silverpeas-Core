@@ -39,7 +39,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -60,7 +60,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 public class JobStartPagePeasRequestRouter extends
     AdminComponentRequestRouter<JobStartPagePeasSessionController> {

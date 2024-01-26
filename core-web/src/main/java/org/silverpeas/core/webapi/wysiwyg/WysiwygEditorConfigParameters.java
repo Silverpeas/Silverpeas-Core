@@ -30,7 +30,7 @@ import org.silverpeas.core.web.util.WysiwygEditorConfig;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Representation of different parameters with which the WYSIWYG editor configuration could be

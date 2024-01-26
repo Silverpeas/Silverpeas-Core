@@ -42,7 +42,7 @@ import javax.portlet.PortletPreferences;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import com.sun.portal.container.ContainerLogger;
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletLang;

@@ -32,7 +32,7 @@ import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.index.search.qualifiers.TaxonomySearch;
 import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

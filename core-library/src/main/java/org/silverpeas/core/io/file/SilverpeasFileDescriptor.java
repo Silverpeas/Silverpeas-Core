@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.file;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 

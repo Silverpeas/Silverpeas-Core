@@ -36,8 +36,8 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.MemoizedSupplier;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

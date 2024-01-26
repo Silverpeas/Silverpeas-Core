@@ -31,7 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore.Container;
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore.Content;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
@@ -47,7 +48,7 @@ import static org.hamcrest.Matchers.notNullValue;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class DragAndDropWebEditorStoreStructureTest {
 
   private File tempFile;

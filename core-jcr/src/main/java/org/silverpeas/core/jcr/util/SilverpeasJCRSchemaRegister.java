@@ -26,9 +26,9 @@
 package org.silverpeas.core.jcr.util;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.jcr.JCRSession;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

@@ -26,6 +26,7 @@ package org.silverpeas.core.util;
 
 import org.silverpeas.core.admin.component.model.ComponentInstPath;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.i18n;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;

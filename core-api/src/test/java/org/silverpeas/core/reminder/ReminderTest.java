@@ -34,9 +34,9 @@ import org.silverpeas.core.contribution.model.NoSuchPropertyException;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
-import org.silverpeas.core.test.extension.EnableSilverTestEnv;
-import org.silverpeas.core.test.extension.TestManagedBean;
-import org.silverpeas.core.test.extension.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
 
 import java.time.OffsetDateTime;
 

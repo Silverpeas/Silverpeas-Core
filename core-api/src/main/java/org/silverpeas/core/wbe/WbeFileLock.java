@@ -29,7 +29,7 @@ import java.util.StringJoiner;
 
 import static java.time.OffsetDateTime.now;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This class permits to handle Web Browser Edition file locking from point of view of the HOST.

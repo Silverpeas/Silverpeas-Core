@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryUnit;
 

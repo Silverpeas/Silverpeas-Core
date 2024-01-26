@@ -35,10 +35,10 @@
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@page import="org.silverpeas.core.util.URLUtil" %>
 <%@page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@page import="org.silverpeas.core.util.MultiSilverpeasBundle" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.SettingBundle" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.List" %>
 

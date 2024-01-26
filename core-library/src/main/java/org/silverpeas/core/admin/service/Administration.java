@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -61,7 +61,7 @@ public interface Administration {
   }
 
   static Administration get() {
-    return ServiceProvider.getSingleton(Administration.class);
+    return ServiceProvider.getService(Administration.class);
   }
 
   void reloadCache();

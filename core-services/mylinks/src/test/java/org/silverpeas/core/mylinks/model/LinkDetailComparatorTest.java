@@ -25,7 +25,7 @@ package org.silverpeas.core.mylinks.model;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.List;

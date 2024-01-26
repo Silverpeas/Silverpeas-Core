@@ -29,6 +29,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.enterprise.util.AnnotationLiteral;
 
@@ -62,6 +63,7 @@ public class ServiceProviderIT {
   @Test
   public void emptyTest() {
     // just to test the deployment into wildfly works fine.
+    assertThat(true, is(true));
   }
 
   @Test
@@ -70,9 +72,9 @@ public class ServiceProviderIT {
     assertThat(bean, notNullValue());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = SilverpeasRuntimeException.class)
   public void fetchAManagedBeanByItsNameByTheServiceProviderShouldSucceed() {
-    TestManagedBean bean = ServiceProvider.getService("testManagedBean");
+    ServiceProvider.getService("testManagedBean");
   }
 
   @Test

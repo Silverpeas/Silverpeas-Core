@@ -26,7 +26,7 @@ package org.silverpeas.core.io.file;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * A processor to assert that the path of a {@link SilverpeasFile} does not contains relative parts.

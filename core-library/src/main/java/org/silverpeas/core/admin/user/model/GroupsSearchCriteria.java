@@ -27,12 +27,12 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Arrays;
 
 import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A conjunction of criteria in the search of user groups.

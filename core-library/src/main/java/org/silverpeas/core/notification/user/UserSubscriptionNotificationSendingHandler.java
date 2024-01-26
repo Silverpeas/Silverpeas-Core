@@ -25,7 +25,9 @@ package org.silverpeas.core.notification.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Nullable;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.util.JSONCodec;
@@ -37,9 +39,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Objects;
 
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 /**
  * This class handles the feature that permits to skip the user subscription notification sending.
@@ -110,8 +113,9 @@ public class UserSubscriptionNotificationSendingHandler implements
 
   /**
    * Gets a user note to paste into subscription notification message from the current request.
-   * @return true if enabled, false otherwise.
+   * @return the note or null if no such note exists.
    */
+  @Nullable
   public String getSubscriptionNotificationUserNoteFromCurrentRequest() {
     final Confirmation confirmation = getConfirmation();
     if (confirmation.isNotificationSendEnabled()) {
@@ -153,9 +157,11 @@ public class UserSubscriptionNotificationSendingHandler implements
     return confirmation == null ? new Confirmation() : confirmation;
   }
 
+  @NonNull
   private Confirmation getOrCreateConfirmation() {
-    return getThreadCacheAccessor().getCache()
+    Confirmation confirmation = getThreadCacheAccessor().getCache()
         .computeIfAbsent(SENDING_NOT_ENABLED_KEY, Confirmation.class, Confirmation::new);
+    return Objects.requireNonNull(confirmation);
   }
 
   @XmlRootElement

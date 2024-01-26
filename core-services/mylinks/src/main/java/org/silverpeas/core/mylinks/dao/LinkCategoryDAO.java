@@ -27,7 +27,7 @@ import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.mylinks.model.CategoryDetail;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;

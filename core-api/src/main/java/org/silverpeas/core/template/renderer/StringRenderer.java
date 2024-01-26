@@ -24,7 +24,7 @@
 package org.silverpeas.core.template.renderer;
 
 import org.antlr.stringtemplate.AttributeRenderer;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * Some useful formatting usable from string templates.

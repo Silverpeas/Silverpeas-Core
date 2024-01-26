@@ -29,9 +29,9 @@ import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

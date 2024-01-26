@@ -34,8 +34,8 @@ import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.AbstractResourceSubscriptionService;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,7 +50,7 @@ import static org.silverpeas.core.contribution.publication.subscription.Publicat
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
-import static org.silverpeas.core.util.Mutable.of;
+import static org.silverpeas.kernel.util.Mutable.of;
 
 /**
  * As the class is implementing {@link org.silverpeas.core.initialization.Initialization}, no

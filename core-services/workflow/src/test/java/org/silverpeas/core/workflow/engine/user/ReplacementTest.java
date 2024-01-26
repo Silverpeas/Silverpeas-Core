@@ -26,8 +26,10 @@ package org.silverpeas.core.workflow.engine.user;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 
@@ -44,8 +46,8 @@ import static org.silverpeas.core.workflow.engine.user.TestContext.aUser;
  * Unit tests on the replacement of users by another ones in a workflow instance.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
-@TestManagedBeans({ReplacementConstructor.class})
+@EnableSilverTestEnv(context = JEETestContext.class)
+@TestManagedBeans(ReplacementConstructor.class)
 class ReplacementTest {
 
   private final User anIncumbent = aUser("3");

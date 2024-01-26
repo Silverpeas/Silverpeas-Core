@@ -38,7 +38,7 @@ import org.dbunit.dataset.ITable;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.integration.DataSourceProvider;
 import org.silverpeas.core.test.integration.SQLRequester;

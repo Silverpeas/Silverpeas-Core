@@ -40,7 +40,8 @@ import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -49,8 +50,8 @@ import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryUnit;
@@ -66,7 +67,7 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getComponentSpaceQuotaService;
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getDataStorageSpaceQuotaService;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -686,11 +687,14 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * @return the componentSpaceQuota
    */
+  @NonNull
   private Quota getReachedComponentSpaceQuota() {
     final SimpleCache cache = getThreadCacheAccessor().getCache();
-    return cache.computeIfAbsent(QUOTA_COMPONENT_REACHED_PREFIX_KEY + getLocalId(), Quota.class,
+    Quota quota =  cache.computeIfAbsent(QUOTA_COMPONENT_REACHED_PREFIX_KEY + getLocalId(),
+        Quota.class,
         () -> getComponentSpaceQuotaService()
             .getQuotaReachedFromSpacePath(ComponentSpaceQuotaKey.from(this)));
+    return Objects.requireNonNull(quota);
   }
 
   /**
@@ -744,11 +748,14 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * @return the dataStorageQuota
    */
+  @NonNull
   private Quota getReachedDataStorageQuota() {
     final SimpleCache cache = getThreadCacheAccessor().getCache();
-    return cache.computeIfAbsent(QUOTA_STORAGE_REACHED_PREFIX_KEY + getLocalId(), Quota.class,
+    Quota quota =  cache.computeIfAbsent(QUOTA_STORAGE_REACHED_PREFIX_KEY + getLocalId(),
+        Quota.class,
         () -> getDataStorageSpaceQuotaService()
             .getQuotaReachedFromSpacePath(DataStorageSpaceQuotaKey.from(this)));
+    return Objects.requireNonNull(quota);
   }
 
   /**

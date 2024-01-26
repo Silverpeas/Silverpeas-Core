@@ -30,7 +30,7 @@ import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.Map;
 public interface CommentService {
 
   static CommentService get() {
-    return ServiceProvider.getSingleton(CommentService.class);
+    return ServiceProvider.getService(CommentService.class);
   }
 
   /**

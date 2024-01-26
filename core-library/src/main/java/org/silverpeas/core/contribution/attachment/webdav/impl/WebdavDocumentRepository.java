@@ -31,8 +31,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;

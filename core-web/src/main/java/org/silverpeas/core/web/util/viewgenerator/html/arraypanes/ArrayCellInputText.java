@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 public class ArrayCellInputText extends ActionableArrayCell implements SimpleGraphicElement {

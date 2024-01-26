@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.look;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 public class TopItem {

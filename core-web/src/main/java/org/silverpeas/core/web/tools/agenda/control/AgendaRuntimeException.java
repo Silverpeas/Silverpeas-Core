@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.tools.agenda.control;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class AgendaRuntimeException extends SilverpeasRuntimeException {
 

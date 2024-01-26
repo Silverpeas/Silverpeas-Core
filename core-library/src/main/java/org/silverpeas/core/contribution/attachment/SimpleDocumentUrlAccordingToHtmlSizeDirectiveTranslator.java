@@ -27,7 +27,7 @@ package org.silverpeas.core.contribution.attachment;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author silveryocha

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.annotation.Base;
+import org.silverpeas.kernel.annotation.Base;
 
 import javax.inject.Singleton;
 

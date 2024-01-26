@@ -37,7 +37,7 @@ import org.apache.ecs.xhtml.frame;
 import org.apache.ecs.xhtml.iframe;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.util.Map;

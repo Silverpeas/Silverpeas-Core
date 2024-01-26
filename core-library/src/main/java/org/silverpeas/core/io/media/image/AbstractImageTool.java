@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.io.media.image;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.util.HashMap;

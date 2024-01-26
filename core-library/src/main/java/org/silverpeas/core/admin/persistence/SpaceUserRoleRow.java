@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.space.SpaceProfileInst;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.silverpeas.core.util.StringUtil.asInt;
+import static org.silverpeas.kernel.util.StringUtil.asInt;
 
 public class SpaceUserRoleRow {
 

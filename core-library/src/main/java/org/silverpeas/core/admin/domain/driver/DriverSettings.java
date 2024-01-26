@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.domain.driver;
 
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
  * Settings of a user domain driver.

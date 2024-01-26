@@ -27,7 +27,8 @@ package org.silverpeas.core.admin.component.model;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ import static org.hamcrest.Matchers.not;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ComponentSearchCriteriaTest {
 
   @DisplayName("two empty criteria instances are equals")

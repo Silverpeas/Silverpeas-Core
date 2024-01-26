@@ -27,7 +27,7 @@ import org.owasp.encoder.Encode;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.directory.control.DirectorySessionController;
 

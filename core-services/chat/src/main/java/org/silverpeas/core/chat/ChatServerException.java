@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chat;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Thrown when an error need external intervention to be fixed

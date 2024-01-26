@@ -35,7 +35,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This class handles component file filters (authorized or forbidden files).

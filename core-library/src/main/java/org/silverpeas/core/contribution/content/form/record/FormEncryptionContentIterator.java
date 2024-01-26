@@ -32,8 +32,8 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.SQLException;

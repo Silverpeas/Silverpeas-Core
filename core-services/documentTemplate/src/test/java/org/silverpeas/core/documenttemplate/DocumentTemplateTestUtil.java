@@ -33,7 +33,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static java.text.MessageFormat.format;
-import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralSettingBundle;
 
 /**
  * @author silveryocha

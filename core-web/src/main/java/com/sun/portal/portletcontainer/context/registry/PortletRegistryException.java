@@ -23,8 +23,8 @@
  */
 package com.sun.portal.portletcontainer.context.registry;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.io.PrintWriter;
 import java.util.Locale;

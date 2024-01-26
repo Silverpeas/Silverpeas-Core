@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorS
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore.Content;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.wbe.SimpleWbeFile;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ import java.io.StringReader;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * This class represents a file content dedicated to the registering of Drag&Drop web editor

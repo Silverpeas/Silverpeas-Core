@@ -40,7 +40,7 @@ import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

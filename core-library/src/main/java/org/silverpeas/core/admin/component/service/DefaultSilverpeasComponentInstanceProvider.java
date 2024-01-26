@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInst
 import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Optional;
 

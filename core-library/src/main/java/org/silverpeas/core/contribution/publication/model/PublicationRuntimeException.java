@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class PublicationRuntimeException extends SilverpeasRuntimeException {
 

@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.util.WysiwygEditorConfigRegistry;
 import org.silverpeas.core.web.rs.RESTWebService;
@@ -47,7 +47,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A REST Web resource which permits to obtain volatile identifier scoped into a component

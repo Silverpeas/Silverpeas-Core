@@ -36,9 +36,9 @@
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"%>
 <%@ page import="org.silverpeas.core.util.DateUtil"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.util.SettingBundle"%>
-<%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.SettingBundle"%>
+<%@ page import="org.silverpeas.kernel.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 

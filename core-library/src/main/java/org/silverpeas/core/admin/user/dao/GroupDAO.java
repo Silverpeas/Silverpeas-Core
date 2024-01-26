@@ -32,7 +32,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import java.sql.Connection;
@@ -54,8 +54,8 @@ import static java.text.MessageFormat.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 @Repository
 public class GroupDAO {
@@ -240,7 +240,7 @@ public class GroupDAO {
 
   private void checkUserExistence(final Connection connection, final String userId)
       throws SQLException {
-    UserDAO userDAO = ServiceProvider.getSingleton(UserDAO.class);
+    UserDAO userDAO = ServiceProvider.getService(UserDAO.class);
     if (!userDAO.isUserByIdExists(connection, userId)) {
       throw new SQLException(unknown("user", userId));
     }

@@ -25,7 +25,7 @@
 package org.silverpeas.core.jcr.impl.oak.factories;
 
 import org.apache.jackrabbit.oak.spi.gc.GCMonitor;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import static org.silverpeas.core.util.UnitUtil.formatMemSize;
 import static org.slf4j.helpers.MessageFormatter.arrayFormat;

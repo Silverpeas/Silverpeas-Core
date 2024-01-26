@@ -36,7 +36,7 @@ import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.ws.rs.GET;
@@ -55,7 +55,7 @@ import static org.silverpeas.core.contribution.publication.subscription.OnLocati
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.UNKNOWN;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A REST Web resource representing a given subscription.

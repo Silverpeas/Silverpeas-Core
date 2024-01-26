@@ -27,8 +27,9 @@ package org.silverpeas.core.web.token;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.core.web.token.SilverpeasWebTokenService.WebToken;
 
 import java.util.List;
@@ -49,7 +50,7 @@ import static org.silverpeas.core.web.token.SilverpeasWebTokenService.MAX_TOKENS
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SilverpeasWebTokenServiceTest {
 
   private static final String DEFAULT_ID = "anIdentifier";

@@ -37,7 +37,7 @@ import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 
@@ -60,7 +60,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.USERS_BASE_URI;
 
 /**

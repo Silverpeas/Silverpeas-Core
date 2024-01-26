@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.content.form;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.List;

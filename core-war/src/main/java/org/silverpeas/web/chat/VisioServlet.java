@@ -25,7 +25,7 @@ package org.silverpeas.web.chat;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatSettings;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 
 import javax.servlet.ServletException;
@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.URLUtil.getFullApplicationURL;
 import static org.silverpeas.core.util.file.FileServerUtils.getImageURL;
 

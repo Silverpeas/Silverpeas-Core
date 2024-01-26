@@ -39,7 +39,7 @@ public interface I18n {
    * @return an instance of {@link I18n}
    */
   static I18n get() {
-    return ServiceProvider.getSingleton(I18n.class);
+    return ServiceProvider.getService(I18n.class);
   }
 
   /**
@@ -51,7 +51,7 @@ public interface I18n {
   /**
    * Gets the languages that are supported by the platform and from which users can choose their
    * preferred one.
-   * @return an array of ISO 639-1 codes of languages.
+   * @return a set of ISO 639-1 codes of languages.
    */
   Set<String> getSupportedLanguages();
 }

@@ -31,12 +31,12 @@ import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayerProvider;
 import org.silverpeas.core.web.search.ResultSearchRendererUtil;
@@ -52,7 +52,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import static java.lang.String.format;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * Tag to display result search element (GlobalSilverResult) object. Add extra information from

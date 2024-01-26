@@ -75,10 +75,9 @@ public class MyCommentActionListener extends CDIResourceEventListener<CommentEve
   /**
    * An event on the creation of a resource has be listened.
    * @param event the event on the creation of a resource.
-   * @throws Exception if an error occurs while treating the event.
    */
   @Override
-  public synchronized void onCreation(final CommentEvent event) throws Exception {
+  public synchronized void onCreation(final CommentEvent event) {
     invocation++;
     commentAdded = true;
   }
@@ -87,10 +86,9 @@ public class MyCommentActionListener extends CDIResourceEventListener<CommentEve
    * An event on the deletion of a resource has be listened. A deleted resource is nonexistent and
    * nonrecoverable.
    * @param event the event on the deletion of a resource.
-   * @throws Exception if an error occurs while treating the event.
    */
   @Override
-  public synchronized void onDeletion(final CommentEvent event) throws Exception {
+  public synchronized void onDeletion(final CommentEvent event) {
     invocation++;
     commentRemoved = true;
   }

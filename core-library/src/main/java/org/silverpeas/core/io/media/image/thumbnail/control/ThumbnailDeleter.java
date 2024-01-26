@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 
-import static org.silverpeas.core.util.StringUtil.isInteger;
+import static org.silverpeas.kernel.util.StringUtil.isInteger;
 
 /**
  * Deleter of the thumbnail associated with the contribution that has been deleted.

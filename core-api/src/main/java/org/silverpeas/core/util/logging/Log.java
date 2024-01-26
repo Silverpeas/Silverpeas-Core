@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.kernel.logging.Level;
+
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;

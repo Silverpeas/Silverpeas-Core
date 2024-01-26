@@ -28,9 +28,9 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -47,7 +47,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralLocalizationBundle;
 
 public abstract class GoTo extends HttpServlet {
 

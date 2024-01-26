@@ -27,7 +27,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
 import java.util.ArrayList;

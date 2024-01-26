@@ -44,8 +44,8 @@ import java.util.UUID;
 
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.SelectionType.GROUP;
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.withContainerId;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can

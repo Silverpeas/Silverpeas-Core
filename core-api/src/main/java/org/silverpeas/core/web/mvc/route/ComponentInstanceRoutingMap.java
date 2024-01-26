@@ -25,6 +25,7 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -48,7 +49,7 @@ import java.net.URI;
  * <p>
  * Be carefully about that an implementation of this interface must never be a singleton or
  * application scoped! The implementation should be annotated with both
- * {@link org.silverpeas.core.annotation.Technical} and {@link org.silverpeas.core.annotation.Bean}
+ * {@link Technical} and {@link org.silverpeas.core.annotation.Bean}
  * qualifiers.
  * </p>
  * <p>

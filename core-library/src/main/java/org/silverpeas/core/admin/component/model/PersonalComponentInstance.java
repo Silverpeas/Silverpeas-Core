@@ -26,14 +26,14 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * @author Yohann Chastagnier

@@ -27,7 +27,7 @@
 
 <%@ page import="org.apache.commons.lang3.tuple.Pair" %>
 <%@ page import="org.silverpeas.core.admin.PaginationPage" %>
-<%@ page import="org.silverpeas.core.cache.model.SimpleCache" %>
+<%@ page import="org.silverpeas.kernel.cache.model.SimpleCache" %>
 <%@ page import="org.silverpeas.core.cache.service.CacheAccessorProvider" %>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY" %>
 <%@ page import="org.silverpeas.core.util.SilverpeasList" %>

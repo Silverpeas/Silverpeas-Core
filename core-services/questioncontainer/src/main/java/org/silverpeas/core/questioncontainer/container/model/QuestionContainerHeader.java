@@ -32,7 +32,7 @@ import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.text.ParseException;

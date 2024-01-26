@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassifySessionController> {
 

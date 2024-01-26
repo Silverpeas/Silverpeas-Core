@@ -22,12 +22,11 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 
-<%@ page import="org.silverpeas.core.util.logging.Level" %>
-<%@ page import="org.silverpeas.core.util.logging.LoggerConfigurationManager" %>
+<%@ page import="org.silverpeas.kernel.logging.Level" %>
 <%@ page import="org.silverpeas.core.util.logging.LogsAccessor" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
-<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ page import="org.silverpeas.kernel.logging.SilverLoggerProvider" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -51,7 +50,9 @@
   }
   pageContext.setAttribute("loggingLevels", loggingLevels, PageContext.PAGE_SCOPE);
   pageContext.setAttribute("configurations",
-      LoggerConfigurationManager.get().getAvailableLoggerConfigurations(), PageContext.PAGE_SCOPE);
+      SilverLoggerProvider.getInstance()
+              .getConfigurationManager().getAvailableLoggerConfigurations(),
+          PageContext.PAGE_SCOPE);
   pageContext.setAttribute("logs", LogsAccessor.get().getAllLogs(), PageContext.PAGE_SCOPE);
 %>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>

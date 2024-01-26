@@ -35,11 +35,12 @@ import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.SettingBundleStub;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.SettingBundleStub;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -56,7 +57,7 @@ import static org.silverpeas.core.contribution.tracking.ContributionTrackingTest
  * Unit tests on the tracking for updates of contributions.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans({DefaultSilverpeasComponentInstanceProvider.class, Transaction.class})
 class ContributionTrackingUpdateTest {
 

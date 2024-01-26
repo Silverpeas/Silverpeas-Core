@@ -25,14 +25,14 @@ package org.silverpeas.core.util.time;
 
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Technical enum used by {@link Duration} class.

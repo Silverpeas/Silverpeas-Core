@@ -32,10 +32,11 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.mylinks.dao.LinkDAO;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.RequesterProvider;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -45,10 +46,9 @@ import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class DefaultMyLinksServiceTest {
 
   @TestManagedMock

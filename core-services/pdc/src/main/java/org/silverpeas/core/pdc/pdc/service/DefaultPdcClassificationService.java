@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverpeasContentManager;
@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * The default implementation of the PdcClassificationService by using both the JPA-based repository

@@ -29,9 +29,9 @@ import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.FileInputStream;

@@ -61,7 +61,7 @@ public interface CmisObjectsTreeWalker {
    * @return a {@link CmisObjectsTreeWalker} instance
    */
   static CmisObjectsTreeWalker getInstance() {
-    return ServiceProvider.getSingleton(CmisObjectsTreeWalkerDelegator.class);
+    return ServiceProvider.getService(CmisObjectsTreeWalkerDelegator.class);
   }
 
   /**

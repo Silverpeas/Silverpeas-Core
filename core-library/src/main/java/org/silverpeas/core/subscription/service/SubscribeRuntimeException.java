@@ -26,7 +26,7 @@
 
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class SubscribeRuntimeException extends SilverpeasRuntimeException {
 

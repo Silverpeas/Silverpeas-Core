@@ -35,11 +35,11 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class AtLeastXSpecialCharPasswordRuleTest
+class AtLeastXSpecialCharPasswordRuleTest
     extends AbstractPasswordRuleTest<AtLeastXSpecialCharPasswordRule> {
 
   @Test
-  public void testCommons() {
+  void testCommons() {
     AtLeastXSpecialCharPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR));
     assertThat(rule.check("akl _"), is(false));

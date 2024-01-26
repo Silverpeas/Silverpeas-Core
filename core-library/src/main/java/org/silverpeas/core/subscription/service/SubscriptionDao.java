@@ -36,8 +36,8 @@ import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.sql.Connection;
@@ -52,7 +52,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.UNKNOWN;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha

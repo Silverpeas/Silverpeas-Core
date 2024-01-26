@@ -31,8 +31,8 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.dao.PersonalizationRepository;
 import org.silverpeas.core.personalization.notification.UserPreferenceEventNotifier;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

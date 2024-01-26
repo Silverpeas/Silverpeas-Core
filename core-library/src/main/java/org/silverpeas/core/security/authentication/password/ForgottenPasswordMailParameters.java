@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 public class ForgottenPasswordMailParameters {
 

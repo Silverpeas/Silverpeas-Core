@@ -31,7 +31,7 @@ import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

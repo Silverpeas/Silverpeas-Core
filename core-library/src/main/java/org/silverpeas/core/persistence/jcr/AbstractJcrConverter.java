@@ -28,7 +28,7 @@ import org.apache.jackrabbit.JcrConstants;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;

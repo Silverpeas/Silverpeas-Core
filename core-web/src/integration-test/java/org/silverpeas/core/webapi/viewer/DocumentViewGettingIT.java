@@ -72,7 +72,7 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
 
   @Before
   public void setup() throws Exception {
-    ServiceProvider.getSingleton(SimpleDocumentEmbedMediaViewProvider.class).init();
+    ServiceProvider.getService(SimpleDocumentEmbedMediaViewProvider.class).init();
   }
 
   @Singleton

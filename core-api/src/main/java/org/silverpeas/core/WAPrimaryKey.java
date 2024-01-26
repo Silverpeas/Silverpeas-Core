@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core;
 
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+
 import java.io.Serializable;
 
 /**

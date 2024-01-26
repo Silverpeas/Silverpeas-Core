@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 

@@ -46,7 +46,7 @@ public interface Authentication {
    * @return an instance of the implementation of this interface.
    */
   static Authentication get() {
-    return ServiceProvider.getSingleton(Authentication.class);
+    return ServiceProvider.getService(Authentication.class);
   }
 
   /**

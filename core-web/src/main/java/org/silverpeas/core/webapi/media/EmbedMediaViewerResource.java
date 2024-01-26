@@ -25,11 +25,11 @@ package org.silverpeas.core.webapi.media;
 
 import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.kernel.cache.model.Cache;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.ViewService;
@@ -50,7 +50,7 @@ import java.nio.file.Paths;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.viewer.ResourceViewProvider.getAuthorizedResourceView;
 
 /**

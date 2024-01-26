@@ -27,7 +27,7 @@ package org.silverpeas.cmis.walkers;
 
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisFilePath;
 import org.silverpeas.core.cmis.model.CmisFilePathProvider;

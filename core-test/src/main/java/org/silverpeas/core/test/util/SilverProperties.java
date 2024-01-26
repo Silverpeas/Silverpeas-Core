@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.test.util;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
+ * An utility class to load the properties
  * @author Yohann Chastagnier
  */
 public class SilverProperties extends Properties {
 
-  private final Class baseClass;
+  private final Class<?> baseClass;
 
   /**
    * Loads properties of given property file path from a class.<br>
@@ -44,12 +43,12 @@ public class SilverProperties extends Properties {
    * @param propertyFilePaths the paths of files that contains the aimed properties.
    * @return an instance of {@link SilverProperties} that contains requested properties.
    */
-  public static SilverProperties load(Class fromClass, String... propertyFilePaths) {
+  public static SilverProperties load(Class<?> fromClass, String... propertyFilePaths) {
     SilverProperties properties = new SilverProperties(fromClass);
     return properties.load(propertyFilePaths);
   }
 
-  private SilverProperties(final Class baseClass) {
+  private SilverProperties(final Class<?> baseClass) {
     this.baseClass = baseClass;
   }
 
@@ -68,5 +67,15 @@ public class SilverProperties extends Properties {
       }
     }
     return this;
+  }
+
+  @Override
+  public synchronized boolean equals(Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public synchronized int hashCode() {
+    return super.hashCode();
   }
 }

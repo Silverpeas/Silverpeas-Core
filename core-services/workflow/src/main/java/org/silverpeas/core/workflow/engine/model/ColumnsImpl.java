@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Columns;
 

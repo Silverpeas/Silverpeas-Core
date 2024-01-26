@@ -41,7 +41,7 @@ import java.math.RoundingMode;
 import java.util.Date;
 
 import static java.util.EnumSet.of;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -109,16 +109,16 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
   }
 
   /**
-   * Indicates if the quota is well registred
-   * @return
+   * Indicates if the quota is well registered
+   * @return true if this quota exists in Silverpeas.
    */
   public boolean exists() {
     return getId() != null;
   }
 
   /**
-   * Validates data
-   * @throws QuotaException
+   * Validates quota data satisfies the quota rules.
+   * @throws QuotaException if the quota isn't valid.
    */
   public void validate() throws QuotaException {
     if (getType() == null || !isDefined(getResourceId())) {
@@ -128,8 +128,8 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
   }
 
   /**
-   * Validates count data
-   * @throws QuotaException
+   * Validates count data.
+   * @throws QuotaException if the count data aren't valid.
    */
   public void validateBounds() throws QuotaException {
     if (getMinCount() < 0 || getMaxCount() < 0 || getMinCount() > getMaxCount()) {
@@ -139,7 +139,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
 
   /**
    * Indicates by a basic way the load of the data
-   * @return
+   * @return the quota load
    */
   public QuotaLoad getLoad() {
     final QuotaLoad quotaLoad;
@@ -167,7 +167,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
 
   /**
    * Indicates if the quota is reached or not
-   * @return
+   * @return true if the quota is reached. False otherwise.
    */
   public boolean isReached() {
     return exists() && of(QuotaLoad.FULL, QuotaLoad.OUT_OF_BOUNDS).contains(getLoad());
@@ -175,7 +175,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
 
   /**
    * Calculates the load rate of the quota without rounded rounded at 20 decimals
-   * @return
+   * @return the load rate of the quota.
    */
   public BigDecimal getLoadRate() {
     final BigDecimal loadRate;
@@ -191,7 +191,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
 
   /**
    * Calculates the load percentage of the quota rounded at two decimals
-   * @return
+   * @return the load percentage
    */
   public BigDecimal getLoadPercentage() {
     return getLoadRate().multiply(new BigDecimal(String.valueOf(100)))
@@ -264,6 +264,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
   /**
    * @param minCount the minCount to set
    */
+  @SuppressWarnings("unused")
   public void setMinCount(final String minCount) throws QuotaException {
     try {
       setMinCount(Long.parseLong(minCount));
@@ -340,5 +341,15 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
       builder.append("maxcount=").append(getMaxCount());
     }
     return builder.toString();
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    return super.equals(object);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

@@ -27,8 +27,8 @@ import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.mylinks.model.CategoryDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

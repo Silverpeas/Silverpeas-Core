@@ -25,8 +25,8 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 

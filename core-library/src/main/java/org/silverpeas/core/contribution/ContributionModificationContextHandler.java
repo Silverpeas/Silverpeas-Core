@@ -25,7 +25,8 @@ package org.silverpeas.core.contribution;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -35,11 +36,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
-import static org.silverpeas.core.util.StringUtil.fromBase64;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.fromBase64;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This class permits to handle a contribution modification context.
@@ -141,9 +143,11 @@ public class ContributionModificationContextHandler
     return Optional.ofNullable(getThreadCacheAccessor().getCache().get(CACHE_KEY, Context.class));
   }
 
+  @NonNull
   private Context getOrCreateContext() {
-    return getThreadCacheAccessor().getCache()
+    Context context = getThreadCacheAccessor().getCache()
         .computeIfAbsent(CACHE_KEY, Context.class, Context::new);
+    return Objects.requireNonNull(context);
   }
 
   @XmlRootElement

@@ -43,7 +43,7 @@
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       boolean getBooleanValue( java.lang.String )
     </function-signature>
@@ -59,7 +59,7 @@
   <function>
     <description>Function that indicates if the value is a long.</description>
     <name>isLongValue</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       boolean isLong(java.lang.String)
     </function-signature>
@@ -75,7 +75,7 @@
   <function>
     <description>Function that replace regex text parts by a replacement text</description>
     <name>regexReplace</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       java.lang.String regexReplace(java.lang.String,java.lang.String,java.lang.String)
     </function-signature>
@@ -91,7 +91,7 @@
   <function>
     <description>Function that indicates if a String is defined.</description>
     <name>isDefined</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       boolean isDefined( java.lang.String )
     </function-signature>
@@ -99,7 +99,7 @@
   <function>
     <description>Function that indicates if a String is not defined.</description>
     <name>isNotDefined</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       boolean isNotDefined( java.lang.String )
     </function-signature>
@@ -107,7 +107,7 @@
   <function>
     <description>Use empty string if the one passed is not defined.</description>
     <name>defaultEmptyString</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       java.lang.String defaultStringIfNotDefined(java.lang.String)
     </function-signature>
@@ -115,7 +115,7 @@
   <function>
     <description>Use default string if the first passed is not defined.</description>
     <name>defaultString</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       java.lang.String defaultStringIfNotDefined(java.lang.String,java.lang.String))
     </function-signature>
@@ -123,7 +123,7 @@
   <function>
     <description>Truncate the specified text to the specified length if necessary.</description>
     <name>truncate</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       java.lang.String truncate(java.lang.String,int)
     </function-signature>

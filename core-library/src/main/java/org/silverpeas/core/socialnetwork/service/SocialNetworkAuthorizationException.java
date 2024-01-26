@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.service;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class SocialNetworkAuthorizationException extends SilverpeasException {
 

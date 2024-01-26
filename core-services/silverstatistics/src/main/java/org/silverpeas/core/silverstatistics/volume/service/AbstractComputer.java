@@ -26,7 +26,7 @@ package org.silverpeas.core.silverstatistics.volume.service;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.silverstatistics.volume.model.DirectoryStats;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;

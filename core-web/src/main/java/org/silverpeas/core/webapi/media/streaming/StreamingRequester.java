@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.media.streaming;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 
@@ -36,7 +36,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.silverpeas.core.util.HttpUtil.httpClient;
 import static org.silverpeas.core.util.HttpUtil.toUrl;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * @author silveryocha

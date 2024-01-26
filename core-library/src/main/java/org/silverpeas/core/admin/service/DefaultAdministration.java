@@ -70,8 +70,14 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.Process;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -100,7 +106,7 @@ import static org.silverpeas.core.admin.service.DefaultAdministration.CheckoutGr
 import static org.silverpeas.core.admin.service.DefaultAdministration.CheckoutGroupDescriptor.synchronizingOneGroupWithSuperGroupId;
 import static org.silverpeas.core.util.ArrayUtil.contains;
 import static org.silverpeas.core.util.CollectionUtil.intersection;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 /**
  * The class Admin is the main class of the Administrator.
@@ -5457,10 +5463,10 @@ class DefaultAdministration implements Administration {
     try {
       pasteDetail.setToComponentId(sComponentId);
       ApplicationResourcePasting componentPaste =
-          ServiceProvider.getServiceByComponentInstanceAndNameSuffix(
+          ServiceProvider.getService(
               pasteDetail.getFromComponentId(), ApplicationResourcePasting.NAME_SUFFIX);
       componentPaste.paste(pasteDetail);
-    } catch (IllegalStateException e) {
+    } catch (SilverpeasRuntimeException e) {
       SilverLogger.getLogger(this).silent(e);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);

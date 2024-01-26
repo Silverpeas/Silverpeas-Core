@@ -32,7 +32,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.Link;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +45,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import static org.silverpeas.core.ui.DisplayI18NHelper.verifyLanguage;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This implementation of {@link UserNotification} permits to send a simple user notification,

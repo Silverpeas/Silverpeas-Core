@@ -47,8 +47,8 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -96,7 +96,7 @@ public class ContributionModificationTrackingIT {
     assertThat(publicationService, notNullValue());
 
     File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    SystemWrapper.getInstance().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     WAComponentRegistry.get().init();
   }
 

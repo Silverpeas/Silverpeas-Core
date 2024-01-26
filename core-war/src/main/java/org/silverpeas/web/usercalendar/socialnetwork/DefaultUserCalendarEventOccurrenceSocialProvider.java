@@ -34,7 +34,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.socialnetwork.provider.SocialEventProvider;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.calendar.socialnetwork.CalendarEventOccurrenceSocialInformation;
 import org.silverpeas.core.webapi.calendar.CalendarResourceURIs;
 import org.silverpeas.core.webapi.calendar.CalendarWebManager;
@@ -62,7 +62,7 @@ import static java.util.Collections.singleton;
 import static java.util.stream.Stream.empty;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.admin.component.model.PersonalComponentInstance.from;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * For now, this implementation is alternative to

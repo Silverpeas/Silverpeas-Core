@@ -32,7 +32,7 @@ public class PersonalizationServiceProvider {
    * @return a PersonalizationService instance.
    */
   public static PersonalizationService getPersonalizationService() {
-    return ServiceProvider.getSingleton(PersonalizationService.class);
+    return ServiceProvider.getService(PersonalizationService.class);
   }
 
   private PersonalizationServiceProvider() {

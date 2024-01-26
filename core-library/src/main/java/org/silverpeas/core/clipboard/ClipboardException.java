@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.clipboard;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /*
  * @author Dominique Blot

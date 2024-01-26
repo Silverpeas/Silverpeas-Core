@@ -31,7 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.exception.RelativeFileAccessException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.File;
@@ -48,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author ehugonnet
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class FileUtilTest {
 
   private File rootFolder;

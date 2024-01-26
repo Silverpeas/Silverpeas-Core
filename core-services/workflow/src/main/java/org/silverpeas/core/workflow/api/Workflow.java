@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.workflow.api;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
 import java.util.HashMap;

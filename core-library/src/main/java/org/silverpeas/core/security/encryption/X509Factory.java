@@ -24,12 +24,12 @@
 package org.silverpeas.core.security.encryption;
 
 import net.sourceforge.jcetaglib.lib.X509Cert;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.security.authentication.password.encryption.UnixDESEncryption;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.lang.SystemWrapper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.SystemWrapper;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -56,7 +56,7 @@ public class X509Factory {
 
   static {
     SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.util.security");
-    String home = SystemWrapper.get().getenv("SILVERPEAS_HOME");
+    String home = SystemWrapper.getInstance().getenv("SILVERPEAS_HOME");
     Path defaultTrustStorePath = Path.of(home, "configuration", "security", "servercert");
     Path defaultP12DirPath = Path.of(home, "configuration", "security", "p12");
 

@@ -36,7 +36,7 @@ import javax.ws.rs.WebApplicationException;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * @author silveryocha

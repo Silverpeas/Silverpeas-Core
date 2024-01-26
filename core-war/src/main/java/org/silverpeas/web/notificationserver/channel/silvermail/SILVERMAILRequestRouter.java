@@ -23,24 +23,14 @@
  */
 package org.silverpeas.web.notificationserver.channel.silvermail;
 
-/**
- * Titre : SILVERMAILRequestRouter.java
- * @author eDurand
- */
-
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Class declaration
- */
 public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSessionController> {
   private static final long serialVersionUID = -1666867964822716456L;
 
@@ -55,12 +45,6 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
    * useBean actions in the JSPs.
    */
   private static final String SESSION_BEAN_NAME = "SILVERMAIL";
-
-  /**
-   * Hash table of RequestHandler instances, keyed by class name. This is used for performance
-   * optimization, to avoid the need to load a class by name to process each request.
-   */
-  private static final Map<String, SILVERMAILRequestHandler> handlerHash = new HashMap<>();
 
   public SILVERMAILSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
@@ -77,7 +61,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
 
   public String getDestination(String action, SILVERMAILSessionController componentSC,
       HttpRequest request) {
-    String destination = "/SILVERMAIL/jsp/" + action;
+    String destination;
     String function = extractFunctionName(action);
 
     // If we have an action parameter, obtain the RequestHandler that implements
@@ -107,7 +91,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
       throws SILVERMAILException {
     try {
       return ServiceProvider.getService(action);
-    } catch (IllegalStateException e) {
+    } catch (SilverpeasRuntimeException e) {
       final String handlerName = REQUEST_HANDLER_PACKAGE + "." + action;
       throw new SILVERMAILException("No such request handler " + handlerName, e);
     }

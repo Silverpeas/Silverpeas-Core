@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -46,7 +46,7 @@ public class EntityManagerProvider {
   private EntityManager em;
 
   public static EntityManagerProvider get() {
-    return ServiceProvider.getSingleton(EntityManagerProvider.class);
+    return ServiceProvider.getService(EntityManagerProvider.class);
   }
 
   public EntityManager getEntityManager() {

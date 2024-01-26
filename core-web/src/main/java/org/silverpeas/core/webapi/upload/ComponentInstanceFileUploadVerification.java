@@ -24,7 +24,8 @@
 package org.silverpeas.core.webapi.upload;
 
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.util.Optional;
@@ -68,8 +69,8 @@ public interface ComponentInstanceFileUploadVerification {
   static Optional<ComponentInstanceFileUploadVerification> get(String componentInstanceId) {
     try {
       return Optional.of(ServiceProvider
-          .getServiceByComponentInstanceAndNameSuffix(componentInstanceId, NAME_SUFFIX));
-    } catch (IllegalStateException e) {
+          .getService(componentInstanceId, NAME_SUFFIX));
+    } catch (SilverpeasRuntimeException e) {
       SilverLogger.getLogger(ComponentInstanceFileUploadVerification.class).warn(e);
       return Optional.empty();
     }

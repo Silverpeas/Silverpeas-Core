@@ -28,9 +28,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -49,7 +50,7 @@ import static org.silverpeas.core.util.Charsets.UTF_8;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class DocumentTemplateServiceTest {
 
   private static final  DocumentTemplate DEFAULT_TEMPLATE = new DocumentTemplate(decode(DEFAULT_JSON), "txt");

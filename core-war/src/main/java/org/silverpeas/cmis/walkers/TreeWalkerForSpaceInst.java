@@ -42,7 +42,7 @@ import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;

@@ -24,9 +24,9 @@
 package org.silverpeas.core.thread;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedThreadFactory;
@@ -74,7 +74,7 @@ public class ManagedThreadPool {
    * in different the threads of the pool.
    */
   public static ManagedThreadPool getPool() {
-    return ServiceProvider.getSingleton(ManagedThreadPool.class);
+    return ServiceProvider.getService(ManagedThreadPool.class);
   }
 
   /**

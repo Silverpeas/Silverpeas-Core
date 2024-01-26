@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chart;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 
 import java.lang.reflect.Constructor;

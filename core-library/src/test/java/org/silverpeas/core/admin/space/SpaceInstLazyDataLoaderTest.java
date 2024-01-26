@@ -26,11 +26,12 @@ package org.silverpeas.core.admin.space;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +49,7 @@ import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SpaceInstLazyDataLoaderTest {
 
   private long lastLogTime = -1;

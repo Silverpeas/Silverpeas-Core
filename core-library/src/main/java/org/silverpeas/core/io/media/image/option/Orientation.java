@@ -25,7 +25,7 @@ package org.silverpeas.core.io.media.image.option;
 
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.util.StringUtil.isInteger;
+import static org.silverpeas.kernel.util.StringUtil.isInteger;
 
 /**
  * @author Yohann Chastagnier

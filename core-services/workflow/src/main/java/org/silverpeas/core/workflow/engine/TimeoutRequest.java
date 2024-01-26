@@ -3,7 +3,7 @@ package org.silverpeas.core.workflow.engine;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;

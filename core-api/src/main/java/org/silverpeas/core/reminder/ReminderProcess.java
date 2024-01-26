@@ -30,7 +30,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,7 +49,7 @@ public class ReminderProcess implements SchedulerEventListener {
   private ReminderRepository repository;
 
   public static ReminderProcess get() {
-    return ServiceProvider.getSingleton(ReminderProcess.class);
+    return ServiceProvider.getService(ReminderProcess.class);
   }
 
   @Override

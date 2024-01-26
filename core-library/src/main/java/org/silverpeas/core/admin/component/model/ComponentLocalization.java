@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -34,7 +34,7 @@ import static java.util.Optional.of;
 import static java.util.function.Predicate.not;
 import static org.silverpeas.core.ui.DisplayI18NHelper.getDefaultLanguage;
 import static org.silverpeas.core.ui.DisplayI18NHelper.getLanguages;
-import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle;
 
 /**
  * This is the main implementation of the mechanism in charge of the localized data providing.

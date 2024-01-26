@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.persistence;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

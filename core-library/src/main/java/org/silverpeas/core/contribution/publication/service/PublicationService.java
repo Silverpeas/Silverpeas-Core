@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.publication.social.SocialInformationPubl
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -55,7 +55,7 @@ public interface PublicationService {
    * @return a {@link PublicationService} object.
    */
   static PublicationService get() {
-    return ServiceProvider.getSingleton(PublicationService.class);
+    return ServiceProvider.getService(PublicationService.class);
   }
 
   /**

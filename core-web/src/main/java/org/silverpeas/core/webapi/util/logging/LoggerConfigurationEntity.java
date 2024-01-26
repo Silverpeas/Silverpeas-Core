@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.util.logging;
 
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.LoggerConfigurationManager;
-import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 import org.silverpeas.core.web.rs.WebEntity;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.LoggerConfigurationManager.LoggerConfiguration;
+import org.silverpeas.kernel.logging.SilverLoggerProvider;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;
@@ -43,14 +43,16 @@ public class LoggerConfigurationEntity implements WebEntity {
    * Constant that defines the level of a logger is the one of one of its parent. It is defaulted
    * to one of its parent logger.
    */
-  public static String PARENT_LEVEL = "PARENT";
+  public static final String PARENT_LEVEL = "PARENT";
 
   @XmlElement(defaultValue = "")
   private URI uri;
   private String logger;
   private String level;
 
-  private LoggerConfigurationEntity() {
+  @SuppressWarnings("unused")
+  protected LoggerConfigurationEntity() {
+    // for serialization from JSON
   }
 
   private LoggerConfigurationEntity(String logger, String level) {
@@ -94,16 +96,14 @@ public class LoggerConfigurationEntity implements WebEntity {
 
   public LoggerConfiguration toLoggerConfiguration() {
     Level loggingLevel = (isLevelDefined(getLevel()) ? Level.valueOf(getLevel()) : null);
-    return LoggerConfigurationManager.get()
+    return SilverLoggerProvider.getInstance()
+        .getConfigurationManager()
         .getLoggerConfiguration(getLogger())
         .withLevel(loggingLevel);
   }
 
   private boolean isLevelDefined(String level) {
-    return Arrays.asList(Level.values())
-        .stream()
-        .filter(l -> l.name().equals(level))
-        .findFirst()
-        .isPresent();
+    return Arrays.stream(Level.values())
+        .anyMatch(l -> l.name().equals(level));
   }
 }

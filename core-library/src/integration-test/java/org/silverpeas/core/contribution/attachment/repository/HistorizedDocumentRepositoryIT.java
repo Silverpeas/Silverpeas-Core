@@ -46,8 +46,7 @@ import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.annotation.TimeMeasuring;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.jcr.JCRSession;
 

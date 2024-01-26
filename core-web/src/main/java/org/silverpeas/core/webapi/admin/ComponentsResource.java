@@ -39,7 +39,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.COMPONENTS_BASE_URI;
 
 /**

@@ -33,14 +33,14 @@
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author neysseri

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /*
  * @author Norbert CHAIX

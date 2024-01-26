@@ -29,9 +29,9 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mylinks.model.CategoryDetail;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 import javax.inject.Inject;
@@ -41,8 +41,8 @@ import java.util.List;
 
 import static java.lang.String.valueOf;
 import static java.util.Collections.emptyList;
-import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 
 /**
@@ -60,7 +60,7 @@ public class MyLinksWebManager {
   }
 
   public static MyLinksWebManager get() {
-    return ServiceProvider.getSingleton(MyLinksWebManager.class);
+    return ServiceProvider.getService(MyLinksWebManager.class);
   }
 
   /**

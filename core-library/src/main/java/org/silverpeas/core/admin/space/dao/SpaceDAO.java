@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.component.dao.CommonDAO;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.scheduler;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 

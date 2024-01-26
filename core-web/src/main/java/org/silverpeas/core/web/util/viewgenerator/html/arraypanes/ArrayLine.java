@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;

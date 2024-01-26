@@ -26,7 +26,7 @@
 package org.silverpeas.core.web.rs;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;

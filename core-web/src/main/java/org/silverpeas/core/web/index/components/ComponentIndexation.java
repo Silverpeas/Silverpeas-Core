@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.index.components;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 
 import static org.silverpeas.core.index.indexing.model.IndexEngineProxy.removeScopedIndexEntries;

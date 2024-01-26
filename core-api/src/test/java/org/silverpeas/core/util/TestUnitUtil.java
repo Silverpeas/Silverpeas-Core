@@ -26,7 +26,7 @@ package org.silverpeas.core.util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.core.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.math.BigDecimal;
@@ -150,12 +150,6 @@ class TestUnitUtil extends AbstractUnitTest {
     assertFormatValue(formatMemSize(new BigDecimal("1023"), MemoryUnit.GB), "1023 Go");
   }
 
-  /**
-   * Centralized assert
-   *
-   * @param test
-   * @param expected
-   */
   private void assertFormatValue(String test, String expected) {
     assertThat(test.replaceAll("[ \u00a0]", "").replace(',', '.'), is(expected.replaceAll(" ", "")));
   }

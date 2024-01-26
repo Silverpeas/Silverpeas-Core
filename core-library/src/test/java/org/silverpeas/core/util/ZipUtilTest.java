@@ -28,14 +28,21 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.util.MavenTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.TestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Enumeration;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import static java.io.File.separatorChar;
@@ -45,38 +52,34 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author ehugonnet
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ZipUtilTest {
 
-  private File tempDir;
+  private Path tempDir;
+  private final TestContext ctx = TestContext.getInstance();
 
   @BeforeEach
-  public void setUpClass(MavenTestEnv mavenTestEnv) throws Exception {
-    tempDir = new File(mavenTestEnv.getBuildDirFile(), "zipdir");
-    tempDir.mkdirs();
+  public void setUpClass() throws IOException {
+    tempDir = ctx.getPathOfBuildDirectory().resolve("zipdir");
+    Files.createDirectories(tempDir);
   }
 
   @AfterEach
-  public void tearDownClass() throws Exception {
-    FileUtils.deleteQuietly(tempDir);
+  public void tearDownClass() {
+    FileUtils.deleteQuietly(tempDir.toFile());
   }
 
-  /**
-   * Test of compressPathToZip method, of class ZipManager.
-   * @throws Exception
-   */
   @Test
-  void testCompressPathToZip(MavenTestEnv mavenTestEnv) throws Exception {
-    File path = new File(mavenTestEnv.getResourceTestDirFile(), "ZipSample");
-    File outfile = new File(tempDir, "testCompressPathToZip.zip");
+  void testCompressPathToZip() throws Exception {
+    File path = ctx.getPathOfTestResources().resolve("ZipSample").toFile();
+    File outfile = tempDir.resolve("testCompressPathToZip.zip").toFile();
     ZipUtil.compressPathToZip(path, outfile);
-    ZipFile zipFile = new ZipFile(outfile, Charsets.UTF_8.name());
-    try {
+    try (ZipFile zipFile = new ZipFile(outfile, Charsets.UTF_8.name())) {
       Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
       assertThat(zipFile.getEncoding(), is(Charsets.UTF_8.name()));
       int nbEntries = 0;
       while (entries.hasMoreElements()) {
-        ZipEntry entry = entries.nextElement();
+        entries.nextElement();
         nbEntries++;
       }
       assertThat(nbEntries, is(5));
@@ -86,31 +89,25 @@ class ZipUtilTest {
       assertThat(zipFile.getEntry("ZipSample/level1/level2a/simple.txt"), is(notNullValue()));
 
       ZipEntry accentuatedEntry = zipFile
-          .getEntry("ZipSample/level1/level2a/s\u00efmplifi\u00e9.txt");
+          .getEntry("ZipSample/level1/level2a/sïmplifié.txt");
       if (accentuatedEntry == null) {
         accentuatedEntry = zipFile.getEntry("ZipSample/level1/level2a/" +
-            new String("sïmplifié.txt".getBytes("UTF-8"), Charset.defaultCharset()));
+            new String("sïmplifié.txt".getBytes(StandardCharsets.UTF_8), Charset.defaultCharset()));
       }
       assertThat(accentuatedEntry, is(notNullValue()));
       assertThat(zipFile.getEntry("ZipSample/level1/level2c/"), is(nullValue()));
-    } finally {
-      zipFile.close();
     }
   }
 
-  /**
-   * Test of compressStreamToZip method, of class ZipManager.
-   * @throws Exception
-   */
   @Test
   void testCompressStreamToZip() throws Exception {
     InputStream inputStream = this.getClass().getClassLoader()
         .getResourceAsStream("FrenchScrum.odp");
     String filePathNameToCreate =
         separatorChar + "dir1" + separatorChar + "dir2" + separatorChar + "FrenchScrum.odp";
-    File outfile = new File(tempDir, "testCompressStreamToZip.zip");
+    File outfile = tempDir.resolve("testCompressStreamToZip.zip").toFile();
     ZipUtil.compressStreamToZip(inputStream, filePathNameToCreate, outfile.getPath());
-    inputStream.close();
+    Objects.requireNonNull(inputStream).close();
     assertThat(outfile, is(notNullValue()));
     assertThat(outfile.exists(), is(true));
     assertThat(outfile.isFile(), is(true));
@@ -121,124 +118,105 @@ class ZipUtilTest {
     zipFile.close();
   }
 
-  /**
-   * Test of extract method, of class ZipManager.
-   */
   @Test
-  void testExtractZipFromLinux(MavenTestEnv mavenTestEnv) {
-    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromLinux.zip");
-    File dest = new File(tempDir, "extract");
-    dest.mkdirs();
-    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+  void testExtractZipFromLinux() throws IOException {
+    Path source = ctx.getPathOfTestResources().resolve("testExtractZipFromLinux.zip");
+    Path dest = tempDir.resolve("extract");
+    Files.createDirectories(dest);
+    final Optional<String> encodingUsed = ZipUtil.extract(source.toFile(), dest.toFile());
     assertThat(encodingUsed.isPresent(), is(true));
-    assertThat(dest.list(), notNullValue());
-    assertThat(dest.list().length, not(is(0)));
+    try(Stream<Path> children = Files.list(dest)) {
+      assertThat(children.count(), is(not(0)));
+    }
   }
 
-  /**
-   * Test of extract method, of class ZipManager.
-   */
   @Test
-  void testExtractZipFrom7ZipWithoutAccent(MavenTestEnv mavenTestEnv) {
-    File source = new File(mavenTestEnv.getResourceTestDirFile(),
-        "testExtractZipFrom7ZipWithoutAccent.zip");
-    File dest = new File(tempDir, "extract");
-    dest.mkdirs();
-    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+  void testExtractZipFrom7ZipWithoutAccent() throws IOException {
+    Path source = ctx.getPathOfTestResources().resolve("testExtractZipFrom7ZipWithoutAccent.zip");
+    Path dest = tempDir.resolve("extract");
+    Files.createDirectories(dest);
+    final Optional<String> encodingUsed = ZipUtil.extract(source.toFile(), dest.toFile());
     assertThat(encodingUsed.isPresent(), is(true));
-    assertThat(dest.list(), notNullValue());
-    assertThat(dest.list().length, not(is(0)));
+    try(Stream<Path> children = Files.list(dest)) {
+      assertThat(children.count(), is(not(0)));
+    }
   }
 
   /**
    * Test of extract method, of class ZipManager.
    */
   @Test
-  void testExtractZipFrom7Zip(MavenTestEnv mavenTestEnv) {
-    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFrom7Zip.zip");
-    File dest = new File(tempDir, "extract");
-    dest.mkdirs();
-    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+  void testExtractZipFrom7Zip() throws IOException {
+    Path source = ctx.getPathOfTestResources().resolve("testExtractZipFrom7Zip.zip");
+    Path dest = tempDir.resolve("extract");
+    Files.createDirectories(dest);
+    final Optional<String> encodingUsed = ZipUtil.extract(source.toFile(), dest.toFile());
     assertThat(encodingUsed.isPresent(), is(true));
-    assertThat(dest.list(), notNullValue());
-    assertThat(dest.list().length, not(is(0)));
+    try(Stream<Path> children = Files.list(dest)) {
+      assertThat(children.count(), is(not(0)));
+    }
   }
 
-  /**
-   * Test of extract method, of class ZipManager.
-   */
   @Test
-  void testExtractZipFromWindows(MavenTestEnv mavenTestEnv) {
-    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromWindows.zip");
-    File dest = new File(tempDir, "extract");
-    dest.mkdirs();
-    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+  void testExtractZipFromWindows() throws IOException {
+    Path source = ctx.getPathOfTestResources().resolve("testExtractZipFromWindows.zip");
+    Path dest = tempDir.resolve("extract");
+    Files.createDirectories(dest);
+    final Optional<String> encodingUsed = ZipUtil.extract(source.toFile(), dest.toFile());
     assertThat(encodingUsed.isPresent(), is(true));
-    assertThat(dest.list(), notNullValue());
-    assertThat(dest.list().length, not(is(0)));
+    try(Stream<Path> children = Files.list(dest)) {
+      assertThat(children.count(), is(not(0)));
+    }
   }
 
-  /**
-   * Test of extract method, of class ZipManager.
-   */
   @Test
-  void testExtractZipFromMacos(MavenTestEnv mavenTestEnv) {
-    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromMacos.zip");
-    File dest = new File(tempDir, "extract");
-    dest.mkdirs();
-    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+  void testExtractZipFromMacos() throws IOException {
+    Path source = ctx.getPathOfTestResources().resolve("testExtractZipFromMacos.zip");
+    Path dest = tempDir.resolve("extract");
+    Files.createDirectories(dest);
+    final Optional<String> encodingUsed = ZipUtil.extract(source.toFile(), dest.toFile());
     assertThat(encodingUsed.isPresent(), is(true));
-    assertThat(dest.list(), notNullValue());
-    assertThat(dest.list().length, not(is(0)));
+    try(Stream<Path> children = Files.list(dest)) {
+      assertThat(children.count(), is(not(0)));
+    }
   }
 
-  /**
-   * Test of extract method, of class ZipManager.
-   * @throws Exception
-   */
   @Test
-  void testExtractTarGz(MavenTestEnv mavenTestEnv) throws Exception {
-    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.tar.gz");
-    File dest = new File(tempDir, "extract-tar");
-    dest.mkdirs();
-    ZipUtil.extract(source, dest);
-    assertThat(dest, is(notNullValue()));
-    File uncompressedDir = new File(dest, "ZipSample");
-    assertThat(uncompressedDir.exists(), is(true));
-    assertThat(uncompressedDir.isDirectory(), is(true));
-    assertThat(uncompressedDir.list().length, is(2));
+  void testExtractTarGz() throws IOException {
+    Path source = ctx.getPathOfTestResources().resolve("testExtract.tar.gz");
+    Path dest = tempDir.resolve("extract-tar");
+    Files.createDirectories(dest);
+    ZipUtil.extract(source.toFile(), dest.toFile());
+    Path uncompressedDir = dest.resolve("ZipSample");
+    assertThat(Files.exists(uncompressedDir), is(true));
+    assertThat(Files.isDirectory(uncompressedDir), is(true));
+    try(Stream<Path> children = Files.list(uncompressedDir)) {
+      assertThat(children.count(), is(not(2)));
+    }
   }
 
-  /**
-   * Test of extract method, of class ZipManager.
-   * @throws Exception
-   */
   @Test
-  void testExtractTarBz2(MavenTestEnv mavenTestEnv) throws Exception {
-    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.tar.bz2");
-    File dest = new File(tempDir, "extract-bz2");
-    dest.mkdirs();
-    ZipUtil.extract(source, dest);
-    assertThat(dest, is(notNullValue()));
-    File uncompressedDir = new File(dest, "ZipSample");
-    assertThat(uncompressedDir.exists(), is(true));
-    assertThat(uncompressedDir.isDirectory(), is(true));
-    assertThat(uncompressedDir.list().length, is(2));
+  void testExtractTarBz2() throws Exception {
+    Path source = ctx.getPathOfTestResources().resolve("testExtract.tar.bz2");
+    Path dest = tempDir.resolve("extract-bz2");
+    Files.createDirectories(dest);
+    ZipUtil.extract(source.toFile(), dest.toFile());
+    Path uncompressedDir = dest.resolve("ZipSample");
+    assertThat(Files.exists(uncompressedDir), is(true));
+    assertThat(Files.isDirectory(uncompressedDir), is(true));
+    try(Stream<Path> children = Files.list(uncompressedDir)) {
+      assertThat(children.count(), is(not(2)));
+    }
   }
 
-  /**
-   * Test of getNbFiles method, of class ZipManager.
-   * @throws Exception
-   */
   @Test
-  void testGetNbFiles(MavenTestEnv mavenTestEnv) throws Exception {
-    File path = new File(mavenTestEnv.getResourceTestDirFile(), "ZipSample");
-    File outfile = new File(tempDir, "testGetNbFiles.zip");
-    ZipUtil.compressPathToZip(path, outfile);
-    assertThat(outfile, is(notNullValue()));
-    assertThat(outfile.exists(), is(true));
-    assertThat(outfile.isFile(), is(true));
-    int result = ZipUtil.getNbFiles(outfile);
+  void testGetNbFiles() throws Exception {
+    Path path = ctx.getPathOfTestResources().resolve("ZipSample");
+    Path outfile = tempDir.resolve("testGetNbFiles.zip");
+    ZipUtil.compressPathToZip(path.toFile(), outfile.toFile());
+    assertThat(Files.exists(outfile), is(true));
+    assertThat(Files.isRegularFile(outfile), is(true));
+    int result = ZipUtil.getNbFiles(outfile.toFile());
     assertThat(result, is(5));
   }
 }

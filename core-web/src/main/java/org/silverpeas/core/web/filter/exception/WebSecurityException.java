@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.filter.exception;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

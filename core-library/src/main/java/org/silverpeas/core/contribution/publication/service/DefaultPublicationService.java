@@ -75,13 +75,14 @@ import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Pagination;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -801,7 +802,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try {
       SeeAlsoDAO.deleteLink(id);
     } catch (Exception e) {
-      throw new org.silverpeas.core.SilverpeasRuntimeException("Can't delete seeAlso "+id, e);
+      throw new SilverpeasRuntimeException("Can't delete seeAlso "+id, e);
     }
   }
 
@@ -1313,7 +1314,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private boolean isRatingEnabled(PublicationPK pk) {
     WAComponent componentDefinition = WAComponent.getByInstanceId(pk.getInstanceId())
-        .orElseThrow(() -> new org.silverpeas.core.SilverpeasRuntimeException(
+        .orElseThrow(() -> new SilverpeasRuntimeException(
             "The component instance '" + pk.getInstanceId() + " doesn't exit!"));
     return componentDefinition.hasParameterDefined("publicationRating");
   }

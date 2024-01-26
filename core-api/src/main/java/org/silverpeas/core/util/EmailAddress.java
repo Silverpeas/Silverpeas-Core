@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;

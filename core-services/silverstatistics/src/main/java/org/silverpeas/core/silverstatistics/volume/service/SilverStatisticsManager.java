@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
@@ -36,10 +36,10 @@ import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConfigE
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.File;
@@ -119,7 +119,7 @@ public class SilverStatisticsManager implements Initialization {
    * @return the instance of silver statistics manager
    */
   public static SilverStatisticsManager getInstance() {
-    return ServiceProvider.getSingleton(SilverStatisticsManager.class);
+    return ServiceProvider.getService(SilverStatisticsManager.class);
   }
 
   /**

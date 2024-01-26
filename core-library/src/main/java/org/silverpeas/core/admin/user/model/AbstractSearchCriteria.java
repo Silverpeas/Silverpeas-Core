@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.user.model;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;

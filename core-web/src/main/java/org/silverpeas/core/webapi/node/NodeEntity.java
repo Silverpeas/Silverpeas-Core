@@ -29,7 +29,7 @@ import org.silverpeas.core.i18n.BeanTranslation;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.xml.bind.annotation.XmlElement;

@@ -29,7 +29,7 @@ import com.carrotsearch.junitbenchmarks.annotation.BenchmarkMethodChart;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,7 +48,7 @@ public class RegExp1Test {
   @Rule
   public TestRule benchmarkRun = new BenchmarkRule();
 
-  private static final String EXPECTED_PACKAGE = "silverpeas.core.util.logging";
+  private static final String EXPECTED_PACKAGE = "silverpeas.kernel.logging";
   private static final String PREFIX = "org.silverpeas";
   private static final Pattern patternNamespace =
       Pattern.compile("org\\.(silverpeas[.a-z]*)");

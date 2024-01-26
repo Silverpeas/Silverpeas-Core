@@ -26,14 +26,14 @@ package org.silverpeas.core.web.session;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * A Silverpeas user session built upon the HTTP session created by the underlying web server.

@@ -31,9 +31,9 @@ import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.File;
@@ -185,7 +185,7 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     }
 
     @Override
-    public Void call() throws Exception {
+    public Void call() {
       // Calculating the date from which files and directories should be deleted from their date
       // of last modification. (from offset specified in milliseconds)
       final ZonedDateTime age = ZonedDateTime.now().minus(millisecondOffset, ChronoUnit.MILLIS);

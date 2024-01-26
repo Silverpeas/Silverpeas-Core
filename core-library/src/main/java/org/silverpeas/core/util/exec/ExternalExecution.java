@@ -25,8 +25,8 @@ package org.silverpeas.core.util.exec;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

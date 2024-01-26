@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;

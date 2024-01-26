@@ -39,14 +39,14 @@ import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailServiceProvider;
 import org.silverpeas.core.util.ImageUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
@@ -64,7 +64,7 @@ import static org.silverpeas.core.io.media.image.ImageToolDirective.GEOMETRY_SHR
 import static org.silverpeas.core.io.media.image.ImageToolDirective.PREVIEW_WORK;
 import static org.silverpeas.core.io.media.image.option.CropOption.crop;
 import static org.silverpeas.core.io.media.image.option.DimensionOption.widthAndHeight;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.util.file.FileUploadUtil.getParameter;
 
 @Service

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.scheduler;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * A listener of events generating within the scheduling system and about scheduled jobs. All

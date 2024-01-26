@@ -33,7 +33,7 @@ import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipDao;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipEventNotifier;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

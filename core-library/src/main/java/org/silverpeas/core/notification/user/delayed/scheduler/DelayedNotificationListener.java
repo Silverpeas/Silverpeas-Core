@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.notification.user.delayed.scheduler;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * @author Yohann Chastagnier

@@ -70,14 +70,14 @@ import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.io.File;

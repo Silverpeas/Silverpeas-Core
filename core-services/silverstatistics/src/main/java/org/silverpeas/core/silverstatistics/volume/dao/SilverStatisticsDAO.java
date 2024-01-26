@@ -25,7 +25,7 @@ package org.silverpeas.core.silverstatistics.volume.dao;
 
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.*;
 import java.util.List;

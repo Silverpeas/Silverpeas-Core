@@ -26,7 +26,7 @@ package org.silverpeas.web.jobstartpage;
 
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController;
 
 import java.util.ArrayList;
@@ -38,8 +38,8 @@ import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.web.jobstartpage.DisplaySorted.TYPE_SPACE;
 import static org.silverpeas.web.jobstartpage.DisplaySorted.TYPE_SUBSPACE;
 

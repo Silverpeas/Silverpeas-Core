@@ -31,8 +31,8 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.EmailAddress;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 
 import java.util.ArrayList;

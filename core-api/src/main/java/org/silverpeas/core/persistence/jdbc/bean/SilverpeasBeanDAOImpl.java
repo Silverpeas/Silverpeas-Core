@@ -27,8 +27,8 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;

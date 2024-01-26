@@ -33,7 +33,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface ComponentAccessControl extends AccessController<String> {
 
   static ComponentAccessControl get() {
-    return ServiceProvider.getSingleton(ComponentAccessControl.class);
+    return ServiceProvider.getService(ComponentAccessControl.class);
   }
 
   @Override

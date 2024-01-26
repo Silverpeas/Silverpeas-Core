@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.util.DateUtil;

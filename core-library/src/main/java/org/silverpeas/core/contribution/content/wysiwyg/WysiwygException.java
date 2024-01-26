@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class WysiwygException extends SilverpeasException {
 

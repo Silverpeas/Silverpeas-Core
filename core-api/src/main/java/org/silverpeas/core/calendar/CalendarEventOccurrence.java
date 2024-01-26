@@ -37,7 +37,7 @@ import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.reminder.WithReminder;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.ResourcePath;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 

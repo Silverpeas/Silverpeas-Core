@@ -29,7 +29,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.util.LinkedList;

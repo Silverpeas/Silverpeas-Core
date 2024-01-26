@@ -28,7 +28,7 @@ package org.silverpeas.core.web.mvc.util;
 
 import org.silverpeas.core.exception.FromModule;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.rmi.RemoteException;
 import java.util.Collection;

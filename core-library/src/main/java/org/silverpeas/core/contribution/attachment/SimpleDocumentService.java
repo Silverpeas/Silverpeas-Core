@@ -57,16 +57,16 @@ import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -88,8 +88,8 @@ import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.contribution.attachment.SimpleDocumentServiceContext.canUnlockNotifyUpdateFromRequestContext;
 import static org.silverpeas.core.contribution.attachment.SimpleDocumentServiceContext.unlockMustNotNotifyUpdateIntoRequestContext;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.*;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.normalize;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.normalize;
 
 /**
  * @author ehugonnet

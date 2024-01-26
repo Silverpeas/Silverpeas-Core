@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Exception thrown when an error occurred while generating a view or a preview of a document.

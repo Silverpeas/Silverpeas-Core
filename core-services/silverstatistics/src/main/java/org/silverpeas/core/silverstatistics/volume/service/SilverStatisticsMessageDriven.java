@@ -24,7 +24,7 @@
 package org.silverpeas.core.silverstatistics.volume.service;
 
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

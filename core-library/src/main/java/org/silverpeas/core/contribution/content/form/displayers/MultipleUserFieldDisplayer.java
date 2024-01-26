@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.html.plugin.UserGroupSelectProducer;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 
 import java.io.PrintWriter;

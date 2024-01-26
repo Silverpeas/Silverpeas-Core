@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.sse.behavior.SendEveryAmountOfTime;
 import org.silverpeas.core.scheduler.Job;
@@ -35,7 +35,7 @@ import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import org.silverpeas.core.util.Process;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -68,7 +68,7 @@ public class ServerEventWaitForManager {
   }
 
   public static ServerEventWaitForManager get() {
-    return ServiceProvider.getSingleton(ServerEventWaitForManager.class);
+    return ServiceProvider.getService(ServerEventWaitForManager.class);
   }
 
   /**

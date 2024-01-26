@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.directory;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Thrown by the directory service

@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
 
 import javax.inject.Inject;

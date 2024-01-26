@@ -48,7 +48,7 @@ package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
 * @author Yohann Chastagnier

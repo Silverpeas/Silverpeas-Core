@@ -31,7 +31,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -49,7 +49,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * This class represents the old Content Management API. It is a gateway for all of the silverpeas

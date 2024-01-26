@@ -24,7 +24,7 @@
 package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.webapi.mylinks.MyLinksWebManager;
 

@@ -34,7 +34,7 @@ import org.apache.jackrabbit.oak.plugins.document.LeaseCheckMode;
 import org.apache.jackrabbit.oak.plugins.document.Path;
 import org.apache.jackrabbit.oak.plugins.document.mongo.MongoDocumentNodeStoreBuilder;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.impl.oak.configuration.DocumentNodeStoreConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.OakRepositoryConfiguration;

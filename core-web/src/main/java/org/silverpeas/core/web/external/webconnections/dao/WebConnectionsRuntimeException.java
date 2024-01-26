@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.external.webconnections.dao;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class WebConnectionsRuntimeException extends SilverpeasRuntimeException {
 

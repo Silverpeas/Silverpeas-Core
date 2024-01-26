@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.JdbcField;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

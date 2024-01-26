@@ -31,7 +31,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Hashtable;

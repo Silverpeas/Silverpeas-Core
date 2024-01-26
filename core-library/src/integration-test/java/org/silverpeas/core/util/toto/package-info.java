@@ -25,4 +25,4 @@
 @Logger("silverpeas.core.tartempion")
 package org.silverpeas.core.util.toto;
 
-import org.silverpeas.core.util.logging.Logger;
+import org.silverpeas.kernel.logging.Logger;

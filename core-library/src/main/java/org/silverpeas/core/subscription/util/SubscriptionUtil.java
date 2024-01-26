@@ -24,7 +24,7 @@
 package org.silverpeas.core.subscription.util;
 
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 

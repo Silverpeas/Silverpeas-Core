@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.pdc;
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;

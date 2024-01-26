@@ -32,9 +32,9 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -56,7 +56,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.contribution.model.ContributionIdentifier.from;
 import static org.silverpeas.core.util.DateUtil.*;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class HistoryObjectDAO {
 

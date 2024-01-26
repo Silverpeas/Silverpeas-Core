@@ -30,7 +30,7 @@ import org.apache.ecs.html.Label;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.I18NLanguage;
 

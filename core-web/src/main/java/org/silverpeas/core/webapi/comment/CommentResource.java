@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.comment;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
@@ -32,7 +32,7 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authorized;

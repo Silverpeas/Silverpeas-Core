@@ -27,7 +27,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.concurrent.Semaphore;
 

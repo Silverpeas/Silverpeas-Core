@@ -25,12 +25,12 @@
 package org.silverpeas.core.backgroundprocess;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

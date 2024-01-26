@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.wysiwyg;
 
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpSession;

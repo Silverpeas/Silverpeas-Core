@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManageme
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Connection;
 

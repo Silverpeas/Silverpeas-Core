@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.route;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import java.io.IOException;
 import javax.servlet.ServletException;

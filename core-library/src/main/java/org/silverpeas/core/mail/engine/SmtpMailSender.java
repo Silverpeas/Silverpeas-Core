@@ -29,8 +29,8 @@ import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.mail.ReceiverMailAddressSet;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.MailUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.mail.MessagingException;

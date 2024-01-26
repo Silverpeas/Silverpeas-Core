@@ -127,7 +127,7 @@ public class SilverpeasJpaEntityRepositoryIT {
   @Before
   public void setup() {
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
-    jpaEntityServiceTest = ServiceProvider.getSingleton(JpaEntityServiceTest.class);
+    jpaEntityServiceTest = ServiceProvider.getService(JpaEntityServiceTest.class);
     OperationContext.fromUser("0");
   }
 

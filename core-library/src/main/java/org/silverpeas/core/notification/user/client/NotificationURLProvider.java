@@ -26,7 +26,7 @@ package org.silverpeas.core.notification.user.client;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 public interface NotificationURLProvider {
 

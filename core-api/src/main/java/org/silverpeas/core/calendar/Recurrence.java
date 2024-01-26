@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TemporalConverter.Conversion;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.persistence.*;
 import java.io.Serializable;

@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
 import org.apache.ecs.ElementContainer;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 

@@ -49,8 +49,8 @@ import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.util.ResourcePath;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
 import javax.persistence.*;

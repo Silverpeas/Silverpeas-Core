@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.personalization.UserMenuDisplay;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.http.HttpSession;

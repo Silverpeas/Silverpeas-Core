@@ -25,9 +25,9 @@ package org.silverpeas.core.util.file;
 
 import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 
 import java.net.URI;

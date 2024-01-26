@@ -34,8 +34,8 @@ import org.silverpeas.core.admin.user.model.UserFull;
 
 import java.util.ArrayList;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * Centralization of conversion between {@link User} of Silverpeas server ans {@link ScimUser} of

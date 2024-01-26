@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.chat;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 /**
  * A provider of a localization bundle for the chat service.

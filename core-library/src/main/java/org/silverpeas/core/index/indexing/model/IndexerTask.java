@@ -24,7 +24,7 @@
 package org.silverpeas.core.index.indexing.model;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 

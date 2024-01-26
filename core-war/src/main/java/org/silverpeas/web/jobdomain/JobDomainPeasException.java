@@ -31,7 +31,7 @@
 package org.silverpeas.web.jobdomain;
 
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception when an error is raised from a Silverpeas domain-related job.

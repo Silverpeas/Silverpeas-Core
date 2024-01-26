@@ -28,17 +28,13 @@ import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.session.HTTPSessionInfo;
 import org.silverpeas.core.webapi.notification.sse.SilverpeasServerSentEventServlet;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.ServletRequestListener;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
@@ -106,7 +102,7 @@ public class SilverListener
 
     // Setting the context according to the Silverpeas session state
     final SessionCacheAccessor sessionCacheAccessor =
-        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+        CacheAccessorProvider.getSessionCacheAccessor();
     final SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
     final Runnable setupSessionCache;
     if (sessionInfo.isDefined()) {
@@ -133,7 +129,7 @@ public class SilverListener
     }
     try {
       setupSessionCache.run();
-    } catch (IllegalStateException e) {
+    } catch (RuntimeException e) {
       SilverLogger.getLogger(this)
           .warn("request ''{0}'' accessing attributes on closed session ({1})",
               httpRequest.getRequestURI(), e.getMessage(), e);

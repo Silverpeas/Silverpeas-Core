@@ -26,7 +26,7 @@ package org.silverpeas.core.test.integration.rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.silverpeas.core.util.logging.SilverLoggerProvider;
+import org.silverpeas.kernel.logging.SilverLoggerProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Reader;

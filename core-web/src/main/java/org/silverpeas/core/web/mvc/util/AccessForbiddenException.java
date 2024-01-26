@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.util;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class AccessForbiddenException extends SilverpeasException {
 

@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexps;
 import static org.silverpeas.core.util.StringDataExtractor.from;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A processor to verify if the given path corresponds to an attachment URL link in order to

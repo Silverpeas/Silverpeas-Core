@@ -24,9 +24,9 @@
 package org.silverpeas.core.security.authentication.password.service;
 
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Collection;

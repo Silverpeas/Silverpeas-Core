@@ -29,7 +29,7 @@
 
 package org.silverpeas.core.security.authentication.exception;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception thrown when an error occurs while a user is authenticating himself against

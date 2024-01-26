@@ -27,10 +27,10 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.io.media.image.option.OrientationOption;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.io.File;

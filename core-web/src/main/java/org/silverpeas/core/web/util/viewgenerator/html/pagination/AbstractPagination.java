@@ -24,9 +24,9 @@
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.util.ArrayList;

@@ -37,7 +37,7 @@ import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import javax.jcr.*;

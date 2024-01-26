@@ -25,7 +25,7 @@
 package org.silverpeas.core.wbe;
 
 import org.silverpeas.core.security.session.SilverpeasUserSession;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;

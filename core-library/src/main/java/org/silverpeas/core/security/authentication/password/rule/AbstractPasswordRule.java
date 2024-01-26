@@ -24,16 +24,16 @@
 package org.silverpeas.core.security.authentication.password.rule;
 
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.MissingResourceException;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * User: Yohann Chastagnier
@@ -43,8 +43,8 @@ public abstract class AbstractPasswordRule implements PasswordRule {
   protected static final int DEFAULT_LENGTH = 8;
   protected static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
-  private PasswordRuleType passwordRuleType;
-  private Random random = new Random();
+  private final PasswordRuleType passwordRuleType;
+  private final Random random = new Random();
 
   protected AbstractPasswordRule(final PasswordRuleType passwordRuleType) {
     this.passwordRuleType = passwordRuleType;
@@ -82,7 +82,7 @@ public abstract class AbstractPasswordRule implements PasswordRule {
 
   /**
    * Returns a random integer value included between 0 and (given maxValue - 1).
-   * @return
+   * @return a random integer value.
    */
   protected int random(int maxValue) {
     return (int) (maxValue * random.nextDouble());
@@ -90,10 +90,10 @@ public abstract class AbstractPasswordRule implements PasswordRule {
 
   /**
    * Gets a string message according to the given language.
-   * @param key
-   * @param language
-   * @param params
-   * @return
+   * @param key the key of the message template to get.
+   * @param language the language in which the message has to be written.
+   * @param params parameters to pass to the message.
+   * @return the message generated from a template and the parameters.
    */
   protected String getString(final String key, final String language, final String... params) {
     LocalizationBundle messages =
@@ -112,9 +112,9 @@ public abstract class AbstractPasswordRule implements PasswordRule {
 
   /**
    * Gets an integer from settings
-   * @param key
-   * @param defaultValue
-   * @return
+   * @param key the key of the property.
+   * @param defaultValue the default value if the property isn't defined.
+   * @return the property value or 0 if the value got from the settings is negative.
    */
   protected Integer getIntegerFromSettings(final String key, final Integer defaultValue) {
     Integer value = defaultValue;
@@ -127,10 +127,10 @@ public abstract class AbstractPasswordRule implements PasswordRule {
   }
 
   /**
-   * Counting regexpr occurences in a String
-   * @param text
-   * @param regex
-   * @return
+   * Counting the number of occurrences matching the specified regexp in the given text.
+   * @param text a text.
+   * @param regex the regexp.
+   * @return the number of matching patterns found in the text with the regexp.
    */
   protected int countRegexOccur(String text, String regex) {
     Matcher matcher = Pattern.compile(regex).matcher(text);

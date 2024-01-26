@@ -24,7 +24,7 @@
 package org.silverpeas.web.directory.servlets;
 
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

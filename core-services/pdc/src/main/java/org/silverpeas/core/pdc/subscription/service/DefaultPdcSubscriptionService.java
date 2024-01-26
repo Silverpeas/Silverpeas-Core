@@ -44,7 +44,7 @@ import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.transaction.Transactional;
 import java.sql.Connection;

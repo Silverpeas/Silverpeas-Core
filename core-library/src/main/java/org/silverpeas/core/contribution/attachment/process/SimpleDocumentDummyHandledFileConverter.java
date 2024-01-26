@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.attachment.process;
 
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;

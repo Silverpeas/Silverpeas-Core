@@ -36,11 +36,11 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class BlankForbiddenPasswordRuleTest
+class BlankForbiddenPasswordRuleTest
     extends AbstractPasswordRuleTest<BlankForbiddenPasswordRule> {
 
   @Test
-  public void testCommons() {
+  void testCommons() {
     BlankForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getType(), is(PasswordRuleType.BLANK_FORBIDDEN));
     assertThat(rule.check("a1234 ;"), is(false));
@@ -66,17 +66,19 @@ public class BlankForbiddenPasswordRuleTest
     assertThat(rule.getValue(), is(true));
     assertThat(rule.isRequired(), is(true));
     assertThat(rule.isCombined(), is(false));
-    assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(false));
+    assertThat(Pattern.compile(" +").matcher(rule.random()).find(), is(false));
   }
 
-  @Disabled
+  @Disabled("Doesn't apply in this test class")
   @Override
   public void testDefinedMoreThanOnePropertyValues() {
+    // doesn't apply in this test class
   }
 
-  @Disabled
+  @Disabled("Doesn't apply in this test class")
   @Override
   public void testCombinationDefinedMoreThanOnePropertyValues() {
+    // doesn't apply in this test class
   }
 
   @Test
@@ -87,7 +89,7 @@ public class BlankForbiddenPasswordRuleTest
     assertThat(rule.getValue(), is(true));
     assertThat(rule.isRequired(), is(true));
     assertThat(rule.isCombined(), is(false));
-    assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(false));
+    assertThat(Pattern.compile(" +").matcher(rule.random()).find(), is(false));
   }
 
   @Test
@@ -98,7 +100,7 @@ public class BlankForbiddenPasswordRuleTest
     assertThat(rule.getValue(), is(true));
     assertThat(rule.isRequired(), is(true));
     assertThat(rule.isCombined(), is(false));
-    assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(false));
+    assertThat(Pattern.compile(" +").matcher(rule.random()).find(), is(false));
   }
 
   @Test
@@ -109,6 +111,6 @@ public class BlankForbiddenPasswordRuleTest
     assertThat(rule.getValue(), is(false));
     assertThat(rule.isRequired(), is(false));
     assertThat(rule.isCombined(), is(false));
-    assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(true));
+    assertThat(Pattern.compile(" +").matcher(rule.random()).find(), is(true));
   }
 }

@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,7 +53,7 @@ class CalendarComponentDiffDescriptor {
   private static final String REMOVE_ATTENDEE_ATTR = "remove_attendee";
   private static final String UPDATE_ATTENDEE_STATUS_ATTR = "status_attendee";
 
-  private Map<String, Object> diff = new HashMap<>();
+  private final Map<String, Object> diff = new HashMap<>();
 
   /**
    * Hidden constructor
@@ -84,14 +84,6 @@ class CalendarComponentDiffDescriptor {
   }
 
   /**
-   * Indicates if it concerns an attendee status diff.
-   * @return true if it exists differences, false if there is not.
-   */
-  boolean isAttendeeStatusDiff() {
-    return diff.size() == 1 && diff.containsKey(UPDATE_ATTENDEE_STATUS_ATTR);
-  }
-
-  /**
    * Merges the detected differences into the given component.
    * @param component the component to merge.
    * @return true if something has been merged, false otherwise.
@@ -116,17 +108,17 @@ class CalendarComponentDiffDescriptor {
       dataMerged.set(true);
     }
     if (diff.containsKey(SAVE_ATTRIBUTE_ATTR)) {
-      Map<String, String> attributesToSave = (Map) diff.get(SAVE_ATTRIBUTE_ATTR);
+      Map<String, String> attributesToSave = (Map<String, String>) diff.get(SAVE_ATTRIBUTE_ATTR);
       attributesToSave.forEach((key, value) -> component.getAttributes().set(key, value));
       dataMerged.set(true);
     }
     if (diff.containsKey(REMOVE_ATTRIBUTE_ATTR)) {
-      Set<String> attributesToRemove = (Set) diff.get(REMOVE_ATTRIBUTE_ATTR);
+      Set<String> attributesToRemove = (Set<String>) diff.get(REMOVE_ATTRIBUTE_ATTR);
       attributesToRemove.forEach(a -> component.getAttributes().remove(a));
       dataMerged.set(true);
     }
     if (diff.containsKey(SAVE_ATTENDEE_ATTR)) {
-      Set<Attendee> attendeesToSave = (Set) diff.get(SAVE_ATTENDEE_ATTR);
+      Set<Attendee> attendeesToSave = (Set<Attendee>) diff.get(SAVE_ATTENDEE_ATTR);
       attendeesToSave.forEach(a -> {
         Optional<Attendee> attendee = component.getAttendees().get(a.getId());
         if (attendee.isPresent()) {
@@ -138,13 +130,13 @@ class CalendarComponentDiffDescriptor {
       dataMerged.set(true);
     }
     if (diff.containsKey(REMOVE_ATTENDEE_ATTR)) {
-      Set<Attendee> attendeesToRemove = (Set) diff.get(REMOVE_ATTENDEE_ATTR);
+      Set<Attendee> attendeesToRemove = (Set<Attendee>) diff.get(REMOVE_ATTENDEE_ATTR);
       attendeesToRemove
           .forEach(atr -> component.getAttendees().removeIf(a -> a.getId().equals(atr.getId())));
       dataMerged.set(true);
     }
     if (diff.containsKey(UPDATE_ATTENDEE_STATUS_ATTR)) {
-      Set<Attendee> attendeeStatusesToUpdate = (Set) diff.get(UPDATE_ATTENDEE_STATUS_ATTR);
+      Set<Attendee> attendeeStatusesToUpdate = (Set<Attendee>) diff.get(UPDATE_ATTENDEE_STATUS_ATTR);
       attendeeStatusesToUpdate.forEach(aS -> {
         Optional<Attendee> attendee = component.getAttendees().get(aS.getId());
         attendee.ifPresent(a -> a.setParticipationStatus(aS.getParticipationStatus()));
@@ -155,16 +147,16 @@ class CalendarComponentDiffDescriptor {
   }
 
   private void analyze(final CalendarComponent changes, final CalendarComponent reference) {
-    if (!areEquals(changes.getTitle(), reference.getTitle())) {
+    if (areNotEquals(changes.getTitle(), reference.getTitle())) {
       diff.put(TITLE_ATTR, changes.getTitle());
     }
-    if (!areEquals(changes.getDescription(), reference.getDescription())) {
+    if (areNotEquals(changes.getDescription(), reference.getDescription())) {
       diff.put(DESCRIPTION_ATTR, changes.getDescription());
     }
-    if (!areEquals(changes.getLocation(), reference.getLocation())) {
+    if (areNotEquals(changes.getLocation(), reference.getLocation())) {
       diff.put(LOCATION_ATTR, changes.getLocation());
     }
-    if (!areEquals(changes.getPriority(), reference.getPriority())) {
+    if (areNotEquals(changes.getPriority(), reference.getPriority())) {
       diff.put(PRIORITY_ATTR, changes.getPriority());
     }
     analyseAttributes(changes, reference);
@@ -177,19 +169,19 @@ class CalendarComponentDiffDescriptor {
     final Set<Attendee> attendeeStatusToUpdate = new HashSet<>();
     left.getAttendees().forEach(aLeft -> {
       Optional<Attendee> aRight = right.getAttendees().get(aLeft.getId());
-      if (!aRight.isPresent()) {
+      if (aRight.isEmpty()) {
         attendeeToSave.add(aLeft);
       } else {
-        if (!areEquals(aLeft.getParticipationStatus(), aRight.get().getParticipationStatus())) {
+        if (areNotEquals(aLeft.getParticipationStatus(), aRight.get().getParticipationStatus())) {
           attendeeStatusToUpdate.add(aLeft);
-        } else if (!areEquals(aLeft.getPresenceStatus(), aRight.get().getPresenceStatus())) {
+        } else if (areNotEquals(aLeft.getPresenceStatus(), aRight.get().getPresenceStatus())) {
           attendeeToSave.add(aLeft);
         }
       }
     });
     right.getAttendees().forEach(aRight -> {
       Optional<Attendee> aLeft = left.getAttendees().get(aRight.getId());
-      if (!aLeft.isPresent() &&
+      if (aLeft.isEmpty() &&
           attendeeToSave.stream().noneMatch(a -> a.getId().equals(aRight.getId()))) {
         attendeeToRemove.add(aRight);
       }
@@ -217,7 +209,7 @@ class CalendarComponentDiffDescriptor {
       if (isOnLeft) {
         boolean isOnRight = rightAttributes.containsKey(key);
         final String leftValue = leftAttributes.get(key);
-        if (!isOnRight || !areEquals(leftValue, rightAttributes.get(key))) {
+        if (!isOnRight || areNotEquals(leftValue, rightAttributes.get(key))) {
           attributesToSave.put(key, leftValue);
         }
       } else {
@@ -232,7 +224,7 @@ class CalendarComponentDiffDescriptor {
     }
   }
 
-  private boolean areEquals(Object left, Object right) {
-    return new EqualsBuilder().append(left, right).build();
+  private boolean areNotEquals(Object left, Object right) {
+    return ! new EqualsBuilder().append(left, right).build();
   }
 }

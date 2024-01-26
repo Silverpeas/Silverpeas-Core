@@ -57,7 +57,7 @@ public class ResourceViewProviderRegistry {
   }
 
   public static ResourceViewProviderRegistry get() {
-    return ServiceProvider.getSingleton(ResourceViewProviderRegistry.class);
+    return ServiceProvider.getService(ResourceViewProviderRegistry.class);
   }
 
   /**

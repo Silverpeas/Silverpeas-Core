@@ -35,7 +35,7 @@
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>

@@ -24,9 +24,9 @@
 package org.silverpeas.core.web.authentication;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -80,6 +80,7 @@ public class LogoutServlet extends HttpServlet {
       // be performed by a cloud mechanism which need clean wildfly session.
       session.invalidate();
     } catch (IllegalStateException e) {
+      // the session has been already invalidated
       SilverLogger.getLogger(this).silent(e);
     }
   }

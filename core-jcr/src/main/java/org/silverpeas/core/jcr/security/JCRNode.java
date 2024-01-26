@@ -27,7 +27,7 @@ package org.silverpeas.core.jcr.security;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.jcr.util.SilverpeasProperty;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.jcr.PropertyType;
 import java.util.stream.Stream;

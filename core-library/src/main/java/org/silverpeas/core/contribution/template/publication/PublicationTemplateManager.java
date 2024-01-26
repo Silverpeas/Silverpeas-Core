@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.template.publication;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.GlobalContext;
@@ -49,16 +49,16 @@ import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.lang.SystemWrapper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.SystemWrapper;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -101,7 +101,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
         ResourceLocator.getSettingBundle("org.silverpeas.publicationTemplate.settings.template");
     templateDir = templateSettings.getString("templateDir");
     defaultTemplateDir =
-        SystemWrapper.get().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
+        SystemWrapper.getInstance().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
     try {
       jaxbContext = JAXBContext.newInstance(PublicationTemplateImpl.class);
     } catch (JAXBException e) {
@@ -114,7 +114,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
    * @return the single instance of PublicationTemplateManager.
    */
   public static PublicationTemplateManager getInstance() {
-    return ServiceProvider.getSingleton(PublicationTemplateManager.class);
+    return ServiceProvider.getService(PublicationTemplateManager.class);
   }
 
   /**

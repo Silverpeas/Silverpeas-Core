@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.pdc;
 
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import java.util.List;

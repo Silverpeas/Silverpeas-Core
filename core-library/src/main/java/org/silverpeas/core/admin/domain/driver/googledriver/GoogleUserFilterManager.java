@@ -27,12 +27,12 @@ package org.silverpeas.core.admin.domain.driver.googledriver;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.Properties;
 
-import static org.silverpeas.core.util.ResourceLocator.saveSettingBundle;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.bundle.ResourceLocator.saveSettingBundle;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author silveryocha

@@ -25,8 +25,8 @@ package org.silverpeas.core.web.mvc;
 
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.io.file.SilverpeasFile;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
 

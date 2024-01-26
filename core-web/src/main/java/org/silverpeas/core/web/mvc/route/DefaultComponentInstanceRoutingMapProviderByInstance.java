@@ -25,9 +25,9 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 
 import javax.annotation.Nonnull;
 

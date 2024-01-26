@@ -34,6 +34,9 @@ import javax.mail.internet.InternetAddress;
 import org.silverpeas.core.i18n.I18NHelper;
 
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * @author ehugonnet

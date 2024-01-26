@@ -27,7 +27,7 @@
 <%@ page import="org.apache.commons.lang3.tuple.Pair"%>
 <%@ page import="org.silverpeas.core.admin.quota.constant.QuotaLoad" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
-<%@ page import="org.silverpeas.core.util.logging.Level" %>
+<%@ page import="org.silverpeas.kernel.logging.Level" %>
 <%@ page import="java.util.Arrays" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>

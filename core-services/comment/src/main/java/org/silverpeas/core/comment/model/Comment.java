@@ -26,11 +26,11 @@ package org.silverpeas.core.comment.model;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.Date;
 
-import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle;
 
 /**
  * A comment on a given user contribution.

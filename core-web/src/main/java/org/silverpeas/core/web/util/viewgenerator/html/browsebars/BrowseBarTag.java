@@ -33,7 +33,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 import javax.servlet.jsp.JspException;
 import java.util.Optional;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class BrowseBarTag extends NeedWindowTag {
 

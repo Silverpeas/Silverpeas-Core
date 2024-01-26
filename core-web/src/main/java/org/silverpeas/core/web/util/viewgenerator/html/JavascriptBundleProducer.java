@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.SilverpeasBundle;
+import org.silverpeas.kernel.bundle.SilverpeasBundle;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 

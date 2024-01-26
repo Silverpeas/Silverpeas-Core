@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.personalorganizer.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class CalendarRuntimeException extends SilverpeasRuntimeException {
 

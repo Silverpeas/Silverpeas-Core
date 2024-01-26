@@ -25,7 +25,7 @@ package org.silverpeas.core.silverstatistics.volume.dao;
 
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.volume.model.*;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import java.sql.*;

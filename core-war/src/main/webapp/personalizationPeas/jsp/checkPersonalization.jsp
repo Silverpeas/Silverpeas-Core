@@ -34,9 +34,9 @@
 <%@ page import="org.owasp.encoder.Encode"%>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 
-<%@ page import="org.silverpeas.core.util.SettingBundle"%>
+<%@ page import="org.silverpeas.kernel.bundle.SettingBundle"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>

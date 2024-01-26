@@ -36,7 +36,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface HtmlSanitizer {
 
   static HtmlSanitizer get() {
-    return ServiceProvider.getSingleton(HtmlSanitizer.class);
+    return ServiceProvider.getService(HtmlSanitizer.class);
   }
 
   /**

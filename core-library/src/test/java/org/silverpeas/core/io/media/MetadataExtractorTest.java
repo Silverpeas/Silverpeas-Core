@@ -26,10 +26,11 @@ package org.silverpeas.core.io.media;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -43,7 +44,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author ehugonnet
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class MetadataExtractorTest {
 
   private static final File docFile = getDocumentNamed("/Liste_ECCA.doc");

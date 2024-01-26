@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
  * A wrapper of the settings on the registration of a new user.

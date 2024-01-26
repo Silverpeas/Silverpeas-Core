@@ -25,7 +25,7 @@ package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.SilverpeasExceptionMessages;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;

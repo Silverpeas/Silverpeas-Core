@@ -49,15 +49,15 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.csv.CSVRow;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
@@ -81,8 +81,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Class declaration

@@ -31,7 +31,7 @@ import org.silverpeas.core.util.ArrayUtil;
 
 import java.util.Arrays;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A builder of search criteria on user profiles.

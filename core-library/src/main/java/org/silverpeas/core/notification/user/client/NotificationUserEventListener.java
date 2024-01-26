@@ -32,7 +32,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.client.model.NotifDefaultAddressRow;
 import org.silverpeas.core.notification.user.client.model.NotifDefaultAddressTable;
 import org.silverpeas.core.notification.user.client.model.NotificationSchema;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

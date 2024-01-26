@@ -27,10 +27,10 @@ package org.silverpeas.core.jcr;
 
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.jcr.security.JCRUserCredentialsProvider;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;

@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.rs.aspect;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.web.rs.ProtectedWebResource;

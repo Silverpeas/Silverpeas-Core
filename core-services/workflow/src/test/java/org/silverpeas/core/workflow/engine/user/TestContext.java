@@ -25,15 +25,14 @@
 package org.silverpeas.core.workflow.engine.user;
 
 import org.mockito.invocation.InvocationOnMock;
-import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.unit.JpaMocker;
-import org.silverpeas.core.test.unit.TestBeanContainerInjector;
-import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
+import org.silverpeas.kernel.util.Mutable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -56,6 +55,8 @@ public class TestContext {
   // The actual replacement that is saved in the context of a given unit test
   final Mutable<ReplacementImpl> savedReplacement = Mutable.empty();
 
+  private final TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+
   public TestContext(final User anIncumbent, final User aSubstitute) {
     super();
     this.aSubstitute = anIncumbent;
@@ -64,7 +65,6 @@ public class TestContext {
 
   public void init() {
     try {
-      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       mockUserManager();
       mockReplacementPersistence();
     } catch (Exception e) {
@@ -91,10 +91,11 @@ public class TestContext {
         invocation -> computeReplacementsFor(invocation, aSubstitute));
     when(repository.findAllBySubstituteAndByWorkflow(any(User.class), anyString())).thenAnswer(
         invocation -> computeReplacementsFor(invocation, anIncumbent));
-    TestBeanContainerInjector.inject(repository);
+    feeder.manageBean(repository, ReplacementRepository.class);
+    feeder.manageBean(repository, Replacement.Repository.class);
   }
 
-  private UserManager mockUserManager() throws WorkflowException {
+  private void mockUserManager() throws WorkflowException {
     // Mocking the User providing mechanism
     UserManager userManager = mock(UserManager.class);
     when(userManager.getUser(anyString())).thenAnswer(invocation -> {
@@ -107,8 +108,7 @@ public class TestContext {
         return aUser(id);
       }
     });
-    TestBeanContainerInjector.inject(userManager);
-    return userManager;
+    feeder.manageBean(userManager, UserManager.class);
   }
 
   private Object computeReplacementsFor(final InvocationOnMock invocation,

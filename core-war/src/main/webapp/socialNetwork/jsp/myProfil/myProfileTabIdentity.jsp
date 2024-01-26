@@ -27,10 +27,10 @@
     pageEncoding="UTF-8"%>
 
 <%@page import="org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes"%>
-<%@page import="org.silverpeas.core.util.LocalizationBundle"%>
+<%@page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
 <%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@page import="org.silverpeas.core.util.SettingBundle"%>
+<%@page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
+<%@page import="org.silverpeas.kernel.bundle.SettingBundle"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 

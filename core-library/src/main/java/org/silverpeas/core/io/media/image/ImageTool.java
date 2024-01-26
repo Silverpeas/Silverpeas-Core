@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.media.image;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -36,7 +36,7 @@ import java.util.Set;
 public interface ImageTool {
 
   static ImageTool get() {
-    return ServiceProvider.getSingleton(ImageTool.class);
+    return ServiceProvider.getService(ImageTool.class);
   }
 
   /**

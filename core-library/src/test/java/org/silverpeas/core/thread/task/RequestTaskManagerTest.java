@@ -29,15 +29,14 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.unit.extention.LoggerExtension;
-import org.silverpeas.core.test.unit.extention.LoggerLevel;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.thread.task.RequestTaskManager.RequestTaskMonitor;
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LoggerLevel;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
@@ -49,8 +48,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
-@ExtendWith(LoggerExtension.class)
+@EnableSilverTestEnv(context = JEETestContext.class)
 @LoggerLevel(Level.DEBUG)
 @TestManagedBeans({TestRequestTask.class, TestRequestTaskWithLimit.class,
     TestRequestTaskWithAfterNoMoreRequestLongTreatment.class})

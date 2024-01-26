@@ -32,8 +32,8 @@ import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
 import org.silverpeas.core.personalorganizer.model.SchedulableCount;
 import org.silverpeas.core.personalorganizer.socialnetwork.SocialInformationEvent;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

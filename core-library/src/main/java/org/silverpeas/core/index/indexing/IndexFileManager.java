@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.index.indexing;
 
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import static java.io.File.separatorChar;
 

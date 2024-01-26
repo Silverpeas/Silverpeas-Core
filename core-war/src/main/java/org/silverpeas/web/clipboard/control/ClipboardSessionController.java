@@ -33,12 +33,12 @@ import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageSe
 import org.silverpeas.core.notification.user.server.channel.popup.PopupMsg;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMsg;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

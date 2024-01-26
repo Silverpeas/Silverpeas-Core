@@ -25,7 +25,7 @@ package org.silverpeas.core.io.media.image.thumbnail;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 public class ThumbnailSettings {
 

@@ -24,8 +24,8 @@
 package org.silverpeas.core.viewer.model;
 
 import org.silverpeas.core.io.temp.TemporaryDataManagementSetting;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.viewer.service.JsonPdfToolManager;
 
 /**

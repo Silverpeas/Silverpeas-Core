@@ -31,8 +31,8 @@ import org.silverpeas.core.security.token.annotation.TokenGenerator;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.security.token.persistent.service.PersistentResourceTokenService;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -48,7 +48,11 @@ import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -58,8 +62,8 @@ import java.util.*;
 
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getUserManualNotificationRecipientLimit;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isUserManualNotificationRecipientLimitEnabled;
-import static org.silverpeas.core.util.StringUtil.areStringEquals;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.areStringEquals;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class UserDetail implements User {
 

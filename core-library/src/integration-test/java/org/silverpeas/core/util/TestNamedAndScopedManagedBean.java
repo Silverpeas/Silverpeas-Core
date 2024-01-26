@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.annotation.Base;
+import org.silverpeas.kernel.annotation.Base;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;

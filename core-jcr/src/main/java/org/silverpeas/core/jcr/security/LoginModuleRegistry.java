@@ -25,7 +25,7 @@
 
 package org.silverpeas.core.jcr.security;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.jcr.Credentials;
 import javax.security.auth.spi.LoginModule;

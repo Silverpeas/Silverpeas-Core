@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
 

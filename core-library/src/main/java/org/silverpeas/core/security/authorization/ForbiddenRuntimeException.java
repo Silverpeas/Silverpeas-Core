@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class ForbiddenRuntimeException extends SilverpeasRuntimeException {
 

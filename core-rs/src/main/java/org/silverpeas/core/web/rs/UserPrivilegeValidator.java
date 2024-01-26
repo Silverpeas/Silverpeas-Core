@@ -38,7 +38,7 @@ import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;

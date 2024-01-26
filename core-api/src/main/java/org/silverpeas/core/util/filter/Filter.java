@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.util.filter;
 
+import org.silverpeas.kernel.util.Mutable;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,7 +32,7 @@ import java.util.function.Predicate;
 /**
  * A filter is an object that plays all the predicates against a given object and that applies the
  * operation associated with the matched predicate. If the object is an {@link java.util.Optional}
- * or a {@link org.silverpeas.core.util.Mutable} instance, then the predicates are directly applied
+ * or a {@link Mutable} instance, then the predicates are directly applied
  * to the contained object; if they are empty, then no predicates are played.
  * <p>
  * With a chain of {@link #match(Predicate, Consumer)} methods, the operations are performed

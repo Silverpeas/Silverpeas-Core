@@ -29,7 +29,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class DefaultContributionLocator implements ContributionLocator {
         getPotentialLocators(type);
 
     for (Class<? extends ContributionLocatorByLocalIdAndType> locatorClass : potentialLocators) {
-      ContributionLocatorByLocalIdAndType locator = ServiceProvider.getSingleton(locatorClass);
+      ContributionLocatorByLocalIdAndType locator = ServiceProvider.getService(locatorClass);
       Optional<ContributionIdentifier> contributionIdentifier =
           locator.getContributionIdentifierFromLocalIdAndType(localId, type);
       if (contributionIdentifier.isPresent()) {

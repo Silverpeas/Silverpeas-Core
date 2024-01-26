@@ -32,11 +32,11 @@ import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -58,7 +58,7 @@ import static java.util.Collections.singletonList;
 import static org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner.extractUrlParameters;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.file.FileServerUtils.*;
 
 public class FileServer extends AbstractFileSender {

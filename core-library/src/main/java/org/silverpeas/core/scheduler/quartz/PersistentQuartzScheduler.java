@@ -33,8 +33,9 @@ import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.PersistentScheduling;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.lang.reflect.Constructor;
@@ -128,7 +129,7 @@ public class PersistentQuartzScheduler extends QuartzScheduler {
 
       try {
         return ServiceProvider.getService(propertyClass);
-      } catch (IllegalStateException e) {
+      } catch (SilverpeasRuntimeException e) {
         SilverLogger.getLogger(getClass())
             .debug("The " + className + " isn't in the IoC container");
       }

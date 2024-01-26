@@ -27,8 +27,8 @@ import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * User notification defined in the Notification User personal component.

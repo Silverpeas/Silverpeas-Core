@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.scheduler;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception thrown when an error occurs within the scheduler.

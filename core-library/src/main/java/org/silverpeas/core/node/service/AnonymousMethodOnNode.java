@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.node.service;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.node.model.NodePK;
 
 /**

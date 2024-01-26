@@ -39,7 +39,7 @@ import java.util.Objects;
 
 import static java.time.temporal.ChronoField.*;
 import static org.silverpeas.core.date.TemporalConverter.asZonedDateTime;
-import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle;
 
 /**
  * A formatter of date and datetime in String into different formats, both localized and ISO.

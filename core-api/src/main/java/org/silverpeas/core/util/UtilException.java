@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * An exception thrown from a failure in a treatment of a utility class.

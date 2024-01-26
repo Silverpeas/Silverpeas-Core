@@ -24,10 +24,10 @@
 package org.silverpeas.core.admin.domain.driver.googledriver;
 
 import com.google.api.client.json.GenericJson;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine.OperatorFunction;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +46,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleUserFilter.ERROR.*;
 import static org.silverpeas.core.util.CollectionUtil.intersection;
 import static org.silverpeas.core.util.CollectionUtil.union;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.util.StringUtil.*;
 import static org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine.from;
 
 /**

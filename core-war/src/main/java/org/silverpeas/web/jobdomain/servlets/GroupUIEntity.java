@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * UI item for a {@link Group} instance.

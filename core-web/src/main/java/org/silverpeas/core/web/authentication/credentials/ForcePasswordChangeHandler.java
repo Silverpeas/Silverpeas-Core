@@ -25,7 +25,7 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

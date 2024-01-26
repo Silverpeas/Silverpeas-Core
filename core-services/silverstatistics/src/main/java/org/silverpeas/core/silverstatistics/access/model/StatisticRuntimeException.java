@@ -26,7 +26,7 @@
 
 package org.silverpeas.core.silverstatistics.access.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * @see SilverpeasRuntimeException

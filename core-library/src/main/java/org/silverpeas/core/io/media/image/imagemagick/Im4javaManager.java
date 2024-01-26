@@ -28,7 +28,7 @@ import org.im4java.core.IMOperation;
 import org.im4java.process.ProcessStarter;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Map;
 

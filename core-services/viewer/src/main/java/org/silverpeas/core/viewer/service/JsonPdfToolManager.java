@@ -25,12 +25,12 @@ package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecution.Config;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.util.Map;
@@ -50,7 +50,7 @@ import java.util.Map;
 public class JsonPdfToolManager implements Initialization {
 
   public static JsonPdfToolManager get() {
-    return ServiceProvider.getSingleton(JsonPdfToolManager.class);
+    return ServiceProvider.getService(JsonPdfToolManager.class);
   }
 
   private boolean isActivated = false;

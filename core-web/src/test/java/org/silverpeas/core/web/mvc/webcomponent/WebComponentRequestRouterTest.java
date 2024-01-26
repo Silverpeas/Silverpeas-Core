@@ -32,15 +32,16 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestManagedMocks;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -69,7 +70,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Yohann Chastagnier
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedMocks({Administration.class, SessionManager.class, SilverStatisticsManager.class})
 @TestManagedBeans({SynchronizerTokenService.class})
 public abstract class WebComponentRequestRouterTest {

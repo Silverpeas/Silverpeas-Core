@@ -81,11 +81,10 @@
       <artifactId>jodconverter-local</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-test</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>net.bytebuddy</groupId>

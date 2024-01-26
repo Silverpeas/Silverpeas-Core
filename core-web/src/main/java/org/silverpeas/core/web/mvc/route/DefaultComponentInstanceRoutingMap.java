@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 
 import java.net.URI;
 

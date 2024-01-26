@@ -36,7 +36,7 @@ import java.io.File;
 public interface ViewService {
 
   static ViewService get() {
-    return ServiceProvider.getSingleton(ViewService.class);
+    return ServiceProvider.getService(ViewService.class);
   }
 
   /**

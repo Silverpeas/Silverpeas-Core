@@ -8,7 +8,7 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 

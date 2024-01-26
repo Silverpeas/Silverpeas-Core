@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

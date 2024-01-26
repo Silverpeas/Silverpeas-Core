@@ -32,6 +32,7 @@
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="java.time.ZoneId" %>
 <%@ page import="org.silverpeas.core.date.TemporalConverter" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

@@ -31,7 +31,7 @@ import org.silverpeas.core.documenttemplate.DocumentTemplateRuntimeException;
 import org.silverpeas.core.documenttemplate.DocumentTemplateService;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.MemoizedSyncSupplier;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.viewer.service.PreviewService;
@@ -51,9 +51,9 @@ import java.util.stream.Collectors;
 import static javax.ws.rs.core.Response.Status.*;
 import static org.apache.commons.io.FileUtils.openInputStream;
 import static org.silverpeas.core.documenttemplate.DocumentTemplateSettings.isEnabled;
-import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 
 /**
@@ -71,7 +71,7 @@ public class DocumentTemplateWebManager {
   }
 
   public static DocumentTemplateWebManager get() {
-    return ServiceProvider.getSingleton(DocumentTemplateWebManager.class);
+    return ServiceProvider.getService(DocumentTemplateWebManager.class);
   }
 
   private final MemoizedSyncSupplier<List<DocumentTemplate>> cachedList =

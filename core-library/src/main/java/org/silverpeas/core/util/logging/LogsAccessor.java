@@ -24,12 +24,12 @@
 package org.silverpeas.core.util.logging;
 
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,7 +58,7 @@ public class LogsAccessor {
   }
 
   public static LogsAccessor get() {
-    return ServiceProvider.getSingleton(LogsAccessor.class);
+    return ServiceProvider.getService(LogsAccessor.class);
   }
 
   /**
@@ -67,7 +67,7 @@ public class LogsAccessor {
    * @throws IOException if an error occurs while accessing the logs.
    */
   public Set<String> getAllLogs() throws IOException {
-    String logPath = SystemWrapper.get().getProperty(SILVERPEAS_LOG_DIR);
+    String logPath = SystemWrapper.getInstance().getProperty(SILVERPEAS_LOG_DIR);
     try (final Stream<Path> paths = Files.list(Paths.get(logPath))) {
       return paths.filter(
           path -> "log".equalsIgnoreCase(FilenameUtils.getExtension(path.toString())))
@@ -89,7 +89,7 @@ public class LogsAccessor {
       throws SilverpeasException {
     try {
       FileUtil.assertPathNotRelative(log);
-      String logPath = SystemWrapper.get().getProperty(SILVERPEAS_LOG_DIR);
+      String logPath = SystemWrapper.getInstance().getProperty(SILVERPEAS_LOG_DIR);
       Path logFile = Paths.get(logPath, log);
       return readLastLines(logFile, recordCount);
     } catch (RelativeFileAccessException | IOException e) {

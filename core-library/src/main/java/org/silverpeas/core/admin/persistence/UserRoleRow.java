@@ -24,12 +24,12 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.silverpeas.core.util.StringUtil.asInt;
+import static org.silverpeas.kernel.util.StringUtil.asInt;
 
 public class UserRoleRow {
 

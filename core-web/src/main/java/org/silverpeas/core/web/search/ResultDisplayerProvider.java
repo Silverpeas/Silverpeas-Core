@@ -41,10 +41,11 @@ public class ResultDisplayerProvider {
   }
 
   /**
+   * Gets the displayer of results for the specified component name
    * @param name the component name
    * @return a component ResultDisplayer using dependency injection
    */
   public static ResultDisplayer getResultDisplayer(String name) {
-    return ServiceProvider.getSingleton(name + BEAN_NAME_POSTFIX);
+    return ServiceProvider.getService(name + BEAN_NAME_POSTFIX);
   }
 }

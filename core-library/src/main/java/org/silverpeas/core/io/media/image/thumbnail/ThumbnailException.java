@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ThumbnailException extends SilverpeasException {
 

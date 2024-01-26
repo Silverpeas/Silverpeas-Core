@@ -32,7 +32,7 @@ import javax.inject.Named;
 import java.io.File;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Implementation of the HTMLConverter interface by using the OpenOffice API to perform its job.

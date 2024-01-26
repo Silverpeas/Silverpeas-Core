@@ -25,9 +25,9 @@
 package org.silverpeas.core.jcr.impl;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nullable;
 import javax.annotation.PreDestroy;
@@ -54,7 +54,7 @@ public class ResourcesCloser {
    * @return a {@link ResourcesCloser} instance.
    */
   public static ResourcesCloser get() {
-    return ServiceProvider.getSingleton(ResourcesCloser.class);
+    return ServiceProvider.getService(ResourcesCloser.class);
   }
 
   /**

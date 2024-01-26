@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.component.exception;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier

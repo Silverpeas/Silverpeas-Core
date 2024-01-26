@@ -32,13 +32,13 @@ import org.apache.jackrabbit.oak.segment.file.FileStore;
 import org.apache.jackrabbit.oak.segment.file.FileStoreBuilder;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
-import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.impl.oak.configuration.OakRepositoryConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.SegmentNodeStoreConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.StorageType;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
 import java.nio.file.Path;

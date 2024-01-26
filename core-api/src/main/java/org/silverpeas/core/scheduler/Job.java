@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.scheduler;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * A job to schedule at a given moments in time. A job is identified in the scheduler by a name that

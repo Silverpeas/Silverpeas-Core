@@ -38,7 +38,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PartialContentStre
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.util.CmisProperties;
-import org.silverpeas.core.NotFoundException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -64,7 +64,7 @@ import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

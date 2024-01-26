@@ -29,8 +29,8 @@ import org.silverpeas.core.security.encryption.CipherKeyUpdateException;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.DefaultContentEncryptionService;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authorized;
@@ -45,7 +45,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
+import static org.silverpeas.kernel.logging.SilverLogger.getLogger;
 
 /**
  * A WEB resource representing the cipher key used in Silverpeas to encrypt and decrypt content.

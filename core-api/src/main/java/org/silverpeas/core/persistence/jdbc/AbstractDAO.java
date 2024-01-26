@@ -25,7 +25,7 @@
 package org.silverpeas.core.persistence.jdbc;
 
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

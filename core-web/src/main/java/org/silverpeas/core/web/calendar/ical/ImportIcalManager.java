@@ -42,7 +42,7 @@ import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
@@ -57,7 +57,7 @@ import java.util.GregorianCalendar;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class ImportIcalManager {
 

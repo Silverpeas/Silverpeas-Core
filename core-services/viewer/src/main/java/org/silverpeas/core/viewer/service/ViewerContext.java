@@ -25,7 +25,7 @@ package org.silverpeas.core.viewer.service;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 

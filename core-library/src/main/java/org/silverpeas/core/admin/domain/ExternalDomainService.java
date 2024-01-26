@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.domain.exception.DomainConflictException;
 import org.silverpeas.core.admin.domain.exception.DomainCreationException;
 import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

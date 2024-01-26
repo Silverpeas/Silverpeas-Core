@@ -28,6 +28,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@page import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ include file="headLog.jsp" %>
 
 <%

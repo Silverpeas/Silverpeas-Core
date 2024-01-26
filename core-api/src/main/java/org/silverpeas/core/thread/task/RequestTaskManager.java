@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.thread.task;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask.Request;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
@@ -65,7 +65,7 @@ public class RequestTaskManager {
   private static final int RESTART_WAITING_BEFORE_GETTING_RESULT = 200;
 
   public static RequestTaskManager get() {
-    return ServiceProvider.getSingleton(RequestTaskManager.class);
+    return ServiceProvider.getService(RequestTaskManager.class);
   }
 
   /**

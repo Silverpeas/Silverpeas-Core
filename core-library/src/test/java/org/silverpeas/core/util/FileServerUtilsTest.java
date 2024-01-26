@@ -28,7 +28,7 @@
 package org.silverpeas.core.util;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.util.HashMap;

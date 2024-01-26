@@ -37,7 +37,7 @@ import java.util.Optional;
 public interface CalendarResourcePathProvider {
 
   static CalendarResourcePathProvider get() {
-    return ServiceProvider.getSingleton(CalendarResourcePathProvider.class);
+    return ServiceProvider.getService(CalendarResourcePathProvider.class);
   }
 
   /**

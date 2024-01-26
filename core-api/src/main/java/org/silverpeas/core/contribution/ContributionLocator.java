@@ -52,7 +52,7 @@ import java.util.Optional;
 public interface ContributionLocator {
 
   static ContributionLocator get() {
-    return ServiceProvider.getSingleton(ContributionLocator.class);
+    return ServiceProvider.getService(ContributionLocator.class);
   }
 
   /**

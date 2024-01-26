@@ -31,11 +31,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.LoggerReaderRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -87,7 +88,7 @@ public class ErrorAnnotationIT {
   @Before
   public void SetUpTestContext() {
     context.setLoggerLevel(Level.DEBUG);
-    SystemWrapper.get()
+    SystemWrapper.getInstance()
         .getenv()
         .put("SILVERPEAS_HOME", mavenTargetDirectoryRule.getBuildDirFile().getAbsolutePath());
   }

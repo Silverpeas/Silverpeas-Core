@@ -53,7 +53,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.*;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.util.URLUtil.getURL;
 import static org.silverpeas.core.webapi.mylinks.CategoryEntity.fromCategoryDetail;

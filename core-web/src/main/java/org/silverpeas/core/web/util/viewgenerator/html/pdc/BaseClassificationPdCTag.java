@@ -32,7 +32,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
@@ -43,8 +43,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.text.MessageFormat;
 
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTagOperation.*;
 
 /**

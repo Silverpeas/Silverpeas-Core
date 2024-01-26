@@ -29,7 +29,7 @@ import com.pholser.junit.quickcheck.generator.java.lang.AbstractStringGenerator;
 import com.pholser.junit.quickcheck.generator.java.lang.strings.CodePoints;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Collections.emptyList;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha

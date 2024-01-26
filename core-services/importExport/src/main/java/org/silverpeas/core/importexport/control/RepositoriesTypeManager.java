@@ -27,7 +27,7 @@ import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.EntityArrays;
 import org.apache.commons.text.translate.LookupTranslator;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -76,14 +76,14 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.mail.Address;
@@ -99,8 +99,8 @@ import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvi
 import static org.silverpeas.core.contribution.attachment.model.DocumentType.attachment;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled;
 import static org.silverpeas.core.importexport.versioning.DocumentVersion.TYPE_PUBLIC_VERSION;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas

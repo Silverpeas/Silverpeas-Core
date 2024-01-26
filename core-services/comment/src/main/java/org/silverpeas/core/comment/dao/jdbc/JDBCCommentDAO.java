@@ -24,7 +24,7 @@
 package org.silverpeas.core.comment.dao.jdbc;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
@@ -32,7 +32,7 @@ import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;

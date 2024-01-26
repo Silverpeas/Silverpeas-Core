@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.viewer.model;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.ViewerContext;
 
 import java.io.File;

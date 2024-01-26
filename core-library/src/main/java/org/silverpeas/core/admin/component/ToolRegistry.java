@@ -26,9 +26,9 @@ package org.silverpeas.core.admin.component;
 import org.silverpeas.core.admin.component.model.Tool;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.Collections;
@@ -47,7 +47,7 @@ import java.util.stream.Stream;
 @Singleton
 public class ToolRegistry implements Initialization {
 
-  private Map<String, Tool> toolsById = new HashMap<>();
+  private final Map<String, Tool> toolsById = new HashMap<>();
 
   ToolRegistry() {
   }
@@ -57,7 +57,7 @@ public class ToolRegistry implements Initialization {
    * @return a ToolRegistry instance.
    */
   public static ToolRegistry get() {
-    return ServiceProvider.getSingleton(ToolRegistry.class);
+    return ServiceProvider.getService(ToolRegistry.class);
   }
 
   /**

@@ -34,9 +34,9 @@ import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBean;
 import org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBeanService;
 

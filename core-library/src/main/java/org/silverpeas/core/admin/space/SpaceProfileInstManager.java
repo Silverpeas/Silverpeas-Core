@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.dao.SpaceRoleDAO;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

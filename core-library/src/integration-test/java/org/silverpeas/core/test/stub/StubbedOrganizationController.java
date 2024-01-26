@@ -26,7 +26,7 @@ package org.silverpeas.core.test.stub;
 import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

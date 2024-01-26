@@ -25,8 +25,9 @@ package org.silverpeas.core.subscription;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
 
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SubscriptionFactoryTest {
 
   @TestManagedBean

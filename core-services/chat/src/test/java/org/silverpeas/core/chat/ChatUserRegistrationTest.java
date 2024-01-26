@@ -34,12 +34,15 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.chat.servers.ChatServer;
+import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestManagedMocks;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +57,7 @@ import static org.mockito.Mockito.*;
  * Unit tests on the registration of users in the remote chat server.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedMocks(UserRegistrationService.class)
 class ChatUserRegistrationTest {
 
@@ -65,6 +68,7 @@ class ChatUserRegistrationTest {
   private ChatSettings settings;
 
   @TestManagedMock(stubbed = false)
+  @DefaultChatServer
   private ChatServer chatServer;
 
   @TestManagedMock
@@ -73,11 +77,11 @@ class ChatUserRegistrationTest {
   @TestedBean
   private ChatUsersRegistration registration;
 
+  @Inject
   private UserProvider userProvider;
 
   @BeforeEach
   void setUpMocks() {
-    userProvider = UserProvider.get();
     assertThat(userProvider, notNullValue());
     assertThat(registration, notNullValue());
     assertThat(controller, notNullValue());
@@ -190,7 +194,7 @@ class ChatUserRegistrationTest {
   @DisplayName("The contacts of a user in the same domain should be registered with him")
   void registerAUserInMappedDomainWithItsContactsInSameDomainShouldSucceed() {
     final User aUser = aUser();
-    final List<String> theConnections = connections(1, aUser);
+    final List<String> theConnections = connections(1);
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
@@ -210,7 +214,7 @@ class ChatUserRegistrationTest {
   @DisplayName("The contacts of a user in a mapped domain should be registered with him")
   void registerAUserInMappedDomainWithItsContactsInMappedDomainShouldSucceed() {
     final User aUser = aUser();
-    final List<String> theConnections = connections(3, aUser);
+    final List<String> theConnections = connections(3);
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
@@ -233,7 +237,7 @@ class ChatUserRegistrationTest {
           "service should be registered with him")
   void registerAUserAndHisContactsInTheAllowedGroupsShouldBeRegistered() {
     final User aUser = aUser();
-    final List<String> theConnections = connections(3, aUser);
+    final List<String> theConnections = connections(3);
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
@@ -257,7 +261,7 @@ class ChatUserRegistrationTest {
           "others contacts")
   void registerAUserInMappedDomainWithItsContactsNotAllInMappedDomainsShouldSucceed() {
     final User aUser = aUser();
-    final List<String> theConnections = connections(3, aUser);
+    final List<String> theConnections = connections(3);
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
@@ -280,7 +284,7 @@ class ChatUserRegistrationTest {
           "should be registered with him; Not his others contacts")
   void registerAUserAndHisContactsInAMappedDomainAndSomeInAnAllowedGroupsShouldSucceed() {
     final User aUser = aUser();
-    final List<String> theConnections = connections(5, aUser);
+    final List<String> theConnections = connections(5);
     final List<String> allowed =
         Arrays.asList(theConnections.get(0), theConnections.get(2), theConnections.get(4));
     when(settings.isChatEnabled()).thenReturn(true);
@@ -322,7 +326,7 @@ class ChatUserRegistrationTest {
     return injectUser("32", "0", "Bart", "Simpson");
   }
 
-  final List<String> connections(final int count, final User user) {
+  final List<String> connections(final int count) {
     final List<String> connections = new ArrayList<>();
     for (int i = 0; i < count; i++) {
       final String connectionId = String.valueOf(i + 50);

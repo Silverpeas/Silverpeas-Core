@@ -26,9 +26,9 @@ package org.silverpeas.core.comment.service.notification;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -25,7 +25,7 @@ package org.silverpeas.core.web.jstl.view;
 
 import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 

@@ -1,12 +1,14 @@
 package org.silverpeas.core.notification.user;
 
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+
 import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.silverpeas.core.notification.user.ComponentInstanceManualUserNotification.Constants.NAME_SUFFIX;
-import static org.silverpeas.core.util.ServiceProvider.getServiceByComponentInstanceAndNameSuffix;
+import static org.silverpeas.core.util.ServiceProvider.getService;
 
 /**
  * <p>
@@ -53,8 +55,8 @@ public interface ComponentInstanceManualUserNotification {
   static Optional<ComponentInstanceManualUserNotification> get(String componentNameOrInstanceId) {
     Optional<ComponentInstanceManualUserNotification> service;
     try {
-      service = of(getServiceByComponentInstanceAndNameSuffix(componentNameOrInstanceId, NAME_SUFFIX));
-    } catch (IllegalStateException e) {
+      service = of(getService(componentNameOrInstanceId, NAME_SUFFIX));
+    } catch (SilverpeasRuntimeException e) {
       service = empty();
     }
     return service;

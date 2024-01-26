@@ -29,15 +29,15 @@ import org.im4java.core.IMOperation;
 import org.im4java.core.IdentifyCmd;
 import org.im4java.core.MogrifyCmd;
 import org.im4java.process.ArrayListOutputConsumer;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.io.media.image.AbstractImageTool;
 import org.silverpeas.core.io.media.image.ImageInfoType;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.*;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;

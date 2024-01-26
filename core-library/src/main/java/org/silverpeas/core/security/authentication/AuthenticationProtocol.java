@@ -25,8 +25,8 @@ package org.silverpeas.core.security.authentication;
 
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPwdChangeNotAvailException;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * A set of security-related operations about a user authentication.

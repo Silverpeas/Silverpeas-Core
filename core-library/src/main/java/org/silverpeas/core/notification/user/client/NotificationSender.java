@@ -30,7 +30,7 @@ import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 import java.util.Collections;

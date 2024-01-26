@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailReference;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 
 import javax.inject.Inject;

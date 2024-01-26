@@ -36,7 +36,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;

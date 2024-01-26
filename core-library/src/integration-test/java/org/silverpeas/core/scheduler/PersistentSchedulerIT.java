@@ -36,7 +36,7 @@ import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.text.ParseException;

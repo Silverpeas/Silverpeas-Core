@@ -24,7 +24,7 @@
 package org.silverpeas.core.exception;
 
 /**
- * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasException}
+ * Deprecated exception. Please use instead {@link org.silverpeas.kernel.SilverpeasException}
  * <br>
  * SilverpeasException est la racine de la hiérarchie d'exception silverpeas. Toutes les classes
  * d'exception spécifiques aux differents modules doivent dériver (directement ou non) de

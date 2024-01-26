@@ -27,10 +27,10 @@ import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 import static java.lang.Character.isDigit;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * Transforms all URL of images to take into account theirs display size.

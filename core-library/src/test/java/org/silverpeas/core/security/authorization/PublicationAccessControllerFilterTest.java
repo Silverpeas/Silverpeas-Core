@@ -38,7 +38,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -46,20 +45,14 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.util.Pair;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -78,7 +71,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author silveryocha
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class PublicationAccessControllerFilterTest {
 
   private static final String USER_ID = "bart";
@@ -148,7 +141,6 @@ class PublicationAccessControllerFilterTest {
 
   @BeforeEach
   void setup() {
-    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(user.getDisplayedName()).thenReturn(USER_ID);
@@ -562,7 +554,7 @@ class PublicationAccessControllerFilterTest {
               .forEach(pu -> result.put(pu.getId(), new HashSet<>(pu.getLocations())));
           return result;
       });
-      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
+      CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     }
 
     public TestVerifyResults results() {
@@ -608,11 +600,6 @@ class PublicationAccessControllerFilterTest {
       extends DefaultInstancePublicationAccessControlExtension {
 
     DefaultInstancePublicationAccessControlExtension4Test() {
-    }
-
-    @Override
-    protected boolean isDraftVisibleWithCoWriting() {
-      return false;
     }
   }
 }

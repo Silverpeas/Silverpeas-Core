@@ -28,7 +28,7 @@ import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.persistence.jdbc.LongText;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;

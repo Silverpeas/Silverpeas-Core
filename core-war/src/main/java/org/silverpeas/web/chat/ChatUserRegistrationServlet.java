@@ -28,9 +28,9 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.ChatUsersRegistration;
 import org.silverpeas.core.notification.user.SimpleUserNotification;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 

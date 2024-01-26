@@ -39,7 +39,7 @@ import java.util.List;
 class PublicationDetail4Test extends PublicationDetail {
   private static final long serialVersionUID = 4151460677735398441L;
 
-  private List<Location> locations = new ArrayList<>();
+  private final List<Location> locations = new ArrayList<>();
 
   PublicationDetail4Test(final String id, final NodeDetail node) {
     final NodePK nodePK = node.getNodePK();
@@ -54,9 +54,12 @@ class PublicationDetail4Test extends PublicationDetail {
     setCloneId(cloneId);
   }
 
-  PublicationDetail4Test(final String id, final NodeDetail node, final String cloneId, final boolean isTheClone) {
+  PublicationDetail4Test(final String id, final NodeDetail node, final String cloneId,
+      final boolean isTheClone) {
     this(id, node, cloneId);
-    setStatus(CLONE_STATUS);
+    if (isTheClone) {
+      setStatus(CLONE_STATUS);
+    }
   }
 
   PublicationDetail4Test clearAliases() {
@@ -66,12 +69,11 @@ class PublicationDetail4Test extends PublicationDetail {
     return this;
   }
 
-  PublicationDetail4Test addAliasLocation(final NodeDetail node) {
+  void addAliasLocation(final NodeDetail node) {
     final NodePK nodePK = node.getNodePK();
     final Location location = new Location(nodePK.getId(), nodePK.getInstanceId());
     location.setAsAlias("userId");
     locations.add(location);
-    return this;
   }
 
   List<Location> getLocations() {

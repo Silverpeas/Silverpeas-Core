@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class NotificationServerException extends SilverpeasException {
 

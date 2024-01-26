@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 

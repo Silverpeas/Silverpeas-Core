@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.io.media.image.ImageTool;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.PreviewService;
 import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;

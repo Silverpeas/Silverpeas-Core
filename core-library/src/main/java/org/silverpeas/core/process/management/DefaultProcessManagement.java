@@ -28,7 +28,7 @@ import org.silverpeas.core.process.check.ProcessCheck;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import javax.inject.Singleton;

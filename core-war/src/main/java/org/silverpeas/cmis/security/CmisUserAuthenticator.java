@@ -38,7 +38,7 @@ import org.silverpeas.core.web.rs.WebAuthorizationValidation;
 
 import javax.ws.rs.WebApplicationException;
 
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 /**
  * Authenticates and identifies the user requesting a CMIS service.
@@ -83,7 +83,7 @@ public class CmisUserAuthenticator extends AbstractCmisServiceWrapper
     try {
       prepareForSOAPUsernameToken();
       final UserPrivilegeValidation validation =
-          ServiceProvider.getSingleton(UserPrivilegeValidation.class);
+          ServiceProvider.getService(UserPrivilegeValidation.class);
       validateUserAuthentication(validation);
       validateUserAuthorization(validation);
     } catch (WebApplicationException e) {

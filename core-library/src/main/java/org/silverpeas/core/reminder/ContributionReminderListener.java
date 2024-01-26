@@ -27,7 +27,7 @@ import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.ContributionModification;
 import org.silverpeas.core.contribution.ContributionMove;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.List;

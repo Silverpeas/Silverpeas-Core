@@ -24,7 +24,8 @@
 package org.silverpeas.core.admin.component;
 
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Optional;
 
@@ -80,8 +81,8 @@ public interface ComponentInstancePreDestruction {
   static Optional<ComponentInstancePreDestruction> get(String destructionName) {
     try {
       return Optional.of(ServiceProvider
-          .getServiceByComponentInstanceAndNameSuffix(destructionName, NAME_SUFFIX));
-    } catch (IllegalStateException e) {
+          .getService(destructionName, NAME_SUFFIX));
+    } catch (SilverpeasRuntimeException e) {
       SilverLogger.getLogger(ComponentInstancePreDestruction.class).silent(e);
       return Optional.empty();
     }

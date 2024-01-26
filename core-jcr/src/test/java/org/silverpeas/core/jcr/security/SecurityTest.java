@@ -35,8 +35,9 @@ import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.security.token.persistent.service.PersistentResourceTokenService;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.test.TestUser;
 
 import javax.jcr.Credentials;
@@ -55,7 +56,7 @@ import static org.mockito.Mockito.when;
  * an access authorization of a user in Silverpeas.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public abstract class SecurityTest {
 
   /**
@@ -106,9 +107,6 @@ public abstract class SecurityTest {
   @TestManagedMock
   PersistentResourceTokenService tokenService;
 
-  @TestManagedMock
-  UserProvider userProvider;
-
   static Context context = new Context();
 
   @BeforeEach
@@ -154,6 +152,7 @@ public abstract class SecurityTest {
         }
     );
 
+    UserProvider userProvider = UserProvider.get();
     when(userProvider.getUser(anyString())).thenAnswer(
         invocationOnMock -> {
           String userId = invocationOnMock.getArgument(0);

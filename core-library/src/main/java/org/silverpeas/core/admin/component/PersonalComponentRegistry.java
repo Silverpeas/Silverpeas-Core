@@ -24,12 +24,12 @@
 package org.silverpeas.core.admin.component;
 
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
@@ -66,7 +66,7 @@ import java.util.stream.Stream;
 public class PersonalComponentRegistry implements Initialization {
 
   private static final int MAX_DEPTH = 2;
-  private Map<String, PersonalComponent> componentsByName = new HashMap<>();
+  private final Map<String, PersonalComponent> componentsByName = new HashMap<>();
 
   PersonalComponentRegistry() {
   }
@@ -76,7 +76,7 @@ public class PersonalComponentRegistry implements Initialization {
    * @return the path to the directory
    */
   private static Path getPersonalComponentDescriptorHome() {
-    SystemWrapper system = SystemWrapper.get();
+    SystemWrapper system = SystemWrapper.getInstance();
     return Paths.get(system.getenv("SILVERPEAS_HOME"), "xmlcomponents", "personals");
   }
 
@@ -99,7 +99,7 @@ public class PersonalComponentRegistry implements Initialization {
    * @return a PersonalComponentRegistry instance.
    */
   public static PersonalComponentRegistry get() {
-    return ServiceProvider.getSingleton(PersonalComponentRegistry.class);
+    return ServiceProvider.getService(PersonalComponentRegistry.class);
   }
 
   /**
