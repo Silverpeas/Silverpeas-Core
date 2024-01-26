@@ -228,8 +228,8 @@
     return document.getElementById(elementId);
   }
 
-  let oListText ;
-  let oListValue ;
+  window.oListText = undefined;
+  window.oListValue = undefined;
 
   $(document).ready(function(){
     oListText	= document.getElementById( 'cmbText' ) ;
