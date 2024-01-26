@@ -31,7 +31,7 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;

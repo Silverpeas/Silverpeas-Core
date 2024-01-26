@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import java.io.Serializable;
 

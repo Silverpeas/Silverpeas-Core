@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.viewer;
 
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import static org.silverpeas.core.util.StringUtil.definedString;
+import static org.silverpeas.kernel.util.StringUtil.definedString;
 
 /**
  * This abstraction centralizes the commons stuffs between the WEB services of view and preview

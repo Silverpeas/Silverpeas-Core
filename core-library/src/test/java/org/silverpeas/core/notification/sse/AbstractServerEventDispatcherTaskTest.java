@@ -31,13 +31,14 @@ import org.mockito.ArgumentMatchers;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask.ServerEventStore;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.LoggerLevel;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LoggerLevel;
 import org.silverpeas.core.test.unit.extention.RequesterProvider;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.kernel.logging.Level;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
@@ -67,8 +68,8 @@ import static org.mockito.Mockito.*;
 /**
  * @author Yohann Chastagnier
  */
-@EnableSilverTestEnv
-@LoggerLevel(Level.DEBUG)
+@EnableSilverTestEnv(context = JEETestContext.class)
+@LoggerLevel(Level.INFO)
 @TestManagedBeans({ServerEventDispatcherTask.class, RequestTaskManager.class,
     ServerEventWaitForManager.class, DefaultServerEventContextManager.class})
 abstract class AbstractServerEventDispatcherTaskTest {

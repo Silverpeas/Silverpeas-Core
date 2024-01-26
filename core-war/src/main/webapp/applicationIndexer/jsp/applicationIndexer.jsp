@@ -37,9 +37,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
 
-<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.util.StringUtil"%>
 
 <%@ page import="org.silverpeas.core.web.index.IndexationProcessExecutor"%>
 <%@ page import="org.silverpeas.core.web.index.components.ApplicationIndexer"%>

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contact.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contact.info.InfoDAO;
@@ -39,7 +39,7 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

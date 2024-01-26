@@ -38,7 +38,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.FileInputStream;
 import java.io.IOException;

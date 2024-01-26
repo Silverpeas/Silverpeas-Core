@@ -4,7 +4,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.FileLink;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.memory.MemoryUnit;
 

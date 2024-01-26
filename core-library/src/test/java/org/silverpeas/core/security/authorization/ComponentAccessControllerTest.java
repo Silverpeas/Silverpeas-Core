@@ -28,7 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -45,11 +44,12 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.exception.NotSupportedException;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.Optional;
 import java.util.Set;
@@ -59,17 +59,17 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.core.security.authorization.ComponentInstanceAccessControlExtension.Constants.NAME_SUFFIX;
 
 /**
  *
  * @author ehugonnet
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ComponentAccessControllerTest {
   private static final String toolId = "toolId";
   private static final String componentAdminId = "ADMIN";
@@ -110,7 +110,6 @@ class ComponentAccessControllerTest {
 
   @BeforeEach
   void setup() {
-    when(ServiceProvider.getService(endsWith(NAME_SUFFIX))).thenReturn(defaultInstanceAccessControlExtension);
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     final UserDetail user = new UserDetail();
     user.setId(USER_ID);

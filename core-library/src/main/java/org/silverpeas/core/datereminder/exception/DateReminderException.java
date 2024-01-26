@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.datereminder.exception;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * The exception for all normal errors occuring with the DateReminder API and for which the client requires

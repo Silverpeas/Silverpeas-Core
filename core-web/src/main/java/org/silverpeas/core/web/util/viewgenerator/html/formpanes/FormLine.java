@@ -31,8 +31,8 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.servlet.http.HttpServletRequest;

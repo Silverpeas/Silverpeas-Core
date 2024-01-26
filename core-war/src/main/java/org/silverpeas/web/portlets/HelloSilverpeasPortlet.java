@@ -31,7 +31,7 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 public class HelloSilverpeasPortlet extends GenericPortlet {
 

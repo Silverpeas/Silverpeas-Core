@@ -42,8 +42,8 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -72,7 +72,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO.PUBLICATION_FATHER_TABLE_NAME;
 import static org.silverpeas.core.util.DateUtil.formatDate;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * This is the Publication Data Access Object.

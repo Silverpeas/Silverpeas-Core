@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.index.tools;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Indexation of the data managed in a given personal tool.

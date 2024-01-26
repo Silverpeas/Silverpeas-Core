@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * An import-export descriptor is an object that provides useful information to exporters and

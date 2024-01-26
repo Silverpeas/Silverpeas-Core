@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Exception thrown when an error occurs with attachments of a resource.

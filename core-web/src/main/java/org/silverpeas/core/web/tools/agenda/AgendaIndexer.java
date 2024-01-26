@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.tools.agenda;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
 

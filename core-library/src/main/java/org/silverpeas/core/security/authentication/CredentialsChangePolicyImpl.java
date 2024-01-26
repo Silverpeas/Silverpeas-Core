@@ -25,7 +25,7 @@
 package org.silverpeas.core.security.authentication;
 
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * Implementation of both the {@link CredentialsChangePolicy} and

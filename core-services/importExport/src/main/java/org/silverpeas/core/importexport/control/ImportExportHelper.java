@@ -26,7 +26,7 @@ package org.silverpeas.core.importexport.control;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;

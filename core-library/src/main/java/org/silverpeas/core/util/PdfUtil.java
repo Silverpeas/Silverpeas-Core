@@ -31,9 +31,9 @@ import com.itextpdf.text.pdf.PdfStamper;
 import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

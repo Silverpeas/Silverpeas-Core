@@ -26,7 +26,7 @@
 package org.silverpeas.core.jcr.impl.oak;
 
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.jcr.SilverpeasRepositoryFactory;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
@@ -37,8 +37,8 @@ import org.silverpeas.core.jcr.impl.oak.factories.DocumentNodeStoreFactory;
 import org.silverpeas.core.jcr.impl.oak.factories.MemoryNodeStoreFactory;
 import org.silverpeas.core.jcr.impl.oak.factories.NodeStoreFactory;
 import org.silverpeas.core.jcr.impl.oak.factories.SegmentNodeStoreFactory;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;

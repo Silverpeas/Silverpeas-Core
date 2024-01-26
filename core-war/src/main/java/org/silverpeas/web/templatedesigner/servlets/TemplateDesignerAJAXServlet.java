@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.templatedesigner.servlets;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
 import org.silverpeas.web.templatedesigner.model.TemplateDesignerException;
 

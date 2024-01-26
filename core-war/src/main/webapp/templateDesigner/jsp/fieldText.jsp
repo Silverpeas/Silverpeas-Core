@@ -24,7 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.core.contribution.content.form.field.TextField"%>
-<%@page import="org.silverpeas.core.util.StringUtil"%>
+<%@page import="org.silverpeas.kernel.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp" %>

@@ -30,7 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Yohann Chastagnier

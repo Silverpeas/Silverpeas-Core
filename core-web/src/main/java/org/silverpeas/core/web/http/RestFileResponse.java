@@ -36,7 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
 
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * Centralizing the code which permits to send a file, and if necessary or asked to send it

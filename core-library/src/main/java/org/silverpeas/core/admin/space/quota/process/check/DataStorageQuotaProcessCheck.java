@@ -39,20 +39,14 @@ import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.AbstractFileProcessCheck;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset.from;
 import static org.silverpeas.core.admin.space.quota.process.check.SpaceDataStorageQuotaCountingOffset.from;
@@ -100,6 +94,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
       final Map<String, SimpleQuotaCountingOffset> previousSpaceOffsets =
           getThreadCacheAccessor().getCache()
           .computeIfAbsent(PREVIOUS_CACHE_KEY, Map.class, () -> new HashMap<>(spaces.size()));
+      Objects.requireNonNull(previousSpaceOffsets);
       for (final SpaceInst space : spaces) {
         try {
           final String spaceId = space.getId();

@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.mylinks;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.mylinks.model.CategoryDetail;
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 
@@ -51,8 +51,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.valueOf;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.mylinks.MyLinksResourceURIs.MYLINKS_BASE_URI;
 
 /**

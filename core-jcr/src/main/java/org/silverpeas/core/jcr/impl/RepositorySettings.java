@@ -25,9 +25,9 @@
 
 package org.silverpeas.core.jcr.impl;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 /**
  * The parameters the different {@link javax.jcr.RepositoryFactory} have to understand and satisfy
@@ -53,11 +53,11 @@ public class RepositorySettings {
    * Gets the absolute path of the JCR home directory. The JCR home directory is the location in
    * which is defined the repository to use in Silverpeas. It should be defined in the system
    * properties to be retrieved. If no such property is found, then a
-   * {@link org.silverpeas.core.SilverpeasRuntimeException} exception is thrown.
+   * {@link SilverpeasRuntimeException} exception is thrown.
    * @return the absolute path of the JCR home directory.
    */
   public String getJCRHomeDirectory() {
-    String jcrHomePath = SystemWrapper.get().getProperty(JCR_HOME);
+    String jcrHomePath = SystemWrapper.getInstance().getProperty(JCR_HOME);
     if (StringUtil.isNotDefined(jcrHomePath)) {
       throw new SilverpeasRuntimeException("No such system properties defined: " + JCR_HOME);
     }
@@ -69,12 +69,12 @@ public class RepositorySettings {
    * the repository. The configuration file can be either specific to the underlying implementation
    * or specific to Silverpeas whether this one performs itself the creation of the
    * {@link javax.jcr.Repository} instance. If no such property is found, then a
-   * {@link org.silverpeas.core.SilverpeasRuntimeException} exception is thrown.
+   * {@link SilverpeasRuntimeException} exception is thrown.
    * @return the absolute path of the JCR configuration file to use to create a
    * {@link javax.jcr.Repository} instance.
    */
   public String getJCRConfigurationFile() {
-    String jcrConf = SystemWrapper.get().getProperty(JCR_CONF);
+    String jcrConf = SystemWrapper.getInstance().getProperty(JCR_CONF);
     if (StringUtil.isNotDefined(jcrConf)) {
       throw new SilverpeasRuntimeException("No such system properties defined: " + JCR_CONF);
     }

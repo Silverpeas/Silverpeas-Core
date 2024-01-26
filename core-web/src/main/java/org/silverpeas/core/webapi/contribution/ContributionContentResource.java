@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.ws.rs.GET;

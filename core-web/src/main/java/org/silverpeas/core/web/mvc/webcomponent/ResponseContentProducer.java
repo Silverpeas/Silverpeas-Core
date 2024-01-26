@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;

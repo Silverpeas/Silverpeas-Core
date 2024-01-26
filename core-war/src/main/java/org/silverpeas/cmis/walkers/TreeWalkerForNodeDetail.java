@@ -33,7 +33,7 @@ import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;

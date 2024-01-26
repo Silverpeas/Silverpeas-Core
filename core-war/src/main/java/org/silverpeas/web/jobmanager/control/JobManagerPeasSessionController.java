@@ -27,7 +27,7 @@ import org.silverpeas.core.documenttemplate.DocumentTemplateSettings;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.wbe.WbeSettings;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

@@ -30,9 +30,9 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

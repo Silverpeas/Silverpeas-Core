@@ -34,7 +34,7 @@ import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.sql.Connection;

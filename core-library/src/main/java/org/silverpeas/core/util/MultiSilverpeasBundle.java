@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.util;
 
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.bundle.SilverpeasBundle;
+import org.silverpeas.kernel.util.StringUtil;
+
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;

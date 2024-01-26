@@ -25,7 +25,7 @@
 package org.silverpeas.core.webapi.notification.sse;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.web.session.UserSessionEvent;
 
 import javax.enterprise.event.Observes;

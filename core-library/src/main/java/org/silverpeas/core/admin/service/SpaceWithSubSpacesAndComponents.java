@@ -10,7 +10,7 @@ import java.util.Set;
 
 import static java.lang.String.valueOf;
 import static java.util.Collections.emptySet;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Representation of a Silverpeas's space and component structure more or less filtered.

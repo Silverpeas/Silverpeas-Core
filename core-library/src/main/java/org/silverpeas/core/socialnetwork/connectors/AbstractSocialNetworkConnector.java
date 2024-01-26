@@ -25,8 +25,8 @@ package org.silverpeas.core.socialnetwork.connectors;
 
 import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;

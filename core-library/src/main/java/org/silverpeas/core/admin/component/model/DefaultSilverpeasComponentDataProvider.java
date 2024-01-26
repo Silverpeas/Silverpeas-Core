@@ -25,6 +25,7 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.annotation.Provider;
+import org.silverpeas.kernel.exception.NotFoundException;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
@@ -41,6 +42,6 @@ public class DefaultSilverpeasComponentDataProvider implements SilverpeasCompone
 
   private SilverpeasComponent getComponent(final String componentName) {
     return SilverpeasComponent.getByName(componentName)
-        .orElseThrow(() -> new IllegalStateException(unknown("component", componentName)));
+        .orElseThrow(() -> new NotFoundException(unknown("component", componentName)));
   }
 }

@@ -25,9 +25,9 @@
 package org.silverpeas.core.contribution.content.ddwe.model;
 
 import org.silverpeas.core.ApplicationService;
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.SilverpeasResource;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -67,8 +67,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * Represents the store that register all data manipulated by a Drag & Drop Web Editor.

@@ -29,7 +29,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;

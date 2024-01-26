@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.notification.system;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -95,7 +95,7 @@ public class JMSOperation {
   private ConnectionFactory jmsConnectionFactory;
 
   private static JMSOperation get() {
-    return ServiceProvider.getSingleton(JMSOperation.class);
+    return ServiceProvider.getService(JMSOperation.class);
   }
 
   private JMSOperation() {

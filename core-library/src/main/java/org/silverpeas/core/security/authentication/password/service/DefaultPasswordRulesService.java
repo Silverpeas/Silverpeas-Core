@@ -35,26 +35,19 @@ import org.silverpeas.core.security.authentication.password.rule.MaxLengthPasswo
 import org.silverpeas.core.security.authentication.password.rule.MinLengthPasswordRule;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.rule.SequentialForbiddenPasswordRule;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.security.SecureRandom;
+import java.util.*;
 
 /**
- * User: Yohann Chastagnier
- * Date: 07/01/13
+ * Service dedicated to check the rules on passwords are satisfied.
+ * @author  Yohann Chastagnier
  */
 @Service
 @Singleton
@@ -65,16 +58,18 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
       settings.getInteger("password.combination.nbMatchingRules", 0);
 
   /* All server password rules */
-  private Map<PasswordRuleType, PasswordRule> allPasswordRules =
+  private final Map<PasswordRuleType, PasswordRule> allPasswordRules =
       new LinkedHashMap<>(PasswordRuleType.values().length);
 
   /* All required server password rules */
-  private Map<PasswordRuleType, PasswordRule> requiredPasswordRules =
+  private final Map<PasswordRuleType, PasswordRule> requiredPasswordRules =
       new LinkedHashMap<>(PasswordRuleType.values().length);
 
   /* All combined server password rules */
-  private Map<PasswordRuleType, PasswordRule> combinedPasswordRules =
+  private final Map<PasswordRuleType, PasswordRule> combinedPasswordRules =
       new LinkedHashMap<>(PasswordRuleType.values().length);
+
+  private final Random random = new SecureRandom();
 
   /**
    * Loading just after the server is started all activated server password rules.
@@ -83,6 +78,7 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
   protected void loadRules() {
     allPasswordRules.clear();
     requiredPasswordRules.clear();
+    combinedPasswordRules.clear();
     for (PasswordRule rule : new PasswordRule[]{new MinLengthPasswordRule(),
         new MaxLengthPasswordRule(), new BlankForbiddenPasswordRule(),
         new SequentialForbiddenPasswordRule(), new AtLeastXUppercasePasswordRule(),
@@ -172,14 +168,7 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
     while (currentPasswordLength < requiredPasswordLength) {
 
       // Gets a password rule
-      if (!requiredRules.isEmpty()) {
-        currentRule = requiredRules.remove(random(requiredRules.size()));
-      } else if (!combinedRules.isEmpty() &&
-          combinedRulesPerformed.size() < nbMatchingCombinedRules) {
-        currentRule = combinedRules.remove(random(combinedRules.size()));
-      } else {
-        currentRule = rules.get(random(rules.size()));
-      }
+      currentRule = getPasswordRule(requiredRules, combinedRules, combinedRulesPerformed, rules);
 
       // Storing combined rule performed
       if (currentRule.isCombined()) {
@@ -215,12 +204,28 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
     return generatedPassword;
   }
 
+  private PasswordRule getPasswordRule(List<PasswordRule> requiredRules,
+      List<PasswordRule> combinedRules,
+      Set<PasswordRule> combinedRulesPerformed,
+      List<PasswordRule> rules) {
+    PasswordRule currentRule;
+    if (!requiredRules.isEmpty()) {
+      currentRule = requiredRules.remove(random(requiredRules.size()));
+    } else if (!combinedRules.isEmpty() &&
+        combinedRulesPerformed.size() < nbMatchingCombinedRules) {
+      currentRule = combinedRules.remove(random(combinedRules.size()));
+    } else {
+      currentRule = rules.get(random(rules.size()));
+    }
+    return currentRule;
+  }
+
   /**
    * Returns a random integer value included between 0 and (given maxValue - 1).
-   * @return
+   * @return a random integer.
    */
   private int random(int maxValue) {
-    return (int) (maxValue * Math.random());
+    return random.nextInt(maxValue);
   }
 
   @Override

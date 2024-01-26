@@ -30,9 +30,9 @@ import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

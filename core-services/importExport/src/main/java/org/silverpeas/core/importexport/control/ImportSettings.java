@@ -24,12 +24,12 @@
 package org.silverpeas.core.importexport.control;
 
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled;
 

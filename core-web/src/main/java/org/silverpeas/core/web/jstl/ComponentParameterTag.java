@@ -25,7 +25,7 @@ package org.silverpeas.core.web.jstl;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.jstl.util.AbstractSetVarTagSupport;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.jsp.JspException;
 

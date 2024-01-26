@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.template;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.util.MavenTestEnv;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.TestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import static java.io.File.separator;
@@ -36,21 +37,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.silverpeas.core.template.SilverpeasTemplate.TEMPLATE_CUSTOM_DIR;
 import static org.silverpeas.core.template.SilverpeasTemplate.TEMPLATE_ROOT_DIR;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SilverpeasTemplateTest {
 
   private Properties configuration;
 
   @BeforeEach
-  public void setUp(MavenTestEnv mavenTestEnv) {
-    final File rootDir = new File(mavenTestEnv.getResourceTestDirFile(), "templates");
+  public void setUp() {
+    final Path rootDir = TestContext.getInstance().getPathOfTestResources().resolve("templates");
     configuration = new Properties();
-    configuration.setProperty(TEMPLATE_ROOT_DIR, rootDir.getPath() + separator);
-    configuration.setProperty(TEMPLATE_CUSTOM_DIR, rootDir.getPath() + separator);
+    configuration.setProperty(TEMPLATE_ROOT_DIR, rootDir + separator);
+    configuration.setProperty(TEMPLATE_CUSTOM_DIR, rootDir + separator);
   }
 
   @Test
-  void applyFileTemplateWithSimpleAttribute() throws Exception {
+  void applyFileTemplateWithSimpleAttribute() {
     SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     String attributeString = "single";
@@ -60,7 +61,7 @@ class SilverpeasTemplateTest {
   }
 
   @Test
-  void applyStringTemplateWithSimpleAttribute() throws Exception {
+  void applyStringTemplateWithSimpleAttribute() {
     SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     String attributeString = "single";
@@ -70,7 +71,7 @@ class SilverpeasTemplateTest {
   }
 
   @Test
-  void applyStringTemplateWithArrayAttribute() throws Exception {
+  void applyStringTemplateWithArrayAttribute() {
     SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     String[] attributeList = new String[2];
@@ -82,7 +83,7 @@ class SilverpeasTemplateTest {
   }
 
   @Test
-  void applyFileTemplateWithArrayAttribute() throws Exception {
+  void applyFileTemplateWithArrayAttribute() {
     SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     String[] attributeList = new String[2];

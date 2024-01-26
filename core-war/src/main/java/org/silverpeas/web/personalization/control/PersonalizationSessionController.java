@@ -31,7 +31,7 @@ import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationAddress;
 import org.silverpeas.core.notification.user.client.NotificationManager;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;

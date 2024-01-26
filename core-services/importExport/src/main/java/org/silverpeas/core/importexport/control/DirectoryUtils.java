@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * @author sdevolder Méthodes à factoriser

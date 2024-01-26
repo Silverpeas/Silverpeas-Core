@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class MailContentProcessException extends SilverpeasException {
   private static final long serialVersionUID = 3370702841259278204L;

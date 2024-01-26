@@ -30,9 +30,9 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chart.pie.PieChart;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;

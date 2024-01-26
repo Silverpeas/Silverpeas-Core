@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.MailLinkCssApplierDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.OpenLinkOnBlankPageDirective;
@@ -31,8 +31,8 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.directive.Saniti
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.SilverpeasLinkCssApplierDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.VariablesReplacementDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.List;

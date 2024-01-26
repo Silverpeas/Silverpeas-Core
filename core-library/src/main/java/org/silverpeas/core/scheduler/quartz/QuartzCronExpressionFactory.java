@@ -24,7 +24,7 @@
 package org.silverpeas.core.scheduler.quartz;
 
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.scheduler.trigger.CronExpression;
 import org.silverpeas.core.scheduler.trigger.CronExpressionFactory;
 

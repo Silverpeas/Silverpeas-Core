@@ -26,7 +26,7 @@ package org.silverpeas.core.jcr.webdav;
 
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.jcr.Repository;

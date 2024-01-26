@@ -24,10 +24,11 @@
 package org.silverpeas.core.index.indexing.parser;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -79,7 +80,7 @@ public final class ParserManager {
         try {
           Parser parser = ServiceProvider.getService(parserName);
           parserMap.put(mimeType, parser);
-        } catch (IllegalStateException e) {
+        } catch (SilverpeasRuntimeException e) {
           indexingLogger().error("No parser found in silverpeas for {0}: {1}", mimeType, parserName);
         } catch (Exception e) {
           indexingLogger().error(e.getMessage(), e);

@@ -29,8 +29,8 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.List;

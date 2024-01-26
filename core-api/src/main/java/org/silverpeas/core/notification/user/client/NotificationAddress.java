@@ -1,7 +1,7 @@
 package org.silverpeas.core.notification.user.client;
 
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * A notification address is an address to which a user can receive the notification messages

@@ -32,6 +32,6 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface SocialRelationShipProvider extends SocialInformationProvider {
 
   static SocialRelationShipProvider get() {
-    return ServiceProvider.getSingleton(SocialRelationShipProvider.class);
+    return ServiceProvider.getService(SocialRelationShipProvider.class);
   }
 }

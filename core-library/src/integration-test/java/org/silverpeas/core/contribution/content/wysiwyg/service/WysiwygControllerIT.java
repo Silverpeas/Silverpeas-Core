@@ -43,8 +43,8 @@ import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.ByteArrayInputStream;

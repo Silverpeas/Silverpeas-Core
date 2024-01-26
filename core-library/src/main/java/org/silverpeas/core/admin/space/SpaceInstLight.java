@@ -32,7 +32,7 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.io.Serializable;
 import java.util.Date;

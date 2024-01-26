@@ -29,8 +29,8 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.search.SearchService;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 

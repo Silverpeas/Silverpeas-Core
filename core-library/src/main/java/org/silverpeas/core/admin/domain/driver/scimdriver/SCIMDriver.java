@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.transaction.Transactional;
 import java.util.Collection;

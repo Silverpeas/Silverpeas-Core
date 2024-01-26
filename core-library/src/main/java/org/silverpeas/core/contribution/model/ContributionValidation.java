@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

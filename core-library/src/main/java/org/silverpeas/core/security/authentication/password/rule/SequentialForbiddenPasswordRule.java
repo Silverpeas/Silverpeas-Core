@@ -27,7 +27,7 @@ import org.silverpeas.core.security.authentication.password.constant.PasswordRul
 
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Sequential character forbidden in password.

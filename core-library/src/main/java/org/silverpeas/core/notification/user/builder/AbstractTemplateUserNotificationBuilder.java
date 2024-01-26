@@ -37,8 +37,8 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
 
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;

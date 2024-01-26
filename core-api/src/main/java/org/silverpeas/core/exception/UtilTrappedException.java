@@ -23,8 +23,10 @@
  */
 package org.silverpeas.core.exception;
 
+import org.silverpeas.kernel.SilverpeasException;
+
 /**
- * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasException}
+ * Deprecated exception. Please use instead {@link SilverpeasException}
  * @deprecated
  */
 @Deprecated

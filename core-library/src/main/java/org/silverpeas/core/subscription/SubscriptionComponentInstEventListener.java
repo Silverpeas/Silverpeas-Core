@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Singleton;
 

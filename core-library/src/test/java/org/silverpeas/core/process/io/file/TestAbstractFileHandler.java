@@ -32,9 +32,10 @@ import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.exception.FileHandlerException;
 import org.silverpeas.core.process.session.DefaultProcessSession;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.io.File;
 import java.util.UUID;
@@ -48,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Yohann Chastagnier
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class TestAbstractFileHandler {
 
   private FileBasePath BASE_PATH_TEST;

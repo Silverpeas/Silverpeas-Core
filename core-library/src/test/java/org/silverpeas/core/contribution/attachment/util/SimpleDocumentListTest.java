@@ -29,9 +29,11 @@ import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.i18n.I18n;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,10 +45,10 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SimpleDocumentListTest {
 
-  @TestManagedMock
+  @Inject
   I18n i18n;
 
   @BeforeEach

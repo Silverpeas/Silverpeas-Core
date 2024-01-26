@@ -24,32 +24,24 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPIRule;
+import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author ehugonnet
  */
-public class DateUtilTest {
-
-  @Rule
-  public CommonAPIRule commonAPIRule = new CommonAPIRule();
+class DateUtilTest {
 
   private static final String LANGUAGE = "en";
 
-  public DateUtilTest() {
-  }
-
   @Test
-  public void testGetOutputDateAndHour() {
+  void testGetOutputDateAndHour() {
     Date date = DateUtil.resetHour(java.sql.Date.valueOf("2013-05-21"));
     assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/21/2013"));
 
@@ -115,7 +107,7 @@ public class DateUtilTest {
    * Test of formatDuration method, of class DateUtil.
    */
   @Test
-  public void testFormatDuration() {
+  void testFormatDuration() {
     long duration = 0L;
     String expResult = "0s";
     String result = DateUtil.formatDuration(duration);
@@ -153,7 +145,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testAddDays() {
+  void testAddDays() {
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.DATE, 27);
     calend.set(Calendar.MONTH, Calendar.JUNE);
@@ -180,7 +172,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testDatesAreEqual() {
+  void testDatesAreEqual() {
     Date date1 = java.sql.Date.valueOf("2013-01-01");
     Date date2 = DateUtils.addHours(java.sql.Date.valueOf("2013-01-02"), 3);
     assertThat(false, is(DateUtil.datesAreEqual(date1, date2)));
@@ -191,7 +183,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testCompareTo() {
+  void testCompareTo() {
     Date date1 = java.sql.Date.valueOf("2013-01-01");
     Date date2 = DateUtils.addHours(java.sql.Date.valueOf("2013-01-02"), 3);
     assertThat(false, is(DateUtil.compareTo(date1, date2) == 0));
@@ -214,7 +206,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetDayNumberBetween() {
+  void testGetDayNumberBetween() {
     Date date1 = java.sql.Date.valueOf("2013-01-01");
     Date date2 = java.sql.Date.valueOf("2013-01-02");
     assertThat(1, is(DateUtil.getDayNumberBetween(date1, date2)));
@@ -231,7 +223,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetFirstDateOfYear() {
+  void testGetFirstDateOfYear() {
     Date dateTest = DateUtil.getFirstDateOfYear(java.sql.Date.valueOf("2013-04-20"));
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -244,7 +236,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetEndDateOfYear() {
+  void testGetEndDateOfYear() {
     Date dateTest = DateUtil.getEndDateOfYear(java.sql.Date.valueOf("2013-04-20"));
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -257,7 +249,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetFirstDateOfMonth() {
+  void testGetFirstDateOfMonth() {
     Date dateTest = DateUtil.getFirstDateOfMonth(java.sql.Date.valueOf("2013-04-20"));
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -270,7 +262,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetEndDateOfMonth() {
+  void testGetEndDateOfMonth() {
     Date dateTest = DateUtil.getEndDateOfMonth(java.sql.Date.valueOf("2013-04-20"));
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -283,7 +275,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetFirstDateOfWeekFR() {
+  void testGetFirstDateOfWeekFR() {
     Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-04-20"), "fr");
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -296,7 +288,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetEndDateOfWeekFR() {
+  void testGetEndDateOfWeekFR() {
     Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-04-20"), "fr");
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -309,7 +301,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetFirstDateOfWeekFRBetween2Months() {
+  void testGetFirstDateOfWeekFRBetween2Months() {
     Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-04-29"), "fr");
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -322,7 +314,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetEndDateOfWeekFRBetween2Months() {
+  void testGetEndDateOfWeekFRBetween2Months() {
     Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-04-29"), "fr");
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -335,7 +327,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetFirstDateOfWeekFRBetween2Years() {
+  void testGetFirstDateOfWeekFRBetween2Years() {
     Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-12-31"), "fr");
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -348,7 +340,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetEndDateOfWeekFRBetween2Years() {
+  void testGetEndDateOfWeekFRBetween2Years() {
     Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-12-31"), "fr");
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2014));
@@ -361,7 +353,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetFirstDateOfWeekEN() {
+  void testGetFirstDateOfWeekEN() {
     Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-04-20"), LANGUAGE);
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -374,7 +366,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetEndDateOfWeekEN() {
+  void testGetEndDateOfWeekEN() {
     Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-04-20"), LANGUAGE);
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -387,7 +379,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetBeginOfDay() {
+  void testGetBeginOfDay() {
     Date dateTest = DateUtil.getBeginOfDay(java.sql.Date.valueOf("2013-04-20"));
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
@@ -400,7 +392,7 @@ public class DateUtilTest {
   }
 
   @Test
-  public void testGetEndOfDay() {
+  void testGetEndOfDay() {
     Date dateTest = DateUtil.getEndOfDay(java.sql.Date.valueOf("2013-04-20"));
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));

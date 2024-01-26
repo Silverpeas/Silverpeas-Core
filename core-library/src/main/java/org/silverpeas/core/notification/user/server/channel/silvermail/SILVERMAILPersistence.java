@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
-import org.silverpeas.core.NotFoundException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.user.UserNotificationServerEvent;
@@ -38,11 +38,12 @@ import org.silverpeas.core.persistence.jdbc.LongText;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import java.text.ParseException;
 import java.util.Collection;
@@ -270,7 +271,7 @@ public class SILVERMAILPersistence {
     try {
       msgDate = DateUtil.parseDate(smb.getDateMsg());
     } catch (ParseException e) {
-      throw new org.silverpeas.core.SilverpeasRuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
     SILVERMAILMessage silverMailMessage = new SILVERMAILMessage();
     silverMailMessage.setId(Long.parseLong(smb.getId()));

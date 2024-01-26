@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ApplicationServiceProvider;
 import org.silverpeas.core.BasicIdentifier;
-import org.silverpeas.core.NotFoundException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -42,7 +42,7 @@ import org.silverpeas.core.contribution.model.Plannable;
 import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WithThumbnail;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.webapi.util.UserEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;

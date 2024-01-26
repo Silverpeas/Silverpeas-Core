@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.test;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.nio.charset.StandardCharsets;
 

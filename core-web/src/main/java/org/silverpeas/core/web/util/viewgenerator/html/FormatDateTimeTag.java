@@ -32,7 +32,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.DateUtil;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A tag to print out a localized date according to the language of the user.

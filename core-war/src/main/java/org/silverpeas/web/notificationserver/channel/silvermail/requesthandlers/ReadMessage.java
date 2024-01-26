@@ -26,7 +26,7 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;

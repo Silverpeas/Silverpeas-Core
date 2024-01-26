@@ -26,6 +26,7 @@ package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.annotation.Service;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,6 +45,14 @@ public class DefaultServerEventContextManager implements SilverpeasServerEventCo
 
   final ReadWriteLock lock = new ReentrantReadWriteLock(true);
   final Set<SilverpeasServerEventContext> contexts = new HashSet<>(2000);
+
+  @PreDestroy
+  protected void cleanContexts() {
+    safeWrite(null, s -> {
+      contexts.clear();
+      return true;
+    });
+  }
 
   @Override
   public void register(final SilverpeasServerEventContext context) {

@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.token;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Nonnull;
@@ -67,7 +67,7 @@ public class SilverpeasWebTokenService {
   private final Repository repository = new Repository();
 
   public static SilverpeasWebTokenService get() {
-    return ServiceProvider.getSingleton(SilverpeasWebTokenService.class);
+    return ServiceProvider.getService(SilverpeasWebTokenService.class);
   }
 
   /**

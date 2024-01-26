@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier

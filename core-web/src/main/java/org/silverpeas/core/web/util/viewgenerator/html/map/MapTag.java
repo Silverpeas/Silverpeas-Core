@@ -27,9 +27,9 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
@@ -37,7 +37,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import static org.silverpeas.core.admin.component.model.ComponentInstLight.getIcon;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 public class MapTag extends TagSupport {
 

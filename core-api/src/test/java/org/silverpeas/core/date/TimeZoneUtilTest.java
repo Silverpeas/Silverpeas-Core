@@ -24,9 +24,8 @@
 
 package org.silverpeas.core.date;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPIRule;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.time.ZoneId;
 
@@ -36,13 +35,11 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author silveryocha
  */
-public class TimeZoneUtilTest {
-
-  @Rule
-  public CommonAPIRule commonAPIRule = new CommonAPIRule();
+@EnableSilverTestEnv
+class TimeZoneUtilTest {
 
   @Test
-  public void toZoneId() {
+  void toZoneId() {
     assertThat(TimeZoneUtil.toZoneId("Pacific Standard Time (Mexico)"), is(ZoneId.of("America/Tijuana")));
     assertThat(TimeZoneUtil.toZoneId("Pacific Standard Time"), is(ZoneId.of("America/Los_Angeles")));
     assertThat(TimeZoneUtil.toZoneId("Romance Standard Time"), is(ZoneId.of("Europe/Paris")));

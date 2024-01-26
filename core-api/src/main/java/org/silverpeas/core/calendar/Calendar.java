@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.calendar.notification.CalendarLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
@@ -46,7 +46,7 @@ import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

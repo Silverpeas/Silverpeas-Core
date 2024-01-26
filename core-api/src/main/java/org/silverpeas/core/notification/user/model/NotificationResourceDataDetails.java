@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * Labels and gender container linked to a {@link NotificationResourceData}.

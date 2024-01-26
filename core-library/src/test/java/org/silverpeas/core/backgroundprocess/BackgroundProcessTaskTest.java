@@ -27,12 +27,15 @@ package org.silverpeas.core.backgroundprocess;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.silverpeas.core.test.unit.extention.*;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.thread.task.RequestTaskManager;
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LoggerLevel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +53,7 @@ import static org.hamcrest.Matchers.notNullValue;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
-@ExtendWith(LoggerExtension.class)
+@EnableSilverTestEnv(context = JEETestContext.class)
 @LoggerLevel(Level.DEBUG)
 @Execution(ExecutionMode.SAME_THREAD)
 @TestManagedBeans(BackgroundProcessTask.class)

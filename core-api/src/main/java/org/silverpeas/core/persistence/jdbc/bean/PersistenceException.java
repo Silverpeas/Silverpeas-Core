@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.persistence.jdbc.bean;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class PersistenceException extends SilverpeasException {
 

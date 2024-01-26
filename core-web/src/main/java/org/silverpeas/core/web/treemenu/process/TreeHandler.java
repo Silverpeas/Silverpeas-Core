@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.treemenu.process;
 
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.core.web.treemenu.model.MenuItem;
@@ -58,7 +58,7 @@ public class TreeHandler {
    */
   public static String processMenu(HttpServletRequest request, String menuType, boolean useCurrentOrder) {
     useOrder = useCurrentOrder;
-    SilverpeasWebUtil webUtil = ServiceProvider.getSingleton(SilverpeasWebUtil.class);
+    SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
     MainSessionController mainSessionCtrl = webUtil.getMainSessionController(request);
     String userId = mainSessionCtrl.getUserId();
     String language = mainSessionCtrl.getFavoriteLanguage();

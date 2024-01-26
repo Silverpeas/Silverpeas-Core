@@ -28,7 +28,7 @@
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel"%>
 <%@ page import="org.silverpeas.core.chart.pie.PieChart" %>
 <%@ page import="org.silverpeas.core.chart.pie.PieChartItem" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

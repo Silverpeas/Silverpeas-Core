@@ -27,7 +27,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
@@ -43,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * User: Yohann Chastagnier
  * Date: 08/07/13
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public class PdfUtilTest {
 
   private final static String STAMP_FILE_NAME = "draft.png";

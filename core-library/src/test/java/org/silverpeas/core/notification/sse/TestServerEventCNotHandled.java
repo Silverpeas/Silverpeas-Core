@@ -35,7 +35,7 @@ import static java.util.Collections.singletonList;
 class TestServerEventCNotHandled extends AbstractServerEventTest implements StoreLastOnly {
 
   private static final List<String> EVENT_SOURCE_URIS = singletonList("/not/handled");
-  private static ServerEventName EVENT_NAME = () -> "EVENT_C";
+  private static final ServerEventName EVENT_NAME = () -> "EVENT_C";
 
   @Override
   public ServerEventName getName() {

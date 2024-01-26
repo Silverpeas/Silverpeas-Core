@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.ResourceBundle;
 
-import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralLocalizationBundle;
 
 /**
  * Centralizing common data providing.

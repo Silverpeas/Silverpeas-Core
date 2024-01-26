@@ -81,7 +81,7 @@ public class WysiwygContent implements ContributionContent<String> {
    */
   public static WysiwygContent getContent(final LocalizedContribution contribution) {
     WysiwygContentRepository repository =
-        ServiceProvider.getSingleton(WysiwygContentRepository.class);
+        ServiceProvider.getService(WysiwygContentRepository.class);
     return repository.getByContribution(contribution);
   }
 

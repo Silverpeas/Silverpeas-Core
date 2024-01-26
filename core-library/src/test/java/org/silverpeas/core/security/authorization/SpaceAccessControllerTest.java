@@ -33,9 +33,10 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 
 import java.util.EnumSet;
 import java.util.Objects;
@@ -56,7 +57,7 @@ import static org.silverpeas.core.security.authorization.SpaceAccessControllerTe
  * @author silveryocha
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SpaceAccessControllerTest {
 
   private static final String SPACE_ID = "23";
@@ -219,8 +220,7 @@ class SpaceAccessControllerTest {
   void assertManagementAccess(final boolean expected) {
     initTest();
     assertThat(instance.isUserAuthorized(USER_ID, SPACE_ID, init().onOperationsOf(MODIFICATION)), is(expected));
-    EnumSet.of(CREATION, DELETION)
-        .stream()
+    Stream.of(CREATION, DELETION)
         .forEach(o -> {
           initTest();
           assertThat(
@@ -234,8 +234,7 @@ class SpaceAccessControllerTest {
     initTest();
     final Matcher matcher = expectedRoles.length > 0 ? containsInAnyOrder(expectedRoles) : empty();
     assertThat(instance.getUserRoles(USER_ID, SPACE_ID, init().onOperationsOf(MODIFICATION)), matcher);
-    EnumSet.of(CREATION, DELETION)
-        .stream()
+    Stream.of(CREATION, DELETION)
         .forEach(o -> {
           initTest();
           assertThat(

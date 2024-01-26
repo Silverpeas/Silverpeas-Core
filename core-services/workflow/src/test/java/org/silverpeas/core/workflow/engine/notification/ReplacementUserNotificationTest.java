@@ -38,10 +38,11 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -64,7 +65,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans(ReplacementConstructor.class)
 class ReplacementUserNotificationTest {
 

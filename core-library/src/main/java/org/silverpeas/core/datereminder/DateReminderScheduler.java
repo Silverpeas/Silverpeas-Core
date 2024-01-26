@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.datereminder;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
@@ -41,9 +41,9 @@ import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Calendar;
 import java.util.Collection;

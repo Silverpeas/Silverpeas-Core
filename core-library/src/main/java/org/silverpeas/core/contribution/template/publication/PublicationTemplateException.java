@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.template.publication;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Thrown by the form components.

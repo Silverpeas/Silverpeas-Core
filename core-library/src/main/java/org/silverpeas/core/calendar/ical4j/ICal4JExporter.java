@@ -37,7 +37,7 @@ import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.parameter.Rsvp;
 import net.fortuna.ical4j.model.property.*;
 import net.fortuna.ical4j.util.CompatibilityHints;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Calendar;
@@ -49,10 +49,10 @@ import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -66,7 +66,7 @@ import java.util.stream.Stream;
 
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.ACCEPTED;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Implementation of the {@link ICalendarExporter} interface by using the iCal4J library to perform

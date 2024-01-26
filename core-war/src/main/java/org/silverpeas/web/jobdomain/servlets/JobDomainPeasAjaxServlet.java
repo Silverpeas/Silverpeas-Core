@@ -24,7 +24,7 @@
 package org.silverpeas.web.jobdomain.servlets;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import javax.servlet.http.HttpServlet;

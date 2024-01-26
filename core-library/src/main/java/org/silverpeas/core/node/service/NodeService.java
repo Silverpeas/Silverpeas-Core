@@ -39,7 +39,7 @@ import java.util.List;
 public interface NodeService {
 
   static NodeService get() {
-    return ServiceProvider.getSingleton(NodeService.class);
+    return ServiceProvider.getService(NodeService.class);
   }
 
   /**

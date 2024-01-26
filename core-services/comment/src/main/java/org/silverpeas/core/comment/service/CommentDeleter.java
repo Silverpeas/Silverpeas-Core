@@ -25,7 +25,7 @@
 package org.silverpeas.core.comment.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.contribution.ContributionDeletion;

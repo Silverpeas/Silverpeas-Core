@@ -28,8 +28,8 @@ import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

@@ -34,7 +34,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.publication.model.Location;
@@ -42,11 +41,11 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,7 +62,7 @@ import static org.mockito.Mockito.*;
  * @author ehugonnet
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SimpleDocumentAccessControllerTest {
 
   private static final String USER_ID = "bart";
@@ -85,11 +84,10 @@ class SimpleDocumentAccessControllerTest {
 
   @BeforeEach
   void setup() {
-    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
+    CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     testContext = new TestContext();
     testContext.clear();
   }
@@ -1949,9 +1947,8 @@ class SimpleDocumentAccessControllerTest {
       return this;
     }
 
-    public TestContext enableFileSharingRole(SilverpeasRole role) {
+    public void enableFileSharingRole(SilverpeasRole role) {
       fileSharingRole = role;
-      return this;
     }
 
     public TestContext onOperationsOf(AccessControlOperation... operations) {
@@ -1992,9 +1989,8 @@ class SimpleDocumentAccessControllerTest {
       return this;
     }
 
-    public TestContext forbidDownloadForReaders() {
+    public void forbidDownloadForReaders() {
       isDownloadAllowedForReaders = false;
-      return this;
     }
 
     public TestContext userIsThePublicationAuthor() {
@@ -2047,7 +2043,7 @@ class SimpleDocumentAccessControllerTest {
         return componentUserRoles;
       });
       when(nodeAccessController.isUserAuthorized(any(EnumSet.class))).then(
-          invocation -> CollectionUtil.isNotEmpty((EnumSet) invocation.getArguments()[0]));
+          invocation -> CollectionUtil.isNotEmpty((EnumSet<?>) invocation.getArguments()[0]));
       when(publicationService.getMinimalDataByIds(any(Collection.class))).then(invocation -> {
         PublicationPK pk =
             ((Collection<PublicationPK>) invocation.getArguments()[0]).iterator().next();
@@ -2063,7 +2059,7 @@ class SimpleDocumentAccessControllerTest {
         }
         return allLocations;
       });
-      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
+      CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     }
   }
 
@@ -2083,9 +2079,8 @@ class SimpleDocumentAccessControllerTest {
       return this;
     }
 
-    public TestVerifyResults verifyTwoCallsOfComponentAccessControllerIsUserAuthorized() {
+    public void verifyTwoCallsOfComponentAccessControllerIsUserAuthorized() {
       nbCallOfComponentAccessControllerIsUserAuthorized = 2;
-      return this;
     }
 
     public TestVerifyResults verifyCallOfNodeAccessControllerGetUserRoles() {
@@ -2121,8 +2116,8 @@ class SimpleDocumentAccessControllerTest {
       verify(componentAccessController,
           times(nbCallOfComponentAccessControllerIsUserAuthorized)).isUserAuthorized(
           any(EnumSet.class));
-      final ComponentAccessController.DataManager dataManager =
-          ComponentAccessController.getDataManager(testContext.accessControlContext);
+
+      ComponentAccessController.getDataManager(testContext.accessControlContext);
       verify(nodeAccessController, times(nbCallOfNodeAccessControllerGetUserRoles)).getUserRoles(
           anyString(), any(NodePK.class), any(AccessControlContext.class));
       verify(nodeAccessController,

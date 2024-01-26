@@ -30,7 +30,8 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.repository.jpa.AbstractJpaEntityRepository;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
+import org.silverpeas.kernel.util.Mutable;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.ParameterizedType;
@@ -71,7 +72,8 @@ public class JpaMocker {
       savedEntity.set(EntityIdSetter.setIdTo(entity, UuidIdentifier.class));
       return savedEntity.get();
     });
-    TestBeanContainerInjector.inject(repository);
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(repository, repoType);
     return repository;
   }
 
@@ -96,8 +98,9 @@ public class JpaMocker {
       }
       return entity;
     });
-    TestBeanContainerInjector.inject(entityManagerProvider);
-    TestBeanContainerInjector.inject(new Transaction());
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(entityManagerProvider, EntityManagerProvider.class);
+    feeder.manageBean(new Transaction(), Transaction.class);
   }
 }
   

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.node.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class NodeRuntimeException extends SilverpeasRuntimeException {
 

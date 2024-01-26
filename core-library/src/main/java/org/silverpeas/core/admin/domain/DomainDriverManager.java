@@ -43,12 +43,12 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

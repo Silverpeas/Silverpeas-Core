@@ -24,7 +24,7 @@
 package org.silverpeas.core.notification.user.server;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.util.ServiceProvider;
 

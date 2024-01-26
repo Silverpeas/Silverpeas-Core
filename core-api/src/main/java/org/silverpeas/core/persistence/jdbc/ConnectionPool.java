@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.jdbc;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -54,7 +54,7 @@ public class ConnectionPool {
    * @throws java.sql.SQLException if an error occurs while getting an available connection.
    */
   public static Connection getConnection() throws SQLException {
-    ConnectionPool connectionPool = ServiceProvider.getSingleton(ConnectionPool.class);
+    ConnectionPool connectionPool = ServiceProvider.getService(ConnectionPool.class);
     return connectionPool.getDataSourceConnection();
   }
 

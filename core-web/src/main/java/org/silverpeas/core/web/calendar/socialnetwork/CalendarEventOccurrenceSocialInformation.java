@@ -29,7 +29,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;

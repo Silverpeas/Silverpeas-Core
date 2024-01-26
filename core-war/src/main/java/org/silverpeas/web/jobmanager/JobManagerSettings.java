@@ -23,9 +23,9 @@
  */
 package org.silverpeas.web.jobmanager;
 
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Singleton;
 

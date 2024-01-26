@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.treemenu.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  *

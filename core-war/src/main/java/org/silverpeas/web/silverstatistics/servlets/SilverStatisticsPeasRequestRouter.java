@@ -27,7 +27,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.chart.period.PeriodChart;
 import org.silverpeas.core.chart.pie.PieChart;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * Class declaration

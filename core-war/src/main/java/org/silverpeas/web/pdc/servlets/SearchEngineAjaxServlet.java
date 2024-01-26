@@ -24,7 +24,7 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
 import javax.servlet.http.HttpServlet;

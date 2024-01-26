@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.index.search.model;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Thrown by the searchEngine

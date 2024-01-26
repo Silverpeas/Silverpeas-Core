@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.LoggerReaderRule;
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.kernel.logging.Level;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;

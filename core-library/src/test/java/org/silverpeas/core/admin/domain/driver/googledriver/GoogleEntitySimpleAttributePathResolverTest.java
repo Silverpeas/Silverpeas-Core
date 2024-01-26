@@ -28,7 +28,8 @@ import com.google.api.services.directory.model.User;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.AttributePathDecoder;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.SimpleAttributePathDecoder;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.List;
 
@@ -41,7 +42,7 @@ import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleUserBui
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class GoogleEntitySimpleAttributePathResolverTest {
 
   private static final User USER_A = aUser("A", "/").withEmail("a@a.a", "work").build();

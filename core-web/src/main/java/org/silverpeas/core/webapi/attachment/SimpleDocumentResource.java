@@ -38,7 +38,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.web.http.FileResponse;

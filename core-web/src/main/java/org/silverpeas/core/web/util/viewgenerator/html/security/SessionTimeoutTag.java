@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.security;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import javax.servlet.ServletException;
 import javax.servlet.jsp.JspException;

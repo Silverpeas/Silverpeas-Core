@@ -25,20 +25,22 @@
 package org.silverpeas.core.contribution.attachment.webdav;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.webdav.impl.WebdavContentDescriptor;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.wbe.WbeFile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -151,22 +153,27 @@ public class WebdavWbeFile extends WbeFile {
         doc.canBeModifiedBy(user);
   }
 
+  @NonNull
   private SimpleDocument getDocument() {
     final SimpleCache cache = getThreadCacheAccessor().getCache();
     final String key = DOC_CACHE_KEY_PREFIX + docId;
-    return cache.computeIfAbsent(key, SimpleDocument.class, () -> Optional.ofNullable(
+    SimpleDocument document = cache.computeIfAbsent(key, SimpleDocument.class,
+        () -> Optional.ofNullable(
         AttachmentService.get().searchDocumentById(new SimpleDocumentPK(docId), docLanguage))
         .orElseThrow(() -> new SilverpeasRuntimeException(
             format("document {0}[{1}] does not exist anymore", docId, docLanguage))));
+    return Objects.requireNonNull(document);
   }
 
+  @NonNull
   private WebdavContentDescriptor getContentDescriptor() {
     final SimpleCache cache = getThreadCacheAccessor().getCache();
     final String key = DESC_CACHE_KEY_PREFIX + docId;
-    return cache.computeIfAbsent(key, WebdavContentDescriptor.class,
+    var descriptor = cache.computeIfAbsent(key, WebdavContentDescriptor.class,
         () -> getWebdavContentDescriptor().orElseThrow(
             () -> new SilverpeasRuntimeException(
                 format("no WEBDAV description for document {0}[{1}]", docId, docLanguage))));
+    return Objects.requireNonNull(descriptor);
   }
 
   private Optional<WebdavContentDescriptor> getWebdavContentDescriptor() {

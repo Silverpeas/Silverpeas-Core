@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.viewer;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.viewer.model.ViewerSettings.getLicenceKey;
 

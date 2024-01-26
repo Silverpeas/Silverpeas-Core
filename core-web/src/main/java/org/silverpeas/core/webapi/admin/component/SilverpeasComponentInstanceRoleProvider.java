@@ -27,7 +27,7 @@ package org.silverpeas.core.webapi.admin.component;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 
 import java.util.Optional;

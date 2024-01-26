@@ -35,8 +35,8 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

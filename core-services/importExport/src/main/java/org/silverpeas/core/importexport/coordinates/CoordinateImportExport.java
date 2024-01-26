@@ -31,8 +31,8 @@ import org.silverpeas.core.node.coordinates.service.CoordinatesService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Inject;
 import java.rmi.RemoteException;

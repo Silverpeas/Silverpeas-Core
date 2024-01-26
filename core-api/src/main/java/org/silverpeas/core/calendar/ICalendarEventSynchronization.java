@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
@@ -37,10 +37,10 @@ import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig;
 import org.silverpeas.core.thread.ManagedThreadPoolException;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;

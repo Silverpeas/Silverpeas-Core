@@ -156,8 +156,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependencies("org.apache.tika:tika-parsers-standard-package");
     addMavenDependencies("com.drewnoakes:metadata-extractor");
     addClasses(ErrorAnnotationProcessor.class, LogAnnotationProcessor.class, LogsAccessor.class);
-    addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
-        "META-INF/services/org.silverpeas.core.util.logging.SilverLoggerFactory");
     addAsResource("maven.properties");
   }
 

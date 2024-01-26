@@ -33,7 +33,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface MailSender {
 
   static MailSender get() {
-    return ServiceProvider.getSingleton(MailSender.class);
+    return ServiceProvider.getService(MailSender.class);
   }
 
   /**

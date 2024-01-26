@@ -28,7 +28,7 @@ import org.silverpeas.core.web.rs.SilverpeasRequestContext;
 
 import javax.enterprise.context.RequestScoped;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * The WBE host request context which handles the domain identifier data in addition to the data

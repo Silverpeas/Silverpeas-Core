@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.process;
 
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;

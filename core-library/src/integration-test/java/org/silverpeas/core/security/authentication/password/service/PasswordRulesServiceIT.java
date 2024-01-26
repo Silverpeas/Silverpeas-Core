@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 import org.silverpeas.core.security.authentication.password.rule.*;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,9 +63,7 @@ public class PasswordRulesServiceIT {
 
   @After
   public void afterTest() {
-    if (context!=null) {
-      context.settings("org.silverpeas.password.settings.password");
-    }
+    setOriginalSettings();
   }
 
 
@@ -93,7 +91,7 @@ public class PasswordRulesServiceIT {
 
 
   @Test
-  public void testGetRule() {
+  public void getRule() {
     final Set<Class<?>> rules = new HashSet<>();
     for (PasswordRuleType ruleType : PasswordRuleType.values()) {
       rules.add(passwordRulesService.getRule(ruleType).getClass());
@@ -102,29 +100,29 @@ public class PasswordRulesServiceIT {
   }
 
   @Test
-  public void testGetRules() {
+  public void getRules() {
     assertThat(passwordRulesService.getRules().size(), is(PasswordRuleType.values().length));
   }
 
   @Test
-  public void testGetRequiredRules() {
+  public void getRequiredRules() {
     assertThat(passwordRulesService.getRequiredRules().size(), is(PasswordRuleType.values().length));
   }
 
   @Test
-  public void testGetRulesNoneRequiredInSettings() {
+  public void getRulesNoneRequiredInSettings() {
     assertThat(passwordRulesService.getRules().size(), is(PasswordRuleType.values().length));
   }
 
   @Test
-  public void testGetRequiredRulesNoneRequiredInSettings() {
+  public void getRequiredRulesNoneRequiredInSettings() {
     setNotDefinedSettings();
     // Max length and blank forbidden are required.
     assertThat(passwordRulesService.getRequiredRules().size(), is(2));
   }
 
   @Test
-  public void testCheck() {
+  public void check() {
     assertThat(passwordRulesService.check("aA0$1234").isCorrect(), is(true));
 
     // Min length is not validated
@@ -158,7 +156,7 @@ public class PasswordRulesServiceIT {
   }
 
   @Test
-  public void testCheckWithCombination() {
+  public void checkWithCombination() {
     setCombinationSettings();
     assertThat(passwordRulesService.check("aABC;0$1234").isCorrect(), is(true));
 
@@ -205,7 +203,7 @@ public class PasswordRulesServiceIT {
   }
 
   @Test
-  public void testGenerate() {
+  public void generate() {
     int nbGenerations = 1000;
     final Set<String> generatedPasswords = new HashSet<>(nbGenerations);
     for (int i = 0; i < nbGenerations; i++) {
@@ -220,7 +218,7 @@ public class PasswordRulesServiceIT {
   }
 
   @Test
-  public void testGenerateWithCombination() {
+  public void generateWithCombination() {
     setCombinationSettings();
     int nbGenerations = 1000;
     final Set<String> generatedPasswords = new HashSet<>(nbGenerations);
@@ -236,9 +234,13 @@ public class PasswordRulesServiceIT {
   }
 
   @Test
-  public void testGetExtraRuleMessage() {
+  public void getExtraRuleMessage() {
     assertThat(passwordRulesService.getExtraRuleMessage("fr"),
         is("règles supplémentaires non vérifiables ..."));
+  }
+
+  protected void setOriginalSettings() {
+    context.settings("org.silverpeas.password.settings.password");
   }
 
   protected void setNotDefinedSettings() {

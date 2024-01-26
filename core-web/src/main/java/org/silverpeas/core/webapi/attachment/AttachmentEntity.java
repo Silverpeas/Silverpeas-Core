@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.ws.rs.core.UriBuilder;

@@ -56,8 +56,8 @@ import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.Securable;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import java.math.BigInteger;

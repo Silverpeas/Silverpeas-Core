@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 

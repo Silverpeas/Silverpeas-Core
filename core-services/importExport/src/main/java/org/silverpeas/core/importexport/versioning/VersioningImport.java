@@ -40,12 +40,12 @@ import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,7 +61,7 @@ import java.util.List;
  */
 public class VersioningImport {
 
-  private UserDetail user;
+  private final UserDetail user;
   private final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.importSettings");
 
@@ -74,7 +74,6 @@ public class VersioningImport {
       boolean indexIt) throws IOException {
     final List<Pair<AttachmentDetail, SimpleDocument>> createdDocuments = new ArrayList<>(
         attachments.size());
-    int versionType = DocumentVersion.TYPE_PUBLIC_VERSION;
     AttachmentImportExport attachmentImportExport = new AttachmentImportExport(user);
     ResourceReference pubPK = new ResourceReference(objectId, componentId);
 
@@ -111,7 +110,7 @@ public class VersioningImport {
         HistorisedDocument version =
             new HistorisedDocument(new SimpleDocumentPK(null, componentId), objectId, -1,
                 attachment.getAuthor(), copy);
-        version.setPublicDocument(versionType == DocumentVersion.TYPE_PUBLIC_VERSION);
+        version.setPublicDocument(true);
         version.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
         createdDocuments.add(Pair.of(attachment, AttachmentServiceProvider.getAttachmentService()
             .createAttachment(version, content, indexIt)));
@@ -157,7 +156,8 @@ public class VersioningImport {
     return importedDocs;
   }
 
-  private void importDocument(final ResourceReference objectPK, final int userId, final boolean indexIt,
+  private void importDocument(final ResourceReference objectPK, final int userId,
+      final boolean indexIt,
       final List<SimpleDocument> importedDocs,
       final List<SimpleDocument> existingDocuments, final FormTemplateImportExport xmlIE,
       final Document document) throws FileNotFoundException {
@@ -172,32 +172,51 @@ public class VersioningImport {
           existingDocument);
     } else {
       // no document yet existing with the same name, so create it
-      List<DocumentVersion> versions = document.getVersionsType();
-      existingDocument = null;
-      for (DocumentVersion version : versions) {
-        if (existingDocument == null) {
-          if (version.getCreationDate() == null) {
-            version.setCreationDate(new Date());
-          }
-          if (version.getAuthorId() == -1) {
-            version.setAuthorId(userId);
-          }
-          boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
-          if (isPublic) {
-            launchCallback = true;
-          }
-          existingDocument = createSimpleDocument(objectPK, indexIt, document, version, isPublic);
-        } else {
-          existingDocument = addVersion(version, existingDocument, userId, indexIt);
-        }
-        importedDocs.add(existingDocument);
-        // Store xml content
-        importXMLContent(version, xmlIE);
-      }
+      var creation = createDocument(objectPK, userId, indexIt, importedDocs, xmlIE, document);
+      launchCallback = creation.launchCallback;
+      existingDocument = creation.existingDocument;
     }
     if (launchCallback && existingDocument != null) {
       AttachmentEventNotifier notifier = AttachmentEventNotifier.getNotifier();
       notifier.notifyEventOn(type, existingDocument);
+    }
+  }
+
+  private DocumentCreation createDocument(ResourceReference objectPK, int userId, boolean indexIt,
+      List<SimpleDocument> importedDocs, FormTemplateImportExport xmlIE, Document document) throws FileNotFoundException {
+    SimpleDocument existingDocument = null;
+    boolean launchCallback = false;
+    List<DocumentVersion> versions = document.getVersionsType();
+    for (DocumentVersion version : versions) {
+      if (existingDocument == null) {
+        if (version.getCreationDate() == null) {
+          version.setCreationDate(new Date());
+        }
+        if (version.getAuthorId() == -1) {
+          version.setAuthorId(userId);
+        }
+        boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
+        if (isPublic) {
+          launchCallback = true;
+        }
+        existingDocument = createSimpleDocument(objectPK, indexIt, document, version, isPublic);
+      } else {
+        existingDocument = addVersion(version, existingDocument, userId, indexIt);
+      }
+      importedDocs.add(existingDocument);
+      // Store xml content
+      importXMLContent(version, xmlIE);
+    }
+    return new DocumentCreation(launchCallback, existingDocument);
+  }
+
+  private static class DocumentCreation {
+    public final boolean launchCallback;
+    public final SimpleDocument existingDocument;
+
+    public DocumentCreation(boolean launchCallback, SimpleDocument existingDocument) {
+      this.launchCallback = launchCallback;
+      this.existingDocument = existingDocument;
     }
   }
 
@@ -296,7 +315,6 @@ public class VersioningImport {
       int userId, boolean indexIt) throws FileNotFoundException {
     InputStream content = getVersionContent(version);
     boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
-    boolean launchCallback = isPublic;
     existingDocument.setPublicDocument(isPublic);
     existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
     existingDocument.setLastUpdateDate(new Date());
@@ -312,7 +330,7 @@ public class VersioningImport {
     AttachmentServiceProvider.getAttachmentService().
         lock(existingDocument.getId(), "" + userId, existingDocument.getLanguage());
     AttachmentServiceProvider.getAttachmentService().updateAttachment(existingDocument,
-        content, indexIt, launchCallback);
+        content, indexIt, isPublic);
     AttachmentServiceProvider.getAttachmentService().
         unlock(new UnlockContext(existingDocument.getId(), "" + userId, existingDocument.
         getLanguage()));
@@ -325,7 +343,7 @@ public class VersioningImport {
 
   private InputStream getVersionContent(DocumentVersion version) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(version.getDocumentPath()));
-    if (file == null || !file.exists() || !file.isFile()) {
+    if (!file.exists() || !file.isFile()) {
       String baseDir = settings.getString("importRepository", "");
       file = new File(FileUtil.convertPathToServerOS(baseDir + File.separatorChar + version.
           getPhysicalName()));

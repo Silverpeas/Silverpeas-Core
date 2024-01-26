@@ -28,7 +28,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.util.LinkedHashMap;

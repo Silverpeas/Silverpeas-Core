@@ -28,15 +28,23 @@ import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.math.BigDecimal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public class QuotaTest {
+
+  private QuotaTest() {
+  }
+
+  public static QuotaTest createQuotaTest() {
+    return new QuotaTest();
+  }
 
   @Test
   public void testValidate() {

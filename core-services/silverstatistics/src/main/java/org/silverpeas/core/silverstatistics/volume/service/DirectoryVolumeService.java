@@ -28,7 +28,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.silverstatistics.volume.model.DirectoryStats;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;

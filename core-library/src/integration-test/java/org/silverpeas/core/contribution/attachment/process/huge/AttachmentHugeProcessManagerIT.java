@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
@@ -75,6 +75,7 @@ public class AttachmentHugeProcessManagerIT {
     return WarBuilder4LibCore.onWarForTestClass(AttachmentHugeProcessManagerIT.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
+        .addPackages(true, "org.silverpeas.core.i18n")
         .addPackages(true, "org.silverpeas.core.contribution.attachment")
         .build();
   }

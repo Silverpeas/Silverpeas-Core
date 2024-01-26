@@ -39,12 +39,13 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTr
 import org.silverpeas.core.io.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.test.unit.TestBeanContainer;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.SettingBundleStub;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.SettingBundleStub;
 
 import javax.activation.FileDataSource;
 import javax.activation.URLDataSource;
@@ -61,11 +62,12 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class MailContentProcessTest {
 
   @RegisterExtension
-  protected SettingBundleStub urlSettings = new SettingBundleStub("org.silverpeas.wysiwyg.settings.wysiwygSettings");
+  protected SettingBundleStub urlSettings =
+      new SettingBundleStub("org.silverpeas.wysiwyg.settings.wysiwygSettings");
 
   private static final String ODT_NAME = "LibreOffice.odt";
   private static final String IMAGE_NAME = "image-test.jpg";
@@ -99,6 +101,9 @@ class MailContentProcessTest {
   private static final String IMAGE_ATTACHMENT_LINK_BIS =
       "http://www.toto.fr/silverpeas/File/d07411cc-19af-49f8-af57-16fc9fabf318-bis";
 
+  @TestManagedMock
+  private AttachmentService attachmentService;
+
   @TestManagedBean
   private MailContentProcess.WysiwygCkeditorMediaLinkUrlToDataSourceScanner ckScanner;
 
@@ -130,18 +135,13 @@ class MailContentProcessTest {
     processors.clear();
     SilverpeasFileProvider.addProcessor(new AttachmentUrlLinkProcessor());
 
-    // The mock instance
-    AttachmentService mockAttachmentService = mock(AttachmentService.class);
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(AttachmentService.class))
-        .thenReturn(mockAttachmentService);
-
     /*
     Mocking methods of attachment service instance
      */
 
     // searchDocumentById returns always a simple document which the PK is the one specified from
     // method parameters.
-    when(mockAttachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
+    when(attachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
         .then(invocation -> {
           SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
           SimpleDocument simpleDocument = mock(SimpleDocument.class);

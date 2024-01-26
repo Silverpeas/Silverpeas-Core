@@ -49,8 +49,8 @@ import org.silverpeas.core.security.encryption.X509Factory;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

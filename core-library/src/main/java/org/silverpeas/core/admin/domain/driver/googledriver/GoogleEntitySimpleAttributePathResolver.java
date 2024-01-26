@@ -25,8 +25,8 @@
 package org.silverpeas.core.admin.domain.driver.googledriver;
 
 import com.google.api.client.json.GenericJson;
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.List;
 import java.util.Map;

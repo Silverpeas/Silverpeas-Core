@@ -44,7 +44,7 @@ import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.text.ParseException;

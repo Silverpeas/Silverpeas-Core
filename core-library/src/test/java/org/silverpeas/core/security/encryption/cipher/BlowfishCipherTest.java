@@ -25,7 +25,8 @@ package org.silverpeas.core.security.encryption.cipher;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.Charsets;
 
 import javax.crypto.KeyGenerator;
@@ -38,7 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Unit tests on the Blowfish cipher as implemented in Silverpeas.
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public class BlowfishCipherTest {
 
   private static final String KNOWN_PLAIN_TEXT = "Il était une fois un joli petit pois tout argenté";

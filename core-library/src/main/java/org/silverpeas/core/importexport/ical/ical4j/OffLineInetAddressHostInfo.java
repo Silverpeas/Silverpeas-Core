@@ -25,7 +25,7 @@ package org.silverpeas.core.importexport.ical.ical4j;
 
 import net.fortuna.ical4j.util.HostInfo;
 import net.fortuna.ical4j.util.InetAddressHostInfo;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.net.SocketException;
 

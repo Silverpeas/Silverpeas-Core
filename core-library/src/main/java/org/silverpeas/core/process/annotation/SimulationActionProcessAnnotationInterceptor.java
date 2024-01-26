@@ -24,7 +24,7 @@
 package org.silverpeas.core.process.annotation;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.AnnotationUtil;
 import org.silverpeas.core.util.annotation.Language;

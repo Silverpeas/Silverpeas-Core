@@ -33,7 +33,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 
 import org.apache.ecs.ElementContainer;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 

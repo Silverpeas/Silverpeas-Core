@@ -29,15 +29,15 @@ import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUser
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.notificationuser.Notification;
 
 import javax.inject.Named;
 import java.util.Optional;
 
 import static org.silverpeas.core.ui.DisplayI18NHelper.getLanguages;
-import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle;
 
 /**
  * @author silveryocha

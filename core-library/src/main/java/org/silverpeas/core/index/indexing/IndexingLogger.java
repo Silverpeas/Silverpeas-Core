@@ -25,7 +25,7 @@ package org.silverpeas.core.index.indexing;
 
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * @author silveryocha

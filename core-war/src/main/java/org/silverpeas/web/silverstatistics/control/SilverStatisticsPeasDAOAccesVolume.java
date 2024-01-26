@@ -32,7 +32,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nonnull;
 import java.sql.Connection;

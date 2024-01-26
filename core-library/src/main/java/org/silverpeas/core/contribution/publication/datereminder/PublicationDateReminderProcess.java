@@ -31,7 +31,7 @@ import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.text.MessageFormat;
 

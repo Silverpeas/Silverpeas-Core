@@ -26,12 +26,12 @@ package org.silverpeas.core.util.file;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.SilverpeasResourcesLocation;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.lang.SystemWrapper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.io.File;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 import static java.io.File.separatorChar;
 import static java.nio.file.Files.walkFileTree;
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.maxThreadPoolSizeOf;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Provides useful methods to handle files and directories in the Silverpeas specific filesystem.
@@ -58,40 +58,36 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  */
 public class FileRepositoryManager {
 
-  static String tempPath;
-  static String domainPropertiesFolderPath;
-  static String domainAuthenticationPropertiesFolderPath;
-  static final SettingBundle uploadSettings =
+  private static final SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
+
+  private static final SettingBundle uploadSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.uploads.uploadSettings");
   private static final String CONTEXT_TOKEN = ",";
 
-  static {
-    tempPath = ResourceLocator.getGeneralSettingBundle().getString("tempPath");
-    if (!tempPath.endsWith(File.separator)) {
-      tempPath = tempPath + File.separatorChar;
-    }
+  private static Path getDomainPropertiesFolderPath() {
+    return SilverpeasResourcesLocation.getInstance().getConfigurationFilesRootPath()
+        .resolve(Path.of("org", "silverpeas", "domains"));
+  }
 
-    File path = FileUtils
-        .getFile(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas");
-    domainPropertiesFolderPath =
-        FileUtils.getFile(path, "domains").getAbsolutePath() + separatorChar;
-    domainAuthenticationPropertiesFolderPath =
-        FileUtils.getFile(path, "authentication").getAbsolutePath() + separatorChar;
+  private static Path getDomainAuthPropertiesFolderPath() {
+    return SilverpeasResourcesLocation.getInstance().getConfigurationFilesRootPath()
+        .resolve(Path.of("org", "silverpeas", "authentication"));
   }
 
   /**
-   * Gets the path of the directory in which all the resources related to the security in Silverpeas are stored.
+   * Gets the path of the directory in which all the resources related to the security in Silverpeas
+   * are stored.
    *
    * @return the path of the Silverpeas security directory.
    */
   public static String getSecurityDirPath() {
-    return ResourceLocator.getGeneralSettingBundle().getString("securityPath") + File.separator;
+    return generalSettings.getString("securityPath") + File.separator;
   }
 
   /**
    * Gets the path of the directory of initialization data with which some
-   * {@link org.silverpeas.core.initialization.Initialization} services can use to persist their data required for their
-   * work.
+   * {@link org.silverpeas.core.initialization.Initialization} services can use to persist their
+   * data required for their work.
    *
    * @return the path of the directory of initialization data.
    */
@@ -99,61 +95,121 @@ public class FileRepositoryManager {
     return getUploadPath() + File.separator + "init";
   }
 
+  /**
+   * Gets the absolute path of the upload directory associated to the specified Silverpeas component
+   * instance.
+   *
+   * @param sComponentId the unique identifier of the component instance.
+   * @return the upload directory absolute path of the given component instance.
+   */
   public static String getAbsolutePath(String sComponentId) {
     return getUploadPath() + sComponentId + separatorChar;
   }
 
+  /**
+   * Gets the path of the root directory into which are located the users avatars.
+   * @return the absolute path of the user avatars.
+   */
   public static String getAvatarPath() {
-    return ResourceLocator.getGeneralSettingBundle().getString(
-        "avatar.path", getUploadPath() + "avatar");
+    return generalSettings.getString("avatar.path", getUploadPath() + "avatar");
   }
 
   /**
-   * Gets the path of the repository into which attachments and other files are uploaded in Silverpeas.
+   * Gets the path of the repository into which attachments and other files are uploaded in
+   * Silverpeas.
    *
    * @return the path of the root repository for uploads.
    */
   public static String getUploadPath() {
-    return ResourceLocator.getGeneralSettingBundle().getString(
-        "uploadsPath") + separatorChar;
+    return generalSettings.getString("uploadsPath") + separatorChar;
   }
 
-  public static String getAbsolutePath(String componentId, String[] directoryName) {
+  /**
+   * Gets the absolute path of the specified path relative to the upload directory of the given
+   * component instance.
+   * @param componentId the unique identifier of a component instance.
+   * @param relativeDirectoryPath the relative path of a directory
+   * @return the absolute path of the directory.
+   */
+  public static String getAbsolutePath(String componentId, String[] relativeDirectoryPath) {
     StringBuilder path = new StringBuilder(getAbsolutePath(componentId));
-    for (String s : directoryName) {
+    for (String s : relativeDirectoryPath) {
       path.append(s).append(separatorChar);
     }
     return path.toString();
   }
 
+  /**
+   * Gets the temporary path of Silverpeas.
+   * @return the temporary path used by Silverpeas.
+   * @implNote the returned path ends with the path separator.
+   */
   public static String getTemporaryPath() {
-    return tempPath + separatorChar;
+    return generalSettings.getString("tempPath") + separatorChar;
   }
 
+  /**
+   * Gets the absolute path of the descriptor of the specified user domain.
+   * @param domainName the name of a user domain.
+   * @return the path of the domain properties file.
+   */
   public static String getDomainPropertiesPath(String domainName) {
-    return domainPropertiesFolderPath + "domain" + domainName + ".properties";
+    Path path = getDomainPropertiesFolderPath();
+    return path.resolve("domain" + domainName + ".properties").toString();
   }
 
+  /**
+   * Gets the absolute path of the authentication descriptor of the specified user domain.
+   * @param domainName the name of a user domain.
+   * @return the path of the domain authentication properties file.
+   */
   public static String getDomainAuthenticationPropertiesPath(String domainName) {
-    return domainAuthenticationPropertiesFolderPath + "autDomain" + domainName + ".properties";
+    Path path = getDomainAuthPropertiesFolderPath();
+    return path.resolve("autDomain" + domainName + ".properties").toString();
   }
 
+  /**
+   * Creates the specified directory into the upload directory of the given component instance.
+   * @param componentId the unique identifier of a component instance.
+   * @param directoryName the name of the directory to create.
+   */
   public static void createAbsolutePath(String componentId, String directoryName) {
     FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
   }
 
+  /**
+   * Creates the specified directory into the temporary directory of Silverpeas.
+   * @param sDirectoryName the name of the directory to create.
+   */
   public static void createGlobalTempPath(String sDirectoryName) {
     FileFolderManager.createFolder(getTemporaryPath() + sDirectoryName);
   }
 
+  /**
+   * Deletes the specified directory in the upload directory of the specified component instance.
+   * All the content of the directory to delete will be also deleted.
+   * @param sComponentId the unique identifier of a component instance.
+   * @param sDirectoryName the name of the directory to delete.
+   */
   public static void deleteAbsolutePath(String sComponentId, String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId) + sDirectoryName);
   }
 
+  /**
+   * Gets the path of the specified icon in the icons root directory.
+   * @param extension the name of the icon.
+   * @return the path of the icon.
+   */
   public static String getFileIcon(String extension) {
     return getFileIcon(false, extension);
   }
 
+  /**
+   * Gets the path of the small or not version of the specified icon in the icons root directory.
+   * @param small a flag indicating if the path of a small version of the icon has to be returned.
+   * @param filename the name of the icon.
+   * @return the path of the icon.
+   */
   public static String getFileIcon(boolean small, String filename) {
     String path = URLUtil.getApplicationURL() + uploadSettings.getString("FileIconsPath");
     String extension = defaultStringIfNotDefined(FilenameUtils.getExtension(filename), filename);
@@ -178,8 +234,8 @@ public class FileRepositoryManager {
   /**
    * Get the file size with the suitable unit
    *
-   * @param lSize : size
-   * @return String
+   * @param lSize a size
+   * @return a size with its unit.
    */
   public static String formatFileSize(long lSize) {
     return UnitUtil.formatMemSize(lSize);
@@ -189,7 +245,7 @@ public class FileRepositoryManager {
    * Get the size of a file (in bytes)
    *
    * @param sourceFile the file
-   * @return int the size in bytes
+   * @return the size of the file in bytes
    */
   public static long getFileSize(String sourceFile) {
     return new File(sourceFile).length();
@@ -248,10 +304,10 @@ public class FileRepositoryManager {
   }
 
   /**
-   * Get the estimated download time
+   * Get the estimated download time for a given file size.
    *
-   * @param size the file's size
-   * @return String
+   * @param size a file size in bytes.
+   * @return the estimated download time with its unit.
    */
   public static String getFileDownloadTime(long size) {
     int fileSizeReference = Integer.parseInt(uploadSettings.getString("FileSizeReference"));
@@ -277,10 +333,10 @@ public class FileRepositoryManager {
   }
 
   /**
-   * Copy a contents from a file to another one
+   * Copy the specified file content to the given other.
    *
    * @param from The name of the source file, the one to copy.
-   * @param to   The name of the destination file, where to paste data.
+   * @param to The name of the destination file, where to paste data.
    * @throws IOException if an error occurs while copying the file.
    * @author Seb
    */
@@ -288,21 +344,27 @@ public class FileRepositoryManager {
     FileUtils.copyFile(new File(from), new File(to));
   }
 
-  public static String formatFileUploadTime(long size) {
+  /**
+   * Format the specified time with its unit.
+   * @param time the upload time in milliseconds.
+   * @return the formatted time with its unit.
+   */
+  public static String formatFileUploadTime(long time) {
     String min = " m";
     String sec = " s";
     String ms = " ms";
-    if (size < 1000) {
-      return size + ms;
-    } else if (size < 120000) {
-      return size / 1000 + sec;
+    if (time < 1000) {
+      return time + ms;
+    } else if (time < 120000) {
+      return time / 1000 + sec;
     } else {
-      return size / 60000 + min;
+      return time / 60000 + min;
     }
   }
 
   /**
-   * to create the array of the string this array represents the repertories where the files must be stored.
+   * to create the array of the string this array represents the repertories where the files must be
+   * stored.
    *
    * @param str the string of repertories
    * @return the attachment context
@@ -335,8 +397,7 @@ public class FileRepositoryManager {
    * @return the path of the export template repository.
    */
   public static String getExportTemplateRepository() {
-    String path = ResourceLocator.getGeneralSettingBundle().getString(
-        "exportTemplatePath");
+    String path = generalSettings.getString("exportTemplatePath");
     if (!path.endsWith("/")) {
       path += "/";
     }

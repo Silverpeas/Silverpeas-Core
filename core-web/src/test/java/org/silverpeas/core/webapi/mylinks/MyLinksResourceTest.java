@@ -33,11 +33,12 @@ import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.model.LinkDetailComparator;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestedBean;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.util.Mutable;
 
 import javax.ws.rs.WebApplicationException;
 import java.time.ZoneId;
@@ -57,7 +58,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.webapi.mylinks.MyLinkEntity.fromLinkDetail;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class MyLinksResourceTest {
 
   private static final String CURRENT_USER_ID = "26";

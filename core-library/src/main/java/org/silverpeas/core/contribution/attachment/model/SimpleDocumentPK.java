@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.attachment.model;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Objects;
 

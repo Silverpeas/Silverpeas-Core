@@ -30,7 +30,7 @@ import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.text.ParseException;
 import java.util.HashMap;

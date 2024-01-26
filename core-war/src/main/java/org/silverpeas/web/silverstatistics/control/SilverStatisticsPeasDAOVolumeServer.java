@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.silverstatistics.volume.service.DirectoryVolumeService;

@@ -35,7 +35,7 @@ import org.silverpeas.core.mail.MailException;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;

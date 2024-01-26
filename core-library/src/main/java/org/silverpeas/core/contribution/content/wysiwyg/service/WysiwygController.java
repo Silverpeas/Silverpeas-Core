@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;
@@ -70,7 +70,7 @@ public class WysiwygController {
    * @return
    */
   protected static WysiwygManager getManager() {
-    return ServiceProvider.getSingleton(WysiwygManager.class);
+    return ServiceProvider.getService(WysiwygManager.class);
   }
 
   /**

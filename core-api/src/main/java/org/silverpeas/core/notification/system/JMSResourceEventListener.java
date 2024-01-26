@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.notification.system;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;

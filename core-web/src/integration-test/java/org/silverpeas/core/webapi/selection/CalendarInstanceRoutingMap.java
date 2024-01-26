@@ -1,7 +1,7 @@
 package org.silverpeas.core.webapi.selection;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.web.calendar.AbstractCalendarInstanceRoutingMap;
 

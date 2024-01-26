@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.component.process.check;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;

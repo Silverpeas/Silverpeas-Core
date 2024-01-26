@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.wbe;
 
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.kernel.logging.Level;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.session.UserSessionEvent;
 import org.silverpeas.core.wbe.DefaultWbeUser;

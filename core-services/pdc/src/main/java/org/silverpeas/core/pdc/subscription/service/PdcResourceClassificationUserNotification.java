@@ -28,9 +28,9 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavio
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.URLUtil.getSearchResultURL;
 
 public class PdcResourceClassificationUserNotification

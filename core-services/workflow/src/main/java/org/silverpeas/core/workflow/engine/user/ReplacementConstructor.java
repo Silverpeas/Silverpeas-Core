@@ -26,7 +26,7 @@ package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 

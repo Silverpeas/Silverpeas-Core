@@ -29,8 +29,8 @@ package org.silverpeas.core.web.calendar.ical;
 import com.rometools.rome.feed.synd.SyndFeed;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
-import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;

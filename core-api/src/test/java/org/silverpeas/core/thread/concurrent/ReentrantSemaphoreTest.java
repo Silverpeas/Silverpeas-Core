@@ -25,9 +25,9 @@
 package org.silverpeas.core.thread.concurrent;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;

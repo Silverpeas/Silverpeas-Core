@@ -45,9 +45,9 @@ import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.contribution.content.form.record.ParameterValue;
 import org.silverpeas.core.contribution.content.form.record.Repeatable;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

@@ -28,7 +28,7 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
@@ -44,7 +44,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Objects;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * The comment entity is a comment object that is exposed in the web as an entity (web entity). As

@@ -33,6 +33,6 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface SimpleDocumentAccessControl extends AccessController<SimpleDocument> {
 
   static SimpleDocumentAccessControl get() {
-    return ServiceProvider.getSingleton(SimpleDocumentAccessControl.class);
+    return ServiceProvider.getService(SimpleDocumentAccessControl.class);
   }
 }

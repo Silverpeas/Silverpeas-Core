@@ -28,9 +28,9 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.io.BufferedReader;
 import java.io.IOException;

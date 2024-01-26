@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail.extractor;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ExtractorException extends SilverpeasException {
 

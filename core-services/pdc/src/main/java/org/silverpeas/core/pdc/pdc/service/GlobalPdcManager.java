@@ -48,7 +48,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.sql.Connection;

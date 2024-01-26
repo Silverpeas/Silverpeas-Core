@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.exception;
 
+import org.silverpeas.kernel.SilverpeasException;
+
 /**
  * Thrown when a relative path is detected.
  * @author Yohann Chastagnier
  */
-public class RelativeFileAccessException extends org.silverpeas.core.SilverpeasException {
+public class RelativeFileAccessException extends SilverpeasException {
 
   public RelativeFileAccessException(final String message, final String... parameters) {
     super(message, parameters);

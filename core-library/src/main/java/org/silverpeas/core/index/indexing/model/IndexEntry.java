@@ -25,7 +25,7 @@ package org.silverpeas.core.index.indexing.model;
 
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serializable;
 import java.time.LocalDate;

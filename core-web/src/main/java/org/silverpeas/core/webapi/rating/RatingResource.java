@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.rating.model.RaterRating;
 import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
 import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 

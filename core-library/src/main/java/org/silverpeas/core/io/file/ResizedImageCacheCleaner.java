@@ -30,9 +30,9 @@ import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import java.io.File;

@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * A UserField stores a user reference.

@@ -33,7 +33,7 @@ import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.BytesRef;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.ExternalComponent;
@@ -43,11 +43,11 @@ import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -63,7 +63,7 @@ import java.util.stream.Stream;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doSearch;
 import static org.silverpeas.core.index.indexing.model.IndexReadersCache.getIndexReader;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 
 /**
  * The IndexSearcher class implements search over all the indexes. A IndexSearcher
@@ -103,7 +103,7 @@ public class IndexSearcher {
   }
 
   public static IndexSearcher get() {
-    return ServiceProvider.getSingleton(IndexSearcher.class);
+    return ServiceProvider.getService(IndexSearcher.class);
   }
 
   public QueryParser.Operator getDefaultOperator() {

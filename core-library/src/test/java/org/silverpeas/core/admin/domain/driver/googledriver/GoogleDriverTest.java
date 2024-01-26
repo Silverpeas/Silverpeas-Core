@@ -31,8 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +50,7 @@ import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleUserBui
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class GoogleDriverTest {
 
   private static final List<User> allGoogleUsers = new ArrayList<>();

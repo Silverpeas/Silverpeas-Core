@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;

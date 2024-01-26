@@ -36,21 +36,13 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singleton;
@@ -65,7 +57,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author silveryocha
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ComponentAccessControllerFilterTest {
 
   private static final String USER_ID = "bart";
@@ -93,7 +85,6 @@ class ComponentAccessControllerFilterTest {
 
   @BeforeEach
   void setup() {
-    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
@@ -230,7 +221,7 @@ class ComponentAccessControllerFilterTest {
       });
       when(organizationController.getAvailableComponentsByUser(anyString()))
           .thenAnswer(a -> Arrays.asList(KMELIA_38, KMELIA_83));
-      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
+      CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     }
 
     public TestVerifyResults results() {

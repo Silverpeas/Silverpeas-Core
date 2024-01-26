@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.filter;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -34,7 +34,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * A filter to handle all the exception thrown from the Silverpeas application.

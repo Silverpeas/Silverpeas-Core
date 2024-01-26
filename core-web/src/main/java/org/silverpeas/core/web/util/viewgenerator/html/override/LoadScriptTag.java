@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.override;
 
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import javax.servlet.jsp.JspException;

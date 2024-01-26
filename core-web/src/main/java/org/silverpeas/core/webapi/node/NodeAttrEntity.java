@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.node;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -35,7 +35,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 
-import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
+import static org.silverpeas.kernel.logging.SilverLogger.getLogger;
 
 @XmlRootElement
 public class NodeAttrEntity {

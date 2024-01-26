@@ -32,7 +32,7 @@ import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.DocumentInfo;
 import org.silverpeas.core.util.PdfUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.viewer.flexpaper.TemporaryFlexPaperView;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.model.TemporaryPdfView;
@@ -45,7 +45,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.util.Optional.of;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
 import static org.silverpeas.core.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
 

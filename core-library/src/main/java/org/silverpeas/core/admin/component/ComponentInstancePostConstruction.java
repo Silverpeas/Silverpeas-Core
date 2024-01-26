@@ -24,7 +24,8 @@
 package org.silverpeas.core.admin.component;
 
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Optional;
 
@@ -75,8 +76,8 @@ public interface ComponentInstancePostConstruction {
   static Optional<ComponentInstancePostConstruction> get(String constructionName) {
     try {
       return Optional.of(ServiceProvider
-          .getServiceByComponentInstanceAndNameSuffix(constructionName, NAME_SUFFIX));
-    } catch (IllegalStateException e) {
+          .getService(constructionName, NAME_SUFFIX));
+    } catch (SilverpeasRuntimeException e) {
       SilverLogger.getLogger(ComponentInstancePostConstruction.class).silent(e);
       return Optional.empty();
     }

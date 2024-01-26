@@ -1,7 +1,7 @@
 package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.List;

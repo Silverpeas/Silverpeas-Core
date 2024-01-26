@@ -34,11 +34,11 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class SequentialForbiddenPasswordRuleTest
+class SequentialForbiddenPasswordRuleTest
     extends AbstractPasswordRuleTest<SequentialForbiddenPasswordRule> {
 
   @Test
-  public void testCommons() {
+  void testCommons() {
     SequentialForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getType(), is(PasswordRuleType.SEQUENTIAL_FORBIDDEN));
     assertThat(rule.check("a1234 ;"), is(true));
@@ -68,12 +68,12 @@ public class SequentialForbiddenPasswordRuleTest
     assertThat(rule.check("@@"), is(false));
   }
 
-  @Disabled
+  @Disabled("Doesn't apply in this test class")
   @Override
   public void testDefinedMoreThanOnePropertyValues() {
   }
 
-  @Disabled
+  @Disabled("Doesn't apply in this test class")
   @Override
   public void testCombinationDefinedMoreThanOnePropertyValues() {
   }

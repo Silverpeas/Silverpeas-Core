@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.template;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;

@@ -26,7 +26,7 @@ package org.silverpeas.core.pdc.subscription.service;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 
 public class PdcSubscriptionDeletionUserNotification
     extends AbstractPdcSubscriptionUserNotification<PdcSubscription> {

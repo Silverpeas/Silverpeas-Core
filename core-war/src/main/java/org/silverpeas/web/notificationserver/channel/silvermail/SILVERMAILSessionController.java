@@ -26,7 +26,7 @@
 package org.silverpeas.web.notificationserver.channel.silvermail;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -37,9 +37,9 @@ import org.silverpeas.core.notification.user.client.model.SentNotificationInterf
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY.*;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class SILVERMAILSessionController extends AbstractComponentSessionController {
 

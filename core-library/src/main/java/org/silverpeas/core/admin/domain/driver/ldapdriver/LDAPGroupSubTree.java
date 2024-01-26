@@ -27,8 +27,8 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPDN;
 import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.personalorganizer.model;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import static org.silverpeas.core.util.DateUtil.formatDate;
 import static org.silverpeas.core.util.DateUtil.parseDate;

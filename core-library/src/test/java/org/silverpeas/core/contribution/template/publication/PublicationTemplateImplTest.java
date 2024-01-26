@@ -29,8 +29,9 @@ import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 
 import static java.io.File.separatorChar;
 import static org.hamcrest.Matchers.is;
@@ -41,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author ehugonnet
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans(PublicationTemplateManager.class)
 public class PublicationTemplateImplTest {
   private static final char SEPARATOR = separatorChar;

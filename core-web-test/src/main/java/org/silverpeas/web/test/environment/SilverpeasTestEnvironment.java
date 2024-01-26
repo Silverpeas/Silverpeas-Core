@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.test.environment;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.ServiceProvider;

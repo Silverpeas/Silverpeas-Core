@@ -26,7 +26,7 @@ package org.silverpeas.core.importexport.attachment;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
 

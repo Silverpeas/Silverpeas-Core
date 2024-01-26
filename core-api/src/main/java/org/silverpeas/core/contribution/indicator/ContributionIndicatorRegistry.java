@@ -25,7 +25,7 @@
 package org.silverpeas.core.contribution.indicator;
 
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;
@@ -53,7 +53,7 @@ public class ContributionIndicatorRegistry {
   }
 
   public static ContributionIndicatorRegistry get() {
-    return ServiceProvider.getSingleton(ContributionIndicatorRegistry.class);
+    return ServiceProvider.getService(ContributionIndicatorRegistry.class);
   }
 
 

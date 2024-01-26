@@ -27,7 +27,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.SerializationUtil;
 import org.silverpeas.core.viewer.model.DocumentView;

@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.*;
 
 /**

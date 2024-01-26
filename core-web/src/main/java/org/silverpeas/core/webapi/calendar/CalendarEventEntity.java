@@ -37,7 +37,7 @@ import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.security.html.HtmlSanitizer;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * It represents the state of a calendar event in a calendar as transmitted within the

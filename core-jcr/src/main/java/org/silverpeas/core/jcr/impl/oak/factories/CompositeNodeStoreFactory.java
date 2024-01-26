@@ -26,7 +26,7 @@
 package org.silverpeas.core.jcr.impl.oak.factories;
 
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.jcr.impl.oak.configuration.OakRepositoryConfiguration;
 
 /**

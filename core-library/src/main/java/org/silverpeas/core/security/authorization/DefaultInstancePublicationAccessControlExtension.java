@@ -25,7 +25,7 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.annotation.Base;
+import org.silverpeas.kernel.annotation.Base;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import javax.inject.Singleton;

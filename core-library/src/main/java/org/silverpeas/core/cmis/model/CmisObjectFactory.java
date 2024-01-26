@@ -61,7 +61,7 @@ public class CmisObjectFactory {
    * @return a {@link CmisObjectFactory} instance.
    */
   public static CmisObjectFactory getInstance() {
-    return ServiceProvider.getSingleton(CmisObjectFactory.class);
+    return ServiceProvider.getService(CmisObjectFactory.class);
   }
 
   /**

@@ -28,7 +28,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -48,7 +48,7 @@ public class RelationShipService {
   private RelationShipEventNotifier relationShipEventNotifier;
 
   public static RelationShipService get() {
-    return ServiceProvider.getSingleton(RelationShipService.class);
+    return ServiceProvider.getService(RelationShipService.class);
   }
 
   protected RelationShipService() {

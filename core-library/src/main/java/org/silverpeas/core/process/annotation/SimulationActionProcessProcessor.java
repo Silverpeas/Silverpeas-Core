@@ -26,7 +26,7 @@ package org.silverpeas.core.process.annotation;
 
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
@@ -39,8 +39,8 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.Process;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Named;
 import java.lang.reflect.Method;

@@ -25,7 +25,7 @@ package org.silverpeas.core.workflow.engine.instance;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.model.State;

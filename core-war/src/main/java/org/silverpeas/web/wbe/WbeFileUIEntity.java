@@ -3,7 +3,7 @@ package org.silverpeas.web.wbe;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.wbe.WbeFile;
 import org.silverpeas.core.wbe.WbeUser;
 import org.silverpeas.core.web.util.SelectableUIEntity;

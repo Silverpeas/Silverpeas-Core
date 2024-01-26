@@ -34,7 +34,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsIm
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectDataImpl;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -24,13 +24,13 @@
 package org.silverpeas.core.web.mvc.processor;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.web.selection.Selection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Processor of the selection of some users and user groups with a dedicated form. This processor

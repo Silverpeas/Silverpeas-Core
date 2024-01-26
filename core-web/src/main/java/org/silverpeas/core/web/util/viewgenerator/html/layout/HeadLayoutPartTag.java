@@ -26,13 +26,12 @@ package org.silverpeas.core.web.util.viewgenerator.html.layout;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.head;
 import org.apache.ecs.xhtml.title;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.LookAndStyleTag;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.includeMinimalSilverpeas;
 
 /**

@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Collections.synchronizedList;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Register of all permalink prefixes available into Silverpeas.
@@ -47,7 +47,7 @@ public class PermalinkRegistry {
   private final List<String> urlPartRegistry = synchronizedList(new ArrayList<>());
 
   public static PermalinkRegistry get() {
-    return ServiceProvider.getSingleton(PermalinkRegistry.class);
+    return ServiceProvider.getService(PermalinkRegistry.class);
   }
 
   @PostConstruct

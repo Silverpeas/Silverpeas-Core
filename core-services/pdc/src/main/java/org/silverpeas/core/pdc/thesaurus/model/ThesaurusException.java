@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.thesaurus.model;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ThesaurusException extends SilverpeasException {
 

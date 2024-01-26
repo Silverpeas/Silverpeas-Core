@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.cache.service;
 
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 

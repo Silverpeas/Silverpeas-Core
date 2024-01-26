@@ -35,7 +35,7 @@ import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.pdc.thesaurus.model.Vocabulary;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;

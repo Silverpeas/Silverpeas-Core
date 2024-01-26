@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A builder of search criteria on user groups.

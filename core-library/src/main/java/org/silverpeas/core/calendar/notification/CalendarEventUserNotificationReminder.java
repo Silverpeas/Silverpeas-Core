@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;

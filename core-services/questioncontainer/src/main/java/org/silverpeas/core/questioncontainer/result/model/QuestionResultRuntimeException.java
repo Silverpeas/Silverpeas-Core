@@ -24,7 +24,7 @@
 package org.silverpeas.core.questioncontainer.result.model;
 
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class QuestionResultRuntimeException extends SilverpeasRuntimeException {
 

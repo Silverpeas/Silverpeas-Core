@@ -35,11 +35,11 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class AtLeastXDigitPasswordRuleTest
+class AtLeastXDigitPasswordRuleTest
     extends AbstractPasswordRuleTest<AtLeastXDigitPasswordRule> {
 
   @Test
-  public void testCommons() {
+  void testCommons() {
     AtLeastXDigitPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_X_DIGIT));
     assertThat(rule.check("ajlkaslkj"), is(false));

@@ -32,16 +32,16 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.*;
 
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_RECEIVER_GROUPS;
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_RECEIVER_USERS;
 import static org.silverpeas.core.ui.DisplayI18NHelper.verifyLanguage;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class NotificationMetaData implements java.io.Serializable {
   private static final long serialVersionUID = 6004274748540324759L;

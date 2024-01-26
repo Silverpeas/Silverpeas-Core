@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.space.model.SpacePath;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import javax.persistence.Transient;
@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * The class ComponentInstLight is the representation in memory of a component instance

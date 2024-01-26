@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  */
 public class SilverProperties extends Properties {
 
-  private final Class baseClass;
+  private final Class<?> baseClass;
 
   /**
    * Loads properties of given property file path from a class.<br>
@@ -42,12 +42,12 @@ public class SilverProperties extends Properties {
    * @param propertyFilePaths the paths of files that contains the aimed properties.
    * @return an instance of {@link SilverProperties} that contains requested properties.
    */
-  public static SilverProperties load(Class fromClass, String... propertyFilePaths) {
+  public static SilverProperties load(Class<?> fromClass, String... propertyFilePaths) {
     SilverProperties properties = new SilverProperties(fromClass);
     return properties.load(propertyFilePaths);
   }
 
-  private SilverProperties(final Class baseClass) {
+  private SilverProperties(final Class<?> baseClass) {
     this.baseClass = baseClass;
   }
 

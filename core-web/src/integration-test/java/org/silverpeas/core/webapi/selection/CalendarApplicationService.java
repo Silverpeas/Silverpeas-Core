@@ -26,8 +26,8 @@ package org.silverpeas.core.webapi.selection;
 
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.AbstractCalendarService;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Named;
 

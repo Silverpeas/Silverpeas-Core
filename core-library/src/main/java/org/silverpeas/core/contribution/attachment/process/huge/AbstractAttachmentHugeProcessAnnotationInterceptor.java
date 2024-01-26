@@ -29,7 +29,7 @@ import org.silverpeas.core.util.annotation.AnnotationUtil;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;

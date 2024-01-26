@@ -23,13 +23,13 @@
  */
 package org.silverpeas.web.notificationuser.control;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.ComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -42,7 +42,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class UserNotificationSessionController extends AbstractComponentSessionController {
   private static final long serialVersionUID = 4415724531986026943L;

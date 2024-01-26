@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.system;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.enterprise.event.Observes;
 

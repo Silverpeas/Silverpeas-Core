@@ -28,7 +28,6 @@
 package org.silverpeas.core.admin.component;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,10 +40,13 @@ import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -66,8 +68,9 @@ import static org.hamcrest.Matchers.*;
  * @author ehugonnet
  * @author mmoquillon
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans(PublicationTemplateManager.class)
+@TestManagedMocks(OrganizationController.class)
 class WAComponentRegistryTest {
 
   private static final String NEW_WORKFLOW_COMPONENT_NAME = "newWorkflow";
@@ -305,7 +308,7 @@ class WAComponentRegistryTest {
   }
 
   private Path getWorkflowRepoPath() {
-    return Paths.get(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "xmlcomponents", "workflows");
+    return Paths.get(SystemWrapper.getInstance().getenv("SILVERPEAS_HOME"), "xmlcomponents", "workflows");
   }
 
   private Stream<Path> streamComponentDescriptors(final String componentName) throws IOException {

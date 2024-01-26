@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %><%--
   ~ Copyright (C) 2000 - 2024 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify

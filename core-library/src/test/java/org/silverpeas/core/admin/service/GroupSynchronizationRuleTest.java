@@ -40,10 +40,11 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,12 +64,12 @@ import static org.mockito.Mockito.when;
 import static org.silverpeas.core.admin.service.GroupSynchronizationRule.from;
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.*;
 import static org.silverpeas.core.util.CollectionUtil.union;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * @author Yohann Chastagnier
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @Execution(ExecutionMode.SAME_THREAD)
 class GroupSynchronizationRuleTest {
 

@@ -30,7 +30,7 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 
 import javax.inject.Inject;

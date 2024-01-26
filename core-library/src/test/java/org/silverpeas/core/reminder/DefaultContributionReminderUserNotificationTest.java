@@ -49,10 +49,11 @@ import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestManagedMocks;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -76,7 +77,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @ExtendWith(MockitoExtension.class)
 @TestManagedMocks({DefaultContributionReminderUserNotification.class,
     CalendarEventUserNotificationReminder.class})

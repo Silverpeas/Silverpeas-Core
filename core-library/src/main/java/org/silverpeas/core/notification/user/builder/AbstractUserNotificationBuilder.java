@@ -39,17 +39,17 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Abstract implementation of the {@link UserNotificationBuilder} in which common code to build

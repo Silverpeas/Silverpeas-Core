@@ -32,7 +32,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.board;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * @author mraverdy&lloiseau

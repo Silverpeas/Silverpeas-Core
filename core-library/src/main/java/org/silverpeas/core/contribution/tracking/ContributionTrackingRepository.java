@@ -39,6 +39,6 @@ public class ContributionTrackingRepository
     extends BasicJpaEntityRepository<ContributionTrackingEvent> {
 
   public static ContributionTrackingRepository get() {
-    return ServiceProvider.getSingleton(ContributionTrackingRepository.class);
+    return ServiceProvider.getService(ContributionTrackingRepository.class);
   }
 }

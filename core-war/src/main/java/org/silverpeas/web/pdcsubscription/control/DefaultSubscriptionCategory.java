@@ -25,7 +25,7 @@
 package org.silverpeas.web.pdcsubscription.control;
 
 import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 
 import java.util.List;

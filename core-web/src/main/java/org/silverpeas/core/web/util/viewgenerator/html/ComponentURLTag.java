@@ -27,7 +27,7 @@ import org.silverpeas.core.util.URLUtil;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 /**
  * A tag to print out an URL of a Silverpeas component instance.

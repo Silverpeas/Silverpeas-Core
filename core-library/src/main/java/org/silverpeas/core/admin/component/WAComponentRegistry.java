@@ -24,14 +24,14 @@
 package org.silverpeas.core.admin.component;
 
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ObjectFactory;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
@@ -70,14 +70,14 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
 @Singleton
 public class WAComponentRegistry implements Initialization {
 
-  private Map<String, WAComponent> componentsByName = new HashMap<>();
+  private final Map<String, WAComponent> componentsByName = new HashMap<>();
 
   /**
    * Gets an instance of this WAComponentRegistry registry.
    * @return a WAComponentRegistry instance.
    */
   public static WAComponentRegistry get() {
-    return ServiceProvider.getSingleton(WAComponentRegistry.class);
+    return ServiceProvider.getService(WAComponentRegistry.class);
   }
 
   WAComponentRegistry() {
@@ -172,7 +172,7 @@ public class WAComponentRegistry implements Initialization {
    * @return the path to the directory
    */
   private static Path getWAComponentDescriptorHome() {
-    SystemWrapper system = SystemWrapper.get();
+    SystemWrapper system = SystemWrapper.getInstance();
     return Paths.get(system.getenv("SILVERPEAS_HOME"), "xmlcomponents");
   }
 

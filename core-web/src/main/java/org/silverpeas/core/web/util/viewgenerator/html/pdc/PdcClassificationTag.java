@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.pdc;
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
 import static org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTagOperation.*;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A tag that renders the classification of a content on the PdC configured for the Silverpeas

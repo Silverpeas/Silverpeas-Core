@@ -40,7 +40,7 @@ public interface GroupProvider {
    * @return an implementation of {@link GroupProvider}.
    */
   static GroupProvider get() {
-    return ServiceProvider.getSingleton(GroupProvider.class);
+    return ServiceProvider.getService(GroupProvider.class);
   }
 
   /**

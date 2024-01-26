@@ -25,14 +25,14 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.PersistOperation;
 import org.silverpeas.core.persistence.datasource.PersistenceOperation;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.util.ArgumentAssertion;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;

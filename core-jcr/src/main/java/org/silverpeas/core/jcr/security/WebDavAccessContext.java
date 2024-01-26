@@ -26,7 +26,7 @@
 package org.silverpeas.core.jcr.security;
 
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.net.URLDecoder;
 

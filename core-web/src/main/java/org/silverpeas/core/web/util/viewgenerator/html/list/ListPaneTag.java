@@ -32,7 +32,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import javax.servlet.jsp.JspException;
 import java.io.Serializable;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.INDEX_PARAMETER_NAME;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.ITEMS_PER_PAGE_PARAM;
 

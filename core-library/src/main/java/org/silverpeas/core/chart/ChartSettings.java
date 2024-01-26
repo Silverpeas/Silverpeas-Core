@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.chart;
 
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
  * @author Yohann Chastagnier

@@ -30,7 +30,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import javax.annotation.Nonnull;
 import java.util.function.Function;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
     Comparable<Object> {

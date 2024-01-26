@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;

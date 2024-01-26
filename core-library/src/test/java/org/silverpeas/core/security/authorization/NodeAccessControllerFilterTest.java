@@ -39,32 +39,25 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.util.Pair;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.MODIFICATION;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
@@ -73,7 +66,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author silveryocha
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class NodeAccessControllerFilterTest {
 
   private static final String USER_ID = "bart";
@@ -109,7 +102,6 @@ class NodeAccessControllerFilterTest {
 
   @BeforeEach
   void setup() {
-    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
@@ -298,7 +290,7 @@ class NodeAccessControllerFilterTest {
           a -> ((Collection<String>) a.getArgument(0)).stream()
               .flatMap(i -> ALL_NODES.stream().filter(l -> l.getNodePK().getInstanceId().equals(i)))
               .collect(Collectors.toList()));
-      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
+      CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     }
 
     public TestVerifyResults results() {

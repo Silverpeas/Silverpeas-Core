@@ -32,7 +32,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
@@ -50,7 +51,7 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
  * test running system is unable to be consistent over the time with the time measurements.
  * @author Yohann Chastagnier
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class TemporaryWorkspaceTranslationTest {
 
   private static final String TRANSLATION_ID_KEY = "__sptrans_id=";

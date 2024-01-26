@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.exception;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
- * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasRuntimeException}
+ * Deprecated exception. Please use instead {@link org.silverpeas.kernel.SilverpeasRuntimeException}
  * <br>
  * SilverpeasRuntimeException est la racine de la hiérarchie des exception runtime silverpeas. Les
  * exceptions Runtime ne sont pas obligatoirement traitées par le développeur. C'est pourquoi leur

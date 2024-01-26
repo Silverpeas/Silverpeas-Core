@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.documenttemplate;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Runtime exception dedicated to document template management.

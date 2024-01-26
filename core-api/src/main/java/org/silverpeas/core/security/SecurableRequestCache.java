@@ -25,7 +25,7 @@
 package org.silverpeas.core.security;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 
 import java.util.HashSet;

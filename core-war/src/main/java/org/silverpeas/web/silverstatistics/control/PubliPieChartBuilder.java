@@ -28,9 +28,9 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.chart.pie.PieChart;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.SQLException;
 import java.util.HashMap;

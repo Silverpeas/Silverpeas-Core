@@ -1668,7 +1668,7 @@
       <name>bundle</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>org.silverpeas.core.util.SilverpeasBundle</type>
+      <type>org.silverpeas.kernel.bundle.SilverpeasBundle</type>
     </attribute>
     <attribute>
       <description>Basename of the bundle.</description>
@@ -2874,7 +2874,7 @@
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       boolean getBooleanValue( java.lang.String )
     </function-signature>
@@ -2882,7 +2882,7 @@
   <function>
     <description>Function that indicates if a String is defined.</description>
     <name>isDefined</name>
-    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-class>org.silverpeas.kernel.util.StringUtil</function-class>
     <function-signature>
       boolean isDefined( java.lang.String )
     </function-signature>

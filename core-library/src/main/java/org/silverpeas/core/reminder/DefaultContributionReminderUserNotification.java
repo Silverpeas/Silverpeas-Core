@@ -25,7 +25,7 @@
 package org.silverpeas.core.reminder;
 
 import net.htmlparser.jericho.Source;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionLocalizationBundle;
@@ -34,9 +34,9 @@ import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractContributionTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.filter.FilterByType;
 
 import java.time.LocalDate;
@@ -50,7 +50,7 @@ import java.util.Collections;
 import java.util.function.Supplier;
 
 import static org.silverpeas.core.reminder.ReminderSettings.getMessagesIn;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha

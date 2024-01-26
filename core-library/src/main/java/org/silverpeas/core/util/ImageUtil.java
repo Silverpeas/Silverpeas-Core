@@ -24,7 +24,7 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

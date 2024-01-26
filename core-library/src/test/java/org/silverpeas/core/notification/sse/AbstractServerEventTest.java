@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 
 /**
  * @author Yohann Chastagnier

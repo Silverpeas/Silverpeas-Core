@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 import org.silverpeas.core.web.util.servlet.GoTo;
@@ -42,7 +42,7 @@ import java.net.URLEncoder;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.silverpeas.core.contribution.model.ContributionIdentifier.decode;
-import static org.silverpeas.core.util.StringUtil.fromBase64;
+import static org.silverpeas.kernel.util.StringUtil.fromBase64;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 
 /**

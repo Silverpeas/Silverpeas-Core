@@ -47,8 +47,8 @@ import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.lang.SystemWrapper;
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.kernel.util.SystemWrapper;
+import org.silverpeas.kernel.logging.Level;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -124,7 +124,7 @@ public class ReminderIT {
   @Before
   public void initSchedulers() throws Exception {
     File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    SystemWrapper.getInstance().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     WAComponentRegistry.get().init();
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
 

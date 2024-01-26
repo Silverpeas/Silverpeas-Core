@@ -39,7 +39,7 @@ import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Map;
 

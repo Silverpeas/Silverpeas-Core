@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.templatedesigner.model;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class TemplateDesignerException extends SilverpeasException {
 

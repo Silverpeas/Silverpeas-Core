@@ -24,7 +24,7 @@
 package org.silverpeas.core.index.indexing.model;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;
@@ -76,7 +76,7 @@ public final class IndexEngineProxy {
   }
 
   public static IndexEngineProxy get() {
-    return ServiceProvider.getSingleton(IndexEngineProxy.class);
+    return ServiceProvider.getService(IndexEngineProxy.class);
   }
 
   /**

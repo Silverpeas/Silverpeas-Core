@@ -26,9 +26,10 @@ package org.silverpeas.core.io.media.image.thumbnail.control;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -47,7 +48,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ThumbnailControllerTest {
 
   @TestManagedMock

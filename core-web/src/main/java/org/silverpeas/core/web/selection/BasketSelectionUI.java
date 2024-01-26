@@ -32,19 +32,16 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER;
-import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 
 /**
@@ -93,8 +90,8 @@ public class BasketSelectionUI {
   public static boolean displayPutIntoBasketSelectionShortcut() {
     final SimpleCache cache = CacheAccessorProvider.getSessionCacheAccessor().getCache();
     final String key = "displayPutIntoBasketSelectionShortcut@" + User.getCurrentUser().getId();
-    return cache.computeIfAbsent(key, Boolean.class,
-        BasketSelectionUI::computeDisplayPutIntoBasketSelectionShortcut);
+    return Objects.requireNonNull(cache.computeIfAbsent(key, Boolean.class,
+        BasketSelectionUI::computeDisplayPutIntoBasketSelectionShortcut));
   }
 
   private static boolean computeDisplayPutIntoBasketSelectionShortcut() {
@@ -114,9 +111,8 @@ public class BasketSelectionUI {
     return controller.getUserProfilesByComponentId(userId, newslettersInstances.stream()
         .map(SilverpeasComponentInstance::getId)
         .collect(Collectors.toList()))
-        .entrySet()
+        .values()
         .stream()
-        .map(Map.Entry::getValue)
         .flatMap(Collection::stream)
         .anyMatch(p -> Optional.ofNullable(SilverpeasRole.fromString(p))
             .filter(r -> r.isGreaterThanOrEquals(PUBLISHER))

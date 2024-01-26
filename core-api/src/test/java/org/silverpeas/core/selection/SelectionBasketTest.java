@@ -28,11 +28,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.test.extension.EnableSilverTestEnv;
-import org.silverpeas.core.test.extension.RequesterProvider;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.Optional;
 
@@ -48,18 +49,17 @@ import static org.mockito.Mockito.when;
 @EnableSilverTestEnv
 class SelectionBasketTest {
 
-  @RequesterProvider
-  public User currentRequester() {
-    User user = mock(User.class);
-    when(user.getId()).thenReturn("42");
-    return user;
-  }
-
   @BeforeEach
   void prepareSessionCache() {
-    User user = User.getCurrentRequester();
-    SessionCacheAccessor sessionCacheAccessor =
-        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+    User user = mock(User.class);
+    when(user.getId()).thenReturn("42");
+
+    UserProvider userProvider = mock(UserProvider.class);
+    when(userProvider.getCurrentRequester()).thenReturn(user);
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(userProvider, UserProvider.class);
+
+    SessionCacheAccessor sessionCacheAccessor = CacheAccessorProvider.getSessionCacheAccessor();
     sessionCacheAccessor.newSessionCache(user);
   }
 

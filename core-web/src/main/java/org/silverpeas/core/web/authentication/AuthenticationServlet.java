@@ -37,9 +37,12 @@ import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVe
 import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.core.util.*;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;

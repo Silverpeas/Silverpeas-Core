@@ -36,9 +36,9 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.MemoizedBooleanSupplier;
 import org.silverpeas.core.util.MemoizedSupplier;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

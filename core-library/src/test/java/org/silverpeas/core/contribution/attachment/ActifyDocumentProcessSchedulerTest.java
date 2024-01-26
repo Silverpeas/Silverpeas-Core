@@ -41,11 +41,12 @@ import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.quartz.QuartzCronExpressionFactory;
 import org.silverpeas.core.scheduler.quartz.VolatileQuartScheduler;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.core.util.MimeTypes;
 
 import java.io.File;
@@ -65,7 +66,7 @@ import static org.mockito.Mockito.*;
  * Unit tests on the scheduling of the tasks on the documents handled by Actify.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans({ActifyDocumentProcessor.class, QuartzCronExpressionFactory.class})
 class ActifyDocumentProcessSchedulerTest {
 

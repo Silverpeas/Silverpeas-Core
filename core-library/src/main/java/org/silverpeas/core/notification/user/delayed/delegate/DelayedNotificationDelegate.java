@@ -50,11 +50,11 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -63,8 +63,8 @@ import static org.silverpeas.core.notification.user.client.NotificationTemplateK
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_SERVER_URL;
 import static org.silverpeas.core.notification.user.delayed.DelayedNotificationProvider.getDelayedNotification;
 import static org.silverpeas.core.util.MapUtil.putAddList;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier

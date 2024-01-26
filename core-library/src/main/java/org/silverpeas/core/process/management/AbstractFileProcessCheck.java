@@ -26,7 +26,7 @@ package org.silverpeas.core.process.management;
 import org.silverpeas.core.process.check.AbstractProcessCheck;
 import org.silverpeas.core.process.check.ProcessCheckType;
 import org.silverpeas.core.process.io.file.FileHandler;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -29,8 +29,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.SettingBundleStub;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.SettingBundleStub;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -38,7 +39,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class AuthenticationCredentialTest {
 
   private static final String DOMAIN_ID = "26";

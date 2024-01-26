@@ -27,7 +27,7 @@ import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.socialnetwork.SocialNetworkException;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;

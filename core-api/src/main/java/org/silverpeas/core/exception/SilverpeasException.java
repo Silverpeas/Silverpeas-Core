@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.exception;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ejb.EJBException;
 import java.rmi.RemoteException;
@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasException}
+ * Deprecated exception. Please use instead {@link org.silverpeas.kernel.SilverpeasException}
  * <br>
  * SilverpeasException est la racine de la hiérarchie d'exception silverpeas. Toutes les classes
  * d'exception spécifiques aux differents modules doivent dériver (directement ou non) de
@@ -46,7 +46,7 @@ import java.util.List;
  * @deprecated
  */
 @Deprecated
-public abstract class SilverpeasException extends org.silverpeas.core.SilverpeasException
+public abstract class SilverpeasException extends org.silverpeas.kernel.SilverpeasException
     implements WithNested, FromModule {
 
   public static final int FATAL = 0x00000005;

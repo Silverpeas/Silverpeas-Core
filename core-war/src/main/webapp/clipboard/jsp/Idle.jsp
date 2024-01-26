@@ -33,7 +33,7 @@
 %>
 
 <%@ page import="org.owasp.encoder.Encode" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController" %>
 
 <%@ page import="java.util.Enumeration" %>

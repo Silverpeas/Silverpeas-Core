@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.util.URLUtil;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier

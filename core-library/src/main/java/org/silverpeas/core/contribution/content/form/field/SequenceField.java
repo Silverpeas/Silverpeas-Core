@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.content.form.field;
 
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

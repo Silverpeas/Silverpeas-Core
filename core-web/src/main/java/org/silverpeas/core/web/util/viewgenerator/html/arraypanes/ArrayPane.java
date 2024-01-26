@@ -25,7 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
@@ -39,8 +39,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 
 /**

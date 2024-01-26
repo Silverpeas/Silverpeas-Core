@@ -23,7 +23,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.util.StringUtil" %><%--
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 

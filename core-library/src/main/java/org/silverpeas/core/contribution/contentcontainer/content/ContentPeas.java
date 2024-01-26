@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -96,7 +96,7 @@ public class ContentPeas {
       try {
         Class<SilverpeasContentManager> contentInterfaceClass =
             (Class<SilverpeasContentManager>) Class.forName(this.getContentManagerClass());
-        this.contentManager = ServiceProvider.getSingleton(contentInterfaceClass);
+        this.contentManager = ServiceProvider.getService(contentInterfaceClass);
       } catch (ClassNotFoundException e) {
         throw new SilverpeasException(e);
       }

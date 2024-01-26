@@ -26,7 +26,7 @@ package org.silverpeas.web.pdc;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.time.LocalDate;
 import java.util.HashMap;

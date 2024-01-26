@@ -32,10 +32,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheAccessor;
+import org.silverpeas.kernel.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.service.CacheAccessor;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

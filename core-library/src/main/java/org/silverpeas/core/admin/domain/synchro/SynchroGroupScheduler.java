@@ -31,7 +31,7 @@ import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.synchronizedSet;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 public class SynchroGroupScheduler implements SchedulerEventListener {
 

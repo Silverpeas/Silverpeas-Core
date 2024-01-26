@@ -31,7 +31,7 @@ import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 
 import java.net.URI;
 
-import static org.silverpeas.core.util.StringUtil.asBase64;
+import static org.silverpeas.kernel.util.StringUtil.asBase64;
 
 /**
  * Routing map centralization about the calendar event resources.

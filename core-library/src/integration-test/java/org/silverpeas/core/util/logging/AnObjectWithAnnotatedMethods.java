@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Bean;
 
 import java.util.Date;

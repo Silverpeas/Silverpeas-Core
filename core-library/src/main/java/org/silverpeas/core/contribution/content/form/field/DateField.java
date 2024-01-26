@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import java.text.ParseException;

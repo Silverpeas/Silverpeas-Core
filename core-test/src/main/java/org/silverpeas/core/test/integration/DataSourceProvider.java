@@ -41,7 +41,7 @@ public class DataSourceProvider {
   private DataSource dataSource;
 
   private static DataSourceProvider getInstance() {
-    return ServiceProvider.getSingleton(DataSourceProvider.class);
+    return ServiceProvider.getService(DataSourceProvider.class);
   }
 
   @Produces

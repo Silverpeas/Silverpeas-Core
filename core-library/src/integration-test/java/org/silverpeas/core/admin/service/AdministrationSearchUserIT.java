@@ -55,8 +55,8 @@ import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.*;
 import static org.silverpeas.core.admin.user.constant.UserState.*;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.truncate;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.truncate;
 
 /**
  * Look at CommonAdministrationIT.ods to get a better view of data.

@@ -36,7 +36,7 @@ import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvide
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

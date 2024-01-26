@@ -28,7 +28,7 @@ package org.silverpeas.core.jcr.security;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.jcr.Credentials;
 import javax.jcr.SimpleCredentials;

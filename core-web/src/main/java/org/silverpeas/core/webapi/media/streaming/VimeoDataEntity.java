@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.media.streaming;
 
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.io.media.Definition;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.webapi.media.MediaDefinitionEntity;

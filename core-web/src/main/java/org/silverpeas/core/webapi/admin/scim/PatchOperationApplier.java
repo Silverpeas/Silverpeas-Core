@@ -28,8 +28,8 @@ import edu.psu.swe.scim.spec.protocol.data.PatchOperation;
 import edu.psu.swe.scim.spec.resources.Email;
 import edu.psu.swe.scim.spec.resources.Name;
 import edu.psu.swe.scim.spec.resources.ScimUser;
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.Mutable;
 
 import java.util.ArrayList;
 import java.util.List;

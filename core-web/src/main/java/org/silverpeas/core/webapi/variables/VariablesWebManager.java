@@ -25,8 +25,8 @@ package org.silverpeas.core.webapi.variables;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.variables.Variable;
 import org.silverpeas.core.variables.VariableScheduledValue;

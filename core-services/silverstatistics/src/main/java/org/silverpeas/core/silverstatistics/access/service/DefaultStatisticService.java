@@ -24,7 +24,7 @@
 package org.silverpeas.core.silverstatistics.access.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -40,7 +40,7 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria;
 import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Singleton;

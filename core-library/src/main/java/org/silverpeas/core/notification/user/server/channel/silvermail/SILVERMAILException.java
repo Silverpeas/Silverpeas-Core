@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception thrown by the Silver mail processing chain.

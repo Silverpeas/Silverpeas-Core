@@ -25,8 +25,9 @@
 package org.silverpeas.core.media.streaming;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class StreamingProvidersRegistryTest {
 
   @TestedBean

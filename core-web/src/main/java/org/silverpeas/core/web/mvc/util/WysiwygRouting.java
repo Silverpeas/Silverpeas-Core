@@ -27,7 +27,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 
 import javax.servlet.http.HttpServletRequest;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.treemenu.process;
 
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 import org.silverpeas.core.web.treemenu.model.MenuItem;
 import org.silverpeas.core.web.treemenu.model.NodeType;
 import org.junit.jupiter.api.Test;

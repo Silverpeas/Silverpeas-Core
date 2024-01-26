@@ -26,8 +26,8 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.directive;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 import java.util.HashMap;

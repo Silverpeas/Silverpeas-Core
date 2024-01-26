@@ -27,7 +27,7 @@ package org.silverpeas.core.documenttemplate;
 import org.silverpeas.core.ui.UserI18NTranslationMap;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -42,8 +42,8 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static java.time.ZoneId.systemDefault;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * This class handles the json data persisted into repository of document template.

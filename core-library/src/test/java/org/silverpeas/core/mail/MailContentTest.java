@@ -26,7 +26,7 @@ package org.silverpeas.core.mail;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 import org.silverpeas.core.util.Charsets;
 
 import javax.activation.DataHandler;
@@ -39,7 +39,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 @UnitTest
 public class MailContentTest {

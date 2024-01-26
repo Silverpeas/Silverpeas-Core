@@ -24,11 +24,11 @@
 package org.silverpeas.core.webapi.util.logging;
 
 import org.apache.ecs.xhtml.span;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.logging.LogsAccessor;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.inject.Inject;

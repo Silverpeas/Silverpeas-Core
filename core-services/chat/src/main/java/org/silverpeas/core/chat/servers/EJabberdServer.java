@@ -29,7 +29,7 @@ import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ws.rs.core.Response;
 import java.util.function.Function;

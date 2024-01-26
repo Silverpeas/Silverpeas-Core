@@ -26,7 +26,7 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Class declaration

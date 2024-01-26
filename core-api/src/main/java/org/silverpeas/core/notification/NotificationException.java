@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception thrown when an error occurs while preparing, sending, or treating a notification in

@@ -41,7 +41,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
-import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
+import static org.silverpeas.kernel.logging.SilverLogger.getLogger;
 import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
 
 /**

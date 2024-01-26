@@ -25,6 +25,9 @@
 --%>
 <%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
 <%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

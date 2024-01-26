@@ -24,10 +24,11 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.annotation.Base;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Base;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -94,8 +95,8 @@ public interface ComponentInstanceSimpleDocumentAccessControlExtension {
 
     try {
       accessControlExtension.set(ServiceProvider
-          .getServiceByComponentInstanceAndNameSuffix(instanceId, Constants.NAME_SUFFIX));
-    } catch (IllegalStateException e) {
+          .getService(instanceId, Constants.NAME_SUFFIX));
+    } catch (SilverpeasRuntimeException e) {
       // Default implementation if none existing for the component
       accessControlExtension.set(ServiceProvider.getService(
           ComponentInstanceSimpleDocumentAccessControlExtension.class, new AnnotationLiteral<Base>() {}));

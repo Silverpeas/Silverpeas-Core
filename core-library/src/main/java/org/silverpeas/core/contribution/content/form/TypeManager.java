@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

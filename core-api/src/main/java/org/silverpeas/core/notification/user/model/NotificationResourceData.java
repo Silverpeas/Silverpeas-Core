@@ -39,7 +39,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.silverpeas.core.util.JSONCodec.decode;
 import static org.silverpeas.core.util.JSONCodec.encode;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Data on the notification about an action operated on a resource in Silverpeas. A resource can

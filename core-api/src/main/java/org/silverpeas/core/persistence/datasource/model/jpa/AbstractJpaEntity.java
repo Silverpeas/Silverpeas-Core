@@ -25,12 +25,12 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.ExternalEntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.EmbeddedId;

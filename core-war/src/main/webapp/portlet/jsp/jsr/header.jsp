@@ -27,8 +27,8 @@
 
 <%@page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.admin.space.SpaceInst"%>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>

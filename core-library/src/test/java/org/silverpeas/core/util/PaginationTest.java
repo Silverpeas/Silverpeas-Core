@@ -27,7 +27,7 @@ package org.silverpeas.core.util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;

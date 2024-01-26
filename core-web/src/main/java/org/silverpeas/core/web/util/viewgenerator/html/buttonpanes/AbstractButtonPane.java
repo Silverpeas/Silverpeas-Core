@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 
 import java.util.ArrayList;

@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
 import org.silverpeas.web.portlets.portal.DesktopMessages;
@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * AdminServlet is a router for admin related requests like deploying/undeploying of portlets and

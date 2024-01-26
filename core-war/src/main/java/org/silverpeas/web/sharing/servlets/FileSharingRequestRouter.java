@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

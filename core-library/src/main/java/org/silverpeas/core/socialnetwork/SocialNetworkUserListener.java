@@ -31,7 +31,7 @@ import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.List;

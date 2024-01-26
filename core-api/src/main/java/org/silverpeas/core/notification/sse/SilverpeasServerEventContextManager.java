@@ -45,7 +45,7 @@ import java.util.List;
 public interface SilverpeasServerEventContextManager {
 
   static SilverpeasServerEventContextManager get() {
-    return ServiceProvider.getSingleton(SilverpeasServerEventContextManager.class);
+    return ServiceProvider.getService(SilverpeasServerEventContextManager.class);
   }
 
   /**

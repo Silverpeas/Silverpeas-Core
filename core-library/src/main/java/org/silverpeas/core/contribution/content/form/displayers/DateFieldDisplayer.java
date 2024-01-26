@@ -37,7 +37,7 @@ import org.apache.ecs.xhtml.input;
 import org.apache.ecs.xhtml.span;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nullable;
 import java.io.PrintWriter;

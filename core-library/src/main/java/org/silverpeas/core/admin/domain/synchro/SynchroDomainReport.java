@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin.domain.synchro;
 
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;

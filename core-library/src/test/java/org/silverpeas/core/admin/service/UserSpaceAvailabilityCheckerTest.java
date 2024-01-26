@@ -25,8 +25,9 @@
 package org.silverpeas.core.admin.service;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.List;
 import java.util.Set;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.when;
  * @author silveryocha
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class UserSpaceAvailabilityCheckerTest {
 
   private static final String UNKNOWN_SPACE_ID = "38";

@@ -24,7 +24,7 @@
 package org.silverpeas.core.mail;
 
 import org.silverpeas.core.util.MailUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;

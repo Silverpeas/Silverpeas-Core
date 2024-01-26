@@ -27,9 +27,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestedBean;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +39,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class UserSubscriptionNotificationSendingHandlerTest {
 
   private static final String SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM =

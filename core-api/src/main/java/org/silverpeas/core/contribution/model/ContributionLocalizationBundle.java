@@ -26,9 +26,9 @@ package org.silverpeas.core.contribution.model;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.MissingResourceException;
 import java.util.Optional;

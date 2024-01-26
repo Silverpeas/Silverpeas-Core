@@ -37,10 +37,10 @@ import org.silverpeas.core.index.search.model.SearchCompletion;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.security.authorization.ComponentAuthorization.ComponentResourceReference;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -61,7 +61,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A SimpleSearchEngine search Silverpeas indexes index and give access to the retrieved index

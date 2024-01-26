@@ -25,7 +25,7 @@
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

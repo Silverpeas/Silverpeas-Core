@@ -52,7 +52,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * replacement exists.
    */
   static <T extends Replacement<T>> Optional<T> get(final String replacementId) {
-    Repository repository = ServiceProvider.getSingleton(Repository.class);
+    Repository repository = ServiceProvider.getService(Repository.class);
     return Optional.ofNullable(repository.findById(replacementId));
   }
 
@@ -65,7 +65,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    */
   static <T extends Replacement<T>> ReplacementList<T> getAllOf(final User incumbent,
       final String workflowInstanceId) {
-    Repository repository = ServiceProvider.getSingleton(Repository.class);
+    Repository repository = ServiceProvider.getService(Repository.class);
     List<T> replacements = repository.findAllByIncumbentAndByWorkflow(incumbent, workflowInstanceId);
     return new ReplacementList<>(replacements);
   }
@@ -79,7 +79,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    */
   static <T extends Replacement<T>> ReplacementList<T> getAllBy(final User substitute,
       final String workflowInstanceId) {
-    Repository repository = ServiceProvider.getSingleton(Repository.class);
+    Repository repository = ServiceProvider.getService(Repository.class);
     List<T> replacements = repository.findAllBySubstituteAndByWorkflow(substitute, workflowInstanceId);
     return new ReplacementList<>(replacements);
   }
@@ -95,7 +95,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    */
   static <T extends Replacement<T>> ReplacementList<T> getAllWith(final User incumbent, final User substitute,
       final String workflowInstanceId) {
-    Repository repository = ServiceProvider.getSingleton(Repository.class);
+    Repository repository = ServiceProvider.getService(Repository.class);
     List<T> replacements = repository.findAllByUsersAndByWorkflow(incumbent, substitute, workflowInstanceId);
     return new ReplacementList<>(replacements);
   }
@@ -108,7 +108,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * replacements exist, then an empty list is returned.
    */
   static <T extends Replacement<T>> ReplacementList<T> getAll(final String workflowInstanceId) {
-    Repository repository = ServiceProvider.getSingleton(Repository.class);
+    Repository repository = ServiceProvider.getService(Repository.class);
     List<T> replacements = repository.findAllByWorkflow(workflowInstanceId);
     return new ReplacementList<>(replacements);
   }
@@ -172,7 +172,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    */
   default T save() {
     return Transaction.performInOne(() -> {
-      Repository repository = ServiceProvider.getSingleton(Repository.class);
+      Repository repository = ServiceProvider.getService(Repository.class);
       return repository.save(this);
     });
   }
@@ -183,7 +183,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    */
   default void delete() {
     Transaction.performInOne(() -> {
-      Repository repository = ServiceProvider.getSingleton(Repository.class);
+      Repository repository = ServiceProvider.getService(Repository.class);
       repository.delete(this);
       return null;
     });

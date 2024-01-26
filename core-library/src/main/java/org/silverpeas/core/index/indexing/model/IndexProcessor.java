@@ -24,9 +24,9 @@
 package org.silverpeas.core.index.indexing.model;
 
 import org.silverpeas.core.index.search.model.ParseException;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;

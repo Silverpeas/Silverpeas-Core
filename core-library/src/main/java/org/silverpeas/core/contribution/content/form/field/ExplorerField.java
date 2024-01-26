@@ -36,7 +36,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;

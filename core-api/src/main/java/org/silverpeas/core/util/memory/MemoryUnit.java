@@ -24,12 +24,12 @@
 package org.silverpeas.core.util.memory;
 
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.math.BigDecimal;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * User: Yohann Chastagnier

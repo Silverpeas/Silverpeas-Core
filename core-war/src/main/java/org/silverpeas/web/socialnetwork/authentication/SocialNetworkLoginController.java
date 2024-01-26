@@ -35,7 +35,7 @@ import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
 import org.springframework.social.connect.UserProfile;
 

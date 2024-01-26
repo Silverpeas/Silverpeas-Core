@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

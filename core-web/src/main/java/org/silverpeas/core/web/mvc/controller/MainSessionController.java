@@ -42,11 +42,12 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
+import org.silverpeas.kernel.SilverpeasException;
 
 import javax.enterprise.util.AnnotationLiteral;
 import javax.servlet.http.HttpSession;
@@ -150,10 +151,10 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
    * connected to Silverpeas.
    * @param authenticationKey the authentication key of the user.
    * @param httpSession the http session.
-   * @throws org.silverpeas.core.SilverpeasException if the user session is not open.
+   * @throws SilverpeasException if the user session is not open.
    */
   public MainSessionController(String authenticationKey, HttpSession httpSession)
-      throws org.silverpeas.core.SilverpeasException {
+      throws SilverpeasException {
     try {
       this.httpSession = httpSession;
       this.sessionId = httpSession.getId();
@@ -166,7 +167,7 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
       // Get the user language
       userLanguage = userPreferences.getLanguage();
     } catch (Exception e) {
-      throw new org.silverpeas.core.SilverpeasException(
+      throw new SilverpeasException(
           failureOnGetting("user with authentication key", authenticationKey));
     }
   }
@@ -176,10 +177,10 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
    * connected to Silverpeas.
    * @param sessionInfo an existing session info.
    * @param httpSession the http session.
-   * @throws org.silverpeas.core.SilverpeasException if the user session is not open.
+   * @throws SilverpeasException if the user session is not open.
    */
   public MainSessionController(SessionInfo sessionInfo, HttpSession httpSession)
-      throws org.silverpeas.core.SilverpeasException {
+      throws SilverpeasException {
     try {
       this.httpSession = httpSession;
       this.sessionId = httpSession.getId();
@@ -192,7 +193,7 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
       // Get the user language
       userLanguage = userPreferences.getLanguage();
     } catch (Exception e) {
-      throw new org.silverpeas.core.SilverpeasException(
+      throw new SilverpeasException(
           "can not initialize main controller from session id {0}", sessionInfo.getSessionId());
     }
   }

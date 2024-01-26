@@ -29,7 +29,7 @@ import org.silverpeas.core.util.ContributionPath;
 
 import java.util.Optional;
 
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * Path of a {@link CalendarComponent} instance.

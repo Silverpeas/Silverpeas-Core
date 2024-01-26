@@ -24,11 +24,11 @@
  */
 package org.silverpeas.core.jcr;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
@@ -62,7 +62,7 @@ public class RepositoryProvider {
    * @return a {@link RepositoryProvider} instance.
    */
   public static RepositoryProvider get() {
-    return ServiceProvider.getSingleton(RepositoryProvider.class);
+    return ServiceProvider.getService(RepositoryProvider.class);
   }
 
   @PostConstruct

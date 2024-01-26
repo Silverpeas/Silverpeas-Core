@@ -30,9 +30,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.thread.task.RequestTaskManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,19 +48,22 @@ import static org.hamcrest.Matchers.*;
 class ServerEventListenerPushingServerEventOnWebSocketContextDispatcherTaskTest
     extends AbstractServerEventDispatcherTaskTest {
 
-  @Inject
   TestServerEventBucket bucket;
 
-  @Inject
   TestServerEventNotifier testServerEventNotifier;
 
-  @Inject
   DefaultServerEventNotifier defaultServerEventNotifier;
 
   @BeforeEach
   @AfterEach
-  public void bucketSetup() {
-    bucket.empty();
+  // parameters injected by weld
+  public void bucketSetup(TestServerEventBucket bucket,
+      TestServerEventNotifier testSseNotifier,
+      DefaultServerEventNotifier sseNotifier) {
+    this.bucket = bucket;
+    this.testServerEventNotifier = testSseNotifier;
+    this.defaultServerEventNotifier = sseNotifier;
+    this.bucket.empty();
   }
 
   @Test

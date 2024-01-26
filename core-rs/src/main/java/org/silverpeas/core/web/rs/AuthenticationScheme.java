@@ -24,7 +24,7 @@
  */
 package org.silverpeas.core.web.rs;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Optional;
 

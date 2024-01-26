@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.look;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
@@ -41,11 +41,11 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONArray;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;

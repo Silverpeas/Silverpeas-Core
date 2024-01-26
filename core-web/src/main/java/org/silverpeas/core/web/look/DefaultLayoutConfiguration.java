@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.web.look;
 
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Nicolas Eysseric

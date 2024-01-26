@@ -26,7 +26,7 @@ package org.silverpeas.core.socialnetwork.status;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

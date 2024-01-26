@@ -29,18 +29,19 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.file.DeletingPathVisitor;
 
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
@@ -63,7 +64,7 @@ import static org.silverpeas.core.documenttemplate.JsonDocumentTemplate.decode;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class DocumentTemplateRepositoryTest {
 
   private static final  DocumentTemplate DEFAULT_TEMPLATE = new DocumentTemplate(decode(DEFAULT_JSON), "txt");
@@ -72,7 +73,7 @@ class DocumentTemplateRepositoryTest {
   @TestedBean
   private DefaultDocumentTemplateRepository repository;
 
-  @TestManagedMock
+  @Inject
   private UserProvider userProvider;
 
   @BeforeAll
@@ -350,7 +351,7 @@ class DocumentTemplateRepositoryTest {
     }
     });
     final List<Integer> allPositions = IntStream.rangeClosed(1, 5)
-        .mapToObj(Integer::valueOf)
+        .boxed()
         .collect(Collectors.toList());
     final List<DocumentTemplate> all = repository.streamAll().collect(Collectors.toList());
     assertThat(all, hasSize(5));
@@ -378,7 +379,7 @@ class DocumentTemplateRepositoryTest {
     try (final Stream<Path> list = Files.list(getRepositoryPath())) {
       assertThat(list.count(), is(nb));
     } catch (IOException e) {
-      throw new SilverpeasRuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 }

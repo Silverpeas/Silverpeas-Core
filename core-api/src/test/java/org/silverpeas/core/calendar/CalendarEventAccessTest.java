@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
@@ -32,20 +32,20 @@ import org.silverpeas.core.admin.component.service.SilverpeasComponentInstancePr
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.test.TestBeanContainer;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Optional.of;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
 /**
@@ -54,12 +54,15 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
  * @author silveryocha
  */
 @Execution(ExecutionMode.SAME_THREAD)
-public class CalendarEventAccessTest {
+@EnableSilverTestEnv
+class CalendarEventAccessTest {
 
   private static final String USER_TEST_ID = "26";
   private User userTest;
   private Calendar calendar;
   private CalendarEventStubBuilder eventBuilder;
+
+  @TestManagedMock
   private SilverpeasComponentInstanceProvider componentInstanceProvider;
 
   @BeforeEach
@@ -73,11 +76,6 @@ public class CalendarEventAccessTest {
         .from(Period.between(LocalDate.of(2017, 8, 25), LocalDate.of(2017, 8, 26)));
     eventBuilder.plannedOn(calendar);
     eventBuilder.withVisibilityLevel(VisibilityLevel.PRIVATE);
-
-    componentInstanceProvider = mock(SilverpeasComponentInstanceProvider.class);
-    when(TestBeanContainer.getMockedBeanContainer()
-        .getBeanByType(SilverpeasComponentInstanceProvider.class)).thenReturn(
-        componentInstanceProvider);
     when(componentInstanceProvider.getById(anyString())).thenReturn(Optional.empty());
   }
 
@@ -86,52 +84,52 @@ public class CalendarEventAccessTest {
    */
 
   @Test
-  public void notAccessibleWithDefaultTestEvent() {
+  void notAccessibleWithDefaultTestEvent() {
     assertThatEventIsNotAccessible();
   }
 
   @Test
-  public void accessibleWhenCalendarIsAccessible() {
+  void accessibleWhenCalendarIsAccessible() {
     calendarCanBeAccessed();
     assertThatEventIsAccessible();
   }
 
   @Test
-  public void accessibleWhenUserIsParticipant() {
+  void accessibleWhenUserIsParticipant() {
     eventBuilder.withAttendee(userTest, attendee -> {
     });
     assertThatEventIsAccessible();
   }
 
   @Test
-  public void notAccessibleWhenVisibilityIsPublicButNoComponentInstance() {
+  void notAccessibleWhenVisibilityIsPublicButNoComponentInstance() {
     eventBuilder.withVisibilityLevel(VisibilityLevel.PUBLIC);
     assertThatEventIsNotAccessible();
   }
 
   @Test
-  public void notAccessibleWhenVisibilityIsPublicButComponentInstanceIsNotPersonalOrPublic() {
+  void notAccessibleWhenVisibilityIsPublicButComponentInstanceIsNotPersonalOrPublic() {
     onPrivateComponentInstance();
     eventBuilder.withVisibilityLevel(VisibilityLevel.PUBLIC);
     assertThatEventIsNotAccessible();
   }
 
   @Test
-  public void accessibleWhenVisibilityIsPublicAndComponentInstanceIsPersonal() {
+  void accessibleWhenVisibilityIsPublicAndComponentInstanceIsPersonal() {
     onPersonalComponentInstance();
     eventBuilder.withVisibilityLevel(VisibilityLevel.PUBLIC);
     assertThatEventIsAccessible();
   }
 
   @Test
-  public void accessibleWhenVisibilityIsPublicAndComponentInstanceIsPublic() {
+  void accessibleWhenVisibilityIsPublicAndComponentInstanceIsPublic() {
     onPublicComponentInstance();
     eventBuilder.withVisibilityLevel(VisibilityLevel.PUBLIC);
     assertThatEventIsAccessible();
   }
 
   @Test
-  public void notAccessibleWhenVisibilityIsPrivateAndComponentInstanceIsPublic() {
+  void notAccessibleWhenVisibilityIsPrivateAndComponentInstanceIsPublic() {
     onPublicComponentInstance();
     assertThatEventIsNotAccessible();
   }
@@ -141,12 +139,12 @@ public class CalendarEventAccessTest {
    */
 
   @Test
-  public void notModifiableWithDefaultTestEvent() {
+  void notModifiableWithDefaultTestEvent() {
     assertThatEventIsNotModifiable();
   }
 
   @Test
-  public void notModifiableWhenCalendarIsAccessibleButNoUserRole() {
+  void notModifiableWhenCalendarIsAccessibleButNoUserRole() {
     calendarCanBeAccessed();
     onPrivateComponentInstance();
 
@@ -154,7 +152,7 @@ public class CalendarEventAccessTest {
   }
 
   @Test
-  public void notModifiableWhenCalendarIsAccessibleAndUserRoleIsReader() {
+  void notModifiableWhenCalendarIsAccessibleAndUserRoleIsReader() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
     when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(USER);
@@ -163,7 +161,7 @@ public class CalendarEventAccessTest {
   }
 
   @Test
-  public void modifiableWhenCalendarIsAccessibleAndUserRoleIsAdmin() {
+  void modifiableWhenCalendarIsAccessibleAndUserRoleIsAdmin() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
     when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(ADMIN);
@@ -172,7 +170,7 @@ public class CalendarEventAccessTest {
   }
 
   @Test
-  public void notModifiableWhenCalendarIsAccessibleButSynchronizedAndUserRoleIsAdmin()
+  void notModifiableWhenCalendarIsAccessibleButSynchronizedAndUserRoleIsAdmin()
       throws MalformedURLException {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
@@ -183,7 +181,7 @@ public class CalendarEventAccessTest {
   }
 
   @Test
-  public void modifiableWhenCalendarIsAccessibleAndUserRoleIsPublisher() {
+  void modifiableWhenCalendarIsAccessibleAndUserRoleIsPublisher() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
     when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(PUBLISHER);
@@ -192,7 +190,7 @@ public class CalendarEventAccessTest {
   }
 
   @Test
-  public void notModifiableWhenCalendarIsAccessibleAndUserRoleIsWriterAndUserIsNotEventCreator() {
+  void notModifiableWhenCalendarIsAccessibleAndUserRoleIsWriterAndUserIsNotEventCreator() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
     when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(WRITER);
@@ -202,7 +200,7 @@ public class CalendarEventAccessTest {
   }
 
   @Test
-  public void modifiableWhenCalendarIsAccessibleAndUserRoleIsWriterAndUserIsEventCreator() {
+  void modifiableWhenCalendarIsAccessibleAndUserRoleIsWriterAndUserIsEventCreator() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
     when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(WRITER);
@@ -212,7 +210,7 @@ public class CalendarEventAccessTest {
   }
 
   @Test
-  public void notModifiableWhenCalendarIsNotAccessibleAndUserRoleIsWriterAndUserIsEventCreator() {
+  void notModifiableWhenCalendarIsNotAccessibleAndUserRoleIsWriterAndUserIsEventCreator() {
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
     when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(WRITER);
 
@@ -271,11 +269,7 @@ public class CalendarEventAccessTest {
   }
 
   private User aUser() {
-    try {
-      Thread.sleep(1);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
+    await().atLeast(1, TimeUnit.MILLISECONDS).until(() -> true);
     User aUser = mock(User.class);
     when(aUser.getId()).thenReturn(String.valueOf(System.currentTimeMillis()));
     return aUser;

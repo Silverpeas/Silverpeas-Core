@@ -30,7 +30,7 @@
 
 package org.silverpeas.web.jobstartpage;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception when an error is raised from a Silverpeas space and component related job.

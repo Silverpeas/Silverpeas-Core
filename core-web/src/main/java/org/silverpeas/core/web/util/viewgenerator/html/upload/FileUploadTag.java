@@ -31,9 +31,9 @@ import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.legend;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 

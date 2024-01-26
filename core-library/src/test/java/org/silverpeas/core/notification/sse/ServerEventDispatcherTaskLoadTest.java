@@ -31,8 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 import org.silverpeas.core.notification.sse.behavior.SendEveryAmountOfTime;
 import org.silverpeas.core.notification.sse.behavior.StoreLastOnly;
@@ -41,17 +39,17 @@ import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.ScheduledJob;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.test.unit.extention.LoggerLevel;
-import org.silverpeas.core.test.unit.extention.SettingBundleStub;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
 import org.silverpeas.core.thread.task.RequestTaskManager;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.extension.LoggerLevel;
+import org.silverpeas.kernel.test.extension.SettingBundleStub;
+import org.silverpeas.kernel.util.Mutable;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -74,7 +72,7 @@ import static org.hamcrest.Matchers.*;
  * @author Yohann Chastagnier
  */
 @EnableAutoWeld
-@AddBeanClasses(DefaultServerEventNotifier.class)
+@AddBeanClasses({DefaultServerEventNotifier.class})
 @AddPackages({AbstractServerEventDispatcherTaskTest.class, RequestTaskManager.class})
 class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTaskTest {
 
@@ -90,16 +88,17 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
   @TestManagedBean
   private VolatileScheduler4Test volatileScheduler4Test;
 
-  @Inject
   TestServerEventBucket bucket;
 
-  @Inject
   DefaultServerEventNotifier defaultServerEventNotifier;
 
   @BeforeEach
   @AfterEach
-  public void bucketSetup() throws Exception {
-    bucket.empty();
+  // parameters injected by weld
+  public void bucketSetup(TestServerEventBucket bucket, DefaultServerEventNotifier sseNotifier) {
+    this.defaultServerEventNotifier = sseNotifier;
+    this.bucket = bucket;
+    this.bucket.empty();
     volatileScheduler4Test.shutdown();
   }
 
@@ -299,14 +298,13 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
           })))
           .collect(Collectors.toList());
       final List<Thread> newEventThreads = IntStream.range(0, NB_EVT_THREAD)
-          .mapToObj(i -> new Thread(() -> {
-            IntStream.range(0, NB_EVT_BY_THREAD).forEach(j -> {
-              with().pollInterval(20, TimeUnit.MILLISECONDS)
-                  .await()
-                  .untilTrue(new AtomicBoolean(true));
-              test.defaultServerEventNotifier.notify(eventSupplier.get());
-            });
-          }))
+          .mapToObj(i -> new Thread(() ->
+              IntStream.range(0, NB_EVT_BY_THREAD).forEach(j -> {
+                with().pollInterval(20, TimeUnit.MILLISECONDS)
+                    .await()
+                    .untilTrue(new AtomicBoolean(true));
+            test.defaultServerEventNotifier.notify(eventSupplier.get());
+          })))
           .collect(Collectors.toList());
       final long start = System.currentTimeMillis();
       starts(contextThreads);
@@ -375,19 +373,18 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
 
     @Override
     public ScheduledJob scheduleJob(final String jobName, final JobTrigger trigger,
-        final SchedulerEventListener listener) throws SchedulerException {
+        final SchedulerEventListener listener) {
       return null;
     }
 
     @Override
     public ScheduledJob scheduleJob(final Job theJob, final JobTrigger trigger,
-        final SchedulerEventListener listener) throws SchedulerException {
+        final SchedulerEventListener listener) {
       return null;
     }
 
     @Override
-    public ScheduledJob scheduleJob(final Job theJob, final JobTrigger trigger)
-        throws SchedulerException {
+    public ScheduledJob scheduleJob(final Job theJob, final JobTrigger trigger) {
       final int seconds = NotificationManagerSettings.sendEveryAmountOfSecondsFor(
           TestServerEventLoadSendAveryAmount.EVENT_NAME);
       if (seconds > 0) {
@@ -408,7 +405,7 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
     }
 
     @Override
-    public void unscheduleJob(final String jobName) throws SchedulerException {
+    public void unscheduleJob(final String jobName) {
       shutdown();
     }
 
@@ -423,7 +420,7 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
     }
 
     @Override
-    public void shutdown() throws SchedulerException {
+    public void shutdown() {
       if (scheduledExecutor != null && !scheduledExecutor.isShutdown()) {
         scheduledExecutor.shutdownNow();
       }

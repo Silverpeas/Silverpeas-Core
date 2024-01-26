@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.Collection;

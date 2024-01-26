@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.look;
 
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;

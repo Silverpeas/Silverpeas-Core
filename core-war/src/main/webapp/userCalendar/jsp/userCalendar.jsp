@@ -22,7 +22,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
 
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

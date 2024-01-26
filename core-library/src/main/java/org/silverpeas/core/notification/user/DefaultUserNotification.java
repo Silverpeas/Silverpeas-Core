@@ -30,7 +30,7 @@ import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Map;
 

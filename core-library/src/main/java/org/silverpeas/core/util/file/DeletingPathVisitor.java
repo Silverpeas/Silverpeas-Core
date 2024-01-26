@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.util.file;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;

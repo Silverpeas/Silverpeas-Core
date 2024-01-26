@@ -27,7 +27,7 @@
 package org.silverpeas.web.interests.servlets;
 
 import org.silverpeas.core.pdc.interests.model.Interests;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

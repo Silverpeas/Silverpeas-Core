@@ -30,7 +30,8 @@ import org.silverpeas.core.admin.quota.service.AbstractQuotaService;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
@@ -41,9 +42,9 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
     extends AbstractQuotaService<T> implements SpaceQuotaService<T> {
 
   /**
-   * Creates a quota key
-   * @param space
-   * @return
+   * Creates a quota key for the specified space.
+   * @param space a space instance.
+   * @return the key
    */
   protected abstract T createKeyFrom(SpaceInst space);
 
@@ -54,6 +55,7 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
      * silverpeas.admin.space.quota.ComponentSpaceQuotaKey)
      */
   @Override
+  @NonNull
   public Quota getQuotaReachedFromSpacePath(final T key) {
     Quota spaceQuotaReached = new Quota();
     if (key.isValid()) {

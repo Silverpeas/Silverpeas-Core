@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contact.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class ContactRuntimeException extends SilverpeasRuntimeException {
 

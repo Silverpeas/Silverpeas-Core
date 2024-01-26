@@ -27,7 +27,7 @@
 
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.admin.component.model.SilverpeasComponentInstance" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ include file="import.jsp" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>

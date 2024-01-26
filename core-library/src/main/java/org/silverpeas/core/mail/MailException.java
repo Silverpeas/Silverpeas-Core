@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.mail;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception thrown when a mail operation failed.

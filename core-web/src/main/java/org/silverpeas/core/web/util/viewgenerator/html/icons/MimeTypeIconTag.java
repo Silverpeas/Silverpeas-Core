@@ -24,8 +24,8 @@
 package org.silverpeas.core.web.util.viewgenerator.html.icons;
 
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

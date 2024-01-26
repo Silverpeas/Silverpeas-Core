@@ -26,7 +26,7 @@ package org.silverpeas.core.io.media;
 import org.apache.tika.metadata.*;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.time.Duration;

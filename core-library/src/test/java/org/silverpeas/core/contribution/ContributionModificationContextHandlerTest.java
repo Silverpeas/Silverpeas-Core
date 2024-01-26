@@ -28,9 +28,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestedBean;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ContributionModificationContextHandlerTest {
 
   private static final String CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM =

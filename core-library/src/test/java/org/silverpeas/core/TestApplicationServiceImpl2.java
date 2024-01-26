@@ -24,8 +24,8 @@
 package org.silverpeas.core;
 
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Singleton;
 import java.util.Optional;

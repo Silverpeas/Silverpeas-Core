@@ -28,7 +28,7 @@ import org.silverpeas.core.security.token.TokenGenerationParameter;
 import org.silverpeas.core.security.token.TokenGenerator;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;

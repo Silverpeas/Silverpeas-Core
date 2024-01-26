@@ -24,11 +24,11 @@
 package org.silverpeas.core.web.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletRequest;

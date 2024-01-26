@@ -24,12 +24,12 @@
 
 package org.silverpeas.core.chat;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.Collections;
@@ -38,7 +38,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.util.URLUtil.getCurrentServerURL;
 
@@ -70,7 +70,7 @@ public class ChatSettings {
    * @return a {@link ChatSettings} instance.
    */
   public static ChatSettings get() {
-    return ServiceProvider.getSingleton(ChatSettings.class);
+    return ServiceProvider.getService(ChatSettings.class);
   }
 
   /**

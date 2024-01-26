@@ -39,9 +39,8 @@ import org.silverpeas.core.scheduler.ScheduledJob;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.util.BeanContainer;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
 
 import javax.enterprise.util.AnnotationLiteral;
 import javax.persistence.EntityManager;
@@ -159,9 +158,9 @@ public class ReminderTestContext {
    */
   private void setUpScheduler() {
     Scheduler scheduler = mock(Scheduler.class);
-    BeanContainer beanContainer = TestBeanContainer.getMockedBeanContainer();
-    when(beanContainer.getBeanByType(Scheduler.class,
-        new AnnotationLiteral<PersistentScheduling>() {})).thenReturn(scheduler);
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(scheduler, Scheduler.class,
+        new AnnotationLiteral<PersistentScheduling>(){});
     try {
       when(scheduler.scheduleJob(anyString(), any(JobTrigger.class),
           any(ReminderProcess.class))).thenAnswer(invocation -> {

@@ -30,8 +30,9 @@ import org.mockito.Mockito;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.csv.CSVRow;
 
@@ -55,7 +56,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ExportCSVBuilderTest {
 
   private static final String LINE_SEPARATOR = "\n";

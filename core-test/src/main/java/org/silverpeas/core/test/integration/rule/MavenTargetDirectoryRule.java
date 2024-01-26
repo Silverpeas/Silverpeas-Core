@@ -210,7 +210,7 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @return the resource path.
    */
   public static File getResourceTestDirFile(Properties mavenProperties) {
-    return getPath(mavenProperties, "test-resources.directory");
+    return getPath(mavenProperties, "test.resources.directory");
   }
 
   /**

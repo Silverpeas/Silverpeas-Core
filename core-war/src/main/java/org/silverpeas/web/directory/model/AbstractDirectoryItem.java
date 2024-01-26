@@ -26,7 +26,7 @@ package org.silverpeas.web.directory.model;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 public abstract class AbstractDirectoryItem implements DirectoryItem {
 

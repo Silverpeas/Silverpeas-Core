@@ -25,7 +25,8 @@ package org.silverpeas.core.admin.user;
 
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.EnumSet;
 
@@ -36,7 +37,7 @@ import static org.hamcrest.Matchers.*;
  * User: Yohann Chastagnier
  * Date: 17/12/13
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class SilverpeasRoleTest {
 
   @Test

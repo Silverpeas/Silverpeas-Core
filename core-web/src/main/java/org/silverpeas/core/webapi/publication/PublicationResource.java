@@ -38,7 +38,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.NodeAccessController;
 import org.silverpeas.core.security.authorization.PublicationAccessController;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 

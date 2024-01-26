@@ -43,7 +43,7 @@ public class DocumentTemplateResourceURIs {
   public static final String DOC_TEMPLATE_BASE_URI = "documentTemplates";
 
   public static DocumentTemplateResourceURIs get() {
-    return ServiceProvider.getSingleton(DocumentTemplateResourceURIs.class);
+    return ServiceProvider.getService(DocumentTemplateResourceURIs.class);
   }
 
   /**

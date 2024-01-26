@@ -47,10 +47,10 @@ import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -66,7 +66,7 @@ import java.util.stream.Stream;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.IOUtils.toInputStream;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Implementation of the {@link ICalendarImporter} interface by using the iCal4J library to perform

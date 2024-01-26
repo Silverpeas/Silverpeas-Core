@@ -56,7 +56,7 @@ public class AttachmentHugeProcessManager {
   private final ThreadLocal<Set<String>> instanceIdsOfThread = new ThreadLocal<>();
 
   public static AttachmentHugeProcessManager get() {
-    return ServiceProvider.getSingleton(AttachmentHugeProcessManager.class);
+    return ServiceProvider.getService(AttachmentHugeProcessManager.class);
   }
 
   /**
@@ -73,7 +73,7 @@ public class AttachmentHugeProcessManager {
    * Is a huge processing running about the attachments hosted by the component instances
    * represented by the given identifier?
    * @param instanceId unique identifier of a component instance.
-   * @throw AttachmentException if a huge processing is currently running, false otherwise.
+   * @throws AttachmentException if a huge processing is currently running, false otherwise.
    */
   public void checkNoOneIsRunningOnInstance(final String instanceId) {
     if (isOneRunningOnInstance(instanceId)) {

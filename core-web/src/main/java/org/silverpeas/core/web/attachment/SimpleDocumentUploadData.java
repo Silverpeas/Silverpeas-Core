@@ -25,7 +25,7 @@ package org.silverpeas.core.web.attachment;
 
 import org.silverpeas.core.documenttemplate.DocumentTemplate;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestFile;
 import org.silverpeas.core.web.http.RequestParameterDecoder;

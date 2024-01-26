@@ -27,12 +27,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.cache.model.Cache;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.cache.model.Cache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.html.PermalinkRegistry;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -49,8 +51,8 @@ import static java.time.ZoneId.systemDefault;
 import static java.time.temporal.ChronoField.*;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
-import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralSettingBundle;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 /**
  * Class declaration

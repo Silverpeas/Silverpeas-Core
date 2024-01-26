@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.space.quota;
 
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.quota.service.QuotaService;
+import org.silverpeas.kernel.annotation.NonNull;
 
 /**
  * @author Yohann Chastagnier
@@ -32,9 +33,12 @@ import org.silverpeas.core.admin.quota.service.QuotaService;
 public interface SpaceQuotaService<T extends AbstractSpaceQuotaKey> extends QuotaService<T> {
 
   /**
-   * Gets the quota reached of the resource from a given quota key in recursively way.
-   * @param key
-   * @return
+   * Gets the quota reached by a resource from a given quota key and this in a recursively way.
+   * @param key the key of the quota.
+   * @return a quota. If no such quota is associated with the given key, then an empty quota is
+   * returned. In this case the identifier, the type and the related source of the quota are null
+   * (undefined).
    */
+  @NonNull
   Quota getQuotaReachedFromSpacePath(T key);
 }

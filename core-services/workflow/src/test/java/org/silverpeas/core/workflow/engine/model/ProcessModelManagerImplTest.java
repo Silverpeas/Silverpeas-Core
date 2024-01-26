@@ -30,20 +30,18 @@ package org.silverpeas.core.workflow.engine.model;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestedBean;
-import org.silverpeas.core.test.util.MavenTestEnv;
-import org.silverpeas.core.workflow.api.model.Action;
-import org.silverpeas.core.workflow.api.model.Column;
-import org.silverpeas.core.workflow.api.model.Consequence;
-import org.silverpeas.core.workflow.api.model.Presentation;
-import org.silverpeas.core.workflow.api.model.ProcessModel;
-import org.silverpeas.core.workflow.api.model.Role;
-import org.silverpeas.core.workflow.api.model.State;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.core.workflow.api.model.*;
+import org.silverpeas.kernel.test.TestContext;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.io.File;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -51,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author ehugonnet
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ProcessModelManagerImplTest {
 
   @TestedBean
@@ -118,17 +116,19 @@ class ProcessModelManagerImplTest {
     ProcessModel process = instance.loadProcessModel(processFileName);
     String resultFileName = "DemandeCongesSimpleSerial.xml";
     instance.saveProcessModel(process, resultFileName);
-    FileUtils.contentEquals(new File(instance.getProcessPath(processFileName)), new File(instance.getProcessPath(resultFileName)));
+    ProcessModel actualProcess = instance.loadProcessModel(resultFileName);
+    assertThat(actualProcess.getName(), is(process.getName()));
+    assertThat(actualProcess.getModelId(), is(process.getModelId()));
   }
 
   /**
    * Test of getProcessModelDir method, of class ProcessModelManagerImpl.
    */
   @Test
-  void getProcessModelDir(final MavenTestEnv mavenTestEnv) {
+  void getProcessModelDir() {
     System.out.println("getProcessModelDir");
     String expResult =
-        new File(mavenTestEnv.getBuildDirFile(), "test-classes").getPath() + File.separator;
+        TestContext.getInstance().getPathOfTestResources().toString() + File.separator;
     String result = instance.getProcessModelDir();
     assertEquals(expResult, result);
   }

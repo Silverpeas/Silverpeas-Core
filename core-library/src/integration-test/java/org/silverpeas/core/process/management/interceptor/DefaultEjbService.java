@@ -29,7 +29,7 @@ import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.TargetPK;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;

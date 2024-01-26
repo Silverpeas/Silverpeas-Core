@@ -31,7 +31,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * A FieldDescription pack all the needed information to parse and index a generic field (xml field,

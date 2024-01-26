@@ -30,10 +30,10 @@ import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
 import org.silverpeas.core.util.EncodingUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Named;
 import java.io.ByteArrayInputStream;

@@ -24,9 +24,9 @@
 package org.silverpeas.core.io.file;
 
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.BufferedInputStream;
 import java.io.File;

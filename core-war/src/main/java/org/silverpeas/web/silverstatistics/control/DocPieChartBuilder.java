@@ -25,9 +25,9 @@ package org.silverpeas.web.silverstatistics.control;
 
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.HashMap;
 import java.util.Map;

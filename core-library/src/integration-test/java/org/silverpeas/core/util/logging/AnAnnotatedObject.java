@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Bean;
 
 import java.util.Date;
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.awaitility.Awaitility.await;
-import static org.silverpeas.core.util.logging.Level.DEBUG;
+import static org.silverpeas.kernel.logging.Level.DEBUG;
 
 @Log(dualRecord = true, level = DEBUG)
 @Error

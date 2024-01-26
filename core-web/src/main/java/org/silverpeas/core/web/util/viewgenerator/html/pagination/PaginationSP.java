@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
 import org.apache.ecs.html.IMG;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Date;
 import java.util.List;

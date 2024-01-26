@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.admin.component.constant;
 
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * Centralization of common parameter names of component instances.

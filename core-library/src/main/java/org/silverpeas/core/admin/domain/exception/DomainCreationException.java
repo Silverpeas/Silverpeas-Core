@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.domain.exception;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class DomainCreationException extends SilverpeasException {
 

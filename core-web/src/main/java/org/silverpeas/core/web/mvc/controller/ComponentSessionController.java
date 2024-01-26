@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.io.Serializable;
 import java.time.ZoneId;

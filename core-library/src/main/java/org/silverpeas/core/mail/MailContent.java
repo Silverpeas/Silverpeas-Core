@@ -29,10 +29,10 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.body;
 import org.apache.ecs.xhtml.head;
 import org.apache.ecs.xhtml.html;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;

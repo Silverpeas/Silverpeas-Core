@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.apache.commons.exec.LogOutputStream;
 
-import static org.silverpeas.core.util.StringUtil.NEWLINE;
+import static org.silverpeas.kernel.util.StringUtil.NEWLINE;
 
 /**
  * Helper class to collectect the output of a command execution.

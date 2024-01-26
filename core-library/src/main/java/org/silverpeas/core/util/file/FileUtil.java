@@ -32,10 +32,11 @@ import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.OsEnum;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.Nonnull;
@@ -57,7 +58,7 @@ import java.util.stream.Stream;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.util.MimeTypes.*;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Util class to perform file system operations. All file operations wil be removed in the future in
@@ -83,8 +84,8 @@ public class FileUtil {
    * @param fileName the name of the file with its path.
    * @return the mime-type of the specified file.
    */
+  @NonNull
   public static String getMimeType(final String fileName) {
-
     // Request caching in order to increase significantly the performance about file parsing
     String cacheKey = MIME_TYPE_CACHE_KEY_PREFIX + fileName;
     String cachedMimeType = getThreadCacheAccessor().getCache().get(cacheKey, String.class);
@@ -99,7 +100,7 @@ public class FileUtil {
     return mimeType;
   }
 
-  @Nonnull
+  @NonNull
   private static String computeMimeType(final String fileName) {
     String mimeType = null;
     File file = new File(fileName);
@@ -269,7 +270,7 @@ public class FileUtil {
   }
 
   /**
-   * Asserts that the path doesn't contain relative navigation between pathes.
+   * Asserts that the path doesn't contain relative navigation between paths.
    * @param path the path to check
    * @throws RelativeFileAccessException when a relative path is detected.
    */

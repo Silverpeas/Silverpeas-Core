@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class SocialNetworkException extends SilverpeasRuntimeException {
 

@@ -25,7 +25,7 @@ package org.silverpeas.web.jobdomain.control;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.xhtml.br;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
@@ -72,8 +72,11 @@ import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.LoginServlet;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
@@ -83,6 +86,8 @@ import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.util.ListIndex;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.servlets.ImageProfile;
 import org.silverpeas.web.jobdomain.*;
 
@@ -103,9 +108,9 @@ import static java.util.stream.Collectors.toList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider.getPersonalizationService;
-import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class JobDomainPeasSessionController extends AbstractAdminComponentSessionController {
 

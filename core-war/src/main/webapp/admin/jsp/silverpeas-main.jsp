@@ -35,7 +35,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/chat" prefix="chatTags" %>
 <%@ include file="importFrameSet.jsp" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
 
 <%

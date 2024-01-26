@@ -43,7 +43,7 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.io.IOException;
 import java.io.PrintWriter;

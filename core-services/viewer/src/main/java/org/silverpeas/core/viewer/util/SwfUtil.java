@@ -24,7 +24,7 @@
 package org.silverpeas.core.viewer.util;
 
 import org.apache.commons.exec.CommandLine;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecutionException;
 import org.silverpeas.core.viewer.service.SwfToolManager;

@@ -42,7 +42,7 @@ public interface CalendarRepository extends EntityRepository<Calendar> {
    * @return a persistence repository of calendars.
    */
   static CalendarRepository get() {
-    return ServiceProvider.getSingleton(CalendarRepository.class);
+    return ServiceProvider.getService(CalendarRepository.class);
   }
 
   /**

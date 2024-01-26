@@ -37,7 +37,7 @@ import javax.ws.rs.WebApplicationException;
 import java.text.MessageFormat;
 
 import static javax.ws.rs.core.Response.Status.*;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * Base of all SCIM services which handles the resources between a SCIM client and Silverpeas

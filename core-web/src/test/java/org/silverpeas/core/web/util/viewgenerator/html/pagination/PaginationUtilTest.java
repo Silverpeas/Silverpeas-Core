@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

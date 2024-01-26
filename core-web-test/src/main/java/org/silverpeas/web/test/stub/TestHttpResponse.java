@@ -25,7 +25,7 @@
 package org.silverpeas.web.test.stub;
 
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletOutputStream;

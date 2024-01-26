@@ -32,11 +32,11 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Set;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha

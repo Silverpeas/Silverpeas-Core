@@ -32,9 +32,10 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -44,7 +45,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Cécile Bonin
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
 class PersistentResourceDateReminderTest {
 

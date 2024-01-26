@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class ThumbnailRuntimeException extends SilverpeasRuntimeException {
 

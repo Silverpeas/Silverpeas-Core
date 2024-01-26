@@ -33,16 +33,16 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.engine.MailSender;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.GreenMailExtension;
-import org.silverpeas.core.test.unit.extention.LoggerExtension;
-import org.silverpeas.core.test.unit.extention.LoggerLevel;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.test.unit.extention.SmtpConfig;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LoggerLevel;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -63,12 +63,11 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
-@EnableSilverTestEnv
-@ExtendWith(LoggerExtension.class)
+@EnableSilverTestEnv(context = JEETestContext.class)
 @ExtendWith(GreenMailExtension.class)
-@LoggerLevel(Level.DEBUG)
+@LoggerLevel(Level.INFO)
 @SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
 @Execution(ExecutionMode.SAME_THREAD)
 @TestManagedBeans({MailSenderTask.class, RequestTaskManager.class,

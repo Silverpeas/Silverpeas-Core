@@ -41,7 +41,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier

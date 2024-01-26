@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.model.Item;
 
 import java.text.ParseException;
@@ -36,8 +36,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha

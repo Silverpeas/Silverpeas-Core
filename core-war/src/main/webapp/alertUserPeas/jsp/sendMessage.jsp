@@ -23,7 +23,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.util.Pair" %>
+<%@ page import="org.silverpeas.kernel.util.Pair" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElement" %>
 <%@ page import="org.silverpeas.core.util.CollectionUtil" %>

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client.constant;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -23,7 +23,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.StringUtil"%>
+<%@page import="org.silverpeas.kernel.util.StringUtil"%>
 <%@ include file="includeParamsField.jsp" %>
 	<script type="text/javascript">
 		function isCorrectForm()  {

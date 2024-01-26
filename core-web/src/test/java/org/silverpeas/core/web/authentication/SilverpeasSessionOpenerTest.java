@@ -36,9 +36,10 @@ import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatistics;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMocks;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.session.SessionManager;
@@ -60,7 +61,7 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedMocks({Scheduler.class, SilverStatistics.class, DefaultServerEventNotifier.class,
     ServerMessageService.class, PopupMessageService.class, SilverpeasServerEventContextManager.class})
 class SilverpeasSessionOpenerTest {

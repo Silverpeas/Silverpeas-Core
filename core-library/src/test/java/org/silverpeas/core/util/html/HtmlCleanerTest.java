@@ -25,7 +25,7 @@ package org.silverpeas.core.util.html;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 
 @UnitTest
 public class HtmlCleanerTest {

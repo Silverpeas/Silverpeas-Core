@@ -27,7 +27,7 @@ import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;

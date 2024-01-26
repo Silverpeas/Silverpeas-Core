@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.datasource;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -56,16 +56,15 @@ public class OperationContext {
 
   private static final String CACHE_KEY = OperationContext.class.getName();
 
-  private List<State> states = new ArrayList<>();
+  private final List<State> states = new ArrayList<>();
   private boolean updatingInCaseOfCreation = false;
 
   // The user
   private User user = null;
-  private List<PersistenceOperation> persistenceOperations = new ArrayList<>();
+  private final List<PersistenceOperation> persistenceOperations = new ArrayList<>();
 
   /**
    * Creates an empty instance.
-   * @return a new {@link OperationContext} instance.
    */
   private OperationContext() {
     // Nothing.
@@ -139,24 +138,22 @@ public class OperationContext {
 
   /**
    * Adds states into context.
+   *
    * @param states the states to add.
-   * @return itself.
    */
-  public static OperationContext addStates(final State... states) {
+  public static void addStates(final State... states) {
     final OperationContext context = getFromCache();
     context.states.addAll(Arrays.asList(states));
-    return context;
   }
 
   /**
    * Removes states from context.
+   *
    * @param states the states to remove.
-   * @return itself.
    */
-  public static OperationContext removeStates(final State... states) {
+  public static void removeStates(final State... states) {
     final OperationContext context = getFromCache();
     context.states.removeAll(Arrays.asList(states));
-    return context;
   }
 
   /**
@@ -173,7 +170,7 @@ public class OperationContext {
    * Calling this method to indicates that the current data update is performed in a case of a
    * creation. Indeed, in some cases, the creation of a resource into database is done by a
    * chaining of inserts and updates.
-   * @return itselft.
+   * @return itself.
    */
   public OperationContext setUpdatingInCaseOfCreation() {
     return setUpdatingInCaseOfCreation(true);

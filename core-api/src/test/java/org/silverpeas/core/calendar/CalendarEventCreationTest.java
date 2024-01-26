@@ -86,21 +86,17 @@ class CalendarEventCreationTest {
   }
 
   @Test
-  void createADefaultNewEventWithEndDateBeforeStartDate() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      LocalDate now = LocalDate.now();
-      LocalDate yesterday = now.minusDays(1);
-      CalendarEvent.on(Period.between(now, yesterday));
-    });
+  void createAnEventPeriodWithEndDateBeforeStartDate() {
+    LocalDate now = LocalDate.now();
+    LocalDate yesterday = now.minusDays(1);
+    assertThrows(IllegalArgumentException.class, () -> Period.between(now, yesterday));
   }
 
   @Test
-  void createADefaultNewEventWithEndDateTimeBeforeStartDateTime() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      OffsetDateTime now = OffsetDateTime.now();
-      OffsetDateTime yesterday = now.minusDays(1);
-      CalendarEvent.on(Period.between(now, yesterday));
-    });
+  void createAnEventPeriodWithEndDateTimeBeforeStartDateTime() {
+    OffsetDateTime now = OffsetDateTime.now();
+    OffsetDateTime yesterday = now.minusDays(1);
+    assertThrows(IllegalArgumentException.class, () -> Period.between(now, yesterday));
   }
 
   private void assertDefaultValuesOf(CalendarEvent event) {

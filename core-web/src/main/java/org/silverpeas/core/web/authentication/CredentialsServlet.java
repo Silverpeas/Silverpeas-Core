@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.annotation.Defined;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.annotation.Defined;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.credentials.*;
 
 import javax.servlet.RequestDispatcher;

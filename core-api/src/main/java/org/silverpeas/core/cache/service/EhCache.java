@@ -28,33 +28,56 @@ import org.ehcache.UserManagedCache;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.builders.UserManagedCacheBuilder;
 import org.ehcache.expiry.ExpiryPolicy;
-import org.silverpeas.core.cache.model.AbstractCache;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.cache.model.ExternalCache;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * Implementation of the Cache that uses EhCache API.
- * User: Yohann Chastagnier Date: 11/09/13
+ * Implementation of the external cache by using the EhCache API. This cache is loaded and used by
+ * the {@link org.silverpeas.kernel.cache.service.ApplicationCacheAccessor} through the Java SPI
+ * mechanism.
+ *
+ * @author Yohann Chastagnier
+ * @see ExternalCache
+ * @see org.silverpeas.kernel.cache.service.ApplicationCacheAccessor
  */
-final class EhCache extends AbstractCache {
+public final class EhCache extends ExternalCache {
 
   private final UserManagedCache<Object, Element> managedCache;
 
   /**
-   * Initialization of the service using EhCache API.
-   *
-   * @param nbMaxElements maximum capacity of the cache.
+   * Constructs the EhCache cache. The maximum number of elements the cache can be contained is
+   * provided by the property {@code application.cache.common.nbMaxElements} in the general
+   * Silverpeas settings. This method is dedicated to be used by the Java SPI mechanism.
    */
-  EhCache(long nbMaxElements) {
+  @SuppressWarnings("unused")
+  public EhCache() {
+    int nbMaxElements = ResourceLocator.getGeneralSettingBundle().
+        getInteger("application.cache.common.nbMaxElements", 0);
+    managedCache = createCache(Math.max(nbMaxElements, 0));
+  }
+
+  /**
+   * Constructs the EhCache cache by initializing it with the specified maximum number of elements.
+   *
+   * @param elementsMaxNb maximum capacity of the cache.
+   */
+  EhCache(long elementsMaxNb) {
+    managedCache = createCache(elementsMaxNb);
+  }
+
+  private UserManagedCache<Object, Element> createCache(long elementsMaxNb) {
     var cacheBuilder =
         UserManagedCacheBuilder.newUserManagedCacheBuilder(Object.class, Element.class)
             .withExpiry(new PerElementExpiration());
-    if (nbMaxElements > 0) {
-      cacheBuilder = cacheBuilder.withResourcePools(ResourcePoolsBuilder.heap(nbMaxElements));
-    }
-    managedCache = cacheBuilder.build(true);
+    return (elementsMaxNb > 0 ?
+        cacheBuilder.withResourcePools(ResourcePoolsBuilder.heap(elementsMaxNb)) :
+        cacheBuilder).build(true);
   }
 
   /**
@@ -121,6 +144,14 @@ final class EhCache extends AbstractCache {
       put(key, value, timeToLive, timeToIdle);
     }
     return value;
+  }
+
+  @Override
+  public Map<Object, Object> getAll() {
+    Map<Object, Object> entries = new HashMap<>();
+    getCache().iterator()
+        .forEachRemaining(e -> entries.put(e.getKey(), e.getValue().getObjectValue()));
+    return entries;
   }
 
   /**

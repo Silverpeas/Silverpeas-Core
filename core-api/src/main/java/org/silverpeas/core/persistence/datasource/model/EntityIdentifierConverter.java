@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;

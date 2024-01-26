@@ -25,7 +25,7 @@
 package org.silverpeas.web.ddwe;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.wbe.WbeClientManager;
 import org.silverpeas.core.wbe.WbeFile;
 import org.silverpeas.core.wbe.WbeUser;

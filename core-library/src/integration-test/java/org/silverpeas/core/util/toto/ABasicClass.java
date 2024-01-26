@@ -25,7 +25,7 @@
 package org.silverpeas.core.util.toto;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 @Bean
 public class ABasicClass {

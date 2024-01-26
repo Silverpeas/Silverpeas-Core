@@ -28,7 +28,7 @@ import org.silverpeas.core.notification.sse.ServerEvent;
 import org.silverpeas.core.notification.sse.SilverpeasServerEventContext;
 import org.silverpeas.core.notification.sse.SilverpeasServerEventContextManager;
 import org.silverpeas.core.notification.sse.SseLogger;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;

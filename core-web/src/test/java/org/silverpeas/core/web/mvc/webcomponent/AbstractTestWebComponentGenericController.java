@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 

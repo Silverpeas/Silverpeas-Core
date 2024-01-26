@@ -42,8 +42,8 @@ import java.util.UUID;
 
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.SelectionType.USER;
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.withContainerId;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP

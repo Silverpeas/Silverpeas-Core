@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.look;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.HashMap;

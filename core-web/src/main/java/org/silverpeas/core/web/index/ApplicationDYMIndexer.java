@@ -26,7 +26,7 @@ package org.silverpeas.core.web.index;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.DidYouMeanIndexer;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.index.tools.FileFilterAgenda;
 import org.silverpeas.core.web.index.tools.FileFilterTodo;
 

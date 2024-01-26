@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.test.unit.extention.SettingBundleStub;
+import org.silverpeas.kernel.test.extension.SettingBundleStub;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**

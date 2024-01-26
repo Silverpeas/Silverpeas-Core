@@ -42,7 +42,7 @@ public interface SilverpeasComponentInstanceProvider {
    * @return an implementation of {@link SilverpeasComponentInstanceProvider}.
    */
   static SilverpeasComponentInstanceProvider get() {
-    return ServiceProvider.getSingleton(SilverpeasComponentInstanceProvider.class);
+    return ServiceProvider.getService(SilverpeasComponentInstanceProvider.class);
   }
 
   /**

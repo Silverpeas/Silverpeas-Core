@@ -153,7 +153,7 @@ public class SpaceInstLazyDataLoader implements Serializable {
    */
   protected void load() {
     Transaction.getTransaction().perform(() -> {
-      final SpaceInstManager spaceInstManager = ServiceProvider.getSingleton(SpaceInstManager.class);
+      final SpaceInstManager spaceInstManager = ServiceProvider.getService(SpaceInstManager.class);
       spaceInstManager.loadSpaceInstData(space);
       return null;
     });

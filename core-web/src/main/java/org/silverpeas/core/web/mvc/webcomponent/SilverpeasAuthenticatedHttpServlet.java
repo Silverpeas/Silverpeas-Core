@@ -27,8 +27,8 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.token.SynchronizerTokenService;

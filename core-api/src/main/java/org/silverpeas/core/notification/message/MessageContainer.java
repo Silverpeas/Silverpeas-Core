@@ -24,8 +24,8 @@
 package org.silverpeas.core.notification.message;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

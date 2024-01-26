@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -37,10 +37,10 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

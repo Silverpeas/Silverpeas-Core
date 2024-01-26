@@ -24,7 +24,8 @@
 package org.silverpeas.core.util;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.ExecutionAttempts.Job;
 
 import static org.hamcrest.Matchers.is;
@@ -35,7 +36,7 @@ import static org.silverpeas.core.util.ExecutionAttempts.retry;
 /**
  * Tests the retry mechanism.
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public class ExecutionAttemptsTest {
 
   /**

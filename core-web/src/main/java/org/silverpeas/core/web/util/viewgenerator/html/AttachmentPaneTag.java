@@ -26,8 +26,8 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.jsp.JspException;

@@ -30,8 +30,8 @@ import org.silverpeas.core.tagcloud.model.TagCloudUtil;
 import org.silverpeas.core.contribution.publication.service.DefaultPublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.annotation.PostConstruct;

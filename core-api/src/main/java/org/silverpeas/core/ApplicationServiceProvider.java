@@ -27,11 +27,12 @@ package org.silverpeas.core;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.cache.model.SimpleCache;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class ApplicationServiceProvider {
    * @return an {@link ApplicationServiceProvider} instance.
    */
   public static ApplicationServiceProvider get() {
-    return ServiceProvider.getSingleton(ApplicationServiceProvider.class);
+    return ServiceProvider.getService(ApplicationServiceProvider.class);
   }
 
   /**
@@ -76,18 +77,17 @@ public class ApplicationServiceProvider {
    * given component instance is of. If no such application service exists, then nothing is
    * returned.
    */
-  public Optional<ApplicationService> getApplicationServiceById(
-      final String appId) {
+  public Optional<ApplicationService> getApplicationServiceById(final String appId) {
     SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     String appName = SilverpeasComponentInstance.getComponentName(appId);
     if (StringUtil.isNotDefined(appName)) {
       return Optional.empty();
     }
     try {
-      return Optional.of(cache.computeIfAbsent(CACHE_PREFIX_KEY + appName, ApplicationService.class,
-          () -> ServiceProvider.getServiceByComponentInstanceAndNameSuffix(appId,
-              SERVICE_NAME_SUFFIX)));
-    } catch (IllegalStateException e) {
+      return Optional.ofNullable(cache.computeIfAbsent(CACHE_PREFIX_KEY + appName,
+          ApplicationService.class,
+          () -> ServiceProvider.getService(appId, SERVICE_NAME_SUFFIX)));
+    } catch (SilverpeasRuntimeException e) {
       SilverLogger.getLogger(this).warn(e.getMessage());
       return Optional.empty();
     }

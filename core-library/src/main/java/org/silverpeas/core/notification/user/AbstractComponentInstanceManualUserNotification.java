@@ -32,7 +32,7 @@ import org.silverpeas.core.security.authorization.PublicationAccessControl;
 
 import java.util.Map;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha

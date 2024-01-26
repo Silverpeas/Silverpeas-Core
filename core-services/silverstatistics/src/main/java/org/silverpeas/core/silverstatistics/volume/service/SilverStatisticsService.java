@@ -32,7 +32,7 @@ import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConfigE
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsRuntimeException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.sql.Connection;

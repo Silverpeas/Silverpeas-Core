@@ -36,17 +36,17 @@ import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.core.test.unit.extention.LoggerExtension;
-import org.silverpeas.core.test.unit.extention.LoggerLevel;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.test.unit.extention.RequesterProvider;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestManagedMocks;
-import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LoggerLevel;
 
 import java.util.logging.Logger;
 
@@ -58,12 +58,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Unit test to test some JUnit 5 extensions.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @ExtendWith(MockitoExtension.class)
-@ExtendWith(LoggerExtension.class)
 @LoggerLevel(Level.WARNING)
 @TestManagedMocks({OrganizationController.class, Administration.class})
-public class PoCJUnit5Test {
+class PoCJUnit5Test {
 
   @RegisterExtension
   FieldMocker mocker = new FieldMocker();
@@ -90,33 +89,33 @@ public class PoCJUnit5Test {
 
   @Test
   @LoggerLevel(Level.DEBUG)
-  public void test1() {
+  void test1() {
     assertThat(Logger.getLogger("silverpeas").getLevel(), is(java.util.logging.Level.FINE));
   }
 
   @Test
-  public void test2(@TestManagedMock final User user) {
+  void test2(@TestManagedMock final User user) {
     assertThat(user, notNullValue());
   }
 
   @Test
-  public void test3(@Mock UserProvider provider) {
+  void test3(@Mock UserProvider provider) {
     assertThat(provider, notNullValue());
   }
 
   @Test
-  public void test4() {
+  void test4() {
     assertThat(Logger.getLogger("silverpeas").getLevel(), is(java.util.logging.Level.WARNING));
   }
 
   @Test
-  public void test5() {
+  void test5() {
     assertThat(ServiceProvider.getService(UserDetail.class), is(user));
     assertThat(ServiceProvider.getService(UserManager.class), is(userManager));
   }
 
   @Test
-  public void test6() {
+  void test6() {
     Registration registration = new Registration();
     User registeredUser = mocker.mockField(registration, User.class, "user");
     assertThat(registration, notNullValue());
@@ -124,23 +123,24 @@ public class PoCJUnit5Test {
   }
 
   @Test
-  public void test7() {
+  void test7() {
     assertThat(factory, notNullValue());
     assertThat(factory.getUserManager(), is(userManager));
   }
 
   @Test
-  public void test8() {
+  void test8() {
     assertThat(User.getCurrentRequester(), is(user));
   }
 
   @Test
-  public void test9() {
+  void test9() {
     assertThat(ServiceProvider.getService(OrganizationController.class), notNullValue());
     assertThat(ServiceProvider.getService(Administration.class), notNullValue());
   }
 
   static class Registration {
+    @SuppressWarnings("unused")
     private User user;
 
     public User getRegisteredUser() {

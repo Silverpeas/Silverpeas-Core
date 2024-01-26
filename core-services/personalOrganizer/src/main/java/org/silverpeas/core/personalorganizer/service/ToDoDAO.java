@@ -27,7 +27,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.personalorganizer.model.ToDoHeader;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

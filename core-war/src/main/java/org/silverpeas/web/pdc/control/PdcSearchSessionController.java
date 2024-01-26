@@ -66,13 +66,17 @@ import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.ViewerProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.vo.*;
 
@@ -84,8 +88,8 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toSet;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {

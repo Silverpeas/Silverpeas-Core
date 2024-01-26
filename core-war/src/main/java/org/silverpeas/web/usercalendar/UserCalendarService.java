@@ -25,9 +25,10 @@
 package org.silverpeas.web.usercalendar;
 
 import org.silverpeas.core.ApplicationServiceProvider;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.AbstractCalendarService;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Named;
 
@@ -35,6 +36,7 @@ import javax.inject.Named;
  * Implementation of the calendar service to serv the calendar of the current user.
  * @author silveryocha
  */
+@Service
 @Named("userCalendar" + ApplicationServiceProvider.SERVICE_NAME_SUFFIX)
 public class UserCalendarService extends AbstractCalendarService {
 

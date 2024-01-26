@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.mvc.controller;
 
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 /**
  * Built by the main session controller the ComponentContext objects store the context of a

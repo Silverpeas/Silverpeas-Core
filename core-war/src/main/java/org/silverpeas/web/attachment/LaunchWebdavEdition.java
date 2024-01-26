@@ -31,9 +31,9 @@ import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
 import org.silverpeas.core.contribution.attachment.webdav.impl.WebDavDocumentService;
 import org.silverpeas.core.contribution.attachment.webdav.impl.WebdavContentDescriptor;
 import org.silverpeas.core.jcr.webdav.WebDavAccessOpener;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.webapi.wbe.WbeFileEdition;
 

@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.directive;
 
 import org.owasp.html.PolicyFactory;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import static org.owasp.html.Sanitizers.*;
 

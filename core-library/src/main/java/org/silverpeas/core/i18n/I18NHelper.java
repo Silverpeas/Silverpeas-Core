@@ -24,14 +24,17 @@
 package org.silverpeas.core.i18n;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +51,9 @@ import java.util.StringTokenizer;
  * Be careful, this class handles possible content languages and not possible user languages.<br>
  * The different user languages are managed by {@link DisplayI18NHelper}.
  */
+@Technical
+@Service
+@Singleton
 public class I18NHelper implements I18n {
 
   // "fr" - List of I18NLanguage : all available languages in french
@@ -242,7 +248,7 @@ public class I18NHelper implements I18n {
     return links.toString();
   }
 
-  public static String getHTMLLinks(I18NBean bean, String currentLanguage) {
+  public static String getHTMLLinks(I18NBean<?> bean, String currentLanguage) {
     String lang = currentLanguage;
     if (!isI18nContentActivated || bean == null) {
       return "";
@@ -262,22 +268,20 @@ public class I18NHelper implements I18n {
     return getFormLine(resources, null, null);
   }
 
-  public static String getFormLine(MultiSilverpeasBundle resources, I18NBean bean,
+  public static String getFormLine(MultiSilverpeasBundle resources, I18NBean<?> bean,
       String translation) {
     if (nbContentLanguages == 1) {
       return "";
     }
-    StringBuilder tr = new StringBuilder(50);
-    tr.append("<tr>\n");
-    tr.append("<td class=\"txtlibform\">").append(
-        resources.getString("GML.language")).append(" :</td>\n");
-    tr.append("<td>").append(getHTMLSelectObject(resources.getLanguage(), bean, translation)).
-        append("</td>");
-    tr.append("</tr>\n");
-    return tr.toString();
+    return "<tr>\n" +
+        "<td class=\"txtlibform\">" +
+        resources.getString("GML.language") + " :</td>\n" +
+        "<td>" + getHTMLSelectObject(resources.getLanguage(), bean, translation) +
+        "</td>" +
+        "</tr>\n";
   }
 
-  public static String getHTMLSelectObject(String userLanguage, I18NBean bean,
+  public static String getHTMLSelectObject(String userLanguage, I18NBean<?> bean,
       String selectedTranslation) {
     List<I18NLanguage> languages = getAllUserTranslationsOfContentLanguages(userLanguage);
 
@@ -295,7 +299,7 @@ public class I18NHelper implements I18n {
     return getHTMLSelectObject(result, bean, selectedTranslation, userLanguage);
   }
 
-   private static String getHTMLSelectObject(List<I18NLanguage> toDisplay, I18NBean bean,
+   private static String getHTMLSelectObject(List<I18NLanguage> toDisplay, I18NBean<?> bean,
       String selectedTranslation, String userLanguage) {
      StringBuilder list = new StringBuilder();
     String currentTranslation = selectedTranslation;
@@ -361,7 +365,7 @@ public class I18NHelper implements I18n {
      return list.toString();
   }
 
-  public static String updateHTMLLinks(I18NBean bean) {
+  public static String updateHTMLLinks(I18NBean<?> bean) {
     StringBuilder javaScript = new StringBuilder();
     Set<String> codes = bean.getTranslations().keySet();
     for (String lang : codes) {
@@ -405,14 +409,14 @@ public class I18NHelper implements I18n {
     return isI18nContentActivated;
   }
 
-  public static void setI18NInfo(I18NBean bean, HttpServletRequest request) {
+  public static void setI18NInfo(I18NBean<?> bean, HttpServletRequest request) {
     String languageAndTranslationId = request.getParameter(HTMLSelectObjectName);
     String removeTranslation = request.getParameter(HTMLHiddenRemovedTranslationMode);
 
     setI18NInfo(bean, languageAndTranslationId, removeTranslation);
   }
 
-  public static void setI18NInfo(I18NBean bean, List<FileItem> parameters) {
+  public static void setI18NInfo(I18NBean<?> bean, List<FileItem> parameters) {
     String languageAndTranslationId = getParameterValue(parameters,
         HTMLSelectObjectName);
     String removeTranslation = getParameterValue(parameters,
@@ -421,7 +425,7 @@ public class I18NHelper implements I18n {
     setI18NInfo(bean, languageAndTranslationId, removeTranslation);
   }
 
-  private static void setI18NInfo(I18NBean bean, String param,
+  private static void setI18NInfo(I18NBean<?> bean, String param,
       String removeParam) {
     String[] languageAndTranslationId = getLanguageAndTranslationId(param);
     if (languageAndTranslationId.length > 0) {
@@ -431,10 +435,8 @@ public class I18NHelper implements I18n {
       bean.setLanguage(language);
       bean.setTranslationId(translationId);
 
-      String removeTranslation = removeParam;
-
       // check if translation must be removed
-      bean.setRemoveTranslation("true".equalsIgnoreCase(removeTranslation));
+      bean.setRemoveTranslation("true".equalsIgnoreCase(removeParam));
     }
   }
 

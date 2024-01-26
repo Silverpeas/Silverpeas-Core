@@ -24,23 +24,22 @@
 
 package org.silverpeas.core.calendar;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.PersistOperation;
 import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.TestBeanContainer;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
 
 import javax.enterprise.util.AnnotationLiteral;
-
 import java.util.Objects;
 
 import static java.time.LocalDate.parse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.ACCEPTED;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.AWAITING;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.INFORMATIVE;
@@ -56,12 +55,19 @@ class CalendarComponentDiffDescriptorTest {
 
   @BeforeEach
   public void prepareInjection() {
-    when(TestBeanContainer.getMockedBeanContainer()
-        .getBeanByType(JpaPersistOperation.class, new AnnotationLiteral<PersistOperation>() {
-        })).thenReturn(new JpaPersistOperation());
-    when(TestBeanContainer.getMockedBeanContainer()
-        .getBeanByType(JpaUpdateOperation.class, new AnnotationLiteral<UpdateOperation>() {
-        })).thenReturn(new JpaUpdateOperation());
+    var feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(new JpaPersistOperation(), JpaPersistOperation.class,
+        new AnnotationLiteral<PersistOperation>() {
+        });
+    feeder.manageBean(new JpaUpdateOperation(), JpaUpdateOperation.class,
+        new AnnotationLiteral<UpdateOperation>() {
+        });
+  }
+
+  @AfterEach
+  public void cleanBeanContainer() {
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.removeAllManagedBeans();
   }
 
   @Test
@@ -135,7 +141,7 @@ class CalendarComponentDiffDescriptorTest {
 
     assertThat(dataMerged, is(true));
     assertThat(mergedComponent.getTitle(), nullValue());
-    assertThat(mergedComponent.getDescription(), isEmptyString());
+    assertThat(mergedComponent.getDescription(), is(emptyString()));
   }
 
   @Test
@@ -282,6 +288,7 @@ class CalendarComponentDiffDescriptorTest {
     assertThat(mergedComponent.getAttributes().getData().size(), is(0));
     assertThat(mergedComponent.getAttendees().size(), is(1));
     final Attendee attendeeAdded = mergedComponent.getAttendees().get("ATTENDEE_ID").orElse(null);
+    assertThat(attendeeAdded, is(notNullValue()));
     assertThat(attendeeAdded.getId(), is("ATTENDEE_ID"));
   }
 
@@ -290,15 +297,17 @@ class CalendarComponentDiffDescriptorTest {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID"));
     CalendarComponent modifiedComponent = copy(componentBase);
-    modifiedComponent.getAttendees().get("ATTENDEE_ID").orElse(null).setPresenceStatus(INFORMATIVE);
+    Objects.requireNonNull(modifiedComponent.getAttendees().get("ATTENDEE_ID").orElse(null))
+        .setPresenceStatus(INFORMATIVE);
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
     assertThat(diff.existsDiff(), is(true));
 
     CalendarComponent mergedComponent = createComponentToMergeDiffInto();
     mergedComponent.getAttendees().add(new AttendeeTest("ATTENDEE_ID"));
-    assertThat(mergedComponent.getAttendees().get("ATTENDEE_ID").orElse(null).getPresenceStatus(),
-        is(REQUIRED));
+    Attendee attendee = mergedComponent.getAttendees().get("ATTENDEE_ID").orElse(null);
+    assertThat(attendee, is(notNullValue()));
+    assertThat(attendee.getPresenceStatus(), is(REQUIRED));
     boolean dataMerged = diff.mergeInto(mergedComponent);
 
     assertThat(dataMerged, is(true));
@@ -306,6 +315,7 @@ class CalendarComponentDiffDescriptorTest {
     assertThat(mergedComponent.getAttributes().getData().size(), is(0));
     assertThat(mergedComponent.getAttendees().size(), is(1));
     final Attendee attendeeUpdated = mergedComponent.getAttendees().get("ATTENDEE_ID").orElse(null);
+    assertThat(attendeeUpdated, is(notNullValue()));
     assertThat(attendeeUpdated.getPresenceStatus(), is(INFORMATIVE));
   }
 
@@ -337,7 +347,7 @@ class CalendarComponentDiffDescriptorTest {
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID_TO_UPDATE"));
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID_TO_REMOVE"));
     CalendarComponent modifiedComponent = copy(componentBase);
-    modifiedComponent.getAttendees().get("ATTENDEE_ID_TO_UPDATE").orElse(null)
+    Objects.requireNonNull(modifiedComponent.getAttendees().get("ATTENDEE_ID_TO_UPDATE").orElse(null))
         .setPresenceStatus(INFORMATIVE);
     modifiedComponent.getAttendees().removeIf(a -> "ATTENDEE_ID_TO_REMOVE".equals(a.getId()));
     modifiedComponent.getAttendees().add(new AttendeeTest("ATTENDEE_ID_TO_ADD"));
@@ -348,8 +358,9 @@ class CalendarComponentDiffDescriptorTest {
     CalendarComponent mergedComponent = createComponentToMergeDiffInto();
     mergedComponent.getAttendees().add(new AttendeeTest("ATTENDEE_ID_OTHER"));
     mergedComponent.getAttendees().add(new AttendeeTest("ATTENDEE_ID_TO_UPDATE"));
-    assertThat(mergedComponent.getAttendees().get("ATTENDEE_ID_TO_UPDATE").orElse(null)
-        .getPresenceStatus(), is(REQUIRED));
+    Attendee attendee = mergedComponent.getAttendees().get("ATTENDEE_ID_TO_UPDATE").orElse(null);
+    assertThat(attendee, is(notNullValue()));
+    assertThat(attendee.getPresenceStatus(), is(REQUIRED));
     mergedComponent.getAttendees().add(new AttendeeTest("ATTENDEE_ID_TO_REMOVE"));
     assertThat(mergedComponent.getAttendees().size(), is(3));
     boolean dataMerged = diff.mergeInto(mergedComponent);
@@ -364,8 +375,11 @@ class CalendarComponentDiffDescriptorTest {
         mergedComponent.getAttendees().get("ATTENDEE_ID_TO_ADD").orElse(null);
     final Attendee attendeeUpdated =
         mergedComponent.getAttendees().get("ATTENDEE_ID_TO_UPDATE").orElse(null);
+    assertThat(attendeeOther, is(notNullValue()));
     assertThat(attendeeOther.getId(), is("ATTENDEE_ID_OTHER"));
+    assertThat(attendeeAdded, is(notNullValue()));
     assertThat(attendeeAdded.getId(), is("ATTENDEE_ID_TO_ADD"));
+    assertThat(attendeeUpdated, is(notNullValue()));
     assertThat(attendeeUpdated.getId(), is("ATTENDEE_ID_TO_UPDATE"));
     assertThat(attendeeUpdated.getPresenceStatus(), is(INFORMATIVE));
   }
@@ -391,6 +405,7 @@ class CalendarComponentDiffDescriptorTest {
     assertThat(mergedComponent.getAttributes().getData().size(), is(0));
     assertThat(mergedComponent.getAttendees().size(), is(1));
     final Attendee attendee = mergedComponent.getAttendees().get("ATTENDEE_ID").orElse(null);
+    assertThat(attendee, is(notNullValue()));
     assertThat(attendee.getParticipationStatus(), is(ACCEPTED));
   }
 
@@ -399,7 +414,7 @@ class CalendarComponentDiffDescriptorTest {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID"));
     CalendarComponent modifiedComponent = copy(componentBase);
-    modifiedComponent.getAttendees().get("ATTENDEE_ID").orElse(null)
+    Objects.requireNonNull(modifiedComponent.getAttendees().get("ATTENDEE_ID").orElse(null))
         .setParticipationStatus(ACCEPTED);
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -418,6 +433,7 @@ class CalendarComponentDiffDescriptorTest {
     assertThat(attendee, nullValue());
     final Attendee attendeeOther =
         mergedComponent.getAttendees().get("ATTENDEE_OTHER_ID").orElse(null);
+    assertThat(attendeeOther, is(notNullValue()));
     assertThat(attendeeOther.getParticipationStatus(), is(AWAITING));
   }
 
@@ -438,8 +454,9 @@ class CalendarComponentDiffDescriptorTest {
 
   private static class AttendeeTest extends Attendee {
 
+    @SuppressWarnings("unused")
     protected AttendeeTest() {
-      // empty to allow copy
+      // used in Attendee#copyFor
     }
 
     AttendeeTest(String id) {

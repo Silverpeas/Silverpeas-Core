@@ -29,33 +29,28 @@ import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
-import org.silverpeas.core.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
-import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsException;
-import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseException;
+import org.silverpeas.core.admin.domain.exception.*;
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.test.integration.DataSetTest;
 import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.integration.DataSetTest;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
 
-import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.apache.commons.io.FileUtils.getFile;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.countAll;
 
@@ -72,22 +67,17 @@ public class SQLDomainServiceIT extends DataSetTest {
   @Named("sqlDomainService")
   private DomainService service;
 
-  private File silverpeasHome;
-
   private File expectedDomainPropertiesFile;
   private File expectedDomainAuthenticationPropertiesFile;
-  File domainPropertyPath = null;
-  File autDomainPropertyPath = null;
 
-  private Domain createDomain(String id, String name, String description,
-      String authenticationServer, String className, String propFileName) {
+  private Domain createDomain(String id, String name) {
     Domain newDomain = new Domain();
     newDomain.setId(id);
     newDomain.setName(name);
-    newDomain.setDescription(description);
-    newDomain.setAuthenticationServer(authenticationServer);
-    newDomain.setDriverClassName(className);
-    newDomain.setPropFileName(propFileName);
+    newDomain.setDescription(null);
+    newDomain.setAuthenticationServer(null);
+    newDomain.setDriverClassName(null);
+    newDomain.setPropFileName(null);
     newDomain.setSilverpeasServerURL("http://localhost:8000/silverpeas");
     return newDomain;
   }
@@ -123,6 +113,7 @@ public class SQLDomainServiceIT extends DataSetTest {
           "org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver", "autDomainCustomers",
           "0", "autDomainCustomers").build();
 
+  @SuppressWarnings("unchecked")
   @Override
   protected Operation getDbSetupInitializations() {
     return Operations.sequenceOf(DROP_ALL, TABLES_CREATION, DEFAULT_DOMAIN_SET_UP);
@@ -143,62 +134,45 @@ public class SQLDomainServiceIT extends DataSetTest {
         }).build();
   }
 
-  @After
-  public void unsetSilverpeasHome() throws Exception {
-    deleteQuietly(silverpeasHome);
-  }
-
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Before
-  public void initTest() throws Exception {
-    silverpeasHome = getFile(mavenTargetDirectoryRule.getBuildDirFile(), "SILVERPEAS_HOME");
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
-
+  public void initTest() {
     // load expected properties files
     expectedDomainPropertiesFile =
         getFile(mavenTargetDirectoryRule.getBuildDirFile(), "test-classes",
             "/org/silverpeas/core/admin/domain/expectedDomainPropertiesFile.properties");
     expectedDomainAuthenticationPropertiesFile =
         getFile(mavenTargetDirectoryRule.getBuildDirFile(), "test-classes",
-            "/org/silverpeas/core/admin/domain/expectedDomainAuthenticationPropertiesFile.properties");
-
-    // initialize the creation tests directory
-    domainPropertyPath =
-        getFile(FileRepositoryManager.getDomainPropertiesPath("TestCreation")).getParentFile();
-    domainPropertyPath.mkdirs();
-    autDomainPropertyPath =
-        getFile(FileRepositoryManager.getDomainAuthenticationPropertiesPath("TestCreation"))
-            .getParentFile();
-    autDomainPropertyPath.mkdirs();
+            "/org/silverpeas/core/admin/domain/expectedDomainAuthenticationPropertiesFile" +
+                ".properties");
   }
 
   @Test
-  public void testGetTechnicalDomainName() {
+  public void checkTechnicalDomainName() {
     SQLDomainService sqlDomainService = (SQLDomainService) service;
     for (int i = 0; i < 1001; i += 100) {
       String domainId = String.valueOf(i);
-      Domain domain = createDomain(domainId, "éèëêöôõòïîìñüûùçàäãâ°", null, null, null, null);
+      Domain domain = createDomain(domainId, "éèëêöôõòïîìñüûùçàäãâ°");
       String technicalDomainName = sqlDomainService.getTechnicalDomainName(domain);
-      asserTechnicalDomainName(technicalDomainName, domainId, "eeeeooooiiinuuucaaaa");
+      assertTechnicalDomainName(technicalDomainName, domainId);
     }
-    Domain domain = createDomain("0", "ïîìñüûùçàäãâ°éèëêöôõò", null, null, null, null);
+    Domain domain = createDomain("0", "ïîìñüûùçàäãâ°éèëêöôõò");
     String technicalDomainName = sqlDomainService.getTechnicalDomainName(domain);
     assertThat(technicalDomainName, is("0iiinuuuc"));
 
-    domain = createDomain("0", "àäãâ°éèëêöôõòïîìñüûùç", null, null, null, null);
+    domain = createDomain("0", "àäãâ°éèëêöôõòïîìñüûùç");
     technicalDomainName = sqlDomainService.getTechnicalDomainName(domain);
     assertThat(technicalDomainName, is("0aaaaeeee"));
 
     domain =
-        createDomain("0", " &~#\"'{([-|`_\\^@°)]}+=¨£$¤%*µ<>?,.;/:§!€", null, null, null, null);
+        createDomain("0", " &~#\"'{([-|`_\\^@°)]}+=¨£$¤%*µ<>?,.;/:§!€");
     technicalDomainName = sqlDomainService.getTechnicalDomainName(domain);
     assertThat(technicalDomainName, is("0"));
 
-    domain = createDomain("0", "x²", null, null, null, null);
+    domain = createDomain("0", "x²");
     technicalDomainName = sqlDomainService.getTechnicalDomainName(domain);
     assertThat(technicalDomainName, is("0x2"));
 
-    domain = createDomain("0", "X²AbCd", null, null, null, null);
+    domain = createDomain("0", "X²AbCd");
     technicalDomainName = sqlDomainService.getTechnicalDomainName(domain);
     assertThat(technicalDomainName, is("0X2AbCd"));
   }
@@ -206,29 +180,24 @@ public class SQLDomainServiceIT extends DataSetTest {
   /**
    * Common assertion method.
    */
-  private void asserTechnicalDomainName(final String technicalDomainName, String domainId,
-      String normalizedDomainName) {
-    String expectedTechnicalDomainName = left(domainId + normalizedDomainName,
-        SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH - 21);
+  private void assertTechnicalDomainName(final String technicalDomainName, String domainId) {
+    String expectedTechnicalDomainName = left(domainId + "eeeeooooiiinuuucaaaa"
+    );
     assertThat(technicalDomainName, is(expectedTechnicalDomainName));
   }
 
-  private static String left(final String str, final int len) {
+  private static String left(final String str) {
     if (str == null) {
       return null;
     }
-    if (len < 0) {
-      return "";
-    }
-    if (str.length() <= len) {
+    if (str.length() <= 9) {
       return str;
     }
-    return str.substring(0, len);
+    return str.substring(0, 9);
   }
 
-  @SuppressWarnings("ConstantConditions")
   @Test
-  public void testCreateDomain() throws Exception {
+  public void createDomain() throws Exception {
     Domain domain = new Domain();
     domain.setName("TestCreation");
 
@@ -241,77 +210,71 @@ public class SQLDomainServiceIT extends DataSetTest {
     assertThat("domainId returned is empty", domainId, is(not("")));
 
     // Performs checks on generated properties files
-    File[] domainPropertyFiles = domainPropertyPath.listFiles();
-    assertThat(domainPropertyFiles, arrayWithSize(1));
-    assertThat("domain properties files has not been generated", domainPropertyFiles[0].getName(),
-        is("domain3TestCrea.properties"));
-    assertThat(FileUtils.contentEquals(domainPropertyFiles[0], expectedDomainPropertiesFile),
+    final String domainNameKey = "3TestCrea";
+    String domainDescriptor = FileRepositoryManager.getDomainPropertiesPath(domainNameKey);
+    Path domainPath = Path.of(domainDescriptor);
+    assertThat(Files.exists(domainPath), is(true));
+    assertThat(FileUtils.contentEquals(domainPath.toFile(), expectedDomainPropertiesFile),
         is(true));
-    File[] autDomainPropertyFiles = autDomainPropertyPath.listFiles();
-    assertThat(autDomainPropertyFiles, arrayWithSize(1));
-    assertThat("domain authentication properties files has not been generated",
-        autDomainPropertyFiles[0].getName(), is("autDomain3TestCrea.properties"));
+
+    String authDomainDescriptor =
+        FileRepositoryManager.getDomainAuthenticationPropertiesPath(domainNameKey);
+    Path authDomainPath = Path.of(authDomainDescriptor);
+    assertThat(Files.exists(authDomainPath), is(true));
     assertThat(FileUtils
-            .contentEquals(autDomainPropertyFiles[0], expectedDomainAuthenticationPropertiesFile),
+            .contentEquals(authDomainPath.toFile(), expectedDomainAuthenticationPropertiesFile),
         is(true));
 
     // Performs checks on generated tables
-    testTablesExistence("3TestCrea", true);
+    assertTables3TestCreaExists();
   }
 
-  @Test
-  public void testCreateDomainAlreadyInDB() throws Exception {
+  @Test(expected = NameAlreadyExistsInDatabaseException.class)
+  public void createDomainAlreadyInDB() throws DomainCreationException,
+      DomainConflictException {
     Domain domain = new Domain();
     domain.setName("Customers");
-    try {
-      service.createDomain(domain);
-      fail("Exception must have been thrown");
-    } catch (Exception e) {
-      assertThat(e instanceof NameAlreadyExistsInDatabaseException, is(true));
-    }
+    service.createDomain(domain);
+    fail("Exception must have been thrown");
   }
 
   @Test(expected = DomainPropertiesAlreadyExistsException.class)
-  public void testCreateDomainWithPropertiesNameConflictsOnDomainProperties() throws Exception {
+  public void createDomainWithPropertiesNameConflictsOnDomainProperties() throws Exception {
     Domain domain = new Domain();
-    domain.setName("TestCreation");
+    domain.setName("TestFail");
 
-    File conflictingPropertiesFile = new File(domainPropertyPath, "domain3TestCrea.properties");
+    Path domainPath = Path.of(FileRepositoryManager.getDomainPropertiesPath("3TestFail"));
+    File conflictingPropertiesFile = domainPath.toFile();
     FileUtils.touch(conflictingPropertiesFile);
     service.createDomain(domain);
     fail("Exception must have been thrown");
   }
 
   @Test(expected = DomainAuthenticationPropertiesAlreadyExistsException.class)
-  public void testCreateDomainWithPropertiesNameConflictsOnAutDomainProperties() throws Exception {
+  public void createDomainWithPropertiesNameConflictsOnAutDomainProperties() throws Exception {
     Domain domain = new Domain();
-    domain.setName("TestCreation");
+    domain.setName("TestFail");
 
-    File conflictingPropertiesFile =
-        new File(autDomainPropertyPath, "autDomain3TestCrea.properties");
+    Path domainPath = Path.of(FileRepositoryManager.getDomainAuthenticationPropertiesPath(
+        "3TestFail"));
+    File conflictingPropertiesFile = domainPath.toFile();
     FileUtils.touch(conflictingPropertiesFile);
     // create domain
     service.createDomain(domain);
     fail("Exception must have been thrown");
   }
 
-  private void testTablesExistence(String name, boolean mustExists) throws SQLException {
+  private void assertTables3TestCreaExists() throws SQLException {
     boolean userTableFound = countAll().from("INFORMATION_SCHEMA.TABLES")
-        .where("lower(TABLE_NAME) = lower(?)", "domain" + name + "_User").execute() == 1;
+        .where("lower(TABLE_NAME) = lower(?)", "domain" + "3TestCrea" + "_User").execute() == 1;
     boolean groupTableFound = countAll().from("INFORMATION_SCHEMA.TABLES")
-        .where("lower(TABLE_NAME) = lower(?)", "domain" + name + "_Group").execute() == 1;
+        .where("lower(TABLE_NAME) = lower(?)", "domain" + "3TestCrea" + "_Group").execute() == 1;
     boolean groupUserRelTableFound = countAll().from("INFORMATION_SCHEMA.TABLES")
-        .where("lower(TABLE_NAME) = lower(?)", "domain" + name + "_Group_User_Rel").execute() == 1;
+        .where("lower(TABLE_NAME) = lower(?)", "domain" + "3TestCrea" + "_Group_User_Rel").execute() == 1;
 
     // Performs checks
-    if (mustExists) {
-      assertThat("User table has not been created", userTableFound, is(true));
-      assertThat("Group table has not been created", groupTableFound, is(true));
-      assertThat("Group_User_Rel table has not been created", groupUserRelTableFound, is(true));
-    } else {
-      assertThat("User table has not been dropped", userTableFound, is(false));
-      assertThat("Group table has not been dropped", groupTableFound, is(false));
-      assertThat("Group_User_Rel table has not been dropped", groupUserRelTableFound, is(false));
-    }
+    assertThat("User table has not been created", userTableFound, is(true));
+    assertThat("Group table has not been created", groupTableFound, is(true));
+    assertThat("Group_User_Rel table has not been created", groupUserRelTableFound, is(true));
   }
 }

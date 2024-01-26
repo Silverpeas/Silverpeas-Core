@@ -25,7 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.apache.ecs.ElementContainer;
 import org.silverpeas.core.html.WebPlugin;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 

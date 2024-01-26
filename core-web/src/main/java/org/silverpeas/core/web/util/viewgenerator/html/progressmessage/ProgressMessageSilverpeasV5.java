@@ -25,7 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer;

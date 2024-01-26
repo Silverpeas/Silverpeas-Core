@@ -29,8 +29,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -46,7 +47,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * repository creation is asked with the Silverpeas settings.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans({ResourcesCloser.class})
 class OakRepositoryFactoryTest {
 

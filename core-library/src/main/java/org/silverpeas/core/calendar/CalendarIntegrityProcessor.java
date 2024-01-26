@@ -31,7 +31,7 @@ import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.SQLException;
 import java.util.List;

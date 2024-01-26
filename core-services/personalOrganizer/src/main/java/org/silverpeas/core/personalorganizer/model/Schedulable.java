@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.personalorganizer.model;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.text.ParseException;
 import java.util.Date;
 
 import static org.silverpeas.core.util.DateUtil.*;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public abstract class Schedulable implements java.io.Serializable {
 

@@ -38,7 +38,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.pdc.form.fieldtype.PdcField;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;

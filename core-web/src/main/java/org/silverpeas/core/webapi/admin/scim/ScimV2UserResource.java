@@ -55,7 +55,7 @@ import java.io.StringWriter;
 
 import static java.text.MessageFormat.format;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
 import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE_URI;
 

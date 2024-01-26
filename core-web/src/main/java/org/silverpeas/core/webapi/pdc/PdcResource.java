@@ -44,7 +44,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
 import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
 

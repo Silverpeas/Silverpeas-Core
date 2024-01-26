@@ -27,9 +27,9 @@ import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverCon
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

@@ -40,11 +40,11 @@ import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +64,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author ehugonnet
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class NodeAccessControllerTest {
 
   private final static String A_NODE_ID = "26";
@@ -82,7 +82,6 @@ class NodeAccessControllerTest {
 
   @BeforeEach
   void setup() {
-    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     User user = mock(User.class);
     when(UserProvider.get().getUser(userId)).thenReturn(user);

@@ -24,8 +24,8 @@
 package org.silverpeas.core.i18n;
 
 import org.silverpeas.core.Nameable;
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

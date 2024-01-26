@@ -27,7 +27,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;

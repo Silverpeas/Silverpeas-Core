@@ -29,7 +29,7 @@ import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;

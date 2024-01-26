@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.util.SilverpeasBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SilverpeasBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

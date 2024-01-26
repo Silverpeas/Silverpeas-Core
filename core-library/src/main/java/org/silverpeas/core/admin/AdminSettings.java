@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
-import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Handled the settings around the attachments.

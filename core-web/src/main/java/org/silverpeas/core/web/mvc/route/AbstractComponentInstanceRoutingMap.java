@@ -27,7 +27,7 @@ package org.silverpeas.core.web.mvc.route;
 import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.silverpeas.core.contribution.model.ContributionIdentifier.MISSING_PART;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Abstract implementation of {@link ComponentInstanceRoutingMap} which permits to handle as a

@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.service;
 
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPLocalException;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
@@ -43,10 +43,10 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.exception.WithNested;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine.OperatorFunction;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;

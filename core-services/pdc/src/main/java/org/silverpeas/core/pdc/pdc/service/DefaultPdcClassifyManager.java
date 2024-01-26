@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
@@ -44,7 +44,7 @@ import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.JoinStatement;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

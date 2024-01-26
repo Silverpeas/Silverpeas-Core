@@ -28,13 +28,13 @@ import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.core.office.OfficeManager;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle;
 
 /**
  * The OpenOffice service gives access to an open office process.

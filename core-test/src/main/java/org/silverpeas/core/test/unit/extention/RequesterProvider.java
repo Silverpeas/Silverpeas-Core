@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.test.unit.extention;
 
+import org.silverpeas.kernel.test.extension.SilverTestEnv;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

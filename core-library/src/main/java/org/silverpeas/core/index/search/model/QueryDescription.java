@@ -25,7 +25,7 @@ package org.silverpeas.core.index.search.model;
 
 import org.silverpeas.core.index.indexing.model.ExternalComponent;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serializable;
 import java.time.LocalDate;

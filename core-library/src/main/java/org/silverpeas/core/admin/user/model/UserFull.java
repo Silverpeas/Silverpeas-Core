@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -25,8 +25,9 @@
 package org.silverpeas.core.html;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.core.util.URLUtil.Permalink;
 
 import java.util.List;
@@ -39,7 +40,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class PermalinkRegistryTest {
 
   private static final List<String> PERMALINK_PARTS = Stream.of(Permalink.values())

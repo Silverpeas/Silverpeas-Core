@@ -28,7 +28,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -50,7 +51,7 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
 /**
  * @author Yohann Chastagnier
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class TestLastModifiedDateFileTask {
   private Path tempPath;
 

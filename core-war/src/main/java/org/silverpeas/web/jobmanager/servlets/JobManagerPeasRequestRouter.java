@@ -33,7 +33,7 @@ import org.silverpeas.web.jobmanager.control.JobManagerPeasSessionController;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Class declaration

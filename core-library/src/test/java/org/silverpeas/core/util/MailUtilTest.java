@@ -25,7 +25,7 @@ package org.silverpeas.core.util;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 
 import javax.mail.internet.InternetAddress;
 

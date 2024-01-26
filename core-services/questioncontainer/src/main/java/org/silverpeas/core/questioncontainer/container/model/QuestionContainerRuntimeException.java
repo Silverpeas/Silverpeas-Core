@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.container.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class QuestionContainerRuntimeException extends
     SilverpeasRuntimeException {

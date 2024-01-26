@@ -31,7 +31,7 @@
  */
 package org.silverpeas.core.admin.quota.exception;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier

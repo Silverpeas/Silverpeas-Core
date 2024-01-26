@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.http.FileResponse.encodeAttachmentFilenameAsUtf8;
 import static org.silverpeas.core.web.http.PreparedDownload.getPreparedDownloadToPerform;
 

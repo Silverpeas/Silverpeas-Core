@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.security.html.HtmlSanitizer;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.ws.rs.core.UriBuilder;

@@ -34,10 +34,10 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengthPasswordRule> {
+class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengthPasswordRule> {
 
   @Test
-  public void testCommons() {
+  void testCommons() {
     MinLengthPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getType(), is(PasswordRuleType.MIN_LENGTH));
     assertThat(rule.random(), is(""));
@@ -56,12 +56,12 @@ public class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengt
     assertThat(rule.check("12345678901"), is(true));
   }
 
-  @Disabled
+  @Disabled("Doesn't apply in this test class")
   @Override
   public void testDefinedMoreThanOnePropertyValues() {
   }
 
-  @Disabled
+  @Disabled("Doesn't apply in this test class")
   @Override
   public void testCombinationDefinedMoreThanOnePropertyValues() {
   }

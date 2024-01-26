@@ -26,7 +26,7 @@
 
 package org.silverpeas.core.pdc.tree.model;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class TreeManagerException extends SilverpeasException {
 

@@ -44,6 +44,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import java.util.Collections;
@@ -91,7 +92,7 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
     try {
       CmisContributionsProvider provider = CmisContributionsProvider.getByAppId(objectId);
       return provider != null;
-    } catch (IllegalStateException e) {
+    } catch (SilverpeasRuntimeException e) {
       return false;
     }
   }

@@ -1,5 +1,6 @@
 package org.silverpeas.core.calendar.view;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -9,8 +10,9 @@ import org.silverpeas.core.persistence.datasource.PersistOperation;
 import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.TestUserProvider;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
+import org.silverpeas.kernel.test.UnitTest;
 
 import javax.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
@@ -20,38 +22,45 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
  * Unit test on the view applying on a list of calendar event occurrences.
  * @author mmoquillon
  */
-public class CalendarEventInternalParticipationViewTest {
+@UnitTest
+class CalendarEventInternalParticipationViewTest {
 
-  private CalendarEventInternalParticipationView view = new CalendarEventInternalParticipationView();
+  private final CalendarEventInternalParticipationView view =
+      new CalendarEventInternalParticipationView();
 
   @BeforeEach
   public void setUpUsers() {
     UserProvider userProvider = TestUserProvider.withoutCurrentRequester();
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class)).thenReturn(
-        userProvider);
-    when(TestBeanContainer.getMockedBeanContainer()
-        .getBeanByType(JpaPersistOperation.class, new AnnotationLiteral<PersistOperation>() {
-        })).thenReturn(new JpaPersistOperation());
-    when(TestBeanContainer.getMockedBeanContainer()
-        .getBeanByType(JpaUpdateOperation.class, new AnnotationLiteral<UpdateOperation>() {
-        })).thenReturn(new JpaUpdateOperation());
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(userProvider, UserProvider.class);
+    feeder.manageBean(new JpaPersistOperation(), JpaPersistOperation.class,
+        new AnnotationLiteral<PersistOperation>() {
+        });
+    feeder.manageBean(new JpaUpdateOperation(), JpaUpdateOperation.class,
+        new AnnotationLiteral<UpdateOperation>() {
+        });
+  }
+
+  @AfterEach
+  public void cleanBeanContainer() {
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.removeAllManagedBeans();
   }
 
   @Test
-  public void applyOnAnEmptyListShouldDoesNothing() {
+  void applyOnAnEmptyListShouldDoesNothing() {
     Map<String, List<CalendarEventOccurrence>> byUser = view.apply(new ArrayList<>());
     assertThat(byUser.isEmpty(), is(true));
   }
 
   @Test
-  public void applyOnAListWithOccurrences() {
+  void applyOnAListWithOccurrences() {
     List<CalendarEventOccurrence> occurrences = TestCalendarEventOccurrenceBuilder.build();
     Map<String, List<CalendarEventOccurrence>> byUser = view.apply(occurrences);
 

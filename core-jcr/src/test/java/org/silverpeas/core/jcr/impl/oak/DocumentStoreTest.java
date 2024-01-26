@@ -28,7 +28,6 @@ package org.silverpeas.core.jcr.impl.oak;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.transitions.Mongod;
 import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
-import de.flapdoodle.embed.process.runtime.Network;
 import de.flapdoodle.reverse.TransitionWalker;
 import de.flapdoodle.reverse.transitions.Start;
 import org.apache.jackrabbit.value.BinaryImpl;
@@ -37,13 +36,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.jcr.impl.RepositorySettings;
-import org.silverpeas.core.jcr.impl.ResourcesCloser;
-import org.silverpeas.core.test.unit.extention.SystemProperty;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
 import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.jcr.RepositoryProvider;
+import org.silverpeas.core.jcr.impl.RepositorySettings;
+import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.security.SecurityTest;
+import org.silverpeas.kernel.test.annotations.SystemProperty;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 import org.silverpeas.test.TestUser;
 
 import javax.jcr.Node;
@@ -55,6 +54,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import static de.flapdoodle.embed.mongo.distribution.Version.Main.V6_0;
+import static de.flapdoodle.net.Net.localhostIsIPv6;
 import static javax.jcr.Property.*;
 import static javax.jcr.nodetype.NodeType.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -91,7 +91,7 @@ public class DocumentStoreTest extends SecurityTest {
       Net localhost = Net.builder()
           .bindIp("localhost")
           .port(27017)
-          .isIpv6(Network.localhostIsIPv6())
+          .isIpv6(localhostIsIPv6())
           .build();
       mongo = Mongod.instance()
           .withNet(Start.to(Net.class).providedBy(() -> localhost))

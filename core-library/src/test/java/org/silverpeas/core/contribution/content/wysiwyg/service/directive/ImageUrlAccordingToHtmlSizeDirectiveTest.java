@@ -32,10 +32,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
-import org.silverpeas.core.test.unit.TestBeanContainer;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.io.File;
@@ -48,9 +48,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
-import static org.silverpeas.core.util.CollectionUtil.asSet;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 @UnitTest
 @BenchmarkOptions(benchmarkRounds = 500, warmupRounds = 500)
@@ -61,10 +59,11 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
 
   @Test
   public void manageImageResizing() {
-    when(TestBeanContainer.getMockedBeanContainer()
-        .getAllBeansByType(ImageUrlAccordingToHtmlSizeDirective.SrcTranslator.class)).thenReturn(
-        asSet(new SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator(),
-            new GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test()));
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(new SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator(),
+        ImageUrlAccordingToHtmlSizeDirective.SrcTranslator.class);
+    feeder.manageBean(new GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test(),
+        ImageUrlAccordingToHtmlSizeDirective.SrcTranslator.class);
 
     ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective();
     String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralImages.txt");
@@ -77,10 +76,11 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
 
   @Test
   public void manageImageResizingWithImageMinimalWidth() {
-    when(TestBeanContainer.getMockedBeanContainer()
-        .getAllBeansByType(ImageUrlAccordingToHtmlSizeDirective.SrcTranslator.class)).thenReturn(
-        asSet(new SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator(),
-            new GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test()));
+    TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.manageBean(new SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator(),
+        ImageUrlAccordingToHtmlSizeDirective.SrcTranslator.class);
+    feeder.manageBean(new GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test(),
+        ImageUrlAccordingToHtmlSizeDirective.SrcTranslator.class);
 
     ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective(400);
     String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralImages.txt");

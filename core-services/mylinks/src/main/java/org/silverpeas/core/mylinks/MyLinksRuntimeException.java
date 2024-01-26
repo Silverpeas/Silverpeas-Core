@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mylinks;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class MyLinksRuntimeException extends SilverpeasRuntimeException {
 

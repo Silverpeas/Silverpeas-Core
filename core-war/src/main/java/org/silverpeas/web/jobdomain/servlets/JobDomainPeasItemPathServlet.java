@@ -27,8 +27,8 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import javax.servlet.http.HttpServlet;

@@ -25,15 +25,15 @@
 package org.silverpeas.core.web.http;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static org.apache.commons.lang3.StringUtils.split;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * An HTTP request decorating an HTTP servlet request with some additional methods and by changing

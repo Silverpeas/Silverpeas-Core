@@ -36,9 +36,9 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

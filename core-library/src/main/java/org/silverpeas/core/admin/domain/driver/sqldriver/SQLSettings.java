@@ -24,7 +24,7 @@
 package org.silverpeas.core.admin.domain.driver.sqldriver;
 
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions

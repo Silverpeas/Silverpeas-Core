@@ -33,7 +33,7 @@ import javax.persistence.Transient;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A reminder about any contribution that is triggered at a specified date time.

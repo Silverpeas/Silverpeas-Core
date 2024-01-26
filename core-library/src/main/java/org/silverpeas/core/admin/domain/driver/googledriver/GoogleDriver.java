@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +50,7 @@ import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntityS
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.USER;
 import static org.silverpeas.core.admin.user.constant.UserState.DEACTIVATED;
 import static org.silverpeas.core.admin.user.constant.UserState.VALID;
-import static org.silverpeas.core.util.StringUtil.likeIgnoreCase;
+import static org.silverpeas.kernel.util.StringUtil.likeIgnoreCase;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)

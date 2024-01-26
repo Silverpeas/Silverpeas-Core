@@ -51,7 +51,7 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.silverpeas.core.util.CollectionUtil.asSet;
 import static org.silverpeas.core.util.ImageUtil.*;
 import static org.silverpeas.core.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
 
 /**

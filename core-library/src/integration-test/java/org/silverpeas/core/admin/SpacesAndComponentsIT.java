@@ -52,11 +52,11 @@ import org.silverpeas.core.index.indexing.IndexingLogger;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.util.SystemWrapper;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
@@ -122,7 +122,7 @@ public class SpacesAndComponentsIT {
   @Before
   public void reloadCache() throws Exception {
     File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    SystemWrapper.getInstance().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     admin.reloadCache();
     registry.init();
   }

@@ -40,7 +40,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A position of a content on some axis of the classification plan (named PdC). The positions of a

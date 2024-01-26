@@ -37,4 +37,12 @@
   <packaging>jar</packaging>
   <name>Silverpeas Chat Service ${project.version}</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-test</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

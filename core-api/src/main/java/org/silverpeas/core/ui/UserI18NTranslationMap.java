@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.ui;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This map is dedicated to simple translation management around user languages.

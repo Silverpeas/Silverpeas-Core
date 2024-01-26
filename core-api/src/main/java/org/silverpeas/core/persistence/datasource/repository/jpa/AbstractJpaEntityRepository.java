@@ -35,7 +35,7 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;

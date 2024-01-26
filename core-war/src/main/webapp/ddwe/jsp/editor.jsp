@@ -85,7 +85,7 @@
 <c:set var="cancelUrl" value="${requestScope.cancelUrl}"/>
 <c:set var="browseBarPath" value="${requestScope.browseBarPath}"/>
 <c:if test="${browseBarPath != null}">
-  <jsp:useBean id="browseBarPath" type="java.util.List<org.silverpeas.core.util.Pair<java.lang.String, java.lang.String>>"/>
+  <jsp:useBean id="browseBarPath" type="java.util.List<org.silverpeas.kernel.util.Pair<java.lang.String, java.lang.String>>"/>
 </c:if>
 <c:set var="user" value="${requestScope.DdweUser}"/>
 <jsp:useBean id="user" type="org.silverpeas.core.wbe.WbeUser"/>

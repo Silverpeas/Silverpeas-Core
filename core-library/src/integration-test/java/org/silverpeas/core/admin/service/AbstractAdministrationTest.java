@@ -45,7 +45,7 @@ import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.integration.rule.TestStatisticRule;
 import org.silverpeas.core.test.integration.SQLRequester;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -57,7 +57,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Look at CommonAdministrationIT.ods to get a better view of data.
@@ -199,7 +199,7 @@ public abstract class AbstractAdministrationTest {
   @Before
   public void setup() throws Exception {
     final File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    SystemWrapper.getInstance().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     WAComponentRegistry.get().init();
     PersonalComponentRegistry.get().init();
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();

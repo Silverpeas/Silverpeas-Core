@@ -24,10 +24,7 @@
 
 package org.silverpeas.core.thread.task;
 
-import org.awaitility.Awaitility;
-import org.silverpeas.core.util.logging.SilverLogger;
-
-import java.util.concurrent.TimeUnit;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * @author silveryocha

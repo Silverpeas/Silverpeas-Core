@@ -38,9 +38,9 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationPassw
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

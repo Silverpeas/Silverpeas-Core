@@ -24,7 +24,7 @@
  */
 package org.silverpeas.core.web.rs;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.annotation.Service;
@@ -37,9 +37,9 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import javax.servlet.http.HttpServletRequest;

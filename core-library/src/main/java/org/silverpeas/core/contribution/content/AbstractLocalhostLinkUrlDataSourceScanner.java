@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.content;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.StringDataExtractor.ExtractorDirective;
 import org.silverpeas.core.util.URLUtil;
 

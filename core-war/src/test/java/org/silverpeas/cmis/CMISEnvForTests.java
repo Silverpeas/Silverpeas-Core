@@ -28,25 +28,13 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.cmis.walkers.CmisObjectsTreeWalkerDelegator;
-import org.silverpeas.cmis.walkers.TreeWalkerForComponentInst;
-import org.silverpeas.cmis.walkers.TreeWalkerForNodeDetail;
-import org.silverpeas.cmis.walkers.TreeWalkerForPublicationDetail;
-import org.silverpeas.cmis.walkers.TreeWalkerForSimpleDocument;
-import org.silverpeas.cmis.walkers.TreeWalkerForSpaceInst;
-import org.silverpeas.cmis.walkers.TreeWalkerSelector;
+import org.silverpeas.cmis.walkers.*;
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -83,35 +71,29 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationService;
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.security.authorization.NodeAccessControl;
-import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
-import org.silverpeas.core.security.authorization.SpaceAccessControl;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.LoggerExtension;
-import org.silverpeas.core.test.unit.extention.LoggerLevel;
+import org.silverpeas.core.security.authorization.*;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.test.unit.extention.RequesterProvider;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.util.MavenTestEnv;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.test.TestContext;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LoggerLevel;
+import org.silverpeas.kernel.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneId;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -124,10 +106,9 @@ import static org.mockito.Mockito.*;
  * of Silverpeas.
  * @author mmoquillon
  */
-@ExtendWith(LoggerExtension.class)
-@LoggerLevel(Level.DEBUG)
+@LoggerLevel(Level.INFO)
 @TestManagedBeans({CmisObjectFactory.class, SilverpeasCmisTypeManager.class})
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public abstract class CMISEnvForTests {
 
   // date at which a user account has been created or saved in Silverpeas
@@ -173,7 +154,7 @@ public abstract class CMISEnvForTests {
   protected AttachmentService attachmentService;
 
   // used to get the current user behind the request
-  @TestManagedMock
+  @Inject
   protected UserProvider userProvider;
 
   // controller to check a user has the rights to access a given space
@@ -202,14 +183,29 @@ public abstract class CMISEnvForTests {
   @Named("kmelia" + CmisContributionsProvider.Constants.NAME_SUFFIX)
   protected CmisContributionsProvider contributionsProvider;
 
-  @SuppressWarnings("unused")
   @TestManagedBean
-  Class<?>[] supplyRequiredManagedBeanTypes() {
-    return new Class<?>[]{TreeWalkerSelector.class, TreeWalkerForComponentInst.class,
-        TreeWalkerForSpaceInst.class, TreeWalkerForNodeDetail.class,
-        TreeWalkerForPublicationDetail.class, TreeWalkerForSimpleDocument.class,
-        CmisObjectsTreeWalkerDelegator.class, SilverpeasCmisSettings.class};
-  }
+  private TreeWalkerSelector selector;
+
+  @TestManagedBean
+  private TreeWalkerForComponentInst walkerForComponentInst;
+
+  @TestManagedBean
+  private TreeWalkerForSpaceInst walkerForSpaceInst;
+
+  @TestManagedBean
+  private TreeWalkerForNodeDetail walkerForNodeDetail;
+
+  @TestManagedBean
+  private TreeWalkerForPublicationDetail walkerForPublicationDetail;
+
+  @TestManagedBean
+  private TreeWalkerForSimpleDocument walkerForSimpleDocument;
+
+  @TestManagedBean
+  private CmisObjectsTreeWalkerDelegator walkerDelegator;
+
+  @TestManagedBean
+  private SilverpeasCmisSettings cmisSettings;
 
   /**
    * Gets the path of the specified node in the organizational schema of Silverpeas used in the unit
@@ -246,9 +242,8 @@ public abstract class CMISEnvForTests {
     return currentUser;
   }
 
-  @SuppressWarnings("JUnitMalformedDeclaration")
   @BeforeEach
-  public void prepareMock(MavenTestEnv mavenTestEnv) {
+  public void prepareMock() {
     mockUserProviders();
     mockUserAuthorization();
 
@@ -521,12 +516,12 @@ public abstract class CMISEnvForTests {
       return getInTreeAndApply(id.asString(), n -> {
         SimpleDocument doc = (SimpleDocument) n.getObject();
         String fileName = doc.getAttachment().getFilename();
-        File content = new File(mavenTestEnv.getResourceTestDirFile(), fileName);
-        if (!content.exists()) {
-          content = new File(mavenTestEnv.getResourceTestDirFile(), DEFAULT_CONTENT_FILENAME);
+        TestContext ctx = TestContext.getInstance();
+        Path content = ctx.getPathOfTestResources().resolve(fileName);
+        if (!Files.exists(content)) {
+          content = ctx.getPathOfTestResources().resolve(DEFAULT_CONTENT_FILENAME);
         }
-        try {
-          FileInputStream input = new FileInputStream(content);
+        try(InputStream input = Files.newInputStream(content)) {
           IOUtils.copyLarge(input, output, offset, length);
         } catch (IOException e) {
           throw new AttachmentException(e);
@@ -613,6 +608,7 @@ public abstract class CMISEnvForTests {
   @BeforeAll
   static void createOrganizationSchema() {
     final String appType = "kmelia";
+    //noinspection ConstantValue
     final int rootNodeId = Integer.parseInt(NodePK.ROOT_NODE_ID);
 
     TreeNode wa1Node = organization.addSpace(1, "", 0, "COLLABORATIVE WORKSPACE", "");

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.score.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class ScoreRuntimeException extends SilverpeasRuntimeException {
 

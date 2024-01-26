@@ -63,7 +63,7 @@ public class SpaceHomepageProxyManager {
   private SpaceHomepageProxy spaceHomePageProxy;
 
   public static SpaceHomepageProxyManager get() {
-    return ServiceProvider.getSingleton(SpaceHomepageProxyManager.class);
+    return ServiceProvider.getService(SpaceHomepageProxyManager.class);
   }
 
   /**

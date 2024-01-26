@@ -24,7 +24,7 @@
 package org.silverpeas.core.notification.user.client;
 
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
@@ -58,10 +58,10 @@ import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServer;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.util.EmailAddress;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;

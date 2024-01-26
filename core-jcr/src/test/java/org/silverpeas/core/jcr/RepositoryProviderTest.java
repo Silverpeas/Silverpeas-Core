@@ -29,11 +29,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.SystemProperty;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestedBean;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.SystemProperty;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -47,7 +48,7 @@ import static org.silverpeas.core.jcr.RepositoryProviderTest.OAK_CONFIG;
  * {@link SilverpeasRepository} class.
  * @author mmoquillon
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @SystemProperty(key = RepositorySettings.JCR_HOME, value = JCR_HOME)
 @SystemProperty(key = RepositorySettings.JCR_CONF, value = OAK_CONFIG)
 @TestManagedBeans({ResourcesCloser.class})
@@ -63,7 +64,7 @@ class RepositoryProviderTest {
   @Test
   @DisplayName("The JCR properties should be found from the system")
   void checkSystemPropertiesForJCRAreCorrectlySet() {
-    SystemWrapper systemWrapper = SystemWrapper.get();
+    SystemWrapper systemWrapper = SystemWrapper.getInstance();
     assertThat(systemWrapper.getProperty(RepositorySettings.JCR_HOME), is(JCR_HOME));
     assertThat(systemWrapper.getProperty(RepositorySettings.JCR_CONF), is(OAK_CONFIG));
   }

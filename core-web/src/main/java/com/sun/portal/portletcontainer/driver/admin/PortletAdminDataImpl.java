@@ -29,7 +29,7 @@ import com.sun.portal.portletcontainer.admin.mbeans.PortletAdmin;
 import com.sun.portal.portletcontainer.admin.mbeans.PortletAdminMBean;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.portlets.portal.PortletAppData;
 import org.silverpeas.core.web.portlets.portal.PortletAppDataImpl;
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;

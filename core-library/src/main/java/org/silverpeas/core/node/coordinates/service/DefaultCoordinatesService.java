@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.node.coordinates.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.coordinates.model.Coordinate;

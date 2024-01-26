@@ -24,9 +24,8 @@
 package org.silverpeas.core.security.session;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,8 +74,7 @@ public abstract class SessionInfo implements SilverpeasUserSession {
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
     this.idleTimestamp = 0;
     if (user != null) {
-      cache = ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(
-          user);
+      cache = CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     }
   }
 

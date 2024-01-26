@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.HistoryDocumentSorter;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -38,7 +38,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import java.util.Collections;
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 public class VersioningSessionController extends AbstractComponentSessionController {
   private static final long serialVersionUID = -6068845833609838967L;

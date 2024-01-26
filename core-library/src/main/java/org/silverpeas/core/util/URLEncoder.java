@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.BitSet;

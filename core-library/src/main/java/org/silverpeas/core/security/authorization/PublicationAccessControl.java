@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 public interface PublicationAccessControl extends AccessController<PublicationPK> {
 
   static PublicationAccessControl get() {
-    return ServiceProvider.getSingleton(PublicationAccessControl.class);
+    return ServiceProvider.getService(PublicationAccessControl.class);
   }
 
   /**

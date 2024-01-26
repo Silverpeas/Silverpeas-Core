@@ -30,8 +30,8 @@ import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 

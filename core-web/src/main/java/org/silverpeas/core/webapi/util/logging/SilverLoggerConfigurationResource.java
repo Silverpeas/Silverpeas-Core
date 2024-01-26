@@ -24,10 +24,11 @@
 package org.silverpeas.core.webapi.util.logging;
 
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.util.logging.LoggerConfigurationManager;
-import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.LoggerConfigurationManager;
+import org.silverpeas.kernel.logging.LoggerConfigurationManager.LoggerConfiguration;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.kernel.logging.SilverLoggerProvider;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -40,6 +41,7 @@ import javax.ws.rs.core.Response;
 
 /**
  * A Web resource representing the configuration of a given logger. It is a REST-based Web service.
+ *
  * @author mmoquillon
  */
 @WebService
@@ -56,7 +58,8 @@ public class SilverLoggerConfigurationResource extends AbstractLoggingResource {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public LoggerConfigurationEntity changeLoggerConfiguration(LoggerConfigurationEntity config) {
-    LoggerConfigurationManager configManager = LoggerConfigurationManager.get();
+    LoggerConfigurationManager configManager =
+        SilverLoggerProvider.getInstance().getConfigurationManager();
     if (namespace.equals(config.getLogger())) {
       LoggerConfiguration loggerConfig = config.toLoggerConfiguration();
       /* save the logger configuration */
@@ -69,7 +72,7 @@ public class SilverLoggerConfigurationResource extends AbstractLoggingResource {
           Response.Status.BAD_REQUEST);
     }
     return LoggerConfigurationEntity.toWebEntity(
-        configManager.getLoggerConfiguration(namespace))
+            configManager.getLoggerConfiguration(namespace))
         .withAsURi(getUri().getRequestUri());
   }
 

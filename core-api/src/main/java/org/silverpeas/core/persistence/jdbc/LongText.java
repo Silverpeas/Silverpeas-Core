@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.persistence.jdbc;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

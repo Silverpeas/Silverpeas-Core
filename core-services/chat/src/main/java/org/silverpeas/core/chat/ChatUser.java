@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chat;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -38,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.util.StringUtil.normalizeByRemovingAccent;
+import static org.silverpeas.kernel.util.StringUtil.normalizeByRemovingAccent;
 
 /**
  * A Silverpeas user with an account in a Chat service. The Silverpeas Chat Engine uses the services

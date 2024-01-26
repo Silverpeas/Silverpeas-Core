@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.webapi.admin.tools.AbstractTool;
 import org.silverpeas.core.webapi.admin.tools.ToolDelegate;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;

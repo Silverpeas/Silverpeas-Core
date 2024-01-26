@@ -38,7 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.silverpeas.core.documenttemplate.DefaultDocumentTemplateRepository.getDocumentTemplateRepositoryPath;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This class is the representation of a document template.

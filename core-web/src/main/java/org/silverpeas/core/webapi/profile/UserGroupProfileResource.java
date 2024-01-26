@@ -46,7 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.GROUPS_BASE_URI;
 
 /**

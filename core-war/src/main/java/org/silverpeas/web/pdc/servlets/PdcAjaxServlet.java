@@ -24,7 +24,7 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.pdc.form.displayers.PdcFieldDisplayer;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

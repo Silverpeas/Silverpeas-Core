@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.filter;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.HttpMethod;
 import org.silverpeas.core.util.security.SecuritySettings;

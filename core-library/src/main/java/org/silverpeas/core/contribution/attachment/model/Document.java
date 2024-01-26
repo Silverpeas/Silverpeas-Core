@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.silverpeas.core.NotFoundException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.model.LocalizedAttachment;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.I18n;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Date;
 import java.util.List;

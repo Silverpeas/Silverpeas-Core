@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.web.pdc.vo.ResultGroupFilter"%>
 <%@ page import="org.apache.lucene.queryparser.classic.QueryParser"%>
 <%@ page import="org.silverpeas.core.index.search.model.IndexSearcher"%>
-<%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.kernel.util.StringUtil"%>
 <%@ page import="java.net.URLDecoder"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.selection;
 
-import org.silverpeas.core.NotFoundException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.I18nContribution;

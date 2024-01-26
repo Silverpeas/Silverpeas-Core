@@ -24,7 +24,7 @@
 package org.silverpeas.core.questioncontainer.answer.model;
 
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class AnswerRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = -7584480862051850784L;

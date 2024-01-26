@@ -30,8 +30,8 @@ import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONArray;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

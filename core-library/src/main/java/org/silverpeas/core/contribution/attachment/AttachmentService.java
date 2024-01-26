@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.index.indexing.model.DocumentIndexing;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.File;
@@ -50,7 +50,7 @@ public interface AttachmentService extends DocumentIndexing {
   String VERSION_MODE = "versionControl";
 
   static AttachmentService get() {
-    return ServiceProvider.getSingleton(AttachmentService.class);
+    return ServiceProvider.getService(AttachmentService.class);
   }
 
   /**

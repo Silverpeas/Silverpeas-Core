@@ -30,7 +30,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.BasicWarBuilder;

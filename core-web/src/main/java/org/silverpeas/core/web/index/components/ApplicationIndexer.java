@@ -27,8 +27,9 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.pdc.pdc.service.PdcIndexer;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.index.AbstractIndexer;
 import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
 
@@ -91,7 +92,7 @@ public class ApplicationIndexer extends AbstractIndexer {
       PersonalToolIndexation personalToolIndexer =
           ServiceProvider.getService(compoName + PersonalToolIndexation.QUALIFIER_SUFFIX);
       personalToolIndexer.index();
-    } catch (IllegalStateException ce) {
+    } catch (SilverpeasRuntimeException ce) {
       SilverLogger.getLogger(this)
           .silent(ce)
           .warn("cannot get personal component of type ''{0}'' ({1})", personalComponent,
@@ -135,7 +136,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     try {
       String qualifier = compoInst.getName() + ComponentIndexation.QUALIFIER_SUFFIX;
       componentIndexer = ServiceProvider.getService(qualifier);
-    } catch (IllegalStateException ex) {
+    } catch (SilverpeasRuntimeException ex) {
       SilverLogger.getLogger(this)
           .silent(ex)
           .warn("no indexer for component ''{0}'' with id ''{1}'' ({2})", compoInst.getLabel(),

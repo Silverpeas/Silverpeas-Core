@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.notification.message.Message;
 import org.silverpeas.core.notification.message.MessageNotifier;
 

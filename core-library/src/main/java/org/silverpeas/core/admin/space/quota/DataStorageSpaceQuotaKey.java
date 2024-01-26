@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.UserDetail;

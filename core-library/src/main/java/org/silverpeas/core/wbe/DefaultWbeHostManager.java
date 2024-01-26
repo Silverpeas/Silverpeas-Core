@@ -33,7 +33,7 @@ import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SilverpeasUserSession;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.PostConstruct;

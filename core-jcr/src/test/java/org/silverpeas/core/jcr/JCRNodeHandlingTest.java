@@ -37,9 +37,9 @@ import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.security.SecurityTest;
 import org.silverpeas.core.jcr.util.SilverpeasJCRSchemaRegister;
 import org.silverpeas.core.jcr.util.SilverpeasProperty;
-import org.silverpeas.core.test.unit.extention.SystemProperty;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.test.annotations.SystemProperty;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.test.TestUser;
 
 import javax.jcr.ItemNotFoundException;

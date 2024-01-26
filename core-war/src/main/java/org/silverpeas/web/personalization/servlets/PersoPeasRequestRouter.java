@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.personalization.servlets;
 
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

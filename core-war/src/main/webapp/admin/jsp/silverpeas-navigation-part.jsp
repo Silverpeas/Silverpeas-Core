@@ -28,10 +28,10 @@
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
 
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.bundle.SettingBundle" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 

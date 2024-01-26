@@ -27,8 +27,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.io.File;
 

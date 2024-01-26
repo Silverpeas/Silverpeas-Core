@@ -24,7 +24,8 @@
 package org.silverpeas.core.security.authorization;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -36,7 +37,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
 /**
  * @author Yohann Chastagnier
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class AccessControlOperationTest {
 
   @Test

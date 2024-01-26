@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
@@ -32,7 +32,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import javax.servlet.jsp.PageContext;
 import java.util.Collections;
 
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLinesTag.AJAX_EXPORT_PARAMETER_NAME;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.INDEX_PARAMETER_NAME;
 

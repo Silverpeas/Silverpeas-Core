@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.model.Space;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;

@@ -26,12 +26,12 @@ package org.silverpeas.core.webapi.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.Base;
+import org.silverpeas.kernel.annotation.Base;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
@@ -51,12 +51,12 @@ import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -86,7 +86,7 @@ import static org.silverpeas.core.calendar.CalendarEventOccurrence.COMPARATOR_BY
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.wysiwygPlaceHaveChanged;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.UNIQUE;
 
@@ -128,14 +128,14 @@ public class CalendarWebManager {
   /**
    * Gets the singleton instance of the provider.
    * @param componentInstanceIdOrComponentName a component instance identifier of a component name.
-   * @see ServiceProvider#getServiceByComponentInstanceAndNameSuffix(String, String)
+   * @see ServiceProvider#getService(String, String)
    */
   public static CalendarWebManager get(final String componentInstanceIdOrComponentName) {
     if (isNotDefined(componentInstanceIdOrComponentName)) {
-      return ServiceProvider.getSingleton(CalendarWebManager.class, new AnnotationLiteral<Base>() {});
+      return ServiceProvider.getService(CalendarWebManager.class, new AnnotationLiteral<Base>() {});
     }
     return ServiceProvider
-        .getServiceByComponentInstanceAndNameSuffix(componentInstanceIdOrComponentName,
+        .getService(componentInstanceIdOrComponentName,
             NAME_SUFFIX);
   }
 

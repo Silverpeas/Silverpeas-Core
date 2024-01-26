@@ -36,19 +36,18 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.Visibility;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.test.unit.UnitTest;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,7 +66,7 @@ import static org.silverpeas.core.util.CollectionUtil.asList;
  * @author Yohann Chastagnier
  */
 @UnitTest
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class PublicationAccessControllerTest {
 
   private static final String USER_ID = "bart";
@@ -93,7 +92,6 @@ class PublicationAccessControllerTest {
 
   @BeforeEach
   void setup() {
-    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
@@ -1239,11 +1237,7 @@ class PublicationAccessControllerTest {
           .verifyCallOfPublicationBmGetDetail()
           .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
           .verifyCallOfPublicationBmGetMainLocation();
-      if (role == SilverpeasRole.WRITER) {
-        assertIsUserAuthorized(false);
-      } else {
-        assertIsUserAuthorized(true);
-      }
+      assertIsUserAuthorized(role != SilverpeasRole.WRITER);
 
       // User has WRITER/PUBLISHER/ADMIN role on component
       // And publication is in draft mode
@@ -1263,11 +1257,7 @@ class PublicationAccessControllerTest {
           .verifyCallOfNodeAccessControllerGetUserRoles()
           .verifyCallOfPublicationBmGetDetail()
           .verifyCallOfPublicationBmGetMainLocation();
-      if (role == SilverpeasRole.WRITER) {
-        assertIsUserAuthorized(false);
-      } else {
-        assertIsUserAuthorized(true);
-      }
+      assertIsUserAuthorized(role != SilverpeasRole.WRITER);
 
       // User has WRITER/PUBLISHER/ADMIN role on component
       // And publication has been refused
@@ -1277,11 +1267,7 @@ class PublicationAccessControllerTest {
           .verifyCallOfNodeAccessControllerGetUserRoles()
           .verifyCallOfPublicationBmGetDetail()
           .verifyCallOfPublicationBmGetMainLocation();
-      if (role == SilverpeasRole.WRITER) {
-        assertIsUserAuthorized(false);
-      } else {
-        assertIsUserAuthorized(true);
-      }
+      assertIsUserAuthorized(role != SilverpeasRole.WRITER);
 
       // User has WRITER/PUBLISHER/ADMIN role on component
       // And publication is not visible
@@ -1291,11 +1277,7 @@ class PublicationAccessControllerTest {
           .verifyCallOfNodeAccessControllerGetUserRoles()
           .verifyCallOfPublicationBmGetDetail()
           .verifyCallOfPublicationBmGetMainLocation();
-      if (role == SilverpeasRole.WRITER) {
-        assertIsUserAuthorized(false);
-      } else {
-        assertIsUserAuthorized(true);
-      }
+      assertIsUserAuthorized(role != SilverpeasRole.WRITER);
 
       // User has WRITER/PUBLISHER/ADMIN role on component, co-writing enabled
       testContext.clear();
@@ -2713,11 +2695,8 @@ class PublicationAccessControllerTest {
           .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
           .verifyCallOfPublicationBmGetMainLocation()
           .verifyCallOfNodeAccessControllerGetUserRoles();
-      if (componentRole == SilverpeasRole.WRITER || componentRole == SilverpeasRole.PUBLISHER) {
-        assertIsUserAuthorized(false);
-      } else {
-        assertIsUserAuthorized(true);
-      }
+      assertIsUserAuthorized(componentRole != SilverpeasRole.WRITER &&
+          componentRole != SilverpeasRole.PUBLISHER);
 
       // User has WRITER/PUBLISHER/ADMIN role on component
       // User has PUBLISHER on directory
@@ -2745,11 +2724,8 @@ class PublicationAccessControllerTest {
           .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
           .verifyCallOfPublicationBmGetMainLocation()
           .verifyCallOfNodeAccessControllerGetUserRoles();
-      if (componentRole == SilverpeasRole.WRITER || componentRole == SilverpeasRole.PUBLISHER) {
-        assertIsUserAuthorized(false);
-      } else {
-        assertIsUserAuthorized(true);
-      }
+      assertIsUserAuthorized(componentRole != SilverpeasRole.WRITER &&
+          componentRole != SilverpeasRole.PUBLISHER);
 
       // User has WRITER/PUBLISHER/ADMIN role on component
       // User has PUBLISHER on directory
@@ -2789,11 +2765,8 @@ class PublicationAccessControllerTest {
           .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
           .verifyCallOfPublicationBmGetMainLocation()
           .verifyCallOfNodeAccessControllerGetUserRoles();
-      if (componentRole == SilverpeasRole.WRITER || componentRole == SilverpeasRole.PUBLISHER) {
-        assertIsUserAuthorized(false);
-      } else {
-        assertIsUserAuthorized(true);
-      }
+      assertIsUserAuthorized(componentRole != SilverpeasRole.WRITER &&
+          componentRole != SilverpeasRole.PUBLISHER);
     }
 
     // User has ADMIN role on component
@@ -3783,9 +3756,8 @@ class PublicationAccessControllerTest {
       return this;
     }
 
-    public TestContext publicationOnTrashDirectory() {
+    public void publicationOnTrashDirectory() {
       isPublicationOnTrashDirectory = true;
-      return this;
     }
 
     public TestContext withRightsActivatedOnDirectory() {
@@ -3809,16 +3781,14 @@ class PublicationAccessControllerTest {
       return this;
     }
 
-    public TestContext withAliasUserRolesAndMainOnOtherGed(SilverpeasRole... roles) {
+    public void withAliasUserRolesAndMainOnOtherGed(SilverpeasRole... roles) {
       withAliasUserRoles(roles);
       mainOnOtherInstanceId = true;
-      return this;
     }
 
-    public TestContext withAliasUserRolesAndMainOnOtherRemovedGed(SilverpeasRole... roles) {
+    public void withAliasUserRolesAndMainOnOtherRemovedGed(SilverpeasRole... roles) {
       withAliasUserRolesAndMainOnOtherGed(roles);
       otherInstanceRemoved = true;
-      return this;
     }
 
     public TestContext userIsThePublicationAuthor() {
@@ -3882,7 +3852,7 @@ class PublicationAccessControllerTest {
         return componentUserRoles;
       });
       when(nodeAccessController.isUserAuthorized(any(EnumSet.class)))
-          .then(invocation -> CollectionUtil.isNotEmpty((EnumSet) invocation.getArguments()[0]));
+          .then(invocation -> CollectionUtil.isNotEmpty((EnumSet<?>) invocation.getArguments()[0]));
       when(publicationService.getMinimalDataByIds(any(Collection.class))).then(invocation -> {
         if (isPublicationNotExisting) {
           return emptyList();
@@ -3910,7 +3880,7 @@ class PublicationAccessControllerTest {
         }
         return allLocations;
       });
-      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
+      CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     }
 
     private PublicationDetail newPublicationWith(final PublicationPK pubPk) {
@@ -4029,7 +3999,7 @@ class PublicationAccessControllerTest {
 
   private static class DefaultInstancePublicationAccessControlExtension4Test
       extends DefaultInstancePublicationAccessControlExtension {
-    private TestContext testContext;
+    private final TestContext testContext;
 
     DefaultInstancePublicationAccessControlExtension4Test(final TestContext testContext) {
       this.testContext = testContext;

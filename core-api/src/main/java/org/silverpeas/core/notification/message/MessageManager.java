@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.notification.message;
 
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * This manager provides tools to register and restitute volatile messages (info, success or error)

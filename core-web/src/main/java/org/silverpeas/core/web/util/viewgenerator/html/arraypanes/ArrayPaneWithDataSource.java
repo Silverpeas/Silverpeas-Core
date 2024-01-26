@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WADataPage;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WADataPaginator;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WAItem;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 
 /**

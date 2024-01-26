@@ -35,8 +35,8 @@ import org.silverpeas.core.security.token.TokenGeneratorProvider;
 import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.security.token.synchronizer.SynchronizerToken;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 

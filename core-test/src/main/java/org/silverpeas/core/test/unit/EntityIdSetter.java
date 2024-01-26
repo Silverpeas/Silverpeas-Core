@@ -26,6 +26,8 @@ package org.silverpeas.core.test.unit;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.kernel.test.util.Reflections;
+import org.silverpeas.kernel.test.util.SilverpeasReflectionException;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -45,16 +47,7 @@ public class EntityIdSetter {
    * @param idType the type of the entity identifier.
    */
   public EntityIdSetter(final Class<? extends EntityIdentifier> idType) {
-    try {
-      MethodHandles.Lookup lookup = MethodHandles.lookup();
-      MethodHandles.Lookup
-          privateLookup = MethodHandles.privateLookupIn(idType, lookup);
-      MethodType constructorType = MethodType.methodType(void.class);
-      MethodHandle constructor = privateLookup.findConstructor(idType, constructorType);
-      this.generator = (EntityIdentifier) constructor.invoke();
-    } catch (Throwable e) {
-      throw new IllegalArgumentException(e);
-    }
+    this.generator = Reflections.instantiate(idType);
   }
 
   /**
@@ -79,17 +72,7 @@ public class EntityIdSetter {
    * @return the entity itself with its identifier set.
    */
   public <T extends AbstractJpaEntity<?, ?>> T setIdTo(final T entity) {
-    try {
-      MethodHandles.Lookup lookup = MethodHandles.lookup();
-      MethodHandles.Lookup
-          privateLookup = MethodHandles.privateLookupIn(AbstractJpaEntity.class, lookup);
-      MethodType methodType = MethodType.methodType(IdentifiableEntity.class, String.class);
-      MethodHandle setter =
-          privateLookup.findVirtual(AbstractJpaEntity.class, "setId", methodType);
-      setter.invoke(entity, this.generator.generateNewId().asString());
-    } catch (Throwable e) {
-      throw new IllegalArgumentException(e);
-    }
+    invokeIdSetter(entity, this.generator.generateNewId().asString());
     return entity;
   }
 
@@ -102,7 +85,13 @@ public class EntityIdSetter {
    * @param <T> the concrete type of the entity.
    * @return the entity itself with its identifier set.
    */
+  @SuppressWarnings("UnusedReturnValue")
   public <T extends AbstractJpaEntity<?, ?>> T setIdTo(final T entity, final String id) {
+    invokeIdSetter(entity, generator.fromString(id).asString());
+    return entity;
+  }
+
+  private  <T extends AbstractJpaEntity<?, ?>> void invokeIdSetter(final T entity, final String id) {
     try {
       MethodHandles.Lookup lookup = MethodHandles.lookup();
       MethodHandles.Lookup
@@ -110,11 +99,10 @@ public class EntityIdSetter {
       MethodType methodType = MethodType.methodType(IdentifiableEntity.class, String.class);
       MethodHandle setter =
           privateLookup.findVirtual(AbstractJpaEntity.class, "setId", methodType);
-      setter.invoke(entity, this.generator.fromString(id).asString());
+      setter.invoke(entity, id);
     } catch (Throwable e) {
-      throw new IllegalArgumentException(e);
+      throw new SilverpeasReflectionException(e);
     }
-    return entity;
   }
 }
   

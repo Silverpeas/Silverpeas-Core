@@ -29,11 +29,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -50,7 +51,7 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
 /**
  * @author Yohann Chastagnier
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class TestUploadSession {
 
   private static final String SESSION_CACHE_KEY = "@@@_" + UploadSession.class.getName();

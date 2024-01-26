@@ -26,7 +26,7 @@ package org.silverpeas.core.util.time;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.AbstractUnitTest;
 
 import java.math.BigDecimal;
@@ -102,7 +102,7 @@ class TestDuration extends AbstractUnitTest {
   void getRoundedTimeConverted() {
     Duration duration = createDefaultTimeData();
     Map<TimeUnit, String> expected = new LinkedHashMap<>();
-    expected.put(TimeUnit.MILLISECOND, getDefaultTime().toString() + ".000");
+    expected.put(TimeUnit.MILLISECOND, getDefaultTime() + ".000");
     expected.put(TimeUnit.SECOND, "2123546464564.987");
     expected.put(TimeUnit.MINUTE, "35392441076.08");
     expected.put(TimeUnit.HOUR, "589874017.93");
@@ -257,7 +257,7 @@ class TestDuration extends AbstractUnitTest {
   void getFormattedValue() {
     Duration duration = createDefaultTimeData();
     Map<TimeUnit, String> expected = new LinkedHashMap<>();
-    expected.put(TimeUnit.MILLISECOND, getDefaultTime().toString() + " ms");
+    expected.put(TimeUnit.MILLISECOND, getDefaultTime() + " ms");
     expected.put(TimeUnit.SECOND, "2123546464564.987 s");
     expected.put(TimeUnit.MINUTE, "35392441076.08 m");
     expected.put(TimeUnit.HOUR, "589874017.93 h");
@@ -269,11 +269,6 @@ class TestDuration extends AbstractUnitTest {
     }
   }
 
-  /**
-   * Centralized assert
-   * @param test
-   * @param expected
-   */
   private void assertFormatValue(String test, String expected) {
     assertThat(test.replaceAll("[ \u00a0]", "").replace(',', '.'),
         is(expected.replaceAll(" ", "")));

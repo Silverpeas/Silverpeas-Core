@@ -25,7 +25,7 @@
 package org.silverpeas.core.ddwe;
 
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +35,8 @@ import java.util.Optional;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Permits to centralization some content manipulation with Drag and Drop editor.

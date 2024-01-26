@@ -24,7 +24,7 @@
 package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;

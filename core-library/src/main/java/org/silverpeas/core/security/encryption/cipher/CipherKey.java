@@ -24,7 +24,7 @@
 package org.silverpeas.core.security.encryption.cipher;
 
 import org.silverpeas.core.util.EncodingUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.text.ParseException;

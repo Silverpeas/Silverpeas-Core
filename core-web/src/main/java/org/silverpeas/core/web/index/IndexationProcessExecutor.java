@@ -24,11 +24,11 @@
 package org.silverpeas.core.web.index;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.kernel.cache.model.Cache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.util.concurrent.Callable;

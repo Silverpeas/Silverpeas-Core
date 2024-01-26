@@ -36,14 +36,14 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.File;
 import java.util.Map;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Representation of an uploaded file.<br> Each {@link UploadedFile} is associated to a unique

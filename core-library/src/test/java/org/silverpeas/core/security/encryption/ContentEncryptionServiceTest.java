@@ -33,9 +33,10 @@ import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.EncodingUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import javax.crypto.KeyGenerator;
@@ -56,7 +57,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * It creates the security directory to receive the key file, but the key file and it constructs
  * a DefaultContentEncryptionService instance ready to be tested.
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public abstract class ContentEncryptionServiceTest {
 
   String ACTUAL_KEY_FILE_PATH;

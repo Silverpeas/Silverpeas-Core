@@ -26,7 +26,7 @@ package org.silverpeas.core.web.mvc.webcomponent;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;

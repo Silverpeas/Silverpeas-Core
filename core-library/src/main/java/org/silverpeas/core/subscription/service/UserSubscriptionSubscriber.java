@@ -25,7 +25,7 @@ package org.silverpeas.core.subscription.service;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import static java.text.MessageFormat.format;
 import static java.util.Optional.ofNullable;

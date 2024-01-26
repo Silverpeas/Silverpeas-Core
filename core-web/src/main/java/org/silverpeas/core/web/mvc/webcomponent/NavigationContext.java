@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;

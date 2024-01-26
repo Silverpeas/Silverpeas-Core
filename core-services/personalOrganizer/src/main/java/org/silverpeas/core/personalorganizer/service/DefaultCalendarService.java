@@ -42,7 +42,7 @@ import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.socialnetwork.SocialInformationEvent;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

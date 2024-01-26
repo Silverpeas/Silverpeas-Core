@@ -24,7 +24,7 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.BasicIdentifier;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -32,7 +32,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)

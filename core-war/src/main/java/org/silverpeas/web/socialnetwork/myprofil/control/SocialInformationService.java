@@ -29,7 +29,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.socialnetwork.provider.SocialInformationProviderSwitcher;
 import org.silverpeas.core.socialnetwork.provider.SocialInformationProviderSwitcher.SocialInfoContext;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

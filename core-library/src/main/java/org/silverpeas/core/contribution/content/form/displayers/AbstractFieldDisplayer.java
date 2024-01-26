@@ -57,7 +57,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

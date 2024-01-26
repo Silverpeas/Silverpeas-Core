@@ -24,9 +24,9 @@
 package org.silverpeas.core.contribution.attachment.util;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponent;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Optional;
 import java.util.stream.Stream;

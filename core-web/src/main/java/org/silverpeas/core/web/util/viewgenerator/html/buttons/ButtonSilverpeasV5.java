@@ -25,7 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
 import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author neysseri

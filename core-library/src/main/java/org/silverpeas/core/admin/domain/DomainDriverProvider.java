@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -41,7 +42,7 @@ public class DomainDriverProvider {
   private static DomainDriver loadDomainDriver(String name) throws ClassNotFoundException {
     try {
       return ServiceProvider.getService(name);
-    } catch (IllegalStateException e) {
+    } catch (SilverpeasRuntimeException e) {
       return ServiceProvider.getService((Class<? extends DomainDriver>) Class.forName(name));
     }
   }

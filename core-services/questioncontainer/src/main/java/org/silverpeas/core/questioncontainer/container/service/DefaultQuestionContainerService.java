@@ -57,9 +57,9 @@ import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
 import org.silverpeas.core.questioncontainer.score.service.ScoreService;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -73,7 +73,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Stateless service to manage question container.

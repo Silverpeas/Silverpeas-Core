@@ -25,9 +25,9 @@ package org.silverpeas.core.security.authentication.password;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.SimpleUserNotification;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import static java.util.stream.Stream.of;
 

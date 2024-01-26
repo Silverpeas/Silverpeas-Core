@@ -25,7 +25,8 @@ package org.silverpeas.core.util.logging;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;

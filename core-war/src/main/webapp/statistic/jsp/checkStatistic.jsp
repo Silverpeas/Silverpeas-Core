@@ -34,9 +34,9 @@ response.setHeader( "Cache-control", "no-cache" );
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.service.StatisticService "%>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.util.ServiceProvider"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>

@@ -28,8 +28,8 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.utils.XMLReaderUtils;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 

@@ -27,14 +27,14 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ToPDFConverter;
 import org.silverpeas.core.util.MimeTypes.MimeTypeRegistry;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Named;
 import java.io.File;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.pdf;
 import static org.silverpeas.core.util.MimeTypes.OPEN_OFFICE_MIME_TYPES;
-import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle;
 import static org.silverpeas.core.util.file.FileUtil.getMimeType;
 
 /**

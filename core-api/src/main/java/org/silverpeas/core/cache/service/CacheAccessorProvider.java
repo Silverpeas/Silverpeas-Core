@@ -23,18 +23,22 @@
  */
 package org.silverpeas.core.cache.service;
 
-import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
+import org.silverpeas.kernel.cache.service.ApplicationCacheAccessor;
+import org.silverpeas.kernel.cache.service.ThreadCacheAccessor;
 
 /**
  * A provider of different kinds of cache accessors available in Silverpeas.
+ *
  * @author Yohann Chastagnier
  */
 public class CacheAccessorProvider {
 
   private static final CacheAccessorProvider instance = new CacheAccessorProvider();
-  private final CacheAccessor sessionCacheAccessor = new SessionCacheAccessor();
-  private final CacheAccessor threadCacheAccessor = new ThreadCacheAccessor();
-  private final CacheAccessor applicationCacheAccessor = new ApplicationCacheAccessor();
+  private final SessionCacheAccessor sessionCacheAccessor = new SessionCacheAccessor();
+  private final ThreadCacheAccessor threadCacheAccessor = ThreadCacheAccessor.getInstance();
+  private final ApplicationCacheAccessor applicationCacheAccessor =
+      ApplicationCacheAccessor.getInstance();
 
   /**
    * Initialization of service instances
@@ -45,6 +49,7 @@ public class CacheAccessorProvider {
 
   /**
    * Gets an instance of this cache accessor provider.
+   *
    * @return a {@link CacheAccessorProvider} instance.
    */
   private static CacheAccessorProvider getInstance() {
@@ -53,31 +58,33 @@ public class CacheAccessorProvider {
 
   /**
    * Gets a useful volatile cache: after the end of the current thread execution, the associated
-   * cache is trashed.
-   * BE VERY VERY VERY CAREFULLY: into web application with thread pool management,
-   * the thread is never killed and this cache is never cleared. If you want the cache cleared
-   * after the end of the request, please use the {@link SimpleCache#clear()}} method of the
+   * cache is trashed. BE VERY VERY VERY CAREFULLY: into web application with thread pool
+   * management, the thread is never killed and this cache is never cleared. If you want the cache
+   * cleared after the end of the request, please use the {@link SimpleCache#clear()}} method of the
    * thread cache.
+   *
    * @return an accessor to a cache associated to the current thread.
    */
-  public static CacheAccessor getThreadCacheAccessor() {
+  public static ThreadCacheAccessor getThreadCacheAccessor() {
     return getInstance().threadCacheAccessor;
   }
 
   /**
    * Gets an accessor to a useful cache in relation with a session: after the end of the session,
    * the associated cache is trashed. If no session cache exists, then it is created and returned.
+   *
    * @return an accessor to a cache associated to the current session.
    */
-  public static CacheAccessor getSessionCacheAccessor() {
+  public static SessionCacheAccessor getSessionCacheAccessor() {
     return getInstance().sessionCacheAccessor;
   }
 
   /**
    * Gets an accessor to the cache of the application.
+   *
    * @return an accessor to the application's cache.
    */
-  public static CacheAccessor getApplicationCacheAccessor() {
+  public static ApplicationCacheAccessor getApplicationCacheAccessor() {
     return getInstance().applicationCacheAccessor;
   }
 }

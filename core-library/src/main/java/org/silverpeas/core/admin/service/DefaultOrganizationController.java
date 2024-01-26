@@ -34,7 +34,12 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.*;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -1108,11 +1113,14 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public List<SpaceInstLight> getPathToSpace(String spaceId) {
+  @NonNull
+  public List<SpaceInstLight> getPathToSpace(@NonNull String spaceId) {
     return getPathToSpace(new ArrayList<>(), spaceId);
   }
 
-  private List<SpaceInstLight> getPathToSpace(List<SpaceInstLight> path, String spaceId) {
+  @NonNull
+  private List<SpaceInstLight> getPathToSpace(@NonNull List<SpaceInstLight> path,
+      @NonNull String spaceId) {
     try {
       SpaceInstLight spaceInst = getAdminService().getSpaceInstLightById(spaceId);
       if (spaceInst != null) {

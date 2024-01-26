@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.wbe;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * A Silverpeas's logger dedicated to Web Browser Edition host features.

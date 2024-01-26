@@ -30,7 +30,8 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.Date;
 
@@ -41,7 +42,7 @@ import static org.hamcrest.Matchers.is;
  * @author Yohann Chastagnier
  * Date: 15/02/13
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class UserMustChangePasswordVerifierTest {
 
   private static final int MAX_CONNECTIONS_FORCING = 8;

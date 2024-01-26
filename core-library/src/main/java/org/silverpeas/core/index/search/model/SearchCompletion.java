@@ -24,9 +24,9 @@
 package org.silverpeas.core.index.search.model;
 
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

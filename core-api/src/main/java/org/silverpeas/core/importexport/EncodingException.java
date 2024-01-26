@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.importexport;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * A runtime exception that is thrown when an error occurs while encoding a Silverpeas object into a

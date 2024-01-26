@@ -40,9 +40,9 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

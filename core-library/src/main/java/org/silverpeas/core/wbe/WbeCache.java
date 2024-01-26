@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.wbe;
 
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.time.OffsetDateTime;
 import java.util.HashSet;

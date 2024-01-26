@@ -23,13 +23,11 @@
  */
 package org.silverpeas.core.web.session;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.upload.UploadSession;
@@ -53,11 +51,12 @@ import org.silverpeas.core.security.session.SessionValidationContext;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nonnull;
 import javax.enterprise.event.Event;
@@ -67,18 +66,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.InetAddress;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static java.util.Optional.ofNullable;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Implementation of the {@code org.silverpeas.core.security.session.SessionManagement} interface.
@@ -532,7 +525,7 @@ public class SessionManager implements SessionManagement, Initialization {
     if (!sessionInfo.isDefined()) {
       throw new SilverpeasRuntimeException("No Anonymous Session was configured!");
     }
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).setCurrentSessionCache(
+    (CacheAccessorProvider.getSessionCacheAccessor()).setCurrentSessionCache(
         sessionInfo.getCache());
     anonymousSessions.put(sessionInfo.getId(), sessionInfo);
     return sessionInfo;

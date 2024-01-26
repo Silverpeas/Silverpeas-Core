@@ -26,7 +26,7 @@
 
 package org.silverpeas.core.pdc.classification;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ClassifyEngineException extends SilverpeasException {
 

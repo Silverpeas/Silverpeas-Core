@@ -28,7 +28,7 @@
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="org.silverpeas.core.web.look.LookHelper"%>
 <%@ page import="org.silverpeas.core.web.look.TopItem"%>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

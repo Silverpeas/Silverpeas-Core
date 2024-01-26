@@ -41,7 +41,7 @@ import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.importexport.EncodingException;
 import org.silverpeas.core.importexport.ical.ICalCodec;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
 
 import javax.annotation.Nonnull;

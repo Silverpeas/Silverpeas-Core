@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.importexport;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception thrown when the import of a Silverpeas resource failed. It is a business exception that

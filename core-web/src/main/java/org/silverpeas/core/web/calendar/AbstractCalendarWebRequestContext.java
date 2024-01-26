@@ -36,7 +36,7 @@ import java.time.temporal.Temporal;
 
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
 
 /**

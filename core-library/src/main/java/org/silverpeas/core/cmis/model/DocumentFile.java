@@ -27,7 +27,7 @@ package org.silverpeas.core.cmis.model;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Set;
 import java.util.function.Supplier;

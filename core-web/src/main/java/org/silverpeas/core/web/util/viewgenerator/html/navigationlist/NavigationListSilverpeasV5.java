@@ -32,7 +32,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.navigationlist;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 

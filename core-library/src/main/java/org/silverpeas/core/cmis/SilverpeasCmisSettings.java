@@ -26,10 +26,10 @@
 package org.silverpeas.core.cmis;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -57,7 +57,7 @@ public class SilverpeasCmisSettings {
   }
 
   public static SilverpeasCmisSettings get() {
-    return ServiceProvider.getSingleton(SilverpeasCmisSettings.class);
+    return ServiceProvider.getService(SilverpeasCmisSettings.class);
   }
 
   @PostConstruct

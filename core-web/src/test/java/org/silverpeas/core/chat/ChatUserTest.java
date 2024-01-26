@@ -29,9 +29,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -41,13 +42,13 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans({ChatSettings.class})
 class ChatUserTest {
 
   @BeforeEach
-  public void setup(@TestManagedMock UserProvider userProvider) {
-    when(userProvider.getUser(anyString())).then((a) -> {
+  public void setup() {
+    when(UserProvider.get().getUser(anyString())).then((a) -> {
       final UserDetail user = new UserDetail();
       user.setId((String) a.getArguments()[0]);
       return user;

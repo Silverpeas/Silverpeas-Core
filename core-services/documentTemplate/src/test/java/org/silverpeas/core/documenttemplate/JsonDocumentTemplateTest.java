@@ -26,7 +26,8 @@ package org.silverpeas.core.documenttemplate;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.Arrays;
 
@@ -38,7 +39,7 @@ import static org.silverpeas.core.documenttemplate.DocumentTemplateTestUtil.DEFA
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class JsonDocumentTemplateTest {
 
   @DisplayName("Empty json should be decoded")

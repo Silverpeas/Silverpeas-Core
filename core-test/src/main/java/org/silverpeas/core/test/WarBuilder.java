@@ -34,7 +34,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.test.integration.SilverpeasLoggerInitializationListener;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.Charsets;
@@ -278,7 +278,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * Builds the final WAR archive. The following stuffs are automatically added:
    * <ul>
    * <li>The <b>beans.xml</b> descriptor in order to activate CDI,</li>
-   * <li>The <b>META-INF/services/org.silverpeas.core.util.BeanContainer</b> service file to load
+   * <li>The <b>META-INF/services/org.silverpeas.kernel.BeanContainer</b> service file to load
    * the CDI-based bean container,</li>
    * </ul>
    * @return the built WAR archive.
@@ -345,8 +345,10 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
             .toArray(File[]::new);
         war.addAsLibraries(libs2);
       }
-      war.addAsResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
-          "META-INF/services/org.silverpeas.core.util.BeanContainer");
+      war.addAsResource("META-INF/services/test-org.silverpeas.kernel.BeanContainer",
+          "META-INF/services/org.silverpeas.kernel.BeanContainer");
+      war.addAsResource("META-INF/services/test-org.silverpeas.kernel.util.SystemWrapper",
+          "META-INF/services/org.silverpeas.kernel.util.SystemWrapper");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       // Resources
       war.addAsResource("maven.properties");

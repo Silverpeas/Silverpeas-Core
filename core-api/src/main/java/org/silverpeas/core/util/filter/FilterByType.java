@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.util.filter;
 
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 
 import java.util.Optional;
 import java.util.function.Consumer;

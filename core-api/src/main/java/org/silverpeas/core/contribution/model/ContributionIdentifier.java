@@ -29,7 +29,7 @@ import org.silverpeas.core.ComponentResourceIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.ContributionLocator;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.util.Mutable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -44,7 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A contribution identifier is an identifier that identifies uniquely a contribution in Silverpeas

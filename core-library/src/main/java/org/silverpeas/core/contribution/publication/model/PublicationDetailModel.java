@@ -34,7 +34,7 @@ import java.time.temporal.Temporal;
 import java.util.Date;
 
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.DELAYED_VISIBILITY_AT_MODEL_PROPERTY;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * The default implementation of the {@link PublicationDetail} entity which is extending the default

@@ -45,7 +45,7 @@ import org.silverpeas.core.socialnetwork.provider.SocialNewsCommentProvider;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.kernel.util.SystemWrapper;
 import org.silverpeas.web.test.WarBuilder4WarCore;
 
 import javax.annotation.Priority;
@@ -114,7 +114,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
   @Before
   public void setup() throws Exception {
     final File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    SystemWrapper.getInstance().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     WAComponentRegistry.get().init();
     PersonalComponentRegistry.get().init();
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();

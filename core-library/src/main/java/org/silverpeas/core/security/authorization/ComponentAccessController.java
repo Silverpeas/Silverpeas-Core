@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -54,7 +54,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker.create;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 
 /**
  * It controls the access of a user to a given Silverpeas component. A Silverpeas component can be

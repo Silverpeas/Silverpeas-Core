@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.silverstatistics.volume.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class StatisticsRuntimeException extends SilverpeasRuntimeException {
 

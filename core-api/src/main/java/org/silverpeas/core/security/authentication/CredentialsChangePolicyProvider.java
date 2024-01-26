@@ -38,7 +38,7 @@ public interface CredentialsChangePolicyProvider {
    * @return an instance of this provider.
    */
   static CredentialsChangePolicyProvider get() {
-    return ServiceProvider.getSingleton(CredentialsChangePolicyProvider.class);
+    return ServiceProvider.getService(CredentialsChangePolicyProvider.class);
   }
 
   /**

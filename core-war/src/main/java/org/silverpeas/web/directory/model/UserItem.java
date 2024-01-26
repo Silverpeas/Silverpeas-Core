@@ -26,7 +26,7 @@ package org.silverpeas.web.directory.model;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.control.DirectoryUserFullRequestCache;
 
 import javax.annotation.Nonnull;

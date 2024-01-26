@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
