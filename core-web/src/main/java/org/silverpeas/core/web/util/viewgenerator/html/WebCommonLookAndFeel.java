@@ -173,7 +173,7 @@ class WebCommonLookAndFeel {
 
     // append specific CSS of current component*
     specificComponentCSS.ifPresent(code::append);
-    code.append(includePolyfills(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includePolyfills(new ElementContainer())).append(STR_NEW_LINE);
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap-global-bind.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap-pause.min.js"));
@@ -200,11 +200,11 @@ class WebCommonLookAndFeel {
         .append("</script>\n");
 
     code.append(getJavaScriptTagWithVersion(contextPath + "/util/javaScript/" + SILVERPEAS_JS));
-    code.append(includeJQuery(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includeJQuery(new ElementContainer())).append(STR_NEW_LINE);
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-i18n.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
 
-    code.append(includeChat(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includeChat(new ElementContainer())).append(STR_NEW_LINE);
 
     code.append(includeLayout(new ElementContainer(),
         LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
@@ -212,27 +212,28 @@ class WebCommonLookAndFeel {
         .filter(StringUtil::isDefined)
         .ifPresent(c -> code.append(scriptContent(c)));
 
-    code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
-    code.append(includeVueJs(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeSelectize(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includePopup(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeUserZoom(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
-    code.append(includeCkeditorAddOns(new ElementContainer()).toString()).append(
+    code.append(includeAngular(new ElementContainer(), language)).append(STR_NEW_LINE);
+    code.append(includeVueJs(new ElementContainer())).append(STR_NEW_LINE);
+    code.append(includeA11y(new ElementContainer(), language)).append(STR_NEW_LINE);
+    code.append(includeSecurityTokenizing(new ElementContainer())).append(STR_NEW_LINE);
+    code.append(includeNotifier(new ElementContainer())).append(STR_NEW_LINE);
+    code.append(includeSelectize(new ElementContainer())).append(STR_NEW_LINE);
+    code.append(includePopup(new ElementContainer())).append(STR_NEW_LINE);
+    code.append(includeUserZoom(new ElementContainer(), language)).append(STR_NEW_LINE);
+    code.append(includeCkeditorAddOns(new ElementContainer())).append(
         STR_NEW_LINE);
-    code.append(includeMessager(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
+    code.append(includeMessager(new ElementContainer(), language)).append(STR_NEW_LINE);
 
     specificJS.ifPresent(code::append);
 
     if (lookSettings.getString("OperationPane").toLowerCase().endsWith("web20")) {
       code.append(getYahooElements());
-      code.append(includeResponsibles(new ElementContainer(), language).toString())
+      code.append(includeResponsibles(new ElementContainer(), language))
           .append(STR_NEW_LINE);
-      code.append(includeMylinks(new ElementContainer()).toString()).append(STR_NEW_LINE);
+      code.append(includeMylinks(new ElementContainer())).append(STR_NEW_LINE);
     }
 
-    code.append(includeVirtualKeyboard(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
+    code.append(includeVirtualKeyboard(new ElementContainer(), language)).append(STR_NEW_LINE);
 
     return code.toString();
   }

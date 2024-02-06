@@ -300,5 +300,9 @@ public interface SupportedWebPlugin {
      * Silverpeas plugin to manage a map.
      */
     public static final SupportedWebPlugin MAP = () -> "MAP";
+    /**
+     * Silverpeas plugin to manage Silverpeas's accessibility (a11y).
+     */
+    public static final SupportedWebPlugin A11Y = () -> "A11Y";
   }
 }

@@ -7609,6 +7609,48 @@ input.dateToPick,
   opacity: 0;
 }
 
+.fast-bottomTop-slide-enter-from, .fast-bottomTop-slide-leave-to,
+.normal-bottomTop-slide-enter-from, .normal-bottomTop-slide-leave-to,
+.long-bottomTop-slide-enter-from, .long-bottomTop-slide-leave-to {
+  transform: translateY(100%);
+}
+
+.fast-leftRight-slide-enter-from, .fast-leftRight-slide-leave-to,
+.normal-leftRight-slide-enter-from, .normal-leftRight-slide-leave-to,
+.long-leftRight-slide-enter-from, .long-leftRight-slide-leave-to {
+  transform: translate(-100%, 100%);
+}
+
+.fast-leftRight-slide-move,
+.fast-bottomTop-slide-move,
+.fast-bottomTop-slide-enter-active, .fast-bottomTop-slide-leave-active,
+.fast-leftRight-slide-enter-active, .fast-leftRight-slide-leave-active{
+  transition: all 0.25s ease-out;
+}
+
+.normal-leftRight-slide-move,
+.normal-bottomTop-slide-move,
+.normal-bottomTop-slide-enter-active, .normal-bottomTop-slide-leave-active,
+.normal-leftRight-slide-enter-active, .normal-leftRight-slide-leave-active {
+  transition: all 0.5s ease-out;
+}
+
+.long-leftRight-slide-move,
+.long-bottomTop-slide-move,
+.long-bottomTop-slide-enter-active, .long-bottomTop-slide-leave-active,
+.long-leftRight-slide-enter-active, .long-leftRight-slide-leave-active {
+  transition: all 1s ease-out;
+}
+
+.fast-bottomTop-slide-leave-active,
+.normal-bottomTop-slide-leave-active,
+.long-bottomTop-slide-leave-active,
+.fast-leftRight-slide-leave-active,
+.normal-leftRight-slide-leave-active,
+.long-leftRight-slide-leave-active {
+  position: absolute;
+}
+
 .silverpeas-attached-popin {
   position: absolute;
   width: auto;

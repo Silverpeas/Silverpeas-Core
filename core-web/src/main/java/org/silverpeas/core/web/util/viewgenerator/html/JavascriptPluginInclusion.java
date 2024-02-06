@@ -190,6 +190,7 @@ public class JavascriptPluginInclusion {
   private static final String HTML2CANVAS_JS = "html2canvas.min.js";
   private static final String DOWNLOAD_JS = "download.min.js";
   private static final String VIRTUAL_KEYBOARD_PATH = getApplicationURL() + "/silverkeyboard";
+  private static final String A11Y_PATH = getApplicationURL() + "/a11y";
 
   private static final String CHART_JS = "flot/jquery.flot.min.js";
   private static final String CHART_PIE_JS = "flot/jquery.flot.pie.min.js";
@@ -356,13 +357,15 @@ public class JavascriptPluginInclusion {
     }
   }
 
-  public static ElementContainer includeMinimalSilverpeas(final ElementContainer xhtml) {
+  public static ElementContainer includeMinimalSilverpeas(final ElementContainer xhtml,
+      final String language) {
     xhtml.addElement(scriptContent("window.webContext='" + getApplicationURL() + "';"));
     includePolyfills(xhtml);
     includeJQuery(xhtml);
     xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas-i18n.js"));
     includeSecurityTokenizing(xhtml);
+    includeA11y(xhtml, language);
     return xhtml;
   }
 
@@ -1490,6 +1493,33 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(script(VIRTUAL_KEYBOARD_PATH + "/vendor/js/layouts/english.min.js"));
       xhtml.addElement(script(VIRTUAL_KEYBOARD_PATH + "/vendor/js/layouts/german.min.js"));
       xhtml.addElement(script(VIRTUAL_KEYBOARD_PATH + "/js/silverkeyboard.js"));
+    }
+    return xhtml;
+  }
+
+  static ElementContainer includeA11y(final ElementContainer xhtml,
+      final String language) {
+    final SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.a11y.settings.a11y");
+    if (settings.getBoolean("a11y.enable", false)) {
+      final LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.a11y.multilang.a11yBundle", language);
+      xhtml.addElement(scriptContent(bundleVariableName("A11yBundle")
+          .add("a.p.c", bundle.getString("a11y.param.contrast"))
+          .add("a.p.c.gl", bundle.getString("a11y.param.contrast.greyLevel"))
+          .add("a.p.c.hc", bundle.getString("a11y.param.contrast.highContrast"))
+          .add("a.p.c.nhc", bundle.getString("a11y.param.contrast.negativeHighContrast"))
+          .add("a.p.f", bundle.getString("a11y.param.font"))
+          .add("a.p.f.b", bundle.getString("a11y.param.font.big"))
+          .add("a.p.cz", bundle.getString("a11y.param.clickZone"))
+          .add("a.p.cz.e", bundle.getString("a11y.param.clickZone.enlarged"))
+          .add("a.p.l", bundle.getString("a11y.param.links"))
+          .add("a.p.l.u", bundle.getString("a11y.param.links.underlined"))
+          .produce()));
+      xhtml.addElement(link(A11Y_PATH + "/css/silverpeas-a11y.css"));
+      xhtml.addElement(link(A11Y_PATH + "/css/silverpeas-a11y-module.css"));
+      xhtml.addElement(script(A11Y_PATH + "/js/silverpeas-a11y.js"));
+      xhtml.addElement(script(A11Y_PATH + "/js/vuejs/components/silverpeas-a11y.js"));
     }
     return xhtml;
   }

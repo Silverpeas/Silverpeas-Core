@@ -815,24 +815,92 @@ window.SpVue = new function() {
     }
   };
 
-  /**
-   * Silverpeas's fade transition.
-   */
-  SpVue.component('silverpeas-fade-transition', {
+  const SP_TRANSITION_MIXIN = {
     emits : ['before-enter', 'enter', 'after-enter', 'before-leave', 'leave', 'after-leave'],
     template : '<transition v-bind:name="name" appear ' +
-                 'v-on:before-enter="$emit(\'before-enter\',$event)" ' +
-                 'v-on:enter="$emit(\'enter\',$event)" ' +
-                 'v-on:after-enter="$emit(\'after-enter\',$event)" ' +
-                 'v-on:before-leave="$emit(\'before-leave\',$event)" ' +
-                 'v-on:leave="$emit(\'leave\',$event)" ' +
-                 'v-on:after-leave="$emit(\'after-leave\',$event)"><slot></slot></transition>',
+        'v-on:before-enter="$emit(\'before-enter\',$event)" ' +
+        'v-on:enter="$emit(\'enter\',$event)" ' +
+        'v-on:after-enter="$emit(\'after-enter\',$event)" ' +
+        'v-on:before-leave="$emit(\'before-leave\',$event)" ' +
+        'v-on:leave="$emit(\'leave\',$event)" ' +
+        'v-on:after-leave="$emit(\'after-leave\',$event)"><slot></slot></transition>',
+    props : {
+      durationType : {
+        'type' : String,
+        'default' : 'normal'
+      }
+    }
+  }
+
+  const SP_TRANSITION_GROUP_MIXIN = {
+    emits : ['before-enter', 'enter', 'leave'],
+    template : '<transition-group v-bind:name="name" appear ' +
+        'v-on:before-enter="onBeforeEnter" ' +
+        'v-on:enter="onEnter" ' +
+        'v-on:leave="onLeave"><slot></slot></transition-group>',
     props : {
       durationType : {
         'type' : String,
         'default' : 'normal'
       }
     },
+    methods : {
+      onBeforeEnter : function(el) {
+        this.$emit('before-enter',el);
+      },
+      onEnter : function(el, done) {
+        this.$emit('enter',el, done);
+      },
+      onLeave : function(el, done) {
+        this.$emit('leave',el, done);
+      }
+    }
+  }
+
+  /**
+   * Silverpeas's slide transition.
+   * - slideType: 'leftRight' by default. Other possibility : 'bottomTop'.
+   */
+  SpVue.component('silverpeas-slide-transition', {
+    mixins : [SP_TRANSITION_MIXIN],
+    props : {
+      slideType : {
+        'type' : String,
+        'default' : 'leftRight'
+      }
+    },
+    computed : {
+      name : function() {
+        return this.durationType + '-' + this.slideType + '-slide';
+      }
+    }
+  });
+
+  /**
+   * Silverpeas's fade transition group.
+   * - slideType: 'leftRight' by default. Other possibility : 'bottomTop'.
+   */
+  SpVue.component('silverpeas-slide-transition-group', {
+    mixins : [SP_TRANSITION_GROUP_MIXIN],
+    props : {
+      slideType : {
+        'type' : String,
+        'default' : 'leftRight'
+      }
+    },
+    computed : {
+      name : function() {
+        return this.durationType + '-' + this.slideType + '-slide';
+      }
+    }
+  });
+
+  /**
+   * Silverpeas's fade transition.
+   * - durationType: 'normal' by default. Other possibilities : 'fast', 'long'.
+   */
+  SpVue.component('silverpeas-fade-transition', {
+    mixins : [SP_TRANSITION_MIXIN],
     computed : {
       name : function() {
         return this.durationType + '-fade';
@@ -842,22 +910,10 @@ window.SpVue = new function() {
 
   /**
    * Silverpeas's fade transition group.
+   * - durationType: 'normal' by default. Other possibilities : 'fast', 'long'.
    */
   SpVue.component('silverpeas-fade-transition-group', {
-    emits : ['before-enter', 'enter', 'after-enter', 'before-leave', 'leave', 'after-leave'],
-    template : '<transition-group v-bind:name="name" appear ' +
-        'v-on:before-enter="$emit(\'before-enter\',$event)" ' +
-        'v-on:enter="$emit(\'enter\',$event)" ' +
-        'v-on:after-enter="$emit(\'after-enter\',$event)" ' +
-        'v-on:before-leave="$emit(\'before-leave\',$event)" ' +
-        'v-on:leave="$emit(\'leave\',$event)" ' +
-        'v-on:after-leave="$emit(\'after-leave\',$event)"><slot></slot></transition-group>',
-    props : {
-      durationType : {
-        'type' : String,
-        'default' : 'normal'
-      }
-    },
+    mixins : [SP_TRANSITION_GROUP_MIXIN],
     computed : {
       name : function() {
         return this.durationType + '-fade';
