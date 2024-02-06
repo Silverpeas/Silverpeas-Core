@@ -124,7 +124,8 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
 
   private void renderMinimalSilverpeas(final head head) {
     if (minimalSilverpeasScriptEnv) {
-      head.addElement(includeMinimalSilverpeas(new ElementContainer()));
+      head.addElement(
+          includeMinimalSilverpeas(new ElementContainer(), getBundle().getLocale().getLanguage()));
     }
   }
 

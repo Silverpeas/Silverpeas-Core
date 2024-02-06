@@ -46,7 +46,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
    */
   @Override
   public void init() {
-    add(MINIMALSILVERPEAS, (x, l) -> includeMinimalSilverpeas(x));
+    add(MINIMALSILVERPEAS, JavascriptPluginInclusion::includeMinimalSilverpeas);
     add(POLYFILLS, (x, l) -> includePolyfills(x));
     add(EMBEDPLAYER, (x, l) -> includeEmbedPlayer(x));
     add(ADMIN_SPACE_HOMEPAGE, (x, l) -> includeAdminSpaceHomepage(x));
@@ -100,7 +100,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(PANES, (x, l) -> includePanes(x));
     add(CONTRIBUTIONREMINDER, JavascriptPluginInclusion::includeContributionReminder);
     add(VIRTUALKEYBOARD, JavascriptPluginInclusion::includeVirtualKeyboard);
-    add(VIRTUALKEYBOARD, JavascriptPluginInclusion::includeVirtualKeyboard);
+    add(A11Y, JavascriptPluginInclusion::includeA11y);
     add(ADDRESSCOMMONS, JavascriptPluginInclusion::includeAddressCommons);
     add(ADDRESSSEARCH, JavascriptPluginInclusion::includeAddressSearch);
     add(MAP, JavascriptPluginInclusion::includeMap);

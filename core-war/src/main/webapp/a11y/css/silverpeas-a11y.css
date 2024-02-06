@@ -1,0 +1,437 @@
+/*
+ * Copyright (C) 2000 - 2024 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+.a11y-contrast-grey-level {
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+  -webkit-filter: grayscale(1);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+  filter: gray
+}
+
+.a11y-underlined-links {
+  & a {
+    text-decoration: underline !important;
+    color: blue !important
+  }
+
+}
+
+.a11y-high-contrast {
+
+  background-image: none;
+  color: #000 !important;
+  font-weight: 500 !important;
+  background-color: #FFF !important;
+
+  & #sp-layout-header-part,
+  & #topar-header {
+    background-image: none;
+    background-color: #FFF !important;
+  }
+
+  & button,
+  & td,
+  & div,
+  & a,
+  & input,
+  & select,
+  & span,
+  & textarea,
+  & p,
+  & #myProfileFiche .statut,
+  & label,
+  & .textePetitBold,
+  & .sp_button,
+  & .ArrayColumn,
+  & #classifieds .tableFrame #categories .categoryTitle,
+  & .tableArrayPane thead,
+  & .commentaires .oneComment .text,
+  & .spaceHome .spaceName,
+  & #preview .publiName,
+  & #preview-clone .publiName,
+  & #home-event h2,
+  & .secteur-container h4,
+  & .spaceHome #spaceManager h2.portlet-title,
+  & .spaceHome #spaceEvent h2.portlet-title,
+  & .spaceHome #spaceQuiskInfo h2.portlet-title,
+  & .titre-formulaire-projet,
+  & #principal-formulaire .eventInfo,
+  & #portletPages dl.sort dt {
+    color: #000 !important;
+    font-weight: 500 !important;
+    background-color: #FFF !important;
+  }
+
+  & button,
+  & input,
+  & select,
+  & textarea,
+  & .sp_button,
+  & a[class*="ubmit"],
+  & a[id*="ubmit"] {
+    border: 1px solid #000;
+    padding: 0.25em;
+  }
+
+  & h3 strong {
+    color: #000 !important;
+    font-weight: 700 !important;
+  }
+
+  & input::placeholder {
+    color: #000 !important;
+    opacity: 1;
+  }
+
+  & strong, b {
+    font-weight: 500 !important;
+  }
+
+  & h1,
+  & h2,
+  & h3,
+  & legend,
+  & .skinFieldset legend {
+    color: #000 !important;
+    font-weight: 800 !important;
+  }
+
+  & #nav > ul > li.selected > a {
+    border: 3px solid #000;
+  }
+
+  & #nav > ul > li > a,
+  & #menutoggle,
+  & .header-container #outils #directory-link-header a {
+    color: #000 !important;
+  }
+
+  & .header-container #infoConnection .silverpeas-user-notifications.unread-user-notification > div > a {
+    color: #FFF !important;
+    background-color: #000 !important;
+  }
+
+  & .spaceHome .spaceNavigation li,
+  & #portletPages #spaceQuiskInfo .portlet-content,
+  & .bgDegradeGris,
+  & .userzoom-tooltip,
+  & .userzoom-tooltip-interaction-accessProfil,
+  & .userzoom-tooltip-interaction-accessChat,
+  & .userzoom-tooltip-interaction-accessNotification,
+  & .userzoom-tooltip-interaction-action-invitation,
+  & .userzoom-tooltip-interaction-accessChat.disabled:hover,
+  & .tableBoard,
+  & #preview #backToSearch a.button,
+  & .sp_button,
+  & #menutoggle,
+  & .link-more,
+  & button,
+  & #list-news-lecteur-view li,
+  & .bgDegradeGris.header,
+  & .bgDegradeGris .header {
+    background-color: #FFF !important;
+    background-image: none !important;
+    border: 1px solid #000 !important;
+    border-radius: 0;
+  }
+
+  & .spaceHome #bloc-advancedSeach form input[type="text"] {
+    border-color: #000 !important;
+  }
+
+  & div#search-zone-header form > a:last-child {
+    background-color: #FFF !important;
+    background-image: none;
+    text-indent: 0;
+    font-size: 18px;
+  }
+
+  & #gef-tabs {
+    border-bottom: 3px solid #000;
+  }
+
+  & .sp_tabOn a {
+    border-top: 1px solid #000;
+    border-right: 1px solid #000;
+    border-left: 1px solid #000;
+  }
+
+
+  & .commentaires #edition-box .title,
+  & .commentaires .oneComment p.author {
+    padding: 0;
+    margin: 0 0 20px 50px;
+    background: none;
+  }
+
+  & .sp-a11y-module .sp-a11y-open-menu,
+  & .sp-a11y-module .sp-a11y-close-menu,
+  & .conversejs .chatbox-title * {
+    background-color: #000 !important;
+  }
+}
+
+/** NEGATIVE HIGH CONTRAST **/
+
+.a11y-negative-high-contrast {
+  background-image: none;
+  color: yellow !important;
+  font-weight: 500 !important;
+  background-color: #000 !important;
+
+  & #sp-layout-header-part,
+  & #topar-header {
+    background-image: none;
+    background-color: #000 !important;
+  }
+
+  & button,
+  & td,
+  & div,
+  & a,
+  & input,
+  & select,
+  & span,
+  & textarea,
+  & p,
+  & #myProfileFiche .statut,
+  & label,
+  & .textePetitBold,
+  & .sp_button,
+  & .ArrayColumn,
+  & #classifieds .tableFrame #categories .categoryTitle,
+  & .tableArrayPane thead,
+  & .commentaires .oneComment .text,
+  & .spaceHome .spaceName,
+  & #preview .publiName,
+  & #preview-clone .publiName,
+  & #home-event h2,
+  & .secteur-container h4,
+  & .spaceHome #spaceManager h2.portlet-title,
+  & .spaceHome #spaceEvent h2.portlet-title,
+  & .spaceHome #spaceQuiskInfo h2.portlet-title,
+  & .titre-formulaire-projet,
+  & #principal-formulaire .eventInfo,
+  & #portletPages dl.sort dt {
+    color: yellow !important;
+    font-weight: 500 !important;
+    background-color: #000 !important;
+    background-image: none !important;
+  }
+
+  & button,
+  & input,
+  & select,
+  & textarea,
+  & .sp_button,
+  & a[class*="ubmit"],
+  & a[id*="ubmit"] {
+    border: 1px solid #FFF;
+    padding: 0.25em;
+  }
+
+  & h3 strong {
+    color: yellow !important;
+    font-weight: 700 !important;
+  }
+
+  & input::placeholder {
+    color: yellow !important;
+    opacity: 1;
+  }
+
+  & strong, b {
+    font-weight: 500 !important;
+  }
+
+  & h1 {
+    color: #FFF !important;
+    font-weight: 800 !important;
+  }
+
+  & h2 {
+    color: #FFF !important;
+    font-weight: 800 !important;
+  }
+
+  & h3,
+  & legend,
+  & .skinFieldset legend {
+    color: #FFF !important;
+    font-weight: 800 !important;
+  }
+
+  & #nav > ul > li.selected > a {
+    border: 3px solid #FFF;
+  }
+
+  & #nav > ul > li > a,
+  & #menutoggle,
+  & .header-container #outils #directory-link-header a {
+    color: yellow !important;
+  }
+
+  & .header-container #infoConnection .silverpeas-user-notifications.unread-user-notification > div > a {
+    color: #000 !important;
+    background-color: yellow !important;
+  }
+
+  & .spaceHome .spaceNavigation li,
+  & #portletPages #spaceQuiskInfo .portlet-content,
+  & .bgDegradeGris,
+  & .userzoom-tooltip,
+  & .userzoom-tooltip-interaction-accessProfil,
+  & .userzoom-tooltip-interaction-accessChat,
+  & .userzoom-tooltip-interaction-accessNotification,
+  & .userzoom-tooltip-interaction-action-invitation,
+  & .userzoom-tooltip-interaction-accessChat.disabled:hover,
+  & .tableBoard,
+  & #preview #backToSearch a.button,
+  & .sp_button,
+  & #menutoggle,
+  & .link-more,
+  & button,
+  & #list-news-lecteur-view li {
+    background-color: #000 !important;
+    background-image: none !important;
+    border: 1px solid yellow !important;
+    border-radius: 0;
+  }
+
+  & .bgDegradeGris.header,
+  & .bgDegradeGris .header {
+    background-color: #000 !important;
+    background-image: none !important;
+    border: 1px solid yellow !important;
+    border-radius: 0;
+  }
+
+  & .spaceHome #bloc-advancedSeach form input[type="text"] {
+    border-color: #FFF !important;
+  }
+
+  & div#search-zone-header form > a:last-child {
+    background-color: #000 !important;
+    background-image: none;
+    text-indent: 0;
+    font-size: 18px;
+  }
+
+  & #gef-tabs {
+    border-bottom: 3px solid #40C090;
+  }
+
+  & .sp_tabOn a {
+    border-top: 1px solid #40C090;
+    border-right: 1px solid #40C090;
+    border-left: 1px solid #40C090;
+  }
+
+
+  & .commentaires #edition-box .title,
+  & .commentaires .oneComment p.author {
+    padding: 0;
+    margin: 0 0 20px 50px;
+    background: none;
+  }
+
+  & .conversejs .chatbox .chat-head .chatbox-btn converse-icon svg,
+  & converse-icon svg {
+    fill: white !important;
+  }
+
+  & .conversejs .box-flyout {
+    border: 1px solid #FFF;
+  }
+
+}
+
+/** BIG FONT **/
+
+.a11y-big-font {
+  font-size: 24px !important;
+  font-weight: 500 !important;
+
+  & button,
+  & td,
+  & div,
+  & a,
+  & input,
+  & select,
+  & span,
+  & textarea,
+  & #myProfileFiche .statut,
+  & label,
+  & .textePetitBold,
+  & .sp_button {
+    font-size: 24px !important;
+    font-weight: 500 !important;
+  }
+
+  & strong,
+  & b {
+    font-weight: 500 !important;
+  }
+
+  & h1 {
+    font-size: 32px !important;
+    font-weight: 800 !important;
+  }
+
+  & h2 {
+    font-size: 30px !important;
+    font-weight: 800 !important;
+  }
+
+  & h3,
+  & legend,
+  & .skinFieldset legend {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+  }
+
+  & .rightContent h4 {
+    height: auto !important;
+  }
+
+  & img[src*='icons'] {
+    width: 28px;
+    height: auto;
+  }
+}
+
+.a11y-enlarged-click-zone {
+  & a {
+    display: inline-block;
+    padding: 1em;
+    border: 1px dashed blue !important;
+  }
+
+  & #topar-header a {
+    padding: 0.25em !important;
+  }
+}

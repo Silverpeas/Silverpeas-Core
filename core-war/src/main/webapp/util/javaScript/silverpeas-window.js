@@ -31,6 +31,10 @@ function _spWindow_getSilverpeasMainWindow() {
   return silverpeasTopWindow;
 }
 
+function _spWindow_isSilverpeasMainWindow() {
+  return window.__spWindow_main_frame;
+}
+
 (function($mainWindow) {
   const __windowDebug = false;
   const __notificationReady = sp.promise.deferred();
