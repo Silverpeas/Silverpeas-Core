@@ -26,11 +26,13 @@ package org.silverpeas.core.web.util.viewgenerator.html.layout;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.head;
 import org.apache.ecs.xhtml.title;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.LookAndStyleTag;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.includeMinimalSilverpeas;
 
 /**
@@ -48,6 +50,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 public class HeadLayoutPartTag extends SilverpeasLayout {
   private static final long serialVersionUID = 3999748737379369648L;
 
+  private String title;
   private String atTop;
   private boolean minimalSilverpeasScriptEnv;
   private boolean noLookAndFeel;
@@ -57,6 +60,10 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
 
   public HeadLayoutPartTag() {
     super();
+  }
+
+  public void setTitle(final String title) {
+    this.title = title;
   }
 
   public void setAtTop(final String atTop) {
@@ -97,7 +104,8 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
   public int doEndTag() throws JspException {
     final head head = new head();
     renderTop(head);
-    head.addElement(new title(getBundle().getString("GML.popupTitle")));
+    head.addElement(
+        new title(defaultStringIfNotDefined(title, getBundle().getString("GML.popupTitle"))));
     renderMinimalSilverpeas(head);
     renderLookAndFeel(head);
     final BodyContent bodyContent = getBodyContent();
