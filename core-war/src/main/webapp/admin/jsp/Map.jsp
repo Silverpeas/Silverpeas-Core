@@ -41,6 +41,9 @@
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <view:timeout />
+
+<c:set var="spaceId" value="${param.SpaceId}"/>
+
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -53,12 +56,8 @@
 
   String title = message.getString("MyMap");
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><%=title%></title>
-  <view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part title="<%=title%>">
   <script type="text/javascript">
     function openClipboard() {
       sp.navRequest('${silfn:applicationURL()}<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp')
@@ -134,8 +133,8 @@
       getComponents();
     });
   </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <view:browseBar extraInformations="<%=title%>"/>
 <view:window>
   <view:frame>
@@ -170,7 +169,7 @@
         <tr>
           <td>
             <ul class="sm-map">
-              <view:map displayAppIcon="true" displayAppsFirst="true"/>
+              <view:map spaceId="${spaceId}" displayAppIcon="true" displayAppsFirst="true"/>
             </ul>
           </td>
         </tr>
@@ -178,5 +177,5 @@
     </view:board>
   </view:frame>
 </view:window>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
