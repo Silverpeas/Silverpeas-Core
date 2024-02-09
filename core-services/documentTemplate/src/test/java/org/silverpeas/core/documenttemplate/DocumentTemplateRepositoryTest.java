@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
@@ -49,6 +50,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -143,6 +145,7 @@ class DocumentTemplateRepositoryTest {
     assertThat(contentFile.isFile(), is(true));
     assertThat(jsonFile.isFile(), is(true));
     assertThat(contentFile.getName(), is(template.getId() + ".txt"));
+    assertRepositoryContainingNbFiles(2);
   }
 
   @DisplayName("Creating a document template whereas content file already exists should throw an exception")
@@ -235,22 +238,33 @@ class DocumentTemplateRepositoryTest {
         "\"lastUpdaterId\":\"26\"," +
         "\"lastUpdateInstant\":\"" + lastUpdateDate + "\"}"));
     assertThat(Files.readString(contentFile.toPath()), is(SIMPLE_CONTENT));
+    assertRepositoryContainingNbFiles(2);
   }
 
-  @DisplayName("Updating json and content files of a document template should work")
+  @DisplayName("Updating json and content files (same extension) of a document template should work")
   @Test
   void update() throws IOException {
+    assertUpdate("txt", true);
+  }
+
+  @DisplayName("Updating json and content files with other extensions of a document template should work")
+  @Test
+  void updateWithOtherContentExtension() throws IOException {
+    assertUpdate("png", false);
+  }
+
+  private void assertUpdate(final String extension, final boolean exists) throws IOException {
     create();
     final String updatedContent = "Another Simple content";
     final ByteArrayInputStream updatedContentStream = new ByteArrayInputStream(
         updatedContent.getBytes(Charsets.UTF_8));
     final DocumentTemplate template = new DocumentTemplate(DEFAULT_TEMPLATE);
-    template.setExtension("png");
+    template.setExtension(extension);
     template.setPosition(38);
     template.setName(template.getName("fr") + " [MODI]", "fr");
     final File notExistsFile = template.getContentFilePath().toFile();
-    assertThat(notExistsFile.getName(), is(template.getId() + ".png"));
-    assertThat(notExistsFile.exists(), is(false));
+    assertThat(notExistsFile.getName(), is(template.getId() + "." + extension));
+    assertThat(notExistsFile.exists(), is(exists));
     final DocumentTemplate updatedTemplate = repository.update(template, updatedContentStream);
     assertThat(updatedTemplate, not(sameInstance(template)));
     final File contentFile = updatedTemplate.getContentFilePath().toFile();
@@ -258,7 +272,7 @@ class DocumentTemplateRepositoryTest {
     assertThat(jsonFile, is(new File(contentFile.getParentFile(), updatedTemplate.getId() + ".json")));
     assertThat(contentFile.isFile(), is(true));
     assertThat(jsonFile.isFile(), is(true));
-    assertThat(contentFile.getName(), is(updatedTemplate.getId() + ".png"));
+    assertThat(contentFile.getName(), is(updatedTemplate.getId() + "." + extension));
     final OffsetDateTime lastUpdateDate = OffsetDateTime.ofInstant(updatedTemplate.getJson().getLastUpdateInstant(), ZoneId.systemDefault());
     assertThat(lastUpdateDate, greaterThan(DEFAULT_CREATION_DATE));
     assertThat(Files.readString(jsonFile.toPath()), is("{" +
@@ -274,6 +288,7 @@ class DocumentTemplateRepositoryTest {
         "\"lastUpdaterId\":\"26\"," +
         "\"lastUpdateInstant\":\"" + lastUpdateDate + "\"}"));
     assertThat(Files.readString(contentFile.toPath()), is(updatedContent));
+    assertRepositoryContainingNbFiles(2);
   }
 
   @DisplayName("Deleting a document template without id should throw an exception")
@@ -321,6 +336,7 @@ class DocumentTemplateRepositoryTest {
     repository.delete(template);
     assertThat(contentFile.exists(), is(false));
     assertThat(jsonFile.exists(), is(false));
+    assertRepositoryContainingNbFiles(0);
   }
 
   @DisplayName("Stream all document templates should work")
@@ -356,5 +372,13 @@ class DocumentTemplateRepositoryTest {
     final Optional<DocumentTemplate> documentTemplate = repository.getById(id);
     assertThat(documentTemplate.isEmpty(), is(false));
     documentTemplate.ifPresent(t -> assertThat(t.getId(), is(id)));
+  }
+
+  private void assertRepositoryContainingNbFiles(long nb) {
+    try (final Stream<Path> list = Files.list(getRepositoryPath())) {
+      assertThat(list.count(), is(nb));
+    } catch (IOException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 }

@@ -49,8 +49,8 @@ public class MemoizedSupplier<T> implements Supplier<T> {
   @Override
   public T get() {
     if (!memoized) {
-      memoized = true;
       value = supplier.get();
+      memoized = true;
     }
     return value;
   }
