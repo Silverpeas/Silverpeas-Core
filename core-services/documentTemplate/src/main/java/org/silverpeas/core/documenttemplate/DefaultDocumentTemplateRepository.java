@@ -125,10 +125,10 @@ public class DefaultDocumentTemplateRepository implements DocumentTemplateReposi
     toUpdate.getJson().setLastUpdateInstant(Instant.now());
     if (content != null) {
       try {
+        final DocumentTemplate current = new DocumentTemplate(documentTemplate);
+        current.setExtension(integrityVisitor.getContentFileExtension());
+        DeletingPathVisitor.deleteQuietly(current.getContentFilePath());
         final Path contentPath = toUpdate.getContentFilePath();
-        if (getExtension(contentPath.toString()).equalsIgnoreCase(integrityVisitor.getContentFileExtension())) {
-          DeletingPathVisitor.deleteQuietly(contentPath);
-        }
         Files.copy(content, contentPath);
       } catch (IOException e) {
         throw new DocumentTemplateRuntimeException(e);
