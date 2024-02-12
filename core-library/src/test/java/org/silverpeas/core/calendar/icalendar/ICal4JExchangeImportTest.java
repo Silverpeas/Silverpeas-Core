@@ -57,7 +57,9 @@ import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -601,8 +603,8 @@ class ICal4JExchangeImportTest {
   private String getFileContent(String fileName) {
     try (InputStream fileStream = getClass().getResourceAsStream(fileName)) {
       return String.join("\n", IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 

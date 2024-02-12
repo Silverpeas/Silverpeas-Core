@@ -49,6 +49,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -57,7 +58,7 @@ import static org.silverpeas.core.admin.service.RightAssignationContext.MODE.REP
 import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
-public class AssignRightIT  {
+public class AssignRightIT {
 
   private static final String SCRIPTS_PATH =
       "/" + AssignRightIT.class.getPackage().getName().replaceAll("\\.", "/");
@@ -528,70 +529,62 @@ public class AssignRightIT  {
    * The mechanism is the following:<br>
    * <p>
    * the given parameters represents the name of the file that contains the expected result that
-   * must return the method {@link #getCurrentDirectRights()}.<br>
-   * Normally, each lines starts with a number as the first data is the domain id. So, in order to
-   * give the possibility to annotate the file (for comprehension for example), each line of the
-   * file that does not start with a number is ignored.<br>
-   * If the file content is equal to the result of the query execution, the test is successfully
-   * verified.<br>
-   * If not, the different lines between the file content and the query result are logged to the
-   * console.<br>
-   * The lines of current query result and those of the expected ones (from the file) are sorted by
-   * alphabetic mode.
+   * must return the method {@link #getCurrentDirectRights()}.<br> Normally, each lines starts with
+   * a number as the first data is the domain id. So, in order to give the possibility to annotate
+   * the file (for comprehension for example), each line of the file that does not start with a
+   * number is ignored.<br> If the file content is equal to the result of the query execution, the
+   * test is successfully verified.<br> If not, the different lines between the file content and the
+   * query result are logged to the console.<br> The lines of current query result and those of the
+   * expected ones (from the file) are sorted by alphabetic mode.
    * </p>
-   * @param fileNameOfExpectedResult
+   *
+   * @param fileNameOfExpectedResult result
    */
-  @SuppressWarnings("unchecked")
   private void verifyCurrentDirectRights(String fileNameOfExpectedResult) {
     StringReader current = new StringReader(getCurrentDirectRights());
     StringReader expected = new StringReader(getFileContent(fileNameOfExpectedResult));
-    try {
-      List<String> currentLines = IOUtils.readLines(current);
-      List<String> expectedLines = IOUtils.readLines(expected);
-      Iterator<String> expectedLinesIt = expectedLines.iterator();
-      while (expectedLinesIt.hasNext()) {
-        String currentExpectedLine = expectedLinesIt.next();
-        byte[] firstChar = new byte[]{currentExpectedLine.getBytes()[0]};
-        if (!StringUtil.isInteger(new String(firstChar))) {
-          // The line does not start with a number, it must be ignored in verification process.
-          expectedLinesIt.remove();
-        }
+    List<String> currentLines = IOUtils.readLines(current);
+    List<String> expectedLines = IOUtils.readLines(expected);
+    Iterator<String> expectedLinesIt = expectedLines.iterator();
+    while (expectedLinesIt.hasNext()) {
+      String currentExpectedLine = expectedLinesIt.next();
+      byte[] firstChar = new byte[]{currentExpectedLine.getBytes()[0]};
+      if (!StringUtil.isInteger(new String(firstChar))) {
+        // The line does not start with a number, it must be ignored in verification process.
+        expectedLinesIt.remove();
       }
-      List<String> leavingCurrentLines = new ArrayList<>(currentLines);
-      leavingCurrentLines.removeAll(expectedLines);
-      List<String> leavingExpectedLines = new ArrayList<>(expectedLines);
-      leavingExpectedLines.removeAll(currentLines);
-      boolean areContentEquals = leavingCurrentLines.isEmpty() && leavingExpectedLines.isEmpty();
-      String message = "";
-      if (!leavingCurrentLines.isEmpty()) {
-        Collections.sort(leavingCurrentLines);
-        message += "Current lines that are not in expected ones:\n" +
-            String.join("\n", leavingCurrentLines);
+    }
+    List<String> leavingCurrentLines = new ArrayList<>(currentLines);
+    leavingCurrentLines.removeAll(expectedLines);
+    List<String> leavingExpectedLines = new ArrayList<>(expectedLines);
+    leavingExpectedLines.removeAll(currentLines);
+    boolean areContentEquals = leavingCurrentLines.isEmpty() && leavingExpectedLines.isEmpty();
+    String message = "";
+    if (!leavingCurrentLines.isEmpty()) {
+      Collections.sort(leavingCurrentLines);
+      message += "Current lines that are not in expected ones:\n" +
+          String.join("\n", leavingCurrentLines);
+    }
+    if (!leavingExpectedLines.isEmpty()) {
+      if (StringUtil.isDefined(message)) {
+        message += "\n";
       }
-      if (!leavingExpectedLines.isEmpty()) {
-        if (StringUtil.isDefined(message)) {
-          message += "\n";
-        }
-        Collections.sort(leavingExpectedLines);
-        message += "Expected lines that are not in current ones:\n" +
-            String.join("\n", leavingExpectedLines);
-      }
-      if (!areContentEquals) {
-        fail("\n" + message);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+      Collections.sort(leavingExpectedLines);
+      message += "Expected lines that are not in current ones:\n" +
+          String.join("\n", leavingExpectedLines);
+    }
+    if (!areContentEquals) {
+      fail("\n" + message);
     }
   }
 
   /**
    * This method execute a SQL Query on the database (with the connection of the test) to extract
-   * the list of all direct rights (inherited or not) assigned to users and groups.<br>
-   * The executed query returns 3 columns and the two firsts columns has always the same number of
-   * characters (spaces are added after data to obtain the total number of characters that must
-   * have
-   * the column). For example, the first column always returns 40 characters. <br>
-   * The composition of the columns is the following (separated by tabulation character):
+   * the list of all direct rights (inherited or not) assigned to users and groups.<br> The executed
+   * query returns 3 columns and the two firsts columns has always the same number of characters
+   * (spaces are added after data to obtain the total number of characters that must have the
+   * column). For example, the first column always returns 40 characters. <br> The composition of
+   * the columns is the following (separated by tabulation character):
    * <ul>
    * <li>Column 1: the domain identifier of the group or the user</li>
    * <li>
@@ -620,6 +613,7 @@ public class AssignRightIT  {
    * </ul>
    * </li>
    * </ul>
+   *
    * @return a string that represents the result of the query execution.
    */
   private String getCurrentDirectRights() {
@@ -645,9 +639,10 @@ public class AssignRightIT  {
 
   private String getFileContent(String fileName) {
     try (InputStream fileStream = getClass().getResourceAsStream(fileName)) {
-      return String.join("\n", IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+      return String.join("\n", IOUtils.readLines(Objects.requireNonNull(fileStream),
+          Charsets.UTF_8));
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 }

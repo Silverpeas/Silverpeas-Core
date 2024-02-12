@@ -39,6 +39,7 @@ import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -165,7 +166,7 @@ public class ErrorAnnotationIT {
       assertThat(format("Searching exception message into \n{0}", lines),
           lines.stream().filter(line -> line.contains("A failure!")).count(),
           is(greaterThanOrEqualTo(1L)));
-    } catch (IOException e) {
+    } catch (UncheckedIOException e) {
       fail(e.getMessage());
     }
   }
@@ -182,7 +183,7 @@ public class ErrorAnnotationIT {
       assertThat(format("Searching {0} into \n{1}", record, lines),
           lines.stream().filter(line -> line.contains(record)).count(),
           is(greaterThanOrEqualTo(1L)));
-    } catch (IOException e) {
+    } catch (UncheckedIOException e) {
       fail(e.getMessage());
     }
   }

@@ -40,6 +40,7 @@ import org.silverpeas.core.util.logging.Level;
 import javax.ejb.EJBException;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -150,7 +151,7 @@ public class SimulationActionInterceptorIT {
       assertThat(IOUtils.readLines(loggerReaderRule.getReader()).stream()
           .filter(line -> line.contains(message))
           .count(), is(greaterThanOrEqualTo(1L)));
-    } catch (IOException e) {
+    } catch (UncheckedIOException e) {
       fail(e.getMessage());
     }
   }

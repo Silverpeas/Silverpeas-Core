@@ -29,6 +29,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,8 +41,9 @@ public class ExternalExecution {
   }
 
   /**
-   * Execute the given external command into the context defined by a default {@link
-   * ExternalExecution.Config} (provided by {@link Config#init()}).
+   * Execute the given external command into the context defined by a default
+   * {@link ExternalExecution.Config} (provided by {@link Config#init()}).
+   *
    * @param commandLine the external command to execute.
    * @return a {@link List} of console lines written by the external command.
    */
@@ -50,11 +52,12 @@ public class ExternalExecution {
   }
 
   /**
-   * Execute the given external command into the context defined by the given {@link
-   * ExternalExecution.Config}.
+   * Execute the given external command into the context defined by the given
+   * {@link ExternalExecution.Config}.
+   *
    * @param commandLine the external command to execute.
-   * @param config the configuration that permits to perform the execution of the command with
-   * some flexibility.
+   * @param config the configuration that permits to perform the execution of the command with some
+   * flexibility.
    * @return a {@link List} of console lines written by the external command.
    */
   public static List<String> exec(final CommandLine commandLine, final Config config) {
@@ -69,7 +72,7 @@ public class ExternalExecution {
       errEater = new Thread(() -> {
         try {
           errors.addAll(IOUtils.readLines(process.getErrorStream(), Charset.defaultCharset()));
-        } catch (final IOException e) {
+        } catch (UncheckedIOException e) {
           throw new ExternalExecutionException(e);
         }
       });
@@ -77,7 +80,7 @@ public class ExternalExecution {
       outEater = new Thread(() -> {
         try {
           result.addAll(IOUtils.readLines(process.getInputStream(), Charset.defaultCharset()));
-        } catch (final IOException e) {
+        } catch (UncheckedIOException e) {
           throw new ExternalExecutionException(e);
         }
       });
@@ -132,6 +135,7 @@ public class ExternalExecution {
      * <li>the code value of a successful exit status is <b>0</b></li>
      * <li>the exception errors are traced by {@link SilverLogger#error(Throwable)}</li>
      * </ul>
+     *
      * @return an instance of {@link ExternalExecution.Config} initialized with default values.
      */
     public static Config init() {
@@ -143,6 +147,7 @@ public class ExternalExecution {
 
     /**
      * Sets the code value of a successful exit status.
+     *
      * @param successfulExitStatusValue an {@link Integer} that represents the code value of a
      * successful exit status.
      * @return the {@link ExternalExecution.Config} instance completed with the given information.
@@ -154,6 +159,7 @@ public class ExternalExecution {
 
     /**
      * Gets the code value of a successful exit status.
+     *
      * @return an integer that represents the code value.
      */
     public int getSuccessfulExitStatusValue() {
@@ -162,9 +168,10 @@ public class ExternalExecution {
 
     /**
      * Calling this method avoids to log errors thrown during the execution of a command into log
-     * handlers of the server.<br>
-     * It is useful for a command for which an execution error can be interpreted as a functional
-     * information. For example, a command that verifies the existence of an external tool.
+     * handlers of the server.<br> It is useful for a command for which an execution error can be
+     * interpreted as a functional information. For example, a command that verifies the existence
+     * of an external tool.
+     *
      * @return the {@link ExternalExecution.Config} instance completed with the given information.
      */
     public Config doNotDisplayErrorTrace() {
@@ -175,6 +182,7 @@ public class ExternalExecution {
     /**
      * Indicates if the Silverpeas error trace must be displayed when an execution error is
      * detected.
+     *
      * @return true if errors must be traced, false otherwise.
      */
     public boolean isDisplayErrorTraceEnabled() {

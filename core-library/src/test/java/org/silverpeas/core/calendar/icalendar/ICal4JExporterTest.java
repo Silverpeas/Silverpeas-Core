@@ -53,10 +53,7 @@ import org.silverpeas.core.test.unit.extention.TestManagedBeans;
 import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.core.util.Charsets;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -668,57 +665,53 @@ class ICal4JExporterTest {
    * <p>
    * The mechanism is the following:<br>
    * <p/>
-   * the first parameter represent the list of calendar events to export and the second one is the name of the file that
-   * contains the expected result.<br> Each lines starting with '#' character is ignored.<br> If the file content is
-   * equal to the result of export, the test is successfully verified.<br> If not, the different lines between the file
-   * content and the export result are logged to the console.<br> Only event parts are verified from the contents.
+   * the first parameter represent the list of calendar events to export and the second one is the
+   * name of the file that contains the expected result.<br> Each lines starting with '#' character
+   * is ignored.<br> If the file content is equal to the result of export, the test is successfully
+   * verified.<br> If not, the different lines between the file content and the export result are
+   * logged to the console.<br> Only event parts are verified from the contents.
    * </p>
    *
-   * @param descriptor               descriptor about the iCal export process
+   * @param descriptor descriptor about the iCal export process
    * @param fileNameOfExpectedResult the name of the file that contains the expected export result.
    */
   @SuppressWarnings("Duplicates")
   private void exportAndVerifyResult(final ExportDescriptor descriptor,
-                                     List<CalendarEvent> calendarEvents, String fileNameOfExpectedResult) throws ExportException {
-    try {
+      List<CalendarEvent> calendarEvents, String fileNameOfExpectedResult) throws ExportException {
+    ByteArrayOutputStream emptyExportResult = new ByteArrayOutputStream();
+    iCalendarExporter.exports(ExportDescriptor.withOutputStream(emptyExportResult)
+        .withParameter(CALENDAR, calendar), Stream::empty);
 
-      ByteArrayOutputStream emptyExportResult = new ByteArrayOutputStream();
-      iCalendarExporter.exports(ExportDescriptor.withOutputStream(emptyExportResult)
-          .withParameter(CALENDAR, calendar), Stream::empty);
+    List<String> empty = IOUtils.readLines(new StringReader(emptyExportResult.toString()));
+    empty.remove(empty.size() - 1);
 
-      List<String> empty = IOUtils.readLines(new StringReader(emptyExportResult.toString()));
-      empty.remove(empty.size() - 1);
+    iCalendarExporter.exports(descriptor, calendarEvents::stream);
 
-      iCalendarExporter.exports(descriptor, calendarEvents::stream);
+    StringReader current = new StringReader(descriptor.getOutputStream().toString());
+    StringReader expected = new StringReader(getFileContent(fileNameOfExpectedResult));
 
-      StringReader current = new StringReader(descriptor.getOutputStream().toString());
-      StringReader expected = new StringReader(getFileContent(fileNameOfExpectedResult));
-
-      final List<String> currentContentLines = IOUtils.readLines(current);
-      currentContentLines.remove(currentContentLines.size() - 1);
-      Iterator<String> it = currentContentLines.iterator();
-      while (it.hasNext() && !empty.isEmpty()) {
-        String currentLine = it.next();
-        String expectedLine = empty.remove(0);
-        assertThat(expectedLine, is(currentLine));
-        it.remove();
-      }
-
-      // Line to ignore from expected result extracted from a file.
-      final List<String> expectedContentLines = IOUtils.readLines(expected);
-      expectedContentLines.removeIf(currentExpectedLine -> currentExpectedLine.startsWith("#"));
-
-      String currentContent = String.join("\n", currentContentLines);
-      String expectedContent = String.join("\n", expectedContentLines);
-
-      // Removing DTSTAMP
-      currentContent = currentContent.replaceAll("DTSTAMP.+\n",
-          "DTSTAMP:VALUE IS NOT VERIFIED BUT IS MANDATORY\n");
-
-      assertThat(currentContent, is(expectedContent));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    final List<String> currentContentLines = IOUtils.readLines(current);
+    currentContentLines.remove(currentContentLines.size() - 1);
+    Iterator<String> it = currentContentLines.iterator();
+    while (it.hasNext() && !empty.isEmpty()) {
+      String currentLine = it.next();
+      String expectedLine = empty.remove(0);
+      assertThat(expectedLine, is(currentLine));
+      it.remove();
     }
+
+    // Line to ignore from expected result extracted from a file.
+    final List<String> expectedContentLines = IOUtils.readLines(expected);
+    expectedContentLines.removeIf(currentExpectedLine -> currentExpectedLine.startsWith("#"));
+
+    String currentContent = String.join("\n", currentContentLines);
+    String expectedContent = String.join("\n", expectedContentLines);
+
+    // Removing DTSTAMP
+    currentContent = currentContent.replaceAll("DTSTAMP.+\n",
+        "DTSTAMP:VALUE IS NOT VERIFIED BUT IS MANDATORY\n");
+
+    assertThat(currentContent, is(expectedContent));
   }
 
   private ExportDescriptor newExportDescriptor() {
@@ -732,9 +725,10 @@ class ICal4JExporterTest {
 
   private String getFileContent(String fileName) {
     try (InputStream fileStream = getClass().getResourceAsStream(fileName)) {
-      return String.join("\n", IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+      return String.join("\n", IOUtils.readLines(Objects.requireNonNull(fileStream),
+          Charsets.UTF_8));
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 

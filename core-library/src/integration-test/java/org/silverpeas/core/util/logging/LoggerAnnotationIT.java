@@ -39,6 +39,7 @@ import org.silverpeas.core.util.toto.ABasicClass;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
@@ -110,7 +111,7 @@ public class LoggerAnnotationIT {
       assertThat(format("Searching {0} into \n{1}", record, lines),
           lines.stream().filter(line -> like(line, record)).count(),
           is(greaterThanOrEqualTo(1L)));
-    } catch (IOException e) {
+    } catch (UncheckedIOException e) {
       fail(e.getMessage());
     }
   }
