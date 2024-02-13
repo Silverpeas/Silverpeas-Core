@@ -36,6 +36,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -166,8 +168,14 @@ public class DocumentTemplateWebController extends
   private UploadedFile mergeDocumentTemplateData(DocumentTemplateWebRequestContext context,
       final DocumentTemplate documentTemplate) {
     final HttpRequest request = context.getRequest();
-    ofNullable(context.getRequest().getParameterAsInteger("position"))
+    ofNullable(request.getParameterAsInteger("position"))
         .ifPresent(documentTemplate::setPosition);
+    ofNullable(request.getParameter("restrictedSpaceIds"))
+        .map(s -> Stream.of(s.split("[ ,;]"))
+            .map(String::trim)
+            .filter(StringUtil::isDefined)
+            .collect(Collectors.toList()))
+        .ifPresent(documentTemplate::setRestrictedSpaceIds);
     DisplayI18NHelper.getLanguages().forEach(l -> {
       documentTemplate.setName(request.getParameter("name-" + l), l);
       documentTemplate.setDescription(request.getParameter("description-" + l), l);
@@ -179,6 +187,7 @@ public class DocumentTemplateWebController extends
         documentTemplate.setExtension(getExtension(f.getFile().getName()));
       } else {
         context.getMessager().addError(getString("docTemplate.save.content.type"));
+        throw new WebApplicationException(BAD_REQUEST);
       }
     });
     return uploadedFile.orElse(null);

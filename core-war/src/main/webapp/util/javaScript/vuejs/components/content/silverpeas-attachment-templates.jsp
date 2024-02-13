@@ -31,8 +31,6 @@
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment"/>
 <view:setBundle basename="org.silverpeas.documentTemplate.multilang.documentTemplate" var="docTplBundle"/>
 
-<c:set var="isDocumentTemplateEnabled" value="<%=DocumentTemplateWebManager.get().existsDocumentTemplate()%>" />
-
 <fmt:message key="attachment.dialog.add" var="addFilesTitle" />
 <fmt:message key="GML.file" var="fileLabel"/>
 <fmt:message key="documentTemplate.label" var="docTemplateLabel" bundle="${docTplBundle}"/>
@@ -42,7 +40,7 @@
   <div class="silverpeas-attachment-management">
     <silverpeas-add-files-popin
         v-on:api="addPopinApi = $event"
-        v-bind:component-instance-id="context.componentInstanceId"
+        v-bind:component-instance-id="componentInstanceId"
         v-bind:is-i18n-content="context.isI18nContent"
         v-bind:i18n-content-language="context.i18nContentLanguage">
       <silverpeas-attachment-form v-on:api="addFormApi = $event"

@@ -39,9 +39,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.time.ZoneId.systemDefault;
+import static java.util.stream.Collectors.toList;
+import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
@@ -63,6 +67,8 @@ class JsonDocumentTemplate implements Serializable {
   @XmlElement
   private int position = -1;
   @XmlElement
+  private JsonDocumentTemplateRestrictions restrictions = new JsonDocumentTemplateRestrictions();
+  @XmlElement
   private String creatorId;
   @XmlElement
   private String creationInstant;
@@ -80,6 +86,7 @@ class JsonDocumentTemplate implements Serializable {
     this.nameTranslations = new UserI18NTranslationMap(other.nameTranslations);
     this.descriptionTranslations = new UserI18NTranslationMap(other.descriptionTranslations);
     this.position = other.position;
+    this.restrictions = new JsonDocumentTemplateRestrictions(other.restrictions);
     this.creatorId = other.creatorId;
     this.creationInstant = other.creationInstant;
     this.lastUpdaterId = other.lastUpdaterId;
@@ -108,6 +115,10 @@ class JsonDocumentTemplate implements Serializable {
 
   void setPosition(final int position) {
     this.position = position;
+  }
+
+  public JsonDocumentTemplateRestrictions getRestrictions() {
+    return restrictions;
   }
 
   String getCreatorId() {
@@ -146,7 +157,17 @@ class JsonDocumentTemplate implements Serializable {
 
   @Override
   public String toString() {
-    return JSONCodec.encode(this);
+    final JsonDocumentTemplateRestrictions savedRestrictions = this.restrictions;
+    if (savedRestrictions.isEmpty()) {
+      this.restrictions = null;
+    }
+    try {
+      return JSONCodec.encode(this);
+    } finally {
+      if (savedRestrictions.isEmpty()) {
+        this.restrictions = savedRestrictions;
+      }
+    }
   }
 
   static JsonDocumentTemplate decode(final Path jsonPath) {
@@ -165,5 +186,60 @@ class JsonDocumentTemplate implements Serializable {
         .map(j -> JSONCodec.decode(j, JsonDocumentTemplate.class))
         .findFirst()
         .orElseGet(JsonDocumentTemplate::new);
+  }
+
+  /**
+   * This class handles the json data part dedicated to restrictions.
+   * @author silveryocha
+   */
+  @XmlRootElement
+  @XmlAccessorType(XmlAccessType.FIELD)
+  static class JsonDocumentTemplateRestrictions implements Serializable {
+    private static final long serialVersionUID = 136978536660882286L;
+
+    @XmlElement
+    private List<String> spaceIds;
+
+    JsonDocumentTemplateRestrictions() {
+      // constructor only visible into package
+    }
+
+    JsonDocumentTemplateRestrictions(final JsonDocumentTemplateRestrictions other) {
+      this.spaceIds = other.spaceIds != null ? new ArrayList<>(other.spaceIds) : null;
+    }
+
+    boolean isEmpty() {
+      return spaceIds == null || spaceIds.isEmpty();
+    }
+
+    /**
+     * Gets the list of space identifiers the document template is restricted to.
+     * <p>
+     *   Children space of indicated ones are allowed to provide the document template.
+     * </p>
+     * @return a list of space identifier as string. Empty list if it does not exist restriction.
+     */
+    public List<String> getSpaceIds() {
+      return spaceIds != null ? spaceIds : new ArrayList<>(0);
+    }
+
+    /**
+     * Gets the list of space identifiers the document template is restricted to.
+     * <p>
+     *   Children space of indicated ones are allowed to provide the document template, so there
+     *   is no need to specified explicitly them.
+     * </p>
+     * <p>
+     *   If an empty list (or a null one) is given, no data about restriction are saved into JSON
+     *   model.
+     * </p>
+     * @param spaceIds a list of space identifier as string. Null or empty list means no space
+     * restriction.
+     */
+    public void setSpaceIds(final List<String> spaceIds) {
+      this.spaceIds = isNotEmpty(spaceIds) ?
+          spaceIds.stream().map(String::toUpperCase).collect(toList()) :
+          null;
+    }
   }
 }

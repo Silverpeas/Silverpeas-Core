@@ -31,7 +31,7 @@
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment"/>
 <view:setBundle basename="org.silverpeas.documentTemplate.multilang.documentTemplate" var="docTplBundle"/>
 
-<c:set var="isDocumentTemplateEnabled" value="<%=DocumentTemplateWebManager.get().existsDocumentTemplate()%>" />
+<c:set var="existsDocumentTemplate" value="<%=DocumentTemplateWebManager.get().existsDocumentTemplate()%>" />
 
 <fmt:message key="attachment.dialog.add" var="addFilesTitle" />
 <fmt:message key="GML.language" var="languageLabel"/>
@@ -55,7 +55,7 @@
         <silverpeas-add-files-form v-on:api="setFormApi"
                                    v-bind:component-instance-id="componentInstanceId"
                                    v-bind:multiple="false"
-                                   v-bind:is-document-template-enabled="${isDocumentTemplateEnabled}"
+                                   v-bind:use-document-template="${existsDocumentTemplate}"
                                    v-bind:is-i18n-content="isI18nContent"
                                    v-bind:i18n-content-language="i18nContentLanguage"></silverpeas-add-files-form>
         <slot></slot>
@@ -92,6 +92,7 @@
       <div class="champ-ui-dialog">
         <silverpeas-document-template-input class="document-template-input"
                                             id="file_create"
+                                            v-bind:component-instance-id="componentInstanceId"
                                             v-on:api="setDocumentTemplateApi"></silverpeas-document-template-input>
       </div>
     </div>
