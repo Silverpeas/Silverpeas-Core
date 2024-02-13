@@ -26,6 +26,8 @@ package org.silverpeas.core.webapi.documenttemplate;
 
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.documenttemplate.DocumentTemplate;
+import org.silverpeas.core.documenttemplate.DocumentTemplateRestrictionFilter;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 
@@ -34,11 +36,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.webapi.documenttemplate.DocumentTemplateResourceURIs.DOC_TEMPLATE_BASE_URI;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha
@@ -53,6 +60,9 @@ public class DocumentTemplateResource extends RESTWebService {
 
   @Inject
   private DocumentTemplateResourceURIs uri;
+
+  @QueryParam("instanceIdFilter")
+  private String instanceIdFilter;
 
   @Override
   protected String getResourceBasePath() {
@@ -81,16 +91,26 @@ public class DocumentTemplateResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<DocumentTemplateEntity> listAll() {
-    return asWebEntities(manager.getAllDocumentTemplates());
+    checkUserCanAccessInstanceIdIfAny();
+    final DocumentTemplateRestrictionFilter filter = new DocumentTemplateRestrictionFilter()
+        .setInstanceId(instanceIdFilter);
+    return asWebEntities(manager.getAllDocumentTemplates().stream().filter(filter::applyOn));
   }
 
-  private List<DocumentTemplateEntity> asWebEntities(final List<DocumentTemplate> docTemplates) {
-    return docTemplates.stream().map(this::asWebEntity).collect(Collectors.toList());
+  private List<DocumentTemplateEntity> asWebEntities(final Stream<DocumentTemplate> docTemplates) {
+    return docTemplates.map(this::asWebEntity).collect(Collectors.toList());
   }
 
   private DocumentTemplateEntity asWebEntity(final DocumentTemplate docTemplate) {
     return DocumentTemplateEntity.from(docTemplate, uri.ofDocumentTemplate(docTemplate),
         getHttpRequest().getUserLanguage());
+  }
+
+  private void checkUserCanAccessInstanceIdIfAny() {
+    if (isDefined(instanceIdFilter) &&
+        !ComponentAccessControl.get().isUserAuthorized(getUser().getId(), instanceIdFilter)) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
   }
 
   @Override

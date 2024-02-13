@@ -75,7 +75,7 @@ public class DocumentTemplateWebManager {
   }
 
   private final MemoizedSyncSupplier<List<DocumentTemplate>> cachedList =
-      new MemoizedSyncSupplier<>(() -> service.listAll());
+      new MemoizedSyncSupplier<>(() -> isEnabled() ? service.listAll() : List.of());
 
   /**
    * Gets the document template data from its identifier.
@@ -199,6 +199,9 @@ public class DocumentTemplateWebManager {
 
   /**
    * Gets all the sorted list of document templates.
+   * <p>
+   *   No filtering rule is performed.
+   * </p>
    * @return a list of {@link DocumentTemplate} instance.
    */
   public List<DocumentTemplate> getAllDocumentTemplates() {
@@ -210,7 +213,7 @@ public class DocumentTemplateWebManager {
    * @return true if exists, false otherwise.
    */
   public boolean existsDocumentTemplate() {
-    return isEnabled() && !cachedList.get().isEmpty();
+    return !cachedList.get().isEmpty();
   }
 
   /**

@@ -2398,13 +2398,13 @@ caption {
 /*- [ directory BEGIN ] --------------------------- */
 
 #directory .message_list {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 
 #directory .message_list li.intfdcolor  {
@@ -2696,20 +2696,20 @@ caption {
   clear:right;
 }
 
-#myProfileFiche  .action .link:hover, 
-#myProfileFiche  #contactCommun .link:hover, 
-#publicProfileFiche  .action .link:hover, 
-#publicProfileFiche  .action .link:focus , 
-#publicProfileFiche  #allContact .link:focus, 
+#myProfileFiche .action .link:hover,
+#myProfileFiche #contactCommun .link:hover,
+#publicProfileFiche .action .link:hover,
+#publicProfileFiche .action .link:focus,
+#publicProfileFiche #allContact .link:focus,
 #publicProfileFiche  #allContact .link:hover,
-#publicProfileFiche  #contactCommun .link:hover, 
+#publicProfileFiche #contactCommun .link:hover,
 #publicProfileFiche  #contactCommun .link:focus  {
   color:#000;
   border-bottom:1px solid #000;
 }
 
-#myProfileFiche  #allContact .link, 
-#publicProfileFiche  #allContact .link, 
+#myProfileFiche #allContact .link,
+#publicProfileFiche #allContact .link,
 #publicProfileFiche  #contactCommun .link {
   clear:both;
   float:right;
@@ -5426,6 +5426,13 @@ div.fileUpload {
   width: auto;
 }
 
+.fileUpload-container input[type="file"]:focus {
+  position: relative !important;
+  top: inherit !important;
+  right: inherit !important;
+  border: 1px dashed blue;
+}
+
 .fileUpload-container div.fileinputs {
   position: relative;
   margin-left: 5px;
@@ -7146,6 +7153,10 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
   max-width: 250px;
 }
 
+.document-template-list li a:focus {
+  border: 1px dashed blue;
+}
+
 .ui-dialog .document-template-list li {
   width: 150px;
 }
@@ -7164,6 +7175,25 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
 .document-template-list .preview img {
   width: 100%;
   height: 100%;
+}
+
+.document-template-list li .restricted-space-ids.inlineMessage {
+  margin: 0.5em 0;
+  padding: 0.25em;
+  font-size: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.document-template-list li .restricted-space-ids.inlineMessage:before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: transparent url(../icons/lock.gif) no-repeat 0 0;
+  vertical-align: top;
+  margin-right: 0.25em;
 }
 
 .document-template-list li .actions {
@@ -7189,15 +7219,18 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
   border-radius: 16px;
 }
 
-.document-template-list li:hover .preview-button {
+.document-template-list li:hover .preview-button,
+.document-template-list li .preview-button:focus {
   background: #FFF url(../icons/preview.png) 2px 4px no-repeat;
 }
 
-.document-template-list li:hover .view-button {
+.document-template-list li:hover .view-button,
+.document-template-list li .view-button:focus {
   background: #FFF url(../icons/view.png) 2px 3px no-repeat;
 }
 
-.document-template-list li:hover .delete-button {
+.document-template-list li:hover .delete-button,
+.document-template-list li .delete-button:focus {
   background: #FFF url(../icons/delete.gif) 0 0 no-repeat;
 }
 

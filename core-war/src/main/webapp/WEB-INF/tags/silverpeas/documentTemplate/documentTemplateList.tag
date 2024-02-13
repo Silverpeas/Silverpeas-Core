@@ -28,6 +28,7 @@
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
@@ -56,8 +57,9 @@
     <jsp:useBean id="documentTemplate" type="org.silverpeas.core.documenttemplate.DocumentTemplate"/>
     <c:set var="id" value="${documentTemplate.id}"/>
     <c:set var="documentTemplateName" value="${documentTemplate.getName(userLanguage)}"/>
+    <c:set var="documentTemplateNameSanitized" value="${silfn:sanitizeHtml(documentTemplateName)}"/>
     <c:set var="documentTemplateDesc" value="${documentTemplate.getDescription(userLanguage)}"/>
-    <c:set var="openCallback" value="${documentTemplate.persisted ? 'modify' : 'select'}DocumentTemplate('${id}', '${silfn:escapeJs(documentTemplateName)}')"/>
+    <c:set var="openCallback" value="${documentTemplate.persisted ? 'modify' : 'select'}DocumentTemplate('${id}', '${silfn:sanitizeHtml(silfn:escapeJs(documentTemplateName))}')"/>
     <li onclick="${openCallback}" id="${id}">
       <a class="title" href="javascript:${openCallback}">
           ${documentTemplateName}
@@ -65,7 +67,11 @@
       <div class="document-template-thumb">
         <c:set var="documentTemplatePreview" value="<%=PreviewEntity.createFrom(PreviewService.get().getPreview(documentTemplate.getViewerContext(userLanguage)))%>"/>
         <jsp:useBean id="documentTemplatePreview" type="org.silverpeas.core.webapi.viewer.PreviewEntity"/>
-        <img src="${documentTemplatePreview.URL}" alt="${documentTemplateName}">
+        <img src="${documentTemplatePreview.URL}" alt="${documentTemplateNameSanitized}">
+        <c:if test="${not empty documentTemplate.restrictedSpaceIds}">
+          <c:set var="newStringArray" value="<%=new String[0]%>"/>
+          <div class="restricted-space-ids inlineMessage">${fn:join(documentTemplate.restrictedSpaceIds.toArray(newStringArray), ', ')}</div>
+        </c:if>
         <c:if test="${not empty documentTemplateDesc}">
           <div class="description">${documentTemplateDesc}</div>
         </c:if>
@@ -73,14 +79,22 @@
       <div class="actions">
         <a class="preview-button preview-file"
            href="javascript:void(0)"
-           onclick="event.stopPropagation();viewDocumentTemplate(this, 'preview', '${documentTemplatePreview.documentId}', '${documentTemplatePreview.documentType}')" title="${previewLabel}"></a>
+           data-view-service="preview"
+           data-document-id="${documentTemplatePreview.documentId}"
+           data-document-type="${documentTemplatePreview.documentType}"
+           title="${previewLabel}"></a>
         <a class="view-button view-file"
            href="javascript:void(0)"
-           onclick="event.stopPropagation();viewDocumentTemplate(this, 'view', '${documentTemplatePreview.documentId}', '${documentTemplatePreview.documentType}')" title="${viewLabel}"></a>
+           data-view-service="view"
+           data-document-id="${documentTemplatePreview.documentId}"
+           data-document-type="${documentTemplatePreview.documentType}"
+           title="${viewLabel}"></a>
         <c:if test="${not readonly}">
           <a class="delete-button"
              href="javascript:void(0)"
-             onclick="event.stopPropagation();deleteDocumentTemplate('${id}', '${silfn:escapeJs(documentTemplateName)}')" title="${deleteLabel}"></a>
+             data-document-template-id="${id}"
+             data-document-template-name="${documentTemplateNameSanitized}"
+             title="${deleteLabel}"></a>
         </c:if>
       </div>
     </li>
@@ -88,6 +102,20 @@
 </ul>
 <script type="text/javascript">
   whenSilverpeasReady(function() {
+    sp.element.querySelectorAll(".document-template-list .preview-button.preview-file,.view-button.view-file").forEach(function($a) {
+      $a.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        viewDocumentTemplate(this);
+      };
+    });
+    sp.element.querySelectorAll(".document-template-list .delete-button").forEach(function($a) {
+      $a.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        deleteDocumentTemplate(this.dataset.documentTemplateId, this.dataset.documentTemplateName);
+      };
+    });
     const $list = jQuery(".document-template-list");
     if ($list.sortable('instance')) {
       $list.sortable('destroy');
@@ -106,13 +134,12 @@
       }
     });
     if (!window.viewDocumentTemplate) {
-      window.viewDocumentTemplate = function(target, service, id, type) {
-        jQuery(target)[service]("document", {
-          documentId: id,
-          documentType: type,
+      window.viewDocumentTemplate = function(target) {
+        jQuery(target)[target.dataset.viewService]("document", {
+          documentId: target.dataset.documentId,
+          documentType: target.dataset.documentType,
           lang: '${userLanguage}'
         });
-        return false;
       };
     }
   });

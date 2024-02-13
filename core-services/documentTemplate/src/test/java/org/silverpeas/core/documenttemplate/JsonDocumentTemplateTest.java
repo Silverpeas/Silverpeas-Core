@@ -30,6 +30,7 @@ import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -54,21 +55,37 @@ class JsonDocumentTemplateTest {
       assertThat(result.getDescriptionTranslations(), notNullValue());
       assertThat(result.getDescriptionTranslations().size(), is(0));
       assertThat(result.getPosition(), is(-1));
+      assertThat(result.getRestrictions().isEmpty(), is(true));
     });
   }
 
   @DisplayName("Encode into json should work")
   @Test
   void encode() {
+    assertEncode(null, DEFAULT_JSON);
+    assertEncode(List.of(), DEFAULT_JSON);
+  }
+
+  @DisplayName("Encode into json with restricted spaces should work")
+  @Test
+  void encodeWithRestrictedSpaces() {
+    assertEncode(List.of("WA26", "WA25"),
+        DEFAULT_JSON.replace("\"position\":3,",
+            "\"position\":3,\"restrictions\":{\"spaceIds\":[\"WA26\",\"WA25\"]},"));
+  }
+
+  private void assertEncode(final List<String> restrictedSpaceIds,
+      final String expectedJson) {
     JsonDocumentTemplate jsonEntity = new JsonDocumentTemplate();
     jsonEntity.setId("an identifier");
     jsonEntity.setPosition(3);
+    jsonEntity.getRestrictions().setSpaceIds(restrictedSpaceIds);
     jsonEntity.getNameTranslations().put("fr", "Ceci est un test");
     jsonEntity.getNameTranslations().put("en", "This is a test");
     jsonEntity.setCreatorId("1");
     jsonEntity.setCreationInstant(DEFAULT_CREATION_INSTANT);
     final String json = jsonEntity.toString();
-    assertThat(json, is(DEFAULT_JSON));
+    assertThat(json, is(expectedJson));
   }
 
   @DisplayName("Decode from json should work")
@@ -77,6 +94,7 @@ class JsonDocumentTemplateTest {
     JsonDocumentTemplate jsonEntity = JsonDocumentTemplate.decode(DEFAULT_JSON);
     assertThat(jsonEntity.getId(), is("an identifier"));
     assertThat(jsonEntity.getPosition(), is(3));
+    assertThat(jsonEntity.getRestrictions().isEmpty(), is(true));
     assertThat(jsonEntity.getNameTranslations().size(), is(2));
     assertThat(jsonEntity.getNameTranslations().get("fr"), is("Ceci est un test"));
     assertThat(jsonEntity.getNameTranslations().get("en"), is("This is a test"));

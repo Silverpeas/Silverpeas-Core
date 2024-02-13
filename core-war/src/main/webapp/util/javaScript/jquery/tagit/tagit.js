@@ -310,7 +310,7 @@
             }
 
             var pressedKey = e.which || e.keyCode || e.charCode;
-            console.log("processKeyEvent:" + pressedKey);
+            // console.log("processKeyEvent:" + pressedKey);
             var lastLi = this.element.children(".tagit-choice:last");
 
             this.isKeyEventProcessed = true;
