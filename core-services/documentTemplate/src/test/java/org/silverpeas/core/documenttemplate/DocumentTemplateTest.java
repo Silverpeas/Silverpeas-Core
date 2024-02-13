@@ -48,6 +48,7 @@ class DocumentTemplateTest {
     assertThat(template, notNullValue());
     assertThat(template.getId(), nullValue());
     assertThat(template.getPosition(), is(-1));
+    assertThat(template.getRestrictedSpaceIds().isEmpty(), is(true));
     assertThat(template.getExtension(), nullValue());
     assertThat(template.getName("fr"), emptyString());
     assertThat(template.getName("en"), emptyString());
@@ -64,6 +65,29 @@ class DocumentTemplateTest {
     assertThat(template, notNullValue());
     assertThat(template.getId(), is("an identifier"));
     assertThat(template.getPosition(), is(3));
+    assertThat(template.getRestrictedSpaceIds().isEmpty(), is(true));
+    assertThat(template.getExtension(), is("txt"));
+    assertThat(template.existNameTranslationIn("fr"), is(true));
+    assertThat(template.getName("fr"), is("Ceci est un test"));
+    assertThat(template.existNameTranslationIn("en"), is(true));
+    assertThat(template.getName("en"), is("This is a test"));
+    assertThat(template.existNameTranslationIn("de"), is(false));
+    assertThat(template.getName("de"), is("Ceci est un test"));
+    assertThat(template.existDescriptionTranslationIn("fr"), is(false));
+    assertThat(template.existDescriptionTranslationIn("en"), is(false));
+    assertThat(template.existDescriptionTranslationIn("de"), is(false));
+  }
+
+  @DisplayName("Initializing from json should initialize document template instance")
+  @Test
+  void fromJsonWithRestrictions() {
+    final String json = DEFAULT_JSON.replace("\"position\":3,",
+        "\"position\":3,\"restrictions\":{\"spaceIds\":[\"WA26\",\"WA25\"]},");
+    DocumentTemplate template = new DocumentTemplate(JsonDocumentTemplate.decode(json), "txt");
+    assertThat(template, notNullValue());
+    assertThat(template.getId(), is("an identifier"));
+    assertThat(template.getPosition(), is(3));
+    assertThat(template.getRestrictedSpaceIds(), contains("WA26", "WA25"));
     assertThat(template.getExtension(), is("txt"));
     assertThat(template.existNameTranslationIn("fr"), is(true));
     assertThat(template.getName("fr"), is("Ceci est un test"));
@@ -90,6 +114,7 @@ class DocumentTemplateTest {
     assertThat(json, notNullValue());
     assertThat(json.getId(), is("an id"));
     assertThat(json.getPosition(), is(4));
+    assertThat(template.getRestrictedSpaceIds().isEmpty(), is(true));
     Map<String, String> translations = json.getNameTranslations();
     assertThat(translations, notNullValue());
     assertThat(translations.size(), is(2));

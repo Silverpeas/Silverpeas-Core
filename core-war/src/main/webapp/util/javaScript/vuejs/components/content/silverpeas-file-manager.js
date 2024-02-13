@@ -60,7 +60,7 @@
             'type': String,
             'default': undefined
           },
-          isDocumentTemplateEnabled : {
+          useDocumentTemplate : {
             'type' : Boolean,
             'required' : true
           },
@@ -71,6 +71,7 @@
         },
         data : function() {
           return {
+            isDocumentTemplateEnabled : false,
             choice : 'upload',
             fileUploadApi : undefined,
             documentTemplateApi : undefined,
@@ -99,6 +100,7 @@
               }
             }
           });
+          this.verifyExistsDocumentTemplateWithContext();
         },
         methods : {
           setFileUploadApi : function(api) {
@@ -122,6 +124,16 @@
               this.fileName = '';
               this.documentTemplateApi.clear();
             }
+          },
+          verifyExistsDocumentTemplateWithContext : function() {
+            if (this.useDocumentTemplate) {
+              new DocumentTemplateService(this.componentInstanceId).listDocumentTemplates().then(
+                  function(documents) {
+                    this.isDocumentTemplateEnabled = documents.length > 0;
+                  }.bind(this));
+            } else {
+              this.isDocumentTemplateEnabled = false;
+            }
           }
         },
         computed : {
@@ -133,6 +145,12 @@
         watch : {
           'i18nContentLanguage' : function() {
             this.contentLanguage = this.i18nContentLanguage;
+          },
+          'useDocumentTemplate' : function() {
+            this.verifyExistsDocumentTemplateWithContext();
+          },
+          'componentInstanceId' : function() {
+            this.verifyExistsDocumentTemplateWithContext();
           }
         }
       }));

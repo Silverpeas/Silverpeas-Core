@@ -30,12 +30,11 @@
   SpVue.component('silverpeas-document-template-input',
       templateRepository.get('input', {
         mixins : [VuejsFormInputMixin],
-        provide : function() {
-          return {
-            documentTemplateService: this.service
-          }
-        },
         props : {
+          componentInstanceId : {
+            'type': String,
+            'default': undefined
+          },
           inputName : {
             'type' : String,
             'default' : 'documentTemplateId'
@@ -43,7 +42,6 @@
         },
         data : function() {
           return {
-            service : new DocumentTemplateService(),
             selectedId : undefined,
             selectedDocumentTemplate : undefined,
             selectPopinApi : undefined,
@@ -102,6 +100,16 @@
           },
           closeSelection : function() {
             this.selectPopinApi.close();
+          }
+        },
+        computed : {
+          service : function() {
+            return new DocumentTemplateService(this.componentInstanceId);
+          }
+        },
+        watch : {
+          'componentInstanceId' : function() {
+            this.loadDocumentTemplates();
           }
         }
       }));

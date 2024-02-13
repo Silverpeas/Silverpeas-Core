@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.silverpeas.core.documenttemplate.DefaultDocumentTemplateRepository.getDocumentTemplateRepositoryPath;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -177,6 +178,22 @@ public class DocumentTemplate implements Serializable {
    */
   public void setExtension(final String extension) {
     this.extension = extension;
+  }
+
+  /**
+   * Sets the space identifiers the document template is restricted to.
+   * @param spacesIds list of space identifier.
+   */
+  public void setRestrictedSpaceIds(final List<String> spacesIds) {
+    json.getRestrictions().setSpaceIds(spacesIds);
+  }
+
+  /**
+   * Gets the space identifiers the document template is restricted to.
+   * @return list of space identifier.
+   */
+  public List<String> getRestrictedSpaceIds() {
+    return json.getRestrictions().getSpaceIds();
   }
 
   /**

@@ -40,6 +40,9 @@
 <fmt:message var="nameLabel" key="GML.name"/>
 <fmt:message var="descriptionLabel" key="GML.description"/>
 <fmt:message var="nameMandatoryError" key="docTemplate.save.name.error.mandatory"/>
+<fmt:message var="restrictedSpaceIdsLabel" key="docTemplate.restrictedSpaceIds.label"/>
+<fmt:message var="restrictedSpaceIdsHelp" key="docTemplate.restrictedSpaceIds.help"/>
+<view:includePlugin name="tags" />
 
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 
@@ -80,6 +83,20 @@
           <img src="${mandatoryIcons}" width="5" height="5" alt="">
         </c:if>
       </div>
+      <div class="field restricted-space-ids">
+        <label class="txtlibform" for="doc_template_restricted-space-ids">
+          <span>${restrictedSpaceIdsLabel}&nbsp;</span>
+          <img class="infoBulle" title="${restrictedSpaceIdsHelp}" src="<c:url value="/util/icons/help.png"/>" alt="info"/>
+        </label>
+        <div class="champs">
+          <ul id="restricted-space-ids">
+            <c:forEach var="restrictedSpaceId" items="${documentTemplate.restrictedSpaceIds}">
+              <li data-value="${restrictedSpaceId}">${restrictedSpaceId}</li>
+            </c:forEach>
+          </ul>
+          <input type="hidden" id="doc_template_restricted-space-ids" name="restrictedSpaceIds"/>
+        </div>
+      </div>
     </div>
   </view:form>
   <div class="legend">
@@ -87,7 +104,14 @@
     <fmt:message key='GML.requiredField'/>
   </div>
   <script type="text/javascript">
+    function getTags(tags) {
+      return tags.map(function(tag) {
+        return tag.value;
+      }).join(',');
+    }
     function checkDocumentTemplateForm(callback) {
+      document.querySelector("#doc_template_restricted-space-ids").value =
+          getTags(jQuery("#restricted-space-ids").tagit("tags"));
       const data = sp.form.serializeJson("form[name='document-template-form']");
       const _fileUploadApi = jQuery(".fileUpload").fileUpload('api');
       try {
@@ -115,6 +139,8 @@
     }
     setTimeout(function() {
       document.querySelector('.document-template-form .languages input').select();
+      const tagTriggerKeys = ['enter', 'comma', 'semicolon', 'space'];
+      jQuery('#restricted-space-ids').tagit({triggerKeys:tagTriggerKeys});
     }, 0);
   </script>
 </div>

@@ -24,8 +24,16 @@
 
 (function() {
 
-  window.DocumentTemplateService = function() {
-    const documentTemplateRepository = new Repository();
+  /**
+   * Services dedicated to provide into Silverpeas's application instances document template data.
+   * These services MUST not be used into context of administration.
+   * @param componentInstanceId optional identifier of a component instance. Allows to indicate the
+   *     context into which services are used and provide more document templates according to
+   *     theirs restrictions.
+   * @constructor
+   */
+  window.DocumentTemplateService = function(componentInstanceId) {
+    const documentTemplateRepository = new Repository(componentInstanceId);
 
     /**
      * Gets document template from its identifier.
@@ -64,9 +72,17 @@
     };
   };
 
-  const Repository = function() {
+  const Repository = function(componentInstanceId) {
     const baseUri = webContext + "/services/documentTemplates/";
     const baseAdapter = RESTAdapter.get(baseUri, DocumentTemplate);
+    const __buildParams = function(id) {
+      return {
+        url : baseAdapter.url + id,
+        criteria : baseAdapter.criteria({
+          instanceIdFilter : componentInstanceId
+        })
+      }
+    }
 
     /**
      * Gets document template from its identifier.
@@ -74,7 +90,7 @@
      * @returns {*}
      */
     this.get = function(id) {
-      return baseAdapter.find(id);
+      return baseAdapter.find(__buildParams(id));
     }
 
     /**
@@ -82,7 +98,7 @@
      * @returns {*}
      */
     this.listAll = function() {
-      return baseAdapter.find();
+      return baseAdapter.find(__buildParams(''));
     }
   };
 })();

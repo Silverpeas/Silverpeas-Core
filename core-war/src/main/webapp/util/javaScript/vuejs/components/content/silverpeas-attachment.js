@@ -27,9 +27,18 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/util/javaScript/vuejs/components/content/silverpeas-attachment-templates.jsp');
 
+  const CONTEXT_METHODS_MIXIN = {
+    computed : {
+      componentInstanceId : function() {
+        return this.context.componentInstanceId ||
+            (this.context.foreignContributionId && this.context.foreignContributionId.instanceId)
+      }
+    }
+  }
+
   SpVue.component('silverpeas-attachment-management',
       templateRepository.get('silverpeas-attachment-management', {
-        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin, CONTEXT_METHODS_MIXIN],
         data : function() {
           return {
             context : {},
@@ -62,7 +71,7 @@
 
   SpVue.component('silverpeas-attachment-form',
       templateRepository.get('silverpeas-attachment-form', {
-        mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin],
+        mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin, CONTEXT_METHODS_MIXIN],
         emits : ['foreign-id-change'],
         props : {
           context : {
@@ -111,9 +120,7 @@
         },
         watch : {
           'context' : function() {
-            if (this.foreignId !== this.context.foreignId) {
-              this.$emit('foreign-id-change');
-            }
+            this.$emit('foreign-id-change');
             this.foreignId = this.context.foreignId;
           }
         }
