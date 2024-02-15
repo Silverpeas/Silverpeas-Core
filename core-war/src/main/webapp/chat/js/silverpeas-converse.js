@@ -227,30 +227,22 @@
     chatOptions.whitelisted_plugins.push('silverpeas-notification');
     converse.plugins.add('silverpeas-notification', {
       initialize : function() {
-        let __timeout;
-        let __lastBlurOrFocus;
         const _converse = this._converse;
-        const _blurFocusEventHandler = function(e) {
-          if (document.visibilityState !== 'hidden') {
-            clearTimeout(__timeout);
-            __timeout = setTimeout(function() {
-              const ev = {'type' : e.type.endsWith('blur') ? "blur" : "focus"};
-              if (__lastBlurOrFocus && ev.type !== __lastBlurOrFocus) {
-                sp.log.debug('previous', __lastBlurOrFocus, 'next', ev);
-                converse.env.utils.saveWindowState(ev);
-              }
-              __lastBlurOrFocus = ev.type;
-            }, 1000);
+        const _blurFocusEventHandler = sp.debounce(function(e) {
+          const isBlur = e.type.endsWith('blur');
+          if (isBlur && document.visibilityState !== 'hidden') {
+            Object.defineProperty(document, 'visibilityState', {value: 'hidden', writable: true});
+            Object.defineProperty(document, 'hidden', {value: true, writable: true});
+            sp.log.debug('set hidden');
+            document.dispatchEvent(new Event("visibilitychange"));
+          } else if (!isBlur && document.visibilityState === 'hidden') {
+            Object.defineProperty(document, 'visibilityState', {value: 'visible', writable: true});
+            Object.defineProperty(document, 'hidden', {value: false, writable: true});
+            sp.log.debug('set visible');
+            document.dispatchEvent(new Event("visibilitychange"));
           }
-        }
-        const _visibilityEventHandler = function() {
-          // If invoked, blur and focus MUST be ignored
-          sp.log.debug('visibilitychange event', document.visibilityState);
-          clearTimeout(__timeout);
-          __lastBlurOrFocus = undefined;
-        }
+        }, 300);
         _converse.api.listen.on('registeredGlobalEventHandlers', function() {
-          window.addEventListener("visibilitychange", _visibilityEventHandler);
           window.addEventListener("blur", _blurFocusEventHandler);
           window.addEventListener("focus", _blurFocusEventHandler);
           let __body = spLayout.getBody();
