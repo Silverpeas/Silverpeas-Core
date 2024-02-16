@@ -27,6 +27,8 @@
 Silverpeas plugin which handles the behaviour about the user notification.
  */
 
+//# sourceURL=/util/javaScript/silverpeas-user-notification.js
+
 (function() {
 
   var $window = top.spLayout ? top.window : window;
@@ -232,7 +234,7 @@ Silverpeas plugin which handles the behaviour about the user notification.
         __notificationMonitor.newOne(userNotification);
         try {
           this.notifyOnDesktop(userNotification.sender, {
-            body : userNotification.subject,
+            body : userNotification.subject.unescapeHTML(),
             tag : userNotification.id,
             icon : DESKTOP_USER_NOTIFICATION_ICON_URL
           }, function(desktopNotification) {
