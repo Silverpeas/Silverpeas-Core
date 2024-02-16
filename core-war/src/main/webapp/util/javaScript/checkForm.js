@@ -22,7 +22,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 // whitespace characters
-const whitespace = " \t\n\r";
+window.whitespace = " \t\n\r";
 
 /**
  * Check whether string s is empty.
