@@ -1,6 +1,5 @@
 package org.silverpeas.web.notificationuser.control;
 
-import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
@@ -58,7 +57,7 @@ public class UserNotificationWrapper implements UserNotification {
       final boolean isSimpleContents = metaData.getTemplateContents().isEmpty();
       final Map<String, String> simpleContents = metaData.getSimpleContents();
       for (String lang : DisplayI18NHelper.getLanguages()) {
-        metaData.setTitle(Encode.forHtml(title), lang);
+        metaData.setTitle(title, lang);
         if (isSimpleContents && isNotDefined(simpleContents.get(lang))) {
           final LocalizationBundle bundle = getLocalizationBundle(
               "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle", lang);

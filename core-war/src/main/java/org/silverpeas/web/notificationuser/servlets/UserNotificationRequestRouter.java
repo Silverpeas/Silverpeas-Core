@@ -129,7 +129,14 @@ public class UserNotificationRequestRouter
     final HtmlSanitizer htmlSanitizer = HtmlSanitizer.get();
     while (parameters.hasMoreElements()) {
       final String name = parameters.nextElement();
-      context.put(name, htmlSanitizer.sanitize(request.getParameter(name)));
+      final String value = request.getParameter(name);
+      boolean isBase64 = false;
+      try {
+        isBase64 = value != null && StringUtil.fromBase64(value).length > 0;
+      } catch (Exception ignore) {
+        // if not base64 encoded, value can be sanitized
+      }
+      context.put(name, isBase64 ? value : htmlSanitizer.sanitize(value));
     }
     return context;
   }
