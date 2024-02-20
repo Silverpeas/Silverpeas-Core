@@ -934,7 +934,11 @@ public interface Administration {
   SpaceInstLight getRootSpace(String spaceId) throws AdminException;
 
   /**
-   * Get the spaces ids manageable by given group id
+   * Get all the spaces ids manageable by given group id.
+   * <p>
+   *   It means the direct space ids the group is indicated to and all the sub spaces ids by
+   *   inheritance.
+   * </p>
    * @param sGroupId the unique identifier of a group
    * @return an array of space identifiers.
    * @throws AdminException if an error occurs
@@ -942,7 +946,11 @@ public interface Administration {
   String[] getGroupManageableSpaceIds(String sGroupId) throws AdminException;
 
   /**
-   * Get the spaces ids manageable by given user id
+   * Get all the spaces ids manageable by given user id.
+   * <p>
+   *   It means the direct space ids the user is indicated to and all the sub spaces ids by
+   *   inheritance.
+   * </p>
    * @param sUserId the unique identifier of a user
    * @return an array of space identifiers
    * @throws AdminException if an error occurs
