@@ -3344,37 +3344,23 @@ class DefaultAdministration implements Administration {
 
   @Override
   public String[] getGroupManageableSpaceIds(String sGroupId) throws AdminException {
-    String[] asManageableSpaceIds;
-    ArrayList<String> alManageableSpaceIds = new ArrayList<>();
     try {
       // Get user manageable space ids from database
-      List<String> groupIds = new ArrayList<>();
-      groupIds.add(sGroupId);
-      List<Integer> manageableSpaceIds = spaceManager.getManageableSpaceIds(null, groupIds);
-
-      // Inherits manageability rights for space children
-      String[] childSpaceIds;
-      for (Integer spaceId : manageableSpaceIds) {
-        String asManageableSpaceId = String.valueOf(spaceId);
-        // add manageable space id in result
-        if (!alManageableSpaceIds.contains(asManageableSpaceId)) {
-          alManageableSpaceIds.add(asManageableSpaceId);
-        }
-
-        // calculate manageable space's children
-        childSpaceIds = spaceManager.getAllSubSpaceIds(spaceId);
-        // add them in result
-        for (String childSpaceId : childSpaceIds) {
-          if (!alManageableSpaceIds.contains(childSpaceId)) {
-            alManageableSpaceIds.add(childSpaceId);
-          }
-        }
+      final List<String> groupIds = List.of(sGroupId);
+      // Get space ids on which the group is specifically indicated as manager
+      final List<Integer> directSpaceIds = spaceManager.getManageableSpaceIds(null, groupIds);
+      final List<SpaceInst> consumer = new ArrayList<>();
+      for (Integer directSpaceId : directSpaceIds) {
+        consumer.add(getSpaceInstById(String.valueOf(directSpaceId)));
       }
-
-      // Put user manageable space ids in cache
-      asManageableSpaceIds = alManageableSpaceIds.toArray(new String[0]);
-
-      return asManageableSpaceIds;
+      // Identifying all managed space ids
+      final Set<String> allSpaces = new LinkedHashSet<>();
+      while (!consumer.isEmpty()) {
+        final SpaceInst current = consumer.remove(0);
+        allSpaces.add(String.valueOf(current.getLocalId()));
+        current.getSubSpaces().forEach(s -> consumer.add(0, s));
+      }
+      return allSpaces.toArray(new String[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("spaces manageable by group", sGroupId), e);
     }
@@ -3389,17 +3375,17 @@ class DefaultAdministration implements Administration {
       if (cachedSpaceIds.isEmpty()) {
         final List<String> groupIds = getAllGroupsOfUser(sUserId);
         // Get space ids on which the user is specifically indicated as manager
-        final Integer[] directSpacedIds = userManager.getManageableSpaceIds(sUserId, groupIds);
+        final Integer[] directSpaceIds = userManager.getManageableSpaceIds(sUserId, groupIds);
         final List<SpaceInst> consumer = new ArrayList<>();
-        for (Integer directSpaceId : directSpacedIds) {
+        for (Integer directSpaceId : directSpaceIds) {
           consumer.add(getSpaceInstById(String.valueOf(directSpaceId)));
         }
         // Identifying all managed space ids
-        final Set<String> allSpaces = new HashSet<>();
+        final Set<String> allSpaces = new LinkedHashSet<>();
         while (!consumer.isEmpty()) {
           final SpaceInst current = consumer.remove(0);
           allSpaces.add(String.valueOf(current.getLocalId()));
-          consumer.addAll(current.getSubSpaces());
+          current.getSubSpaces().forEach(s -> consumer.add(0, s));
         }
         result = allSpaces.toArray(new String[0]);
         cache.putManageableSpaceIds(sUserId, result);
