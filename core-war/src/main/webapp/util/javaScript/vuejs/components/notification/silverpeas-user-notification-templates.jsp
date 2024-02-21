@@ -62,6 +62,7 @@
                        v-bind:with-fade-transition="true">
         <silverpeas-list-item v-for="notification in notifications" v-bind:key="notification.id">
           <silverpeas-user-notification-list-item
+              v-bind:id="notificationDomId(notification)"
               v-on:notification-content-view="markAsRead(notification)"
               v-on:notification-read="markAsRead(notification)"
               v-on:notification-delete="markAsDeleted(notification)"
