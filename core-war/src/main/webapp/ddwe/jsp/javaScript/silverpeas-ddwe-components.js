@@ -479,7 +479,7 @@
           components : {
             type : 'link',
             attributes: {
-              'href': '',
+              'href': 'javascript:void(0)',
               'title': '',
               'class': 'link-image',
               'target': '_blank',
