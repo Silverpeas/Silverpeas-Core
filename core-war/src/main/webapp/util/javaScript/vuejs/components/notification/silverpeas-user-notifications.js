@@ -268,9 +268,23 @@
           spUserNotification.view();
           this.close()
         },
+        notificationDomId : function(notification) {
+          return 'notification-' + notification.id;
+        },
         viewResourceOf : function(notification) {
           spWindow.loadLink(notification.resourceViewUrl);
-          this.close();
+          let close = notification.read;
+          if (!close) {
+            const $contentButton = this.$el.querySelector(
+                '#' + this.notificationDomId(notification) + ' .content-button');
+            close = !$contentButton;
+            if ($contentButton) {
+              $contentButton.click();
+            }
+          }
+          if (close) {
+            this.close();
+          }
         },
         markAsRead : function(notification) {
           if (!notification.read) {
