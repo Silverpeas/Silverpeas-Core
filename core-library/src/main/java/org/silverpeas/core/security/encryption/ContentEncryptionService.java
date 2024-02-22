@@ -24,6 +24,7 @@
 package org.silverpeas.core.security.encryption;
 
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Map;
 
@@ -51,17 +52,26 @@ import java.util.Map;
 public interface ContentEncryptionService {
 
   /**
+   * Gets an instance of a {@link ContentEncryptionService}.
+   *
+   * @return a {@link ContentEncryptionService} object.
+   */
+  static ContentEncryptionService get() {
+    return ServiceProvider.getService(ContentEncryptionService.class);
+  }
+
+  /**
    * Decrypts the specified encrypted content by using the encryption key that was set with the
    * {@link #updateCipherKey(String)} method.
    *
    * @param encryptedContentParts either the different part of an encrypted content to decrypt or
    * several single encrypted textual contents to decrypt.
    * <p>
-   * If the encryption key is is being updated, an IllegalStateException is thrown.
+   * If the encryption key is in being updated, an IllegalStateException is thrown.
    * @return an array with the different parts of the decrypted content in the same order they were
    * passed as argument of this method.
-   * @throws CryptoException the decryption of one of the encrypted content (or content part)
-   * failed.
+   * @throws CryptoException either no valid encryption key has been set or the decryption of one of
+   * the encrypted content (or content part) failed
    */
   String[] decryptContent(final String... encryptedContentParts) throws CryptoException;
 
@@ -78,7 +88,8 @@ public interface ContentEncryptionService {
    * @param encryptedContent the content to decrypt in the form of a Map instance. Each entry in the
    * Map represents a field/property of the content to decrypt.
    * @return a Map with the different field/property of the content decrypted.
-   * @throws CryptoException the decryption of the content failed.
+   * @throws CryptoException either no valid encryption key has been set or the decryption of the
+   * content failed.
    */
   Map<String, String> decryptContent(final Map<String, String> encryptedContent)
       throws CryptoException;
@@ -93,6 +104,8 @@ public interface ContentEncryptionService {
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    *
    * @param iterators the iterators on the contents to decrypt.
+   * @throws CryptoException either no valid encryption key has been set or the decryption of the
+   * content failed.
    */
   void decryptContents(final EncryptionContentIterator... iterators)
       throws CryptoException;
@@ -107,7 +120,8 @@ public interface ContentEncryptionService {
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    * @return an array with the different parts of the content, encrypted and in base64, in the same
    * order they were passed as argument of this method.
-   * @throws CryptoException the encryption of one of the content (or content part) failed.
+   * @throws CryptoException either no valid encryption key has been set or the decryption of one
+   * of the contents (or content part) failed.
    */
   String[] encryptContent(final String... contentParts) throws CryptoException;
 
@@ -124,7 +138,8 @@ public interface ContentEncryptionService {
    * @param content the content to encrypt in the form of a Map instance. Each entry in the Map
    * represents a field/property of the content to encrypt.
    * @return a Map with the different field/property of the content encrypted.
-   * @throws CryptoException the encryption of the content failed.
+   * @throws CryptoException either no valid encryption key has been set or the decryption of the
+   * content failed.
    */
   Map<String, String> encryptContent(final Map<String, String> content) throws CryptoException;
 
@@ -138,6 +153,8 @@ public interface ContentEncryptionService {
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    *
    * @param iterators the iterators on the contents to encrypt.
+   * @throws CryptoException either no valid encryption key has been set or the decryption of the
+   * content failed.
    */
   void encryptContents(final EncryptionContentIterator... iterators) throws CryptoException;
 
@@ -202,6 +219,7 @@ public interface ContentEncryptionService {
 
   /**
    * Checks if a key is defined and so if content can be encrypted
+   *
    * @return true if the key exist and it is valid
    */
   boolean isCipherKeyDefined();

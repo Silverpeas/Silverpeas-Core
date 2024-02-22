@@ -39,7 +39,7 @@ import javax.crypto.SecretKey;
  * bits, called blocks, with an unvarying transformation that is specified by a symmetric key. Block
  * ciphers are important elementary components in the design of many cryptographic protocols, and
  * are widely used to implement encryption of bulk data.
- *
+ * <p>
  * A block cipher by itself allows encryption only of a single data block of the cipher's block
  * length. For a variable-length message, the data must first be partitioned into separate cipher
  * blocks. In the simplest case, known as the electronic codebook (ECB) mode, a message is first
@@ -63,7 +63,8 @@ import javax.crypto.SecretKey;
  * stream, but has the advantage of only needing unique and not (pseudo-)random values as
  * initialization vectors; the needed randomness is derived internally by using the initialization
  * vector as a block counter and encrypting this counter for each block.
- *
+ * </p>
+ * <p>
  * Some modes such as the CBC mode only operate on complete plaintext blocks. Simply extending the
  * last block of a message with zero-bits is insufficient since it does not allow a receiver to
  * easily distinguish messages that differ only in the amount of padding bits. More importantly,
@@ -73,11 +74,13 @@ import javax.crypto.SecretKey;
  * vulnerable to padding oracle attacks, a solution which adds a one-bit and then extends the last
  * block with zero-bits, standardized as "padding method 2" in ISO/IEC 9797-1, has been proven
  * secure against these attacks.
- *
+ * </p>
+ * <p>
  * This class is the base one of all block ciphers which use a padding scheme to complete the data
  * to encrypt when it is not divisible into blocks of expected size. All the subclasses will use the
  * CBC operation mode with the PKCS#5 padding scheme.
- *
+ * </p>
+ * <p>
  * The encrypted data computed by this cipher is a combination of both the ciphertext and the
  * initialization vector (IV) used in the encryption. So this block cipher implementation can
  * retrieve both the ciphertext to decrypt and the IV that was used in the encryption and that is
@@ -88,6 +91,7 @@ import javax.crypto.SecretKey;
  * encryption/decryption of a ciphertext between two implementation of the same cryptographic
  * algorithm, this class provides two methods to combine or to extract the IV and the ciphertext
  * to/from an encrypted data.
+ * </p>
  */
 public abstract class BlockCipherWithPadding implements Cipher {
 
@@ -160,14 +164,6 @@ public abstract class BlockCipherWithPadding implements Cipher {
           + "specified encrypted data failed!", ex);
     }
   }
-
-  /**
-   * Gets the name of the algorithm of the cipher.
-   *
-   * @return the algorithm name.
-   */
-  @Override
-  public abstract CryptographicAlgorithmName getAlgorithmName();
 
   /**
    * Encrypts the specified data by using the specified cryptographic key.

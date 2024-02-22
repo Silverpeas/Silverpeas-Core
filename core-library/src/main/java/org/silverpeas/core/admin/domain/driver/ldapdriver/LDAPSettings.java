@@ -98,6 +98,7 @@ public class LDAPSettings implements DriverSettings {
     // Database Settings
     // -----------------
     String ldap = rs.getString("database.LDAPImpl", null);
+    configuration.setEncryptedCredentials(rs.getBoolean("database.encryptedCredentials", false));
     configuration.setLdapHost(rs.getString("database.LDAPHost", null));
     configuration.setLdapPort(rs.getInteger("database.LDAPPort", configuration.getLdapPort()));
     ldapProtocolVer = rs.getInteger("database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
@@ -105,7 +106,7 @@ public class LDAPSettings implements DriverSettings {
     ldapProtocolVer = LDAPConnection.LDAP_V3; // Only compatible with V3
     configuration.setUsername(rs.getString("database.LDAPAccessLoginDN", null));
     configuration
-        .setPassword(rs.getString("database.LDAPAccessPasswd", "").getBytes(Charsets.UTF_8));
+        .setPassword(rs.getString("database.LDAPAccessPasswd", ""));
     ldapUserBaseDN = rs.getString("database.LDAPUserBaseDN", null);
     ldapMaxMsClientTimeLimit =
         rs.getInteger("database.LDAPMaxMsClientTimeLimit", ldapMaxMsClientTimeLimit);

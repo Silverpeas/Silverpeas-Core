@@ -61,6 +61,7 @@ import static org.silverpeas.core.util.Charsets.UTF_8;
 
 /**
  * This class performs the LDAP authentication
+ *
  * @author tleroi, mmoquillon
  */
 public class AuthenticationLDAP extends AuthenticationProtocol {
@@ -109,6 +110,8 @@ public class AuthenticationLDAP extends AuthenticationProtocol {
   @Override
   public void loadProperties(SettingBundle settings) {
     final String serverName = getServerName();
+    configuration.setEncryptedCredentials(settings.getBoolean(serverName + ".encryptedCredentials",
+        false));
     configuration.setSecure(settings.getBoolean(serverName + ".LDAPSecured", false));
     configuration.setLdapHost(settings.getString(serverName + ".LDAPHost"));
     if (configuration.isSecure()) {
@@ -119,7 +122,7 @@ public class AuthenticationLDAP extends AuthenticationProtocol {
     configuration.setTimeout(settings.getInteger(serverName + ".Timeout", 0));
     ldapImpl = settings.getString(serverName + ".LDAPImpl", "unknown");
     configuration.setUsername(settings.getString(serverName + ".LDAPAccessLogin"));
-    configuration.setPassword(settings.getString(serverName + ".LDAPAccessPasswd").getBytes(UTF_8));
+    configuration.setPassword(settings.getString(serverName + ".LDAPAccessPasswd"));
     userBaseDN = settings.getString(serverName + ".LDAPUserBaseDN", "");
     userLoginFieldName = settings.getString(serverName + ".LDAPUserLoginFieldName");
 
@@ -420,7 +423,8 @@ public class AuthenticationLDAP extends AuthenticationProtocol {
     }
   }
 
-  private LDAPSearchResults search(final LDAPConnection ldapConnection, final String login, final String searchString,
+  private LDAPSearchResults search(final LDAPConnection ldapConnection, final String login,
+      final String searchString,
       final String[] strAttributes)
       throws LDAPException, AuthenticationBadCredentialException {
     ldapConnection.bind(LDAPConnection.LDAP_V3, configuration.getUsername(), configuration

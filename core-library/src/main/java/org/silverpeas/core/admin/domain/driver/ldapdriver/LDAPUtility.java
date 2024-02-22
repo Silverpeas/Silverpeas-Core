@@ -135,22 +135,22 @@ public class LDAPUtility {
 
   private static void internalOpenConnection(String connectionId) throws AdminException {
     LDAPSettings driverSettings = connectInfos.get(connectionId).getSettings();
-    LDAPConnection valret;
+    LDAPConnection ldapConnection;
     if (driverSettings.isLDAPSecured()) {
-      valret = new LDAPConnection(new LDAPJSSESecureSocketFactory());
+      ldapConnection = new LDAPConnection(new LDAPJSSESecureSocketFactory());
     } else {
-      valret = new LDAPConnection();
+      ldapConnection = new LDAPConnection();
     }
     try {
-      valret.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
+      ldapConnection.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
       byte[] passwd = driverSettings.getLDAPAccessPasswd();
-      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
+      ldapConnection.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
           passwd);
-      valret.setConstraints(driverSettings.getSearchConstraints(false));
-      connectInfos.get(connectionId).setConnection(valret);
+      ldapConnection.setConstraints(driverSettings.getSearchConstraints(false));
+      connectInfos.get(connectionId).setConnection(ldapConnection);
     } catch (LDAPException e) {
       try {
-        valret.disconnect();
+        ldapConnection.disconnect();
       } catch (LDAPException ee) {
         SilverLogger.getLogger(LDAPUtility.class)
             .error("Error while closing connection " + connectionId + ". Error LDAP #" +
