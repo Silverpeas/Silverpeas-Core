@@ -35,7 +35,7 @@ public class CipherFactory {
 
   private static final CipherFactory instance = new CipherFactory();
   private static final Map<CryptographicAlgorithmName, Cipher> ciphers =
-      new EnumMap<CryptographicAlgorithmName, Cipher>(CryptographicAlgorithmName.class);
+      new EnumMap<>(CryptographicAlgorithmName.class);
 
   // we load all the ciphers supported by the Silverpeas Cryptography API
   static {

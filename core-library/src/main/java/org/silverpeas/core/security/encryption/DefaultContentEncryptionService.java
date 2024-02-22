@@ -78,7 +78,8 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   private static final String DEPRECATED_KEY_FILE_PATH =
       FileRepositoryManager.getSecurityDirPath() + ".did_key";
   private static final String KEY_SEP = " ";
-  private static List<EncryptionContentIterator> contentIterators = new CopyOnWriteArrayList<>();
+  private static final List<EncryptionContentIterator> contentIterators =
+      new CopyOnWriteArrayList<>();
 
   protected DefaultContentEncryptionService() {
   }
@@ -140,11 +141,11 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   @Override
   public String[] encryptContent(final String... contentParts) throws CryptoException {
     return ConcurrentEncryptionTaskExecutor
-        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask() {
-      @Override
-      public boolean isPrivileged() {
-        return false;
-      }
+        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<>() {
+          @Override
+          public boolean isPrivileged() {
+            return false;
+          }
 
       @Override
       public String[] execute() throws CryptoException {
@@ -181,7 +182,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   public Map<String, String> encryptContent(final Map<String, String> content)
       throws CryptoException {
     return ConcurrentEncryptionTaskExecutor
-        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask() {
+        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<>() {
       @Override
       public boolean isPrivileged() {
         return false;
@@ -228,7 +229,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   @Override
   public String[] decryptContent(final String... encryptedContentParts) throws CryptoException {
     return ConcurrentEncryptionTaskExecutor
-        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask() {
+        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<>() {
       @Override
       public boolean isPrivileged() {
         return false;
@@ -268,7 +269,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   public Map<String, String> decryptContent(final Map<String, String> encryptedContent)
       throws CryptoException {
     return ConcurrentEncryptionTaskExecutor
-        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask() {
+        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<>() {
       @Override
       public boolean isPrivileged() {
         return false;
@@ -407,7 +408,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
       CipherKey encryptionKey = CipherKey.aKeyFromBase64Text(keys[0]);
       key = cipher.decrypt(StringUtil.fromBase64(keys[1]), encryptionKey);
       return CipherKey.aKeyFromHexText(key);
-    } catch (IOException ex) {
+    } catch (IOException | IndexOutOfBoundsException ex) {
       throw new CryptoException("Cannot get the encryption key", ex);
     } catch (ParseException ex) {
       throw new CryptoException("Hum... the key isn't in hexadecimal: '" + key + "'", ex);
@@ -491,7 +492,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
         wrapped.onError(content, ex);
       } catch (Exception e) {
         SilverLogger.getLogger(this)
-            .error("Error while treating the catched CryptoException exception", e);
+            .error("Error while treating the caught CryptoException exception", e);
       }
       throw new CipherRenewingException(ex);
     }
@@ -508,9 +509,9 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   }
 
   private static class CipherKeyUpdater
-      implements ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask {
+      implements ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<Void> {
 
-    private String key;
+    private final String key;
 
     public CipherKeyUpdater(final String key) {
       this.key = key;
@@ -550,12 +551,12 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
         try(InputStream contentStream = new ByteArrayInputStream(encryptedContent.getBytes())) {
           Files.copy(contentStream, keyFile.toPath(), REPLACE_EXISTING);
         }
-        keyFile.setReadOnly();
+        setReadOnly(keyFile);
         setHidden(ACTUAL_KEY_FILE_PATH);
 
         if (renewContentCiphers) {
           EncryptionContentIterator[] iterators =
-              contentIterators.toArray(new EncryptionContentIterator[contentIterators.size()]);
+              contentIterators.toArray(new EncryptionContentIterator[0]);
           CryptographicTask.renewEncryptionOf(iterators).execute();
         }
         return null;
@@ -571,7 +572,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
             if (restore) {
               File keyFile = new File(ACTUAL_KEY_FILE_PATH);
               FileUtil.copyFile(backupedKeyFile, keyFile);
-              keyFile.setReadOnly();
+              setReadOnly(keyFile);
               setHidden(ACTUAL_KEY_FILE_PATH);
             }
             FileUtil.forceDeletion(backupedKeyFile);
@@ -581,7 +582,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
               File keyFile = new File(DEPRECATED_KEY_FILE_PATH);
               Files.delete(keyFile.toPath());
               FileUtil.copyFile(backupedDeprecatedKeyFile, keyFile);
-              keyFile.setReadOnly();
+              setReadOnly(keyFile);
               setHidden(DEPRECATED_KEY_FILE_PATH);
             }
             FileUtil.forceDeletion(backupedDeprecatedKeyFile);
@@ -589,6 +590,13 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
         } catch (IOException ex) {
           SilverLogger.getLogger(this).error(ex.getMessage(), ex);
         }
+      }
+    }
+
+    private void setReadOnly(File keyFile) {
+      if (!keyFile.setReadOnly()) {
+        SilverLogger.getLogger(this).warn("Cannot set readonly the key file " +
+            keyFile.getName());
       }
     }
 

@@ -67,7 +67,7 @@ public class AuthenticationLDAP extends Authentication {
 
   private static final int INTERVALS_PER_MILLISECOND = 1000000 / 100;
   private static final long MILLISECONDS_BETWEEN_1601_AND_1970 = Long.parseLong("11644473600000");
-  private static final String BASEDN_SEPARATOR = ";;";
+  private static final String BASE_DN_SEPARATOR = ";;";
   private static final int FORMAT_NANOSECOND = 0;
   private static final int FORMAT_TIMESTAMP = 1;
 
@@ -109,6 +109,8 @@ public class AuthenticationLDAP extends Authentication {
   @Override
   public void loadProperties(SettingBundle settings) {
     final String serverName = getServerName();
+    configuration.setEncryptedCredentials(settings.getBoolean(serverName + ".encryptedCredentials",
+        false));
     configuration.setSecure(settings.getBoolean(serverName + ".LDAPSecured", false));
     configuration.setLdapHost(settings.getString(serverName + ".LDAPHost"));
     if (configuration.isSecure()) {
@@ -119,7 +121,7 @@ public class AuthenticationLDAP extends Authentication {
     configuration.setTimeout(settings.getInteger(serverName + ".Timeout", 0));
     ldapImpl = settings.getString(serverName + ".LDAPImpl", "unknown");
     configuration.setUsername(settings.getString(serverName + ".LDAPAccessLogin"));
-    configuration.setPassword(settings.getString(serverName + ".LDAPAccessPasswd").getBytes(UTF_8));
+    configuration.setPassword(settings.getString(serverName + ".LDAPAccessPasswd"));
     userBaseDN = settings.getString(serverName + ".LDAPUserBaseDN", "");
     userLoginFieldName = settings.getString(serverName + ".LDAPUserLoginFieldName");
 
@@ -189,6 +191,7 @@ public class AuthenticationLDAP extends Authentication {
       throws AuthenticationException {
     // disconnect from the server
     try {
+      //noinspection unchecked
       LDAPConnection ldapConnection = getLDAPConnection(connection);
       if (ldapConnection != null && ldapConnection.isConnected()) {
         ldapConnection.disconnect();
@@ -206,6 +209,7 @@ public class AuthenticationLDAP extends Authentication {
       final AuthenticationCredential credential)
       throws AuthenticationException {
     // bind to LDAP with administrator account
+    //noinspection unchecked
     LDAPConnection ldapConnection = openLDAPConnection(connection);
 
     // find the LDAP entry matching the specified credential
@@ -387,20 +391,11 @@ public class AuthenticationLDAP extends Authentication {
     String userFullDN;
     String searchString = userLoginFieldName + "=" + login;
     String[] strAttributes = {"sAMAccountName", "memberOf"};
+    //noinspection unchecked
     LDAPConnection ldapConnection = getLDAPConnection(connection);
     try {
       // Bind as the admin for the search
-      ldapConnection.bind(LDAPConnection.LDAP_V3, configuration.getUsername(), configuration
-          .getPassword());
-
-      // Get user DN
-
-      LDAPSearchResults res = ldapConnection.search(userBaseDN, LDAPConnection.SCOPE_SUB,
-          searchString, strAttributes, false);
-      if (!res.hasMore()) {
-        throw new AuthenticationBadCredentialException(
-            USER_NOT_FOUND_WITH_LOGIN + login + ";LoginField=" + userLoginFieldName);
-      }
+      LDAPSearchResults res = search(ldapConnection, login, searchString, strAttributes);
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
 
@@ -425,6 +420,24 @@ public class AuthenticationLDAP extends Authentication {
     } catch (Exception ex) {
       throw new AuthenticationHostException(ex);
     }
+  }
+
+  private LDAPSearchResults search(final LDAPConnection ldapConnection, final String login,
+      final String searchString,
+      final String[] strAttributes)
+      throws LDAPException, AuthenticationBadCredentialException {
+    ldapConnection.bind(LDAPConnection.LDAP_V3, configuration.getUsername(), configuration
+        .getPassword());
+
+    // Get user DN
+
+    LDAPSearchResults res = ldapConnection.search(userBaseDN, LDAPConnection.SCOPE_SUB,
+        searchString, strAttributes, false);
+    if (!res.hasMore()) {
+      throw new AuthenticationBadCredentialException(
+          USER_NOT_FOUND_WITH_LOGIN + login + ";LoginField=" + userLoginFieldName);
+    }
+    return res;
   }
 
   private LDAPModification[] getActiveDirectoryPasswordChange(String oldPassword,
@@ -462,13 +475,13 @@ public class AuthenticationLDAP extends Authentication {
 
   private static String[] extractBaseDNs(String baseDN) {
     // if no separator, return a array with only the baseDN
-    if (!baseDN.contains(BASEDN_SEPARATOR)) {
+    if (!baseDN.contains(BASE_DN_SEPARATOR)) {
       String[] baseDNs = new String[1];
       baseDNs[0] = baseDN;
       return baseDNs;
     }
 
-    StringTokenizer st = new StringTokenizer(baseDN, BASEDN_SEPARATOR);
+    StringTokenizer st = new StringTokenizer(baseDN, BASE_DN_SEPARATOR);
     List<String> baseDNs = new ArrayList<>();
     while (st.hasMoreTokens()) {
       baseDNs.add(st.nextToken());
@@ -484,21 +497,11 @@ public class AuthenticationLDAP extends Authentication {
     String userFullDN;
     String searchString = userLoginFieldName + "=" + login;
     String[] strAttributes = {"sAMAccountName", "memberOf"};
+    //noinspection unchecked
     LDAPConnection ldapConnection = getLDAPConnection(connection);
     try {
       // Bind as the admin for the search
-      ldapConnection.bind(LDAPConnection.LDAP_V3, configuration.getUsername(), configuration
-          .getPassword());
-
-      // Get user DN
-
-      LDAPSearchResults res =
-          ldapConnection.search(userBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes,
-              false);
-      if (!res.hasMore()) {
-        throw new AuthenticationBadCredentialException(
-            USER_NOT_FOUND_WITH_LOGIN + login + ";LoginField=" + userLoginFieldName);
-      }
+      LDAPSearchResults res = search(ldapConnection, login, searchString, strAttributes);
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
 

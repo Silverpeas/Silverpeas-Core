@@ -95,7 +95,7 @@ public class LDAPSettings implements DriverSettings {
   private boolean ihmImportGroups = true;
 
   /**
-   * Performs initialization from a properties file. The optional properties are retreive with
+   * Performs initialization from a properties file. The optional properties are retrieved with
    * getSureString.
    * @param rs Properties resource file
    */
@@ -104,6 +104,7 @@ public class LDAPSettings implements DriverSettings {
     // Database Settings
     // -----------------
     ldapimpl = rs.getString("database.LDAPImpl", null);
+    configuration.setEncryptedCredentials(rs.getBoolean("database.encryptedCredentials", false));
     configuration.setLdapHost(rs.getString("database.LDAPHost", null));
     configuration.setLdapPort(rs.getInteger("database.LDAPPort", configuration.getLdapPort()));
     ldapProtocolVer = rs.getInteger("database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
@@ -111,7 +112,7 @@ public class LDAPSettings implements DriverSettings {
     ldapProtocolVer = LDAPConnection.LDAP_V3; // Only compatible with V3
     configuration.setUsername(rs.getString("database.LDAPAccessLoginDN", null));
     configuration
-        .setPassword(rs.getString("database.LDAPAccessPasswd", "").getBytes(Charsets.UTF_8));
+        .setPassword(rs.getString("database.LDAPAccessPasswd", ""));
     ldapUserBaseDN = rs.getString("database.LDAPUserBaseDN", null);
     ldapMaxMsClientTimeLimit =
         rs.getInteger("database.LDAPMaxMsClientTimeLimit", ldapMaxMsClientTimeLimit);
@@ -245,10 +246,7 @@ public class LDAPSettings implements DriverSettings {
 
   public LDAPSearchConstraints getSearchConstraints(boolean allocateNew) {
     if (allocateNew) {
-      boolean doReferrals = true;
-      if (ldapMaxNbReferrals == 0) {
-        doReferrals = false;
-      }
+      boolean doReferrals = ldapMaxNbReferrals != 0;
       return new LDAPSearchConstraints(ldapMaxMsClientTimeLimit, ldapMaxSecServerTimeLimit,
           LDAPSearchConstraints.DEREF_NEVER, ldapMaxNbEntryReturned, doReferrals, ldapBatchSize,
           null, ldapMaxNbReferrals);
@@ -258,10 +256,7 @@ public class LDAPSettings implements DriverSettings {
 
   public LDAPConstraints getConstraints(boolean allocateNew) {
     if (allocateNew) {
-      boolean doReferrals = true;
-      if (ldapMaxNbReferrals == 0) {
-        doReferrals = false;
-      }
+      boolean doReferrals = ldapMaxNbReferrals != 0;
       return new LDAPConstraints(ldapMaxMsClientTimeLimit, doReferrals, null, ldapMaxNbReferrals);
     }
     return ldapDefaultConstraints;
@@ -326,28 +321,37 @@ public class LDAPSettings implements DriverSettings {
 
   public String getUsersIdFilter(String value) {
     if (LDAPUtility.isAGuid(getUsersIdField()) && (value != null)) {
-      // Replace all "\\" by "\"
-      StringBuilder singleSlashValue = new StringBuilder(value.length());
-      boolean bIsFirst = true;
-      char[] vca = value.toCharArray();
-
-      for (char aVca : vca) {
-        if (aVca == '\\') {
-          if (bIsFirst) {
-            singleSlashValue.append(aVca);
-          }
-          bIsFirst = !bIsFirst;
-        } else {
-          bIsFirst = true;
-          singleSlashValue.append(aVca);
-        }
-      }
+      String singleSlashValue = parseValue(value);
       return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "=" +
-          singleSlashValue.toString() + "))";
+          singleSlashValue + "))";
     } else {
       return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "=" +
           LDAPUtility.normalizeFilterValue(value) + "))";
     }
+  }
+
+  /**
+   * Replaces all "\\" by "\".
+   * @param value the value to parse for "\\".
+   * @return the result of the value parsing.
+   */
+  private String parseValue(String value) {
+    StringBuilder singleSlashValue = new StringBuilder(value.length());
+    boolean bIsFirst = true;
+    char[] vca = value.toCharArray();
+
+    for (char aVca : vca) {
+      if (aVca == '\\') {
+        if (bIsFirst) {
+          singleSlashValue.append(aVca);
+        }
+        bIsFirst = !bIsFirst;
+      } else {
+        bIsFirst = true;
+        singleSlashValue.append(aVca);
+      }
+    }
+    return singleSlashValue.toString();
   }
 
   public String getUsersIdFilter(Collection<String> values) {
@@ -388,7 +392,7 @@ public class LDAPSettings implements DriverSettings {
   }
 
   public String getGroupsFullFilter() {
-    if (groupsFilter != null && groupsFilter.length() > 0) {
+    if (groupsFilter != null && !groupsFilter.isEmpty()) {
       return "(&(objectClass=" + groupsClassName + ")" + groupsFilter + ")";
     }
     return "(objectClass=" + groupsClassName + ")";
@@ -427,24 +431,9 @@ public class LDAPSettings implements DriverSettings {
 
   public String getGroupsIdFilter(String value) {
     if (LDAPUtility.isAGuid(getGroupsIdField()) && (value != null)) {
-      // Replace all "\\" by "\"
-      StringBuilder singleSlashValue = new StringBuilder(value.length());
-      boolean bIsFirst = true;
-      char[] vca = value.toCharArray();
-
-      for (char aVca : vca) {
-        if (aVca == '\\') {
-          if (bIsFirst) {
-            singleSlashValue.append(aVca);
-          }
-          bIsFirst = !bIsFirst;
-        } else {
-          bIsFirst = true;
-          singleSlashValue.append(aVca);
-        }
-      }
+      String singleSlashValue = parseValue(value);
       return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "=" +
-          singleSlashValue.toString() + "))";
+          singleSlashValue + "))";
     } else {
       return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "=" +
           LDAPUtility.normalizeFilterValue(value) + "))";

@@ -23,17 +23,28 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
+import org.silverpeas.core.security.encryption.ContentEncryptionService;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 /**
  *
  * @author ehugonnet
  */
 public class LdapConfiguration {
 
+  private boolean encryptedCredentials = false;
+
   private String ldapHost = "localhost";
   private int ldapPort = 389;
   private String username;
-  private byte[] password;
+  private String password;
   private int timeout = 0;
+
+  public void setEncryptedCredentials(boolean encryptedCredentials) {
+    this.encryptedCredentials = encryptedCredentials;
+  }
 
   /**
    * Get the value of timeout
@@ -78,7 +89,7 @@ public class LdapConfiguration {
    * @return the value of password
    */
   public byte[] getPassword() {
-    return password;
+    return decryptIfNeeded(password).getBytes(Charsets.UTF_8);
   }
 
   /**
@@ -86,8 +97,8 @@ public class LdapConfiguration {
    *
    * @param password new value of password
    */
-  public void setPassword(byte[] password) {
-    this.password = (password != null ? password.clone() : null);
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   /**
@@ -132,7 +143,7 @@ public class LdapConfiguration {
    * @return the value of username
    */
   public String getUsername() {
-    return username;
+    return decryptIfNeeded(this.username);
   }
 
   /**
@@ -146,7 +157,21 @@ public class LdapConfiguration {
 
   @Override
   public String toString() {
+    //noinspection
     return "LdapConfiguration{" + "ldapHost=" + ldapHost + ", ldapPort=" + ldapPort + ", username="
         + username + ", password=" + password + ", timeout=" + timeout + ", secure=" + secure + '}';
   }
+
+  private String decryptIfNeeded(String possibleEncryptedText) {
+    try {
+      return encryptedCredentials ?
+          ContentEncryptionService.get().decryptContent(possibleEncryptedText)[0] :
+          possibleEncryptedText;
+    } catch (CryptoException | IndexOutOfBoundsException e) {
+      String additionalInfo = e.getCause() != null ? "Cause: " + e.getCause().getMessage() : "";
+      SilverLogger.getLogger(this).error(e.getMessage() + " " + additionalInfo);
+      return possibleEncryptedText;
+    }
+  }
+
 }

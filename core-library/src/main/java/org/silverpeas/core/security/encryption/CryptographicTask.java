@@ -43,16 +43,16 @@ import java.util.Map;
  * By default, the task will be executed in non-privileged mode, that is to say that the task will
  * not block other cryptographic tasks awaiting execution.
  */
-class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask {
+class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<Void> {
 
   private enum Type {
     ENCRYPTION,
     DECRYPTION,
-    RENEW;
+    RENEW
   }
 
   private final Type task;
-  private EncryptionContentIterator[] iterators;
+  private final EncryptionContentIterator[] iterators;
   private boolean privileged = false;
 
   /**
@@ -104,11 +104,10 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
   /**
    * Executes a cryptographic task on the contents provided by some
    * {@link EncryptionContentIterator} iterators among the encryption, the decryption and the
-   * chipher renew. If an error occurs while performing the cryptographic function on a given
+   * cipher renew. If an error occurs while performing the cryptographic function on a given
    * content, the exception describing the error is passed to the iterator and the task is stopped.
    *
-   * @param <T> the type of the result of the task execution.
-   * @return the result of the task.
+   * @return nothing
    * @throws CryptoException if an error occurs while executing its encryption task.
    */
   @Override

@@ -60,7 +60,7 @@ class ConcurrentEncryptionTaskExecutor {
    * @return the result of the task execution.
    * @throws CryptoException if an error has occurred while executing the encryption task.
    */
-  public static <T> T execute(ConcurrentEncryptionTask task)
+  public static <T> T execute(ConcurrentEncryptionTask<T> task)
       throws CryptoException {
     try {
       acquireMutex();
@@ -89,8 +89,9 @@ class ConcurrentEncryptionTaskExecutor {
 
   /**
    * An encryption task to execute concurrently by this executor.
+   *  @param <T> the type of the result of the task execution.
    */
-  public interface ConcurrentEncryptionTask {
+  public interface ConcurrentEncryptionTask<T> {
 
     /**
      * Is this task has to be ran in a privileged mode?
@@ -103,10 +104,9 @@ class ConcurrentEncryptionTaskExecutor {
     /**
      * Executes the task.
      *
-     * @param <T> the type of the result of the task execution.
      * @return the result of the task.
      * @throws CryptoException if an error occurs while executing its encryption task.
      */
-    <T> T execute() throws CryptoException;
+    T execute() throws CryptoException;
   }
 }
