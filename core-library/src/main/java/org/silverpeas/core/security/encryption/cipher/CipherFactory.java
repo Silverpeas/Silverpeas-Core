@@ -33,14 +33,14 @@ import static org.silverpeas.core.util.logging.SilverLogger.*;
  */
 public class CipherFactory {
 
-  private static final CipherFactory instance = new CipherFactory();
-  private static final Map<CryptographicAlgorithmName, Cipher> ciphers =
+  private static CipherFactory instance;
+  private final Map<CryptographicAlgorithmName, Cipher> ciphers =
       new EnumMap<>(CryptographicAlgorithmName.class);
 
-  // we load all the ciphers supported by the Silverpeas Cryptography API
-  static {
+  private CipherFactory() {
+    // we load all the ciphers supported by the Silverpeas Cryptography API
     try {
-      ciphers.put(CryptographicAlgorithmName.Blowfish, new BlowfishCipher());
+      ciphers.put(CryptographicAlgorithmName.BLOWFISH, new BlowfishCipher());
     } catch (Exception ex) {
       getLogger(CipherFactory.class).error(ex.getMessage(), ex);
     }
@@ -49,7 +49,10 @@ public class CipherFactory {
     ciphers.put(CryptographicAlgorithmName.AES, new AESCipher());
   }
 
-  public static CipherFactory getFactory() {
+  public static synchronized CipherFactory getFactory() {
+    if (instance == null) {
+      instance = new CipherFactory();
+    }
     return instance;
   }
 

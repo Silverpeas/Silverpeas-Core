@@ -90,7 +90,7 @@ class KeyManagementTest extends ContentEncryptionServiceTest {
     final int count = 5;
     MyOwnContentIterator[] iterators = getEncryptionContentIterators(count, key);
     for (int i = 0; i < iterators.length; i++) {
-      getContentEncryptionService().registerForRenewingContentCipher(iterators[i]);
+      getContentEncryptionService().registerForContentCiphering(iterators[i]);
     }
 
     // new encryption key
@@ -115,7 +115,7 @@ class KeyManagementTest extends ContentEncryptionServiceTest {
 
     // an iterator on encrypted contents that will provoke an error with the cipher renewing
     final int count = 5;
-    getContentEncryptionService().registerForRenewingContentCipher(new MyOwnContentIterator(count,
+    getContentEncryptionService().registerForContentCiphering(new MyOwnContentIterator(count,
         true));
 
     // new encryption key

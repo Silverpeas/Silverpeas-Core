@@ -35,19 +35,19 @@ import java.util.ResourceBundle;
 public class ConfigurationControl extends ResourceBundle.Control {
 
   public static final long DEFAULT_RELOAD = 14400000L; // 4 Hours
-  private static long RELOAD = DEFAULT_RELOAD;
+  private static long reload = DEFAULT_RELOAD;
   public static final String REFRESH_CONFIG = "silverpeas.refresh.configuration";
 
   static {
     String refresh = System.getProperty(REFRESH_CONFIG);
     if (StringUtil.isDefined(refresh) && StringUtil.isLong(refresh)) {
-      RELOAD = Long.parseLong(refresh);
+      reload = Long.parseLong(refresh);
     }
   }
 
   @Override
   public long getTimeToLive(String baseName, Locale locale) {
-    return RELOAD;
+    return reload;
   }
 
 }

@@ -75,29 +75,31 @@ public class SilverpeasSSLSocketFactory extends SSLSocketFactory {
   }
 
   @Override
-  public Socket createSocket(Socket socket, String s, int i, boolean flag) throws IOException {
-    return factory.createSocket(socket, s, i, flag);
+  public Socket createSocket(Socket socket, String host, int port, boolean autoClose)
+      throws IOException {
+    return factory.createSocket(socket, host, port, autoClose);
   }
 
   @Override
-  public Socket createSocket(InetAddress inaddr, int i, InetAddress inaddr1, int j) throws
-      IOException {
-    return factory.createSocket(inaddr, i, inaddr1, j);
+  public Socket createSocket(InetAddress address, int port, InetAddress localAddress,
+      int localPort) throws IOException {
+    return factory.createSocket(address, port, localAddress, localPort);
   }
 
   @Override
-  public Socket createSocket(InetAddress inaddr, int i) throws IOException {
-    return factory.createSocket(inaddr, i);
+  public Socket createSocket(InetAddress address, int port) throws IOException {
+    return factory.createSocket(address, port);
   }
 
   @Override
-  public Socket createSocket(String s, int i, InetAddress inaddr, int j) throws IOException {
-    return factory.createSocket(s, i, inaddr, j);
+  public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
+      throws IOException {
+    return factory.createSocket(host, port, localHost, localPort);
   }
 
   @Override
-  public Socket createSocket(String s, int i) throws IOException {
-    return factory.createSocket(s, i);
+  public Socket createSocket(String host, int port) throws IOException {
+    return factory.createSocket(host, port);
   }
 
   @Override

@@ -36,14 +36,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PKS12KeyStoreWallet {
 
   private static final PKS12KeyStoreWallet instance = new PKS12KeyStoreWallet();
-  private static final Map<String, PKS12KeyStore> keyMap =
-      new ConcurrentHashMap<String, PKS12KeyStore>();
+  private static final Map<String, PKS12KeyStore> keyMap = new ConcurrentHashMap<>();
 
   /**
    * Gets the single wallet instance.
    * @return the single instance of the key store wallet.
    */
-  public static final PKS12KeyStoreWallet getInstance() {
+  public static PKS12KeyStoreWallet getInstance() {
     return instance;
   }
 
@@ -57,14 +56,15 @@ public class PKS12KeyStoreWallet {
    * @param password the password that protects the key store file.
    * @throws CryptoException if an error occurs while adding the keys into this wallet.
    */
+  @SuppressWarnings("unused")
   public void addKeyStore(String keyFilePath, String password) throws CryptoException {
     try {
-      PKS12KeyStore silverkeys = new PKS12KeyStore(keyFilePath, password);
-      keyMap.put(keyFilePath, silverkeys);
+      PKS12KeyStore keyStore = new PKS12KeyStore(keyFilePath, password);
+      keyMap.put(keyFilePath, keyStore);
 
     } catch (Exception e) {
-      throw new CryptoException("Cannot create a PKS#12 key store from the file '" + keyFilePath +
-          "'", e);
+      throw new CryptoException("Cannot create a PKS#12 key store from the file '" +
+          keyFilePath + "'", e);
     }
   }
 

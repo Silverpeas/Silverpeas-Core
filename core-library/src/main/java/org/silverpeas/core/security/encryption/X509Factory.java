@@ -25,6 +25,7 @@ package org.silverpeas.core.security.encryption;
 
 import net.sourceforge.jcetaglib.lib.X509Cert;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.password.encryption.UnixDESEncryption;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -45,16 +46,25 @@ import java.security.cert.X509Certificate;
 
 public class X509Factory {
 
-  private static String truststoreFile = null;
-  private static String truststorePwd = null;
+  private static X509Factory instance;
 
-  private static String p12Dir = null;
-  private static String p12Salt = null;
+  private final String truststoreFile;
+  private final String truststorePwd;
 
-  private static int validity = -1;
-  private static String subjectDNSuffix = null;
+  private final String p12Dir;
+  private final String p12Salt;
 
-  static {
+  private final int validity;
+  private final String subjectDNSuffix;
+
+  public static synchronized X509Factory getFactory() {
+    if (instance == null) {
+      instance = new X509Factory();
+    }
+    return instance;
+  }
+
+  private X509Factory() {
     SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.util.security");
     String home = SystemWrapper.get().getenv("SILVERPEAS_HOME");
     Path defaultTrustStorePath = Path.of(home, "configuration", "security", "servercert");
@@ -79,12 +89,17 @@ public class X509Factory {
     p12Salt = settings.getString("p12.salt", "SP");
   }
 
-  private X509Factory() {
-  }
-
-  public static void buildP12(String userId, String login, String userLastName,
-      String userFirstName, String domainId) {
-    // Create self signed public/private key pair for client
+  /**
+   * Creates a self-signed X509 certificate in P12 format for the specified user.
+   * @param user the user for which a self X509 certificate has to be created.
+   * @throws SilverpeasRuntimeException if an error occurs while creating the certificate.
+   */
+  public void buildP12(final User user) {
+    String userId = user.getId();
+    String login = user.getLogin();
+    String userFirstName = user.getFirstName();
+    String userLastName = user.getLastName();
+    String domainId = user.getDomainId();
     KeyPair keyPair;
     try {
       keyPair = X509Cert.generateKeyPair("RSA", 1024, new byte[0]);
@@ -109,9 +124,8 @@ public class X509Factory {
 
     KeyStore keyStore = getKeyStore();
 
-    String alias = userId;
     try {
-      keyStore.setCertificateEntry(alias, myCert);
+      keyStore.setCertificateEntry(userId, myCert);
     } catch (KeyStoreException e) {
       throw new SilverpeasRuntimeException("Cannot store X509 certificate into the truststore", e);
     }
@@ -124,14 +138,19 @@ public class X509Factory {
     String password = desEncryption.encrypt(login, p12Salt.getBytes());
 
     try {
-      X509Cert.saveAsP12(myCert, null, privateKey, p12File, alias,
+      X509Cert.saveAsP12(myCert, null, privateKey, p12File, userId,
           new StringBuffer(password));
     } catch (Exception e) {
       throw new SilverpeasRuntimeException("Cannot create PKCS12 file", e);
     }
   }
 
-  public static void revocateUserCertificate(String userId) {
+  /**
+   * Revokes the self-signed X509 certificate of the specified user.
+   * @param userId the unique identifier of a user in Silverpeas.
+   * @throws SilverpeasRuntimeException if an error occurs while revoking the user certificate.
+   */
+  public void revokeUserCertificate(String userId) {
     KeyStore keyStore = getKeyStore();
 
     if (keyStore != null) {
@@ -146,7 +165,7 @@ public class X509Factory {
     }
   }
 
-  private static KeyStore getKeyStore() {
+  private KeyStore getKeyStore() {
     KeyStore keyStore;
     try {
       keyStore = KeyStore.getInstance("jks");
@@ -164,7 +183,7 @@ public class X509Factory {
     return keyStore;
   }
 
-  private static void writeKeyStore(KeyStore keyStore) {
+  private void writeKeyStore(KeyStore keyStore) {
     // Writing Keystore back to file
     try (FileOutputStream fos = new FileOutputStream(truststoreFile)) {
       keyStore.store(fos, truststorePwd.toCharArray());

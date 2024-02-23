@@ -29,7 +29,6 @@ import com.novell.ldap.LDAPSearchConstraints;
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
@@ -44,11 +43,7 @@ import static java.util.stream.Collectors.joining;
  */
 public class LDAPSettings implements DriverSettings {
 
-  public static final String TIME_STAMP_MSAD = "uSNChanged";
-  public static final String TIME_STAMP_MSAD_TT = "whenChanged";
-  public static final String TIME_STAMP_NDS = "modifyTimeStamp";
   private final LdapConfiguration configuration = new LdapConfiguration();
-  private String ldapimpl = null;
   private int ldapProtocolVer = LDAPConnection.LDAP_V3;
   private boolean ldapOpAttributesUsed = false;
   private String ldapUserBaseDN = null;
@@ -91,8 +86,6 @@ public class LDAPSettings implements DriverSettings {
   private String groupsNameField = null;
   private String groupsDescriptionField = null;
   // IHM
-  private boolean ihmImportUsers = true;
-  private boolean ihmImportGroups = true;
 
   /**
    * Performs initialization from a properties file. The optional properties are retrieved with
@@ -103,7 +96,7 @@ public class LDAPSettings implements DriverSettings {
   public void initFromProperties(SettingBundle rs) {
     // Database Settings
     // -----------------
-    ldapimpl = rs.getString("database.LDAPImpl", null);
+    String ldap = rs.getString("database.LDAPImpl", null);
     configuration.setEncryptedCredentials(rs.getBoolean("database.encryptedCredentials", false));
     configuration.setLdapHost(rs.getString("database.LDAPHost", null));
     configuration.setLdapPort(rs.getInteger("database.LDAPPort", configuration.getLdapPort()));
@@ -128,7 +121,7 @@ public class LDAPSettings implements DriverSettings {
       configuration.setLdapPort(rs.getInteger("database.LDAPPortSecured", 636));
     }
     sortControlSupported = rs.getBoolean("database.SortControlSupported", !"openldap".
-        equalsIgnoreCase(ldapimpl));
+        equalsIgnoreCase(ldap));
     ldapDefaultSearchConstraints = getSearchConstraints(true);
     ldapDefaultConstraints = getConstraints(true);
 
@@ -168,11 +161,6 @@ public class LDAPSettings implements DriverSettings {
     groupsMemberField = rs.getString("groups.MemberField", "");
     groupsNameField = rs.getString("groups.NameField", "");
     groupsDescriptionField = rs.getString("groups.DescriptionField", "");
-
-    // IHM Settings
-    // ------------
-    ihmImportUsers = rs.getBoolean("ihm.importUsers", true);
-    ihmImportGroups = rs.getBoolean("ihm.importGroups", true);
   }
 
   // HOST FIELDS
@@ -195,10 +183,6 @@ public class LDAPSettings implements DriverSettings {
 
   public boolean mustImportUsers() {
     return synchroImportUsers;
-  }
-
-  public String getLDAPImpl() {
-    return ldapimpl;
   }
 
   public String getLDAPHost() {
@@ -227,10 +211,6 @@ public class LDAPSettings implements DriverSettings {
 
   public String getLDAPUserBaseDN() {
     return ldapUserBaseDN;
-  }
-
-  public boolean getLDAPSearchRecurs() {
-    return ldapSearchRecurs;
   }
 
   public boolean isLDAPSecured() {
@@ -273,14 +253,6 @@ public class LDAPSettings implements DriverSettings {
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
     }
-  }
-
-  public String getUsersClassName() {
-    return usersClassName;
-  }
-
-  public String getUsersFilter() {
-    return usersFilter;
   }
 
   public String getUsersFullFilter() {
@@ -375,20 +347,8 @@ public class LDAPSettings implements DriverSettings {
     }
   }
 
-  public String getGroupsClassName() {
-    return groupsClassName;
-  }
-
   public boolean isGroupsInheritProfiles() {
     return groupsInheritProfiles;
-  }
-
-  public String getGroupsFilter() {
-    return groupsFilter;
-  }
-
-  public int getGroupsNamingDepth() {
-    return groupsNamingDepth;
   }
 
   public String getGroupsFullFilter() {
@@ -471,14 +431,6 @@ public class LDAPSettings implements DriverSettings {
       return attrs;
     }
     return ArrayUtil.emptyStringArray();
-  }
-
-  public boolean displayImportUsers() {
-    return ihmImportUsers;
-  }
-
-  public boolean displayImportGroups() {
-    return ihmImportGroups;
   }
 
   public boolean isSortControlSupported() {

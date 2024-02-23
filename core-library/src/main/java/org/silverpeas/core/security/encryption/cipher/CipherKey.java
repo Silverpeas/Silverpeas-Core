@@ -44,8 +44,8 @@ public class CipherKey {
     this.key = aKey.clone();
   }
 
-  private CipherKey(String akeyFilePath) {
-    this.keyFilePath = akeyFilePath;
+  private CipherKey(String aKeyFilePath) {
+    this.keyFilePath = aKeyFilePath;
   }
 
   /**
@@ -84,6 +84,7 @@ public class CipherKey {
    * @param path the path of the key file.
    * @return a cipher key.
    */
+  @SuppressWarnings("unused")
   public static CipherKey aKeyFromFilePath(String path) {
     return new CipherKey(path);
   }
@@ -99,7 +100,15 @@ public class CipherKey {
       return keyFile.exists() && keyFile.isFile();
     }
     return false;
+  }
 
+  /**
+   * Is the key not in a file?
+   *
+   * @return true if the key isn't in a file or the file doesn't exist, false otherwise.
+   */
+  public boolean isNotInFile() {
+    return !isInFile();
   }
 
   /**

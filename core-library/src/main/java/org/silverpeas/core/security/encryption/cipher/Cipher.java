@@ -60,8 +60,9 @@ public interface Cipher {
 
   /**
    * Encrypts the specified data by using the specified cryptographic key.
-   *
+   * <p>
    * The String objects handled by the encryption is done according the UTF-8 charset.
+   * </p>
    * @param data the data to encode.
    * @param keyCode the key to use in the encryption.
    * @return the encrypted data in bytes.
@@ -71,8 +72,9 @@ public interface Cipher {
 
   /**
    * Decrypt the specified code or cipher by using the specified cryptographic key.
-   *
+   * <p>
    * The String objects handled by the encryption is done according the UTF-8 charset.
+   * </p>
    * @param encryptedData the data in bytes encrypted by this cipher.
    * @param keyCode the key to use in the decryption.
    * @return the decrypted data.

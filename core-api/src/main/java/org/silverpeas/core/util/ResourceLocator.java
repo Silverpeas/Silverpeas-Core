@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Objects;
@@ -69,11 +70,20 @@ import java.util.concurrent.ConcurrentMap;
 public class ResourceLocator {
 
   private static final int INITIAL_CACHE_SIZE = 128;
-  private static final ClassLoader loader =
+  private static final ConfigurationClassLoader loader =
       new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());
   private static final ConfigurationControl configurationControl = new ConfigurationControl();
   private static final ConcurrentMap<String, SilverpeasBundle> bundles =
       new ConcurrentHashMap<>(INITIAL_CACHE_SIZE);
+
+  /**
+   * Gets the path of the root directory into which the Silverpeas resources (both configuration
+   * files and localization bundles) are located.
+   * @return the path of the root directory containing the Silverpeas resources.
+   */
+  public static Path getResourcesRootPath() {
+    return loader.bundlesBaseDirectory().toPath();
+  }
 
   /**
    * Hidden constructor.
@@ -237,6 +247,7 @@ public class ResourceLocator {
    * such time was defined in the system properties of Silverpeas. Otherwise, this method should be
    * explicitly used to reset this cache and then to force the reload of the bundles' content.
    */
+  @SuppressWarnings("unused")
   public static void resetCache() {
     bundles.clear();
     ResourceBundle.clearCache();
