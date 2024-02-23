@@ -44,8 +44,10 @@
   if (typeof window._spWindow_isSilverpeasMainWindow === 'function' &&
       !_spWindow_isSilverpeasMainWindow()) {
     sp.a11y = _spWindow_getSilverpeasMainWindow().sp.a11y;
-    sp.a11y.initializeOn($window);
-    return;
+    if (sp.a11y) {
+      sp.a11y.initializeOn($window);
+      return;
+    }
   }
 
   const CONTRAST_LABEL = sp.i18n.get("a.p.c");
