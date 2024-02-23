@@ -65,12 +65,12 @@ public class SilverpeasX509TrustManager implements X509TrustManager {
       tmf.init(keyStore);
       TrustManager[] tms = tmf.getTrustManagers();
       defaultTrustManager = Stream.of(tms)
-          .filter(t -> t instanceof X509TrustManager)
+          .filter(X509TrustManager.class::isInstance)
           .map(t -> (X509TrustManager) t)
           .findFirst()
           .orElseThrow(() -> new GeneralSecurityException("No X509 TrustStore Manager found!"));
-    } catch (IOException ioex) {
-      logger.error(String.format("Couldn't load truststore %s", trustStoreFile), ioex);
+    } catch (IOException e) {
+      logger.error(String.format("Couldn't load truststore %s", trustStoreFile), e);
     }
   }
 

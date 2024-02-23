@@ -37,15 +37,16 @@ import java.util.Map;
  * "contentEncryptionService".
  * <p>
  * This service doesn't maintain the knowledge of the contents that were encrypted; it is not of its
- * responsibility. Therefore, when the encryption key is updated, it is the responsibility of the
- * content management services to provide this service the encrypted contents they manage. For
- * doing, it provides them an interface to register a content provider in the form of an
- * {@link EncryptionContentIterator} object. These iterators will be then used directly by the
- * content encryption service to renew their cipher when the key is updated.
+ * responsibility. Therefore, when the encryption key is created or updated, it is the
+ * responsibility of the content management services to provide this service the encrypted contents
+ * they manage. For doing, it provides them an interface to register a content provider in the form
+ * of an {@link EncryptionContentIterator} object. These iterators will be then used directly by the
+ * content encryption service to create or to renew their cipher when the key is created or
+ * updated.
  * <p>
- * When the encryption key is updated, all of the encryption and decryption capabilities are then
- * locked. If a call is performed to one of this service's methods, an IllegalStateException is
- * thrown.
+ * When the encryption key is created or updated, all of the encryption and decryption capabilities
+ * are then locked. If a call is performed to one of this service's methods, an
+ * {@link IllegalStateException} is thrown.
  *
  * @author mmoquillon
  */
@@ -120,8 +121,8 @@ public interface ContentEncryptionService {
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    * @return an array with the different parts of the content, encrypted and in base64, in the same
    * order they were passed as argument of this method.
-   * @throws CryptoException either no valid encryption key has been set or the decryption of one
-   * of the contents (or content part) failed.
+   * @throws CryptoException either no valid encryption key has been set or the decryption of one of
+   * the contents (or content part) failed.
    */
   String[] encryptContent(final String... contentParts) throws CryptoException;
 
@@ -169,7 +170,7 @@ public interface ContentEncryptionService {
    * @param iterator a provider of encrypted content in the form of a
    * {@link EncryptionContentIterator} iterator.
    */
-  void registerForRenewingContentCipher(final EncryptionContentIterator iterator);
+  void registerForContentCiphering(final EncryptionContentIterator iterator);
 
   /**
    * Renews explicitly the cipher of the contents provided by the specified iterators.

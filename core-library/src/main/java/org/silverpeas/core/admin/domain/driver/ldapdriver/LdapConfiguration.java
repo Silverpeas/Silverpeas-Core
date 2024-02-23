@@ -167,7 +167,7 @@ public class LdapConfiguration {
       return encryptedCredentials ?
           ContentEncryptionService.get().decryptContent(possibleEncryptedText)[0] :
           possibleEncryptedText;
-    } catch (CryptoException | IndexOutOfBoundsException e) {
+    } catch (CryptoException | IndexOutOfBoundsException  | IllegalArgumentException e) {
       String additionalInfo = e.getCause() != null ? "Cause: " + e.getCause().getMessage() : "";
       SilverLogger.getLogger(this).error(e.getMessage() + " " + additionalInfo);
       return possibleEncryptedText;

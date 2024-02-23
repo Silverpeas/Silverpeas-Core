@@ -547,7 +547,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   protected void registerForRenewingContentCipher() {
     EncryptionContentIterator contentIterator = new FormEncryptionContentIterator();
     ContentEncryptionServiceProvider.getContentEncryptionService()
-        .registerForRenewingContentCipher(contentIterator);
+        .registerForContentCiphering(contentIterator);
   }
 
   public void saveData(String xmlFormName, PagesContext context, List<FileItem> items)

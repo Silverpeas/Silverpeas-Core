@@ -529,8 +529,7 @@ public class UserManager {
       long domainActions = domainDriverManager.getDomainActions(userDetail.getDomainId());
       boolean isX509Enabled = (domainActions & ACTION_X509_USER) != 0;
       if (isX509Enabled) {
-        X509Factory.buildP12(userDetail.getId(), userDetail.getLogin(), userDetail.getLastName(),
-            userDetail.getFirstName(), userDetail.getDomainId());
+        X509Factory.getFactory().buildP12(userDetail);
       }
 
       return userDetail.getId();
@@ -633,7 +632,7 @@ public class UserManager {
       long domainActions = domainDriverManager.getDomainActions(user.getDomainId());
       boolean isX509Enabled = (domainActions & ACTION_X509_USER) != 0;
       if (isX509Enabled) {
-        X509Factory.revocateUserCertificate(user.getId());
+        X509Factory.getFactory().revokeUserCertificate(user.getId());
       }
 
       return user.getId();

@@ -51,17 +51,18 @@ import java.util.List;
  */
 public class PKS12KeyStore {
 
-  private X509Certificate cert = null;
-  private PrivateKey privatekey = null;
-  private PublicKey publickey = null;
+  private final X509Certificate cert;
+  private final PrivateKey privatekey;
+  private final PublicKey publickey;
 
   private static final String LOAD_FAILURE = "The load of the public and secret keys, and of the" +
       " X509 certificate failed!";
 
   /**
    * Constructs a new PKS#12 key store from the specified key store file.
-   *
+   * <p>
    * It loads the secret and public key as well the X509 certificate from the specified file.
+   * </p>
    * @param p12FilePath the path of the PKS#12 key store file.
    * @param password the password which protects the key store file.
    * @throws KeyStoreException if an error occurs while opening the PKS#12 key store file.
@@ -70,11 +71,9 @@ public class PKS12KeyStore {
    */
   public PKS12KeyStore(String p12FilePath, String password)
       throws KeyStoreException, CryptoException {
-    // CHARGEMENT DU FICHIER PKCS#12
-    KeyStore ks = null;
+    KeyStore ks;
     Security.addProvider(new BouncyCastleProvider());
     ks = KeyStore.getInstance("PKCS12");
-    // Password pour le fichier filep12
     if (p12FilePath != null) {
       try(final InputStream input = new FileInputStream(p12FilePath)) {
         ks.load(input, password.toCharArray());
@@ -83,19 +82,18 @@ public class PKS12KeyStore {
       }
     }
 
-    // RECUPERATION DU COUPLE CLE PRIVEE/PUBLIQUE ET DU CERTIFICAT PUBLIQUE
     try {
       Enumeration<String> en = ks.aliases();
       String alias = "";
-      List<String> vectaliases = new ArrayList<>();
+      List<String> listOfAliases = new ArrayList<>();
 
       while (en.hasMoreElements()) {
-        vectaliases.add(en.nextElement());
+        listOfAliases.add(en.nextElement());
       }
-      String[] aliases = (vectaliases.toArray(new String[vectaliases.size()]));
-      for (String aliase : aliases) {
-        if (ks.isKeyEntry(aliase)) {
-          alias = aliase;
+      String[] allAliases = (listOfAliases.toArray(new String[0]));
+      for (String anAliases : allAliases) {
+        if (ks.isKeyEntry(anAliases)) {
+          alias = anAliases;
           break;
         }
       }

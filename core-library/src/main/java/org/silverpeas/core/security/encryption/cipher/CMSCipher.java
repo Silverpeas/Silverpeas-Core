@@ -84,15 +84,14 @@ public class CMSCipher implements Cipher {
   @Override
   public byte[] encrypt(String data, CipherKey keyFilePath) throws CryptoException {
     try {
-      // Chargement de la chaine à crypter
+      // Loads the data to encrypt
       byte[] buffer = stringToByteArray(data);
 
-      // Chiffrement du document
+      // document encryption process
+      // the certificate is the expeditor's one. The public key of this certificate will be used to
+      // encrypt the symmetric key.
       CMSEnvelopedDataGenerator gen = new CMSEnvelopedDataGenerator();
-      // La variable cert correspond au certificat du destinataire
-      // La clé publique de ce certificat servira à chiffrer la clé
-      // symétrique
-      if (!keyFilePath.isInFile()) {
+      if (keyFilePath.isNotInFile()) {
         throw new FileNotFoundException("The PKS#12 file '" + keyFilePath + "' doesn't exist!");
       }
       PKS12KeyStoreWallet wallet = PKS12KeyStoreWallet.getInstance();
@@ -101,10 +100,8 @@ public class CMSCipher implements Cipher {
           new JceKeyTransRecipientInfoGenerator(keyStore.getCertificate()).setProvider("BC");
       gen.addRecipientInfoGenerator(generator);
 
-      // Choix de l'algorithme à clé symétrique pour chiffrer le document.
-      // AES est un standard. Vous pouvez donc l'utiliser sans crainte.
-      // Il faut savoir qu'en france la taille maximum autorisée est de 128
-      // bits pour les clés symétriques (ou clés secrètes)
+      // Choice of the symmetric encryption algorithm to use to encrypt the document
+      // AES is the standard one the more used at this date and can be chosen without worry
       OutputEncryptor encryptor =
           new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC).setProvider("BC").build();
       CMSEnvelopedData envData = gen.generate(new CMSProcessableByteArray(buffer), encryptor);
@@ -127,21 +124,18 @@ public class CMSCipher implements Cipher {
   @Override
   public String decrypt(byte[] encryptedData, CipherKey keyFilePath) throws CryptoException {
     try {
-      // Déchiffrement de la chaine
+      // Decryption
       CMSEnvelopedData ced = new CMSEnvelopedData(encryptedData);
-      @SuppressWarnings("unchecked")
-      Collection<RecipientInformation> recip = ced.getRecipientInfos().getRecipients();
+      Collection<RecipientInformation> recipients = ced.getRecipientInfos().getRecipients();
 
-      RecipientInformation rinfo = recip.iterator().next();
-      // privatekey est la clé privée permettant de déchiffrer la clé
-      // secrète (symétrique)
-      if (!keyFilePath.isInFile()) {
+      RecipientInformation info = recipients.iterator().next();
+      if (!keyFilePath.isNotInFile()) {
         throw new FileNotFoundException("The PKS#12 file '" + keyFilePath + "' doesn't exist!");
       }
       PKS12KeyStoreWallet wallet = PKS12KeyStoreWallet.getInstance();
       PKS12KeyStore keyStore = wallet.getKeyStore(keyFilePath.getKeyFilePath());
       byte[] contents =
-          rinfo.getContent(new JceKeyTransEnvelopedRecipient(keyStore.getPrivatekey()));
+          info.getContent(new JceKeyTransEnvelopedRecipient(keyStore.getPrivatekey()));
       return byteArrayToString(contents);
     } catch (CryptoException e) {
       throw e;
@@ -152,7 +146,6 @@ public class CMSCipher implements Cipher {
 
 
   private String byteArrayToString(byte[] bArray) {
-    // A n'utiliser qu'avec des Strings décryptés!!!
     return new String(bArray, Charsets.UTF_8);
   }
 
@@ -165,7 +158,7 @@ public class CMSCipher implements Cipher {
    * @return nothing, throws an UnsupportedOperationException exception.
    */
   @Override
-  public CipherKey generateCipherKey() throws CryptoException {
+  public CipherKey generateCipherKey() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

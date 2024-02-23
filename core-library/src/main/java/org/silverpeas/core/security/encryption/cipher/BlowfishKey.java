@@ -23,9 +23,10 @@
  */
 package org.silverpeas.core.security.encryption.cipher;
 
-import java.io.UnsupportedEncodingException;
-import java.security.Key;
+import org.silverpeas.core.util.Charsets;
+
 import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
 
 /**
  * A representation of a symmetric key used in the Blowfish cipher. It is a wrapper of the actual
@@ -34,6 +35,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class BlowfishKey implements Key {
 
   private static final long serialVersionUID = 5363796000217868136L;
+  private static final String KEY_CODE = "ƒþX]Lh/‘";
   private Key key = null;
 
   /**
@@ -41,22 +43,19 @@ public class BlowfishKey implements Key {
    * code; that is to say two instances created by using this constructor are equal.
    */
   public BlowfishKey() {
-    if (key == null) {
-      byte[] keybyte = getKeyBytes("ƒþX]Lh/‘");
-      key = new SecretKeySpec(keybyte, CryptographicAlgorithmName.Blowfish.name());
-    }
+    byte[] keyBytes = getKeyBytes(KEY_CODE);
+    key = new SecretKeySpec(keyBytes, CryptographicAlgorithmName.BLOWFISH.getId());
   }
 
   /**
    * Constructs a new symmetric key for the Blowfish cypher from the specified key code in text.
    *
-   * @param keyCode the code of the key.
+   * @param keyCode the code of the key. Must be in UTF-8.
    */
+  @SuppressWarnings("unused")
   public BlowfishKey(String keyCode) {
-    if (key == null) {
-      byte[] keybyte = getKeyBytes(keyCode);
-      key = new SecretKeySpec(keybyte, CryptographicAlgorithmName.Blowfish.name());
-    }
+    byte[] keyBytes = getKeyBytes(keyCode);
+    key = new SecretKeySpec(keyBytes, CryptographicAlgorithmName.BLOWFISH.getId());
   }
 
   /**
@@ -65,20 +64,11 @@ public class BlowfishKey implements Key {
    * @param keyCode the code of the key.
    */
   public BlowfishKey(byte[] keyCode) {
-    if (key == null) {
-      byte[] keybyte = getKeyBytes("ƒþX]Lh/‘");
-      key = new SecretKeySpec(keybyte, CryptographicAlgorithmName.Blowfish.name());
-    }
+    key = new SecretKeySpec(keyCode, CryptographicAlgorithmName.BLOWFISH.getId());
   }
 
   private byte[] getKeyBytes(String keyCode) {
-    byte[] keybyte;
-    try {
-      keybyte = "ƒþX]Lh/‘".getBytes("ISO-8859-1");
-    } catch (UnsupportedEncodingException e) {
-      keybyte = "ƒþX]Lh/‘".getBytes();
-    }
-    return keybyte;
+    return keyCode.getBytes(Charsets.UTF_8);
   }
 
   @Override

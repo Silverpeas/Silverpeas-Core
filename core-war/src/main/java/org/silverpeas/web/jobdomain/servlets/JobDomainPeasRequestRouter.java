@@ -496,7 +496,7 @@ public class JobDomainPeasRequestRouter extends
           bHaveToRefreshDomain = jobDomainSC.importGroup(WebEncodeHelper.htmlStringToJavaString(request.getParameter(
               GROUP_NAME_PARAM)));
         } else if ("groupManagersView".equals(function)) {
-          List<List> groupManagers = jobDomainSC.getGroupManagers();
+          List<List<?>> groupManagers = jobDomainSC.getGroupManagers();
 
           request.setAttribute(USERS_ATTR, groupManagers.get(0));
           request.setAttribute("Groups", groupManagers.get(1));

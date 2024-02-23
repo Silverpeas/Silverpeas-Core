@@ -30,21 +30,6 @@ package org.silverpeas.core.security.encryption;
  */
 class CipherRenewingException extends RuntimeException {
 
-  public static final String CIPHER_RENEW_FAILURE =
-      "The renew of the cipher of encrypted contents has failed!";
-
-  public CipherRenewingException() {
-    super(CIPHER_RENEW_FAILURE);
-  }
-
-  public CipherRenewingException(String message) {
-    super(message);
-  }
-
-  public CipherRenewingException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
   public CipherRenewingException(Throwable cause) {
     super(cause);
   }

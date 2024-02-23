@@ -25,7 +25,6 @@ package org.silverpeas.web.jobdomain.control;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.xhtml.br;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
@@ -53,7 +52,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.message.MessageNotifier;
@@ -72,11 +70,6 @@ import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.logging.Level;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.LoginServlet;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
@@ -86,6 +79,12 @@ import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.util.ListIndex;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.servlets.ImageProfile;
@@ -1041,7 +1040,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
       if ((getDomainActions() & DomainDriver.ActionConstants.ACTION_X509_USER) != 0) {
         // revocate user's certificate
-        revocateCertificate(user);
+        revokeCertificate(user);
       }
       refresh();
     }
@@ -1233,8 +1232,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   /**
    * @return a List with 2 elements. First one, a List of UserDetail. Last one, a List of Group.
    */
-  public List<List> getGroupManagers() {
-    List<List> usersAndGroups = new ArrayList<>();
+  public List<List<?>> getGroupManagers() {
+    List<List<?>> usersAndGroups = new ArrayList<>();
     List<UserDetail> users = new ArrayList<>();
     List<Group> groups = new ArrayList<>();
 
@@ -2104,18 +2103,17 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     UserDetail user = getUserDetail(userId);
 
     try {
-      X509Factory.buildP12(user.getId(), user.getLogin(), user.getLastName(), user.getFirstName(),
-          user.getDomainId());
-    } catch (UtilException e) {
+      X509Factory.getFactory().buildP12(user);
+    } catch (SilverpeasRuntimeException e) {
       throw new JobDomainPeasException(e);
     }
   }
 
-  private void revocateCertificate(UserDetail user)
+  private void revokeCertificate(UserDetail user)
       throws JobDomainPeasException {
     try {
-      X509Factory.revocateUserCertificate(user.getId());
-    } catch (UtilException e) {
+      X509Factory.getFactory().revokeUserCertificate(user.getId());
+    } catch (SilverpeasRuntimeException e) {
       throw new JobDomainPeasException(e);
     }
   }

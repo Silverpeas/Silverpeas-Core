@@ -79,7 +79,7 @@ public class CryptMD5 {
     try(InputStream fileInputStream = new FileInputStream(file)) {
       MessageDigest digest = MessageDigest.getInstance("MD5");
       byte[] buffer = new byte[8];
-      int c = 0;
+      int c;
       while ((c = fileInputStream.read(buffer)) != -1) {
         digest.update(buffer, 0, c);
       }

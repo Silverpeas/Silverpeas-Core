@@ -51,7 +51,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
- * It is the default implementation of the {@link ContentEncryptionService} interface in Silverpeas.
+ * It is the default implementation of the {@link ContentEncryptionService} interface in
+ * Silverpeas.
  * <p>
  * This implementation manages the encryption of the content with the AES-256 cipher and it stores
  * the cipher key into a file after encrypting it with another cryptographic algorithm, CAST-128 (a
@@ -89,14 +90,15 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    * renewed when the encryption key is updated.
    * <p>
    * This method is dedicated to the content management service for providing to the content
-   * encryption services a way to access the encrypted contents they manage in order to renew their
-   * cipher when the encryption key is updated.
+   * encryption services a way to access the encrypted contents they manage in order to encrypt
+   * them (for a new encryption key) or to renew their cipher when the encryption key is updated.
+   * </p>
    *
    * @param iterator a provider of encrypted content in the form of a
    * {@link EncryptionContentIterator} iterator.
    */
   @Override
-  public void registerForRenewingContentCipher(final EncryptionContentIterator iterator) {
+  public void registerForContentCiphering(final EncryptionContentIterator iterator) {
     contentIterators.add(new EncryptionContentIteratorWrapper(iterator));
   }
 
@@ -147,20 +149,20 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
             return false;
           }
 
-      @Override
-      public String[] execute() throws CryptoException {
-        CipherKey key = getActualCipherKey();
-        Cipher cipher = getCipherForContentEncryption();
-        String[] encryptedContents = new String[contentParts.length];
-        for (int i = 0; i < contentParts.length; i++) {
-          if (contentParts[i] != null) {
-            byte[] theEncryptedContent = cipher.encrypt(contentParts[i], key);
-            encryptedContents[i] = StringUtil.asBase64(theEncryptedContent);
+          @Override
+          public String[] execute() throws CryptoException {
+            CipherKey key = getActualCipherKey();
+            Cipher cipher = getCipherForContentEncryption();
+            String[] encryptedContents = new String[contentParts.length];
+            for (int i = 0; i < contentParts.length; i++) {
+              if (contentParts[i] != null) {
+                byte[] theEncryptedContent = cipher.encrypt(contentParts[i], key);
+                encryptedContents[i] = StringUtil.asBase64(theEncryptedContent);
+              }
+            }
+            return encryptedContents;
           }
-        }
-        return encryptedContents;
-      }
-    });
+        });
   }
 
   /**
@@ -183,18 +185,18 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
       throws CryptoException {
     return ConcurrentEncryptionTaskExecutor
         .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<>() {
-      @Override
-      public boolean isPrivileged() {
-        return false;
-      }
+          @Override
+          public boolean isPrivileged() {
+            return false;
+          }
 
-      @Override
-      public Map<String, String> execute() throws CryptoException {
-        CipherKey key = getActualCipherKey();
-        Cipher cipher = getCipherForContentEncryption();
-        return encryptContent(content, cipher, key);
-      }
-    });
+          @Override
+          public Map<String, String> execute() throws CryptoException {
+            CipherKey key = getActualCipherKey();
+            Cipher cipher = getCipherForContentEncryption();
+            return encryptContent(content, cipher, key);
+          }
+        });
   }
 
   /**
@@ -230,24 +232,24 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   public String[] decryptContent(final String... encryptedContentParts) throws CryptoException {
     return ConcurrentEncryptionTaskExecutor
         .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<>() {
-      @Override
-      public boolean isPrivileged() {
-        return false;
-      }
-
-      @Override
-      public String[] execute() throws CryptoException {
-        CipherKey key = getActualCipherKey();
-        Cipher cipher = getCipherForContentEncryption();
-        String[] contents = new String[encryptedContentParts.length];
-        for (int i = 0; i < encryptedContentParts.length; i++) {
-          if (encryptedContentParts[i] != null) {
-            contents[i] = cipher.decrypt(StringUtil.fromBase64(encryptedContentParts[i]), key);
+          @Override
+          public boolean isPrivileged() {
+            return false;
           }
-        }
-        return contents;
-      }
-    });
+
+          @Override
+          public String[] execute() throws CryptoException {
+            CipherKey key = getActualCipherKey();
+            Cipher cipher = getCipherForContentEncryption();
+            String[] contents = new String[encryptedContentParts.length];
+            for (int i = 0; i < encryptedContentParts.length; i++) {
+              if (encryptedContentParts[i] != null) {
+                contents[i] = cipher.decrypt(StringUtil.fromBase64(encryptedContentParts[i]), key);
+              }
+            }
+            return contents;
+          }
+        });
   }
 
   /**
@@ -270,18 +272,18 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
       throws CryptoException {
     return ConcurrentEncryptionTaskExecutor
         .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<>() {
-      @Override
-      public boolean isPrivileged() {
-        return false;
-      }
+          @Override
+          public boolean isPrivileged() {
+            return false;
+          }
 
-      @Override
-      public Map<String, String> execute() throws CryptoException {
-        CipherKey key = getActualCipherKey();
-        Cipher cipher = getCipherForContentEncryption();
-        return decryptContent(encryptedContent, cipher, key);
-      }
-    });
+          @Override
+          public Map<String, String> execute() throws CryptoException {
+            CipherKey key = getActualCipherKey();
+            Cipher cipher = getCipherForContentEncryption();
+            return decryptContent(encryptedContent, cipher, key);
+          }
+        });
   }
 
   /**
@@ -370,11 +372,15 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   protected static Map<String, String> decryptContent(Map<String, String> encryptedContent,
       Cipher cipher, CipherKey key) throws CryptoException {
     Map<String, String> content = new HashMap<>(encryptedContent.size());
-    for (Map.Entry<String, String> anEncryptedContent : encryptedContent.entrySet()) {
-      if (anEncryptedContent.getValue() != null) {
-        String aContent = cipher.decrypt(StringUtil.fromBase64(anEncryptedContent.getValue()), key);
-        content.put(anEncryptedContent.getKey(), aContent);
+    try {
+      for (Map.Entry<String, String> anEncryptedContent : encryptedContent.entrySet()) {
+        if (anEncryptedContent.getValue() != null) {
+          String aContent = cipher.decrypt(StringUtil.fromBase64(anEncryptedContent.getValue()), key);
+          content.put(anEncryptedContent.getKey(), aContent);
+        }
       }
+    } catch (IllegalArgumentException e) {
+      throw new CryptoException(e.getMessage());
     }
     return content;
   }
@@ -508,6 +514,13 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
     }
   }
 
+  /**
+   * A Cryptographic task to update the cipher key to use for content encryption. In the case a key
+   * doesn't already exist, it is created. Once the cipher key created or updated, all the content
+   * encryption iterators are invoked to pass the content to encrypt. For a cipher key update, the
+   * encryption service will decrypt the encrypted content before encrypting them again with the new
+   * key.
+   */
   private static class CipherKeyUpdater
       implements ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask<Void> {
 
@@ -548,16 +561,18 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
         byte[] encryptedKey = cipher.encrypt(key, encryptionKey);
         String encryptedContent = StringUtil.asBase64(encryptionKey.getRawKey()) + KEY_SEP
             + StringUtil.asBase64(encryptedKey);
-        try(InputStream contentStream = new ByteArrayInputStream(encryptedContent.getBytes())) {
+        try (InputStream contentStream = new ByteArrayInputStream(encryptedContent.getBytes())) {
           Files.copy(contentStream, keyFile.toPath(), REPLACE_EXISTING);
         }
         setReadOnly(keyFile);
         setHidden(ACTUAL_KEY_FILE_PATH);
 
+        EncryptionContentIterator[] iterators =
+            contentIterators.toArray(new EncryptionContentIterator[0]);
         if (renewContentCiphers) {
-          EncryptionContentIterator[] iterators =
-              contentIterators.toArray(new EncryptionContentIterator[0]);
           CryptographicTask.renewEncryptionOf(iterators).execute();
+        } else {
+          CryptographicTask.encryptionOf(iterators).execute();
         }
         return null;
       } catch (IOException ex) {

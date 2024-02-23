@@ -29,7 +29,6 @@ import com.novell.ldap.LDAPSearchConstraints;
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 

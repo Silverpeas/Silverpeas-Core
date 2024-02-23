@@ -274,7 +274,7 @@ public class ConnectionDAO {
    */
   private static byte[] getCryptString(String text) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
-    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
+    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.BLOWFISH);
     try {
       return blowfish.encrypt(text, CipherKey.aKeyFromHexText(keyCode));
     } catch (ParseException e) {
@@ -290,7 +290,7 @@ public class ConnectionDAO {
    */
   private static String getUncryptString(byte[] cipherText) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
-    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
+    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.BLOWFISH);
     try {
       return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(keyCode));
     } catch (ParseException e) {
