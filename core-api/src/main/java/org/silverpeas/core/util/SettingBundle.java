@@ -50,8 +50,8 @@ public class SettingBundle implements SilverpeasBundle {
 
   public static final String GENERAL_BUNDLE_NAME = "org.silverpeas.general";
 
-  private String name;
-  private Function<String, ResourceBundle> loader;
+  private final String name;
+  private final Function<String, ResourceBundle> loader;
 
   protected SettingBundle(final String name, final Function<String, ResourceBundle> loader) {
     this.name = name;
@@ -134,6 +134,7 @@ public class SettingBundle implements SilverpeasBundle {
    * @param key the unique name of the data in this bundle.
    * @return an array with the items of the list that values the given property key.
    */
+  @SuppressWarnings("unused")
   public String[] getList(String key) {
     return getList(key, ",");
   }
@@ -234,6 +235,7 @@ public class SettingBundle implements SilverpeasBundle {
     }
   }
 
+  @SuppressWarnings("unused")
   public float getFloat(String key) {
     return Float.parseFloat(getString(key));
   }

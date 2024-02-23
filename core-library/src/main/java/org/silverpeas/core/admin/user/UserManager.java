@@ -25,11 +25,7 @@ package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
-import org.silverpeas.core.admin.persistence.GroupUserRoleTable;
-import org.silverpeas.core.admin.persistence.OrganizationSchema;
-import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
-import org.silverpeas.core.admin.persistence.UserRoleRow;
+import org.silverpeas.core.admin.persistence.*;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.UserAlreadyExistsAdminException;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
@@ -64,7 +60,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_X509_USER;
@@ -128,6 +123,7 @@ public class UserManager {
    * @param id the unique identifier of the user to check its existance.
    * @return true if such a user exist or false otherwise.
    */
+  @SuppressWarnings("unused")
   public boolean isUserExisting(final String id) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.isUserByIdExists(connection, id);
@@ -240,14 +236,6 @@ public class UserManager {
     }
   }
 
-  public List<String> getDirectUserIdsInGroupRole(final String groupRoleId) throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
-      return userDAO.getDirectUserIdsByGroupUserRole(connection, groupRoleId, false);
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("users in group role", groupRoleId), e);
-    }
-  }
-
   /**
    * Gets all the users that belong to the specified domain in order to perform a synchronization
    * with the service backing the domain.
@@ -290,7 +278,7 @@ public class UserManager {
   /**
    * Gets the identifier of all the users that belong to the specified domain.
    * @param sDomainId the unique identifier of the domain in Silverpeas.
-   * @return an array with all the user identifiers.
+   * @return a list with all the user identifiers.
    * @throws AdminException if the getting of the user identifiers fails.
    */
   public List<String> getAllUserIdsInDomain(String sDomainId) throws
@@ -309,7 +297,7 @@ public class UserManager {
       if (userIds.isEmpty()) {
         return ArrayUtil.emptyStringArray();
       }
-      return userIds.toArray(new String[userIds.size()]);
+      return userIds.toArray(new String[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users with access level ", accessLevel.getName()),
           e);
@@ -351,7 +339,7 @@ public class UserManager {
       throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       List<Integer> spaceIds = spaceDAO.getManageableSpaceIds(connection, sUserId, groupIds);
-      return spaceIds.toArray(new Integer[spaceIds.size()]);
+      return spaceIds.toArray(new Integer[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("spaces manageable by user", sUserId), e);
     }
@@ -359,7 +347,7 @@ public class UserManager {
 
   /**
    * Gets the identifier of all the users in Silverpeas.
-   * @return an array with the identifier of all the users in Silverpeas.
+   * @return a list with the identifier of all the users in Silverpeas.
    * @throws AdminException if an error occurs while getting all the user identifiers.
    */
   public List<String> getAllUsersIds() throws AdminException {
@@ -466,7 +454,7 @@ public class UserManager {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUsersBySpecificIds(connection, domainId, specificIds);
     } catch (Exception e) {
-      String sSpecificIds = specificIds.stream().collect(Collectors.joining(", "));
+      String sSpecificIds = String.join(", ", specificIds);
       throw new AdminException(
           failureOnGetting("users with specific ids " + sSpecificIds, IN_DOMAIN + domainId), e);
     }
@@ -587,8 +575,7 @@ public class UserManager {
       long domainActions = domainDriverManager.getDomainActions(userDetail.getDomainId());
       boolean isX509Enabled = (domainActions & ACTION_X509_USER) != 0;
       if (isX509Enabled) {
-        X509Factory.buildP12(userDetail.getId(), userDetail.getLogin(), userDetail.getLastName(),
-            userDetail.getFirstName(), userDetail.getDomainId());
+        X509Factory.getFactory().buildP12(userDetail);
       }
 
       return userDetail.getId();
@@ -691,7 +678,7 @@ public class UserManager {
       long domainActions = domainDriverManager.getDomainActions(user.getDomainId());
       boolean isX509Enabled = (domainActions & ACTION_X509_USER) != 0;
       if (isX509Enabled) {
-        X509Factory.revocateUserCertificate(user.getId());
+        X509Factory.getFactory().revokeUserCertificate(user.getId());
       }
 
       return user.getId();
@@ -789,7 +776,7 @@ public class UserManager {
 
   private void delayedNotificationOfUserDeletion(final UserDetail user) {
     try {
-      DelayedNotificationDelegate.executeUserDeleting(Integer.valueOf(user.getId()));
+      DelayedNotificationDelegate.executeUserDeleting(Integer.parseInt(user.getId()));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
       SynchroDomainReport.warn(USERMANAGER_SYNCHRO_REPORT + ".delayedNotificationOfUserDeletion()",

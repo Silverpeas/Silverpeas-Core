@@ -56,7 +56,7 @@ public class BlowfishCipherTest {
 
   @Test
   public void testGetAlgorithmName() throws Exception {
-    assertThat(blowfish.getAlgorithmName(), is(CryptographicAlgorithmName.Blowfish));
+    assertThat(blowfish.getAlgorithmName(), is(CryptographicAlgorithmName.BLOWFISH));
   }
 
   @Test
@@ -75,7 +75,7 @@ public class BlowfishCipherTest {
 
   private Cipher initBlowhfishCipher() {
     CipherFactory cipherFactory = CipherFactory.getFactory();
-    Cipher cipher = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
+    Cipher cipher = cipherFactory.getCipher(CryptographicAlgorithmName.BLOWFISH);
     assertNotNull(cipher);
     return cipher;
   }

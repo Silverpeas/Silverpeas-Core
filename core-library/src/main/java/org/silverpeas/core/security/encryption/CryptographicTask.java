@@ -103,9 +103,9 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
 
   /**
    * Executes a cryptographic task on the contents provided by some
-   * {@link EncryptionContentIterator} iterators among the encryption, the decryption and the
-   * cipher renew. If an error occurs while performing the cryptographic function on a given
-   * content, the exception describing the error is passed to the iterator and the task is stopped.
+   * {@link EncryptionContentIterator} iterators among the encryption, the decryption and the cipher
+   * renew. If an error occurs while performing the cryptographic function on a given content, the
+   * exception describing the error is passed to the iterator and the task is stopped.
    *
    * @return nothing
    * @throws CryptoException if an error occurs while executing its encryption task.
@@ -125,10 +125,9 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
   private void process(EncryptionContentIterator theContents, Cipher cipher, CipherKey actualKey,
       CipherKey previousKey) {
     theContents.init();
-    Map<String, String> content = null;
-    try {
-      while (theContents.hasNext()) {
-        content = theContents.next();
+    while (theContents.hasNext()) {
+      Map<String, String> content = theContents.next();
+      try {
         switch (task) {
           case ENCRYPTION:
             content = DefaultContentEncryptionService.encryptContent(content, cipher, actualKey);
@@ -142,9 +141,11 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
             break;
         }
         theContents.update(content);
+      } catch (Exception ex) {
+        CryptoException error = ex instanceof CryptoException ? (CryptoException) ex :
+            new CryptoException(ex.getMessage(), ex);
+        theContents.onError(content, error);
       }
-    } catch (Exception ex) {
-      theContents.onError(content, new CryptoException(ex.getMessage(), ex));
     }
   }
 

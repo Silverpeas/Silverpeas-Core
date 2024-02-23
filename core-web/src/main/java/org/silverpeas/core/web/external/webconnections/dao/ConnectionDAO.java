@@ -49,23 +49,23 @@ import java.util.Map;
 
 public class ConnectionDAO {
   private static final String SELECT_FROM = "select * from ";
-  private static String tableName = "SB_webConnections_info";
-  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+  private static final String TABLE_NAME = "SB_webConnections_info";
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.external.webConnections.settings.webConnectionsSettings");
   // warning: the key code should be in hexadecimal!
-  private static String keyCode = settings.getString("keycode");
+  private static final String KEYCODE = settings.getString("keycode");
 
   /**
    * Return a connection for componentId and userId
-   * @param con : Connection
-   * @param componentId : String component identifier
-   * @param userId : String user identifier
-   * @return connection : ConnectionDetail
+   * @param con a connection
+   * @param componentId a component identifier
+   * @param userId a user identifier
+   * @return a ConnectionDetail
    */
   public ConnectionDetail getConnection(Connection con, String componentId, String userId)
       throws SQLException {
     ConnectionDetail connection = null;
-    String query = SELECT_FROM + tableName + " where componentId = ? and userId = ? ";
+    String query = SELECT_FROM + TABLE_NAME + " where componentId = ? and userId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -84,15 +84,15 @@ public class ConnectionDAO {
 
   /**
    * Return a connection corresponding to connectionId
-   * @param con : Connection
-   * @param connectionId : String the connection identifier
-   * @return connection : ConnectionDetail
-   * @throws SQLException
+   * @param con a connection
+   * @param connectionId the connection identifier
+   * @return a ConnectionDetail
+   * @throws SQLException if an error occurs
    */
   public ConnectionDetail getConnectionById(Connection con, String connectionId)
       throws SQLException {
     ConnectionDetail connection = null;
-    String query = SELECT_FROM + tableName + " where connectionId = ? ";
+    String query = SELECT_FROM + TABLE_NAME + " where connectionId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -110,18 +110,16 @@ public class ConnectionDAO {
 
   /**
    * create a connection
-   * @param con : Connection
-   * @param connection : ConnectionDetail
-   * @return the connectionId : String
-   * @throws SQLException
+   *
+   * @param con the connection
+   * @param connection the ConnectionDetail
+   * @throws SQLException if an error occurs
    */
-  public String createConnection(Connection con, ConnectionDetail connection) throws SQLException {
-    String id = "";
+  public void createConnection(Connection con, ConnectionDetail connection) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      int newId = DBUtil.getNextId(tableName, "connectionId");
-      id = String.valueOf(newId);
-      String query = "INSERT INTO " + tableName +
+      int newId = DBUtil.getNextId(TABLE_NAME, "connectionId");
+      String query = "INSERT INTO " + TABLE_NAME +
           " (connectionId, userId, componentId, paramLogin, paramPassword) " +
           "VALUES (?,?,?,?,?)";
       prepStmt = con.prepareStatement(query);
@@ -130,19 +128,18 @@ public class ConnectionDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-    return id;
   }
 
   /**
    * delete the connection corresponding to connectionId
-   * @param con : Connection
-   * @param connectionId : String the connection identifier
-   * @throws SQLException
+   * @param con a connection
+   * @param connectionId the connection identifier
+   * @throws SQLException if an error occurs
    */
   public void deleteConnection(Connection con, String connectionId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      String query = "delete from " + tableName + " where connectionId = ? ";
+      String query = "delete from " + TABLE_NAME + " where connectionId = ? ";
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(connectionId));
       prepStmt.executeUpdate();
@@ -153,27 +150,27 @@ public class ConnectionDAO {
 
   /**
    * update the connection corresponding to connectionId, with the login and the password
-   * @param con : Connection
-   * @param connectionId : String
-   * @param login : String
-   * @param password : String
-   * @throws SQLException
+   * @param con a connection
+   * @param connectionId connection identifier
+   * @param login connection login
+   * @param password connection password
+   * @throws SQLException if an error occurs
    */
   public void updateConnection(Connection con, String connectionId, String login, String password)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       String query =
-          "update " + tableName + " set paramLogin = ? , paramPassword = ? where connectionId = ? ";
+          "update " + TABLE_NAME + " set paramLogin = ? , paramPassword = ? where connectionId = ? ";
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, login);
-      byte[] crypPassword;
+      byte[] cryptPassword;
       try {
-        crypPassword = getCryptString(password);
+        cryptPassword = getCryptString(password);
       } catch (CryptoException e) {
-        crypPassword = null;
+        cryptPassword = null;
       }
-      prepStmt.setBytes(2, crypPassword);
+      prepStmt.setBytes(2, cryptPassword);
       prepStmt.setInt(3, Integer.parseInt(connectionId));
       prepStmt.executeUpdate();
     } finally {
@@ -183,15 +180,15 @@ public class ConnectionDAO {
 
   /**
    * return all connections of the user corresponding to userId
-   * @param con : Connection
-   * @param userId : String the user identifier
-   * @return connections : a list of ConnectionDetail
-   * @throws SQLException
+   * @param con the connection
+   * @param userId the user identifier
+   * @return a list of ConnectionDetail
+   * @throws SQLException if an error occurs
    */
   public List<ConnectionDetail> getConnectionsByUser(Connection con, String userId)
       throws SQLException {
-    ArrayList<ConnectionDetail> connections = null;
-    String query = SELECT_FROM + tableName + " where userId = ? ";
+    ArrayList<ConnectionDetail> connections;
+    String query = SELECT_FROM + TABLE_NAME + " where userId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -210,10 +207,10 @@ public class ConnectionDAO {
   }
 
   /**
-   * create the connection from the resultSet
-   * @param rs : ResultSet
-   * @return the connection : ConnectionDetail
-   * @throws SQLException
+   * Gets the connection from the resultSet
+   * @param rs a ResultSet
+   * @return the connection
+   * @throws SQLException if an error occurs
    */
   protected ConnectionDetail getConnectionFrom(ResultSet rs) throws SQLException {
     ConnectionDetail connection = new ConnectionDetail();
@@ -240,13 +237,6 @@ public class ConnectionDAO {
     return connection;
   }
 
-  /**
-   * initialize the prepStmt with the connection
-   * @param prepStmt : PreparedStatement
-   * @param id : int
-   * @param connection : ConnectionDetail
-   * @throws SQLException
-   */
   private static void initParam(PreparedStatement prepStmt, int id, ConnectionDetail connection)
       throws SQLException {
     prepStmt.setInt(1, id);
@@ -256,54 +246,42 @@ public class ConnectionDAO {
         .getComponentInst(connection.getComponentId());
     String login = connection.getParam().get(inst.getParameterValue("login"));
     String password = connection.getParam().get(inst.getParameterValue("password"));
-    byte[] crypPassword = null;
+    byte[] cryptPassword = null;
     try {
-      crypPassword = getCryptString(password);
+      cryptPassword = getCryptString(password);
     } catch (CryptoException e) {
       SilverLogger.getLogger(ConnectionDAO.class).error(e);
     }
     prepStmt.setString(4, login);
-    prepStmt.setBytes(5, crypPassword);
+    prepStmt.setBytes(5, cryptPassword);
   }
 
-  /**
-   * return the encrypt String corresponding to the string cryptedString
-   * @param text : String
-   * @return the encrypt string : byte[]
-   * @throws CryptoException
-   */
   private static byte[] getCryptString(String text) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
-    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
+    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.BLOWFISH);
     try {
-      return blowfish.encrypt(text, CipherKey.aKeyFromHexText(keyCode));
+      return blowfish.encrypt(text, CipherKey.aKeyFromHexText(KEYCODE));
     } catch (ParseException e) {
-      throw new CryptoException("The key isn't in hexadecimal: '" + keyCode + "'", e);
+      throw new CryptoException("The key isn't in hexadecimal: '" + KEYCODE + "'", e);
     }
   }
 
-  /**
-   * return the uncrypt string corresponding to the encrypt string cipherText
-   * @param cipherText : byte[]
-   * @return the uncrypt string : String
-   * @throws CryptoException
-   */
   private static String getUncryptString(byte[] cipherText) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
-    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
+    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.BLOWFISH);
     try {
-      return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(keyCode));
+      return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(KEYCODE));
     } catch (ParseException e) {
-      throw new CryptoException("The key isn't in hexadecimal: '" + keyCode + "'", e);
+      throw new CryptoException("The key isn't in hexadecimal: '" + KEYCODE + "'", e);
     }
   }
 
   /**
    * Deletes all connection data linked to the given component instance.
    * @param componentInstanceId the identifier of the component instance.
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
   public void deleteByComponentInstanceId(final String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(tableName).where("componentId = ?", componentInstanceId).execute();
+    JdbcSqlQuery.createDeleteFor(TABLE_NAME).where("componentId = ?", componentInstanceId).execute();
   }
 }

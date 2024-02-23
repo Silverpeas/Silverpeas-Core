@@ -35,22 +35,24 @@ import java.security.NoSuchAlgorithmException;
  * large number of cipher suites and encryption products. Blowfish provides a good encryption rate
  * in software and no effective cryptanalysis of it has been found to date. However, the Advanced
  * Encryption Standard now receives more attention.
- *
+ * <p>
  * Blowfish was one of the first secure block ciphers not subject to any patents and therefore
  * freely available for anyone to use. This benefit has contributed to its popularity in
  * cryptographic software.
- *
+ * </p>
+ * <p>
  * This implementation wraps the Blowfish cipher provided in the Java Cryptography API and it
  * performs the redundant operations in the encryption and in the decryption.
+ * </p>
  */
 public class BlowfishCipher implements Cipher {
 
   private final javax.crypto.Cipher cipher;
-  private BlowfishKey blowfishKey = null;
+  private final BlowfishKey blowfishKey;
 
   protected BlowfishCipher() throws NoSuchPaddingException, NoSuchAlgorithmException {
     blowfishKey = new BlowfishKey();
-    cipher = javax.crypto.Cipher.getInstance(CryptographicAlgorithmName.Blowfish.name());
+    cipher = javax.crypto.Cipher.getInstance(CryptographicAlgorithmName.BLOWFISH.getId());
   }
 
   /**
@@ -60,7 +62,7 @@ public class BlowfishCipher implements Cipher {
    */
   @Override
   public CryptographicAlgorithmName getAlgorithmName() {
-    return CryptographicAlgorithmName.Blowfish;
+    return CryptographicAlgorithmName.BLOWFISH;
   }
 
   @Override
@@ -117,8 +119,8 @@ public class BlowfishCipher implements Cipher {
   @Override
   public CipherKey generateCipherKey() throws CryptoException {
     try {
-      KeyGenerator keyGenerator = KeyGenerator.getInstance(CryptographicAlgorithmName.Blowfish.
-          name());
+      KeyGenerator keyGenerator =
+          KeyGenerator.getInstance(CryptographicAlgorithmName.BLOWFISH.getId());
       SecretKey key = keyGenerator.generateKey();
       return CipherKey.aKeyFromBinary(key.getEncoded());
     } catch (NoSuchAlgorithmException ex) {

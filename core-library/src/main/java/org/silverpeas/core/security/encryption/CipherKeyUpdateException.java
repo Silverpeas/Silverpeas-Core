@@ -32,15 +32,7 @@ public class CipherKeyUpdateException extends CryptoException {
 
   private static final long serialVersionUID = -6970908432032192938L;
 
-  public CipherKeyUpdateException(final Throwable cause) {
-    super(cause);
-  }
-
   public CipherKeyUpdateException(final String message, final Throwable cause) {
     super(message, cause);
-  }
-
-  public CipherKeyUpdateException(final String message) {
-    super(message);
   }
 }

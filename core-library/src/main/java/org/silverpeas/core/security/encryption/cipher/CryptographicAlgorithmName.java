@@ -31,19 +31,47 @@ public enum CryptographicAlgorithmName {
   /**
    * The AES-256 cipher.
    */
-  AES,
+  AES("AES"),
   /**
    * The Blowfish cipher.
    */
-  Blowfish,
+  BLOWFISH("Blowfish"),
   /**
    * The CAST5 (CAST-128) cipher.
    */
-  CAST5,
+  CAST5("CAST5"),
   /**
    * The Cryptographic Message Syntax (CMS) based on the syntax of PKCS#7. More than just a cipher,
    * it is an asymmetric-keys and certificate based enciphering process to encrypt and to decrypt
    * digital messages exchanged between two interlocutors.
    */
-  CMS;
+  CMS("CMS");
+
+  private final String id;
+
+  /**
+   * The identifier of the cryptographic algorithm as expected by the {@link javax.crypto.Cipher}
+   * standard Java object.
+   * @param algoID the identifier of the algorithm in the Java Crypto API.
+   */
+  CryptographicAlgorithmName(final String algoID) {
+    this.id = algoID;
+  }
+
+  /**
+   * Gets the unique identifier of this algorithm in the Java Crypto API.
+   * @return the identifier of this algorithm.
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Gets the unique identifier of this algorithm in the Java Crypto API.
+   * @return the identifier of this algorithm.
+   */
+  @Override
+  public String toString() {
+    return getId();
+  }
 }
