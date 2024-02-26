@@ -6312,6 +6312,10 @@ iframe.embed {
   text-align: left;
 }
 
+.silverpeas-user-notifications .silverpeas-attached-popin:hover {
+  z-index: 10000;
+}
+
 .silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-attached-popin-content {
   position: relative !important;
   padding: 0;
