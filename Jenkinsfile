@@ -7,7 +7,7 @@ pipeline {
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild:6.3'
+      image 'silverpeas/silverbuild:6.3.3'
       args '''
         -v $HOME/.m2:/home/silverbuild/.m2 
         -v $HOME/.gitconfig:/home/silverbuild/.gitconfig 
@@ -45,16 +45,18 @@ pipeline {
       }
       steps {
         script {
+          String jdkHome = sh(script: 'echo ${SONAR_JDK_HOME}', returnStdout: true).trim()
           withSonarQubeEnv {
             sh """
-                mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Core2 \\
+                JAVA_HOME=$jdkHome mvn $SONAR_MAVEN_GOAL \\
+                  -Dsonar.projectKey=Silverpeas_Silverpeas-Core2 \\
                   -Dsonar.organization=silverpeas \\
                   -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
                   -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
                   -Dsonar.pullrequest.base=master \\
                   -Dsonar.pullrequest.provider=github \\
                   -Dsonar.host.url=${SONAR_HOST_URL} \\
-                  -Dsonar.login=${SONAR_AUTH_TOKEN} \\
+                  -Dsonar.token=${SONAR_AUTH_TOKEN} \\
                   -Dsonar.scanner.force-deprecated-java-version=true
                 """
           }
