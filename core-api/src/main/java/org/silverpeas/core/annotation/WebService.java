@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.annotation;
 
+import org.silverpeas.kernel.annotation.Managed;
+
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Stereotype;
 import java.lang.annotation.Documented;
@@ -34,18 +36,22 @@ import java.lang.annotation.Target;
 /**
  * This annotation is to tag an object as being a web service whose lifecycle is bound to the scope
  * of the HTTP exchange (request/response) between him and the client behind de request.
- *
+ * <p>
  * Beans annotated with this annotation are marked to be managed by the underlying IoC container and
- * to be bound to the scope of the HTTP request processing. If the bean declare another
- * life-cycle scope, then the new scope overrides the default one.
- *
+ * to be bound to the scope of the HTTP request processing. If the bean declare another life-cycle
+ * scope, then the new scope overrides the default one.
+ * </p>
+ * <p>
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
- * possible to change the IoC container (Spring or CDI for example) by changing the wrapped annnotation
- * to those specific at this IoC implementation without impacting the annotated IoC managed beans.
+ * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
+ * annotation to those specific at this IoC implementation without impacting the annotated IoC
+ * managed beans.
+ * </p>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Managed
 @RequestScoped
 @Stereotype
 public @interface WebService {

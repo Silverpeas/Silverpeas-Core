@@ -40,7 +40,7 @@ import java.io.Serializable;
  * </ul>
  * @author mmoquillon
  */
-public interface ResourceEventNotifier<R extends Serializable, T extends ResourceEvent> {
+public interface ResourceEventNotifier<R extends Serializable, T extends ResourceEvent<?>> {
 
   /**
    * Notify about the specified event.

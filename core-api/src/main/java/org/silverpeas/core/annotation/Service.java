@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.annotation;
 
+import org.silverpeas.kernel.annotation.Managed;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Stereotype;
 import java.lang.annotation.Documented;
@@ -35,20 +37,25 @@ import java.lang.annotation.Target;
  * This annotation is to tag an object as being a business service. A business service is an object
  * whose goal is to provide transverse functionalities within which can be implied one or more types
  * of business objects.
- *
+ * <p>
  * Beans annotated with this annotation are marked to be managed by the underlying IoC container and
  * to be bound to the scope of the application execution. If the bean declare another
  * life-cycle scope, then the new scope overrides the default one.
- *
+ * </p>
+ * <p>
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
  * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
  * annotation to those specific at this IoC implementation without impacting the annotated IoC
  * managed beans.
+ * </p>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Managed
 @ApplicationScoped
 @Stereotype
 public @interface Service {
 }
+
+

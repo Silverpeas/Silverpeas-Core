@@ -73,7 +73,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
       this.transition = StateTransition.transitionBetween(null, resource[0]);
     } else if (type == Type.UNLOCK || type == Type.UPDATE || type == Type.MOVE) {
       this.transition = StateTransition.transitionBetween(resource[0], resource[1]);
-    } else if (type == Type.REMOVING) {
+    } else if (type == Type.REMOVING || type == Type.RECOVERY) {
       this.transition = StateTransition.transitionBetween(resource[0], resource[0]);
     } else if (type == Type.DELETION) {
       this.transition = StateTransition.transitionBetween(resource[0], null);

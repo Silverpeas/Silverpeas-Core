@@ -108,6 +108,7 @@ public class GroupManager {
 
   /**
    * Gets the {@link GroupState#VALID} groups that match the specified criteria.
+   *
    * @param criteria the criteria in searching of user groups.
    * @return a slice of the list of user groups matching the criteria or an empty list of no ones
    * are found.
@@ -154,6 +155,7 @@ public class GroupManager {
   /**
    * Gets the total number of users in the specified group, that is to say the number of distinct
    * users in the specified group and in its subgroups.
+   *
    * @param domainId the unique identifier to which the group belong.
    * @param groupId the unique identifier of the group.
    * @return the total users count in the specified group.
@@ -179,12 +181,12 @@ public class GroupManager {
   /**
    * Add a user to a group
    *
-   * @param sUserId
-   * @param sGroupId
-   * @throws AdminException
+   * @param sUserId the unique identifier of the user.
+   * @param sGroupId the unique identifier of the group.
+   * @throws AdminException if the user cannot be added into the group.
    */
   public void addUserInGroup(String sUserId, String sGroupId) throws
-          AdminException {
+      AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       groupDao.addUserInGroup(connection, sUserId, sGroupId);
       notifyUserInGroup(ResourceEvent.Type.CREATION, sUserId, sGroupId);
@@ -206,12 +208,12 @@ public class GroupManager {
   /**
    * Remove a user from a group
    *
-   * @param sUserId
-   * @param sGroupId
-   * @throws AdminException
+   * @param sUserId the unique identifier of the user.
+   * @param sGroupId the unique identifier of the group.
+   * @throws AdminException if the removing of the user from the group fails.
    */
   public void removeUserFromGroup(String sUserId, String sGroupId)
-          throws AdminException {
+      throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       SynchroDomainReport.debug("GroupManager.removeUserFromGroup()",
           "Retrait de l'utilisateur d'ID " + sUserId + " du groupe d'ID " + sGroupId);
@@ -231,14 +233,14 @@ public class GroupManager {
       }
     } catch (SQLException e) {
       throw new AdminException(
-          failureOnDeleting("users " + userIds.stream().collect(Collectors.joining("n")),
+          failureOnDeleting("users " + String.join("n", userIds),
               IN_GROUP + groupId), e);
     }
   }
 
   public List<String> getDirectGroupIdsInSpaceRole(final String spaceRoleId,
       final boolean includeRemoved) throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       return groupDao.getDirectGroupIdsBySpaceUserRole(connection, spaceRoleId, includeRemoved);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("groups in space role", spaceRoleId), e);
@@ -248,6 +250,7 @@ public class GroupManager {
   /**
    * Get the direct {@link GroupState#VALID} group ids containing a user. Groups that the user is
    * linked to by transitivity are not returned.
+   *
    * @param userId an identifier of a user.
    * @return a list of {@link GroupDetail} instance.
    * @throws AdminException in any technical error.
@@ -262,8 +265,9 @@ public class GroupManager {
   }
 
   /**
-   * Get the direct group ids, whatever their {@link GroupState}, containing a user. Groups that
-   * the user is linked to by transitivity are not returned.
+   * Get the direct group ids, whatever their {@link GroupState}, containing a user. Groups that the
+   * user is linked to by transitivity are not returned.
+   *
    * @param sUserId an identifier of a user.
    * @return a list of {@link GroupDetail} instance.
    * @throws AdminException in any technical error.
@@ -280,6 +284,7 @@ public class GroupManager {
   /**
    * Get all {@link GroupState#VALID} group ids containing a user. So, groups that the user is
    * linked to by transitivity are returned too (recursive treatment).
+   *
    * @param userId identifier of a user.
    * @return list of group identifiers.
    * @throws AdminException on any technical error.
@@ -304,15 +309,15 @@ public class GroupManager {
   }
 
   /**
-   * Get the Silverpeas group id of group qualified by given specific Id and domain id
+   * Get the Silverpeas identifier of the group by its identifier specific to the specified domain.
    *
-   * @param sSpecificId
-   * @param sDomainId
-   * @return
-   * @throws AdminException
+   * @param sSpecificId the specific identifier of the group in the user domain it belongs to.
+   * @param sDomainId the unique identifier of the domain in which the group is defined.
+   * @return the unique identifier of the group in Silverpeas.
+   * @throws AdminException if an error occurs while getting the unique identifier of the group.
    */
   public String getGroupIdBySpecificIdAndDomainId(String sSpecificId,
-          String sDomainId) throws AdminException {
+      String sDomainId) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       GroupDetail gr = groupDao.getGroupBySpecificId(connection, sDomainId, sSpecificId);
       return gr.getId();
@@ -376,14 +381,15 @@ public class GroupManager {
   }
 
   /**
-   * Get the path from root to a given group
+   * Get the path from root to the given group.
    *
-   * @param groupId
-   * @return
-   * @throws AdminException
+   * @param groupId the unique identifier of a group.
+   * @return a list of hierachical parent groups, from the root one to the direct parent of the
+   * specified group.
+   * @throws AdminException if an error occurs while getting the path of the specified group.
    */
   public List<String> getPathToGroup(String groupId) throws
-          AdminException {
+      AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       List<String> path = new ArrayList<>();
       GroupDetail superGroup = groupDao.getSuperGroup(connection, groupId);
@@ -399,12 +405,11 @@ public class GroupManager {
   }
 
   /**
-   * /**
-   * Check if the given group exists
+   * /** Check if there is at least one group in Silverpeas having the specified name.
    *
-   * @param sName
-   * @return true if a group with the given name
-   * @throws AdminException
+   * @param sName the name of a group.
+   * @return true if at least one group with the given name exists in Silverpeas. False otherwise.
+   * @throws AdminException if an error occurs while checking the name.
    */
   public boolean isGroupExist(String sName) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
@@ -416,12 +421,13 @@ public class GroupManager {
 
   /**
    * Gets the group detail instance from group DAO without decoration data.
+   *
    * @param groupId the aimed group id.
    * @return the group detail instance without decoration data.
-   * @throws AdminException
+   * @throws AdminException if an error occurs while getting the group.
    */
   private GroupDetail getGroupDetail(String groupId) throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       return groupDao.getGroup(connection, groupId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(GROUP, groupId), e);
@@ -431,9 +437,10 @@ public class GroupManager {
   /**
    * Get group information with the given id from Silverpeas
    *
-   * @param groupId
-   * @return
-   * @throws AdminException
+   * @param groupId the unique identifier of a group.
+   * @return the group with the given identifier.
+   * @throws AdminException if an error occurs while getting the group and setting its direct
+   * users.
    */
   public GroupDetail getGroup(String groupId) throws AdminException {
     GroupDetail group = getGroupDetail(groupId);
@@ -450,6 +457,7 @@ public class GroupManager {
 
   /**
    * Get the all the {@link GroupState#VALID} subgroup ids of a given group.
+   *
    * @param superGroupId the identifier of the parent group.
    * @return a list of group identifier.
    * @throws AdminException in case of any technical error.
@@ -474,15 +482,15 @@ public class GroupManager {
   }
 
   /**
-   * Get group information with the given group name
+   * Get group information with the given name and in the specified domain.
    *
-   * @param sGroupName
-   * @param sDomainFatherId
-   * @return
-   * @throws AdminException
+   * @param sGroupName the name of a group.
+   * @param sDomainFatherId the unique identifier of a domain.
+   * @return the group or null if no such group exists.
+   * @throws AdminException if an error occurs while getting the group details.
    */
   public GroupDetail getGroupByNameInDomain(String sGroupName,
-          String sDomainFatherId) throws AdminException {
+      String sDomainFatherId) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       GroupDetail group = domainDriverManager.getGroupByNameInDomain(sGroupName, sDomainFatherId);
 
@@ -504,17 +512,18 @@ public class GroupManager {
   }
 
   /**
+   * Gets all the root groups of the specified domain.
    *
-   * @param sDomainId
-   * @return
-   * @throws AdminException
+   * @param sDomainId the unique identifier of a domain.
+   * @return an array with all the root groups details.
+   * @throws AdminException if an error occurs while getting the root groups of the given domain.
    */
   public GroupDetail[] getRootGroupsOfDomain(String sDomainId) throws
-          AdminException {
+      AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       List<GroupDetail> groups = groupDao.getAllRootGroupsByDomainId(connection, sDomainId);
       setDirectUsersOfGroups(groups);
-      return groups.toArray(new GroupDetail[groups.size()]);
+      return groups.toArray(new GroupDetail[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("root groups in domain", sDomainId), e);
     }
@@ -534,6 +543,7 @@ public class GroupManager {
 
   /**
    * Get the groups of domain, including these with {@link GroupState#REMOVED} state.
+   *
    * @param domainId the identifier of the domain.
    * @return a list of {@link GroupDetail} instance.
    * @throws AdminException if any technical occurs.
@@ -542,7 +552,7 @@ public class GroupManager {
     try (Connection connection = DBUtil.openConnection()) {
       // Get organization
       SynchroDomainReport.debug(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
-              "Recherche des groupes du domaine dans la base...");
+          "Recherche des groupes du domaine dans la base...");
       // Get groups of domain from Silverpeas database
       final List<GroupDetail> groups = groupDao.getAllGroupsByDomainId(connection, domainId, true);
       setDirectUsersOfGroups(groups);
@@ -573,18 +583,20 @@ public class GroupManager {
   /**
    * Add the given group in Silverpeas
    *
-   * @param group
-   * @param onlyInSilverpeas
-   * @param indexation
-   * @return
-   * @throws AdminException
+   * @param group the group to add.
+   * @param onlyInSilverpeas a flag indicating if the group has to be added in Silverpeas only and
+   * not also in the domain. The mixed domain is a specific domain of Silverpeas and the flag should
+   * be true for a group to add into this domain.
+   * @param indexation a flag indicating if the group has to be indexed once added.
+   * @return the unique identifier of the added group.
+   * @throws AdminException if an error occurs while adding the group in Silverpeas.
    */
   public String addGroup(GroupDetail group, boolean onlyInSilverpeas, final boolean indexation)
       throws AdminException {
     if (group == null || !StringUtil.isDefined(group.getName())) {
       if (group != null) {
         SynchroDomainReport.error(GROUP_MANAGER_ADD_GROUP, "Problème lors de l'ajout du groupe "
-                + group.getSpecificId() + " dans la base, ce groupe n'a pas de nom", null);
+            + group.getSpecificId() + " dans la base, ce groupe n'a pas de nom", null);
       }
       return "";
     }
@@ -602,11 +614,11 @@ public class GroupManager {
       // Create the group node in Silverpeas
       if (StringUtil.isDefined(group.getSuperGroupId())) {
         SynchroDomainReport.debug(GROUP_MANAGER_ADD_GROUP, "Ajout du groupe " + group.getName()
-                + " (père=" + getGroupDetail(group.getSuperGroupId()).getSpecificId()
-                + ") dans la table ST_Group");
+            + " (père=" + getGroupDetail(group.getSuperGroupId()).getSpecificId()
+            + ") dans la table ST_Group");
       } else {
         SynchroDomainReport.debug(GROUP_MANAGER_ADD_GROUP, "Ajout du groupe " + group.getName()
-                + " (groupe racine) dans la table ST_Group...");
+            + " (groupe racine) dans la table ST_Group...");
       }
       String groupId = groupDao.addGroup(connection, group);
       group.setId(groupId);
@@ -619,7 +631,7 @@ public class GroupManager {
 
       // Create the links group_user in Silverpeas
       SynchroDomainReport.debug(GROUP_MANAGER_ADD_GROUP,
-              "Inclusion des utilisateurs directement associés au groupe " + group.getName()
+          "Inclusion des utilisateurs directement associés au groupe " + group.getName()
               + " (table ST_Group_User_Rel)");
       String[] asUserIds = group.getUserIds();
       int nUserAdded = 0;
@@ -635,7 +647,7 @@ public class GroupManager {
       return groupId;
     } catch (SQLException e) {
       SynchroDomainReport.error(GROUP_MANAGER_ADD_GROUP, "problème lors de l'ajout du groupe "
-              + group.getName() + " - " + e.getMessage(), null);
+          + group.getName() + " - " + e.getMessage(), null);
       throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
     }
   }
@@ -654,6 +666,7 @@ public class GroupManager {
 
   /**
    * Restores the given group in Silverpeas.
+   *
    * @param group the group to restore.
    * @param indexation true to perform indexation.
    * @return all parent group ids (including given group at first position).
@@ -702,6 +715,7 @@ public class GroupManager {
 
   /**
    * Removes the given group in Silverpeas.
+   *
    * @param group the group to remove.
    * @param indexation true to perform indexation.
    * @return all removed subgroup ids (including given group at first position).
@@ -730,6 +744,7 @@ public class GroupManager {
 
   /**
    * Removes given group and its subgroups.
+   *
    * @param connection a {@link Connection} instance.
    * @param group the group to remove from.
    * @return all removed subgroup ids (including given group at first position).
@@ -741,7 +756,8 @@ public class GroupManager {
     SynchroDomainReport.debug(GROUP_MANAGER_REMOVE_GROUP,
         AWAITING_DELETION_MESSAGE + group.getName() + " dans la base...");
     // remove all the subgroups
-    final List<GroupDetail> subgroups = groupDao.getDirectSubGroups(connection, group.getId(), true);
+    final List<GroupDetail> subgroups = groupDao.getDirectSubGroups(connection, group.getId(),
+        true);
     if (!subgroups.isEmpty()) {
       SynchroDomainReport.debug(GROUP_MANAGER_REMOVE_GROUP,
           "En attente de suppression des groupes fils de " + group.getName() + IN_SILVERPEAS_MESSAGE);
@@ -756,15 +772,17 @@ public class GroupManager {
   }
 
   /**
-   * Delete the group with the given Id The delete is apply recursively to the sub-groups
+   * Delete the group with the given id. The delete is apply recursively to the sub-groups.
    *
-   * @param group
-   * @param onlyInSilverpeas
-   * @return
-   * @throws AdminException
+   * @param group the group to delete.
+   * @param onlyInSilverpeas a flag indicating if the group has to be delete in Silverpeas only and
+   * not also in the domain. The mixed domain is a specific domain of Silverpeas and the flag should
+   * be true for a group of this domain.
+   * @return a list of all the deleted groups (the group itself and its children groups).
+   * @throws AdminException if an error occurs while deleting the group and its children groups.
    */
   public List<GroupDetail> deleteGroup(GroupDetail group,
-          boolean onlyInSilverpeas) throws AdminException {
+      boolean onlyInSilverpeas) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       if (group.getDomainId() != null && !onlyInSilverpeas) {
         domainDriverManager.deleteGroup(group.getId());
@@ -779,7 +797,7 @@ public class GroupManager {
       return deletedGroups;
     } catch (SQLException e) {
       SynchroDomainReport.error(GROUP_MANAGER_DELETE_GROUP,
-              "problème lors de la suppression du groupe " + group.getName()
+          "problème lors de la suppression du groupe " + group.getName()
               + " - " + e.getMessage(), null);
       throw new AdminException(failureOnDeleting(GROUP, group.getId()), e);
     }
@@ -787,6 +805,7 @@ public class GroupManager {
 
   /**
    * Deletes given group and its subgroups.
+   *
    * @param connection a {@link Connection} instance.
    * @param group the group to delete from.
    * @return all deleted subgroup ids (including given group at first position).
@@ -866,18 +885,20 @@ public class GroupManager {
   /**
    * Update the given group
    *
-   * @param group
-   * @param onlyInSilverpeas
-   * @return
-   * @throws AdminException
+   * @param group the new details of the group.
+   * @param onlyInSilverpeas a flag indicating if the group has to be updated in Silverpeas only and
+   * not also in the domain. The mixed domain is a specific domain of Silverpeas and the flag should
+   * be true for a group of this domain.
+   * @return the unique identifier of the updated group.
+   * @throws AdminException if an error occurs while updating the group with the given details.
    */
   public String updateGroup(GroupDetail group, boolean onlyInSilverpeas)
-          throws AdminException {
+      throws AdminException {
     if (group == null || !StringUtil.isDefined(group.getName()) || !StringUtil.isDefined(
-            group.getId())) {
+        group.getId())) {
       if (group != null) {
         SynchroDomainReport.error(GROUP_MANAGER_UPDATE_GROUP, "Problème lors de maj du groupe "
-                + group.getSpecificId() + " dans la base, ce groupe n'a pas de nom", null);
+            + group.getSpecificId() + " dans la base, ce groupe n'a pas de nom", null);
       }
       return "";
     }
@@ -890,10 +911,10 @@ public class GroupManager {
       String strInfoSycnhro;
       if (group.getSuperGroupId() != null) {
         strInfoSycnhro = "Maj du groupe " + group.getName() + " (père=" + getGroupDetail(group.
-                getSuperGroupId()).getSpecificId() + ") dans la base (table ST_Group)...";
+            getSuperGroupId()).getSpecificId() + ") dans la base (table ST_Group)...";
       } else {
         strInfoSycnhro = "Maj du groupe " + group.getName()
-                + " (groupe racine) dans la base (table ST_Group)...";
+            + " (groupe racine) dans la base (table ST_Group)...";
       }
       SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP, strInfoSycnhro);
       // Update the group
@@ -903,9 +924,10 @@ public class GroupManager {
       domainDriverManager.indexGroup(group);
 
       // Update the users if necessary
-      SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP, "Maj éventuelle des relations du groupe "
-              + group.getName()
-              + " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel)");
+      SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP, "Maj éventuelle des relations du " +
+          "groupe "
+          + group.getName()
+          + " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel)");
 
       List<String> asOldUsersId = userDao.getDirectUserIdsInGroup(connection, sGroupId, false);
 
@@ -922,7 +944,7 @@ public class GroupManager {
       return sGroupId;
     } catch (Exception e) {
       SynchroDomainReport.error(GROUP_MANAGER_UPDATE_GROUP,
-              "problème lors de la maj du groupe " + group.getName() + " - "
+          "problème lors de la maj du groupe " + group.getName() + " - "
               + e.getMessage(), null);
       throw new AdminException(failureOnUpdate(GROUP, group.getId()), e);
     }
@@ -965,7 +987,7 @@ public class GroupManager {
   }
 
   public List<String> getManageableGroupIds(String userId, List<String> groupIds)
-          throws AdminException {
+      throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.openConnection();
@@ -978,40 +1000,15 @@ public class GroupManager {
     }
   }
 
-  public int getNBUsersDirectlyInGroup(String groupId) throws AdminException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-
-      return groupDao.getNBUsersDirectlyInGroup(con, groupId);
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("user count in group", groupId), e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  public List<String> getUsersDirectlyInGroup(String groupId) throws AdminException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-
-      return groupDao.getUsersDirectlyInGroup(con, groupId);
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("users in group", groupId), e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
   /**
    * Gets all the removed groups in the specified domains. If no domains are given, then all the
    * removed groups in Silverpeas are returned.
+   *
    * @param domainIds zero, one or more unique identifiers of group domains in Silverpeas.
    * @return a list of the removed groups in Silverpeas. If no groups are removed in the specified
    * domains, then an empty list is returned.
-   * @throws AdminException if the removed groups cannot be fetched or if an unexpected exception
-   * is thrown.
+   * @throws AdminException if the removed groups cannot be fetched or if an unexpected exception is
+   * thrown.
    */
   public List<GroupDetail> getRemovedGroupsOfDomains(final String... domainIds)
       throws AdminException {
@@ -1095,7 +1092,7 @@ public class GroupManager {
       if (rolesByGroup != null) {
         final Iterator<GroupDetail> it = groups.iterator();
         final int nbRoles = criteria.getCriterionOnRoleNames().length;
-        while(it.hasNext()) {
+        while (it.hasNext()) {
           final GroupDetail group = it.next();
           if (rolesByGroup.getOrDefault(group.getId(), emptySet()).size() != nbRoles) {
             it.remove();
@@ -1109,7 +1106,7 @@ public class GroupManager {
       if (childrenRequired) {
         final List<GroupDetail> allSubGroups = new LinkedList<>();
         final Iterator<GroupDetail> it = groups.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
           final GroupDetail group = it.next();
           if (logicalNameFiltering && !likeIgnoreCase(group.getName(), nameFilter)) {
             it.remove();
@@ -1121,7 +1118,8 @@ public class GroupManager {
           }
           if (rolesByGroup != null) {
             subGroups.forEach(g -> {
-              final Set<String> roles = rolesByGroup.computeIfAbsent(g.getId(), k -> new HashSet<>());
+              final Set<String> roles = rolesByGroup.computeIfAbsent(g.getId(),
+                  k -> new HashSet<>());
               roles.addAll(rolesByGroup.get(groupId));
             });
           }

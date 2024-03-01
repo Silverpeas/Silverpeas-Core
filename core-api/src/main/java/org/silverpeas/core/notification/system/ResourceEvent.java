@@ -72,7 +72,7 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
   StateTransition<T> getTransition();
 
   /**
-   * Is the event on the creation of a resource.
+   * Is the event on the creation of a resource?
    * @return true if the event is about a resource creation. False otherwise.
    */
   default boolean isOnCreation() {
@@ -80,7 +80,7 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
   }
 
   /**
-   * Is the event on the update of a resource.
+   * Is the event on the update of a resource?
    * @return true if the event is about a resource update. False otherwise.
    */
   default boolean isOnUpdate() {
@@ -88,18 +88,27 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
   }
 
   /**
-   * Is the event on the removing of a resource.
+   * Is the event on the removing of a resource?
    * @return true if the event is about a resource removing. False otherwise.
    */
   default boolean isOnRemoving() {
     return getType() == Type.REMOVING;
   }
 
-  /**Is the event on the deletion of a resource.
+  /**
+   * Is the event on the deletion of a resource?
    * @return true if the event is about a resource deletion. False otherwise.
    */
   default boolean isOnDeletion() {
     return getType() == Type.DELETION;
+  }
+
+  /**
+   * Is the event on the recovery of a removed resource?
+   * @return true if the event is about a resource recovery. False otherwise.
+   */
+  default boolean isOnRecovery() {
+    return getType() == Type.RECOVERY;
   }
 
   /**
@@ -137,6 +146,11 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
      * The notification is about the unlock of a resource in Silverpeas. When a resource is
      * unlocked, it is again available.
      */
-    UNLOCK;
+    UNLOCK,
+    /**
+     * The notification is about the recovery of a resource that has been removed. This event is
+     * about the state of the life-cycle of a such resource.
+     */
+    RECOVERY
   }
 }

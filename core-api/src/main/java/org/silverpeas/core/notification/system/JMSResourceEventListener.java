@@ -59,7 +59,7 @@ import javax.jms.MessageListener;
  * </p>
  * @author mmoquillon
  */
-public abstract class JMSResourceEventListener<T extends AbstractResourceEvent>
+public abstract class JMSResourceEventListener<T extends AbstractResourceEvent<?>>
     extends AbstractResourceEventListener<T> implements MessageListener {
 
   /**

@@ -91,6 +91,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -528,6 +529,7 @@ class DefaultAdministration implements Administration {
 
   /**
    * Get the space instance with the given space id
+   *
    * @param spaceId client space id
    * @return Space information as SpaceInst object
    */
@@ -643,6 +645,7 @@ class DefaultAdministration implements Administration {
    * Update the inheritance mode between a subSpace and its space. If inheritanceBlocked is true
    * then all inherited space profiles are removed. If inheritanceBlocked is false then all subSpace
    * profiles are removed and space profiles are inherited.
+   *
    * @param space a space instance
    * @param inheritanceBlocked is inheritance is blocked?
    * @throws AdminException if an error occurs
@@ -1061,6 +1064,7 @@ class DefaultAdministration implements Administration {
 
   /**
    * Deletes the given component instance in Silverpeas
+   *
    * @param userId the unique identifier of the user requesting the deletion.
    * @param componentId the client identifier of the component instance (for a kmelia instance of id
    * 666, the client identifier of the instance is kmelia666)
@@ -1185,6 +1189,7 @@ class DefaultAdministration implements Administration {
    * Update the inheritance mode between a component and its space. If inheritanceBlocked is true
    * then all inherited space profiles are removed. If inheritanceBlocked is false then all
    * component profiles are removed and space profiles are inherited.
+   *
    * @param component a component instance
    * @param inheritanceBlocked is the inheritance blocked?
    * @throws AdminException if an error occurs.
@@ -1249,6 +1254,7 @@ class DefaultAdministration implements Administration {
 
   /**
    * Set space profile to a subspace. There is no persistence. The subspace object is enriched.
+   *
    * @param subSpace the object to set profiles
    * @param space the object to get profiles
    * @param role the name of the profile
@@ -2109,6 +2115,31 @@ class DefaultAdministration implements Administration {
   @Override
   public GroupDetail getGroupByNameInDomain(String groupName, String domainFatherId)
       throws AdminException {
+    if (domainFatherId.equals(Domain.MIXED_DOMAIN_ID)) {
+      GroupsSearchCriteria criteria = new GroupsSearchCriteria()
+          .onName(groupName)
+          .onDomainIds(domainFatherId);
+      var groups = searchGroups(criteria);
+      if (groups.size() > 1) {
+        throw new AdminException("More than one group exists with the name " + groupName +
+            " in the domain " + domainFatherId);
+      }
+
+      final UnaryOperator<GroupDetail> loadGroupUserIds = g -> {
+        try {
+          var userIds = userManager.getAllUserIdsInGroups(List.of(g.getId()));
+          g.setUserIds(userIds.toArray(new String[0]));
+          return g;
+        } catch (AdminException e) {
+          throw new SilverpeasRuntimeException(e);
+        }
+      };
+
+      return groups.stream()
+          .findFirst()
+          .map(loadGroupUserIds)
+          .orElse(null);
+    }
     return groupManager.getGroupByNameInDomain(groupName, domainFatherId);
   }
 
@@ -2819,7 +2850,7 @@ class DefaultAdministration implements Administration {
   public Domain getDomain(String domainId) throws AdminException {
     try {
       if (!StringUtil.isDefined(domainId) || !StringUtil.isInteger(domainId)) {
-        domainId = "-1";
+        domainId = Domain.MIXED_DOMAIN_ID;
       }
       final Domain domain;
       Optional<Domain> optionalDomain = domainCache.getDomain(domainId);
@@ -3248,7 +3279,7 @@ class DefaultAdministration implements Administration {
 
   @Override
   public List<UserDetail> getUsersWithSensitiveData(final String... domainIds)
-      throws AdminException{
+      throws AdminException {
     return userManager.getUsersWithSensitiveData(domainIds);
   }
 
@@ -4463,6 +4494,7 @@ class DefaultAdministration implements Administration {
   /**
    * Merge the data of a distant user into the data of a silverpeas user : - user identifier (the
    * distant one) - first name - last name - e-mail - login
+   *
    * @param distantUser {@link UserDetail} representing data on externam repository.
    * @param silverpeasUser {@link UserDetail} representing data on silverpeas.
    * @return true if a data has changed, false otherwise.
@@ -5034,6 +5066,7 @@ class DefaultAdministration implements Administration {
   /**
    * Merge the data of a distant group into the data of a silverpeas group : - group identifier (the
    * distant one) - name - description - parent group - users of group
+   *
    * @param context the synchronization process context.
    * @param descriptor the descriptor of current group synchronization.
    * @param distantGroup {@link GroupDetail} representing data on external repository.
@@ -5198,7 +5231,8 @@ class DefaultAdministration implements Administration {
     // search users in profiles
     try {
       for (String profileId : profileIds) {
-        ProfileInst profile = profileManager.getProfileInst(profileId, includeRemovedUsersAndGroups);
+        ProfileInst profile = profileManager.getProfileInst(profileId,
+            includeRemovedUsersAndGroups);
         // add users directly attach to profile
         addAllUsersInProfile(profile, userIds);
       }
@@ -5269,15 +5303,15 @@ class DefaultAdministration implements Administration {
       throws AdminException {
     getRecursivelyValidGroupsIdPlaying(roleNames, instance,
         searchCriteria.getCriterionOnResourceId()).ifPresent(m -> {
-          searchCriteria.withGroupsByRoles(m);
-          if (searchCriteria.isCriterionOnAnyGroupSet()) {
-            searchCriteria.onGroupIds(m.values()
-                .stream()
-                .flatMap(Collection::stream)
-                .distinct()
-                .toArray(String[]::new));
-          }
-        });
+      searchCriteria.withGroupsByRoles(m);
+      if (searchCriteria.isCriterionOnAnyGroupSet()) {
+        searchCriteria.onGroupIds(m.values()
+            .stream()
+            .flatMap(Collection::stream)
+            .distinct()
+            .toArray(String[]::new));
+      }
+    });
   }
 
   private void setAllValidGroupChildren(final UserDetailsSearchCriteria searchCriteria)
@@ -5648,6 +5682,7 @@ class DefaultAdministration implements Administration {
   /**
    * Gets all the profile instances defined for the specified resource in the specified component
    * instance.
+   *
    * @param resourceId the unique identifier of a resource managed in a component instance.
    * @param instanceId the unique identifier of the component instance.
    * @return a list of profile instances.
@@ -5837,6 +5872,7 @@ class DefaultAdministration implements Administration {
 
   /**
    * Centralized method to copy or replace rights.
+   *
    * @param context the context that defined what the treatment must perform.
    * @throws AdminException if an error occurs
    */
@@ -5941,6 +5977,7 @@ class DefaultAdministration implements Administration {
 
   /**
    * Initializing a right assignation context.
+   *
    * @param operationMode : value of {@link RightAssignationContext.MODE}
    * @param nodeAssignRights : true if you want also to add rights to nodes
    * @param authorId : the userId of the author of this action
@@ -6047,6 +6084,7 @@ class DefaultAdministration implements Administration {
      * Gets the role in the component that is mapped with the specified space role. By convention,
      * whether there is no explicit mapping defined in the component descriptor, the role in the
      * component is mapped to the role in the space on their name (they have the same name).
+     *
      * @param spaceRole the role at space level.
      * @param componentName the name of the aimed component.
      * @return the name of the role in the component that is mapped with the specified space role

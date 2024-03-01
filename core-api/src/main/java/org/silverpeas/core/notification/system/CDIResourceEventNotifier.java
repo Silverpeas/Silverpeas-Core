@@ -36,7 +36,8 @@ import java.io.Serializable;
  * @param <T> the type of the resource event.
  * @author mmoquillon
  */
-public abstract class CDIResourceEventNotifier<R extends Serializable, T extends AbstractResourceEvent>
+public abstract class CDIResourceEventNotifier<R extends Serializable,
+    T extends AbstractResourceEvent<?>>
     implements ResourceEventNotifier<R, T> {
 
   @Inject

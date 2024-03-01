@@ -30,6 +30,7 @@ import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipEvent;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Inject;
 import java.util.stream.Stream;
@@ -38,6 +39,7 @@ import java.util.stream.Stream;
  * Listen relationship modifications to clone them in the Chat server
  * @author remipassmoilesel
  */
+@Technical
 @Service
 public class RelationShipListener extends CDIResourceEventListener<RelationShipEvent> {
 
@@ -46,7 +48,7 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
   private ChatServer server;
 
   @Override
-  public void onCreation(final RelationShipEvent event) throws Exception {
+  public void onCreation(final RelationShipEvent event) {
     final RelationShip rs = event.getTransition().getAfter();
     final User uf1 = User.getById(String.valueOf(rs.getUser1Id()));
     final User uf2 = User.getById(String.valueOf(rs.getUser2Id()));
@@ -59,7 +61,7 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
   }
 
   @Override
-  public void onDeletion(final RelationShipEvent event) throws Exception {
+  public void onDeletion(final RelationShipEvent event) {
     final RelationShip rs = event.getTransition().getBefore();
     final User uf1 = User.getById(String.valueOf(rs.getUser1Id()));
     final User uf2 = User.getById(String.valueOf(rs.getUser2Id()));

@@ -26,18 +26,25 @@ package org.silverpeas.core.chat.listeners;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.notification.GroupUserLinkEvent;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.chat.ChatUsersRegistration;
 import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Inject;
 
 /**
- * Listen for the deletion of a group of users. If the deleted group is the one for which the users
- * are allowed to access the chat server, and in the condition the users don't belong to another
- * group through which they can have access the chat server, then the account of those users in the
- * chat server is deleted.
+ * Listens for adding or removing of users in user groups. When a user is in a group for which the
+ * chat service is enabled, then he's also registered into the remote chat service (in the case he's
+ * not yet registered). In counterpart, if the user is removed from a group for which the chat
+ * service is enabled, then, and only if he doesn't belong to another group for which the chat
+ * service is enabled, he's automatically unregistered from the chat service.
+ *
  * @author mmoquillon
  */
+@Technical
+@Service
 public class ChatGroupUserLinkEventListener extends
     CDIAfterSuccessfulTransactionResourceEventListener<GroupUserLinkEvent> {
 
@@ -49,6 +56,16 @@ public class ChatGroupUserLinkEventListener extends
     final String userId = event.getTransition().getAfter().getUserId();
     final User user = User.getById(userId);
     registration.registerUser(user);
+  }
+
+  @Override
+  public void onDeletion(GroupUserLinkEvent event) {
+    String userId = event.getTransition().getBefore().getUserId();
+    ChatUser user = ChatUser.fromUser(User.getById(userId));
+
+    if (!user.isChatEnabled()) {
+      registration.unregisterUser(user);
+    }
   }
 }
   

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.annotation;
 
+import org.silverpeas.kernel.annotation.Managed;
+
 import javax.enterprise.inject.Stereotype;
 import javax.inject.Singleton;
 import java.lang.annotation.Documented;
@@ -35,19 +37,22 @@ import java.lang.annotation.Target;
  * This annotation is to tag an object as being a repository of business objects. A repository is an
  * object aimed to store and to retrieve objects in a given data source. It wraps the type of the
  * used data source and the mechanism to access them.
- *
+ * <p>
  * Beans annotated with this annotation are marked to be managed by the underlying IoC container and
  * to be singleton (there is only one single instance at a given time). If the bean declare another
  * life-cycle scope, then the new scope overrides the default one.
- *
+ * </p>
+ * <p>
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
  * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
  * annotation to those specific at this IoC implementation without impacting the annotated IoC
  * managed beans.
+ * </p>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Managed
 @Singleton
 @Stereotype
 public @interface Repository {

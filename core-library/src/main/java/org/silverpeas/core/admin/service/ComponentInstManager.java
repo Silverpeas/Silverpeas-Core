@@ -40,6 +40,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.kernel.util.Pair;
@@ -64,8 +65,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
-import static org.silverpeas.core.notification.system.ResourceEvent.Type.DELETION;
-import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
+import static org.silverpeas.core.notification.system.ResourceEvent.Type.*;
 
 @Service
 @Singleton
@@ -88,10 +88,10 @@ public class ComponentInstManager {
   }
 
   /**
-   * Return a copy of the given componentInst
+   * Return a copy of the given component instance. The local identifier is also copied.
    *
-   * @param componentInstToCopy
-   * @return
+   * @param componentInstToCopy the component instance to copy.
+   * @return a copy of the component instance.
    */
   public ComponentInst copy(ComponentInst componentInstToCopy) {
     ComponentInst componentInst = new ComponentInst();
@@ -134,10 +134,10 @@ public class ComponentInstManager {
   /**
    * Creates a component instance in database
    *
-   * @param componentInst
-   * @param spaceLocalId
-   * @return
-   * @throws AdminException
+   * @param componentInst the component instance to save in database.
+   * @param spaceLocalId the local identifier of the space in which the component instance
+   * has been spawned.
+   * @throws AdminException if an error occurs.
    */
   public void createComponentInst(ComponentInst componentInst, int spaceLocalId)
       throws AdminException {
@@ -210,6 +210,7 @@ public class ComponentInstManager {
     try {
       organizationSchema.instance()
           .sendComponentToBasket(componentInst.getLocalId(), deletedComponentName, userId);
+      notifier.notifyEventOn(REMOVING, componentInst);
     } catch (Exception e) {
       throw new AdminException(
           failureOnMoving(COMPONENT, componentInst.getLocalId(), "bin", ""), e);
@@ -219,6 +220,8 @@ public class ComponentInstManager {
   public void restoreComponentFromBasket(int localComponentId) throws AdminException {
     try {
       organizationSchema.instance().restoreComponentFromBasket(localComponentId);
+      ComponentInst compInstance = getComponentInst(localComponentId);
+      notifier.notifyEventOn(RECOVERY, compInstance);
     } catch (Exception e) {
       throw new AdminException(failureOnRestoring(COMPONENT, localComponentId), e);
     }
@@ -286,10 +289,10 @@ public class ComponentInstManager {
   }
 
   /**
-   * Return the all the root spaces ids available in Silverpeas
+   * Returns the all the root spaces ids available in Silverpeas
    *
-   * @return
-   * @throws AdminException
+   * @return a list of the removed component instances.
+   * @throws AdminException if an error occurs.
    */
   public List<ComponentInstLight> getRemovedComponents() throws AdminException {
     try {
@@ -303,11 +306,11 @@ public class ComponentInstManager {
   }
 
   /**
-   * Get component instance light with the given id
+   * Get component instance light with the given identifier.
    *
-   * @param compLocalId
-   * @return
-   * @throws AdminException
+   * @param compLocalId the local identifier of a component instance.
+   * @return the component instance.
+   * @throws AdminException if an error occurs.
    */
   public ComponentInstLight getComponentInstLight(int compLocalId) throws AdminException {
     ComponentInstLight compoLight = null;
@@ -327,10 +330,10 @@ public class ComponentInstManager {
   }
 
   /**
-   * Deletes component instance from Silverpeas
+   * Deletes component instance from Silverpeas.
    *
-   * @param componentInst
-   * @throws AdminException
+   * @param componentInst the component instance.
+   * @throws AdminException if an error occurs.
    */
   public void deleteComponentInst(ComponentInst componentInst) throws AdminException {
     try {
@@ -358,9 +361,6 @@ public class ComponentInstManager {
     }
   }
 
-  /*
-   * Updates component in Silverpeas
-   */
   public void updateComponentInheritance(int compLocalId, boolean inheritanceBlocked)
       throws AdminException {
     try {
@@ -473,9 +473,9 @@ public class ComponentInstManager {
   /**
    * Get the component ids with the given component name
    *
-   * @param sComponentName
-   * @return
-   * @throws AdminException
+   * @param sComponentName the name of a Silverpeas component.
+   * @return an array with the identifiers of all the instances of the specified component.
+   * @throws AdminException if an error occurs.
    */
   public String[] getAllCompoIdsByComponentName(String sComponentName) throws AdminException {
     try {

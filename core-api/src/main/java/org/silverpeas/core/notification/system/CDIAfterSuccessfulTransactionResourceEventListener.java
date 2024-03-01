@@ -57,7 +57,7 @@ import static javax.enterprise.event.TransactionPhase.AFTER_SUCCESS;
  *
  * @author mmoquillon
  */
-public abstract class CDIAfterSuccessfulTransactionResourceEventListener<T extends ResourceEvent>
+public abstract class CDIAfterSuccessfulTransactionResourceEventListener<T extends ResourceEvent<?>>
     implements ResourceEventListener<T> {
 
   protected final SilverLogger logger = SilverLogger.getLogger(this);

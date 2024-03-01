@@ -31,6 +31,6 @@ package org.silverpeas.core.notification.system;
  * JMS occurring with classes implementing more the the {@code javax.jms.MessageListener} interface.
  * @author mmoquillon
  */
-public abstract class AbstractResourceEventListener<T extends ResourceEvent>
+public abstract class AbstractResourceEventListener<T extends ResourceEvent<?>>
     implements ResourceEventListener<T> {
 }

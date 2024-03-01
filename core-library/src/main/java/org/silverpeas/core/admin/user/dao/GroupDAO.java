@@ -330,7 +330,7 @@ public class GroupDAO {
    * Returns all the Root Groups having a given domain id.
    * @param domainId domain id
    * @return all the Root Groups having a given domain id.
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
   public List<GroupDetail> getAllRootGroupsByDomainId(final Connection connection,
       final String domainId) throws SQLException {
@@ -349,7 +349,7 @@ public class GroupDAO {
    * @param domainId domain id
    * @param includeRemoved true to include REMOVED from the result, false otherwise
    * @return all the Groups having a given domain id.
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
   public List<GroupDetail> getAllGroupsByDomainId(final Connection connection,
       final String domainId, final boolean includeRemoved) throws SQLException {
@@ -369,7 +369,7 @@ public class GroupDAO {
    * @param connection connection to the data source.
    * @param groupId a group id
    * @return the parent of the specified group or null.
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
   public GroupDetail getSuperGroup(Connection connection, String groupId) throws SQLException {
     return JdbcSqlQuery.select(format(GROUP_COLUMNS_PATTERN, "sg."))
@@ -442,20 +442,6 @@ public class GroupDAO {
       query.and(STATE).notIn(GroupState.REMOVED);
     }
     return query.executeWith(con, GroupDAO::fetchGroup);
-  }
-
-  public int getNBUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
-    return JdbcSqlQuery.select("COUNT(userId)")
-        .from(GROUP_USERS_TABLE)
-        .where(GROUP_ID_CRITERION, Integer.parseInt(groupId))
-        .executeUniqueWith(con, rs -> rs.getInt(1));
-  }
-
-  public List<String> getUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
-    return JdbcSqlQuery.select(USER_ID)
-        .from(GROUP_USERS_TABLE)
-        .where(GROUP_ID_CRITERION, Integer.parseInt(groupId))
-        .executeWith(con, rs -> String.valueOf(rs.getInt(1)));
   }
 
   public List<String> getManageableGroupIds(Connection con, String userId,
