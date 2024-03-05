@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -34,12 +35,12 @@ import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -78,7 +79,7 @@ public class SpaceResource extends AbstractAdminResource {
   /**
    * Gets the JSON representation of root spaces.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
    * feature is disabled.
@@ -90,8 +91,7 @@ public class SpaceResource extends AbstractAdminResource {
   public Collection<SpaceEntity> getAll(
       @QueryParam(FORCE_GETTING_FAVORITE_PARAM) final boolean forceGettingFavorite) {
     try {
-      return asWebEntities(SpaceEntity.class,
-          loadSpaces(getAdminServices().getAllRootSpaceIds(getUser().getId())),
+      return asWebEntities(loadSpaces(OrganizationController.get().getAllRootSpaceIds()),
           forceGettingFavorite);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -103,7 +103,7 @@ public class SpaceResource extends AbstractAdminResource {
   /**
    * Gets the JSON representation of the given existing space.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
@@ -218,7 +218,7 @@ public class SpaceResource extends AbstractAdminResource {
   /**
    * Updates the space data from its JSON representation and returns it once updated.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
@@ -260,7 +260,7 @@ public class SpaceResource extends AbstractAdminResource {
   /**
    * Gets the JSON representation of spaces of the given existing space.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
@@ -275,8 +275,7 @@ public class SpaceResource extends AbstractAdminResource {
       @QueryParam(FORCE_GETTING_FAVORITE_PARAM) final boolean forceGettingFavorite) {
     try {
       verifyUserAuthorizedToAccessSpace(spaceId);
-      return asWebEntities(SpaceEntity.class,
-          loadSpaces(getAdminServices().getAllSubSpaceIds(spaceId, getUser().getId())),
+      return asWebEntities(loadSpaces(orgaController.getAllSubSpaceIds(spaceId)),
           forceGettingFavorite);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -288,7 +287,7 @@ public class SpaceResource extends AbstractAdminResource {
   /**
    * Gets the JSON representation of components of the given existing space.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
@@ -301,8 +300,7 @@ public class SpaceResource extends AbstractAdminResource {
   public Collection<ComponentEntity> getComponents(@PathParam("spaceId") final String spaceId) {
     try {
       verifyUserAuthorizedToAccessSpace(spaceId);
-      return asWebEntities(ComponentEntity.class,
-          loadComponents(getAdminServices().getAllComponentIds(spaceId, getUser().getId())));
+      return asWebEntities(loadComponents(orgaController.getAllComponentIds(spaceId)));
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -313,7 +311,7 @@ public class SpaceResource extends AbstractAdminResource {
   /**
    * Gets the JSON representation of content of the given existing space.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
@@ -341,7 +339,7 @@ public class SpaceResource extends AbstractAdminResource {
   /**
    * Gets the JSON representation of the given existing space.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
@@ -418,7 +416,7 @@ public class SpaceResource extends AbstractAdminResource {
    * Instantiates the requested component in the user's personal space. It returns the JSON
    * representation of the instantiated component.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param componentName the name of component to add in the user's personal space
    * @return the response to the HTTP GET request with the JSON representation of the asked
@@ -447,7 +445,7 @@ public class SpaceResource extends AbstractAdminResource {
    * returns
    * the JSON representation of WAComponent.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param componentName the name of component to add in the user's personal space
    * @return the response to the HTTP GET request with the JSON representation of the asked

@@ -30,12 +30,12 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -97,8 +97,7 @@ public class ComponentResource extends AbstractAdminResource {
   @Produces(APPLICATION_JSON)
   public ComponentEntity get() {
     try {
-      final Collection<ComponentInstLight> component = loadComponents(componentId);
-      return asWebEntity(component.isEmpty() ? null : component.iterator().next());
+      return asWebEntity(loadComponent(getComponentId()));
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -192,9 +191,7 @@ public class ComponentResource extends AbstractAdminResource {
   public String getComponentId() {
     // at this level, the user authorization process requires also the name of the component
     if (!StringUtil.isDefined(fullComponentId)) {
-      final Collection<ComponentInstLight> components = loadComponents(componentId);
-      final ComponentInstLight component =
-          components.isEmpty() ? null : components.iterator().next();
+      final ComponentInstLight component = loadComponent(componentId);
       fullComponentId = component != null ? component.getId() : componentId;
     }
     return fullComponentId;

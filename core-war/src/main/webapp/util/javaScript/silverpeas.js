@@ -44,6 +44,13 @@ if (!Array.prototype.indexOf) {
 }
 
 if (!Array.prototype.addElement) {
+  Object.defineProperty(Array.prototype, 'copy', {
+    enumerable : false, value : function() {
+      return this.map(function(elt) {
+        return elt;
+      });
+    }
+  });
   Object.defineProperty(Array.prototype, 'indexOfElement', {
     enumerable : false, value : function(elt /*, discriminator*/) {
       var discriminator = arguments.length > 1 ? arguments[1] : undefined;
@@ -1715,14 +1722,15 @@ if (typeof window.sp === 'undefined') {
         return Promise.all(promises);
       },
       whenAllResolvedOrRejected : function(promises) {
-        let chain = sp.promise.resolveDirectlyWith();
+        let chain = sp.promise.resolveDirectlyWith([]);
         promises.forEach(function(promise) {
-          chain = chain.then(function() {
+          chain = chain.then(function(results) {
             return new Promise(function(resolve) {
-              promise.then(function() {
-                resolve();
+              promise.then(function(result) {
+                results.push(result);
+                resolve(results);
               }, function() {
-                resolve();
+                resolve(results);
               })
             });
           })

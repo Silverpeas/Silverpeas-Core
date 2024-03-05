@@ -41,6 +41,7 @@
 <fmt:message var="descriptionLabel" key="GML.description"/>
 <fmt:message var="nameMandatoryError" key="docTemplate.save.name.error.mandatory"/>
 <fmt:message var="restrictedSpaceIdsLabel" key="docTemplate.restrictedSpaceIds.label"/>
+<fmt:message var="restrictedSpaceIdsInfo" key="docTemplate.restrictedSpaceIds.info"/>
 <fmt:message var="restrictedSpaceIdsHelp" key="docTemplate.restrictedSpaceIds.help"/>
 <view:includePlugin name="tags" />
 
@@ -50,6 +51,8 @@
 <jsp:useBean id="documentTemplate" type="org.silverpeas.core.documenttemplate.DocumentTemplate"/>
 
 <c:set var="languages" value="<%=DisplayI18NHelper.getLanguages()%>"/>
+
+<view:includePlugin name="spaceandcomponentselector"/>
 
 <div class="document-template-form">
   <view:form name="document-template-form" action="#" method="POST">
@@ -86,7 +89,8 @@
       <div class="field restricted-space-ids">
         <label class="txtlibform" for="doc_template_restricted-space-ids">
           <span>${restrictedSpaceIdsLabel}&nbsp;</span>
-          <img class="infoBulle" title="${restrictedSpaceIdsHelp}" src="<c:url value="/util/icons/help.png"/>" alt="info"/>
+          <img class="infoBulle" title="${restrictedSpaceIdsInfo}" src="<c:url value="/util/icons/info.gif"/>" alt=""/>
+          <img class="helpBulle" title="${restrictedSpaceIdsHelp}" src="<c:url value="/util/icons/help.png"/>" alt=""/>
         </label>
         <div class="champs">
           <ul id="restricted-space-ids">
@@ -95,6 +99,13 @@
             </c:forEach>
           </ul>
           <input type="hidden" id="doc_template_restricted-space-ids" name="restrictedSpaceIds"/>
+          <div id="scs-popin">
+            <silverpeas-space-and-component-selector-popin v-bind:admin-access="true"
+                                                           v-bind:space-selection="selectedSpaces"
+                                                           v-bind:space-content-enabled="false"
+                                                           v-on:validated-space-selection="onValidatedSpaceSelection">
+            </silverpeas-space-and-component-selector-popin>
+          </div>
         </div>
       </div>
     </div>
@@ -104,6 +115,7 @@
     <fmt:message key='GML.requiredField'/>
   </div>
   <script type="text/javascript">
+    //# sourceURL=tmp.js
     function getTags(tags) {
       return tags.map(function(tag) {
         return tag.value;
@@ -137,10 +149,39 @@
       }
       return sp.promise.rejectDirectlyWith();
     }
-    setTimeout(function() {
+    (function() {
       document.querySelector('.document-template-form .languages input').select();
-      const tagTriggerKeys = ['enter', 'comma', 'semicolon', 'space'];
-      jQuery('#restricted-space-ids').tagit({triggerKeys:tagTriggerKeys});
-    }, 0);
+      const app = SpVue.createApp({
+        data : function() {
+          return {
+            selectedSpaces : []
+          };
+        },
+        methods : {
+          onValidatedSpaceSelection : function(spaceSelection) {
+            this.selectedSpaces = spaceSelection;
+            const spaceIds = spaceSelection.map(function(space) {
+              return space.fullId;
+            });
+            jQuery("#restricted-space-ids").tagit("fill", spaceIds);
+          }
+        }
+      }).mount('#scs-popin');
+      const updateSelectedSpaceIdsFromInput = function() {
+        const promises = [];
+        jQuery("#restricted-space-ids").tagit("tags").forEach(function(tag) {
+          promises.push(AdminSpaceService.asAdminAccess().getByIdOrUri(tag.value.toUpperCase()));
+        });
+        sp.promise.whenAllResolvedOrRejected(promises).then(function(spaces) {
+          app.selectedSpaces = spaces;
+        });
+      };
+      jQuery('#restricted-space-ids').tagit({
+        triggerKeys : ['enter', 'comma', 'semicolon', 'space'],
+        tagsChanged : updateSelectedSpaceIdsFromInput
+      });
+      updateSelectedSpaceIdsFromInput();
+      document.querySelector(".tagit-input").setAttribute("aria-description", "${silfn:escapeJs(restrictedSpaceIdsInfo)}");
+    })();
   </script>
 </div>

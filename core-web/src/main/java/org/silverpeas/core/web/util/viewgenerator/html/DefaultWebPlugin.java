@@ -51,6 +51,8 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(EMBEDPLAYER, (x, l) -> includeEmbedPlayer(x));
     add(ADMIN_SPACE_HOMEPAGE, (x, l) -> includeAdminSpaceHomepage(x));
     add(ADMINSERVICES, (x, l) -> includeAdminServices(x));
+    add(SPACE_AND_COMPONENT_BROWSER, (x, l) -> includeSpaceAndComponentBrowser(x));
+    add(SPACE_AND_COMPONENT_SELECTOR, (x, l) -> includeSpaceAndComponentSelector(x));
     add(MEDIAPLAYER, (x, l) -> includeMediaPlayer(x));
     add(QTIP, JavascriptPluginInclusion::includeQTip);
     add(DATEPICKER, JavascriptPluginInclusion::includeDatePicker);

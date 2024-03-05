@@ -25,12 +25,7 @@
 (function() {
   const BASE_URL = webContext + "/services/components";
 
-  /**
-   * All Admin Component Instance Services which permits to get component instance data against the
-   * current user. If user has no access to a component instance, then HTTP errors are returned on
-   * data fetching.
-   */
-  window.AdminComponentInstanceService = new function() {
+  const CommonServiceImpl = function(uriDecorator, adminSpaceService) {
 
     /**
      * Gets the component instance data represented by the given identifier.
@@ -39,23 +34,80 @@
      */
     this.getByIdOrUri = function(idOrUri) {
       const uri = String(idOrUri).indexOf('/') >= 0 ? idOrUri : BASE_URL + '/' + idOrUri;
-      return sp.ajaxRequest(uri).sendAndPromiseJsonResponse();
+      return sp.ajaxRequest(uriDecorator(uri)).sendAndPromiseJsonResponse().then(__componentDecorator);
     };
 
     /**
-     * Gets the path of component instance represented by given id with additional method format()
-     * which permits to render the string path.
-     * @param idOrUri identifier or an URI of a component instance.
-     * @returns {Promise<*[]>}
+     * Decorating a component data instance.
+     * @param component a component data instance.
+     * @private
      */
-    this.getFullPath = function(idOrUri) {
-      return this.getByIdOrUri(idOrUri).then(function(instance) {
-        return AdminSpaceService.getFullPath(instance.parentURI).then(function(path) {
-          path.push(instance);
-          path.last = instance;
-          return path;
+    const __componentDecorator = function(component) {
+      if (typeof component.getParent === 'function') {
+        // already decorated
+        return component;
+      }
+
+      component.instanceId = component.name + component.id;
+
+      /**
+       * Gets the parent space instance of current instance.
+       * The promise return 'undefined' if no parent exists.
+       * @return {Promise<*>}
+       */
+      component.getParent = function() {
+        if (!component.parentURI) {
+          return sp.promise.resolveDirectlyWith();
+        }
+        if (!component.__parent) {
+          return adminSpaceService.getByIdOrUri(component.parentURI).then(function(parent) {
+            component.__parent = parent;
+            return parent;
+          });
+        }
+        return sp.promise.resolveDirectlyWith(component.__parent);
+      };
+
+      /**
+       * Gets the path of component instance represented by given id with additional method format()
+       * which permits to render the string path.
+       * @returns {Promise<*[]>}
+       */
+      component.getFullPath = function() {
+        return component.getParent().then(function(space) {
+          return space.getFullPath().then(function(path) {
+            path.last = component;
+            path.push(component);
+            return path;
+          });
         });
-      });
+      };
+
+      return component;
     };
   };
+  /**
+   * All Admin Component Instance Services which permits to get component instance data against the
+   * current user. If user has no access to a component instance, then HTTP errors are returned on
+   * data fetching.
+   */
+  window.AdminComponentInstanceService = new CommonServiceImpl(function(uri) {
+    return uri;
+  }, AdminSpaceService);
+  const asAdminAccess = new CommonServiceImpl(function(uri) {
+    return sp.url.format(uri, {
+      'admin-access' : true
+    }, AdminSpaceService.asAdminAccess());
+  });
+  /**
+   * In some kind of context, these services can be accessed to provide data about administration
+   * purpose. If the current user is a Silverpeas's administrator (user account with admin access),
+   * then they can be used into administrative context.
+   * @return {CommonServiceImpl}
+   */
+  window.AdminComponentInstanceService.asAdminAccess = function() {
+    return asAdminAccess;
+  }
+  Object.freeze(asAdminAccess);
+  Object.freeze(window.AdminComponentInstanceService);
 })();

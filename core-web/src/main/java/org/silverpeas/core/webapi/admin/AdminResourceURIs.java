@@ -38,6 +38,7 @@ public final class AdminResourceURIs {
 
   public static final String USERS_AND_GROUPS_ROLES_URI_PART = "usersAndGroupsRoles";
 
+  public static final String ADMIN_ACCESS_PARAM = "admin-access";
   public static final String ROLES_PARAM = "roles";
   public static final String FORCE_GETTING_FAVORITE_PARAM = "forceGettingFavorite";
   public static final String GET_NOT_USED_COMPONENTS_PARAM = "getNotUsedComponents";

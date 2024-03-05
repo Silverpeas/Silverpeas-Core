@@ -28,21 +28,30 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.admin.delegate.AdminPersonalWebDelegate;
 import org.silverpeas.core.webapi.admin.tools.AbstractTool;
-import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
 import javax.inject.Inject;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.web.SilverpeasWebResource.getBasePathBuilder;
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
 
@@ -53,83 +62,128 @@ import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
 public abstract class AbstractAdminResource extends RESTWebService {
 
   @Inject
-  private AdminWebService adminServices;
+  protected OrganizationController orgaController;
+
+  @QueryParam(ADMIN_ACCESS_PARAM)
+  private boolean adminAccess = false;
 
   private AdminPersonalWebDelegate adminPersonalDelegate;
 
   @Inject
   private SpaceAccessControl spaceAccessController;
 
+  @Inject
+  private ComponentAccessControl componentAccessController;
+
   private LookWebDelegate lookDelegate;
 
   /**
-   * Loading data centralization of a space
-   * @param spaceId the space identifier
-   * @return the space instance light representation
+   * Loading data centralization of a space.
+   * <p>
+   *   When calling this method to load space data, it is considered that
+   *   {@link #verifyUserAuthorizedToAccessSpace(String)} method has been called in order to
+   *   verify user right access about the space.
+   * </p>
+   * @param spaceId the space identifier.
+   * @return the space instance light representation.
    */
   protected SpaceInstLight loadSpace(final String spaceId) {
-    final Collection<SpaceInstLight> space = loadSpaces(spaceId);
-    return space.isEmpty() ? null : space.iterator().next();
+    return loadSpaces(false, spaceId).findFirst().orElse(null);
   }
 
   /**
-   * Loading data centralization of spaces
-   * @param spaceIds the space identifiers
-   * @return never null collection of spaces
+   * Loading data centralization of spaces.
+   * <p>
+   *   When calling this method, the caller is loading massively space data. In a such context,
+   *   the loading data are verified concerning the user authorizations.
+   * </p>
+   * @param spaceIds the space identifiers.
+   * @return stream of {@link SpaceInstLight} instance.
    */
-  protected Collection<SpaceInstLight> loadSpaces(final String... spaceIds) {
-    final List<SpaceInstLight> spaces = new ArrayList<>();
-    SpaceInstLight space;
-    for (final String spaceId : spaceIds) {
-      space = getAdminServices().getSpaceById(spaceId);
-      if (space != null) {
-        spaces.add(space);
-      }
-    }
-    return spaces;
+  protected Stream<SpaceInstLight> loadSpaces(final String... spaceIds) {
+    return loadSpaces(true, spaceIds);
+  }
+
+  private Stream<SpaceInstLight> loadSpaces(final boolean authorizationCheck,
+      final String... spaceIds) {
+    final Stream<String> stream = (!authorizationCheck || isValidAdminAccess())
+        ? Stream.of(spaceIds)
+        : spaceAccessController.filterAuthorizedByUser(List.of(spaceIds), getUser().getId());
+    return stream.map(orgaController::getSpaceInstLightById)
+        .filter(Objects::nonNull);
   }
 
   /**
-   * Loading data centralization of a space
+   * Loading data centralization of a component instance.
+   * <p>
+   *   When calling this method to load component instance data, it is considered that
+   *   {@link #validateUserAuthorization(UserPrivilegeValidation)} method has been called in
+   *   order to verify user right access about the component instance (cf.
+   *   {@link org.silverpeas.core.web.rs.annotation.Authorized} class annotation).
+   * </p>
    * @param componentId the component instance identifier
-   * @return
+   * @return an instance of {@link ComponentInstLight} if any, null otherwise.
    */
   protected ComponentInstLight loadComponent(final String componentId) {
-    final Collection<ComponentInstLight> component = loadComponents(componentId);
-    return component.isEmpty() ? null : component.iterator().next();
+    return loadComponents(false, componentId).findFirst().orElse(null);
   }
 
   /**
-   * Loading data centralization of components
-   * @param componentIds the component instance identifiers
-   * @return never null collection of components
+   * Loading data centralization of components.
+   * <p>
+   *   When calling this method, the caller is loading massively component data. In a such context,
+   *   the loading data are verified concerning the user authorizations.
+   * </p>
+   * @param componentIds the component instance identifiers.
+   * @return stream of {@link ComponentInstLight} instance.
    */
-  protected Collection<ComponentInstLight> loadComponents(final String... componentIds) {
-    final List<ComponentInstLight> components = new ArrayList<>();
-    ComponentInstLight component;
-    for (final String componentId : componentIds) {
-      component = getAdminServices().getComponentById(componentId);
-      if (component != null) {
-        components.add(component);
-      }
+  protected Stream<ComponentInstLight> loadComponents(final String... componentIds) {
+    return loadComponents(true, componentIds);
+  }
+
+  private Stream<ComponentInstLight> loadComponents(final boolean authorizationCheck,
+      final String... componentIds) {
+    final Stream<String> stream = (!authorizationCheck || isValidAdminAccess())
+        ? Stream.of(componentIds)
+        : componentAccessController.filterAuthorizedByUser(List.of(componentIds), getUser().getId());
+    return stream.map(orgaController::getComponentInstLight)
+        .filter(Objects::nonNull);
+  }
+
+  /**
+   * Filters the given collection of {@link ComponentInstLight} instance according to user rights.
+   * @param componentInstances component instances to filter.
+   * @return a filtered stream of {@link ComponentInstLight} instance.
+   */
+  protected Stream<ComponentInstLight> filterAuthorizedComponents(
+      final Collection<ComponentInstLight> componentInstances) {
+    final Stream<ComponentInstLight> stream;
+    if (isValidAdminAccess()) {
+      stream = componentInstances.stream();
+    } else {
+      final Map<String, ComponentInstLight> indexed = componentInstances.stream()
+          .collect(toMap(ComponentInstLight::getId, c -> c));
+      stream = componentAccessController
+          .filterAuthorizedByUser(
+              componentInstances.stream()
+                  .map(ComponentInstLight::getId)
+                  .collect(toList()), getUser().getId())
+          .map(indexed::get);
     }
-    return components;
+    return stream;
   }
 
   /**
    * Converts the given list of data into their corresponding web entities.
-   * @param entityClass the entity class returned.
    * @param data data to convert.
    * @return an array with the corresponding web entities.
    */
-  protected <T, E extends AbstractTypeEntity> Collection<E> asWebEntities(
-      final Class<E> entityClass, final Collection<T> data) {
-    return asWebEntities(entityClass, data, false);
+  protected <T, E extends AbstractTypeEntity> Collection<E> asWebEntities(final Stream<T> data) {
+    return asWebEntities(data, false);
   }
 
   /**
    * Converts the given list of data into their corresponding web entities.
-   * @param entityClass the entity class returned.
    * @param data data to convert.
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
    * feature is disabled
@@ -137,18 +191,16 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   @SuppressWarnings("unchecked")
   protected <T, E extends AbstractTypeEntity> Collection<E> asWebEntities(
-      final Class<E> entityClass, final Collection<T> data, final boolean forceGettingFavorite) {
-    final Collection<E> entities = new ArrayList<>(data.size());
-    for (final Object object : data) {
+      final Stream<T> data, final boolean forceGettingFavorite) {
+    return (Collection<E>) data.map(object -> {
       if (object instanceof SpaceInstLight) {
-        entities.add((E) asWebEntity((SpaceInstLight) object, forceGettingFavorite));
+        return asWebEntity((SpaceInstLight) object, forceGettingFavorite);
       } else if (object instanceof ComponentInstLight) {
-        entities.add((E) asWebEntity((ComponentInstLight) object));
+        return asWebEntity((ComponentInstLight) object);
       } else {
-        asWebEntity(object);
+        return asWebEntity(object);
       }
-    }
-    return entities;
+    }).collect(toList());
   }
 
   /**
@@ -271,13 +323,6 @@ public abstract class AbstractAdminResource extends RESTWebService {
   }
 
   /**
-   * @return the common admin services
-   */
-  protected AdminWebService getAdminServices() {
-    return adminServices;
-  }
-
-  /**
    * @return the commin admin personal services
    */
   protected AdminPersonalWebDelegate getAdminPersonalDelegate() {
@@ -289,12 +334,20 @@ public abstract class AbstractAdminResource extends RESTWebService {
   }
 
   /**
-   * Verifies the requester user is authorized to access the given space
+   * Verifies the requester user is authorized to access the given space.
    * @param spaceId the space identifier
    */
   protected void verifyUserAuthorizedToAccessSpace(final String spaceId) {
-    if (!spaceAccessController.isUserAuthorized(getUser().getId(), spaceId)) {
+    if (!isValidAdminAccess() &&
+        !spaceAccessController.isUserAuthorized(getUser().getId(), spaceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    if (!isValidAdminAccess()) {
+      super.validateUserAuthorization(validation);
     }
   }
 
@@ -317,7 +370,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
       lookDelegate = LookWebDelegate.getInstance(getUser(), getUserPreferences(),
               getHttpServletRequest());
     }
-    return (lookDelegate != null && lookDelegate.getHelper() != null);
+    return lookDelegate.getHelper() != null;
   }
 
   /**
@@ -326,5 +379,9 @@ public abstract class AbstractAdminResource extends RESTWebService {
   protected LookWebDelegate getLookDelegate() {
     verifyUserAuthorizedToAccessLookContext();
     return lookDelegate;
+  }
+
+  private boolean isValidAdminAccess() {
+    return adminAccess && getUser().isAccessAdmin();
   }
 }
