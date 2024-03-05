@@ -66,7 +66,7 @@
    */
   SpVue.component('silverpeas-admin-space-homepage-popin',
       templateRepository.get('space-homepage-popin', {
-        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin, VuejsAdminServicesMixin],
         emits : ['validated'],
         props : {
           title : {
@@ -100,12 +100,14 @@
               this.open();
             }
           });
-          AdminSpaceService.getFullPath(this.spaceId).then(function(spacePath) {
-            this.spacePath = spacePath;
-            // This is inspired from spAdminWindow.loadSpace()
-            return sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/GoToSpace').withParam('Espace', this.spaceId).send().then(function() {
-              return sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/jobStartPageNavAsJson').sendAndPromiseJsonResponse().then(function(data) {
-                this.spaceApps = data.applications;
+          this.adminSpaceService.getByIdOrUri(this.spaceId).then(function(space) {
+            return space.getFullPath().then(function(spacePath) {
+              this.spacePath = spacePath;
+              // This is inspired from spAdminWindow.loadSpace()
+              return sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/GoToSpace').withParam('Espace', this.spaceId).send().then(function() {
+                return sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/jobStartPageNavAsJson').sendAndPromiseJsonResponse().then(function(data) {
+                  this.spaceApps = data.applications;
+                }.bind(this));
               }.bind(this));
             }.bind(this));
           }.bind(this));

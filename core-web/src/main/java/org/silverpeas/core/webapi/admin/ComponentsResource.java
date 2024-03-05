@@ -39,8 +39,8 @@ import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.COMPONENTS_BASE_URI;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A REST Web resource giving components.
@@ -92,8 +92,8 @@ public class ComponentsResource extends AbstractAdminResource {
   private Collection<ComponentEntity> getByParameterValue(String param, String value) {
     try {
       Collection<ComponentInstLight> components =
-          getAdminServices().getComponentsByParameterValue(param, value);
-      return asWebEntities(ComponentEntity.class, components);
+          orgaController.getComponentsWithParameterValue(param, value);
+      return asWebEntities(filterAuthorizedComponents(components));
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

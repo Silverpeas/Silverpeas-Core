@@ -307,17 +307,19 @@
    * @param spaceId the space identifier
    */
   window.addFavoriteSpace = function(spaceId) {
-    return AdminSpaceService.getFullPath(spaceId).then(function(path) {
-      const space = path.last;
-      const newLink = {
-        "name" : path.format(),
-        "description" : space.description,
-        "url" : '/Space/' + spaceId,
-        "visible" : true
-      };
-      return MyLinksCtrl.addUserLink(newLink).then(function() {
-        __hideProgressMessage();
-        notySuccess(sp.i18n.get('myLinks.add.space.messageConfirm'));
+    return AdminSpaceService.getByIdOrUri(spaceId).then(function(space) {
+      return space.getFullPath().then(function(path) {
+        const space = path.last;
+        const newLink = {
+          "name" : path.format(),
+          "description" : space.description,
+          "url" : '/Space/' + spaceId,
+          "visible" : true
+        };
+        return MyLinksCtrl.addUserLink(newLink).then(function() {
+          __hideProgressMessage();
+          notySuccess(sp.i18n.get('myLinks.add.space.messageConfirm'));
+        });
       });
     });
   }
@@ -326,17 +328,19 @@
    * @param applicationId the identifier of a component instance.
    */
   window.addFavoriteApp = function(applicationId) {
-    return AdminComponentInstanceService.getFullPath(applicationId).then(function(path) {
-      const instance = path.last;
-      const newLink = {
-        "name" : path.format(),
-        "description" : instance.description,
-        "url" : '/Component/' + applicationId,
-        "visible" : true
-      };
-      return MyLinksCtrl.addUserLink(newLink).then(function() {
-        __hideProgressMessage();
-        notySuccess(sp.i18n.get('myLinks.add.application.messageConfirm'));
+    return AdminComponentInstanceService.getByIdOrUri(applicationId).then(function(cInstance) {
+      return cInstance.getFullPath().then(function(path) {
+        const instance = path.last;
+        const newLink = {
+          "name" : path.format(),
+          "description" : instance.description,
+          "url" : '/Component/' + applicationId,
+          "visible" : true
+        };
+        return MyLinksCtrl.addUserLink(newLink).then(function() {
+          __hideProgressMessage();
+          notySuccess(sp.i18n.get('myLinks.add.application.messageConfirm'));
+        });
       });
     });
   }
