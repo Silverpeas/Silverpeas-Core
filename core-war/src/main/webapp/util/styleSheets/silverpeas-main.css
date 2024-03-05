@@ -7268,6 +7268,11 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
   margin-top: 23px;
 }
 
+.document-template-form #scs-popin > a {
+  position: relative;
+  top: -14px;
+}
+
 .document-template-form .legend {
   padding-left: 15px;
   clear: both;

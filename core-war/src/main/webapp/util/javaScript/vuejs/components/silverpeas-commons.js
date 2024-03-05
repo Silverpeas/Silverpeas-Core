@@ -197,37 +197,61 @@
     commonAsyncComponentRepository.get('list-item'));
 
   /**
+   * Common implementation for components which handle one silverpeas-popin.
+   * Add it to a component or a vue instance by attribute mixins.
+   *
+   * @example:
+   * Vue.component('my-component', {
+   *   mixins : [VuejsPopinMixin]
+   * });
+   */
+  window.VuejsPopinMixin = {
+    emits : ['open', 'close'],
+    props : {
+      'type' : {
+        'type' : String,
+        'default' : 'validation'
+      },
+      'title' : {
+        'type' : String,
+        'default' : ''
+      },
+      'dialogClass' : {
+        'type' : String,
+        'default' : ''
+      },
+      'minWidth' : {
+        'type' : Number,
+        'default' : 500
+      },
+      'maxWidth' : {
+        'type' : Number,
+        'default' : 800
+      },
+      'openPromise' : {
+        'type' : Promise,
+        'default' : undefined
+      }
+    }
+  }
+
+  /**
+   * silverpeas-popin is an HTML element to render a popin into VueJS framework.
+   *
+   * @property type (optional string) - one type of silverpeas's jQuery popup plugin. 'validation'
+   *     by default.
+   * @property title (optional string) - the popin title.
+   * @property dialog-class (optional string) - the popin css classes to apply.
+   * @property min-width (optional integer) - the minimal width of the popin. 500 by default.
+   * @property max-width (optional integer) - the maximal width of the popin. 500 by default.
+   * @property open-promise (optional promise) - a promise that conditions the popin opening.
+   *
+   * @event open when the popin is successfully opened.
+   * @event close when the popin is closed.
    */
   SpVue.component('silverpeas-popin',
     commonAsyncComponentRepository.get('popin', {
-      mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
-      emits : ['open', 'close'],
-      props : {
-        'type' : {
-          'type' : String,
-          'default' : 'validation'
-        },
-        'title' : {
-          'type' : String,
-          'default' : ''
-        },
-        'dialogClass' : {
-          'type' : String,
-          'default' : ''
-        },
-        'minWidth' : {
-          'type' : Number,
-          'default' : 500
-        },
-        'maxWidth' : {
-          'type' : Number,
-          'default' : 800
-        },
-        'openPromise' : {
-          'type' : Promise,
-          'default' : undefined
-        }
-      },
+      mixins : [VuejsPopinMixin, VuejsApiMixin, VuejsI18nTemplateMixin],
       data : function() {
         return {
           jqDialog : undefined
@@ -562,7 +586,8 @@
    * {maxWidth} - Number (optional) - the maximal width of the popin.
    * {minHeight} - Number (optional) -  the minimal height of the popin.
    * {maxHeight} - Number (optional) -  the maximal height of the popin.
-   * {openPromise} - Promise (optional) - a promise which MUST be resolved before displaying the popin.
+   * {openPromise} - Promise (optional) - a promise which MUST be resolved before displaying the
+   * popin.
    * {scrollEndEvent} - Number (optional) - If filled, it activates the management of scroll event
    * which permits to send event when the scroll is at end (or almost). The value to filled is the
    * size in pixel before the real scroll end at which 'scroll-end' event is emitted.

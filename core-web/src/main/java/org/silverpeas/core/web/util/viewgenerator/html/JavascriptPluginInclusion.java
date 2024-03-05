@@ -976,6 +976,22 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  static ElementContainer includeSpaceAndComponentBrowser(final ElementContainer xhtml) {
+    includeAdminServices(xhtml);
+    final String vueJsComponentPath = VUEJS_COMPONENT_PATH + "admin/";
+    xhtml.addElement(link(vueJsComponentPath + "silverpeas-space-and-component-browser.css"));
+    xhtml.addElement(script(vueJsComponentPath + "silverpeas-space-and-component-browser.js"));
+    return xhtml;
+  }
+
+  static ElementContainer includeSpaceAndComponentSelector(final ElementContainer xhtml) {
+    includeSpaceAndComponentBrowser(xhtml);
+    final String vueJsComponentPath = VUEJS_COMPONENT_PATH + "admin/";
+    xhtml.addElement(link(vueJsComponentPath + "silverpeas-space-and-component-selector.css"));
+    xhtml.addElement(script(vueJsComponentPath + "silverpeas-space-and-component-selector.js"));
+    return xhtml;
+  }
+
   static ElementContainer includeLang(final ElementContainer xhtml) {
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LANG));
     return xhtml;

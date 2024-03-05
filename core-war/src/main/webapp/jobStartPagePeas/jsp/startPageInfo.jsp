@@ -299,6 +299,7 @@ out.println(tabbedPane.print());
   <c:if test="<%=m_SpaceExtraInfos.isAdmin()%>">
     <div id="spaceHomepage">
       <silverpeas-admin-space-homepage-popin
+          v-bind:admin-access="true"
           v-on:api="api = $event"
           v-on:validated="save($event)"
           v-bind:title="'${silfn:escapeJs(modifyStartPageLabel)}'"
