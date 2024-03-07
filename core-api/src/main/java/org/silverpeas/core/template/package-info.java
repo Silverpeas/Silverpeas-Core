@@ -22,8 +22,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 /**
- * Provides a Template API for generating messages, web pages, emails, documents, or any other
- * formatted content output from a template.
+ * Provides a Templating API for generating messages, web pages, emails, documents, or any other
+ * formatted content output from a template defined either in a file or within a String.
  * @author mmoquillon
  */
 package org.silverpeas.core.template;

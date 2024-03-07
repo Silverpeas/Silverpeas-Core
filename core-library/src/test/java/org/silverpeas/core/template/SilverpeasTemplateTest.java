@@ -53,7 +53,7 @@ class SilverpeasTemplateTest {
   @Test
   void applyFileTemplateWithSimpleAttribute() {
     SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+        SilverpeasTemplates.createSilverpeasTemplate(configuration);
     String attributeString = "single";
     template.setAttribute("element", attributeString);
     String result = template.applyFileTemplate("testString");
@@ -63,7 +63,7 @@ class SilverpeasTemplateTest {
   @Test
   void applyStringTemplateWithSimpleAttribute() {
     SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+        SilverpeasTemplates.createSilverpeasTemplate(configuration);
     String attributeString = "single";
     template.setAttribute("element", attributeString);
     String result = template.applyStringTemplate("la valeur est = $element$");
@@ -73,7 +73,7 @@ class SilverpeasTemplateTest {
   @Test
   void applyStringTemplateWithArrayAttribute() {
     SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+        SilverpeasTemplates.createSilverpeasTemplate(configuration);
     String[] attributeList = new String[2];
     attributeList[0] = "un";
     attributeList[1] = "deux";
@@ -85,12 +85,24 @@ class SilverpeasTemplateTest {
   @Test
   void applyFileTemplateWithArrayAttribute() {
     SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+        SilverpeasTemplates.createSilverpeasTemplate(configuration);
     String[] attributeList = new String[2];
     attributeList[0] = "un";
     attributeList[1] = "deux";
     template.setAttribute("list", attributeList);
     String result = template.applyFileTemplate("testList");
+    assertEquals("la liste donnée est = un, deux", result);
+  }
+
+  @Test
+  void applyTemplateDescriptorWithArrayAttribute() {
+    SilverpeasTemplate template =
+        SilverpeasTemplates.createSilverpeasTemplate(configuration);
+    String[] attributeList = new String[2];
+    attributeList[0] = "un";
+    attributeList[1] = "deux";
+    template.setAttribute("list", attributeList);
+    String result = template.applyFileTemplateDescriptor("testDescriptor");
     assertEquals("la liste donnée est = un, deux", result);
   }
 

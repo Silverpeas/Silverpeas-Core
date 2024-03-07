@@ -23,13 +23,47 @@
  */
 package org.silverpeas.core.template;
 
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
+public class SilverpeasTemplates {
 
-public class SilverpeasTemplateFactory {
+  static final String DEFAULT_COMPONENTS_DIR;
+  static final String CUSTOM_COMPONENTS_DIR;
+  static final String DEFAULT_CORE_DIR;
+  static final String CUSTOM_CORE_DIR;
+  private static final String SEPARATOR = "/";
 
-  private static final String separator = "/";
+  static {
+    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.util.stringtemplate");
+    DEFAULT_COMPONENTS_DIR = settings.getString("template.dir.components.default");
+    CUSTOM_COMPONENTS_DIR = settings.getString("template.dir.components.custom");
+    DEFAULT_CORE_DIR = settings.getString("template.dir.core.default");
+    CUSTOM_CORE_DIR = settings.getString("template.dir.core.custom");
+  }
+
+  private SilverpeasTemplates() {
+  }
+
+  /**
+   * Is the specified template exists in the component templates home directory.
+   * @param rootPath the root path into components of the template file.
+   * @param template the name of the template to check the existence (without the language and
+   * without the extension).
+   * @return true if  the specified template exist for the specified Silverpeas component in the
+   * component templates home directory. False otherwise.
+   */
+  public static boolean isComponentTemplateExist(final String rootPath, final String template) {
+    String templateFileName = template + "_" + DisplayI18NHelper.getDefaultLanguage() + ".st";
+    return Files.exists(Paths.get(DEFAULT_COMPONENTS_DIR, rootPath, templateFileName)) ||
+        Files.exists(Paths.get(CUSTOM_COMPONENTS_DIR, rootPath, templateFileName));
+  }
 
   public static SilverpeasTemplate createSilverpeasTemplate(final Properties configuration) {
     return new SilverpeasStringTemplate(configuration);
@@ -42,28 +76,28 @@ public class SilverpeasTemplateFactory {
   public static SilverpeasTemplate createSilverpeasTemplateOnComponents(final String pathSuffix) {
     final Properties config = new Properties();
     config.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
-        computePath(SilverpeasStringTemplateUtil.defaultComponentsDir, pathSuffix));
+        computePath(DEFAULT_COMPONENTS_DIR, pathSuffix));
     config.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
-        computePath(SilverpeasStringTemplateUtil.customComponentsDir, pathSuffix));
+        computePath(CUSTOM_COMPONENTS_DIR, pathSuffix));
     return createSilverpeasTemplate(config);
   }
 
   public static SilverpeasTemplate createSilverpeasTemplateOnCore(final String pathSuffix) {
     final Properties config = new Properties();
     config.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
-        computePath(SilverpeasStringTemplateUtil.defaultCoreDir, pathSuffix));
+        computePath(DEFAULT_CORE_DIR, pathSuffix));
     config.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
-        computePath(SilverpeasStringTemplateUtil.customCoreDir, pathSuffix));
+        computePath(CUSTOM_CORE_DIR, pathSuffix));
     return createSilverpeasTemplate(config);
   }
 
   private static String computePath(final String pathBase, final String pathSuffix) {
     final StringBuilder sb = new StringBuilder(pathBase);
     if (StringUtils.isNotBlank(pathSuffix)) {
-      sb.append(separator);
+      sb.append(SEPARATOR);
       sb.append(pathSuffix);
-      sb.append(separator);
+      sb.append(SEPARATOR);
     }
-    return sb.toString().replaceAll("[/]{1,}", "/");
+    return sb.toString().replaceAll("/+", "/");
   }
 }

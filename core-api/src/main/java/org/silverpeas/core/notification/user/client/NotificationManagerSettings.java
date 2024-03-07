@@ -52,11 +52,14 @@ public class NotificationManagerSettings {
   private static final int DEFAULT_SSE_ASYNC_TIMEOUT = 180;
   private static final int DEFAULT_SSE_STORE_EVENT_LIFETIME = 40;
   private static final int MS = 1000;
-  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+  static final SettingBundle DEFAULT_SETTINGS = ResourceLocator.getSettingBundle(
       "org.silverpeas.notificationManager.settings.notificationManagerSettings");
 
-  private static SettingBundle silvermailIconsSettings = ResourceLocator.getSettingBundle(
+  static final SettingBundle DEFAULT_ICON_SETTINGS = ResourceLocator.getSettingBundle(
       "org.silverpeas.notificationserver.channel.silvermail.settings.silvermailIcons");
+
+  private static SettingBundle settings = DEFAULT_SETTINGS;
+  private static SettingBundle iconSettings = DEFAULT_ICON_SETTINGS;
 
   /**
    * Hidden constructor.
@@ -70,7 +73,7 @@ public class NotificationManagerSettings {
    */
   public static DelayedNotificationFrequency getDefaultDelayedNotificationFrequency() {
     DelayedNotificationFrequency defaultFrequency = DelayedNotificationFrequency
-        .decode(settings.getString("DEFAULT_DELAYED_NOTIFICATION_FREQUENCY", null));
+        .decode(getSettings().getString("DEFAULT_DELAYED_NOTIFICATION_FREQUENCY", null));
     if (defaultFrequency == null) {
       defaultFrequency = DelayedNotificationFrequency.NONE;
     }
@@ -89,8 +92,8 @@ public class NotificationManagerSettings {
 
     // The parameter value
     final String frequencyChoiceList =
-        settings.getString("DELAYED_NOTIFICATION_FREQUENCY_CHOICE_LIST", "")
-            .replaceAll("[ ]+", ",");
+        getSettings().getString("DELAYED_NOTIFICATION_FREQUENCY_CHOICE_LIST", "")
+            .replaceAll(" +", ",");
 
     // The possible frequencies
     if (StringUtils.isNotBlank(frequencyChoiceList)) {
@@ -123,7 +126,7 @@ public class NotificationManagerSettings {
    * @return the maximum number of recipient for manual user notification.
    */
   public static int getUserManualNotificationRecipientLimit() {
-    return settings.getInteger("notif.manual.receiver.limit", 0);
+    return getSettings().getInteger("notif.manual.receiver.limit", 0);
   }
 
   /**
@@ -132,7 +135,7 @@ public class NotificationManagerSettings {
    * @return an integer value, 0 = no threshold.
    */
   public static int getReceiverThresholdAfterThatReplaceUserNameListByGroupName() {
-    return settings.getInteger("notif.receiver.displayUser.threshold", 0);
+    return getSettings().getInteger("notif.receiver.displayUser.threshold", 0);
   }
 
   /**
@@ -140,7 +143,7 @@ public class NotificationManagerSettings {
    * @return true if enabled, false otherwise.
    */
   public static boolean isDisplayingUserNameListInsteadOfGroupEnabled() {
-    return settings.getBoolean("notif.receiver.displayGroup", false);
+    return getSettings().getBoolean("notif.receiver.displayGroup", false);
   }
 
   /**
@@ -148,7 +151,7 @@ public class NotificationManagerSettings {
    * @return true if enabled, false otherwise.
    */
   public static boolean isDisplayingReceiversInNotificationMessageEnabled() {
-    return settings.getBoolean("addReceiversInBody", false);
+    return getSettings().getBoolean("addReceiversInBody", false);
   }
 
   /**
@@ -156,7 +159,7 @@ public class NotificationManagerSettings {
    * @return the cron configuration of the delayed notification sending.
    */
   public static String getCronOfDelayedNotificationSending() {
-    return settings.getString("cronDelayedNotificationSending", "");
+    return getSettings().getString("cronDelayedNotificationSending", "");
   }
 
   /**
@@ -164,7 +167,7 @@ public class NotificationManagerSettings {
    * @return true if enabled, false otherwise.
    */
   public static boolean isMultiChannelNotificationEnabled() {
-    return settings.getBoolean("multiChannelNotification", false);
+    return getSettings().getBoolean("multiChannelNotification", false);
   }
 
   /**
@@ -172,12 +175,12 @@ public class NotificationManagerSettings {
    * then
    * returns only one among the channels set up as default. In the case no default channels are set
    * up, then the previous behaviour is used; the SMTP is used as default channel.
-   * @return a set of default notification channels.
+   * @return a list of default notification channels.
    */
   static List<NotifChannel> getDefaultChannels() {
-    final String defaultChannelSetting = settings.getString("notif.defaultChannels", "");
+    final String defaultChannelSetting = getSettings().getString("notif.defaultChannels", "");
     final boolean isMultiChannelSupported = isMultiChannelNotificationEnabled();
-    final String[] defaultChannels = defaultChannelSetting.replaceAll("[ ]{2,}", " ").split(" ");
+    final String[] defaultChannels = defaultChannelSetting.replaceAll(" {2,}", " ").split(" ");
     final List<NotifChannel> channels;
     final Stream<NotifChannel> streamOfChannels = Stream.of(defaultChannels)
         .map(NotifChannel::decode)
@@ -201,7 +204,7 @@ public class NotificationManagerSettings {
    * @return true if enabled, false otherwise.
    */
   public static boolean isRemoveSenderFromSubscriptionNotificationReceiversEnabled() {
-    return settings.getBoolean("notification.subscription.removeSenderFromReceivers.enabled", true);
+    return getSettings().getBoolean("notification.subscription.removeSenderFromReceivers.enabled", true);
   }
 
   /**
@@ -209,7 +212,7 @@ public class NotificationManagerSettings {
    * @return true if enabled (default value), false otherwise.
    */
   public static boolean isSubscriptionNotificationConfirmationEnabled() {
-    return settings.getBoolean("notification.subscription.confirmation.enabled", true);
+    return getSettings().getBoolean("notification.subscription.confirmation.enabled", true);
   }
 
   /**
@@ -217,7 +220,7 @@ public class NotificationManagerSettings {
    * @return the timeout as long (seconds).
    */
   public static int getSseAsyncJobTrigger() {
-    return settings.getInteger("notification.sse.job.trigger", DEFAULT_SSE_JOB_TRIGGER);
+    return getSettings().getInteger("notification.sse.job.trigger", DEFAULT_SSE_JOB_TRIGGER);
   }
 
   /**
@@ -225,7 +228,7 @@ public class NotificationManagerSettings {
    * @return the timeout as long (milliseconds).
    */
   public static int getSseAsyncTimeout() {
-    return settings.getInteger("notification.sse.async.timeout", DEFAULT_SSE_ASYNC_TIMEOUT) * MS;
+    return getSettings().getInteger("notification.sse.async.timeout", DEFAULT_SSE_ASYNC_TIMEOUT) * MS;
   }
 
   /**
@@ -233,7 +236,7 @@ public class NotificationManagerSettings {
    * @return true if enabled, false otherwise.
    */
   public static boolean isCheckPreviousAsyncContextEnabled() {
-    return settings.getBoolean("notification.sse.async.previous.check", true);
+    return getSettings().getBoolean("notification.sse.async.previous.check", true);
   }
 
   /**
@@ -241,7 +244,7 @@ public class NotificationManagerSettings {
    * @return the maximum number of thread for send thread pool.
    */
   public static int getSseSendMaxThreadPool() {
-    return settings.getInteger("notification.sse.send.thread.pool.max", 0);
+    return getSettings().getInteger("notification.sse.send.thread.pool.max", 0);
   }
 
 
@@ -250,7 +253,7 @@ public class NotificationManagerSettings {
    * @return the timeout as long (milliseconds).
    */
   public static int getSseStoreEventLifeTime() {
-    return settings
+    return getSettings()
         .getInteger("notification.sse.store.event.lifetime", DEFAULT_SSE_STORE_EVENT_LIFETIME) * MS;
   }
 
@@ -260,7 +263,7 @@ public class NotificationManagerSettings {
    * @return true in order to enable, false otherwise.
    */
   public static boolean isSseEnabled() {
-    return settings.getBoolean("notification.sse.enabled", true);
+    return getSettings().getBoolean("notification.sse.enabled", true);
   }
 
 
@@ -269,7 +272,7 @@ public class NotificationManagerSettings {
    * @return true in order to enable, false otherwise.
    */
   public static boolean usingWebSocket() {
-    return settings.getBoolean("notification.sse.usingWebSocket", false);
+    return getSettings().getBoolean("notification.sse.usingWebSocket", false);
   }
 
 
@@ -278,7 +281,7 @@ public class NotificationManagerSettings {
    * @return timeout in ms, 0 means no timeout.
    */
   public static int getWebSocketSendTimeout() {
-    return settings.getInteger("notification.sse.websocket.send.timeout", 180000);
+    return getSettings().getInteger("notification.sse.websocket.send.timeout", 180000);
   }
 
 
@@ -287,7 +290,7 @@ public class NotificationManagerSettings {
    * @return true in order to handle, false otherwise.
    */
   public static boolean isSseEnabledFor(final ServerEvent serverEvent) {
-    return isSseEnabled() && settings
+    return isSseEnabled() && getSettings()
         .getBoolean("notification.sse.event." + serverEvent.getName().asString() + ".enabled",
             true);
   }
@@ -305,7 +308,7 @@ public class NotificationManagerSettings {
    * @return an integer representing an amount of seconds.
    */
   public static int sendEveryAmountOfSecondsFor(final ServerEventName serverEventName) {
-    return settings.getInteger(
+    return getSettings().getInteger(
         "notification.sse." + serverEventName.asString() + ".send.every", 0);
   }
 
@@ -314,7 +317,7 @@ public class NotificationManagerSettings {
    * @return url as string without the application context.
    */
   public static String getUserNotificationDesktopIconUrl() {
-    return silvermailIconsSettings
+    return iconSettings
         .getString("silvermail.desktop.url", "/util/icons/desktop-user-notification.png");
   }
 
@@ -324,7 +327,7 @@ public class NotificationManagerSettings {
    * @return true if the space label should be set in the notification source. False otherwise.
    */
   public static boolean isSpaceLabelInNotificationSource() {
-    return settings.getBoolean("notification.source.spaceLabel");
+    return getSettings().getBoolean("notification.source.spaceLabel");
   }
 
   /**
@@ -334,7 +337,26 @@ public class NotificationManagerSettings {
    * otherwise.
    */
   public static boolean isComponentInstanceLabelInNotificationSource() {
-    return settings.getBoolean("notification.source.componentLabel");
+    return getSettings().getBoolean("notification.source.componentLabel");
   }
 
+  /**
+   * Setter dedicated to tests.
+   * @param newSettings the settings to use instead of the default one.
+   */
+  static void setSettings(final SettingBundle newSettings) {
+    settings = newSettings;
+  }
+
+  /**
+   * Setters dedicated to tests.
+   * @param newIconSettings the icon settings to use instead of the default one.
+   */
+  static void setIconSettings(final SettingBundle newIconSettings) {
+    iconSettings = newIconSettings;
+  }
+
+  static SettingBundle getSettings() {
+    return settings;
+  }
 }

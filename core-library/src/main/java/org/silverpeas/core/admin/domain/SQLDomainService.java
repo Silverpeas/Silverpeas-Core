@@ -35,12 +35,12 @@ import org.silverpeas.core.admin.domain.repository.SQLDomainRepository;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
@@ -99,32 +99,37 @@ public class SQLDomainService extends AbstractDomainService {
   }
 
   /**
-   * Gets a file name without special characters and without accentued characters in the aim to
+   * Gets a file name without special characters and without accented characters in the aim to
    * create domain property files safely on file system.
-   * @param domain with a name that may contain some special characters and/or accentued characters
-   * @return
+   * @param domain with a name that may contain some special characters and/or accented characters
+   * @return the technical domain name
    */
   protected String getTechnicalDomainName(Domain domain) {
 
-    // Normalizing the name (accents, puissance, ...)
+    // Normalizing the name (accents, power, ...)
     String fileDomainName = FileServerUtils.replaceAccentChars(domain.getName());
     fileDomainName = Normalizer.normalize(fileDomainName, Normalizer.Form.NFKD);
 
     // Replacing of each sequence of special characters by nothing
     fileDomainName = fileDomainName.replaceAll("[^\\p{Alnum}]+", "");
 
-    // Limitations of some databases on length of table or column names : compute max length
-    int maxTableNameSuffixLength = Math.max(DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX.length(),
-        DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX.length());
-    maxTableNameSuffixLength =
-        Math.max(maxTableNameSuffixLength, DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX.length());
-    int maxLength =
-        SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH - DATABASE_TABLE_NAME_DOMAIN_PREFIX.length() -
-            maxTableNameSuffixLength - domain.getId().length();
+    // Limitations of some databases on length of table or column names: compute max length
+    int maxLength = getMaxLength(domain);
 
     // The technical name is the addition of the part of the domain id and the part of the
     // normalized (and resized) domain name. The domain name is unique by this way
     return domain.getId() + StringUtils.left(fileDomainName, maxLength);
+  }
+
+  private static int getMaxLength(Domain domain) {
+    //noinspection DataFlowIssue
+    int maxTableNameSuffixLength = Math.max(DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX.length(),
+        DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX.length());
+    //noinspection DataFlowIssue
+    maxTableNameSuffixLength =
+        Math.max(maxTableNameSuffixLength, DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX.length());
+    return SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH - DATABASE_TABLE_NAME_DOMAIN_PREFIX.length() -
+            maxTableNameSuffixLength - domain.getId().length();
   }
 
   @Transactional
@@ -172,7 +177,7 @@ public class SQLDomainService extends AbstractDomainService {
       domainToCreate.setPropFileName("org.silverpeas.domains.domain" + technicalDomainName);
       domainToCreate.setAuthenticationServer("autDomain" + technicalDomainName);
 
-      // Enregistre le nom initial dans la table st_domain
+      // Save the initial name in the SQL table st_domain
       domainToCreate.setName(initialDomainName);
       registerDomain(domainToCreate);
 
@@ -216,15 +221,7 @@ public class SQLDomainService extends AbstractDomainService {
     final String originalName = domainToRemove.getName();
 
     // Retrieve the prefix of a domain property file name
-    String separator = "#@#@#@#@#";
-    String domainPropertyPrefix = new File(
-        FileRepositoryManager.getDomainPropertiesPath(separator).replaceAll(separator + ".*$", ""))
-        .getName();
-    // Get the domain property file name without the package
-    String domainPropertyFileName =
-        domainToRemove.getPropFileName().replaceAll("[\\p{Alnum}]+\\.+", "");
-    // Compute the common property file name by removing the prefix of a domain property file name
-    String fileDomainName = domainPropertyFileName.replaceFirst(domainPropertyPrefix, "");
+    String fileDomainName = getFileDomainName(domainToRemove);
     domainToRemove.setName(fileDomainName);
 
     // unregister new Domain dans st_domain
@@ -254,8 +251,20 @@ public class SQLDomainService extends AbstractDomainService {
     return domainId;
   }
 
+  private static String getFileDomainName(Domain domainToRemove) {
+    String separator = "#@#@#@#@#";
+    String domainPropertyPrefix = new File(
+        FileRepositoryManager.getDomainPropertiesPath(separator).replaceAll(separator + ".*$", ""))
+        .getName();
+    // Get the domain property file name without the package
+    String domainPropertyFileName =
+        domainToRemove.getPropFileName().replaceAll("\\p{Alnum}+\\.+", "");
+    // Compute the common property file name by removing the prefix of a domain property file name
+    return domainPropertyFileName.replaceFirst(domainPropertyPrefix, "");
+  }
+
   /**
-   * Delete phisycally domain and authentication properties files
+   * Delete physically domain and authentication properties files
    * @param domainName domain name concerned
    */
   private void removePropertiesFiles(String domainName) {
@@ -273,7 +282,7 @@ public class SQLDomainService extends AbstractDomainService {
   /**
    * Generates domain properties file
    * @param domainToCreate domain to create
-   * @throws DomainCreationException
+   * @throws DomainCreationException if an error occurs while generating the domain descriptor
    */
   private void generateDomainPropertiesFile(Domain domainToCreate) throws DomainCreationException {
 
@@ -307,7 +316,8 @@ public class SQLDomainService extends AbstractDomainService {
   /**
    * Generates domain authentication properties file
    * @param domainToCreate domain to create
-   * @throws DomainCreationException
+   * @throws DomainCreationException if an error occurs while generating the domain authentication
+   * descriptor
    */
   private void generateDomainAuthenticationPropertiesFile(Domain domainToCreate)
       throws DomainCreationException {
@@ -345,11 +355,8 @@ public class SQLDomainService extends AbstractDomainService {
   /**
    * Remove domain authentication and settings properties file
    * @param domainToRemove domain to remove
-   * @throws DomainDeletionException
    */
   private void removeDomainPropertiesFile(Domain domainToRemove) {
-
-
     String domainName = domainToRemove.getName();
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
     String authenticationPropertiesPath =
@@ -369,12 +376,8 @@ public class SQLDomainService extends AbstractDomainService {
     }
   }
 
-  /**
-   * Return SilverpeasTemplate
-   * @return
-   */
   private SilverpeasTemplate getNewTemplate() {
-    return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/sqlDomain");
+    return SilverpeasTemplates.createSilverpeasTemplateOnCore("admin/sqlDomain");
   }
 
 }
