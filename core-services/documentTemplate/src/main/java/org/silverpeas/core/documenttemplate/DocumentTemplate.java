@@ -184,7 +184,7 @@ public class DocumentTemplate implements Serializable {
    * Sets the space identifiers the document template is restricted to.
    * @param spacesIds list of space identifier.
    */
-  public void setRestrictedSpaceIds(final List<String> spacesIds) {
+  public void setRestrictedToSpaceIds(final List<String> spacesIds) {
     json.getRestrictions().setSpaceIds(spacesIds);
   }
 
@@ -192,7 +192,7 @@ public class DocumentTemplate implements Serializable {
    * Gets the space identifiers the document template is restricted to.
    * @return list of space identifier.
    */
-  public List<String> getRestrictedSpaceIds() {
+  public List<String> getRestrictedToSpaceIds() {
     return json.getRestrictions().getSpaceIds();
   }
 

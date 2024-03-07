@@ -34,9 +34,7 @@
      * @returns {Promise<*[]>}
      */
     this.listChildrenByIdOrUri = function(idOrUri) {
-      const uri = StringUtil.defaultStringIfNotDefined(idOrUri).indexOf('/') >= 0
-          ? idOrUri
-          : BASE_URL + '/' + idOrUri + '/';
+      const uri = __decodeIdOrUri(idOrUri);
       return sp.ajaxRequest(uriDecorator(uri)).sendAndPromiseJsonResponse().then(__spacesDecorator);
     };
 
@@ -46,11 +44,15 @@
      * @returns {Promise<*[]>}
      */
     this.getByIdOrUri = function(idOrUri) {
-      const uri = StringUtil.defaultStringIfNotDefined(idOrUri).indexOf('/') >= 0
-          ? idOrUri
-          : BASE_URL + '/' + idOrUri;
+      const uri = __decodeIdOrUri(idOrUri);
       return sp.ajaxRequest(uriDecorator(uri)).sendAndPromiseJsonResponse().then(__spaceDecorator);
     };
+
+    function __decodeIdOrUri(idOrUri) {
+      return StringUtil.defaultStringIfNotDefined(idOrUri).indexOf('/') >= 0
+          ? idOrUri
+          : BASE_URL + '/' + idOrUri;
+    }
 
     /**
      * Decorating array of returned spaces.

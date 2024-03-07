@@ -230,7 +230,7 @@ class JsonDocumentTemplate implements Serializable {
      *   is no need to specified explicitly them.
      * </p>
      * <p>
-     *   If an empty list (or a null one) is given, no data about restriction are saved into JSON
+     *   If an empty list (or a null one) is given, no data about restriction is saved into JSON
      *   model.
      * </p>
      * @param spaceIds a list of space identifier as string. Null or empty list means no space

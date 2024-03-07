@@ -37,12 +37,13 @@
 <fmt:setLocale value="${lang}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
+<fmt:message var="mandatoryLabel" key='GML.requiredField.legend'/>
 <fmt:message var="nameLabel" key="GML.name"/>
 <fmt:message var="descriptionLabel" key="GML.description"/>
 <fmt:message var="nameMandatoryError" key="docTemplate.save.name.error.mandatory"/>
-<fmt:message var="restrictedSpaceIdsLabel" key="docTemplate.restrictedSpaceIds.label"/>
-<fmt:message var="restrictedSpaceIdsInfo" key="docTemplate.restrictedSpaceIds.info"/>
-<fmt:message var="restrictedSpaceIdsHelp" key="docTemplate.restrictedSpaceIds.help"/>
+<fmt:message var="restrictedToSpaceIdsLabel" key="docTemplate.restrictedToSpaceIds.label"/>
+<fmt:message var="restrictedToSpaceIdsInfo" key="docTemplate.restrictedToSpaceIds.info"/>
+<fmt:message var="restrictedToSpaceIdsHelp" key="docTemplate.restrictedToSpaceIds.help"/>
 <view:includePlugin name="tags" />
 
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
@@ -55,11 +56,15 @@
 <view:includePlugin name="spaceandcomponentselector"/>
 
 <div class="document-template-form">
+  <div class="legend">
+    <img src="${mandatoryIcons}" width="5" height="5" alt=""/>&nbsp;
+    ${mandatoryLabel}
+  </div>
   <view:form name="document-template-form" action="#" method="POST">
     <div class="fields">
       <div class="field">
         <label class="txtlibform">${nameLabel}</label>
-        &nbsp;<img src="${mandatoryIcons}" width="5" height="5" alt="">
+        &nbsp;<img src="${mandatoryIcons}" width="5" height="5" alt="(${mandatoryLabel})">
       </div>
       <c:forEach var="language" items="${languages}">
         <div class="field languages">
@@ -87,18 +92,18 @@
         </c:if>
       </div>
       <div class="field restricted-space-ids">
-        <label class="txtlibform" for="doc_template_restricted-space-ids">
-          <span>${restrictedSpaceIdsLabel}&nbsp;</span>
-          <img class="infoBulle" title="${restrictedSpaceIdsInfo}" src="<c:url value="/util/icons/info.gif"/>" alt=""/>
-          <img class="helpBulle" title="${restrictedSpaceIdsHelp}" src="<c:url value="/util/icons/help.png"/>" alt=""/>
+        <label class="txtlibform" for="doc_template_restricted-to-space-ids">
+          <span>${restrictedToSpaceIdsLabel}&nbsp;</span>
+          <img class="infoBulle" title="${restrictedToSpaceIdsInfo}" src="<c:url value="/util/icons/info.gif"/>" alt=""/>
+          <img class="helpBulle" title="${restrictedToSpaceIdsHelp}" src="<c:url value="/util/icons/help.png"/>" alt=""/>
         </label>
         <div class="champs">
           <ul id="restricted-space-ids">
-            <c:forEach var="restrictedSpaceId" items="${documentTemplate.restrictedSpaceIds}">
+            <c:forEach var="restrictedSpaceId" items="${documentTemplate.restrictedToSpaceIds}">
               <li data-value="${restrictedSpaceId}">${restrictedSpaceId}</li>
             </c:forEach>
           </ul>
-          <input type="hidden" id="doc_template_restricted-space-ids" name="restrictedSpaceIds"/>
+          <input type="hidden" id="doc_template_restricted-to-space-ids" name="restrictedToSpaceIds"/>
           <div id="scs-popin">
             <silverpeas-space-and-component-selector-popin v-bind:admin-access="true"
                                                            v-bind:space-selection="selectedSpaces"
@@ -110,10 +115,6 @@
       </div>
     </div>
   </view:form>
-  <div class="legend">
-    <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;
-    <fmt:message key='GML.requiredField'/>
-  </div>
   <script type="text/javascript">
     //# sourceURL=tmp.js
     function getTags(tags) {
@@ -122,7 +123,7 @@
       }).join(',');
     }
     function checkDocumentTemplateForm(callback) {
-      document.querySelector("#doc_template_restricted-space-ids").value =
+      document.querySelector("#doc_template_restricted-to-space-ids").value =
           getTags(jQuery("#restricted-space-ids").tagit("tags"));
       const data = sp.form.serializeJson("form[name='document-template-form']");
       const _fileUploadApi = jQuery(".fileUpload").fileUpload('api');
@@ -181,7 +182,7 @@
         tagsChanged : updateSelectedSpaceIdsFromInput
       });
       updateSelectedSpaceIdsFromInput();
-      document.querySelector(".tagit-input").setAttribute("aria-description", "${silfn:escapeJs(restrictedSpaceIdsInfo)}");
+      document.querySelector(".tagit-input").setAttribute("aria-description", "${silfn:escapeJs(restrictedToSpaceIdsInfo)}");
     })();
   </script>
 </div>

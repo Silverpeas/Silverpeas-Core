@@ -57,6 +57,7 @@ public class ImportSettings implements Cloneable {
   private String singleFileTitle;
   private String singleFileDescription;
   private boolean useFileMetadata = isUseFileMetadataForAttachmentDataEnabled();
+  private boolean fromDocumentTemplate;
 
   public ImportSettings(String pathToImport, UserDetail user, String componentId, String folderId,
       boolean draftUsed, boolean poiUsed, int method) {
@@ -99,7 +100,9 @@ public class ImportSettings implements Cloneable {
   }
 
   public boolean isPoiUsed() {
-    if (getMethod() == FROM_XML) {
+    if (isFromDocumentTemplate()) {
+      return false;
+    } else if (getMethod() == FROM_XML) {
       return poiUsed;
     } else if (getMethod() == FROM_DRAGNDROP) {
       return settings.getBoolean("dnd.publication.usePOI", true);
@@ -125,7 +128,9 @@ public class ImportSettings implements Cloneable {
   }
 
   public boolean isPublicationMergeEnabled() {
-    if (getMethod() == FROM_XML) {
+    if (isFromDocumentTemplate()) {
+      return false;
+    } else if (getMethod() == FROM_XML) {
       return settings.getBoolean("xml.publication.merge", true);
     } else if (getMethod() == FROM_DRAGNDROP) {
       return settings.getBoolean("dnd.publication.merge", false);
@@ -202,11 +207,7 @@ public class ImportSettings implements Cloneable {
   }
 
   public boolean isUseFileMetadata() {
-    return useFileMetadata;
-  }
-
-  public void setUseFileMetadata(final boolean useFileMetadata) {
-    this.useFileMetadata = useFileMetadata;
+    return !isFromDocumentTemplate() && useFileMetadata;
   }
 
   public String getContentLanguage() {
@@ -225,8 +226,18 @@ public class ImportSettings implements Cloneable {
     this.targetValidatorIds = targetValidatorIds;
   }
 
+  public boolean isFromDocumentTemplate() {
+    return fromDocumentTemplate;
+  }
+
+  public void setFromDocumentTemplate(final boolean fromDocumentTemplate) {
+    this.fromDocumentTemplate = fromDocumentTemplate;
+  }
+
   public boolean useFileDates() {
-    if (getMethod() == FROM_XML) {
+    if (isFromDocumentTemplate()) {
+      return false;
+    } else if (getMethod() == FROM_XML) {
       return settings.getBoolean("xml.publication.useFileDates", false);
     } else if (getMethod() == FROM_DRAGNDROP) {
       return settings.getBoolean("dnd.publication.useFileDates", false);
