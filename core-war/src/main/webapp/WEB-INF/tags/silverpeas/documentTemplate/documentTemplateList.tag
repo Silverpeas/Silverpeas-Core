@@ -68,9 +68,9 @@
         <c:set var="documentTemplatePreview" value="<%=PreviewEntity.createFrom(PreviewService.get().getPreview(documentTemplate.getViewerContext(userLanguage)))%>"/>
         <jsp:useBean id="documentTemplatePreview" type="org.silverpeas.core.webapi.viewer.PreviewEntity"/>
         <img src="${documentTemplatePreview.URL}" alt="${documentTemplateNameSanitized}">
-        <c:if test="${not empty documentTemplate.restrictedSpaceIds}">
+        <c:if test="${not empty documentTemplate.restrictedToSpaceIds}">
           <c:set var="newStringArray" value="<%=new String[0]%>"/>
-          <div class="restricted-space-ids inlineMessage">${fn:join(documentTemplate.restrictedSpaceIds.toArray(newStringArray), ', ')}</div>
+          <div class="restricted-space-ids inlineMessage">${fn:join(documentTemplate.restrictedToSpaceIds.toArray(newStringArray), ', ')}</div>
         </c:if>
         <c:if test="${not empty documentTemplateDesc}">
           <div class="description">${documentTemplateDesc}</div>

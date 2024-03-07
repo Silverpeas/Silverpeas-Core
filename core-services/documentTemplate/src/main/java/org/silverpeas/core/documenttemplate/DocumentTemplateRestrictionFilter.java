@@ -54,9 +54,9 @@ public class DocumentTemplateRestrictionFilter {
    * @return true if the document template MUST be kept, false otherwise.
    */
   public boolean applyOn(final DocumentTemplate documentTemplate) {
-    final List<String> restrictedSpaceIds = documentTemplate.getRestrictedSpaceIds();
-    return restrictedSpaceIds.isEmpty() ||
-        restrictedSpaceIds.stream().anyMatch(getSpaceIds()::contains);
+    final List<String> restrictedToSpaceIds = documentTemplate.getRestrictedToSpaceIds();
+    return restrictedToSpaceIds.isEmpty() ||
+        restrictedToSpaceIds.stream().anyMatch(getSpaceIds()::contains);
   }
 
   /**

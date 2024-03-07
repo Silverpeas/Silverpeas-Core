@@ -170,12 +170,12 @@ public class DocumentTemplateWebController extends
     final HttpRequest request = context.getRequest();
     ofNullable(request.getParameterAsInteger("position"))
         .ifPresent(documentTemplate::setPosition);
-    ofNullable(request.getParameter("restrictedSpaceIds"))
+    ofNullable(request.getParameter("restrictedToSpaceIds"))
         .map(s -> Stream.of(s.split("[ ,;]"))
             .map(String::trim)
             .filter(StringUtil::isDefined)
             .collect(Collectors.toList()))
-        .ifPresent(documentTemplate::setRestrictedSpaceIds);
+        .ifPresent(documentTemplate::setRestrictedToSpaceIds);
     DisplayI18NHelper.getLanguages().forEach(l -> {
       documentTemplate.setName(request.getParameter("name-" + l), l);
       documentTemplate.setDescription(request.getParameter("description-" + l), l);

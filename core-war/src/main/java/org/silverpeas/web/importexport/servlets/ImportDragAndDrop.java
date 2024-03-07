@@ -114,6 +114,7 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       final String publicationKeywords = getPublicationKeywords(uploadSession, request);
       final String versionType = request.getParameter("VersionType");
       final String validatorIds = request.getParameter("ValidatorIds");
+      settings.setFromDocumentTemplate(fromDocumentTemplate);
       settings.setVersioningUsed(
           StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType));
       if (settings.isVersioningUsed()) {
@@ -128,9 +129,6 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
         settings.getPublicationForAllFiles().setName(publicationName);
         settings.getPublicationForAllFiles().setDescription(publicationDescription);
         settings.getPublicationForAllFiles().setKeywords(publicationKeywords);
-      }
-      if (fromDocumentTemplate) {
-        settings.setUseFileMetadata(false);
       }
       // import
       result.append(performImport(settings));
