@@ -74,12 +74,12 @@ class JsonDocumentTemplateTest {
             "\"position\":3,\"restrictions\":{\"spaceIds\":[\"WA26\",\"WA25\"]},"));
   }
 
-  private void assertEncode(final List<String> restrictedSpaceIds,
+  private void assertEncode(final List<String> restrictedToSpaceIds,
       final String expectedJson) {
     JsonDocumentTemplate jsonEntity = new JsonDocumentTemplate();
     jsonEntity.setId("an identifier");
     jsonEntity.setPosition(3);
-    jsonEntity.getRestrictions().setSpaceIds(restrictedSpaceIds);
+    jsonEntity.getRestrictions().setSpaceIds(restrictedToSpaceIds);
     jsonEntity.getNameTranslations().put("fr", "Ceci est un test");
     jsonEntity.getNameTranslations().put("en", "This is a test");
     jsonEntity.setCreatorId("1");

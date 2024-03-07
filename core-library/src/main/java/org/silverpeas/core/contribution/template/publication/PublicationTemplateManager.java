@@ -462,11 +462,11 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   private boolean isTemplateVisibleAccordingToSpace(PublicationTemplate template,
       GlobalContext context, OrganizationController oc) {
-    List<String> restrictedSpaceIds = template.getSpaces();
+    List<String> restrictedToSpaceIds = template.getSpaces();
     List<SpaceInstLight> spacePath = oc.getPathToSpace(context.getSpaceId());
     for (SpaceInstLight space : spacePath) {
       String spaceId = space.getId();
-      if (restrictedSpaceIds.contains(spaceId)) {
+      if (restrictedToSpaceIds.contains(spaceId)) {
         return true;
       }
     }

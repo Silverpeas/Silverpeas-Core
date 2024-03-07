@@ -48,7 +48,7 @@ class DocumentTemplateTest {
     assertThat(template, notNullValue());
     assertThat(template.getId(), nullValue());
     assertThat(template.getPosition(), is(-1));
-    assertThat(template.getRestrictedSpaceIds().isEmpty(), is(true));
+    assertThat(template.getRestrictedToSpaceIds().isEmpty(), is(true));
     assertThat(template.getExtension(), nullValue());
     assertThat(template.getName("fr"), emptyString());
     assertThat(template.getName("en"), emptyString());
@@ -65,7 +65,7 @@ class DocumentTemplateTest {
     assertThat(template, notNullValue());
     assertThat(template.getId(), is("an identifier"));
     assertThat(template.getPosition(), is(3));
-    assertThat(template.getRestrictedSpaceIds().isEmpty(), is(true));
+    assertThat(template.getRestrictedToSpaceIds().isEmpty(), is(true));
     assertThat(template.getExtension(), is("txt"));
     assertThat(template.existNameTranslationIn("fr"), is(true));
     assertThat(template.getName("fr"), is("Ceci est un test"));
@@ -87,7 +87,7 @@ class DocumentTemplateTest {
     assertThat(template, notNullValue());
     assertThat(template.getId(), is("an identifier"));
     assertThat(template.getPosition(), is(3));
-    assertThat(template.getRestrictedSpaceIds(), contains("WA26", "WA25"));
+    assertThat(template.getRestrictedToSpaceIds(), contains("WA26", "WA25"));
     assertThat(template.getExtension(), is("txt"));
     assertThat(template.existNameTranslationIn("fr"), is(true));
     assertThat(template.getName("fr"), is("Ceci est un test"));
@@ -114,7 +114,7 @@ class DocumentTemplateTest {
     assertThat(json, notNullValue());
     assertThat(json.getId(), is("an id"));
     assertThat(json.getPosition(), is(4));
-    assertThat(template.getRestrictedSpaceIds().isEmpty(), is(true));
+    assertThat(template.getRestrictedToSpaceIds().isEmpty(), is(true));
     Map<String, String> translations = json.getNameTranslations();
     assertThat(translations, notNullValue());
     assertThat(translations.size(), is(2));

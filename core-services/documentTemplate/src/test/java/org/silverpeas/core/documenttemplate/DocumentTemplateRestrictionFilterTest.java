@@ -60,7 +60,7 @@ class DocumentTemplateRestrictionFilterTest {
   void setup() {
     final DocumentTemplate notRestricted = new DocumentTemplate();
     final DocumentTemplate restricted = new DocumentTemplate();
-    restricted.setRestrictedSpaceIds(List.of("WA26", "WA25"));
+    restricted.setRestrictedToSpaceIds(List.of("WA26", "WA25"));
     documentTemplates = List.of(notRestricted, restricted);
     when(controller.getPathToComponent(anyString())).thenAnswer(a -> {
       final String instanceId = a.getArgument(0);
@@ -84,7 +84,7 @@ class DocumentTemplateRestrictionFilterTest {
     final List<DocumentTemplate> filteredDocumentTemplates = getFilteredDocumentTemplates();
     assertThat(filteredDocumentTemplates.size(), is(1));
     assertThat(filteredDocumentTemplates.stream()
-        .map(DocumentTemplate::getRestrictedSpaceIds)
+        .map(DocumentTemplate::getRestrictedToSpaceIds)
         .allMatch(List::isEmpty), is(true));
   }
 
@@ -95,7 +95,7 @@ class DocumentTemplateRestrictionFilterTest {
     final List<DocumentTemplate> filteredDocumentTemplates = getFilteredDocumentTemplates();
     assertThat(filteredDocumentTemplates.size(), is(2));
     assertThat(filteredDocumentTemplates.stream()
-        .map(DocumentTemplate::getRestrictedSpaceIds)
+        .map(DocumentTemplate::getRestrictedToSpaceIds)
         .anyMatch(not(List::isEmpty)), is(true));
   }
 
@@ -106,7 +106,7 @@ class DocumentTemplateRestrictionFilterTest {
     final List<DocumentTemplate> filteredDocumentTemplates = getFilteredDocumentTemplates();
     assertThat(filteredDocumentTemplates.size(), is(1));
     assertThat(filteredDocumentTemplates.stream()
-        .map(DocumentTemplate::getRestrictedSpaceIds)
+        .map(DocumentTemplate::getRestrictedToSpaceIds)
         .allMatch(List::isEmpty), is(true));
   }
 
