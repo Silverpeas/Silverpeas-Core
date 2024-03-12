@@ -110,10 +110,10 @@
 <pre>
 Frame cachee, Time = <%if (clipboardSC != null) {out.print(String.valueOf(clipboardSC.getCounter()));}%> <a href="../../Rclipboard/jsp/Idle.jsp?message=IDLE">idle...</a>
 <%
-  Enumeration values = request.getParameterNames();
+  Enumeration<String> values = request.getParameterNames();
   String sep = "";
   while (values.hasMoreElements()) {
-    String name = (String) values.nextElement();
+    String name = values.nextElement();
     if (name != null) {
       String value = Encode.forHtml(request.getParameter(name));
       if (name.compareTo("submit") != 0) {
@@ -133,9 +133,5 @@ Frame cachee, Time = <%if (clipboardSC != null) {out.print(String.valueOf(clipbo
   out.println(clipboardSC.getHTMLFormForHiddenFrame(request));
 }
 %>
-<!-- SessionId pour securisation pages Web -->
-<form name="ctrl" action="">
-  <input type="hidden" name="sessionId" value="<%=session.getId()%>"/>
-</form>
 </body>
 </html>
