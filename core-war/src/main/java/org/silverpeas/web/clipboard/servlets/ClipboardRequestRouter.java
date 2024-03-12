@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.clipboard.servlets;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
@@ -97,7 +98,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
     } else if (function.startsWith("selectionpaste")) {
       destination = performSelectionPaste(request, clipboardSC);
     } else {
-      destination = "/clipboard/jsp/" + function;
+      destination = "/clipboard/jsp/" + Encode.forUriComponent(function);
     }
 
     return destination;
@@ -120,14 +121,12 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
 
   private String performClipboard(final HttpRequest request,
       final ClipboardSessionController clipboardSC) {
-    final String destination;
     clipboardSC.setComponentRooterName(request.getParameter("compR"));
     clipboardSC.setSpaceId(request.getParameter(SPACE_FROM_PARAM));
     clipboardSC.setComponentId(request.getParameter(COMPONENT_FROM_PARAM));
     clipboardSC.setJSPPage(request.getParameter("JSPPage"));
     clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
-    destination = CLIPBOARD_JSP;
-    return destination;
+    return CLIPBOARD_JSP;
   }
 
   private String performDelete(final HttpRequest request,
@@ -153,7 +152,6 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
 
   private String performSelectObject(final HttpRequest request,
       final ClipboardSessionController clipboardSC) {
-    final String destination;
     try {
       String objectIndex = request.getParameter("Id");
       String objectStatus = request.getParameter("Status");
@@ -165,8 +163,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
-    destination = "/clipboard/jsp/Idle.jsp";
-    return destination;
+    return  "/clipboard/jsp/Idle.jsp";
   }
 
   private String performSelectionPaste(final HttpRequest request,
