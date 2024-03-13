@@ -32,11 +32,8 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController" %>
-
-<%@ page import="java.util.Enumeration" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
@@ -97,38 +94,9 @@
       }
       %>
     }
-
-    //--------------------------------------------------------------------------------------test
-    // Developer test
-    function test() {
-      //window.alert ('clipboardName='+top.ClipboardWindow.name);
-      status = top.ClipboardWindow.document.pasteform.compR.value;
-    }
   </script>
 </head>
 <body onload="DoTask();">
-<pre>
-Frame cachee, Time = <%if (clipboardSC != null) {out.print(String.valueOf(clipboardSC.getCounter()));}%> <a href="../../Rclipboard/jsp/Idle.jsp?message=IDLE">idle...</a>
-<%
-  Enumeration<String> values = request.getParameterNames();
-  String sep = "";
-  while (values.hasMoreElements()) {
-    String name = values.nextElement();
-    if (name != null) {
-      String value = Encode.forHtml(request.getParameter(name));
-      if (name.compareTo("submit") != 0) {
-        if (value != null) {
-          out.print(sep + name + "=" + value);
-        } else {
-          out.print(sep + name + "=null");
-        }
-        sep = "&";
-      }
-    }
-  }
-%>
-	<a href="javascript:onClick=test()">test...</a>
-	</pre>
 <%if (clipboardSC != null) {
   out.println(clipboardSC.getHTMLFormForHiddenFrame(request));
 }
