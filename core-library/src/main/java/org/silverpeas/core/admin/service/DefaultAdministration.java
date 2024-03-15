@@ -374,21 +374,10 @@ class DefaultAdministration implements Administration {
       spaceManager.createSpaceInst(spaceInst);
       // put new space in cache
       cache.opAddSpace(getSpaceInstById(spaceInst.getLocalId()));
-
-      // Instantiate the components
-      List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
-      for (ComponentInst componentInst : alCompoInst) {
-        componentInst.setDomainFatherId(spaceInst.getId());
-        addComponentInst(userId, componentInst);
-      }
-
-      SpaceInstLight space = getSpaceInstLight(spaceInst.getLocalId());
+      final SpaceInstLight space = getSpaceInstLight(spaceInst.getLocalId());
       addSpaceInTreeCache(space, true);
-
       // indexation of the space
-
       createSpaceIndex(space);
-
       return spaceInst.getId();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
@@ -453,8 +442,8 @@ class DefaultAdministration implements Administration {
     }
 
     // delete the space profiles instance
-    for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
-      deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId());
+    for (final SpaceProfileInst spaceProfileInst : spaceInst.getAllSpaceProfilesInst()) {
+      deleteSpaceProfileInst(spaceProfileInst.getId());
     }
 
     // Delete the components
@@ -489,8 +478,8 @@ class DefaultAdministration implements Administration {
   private void deleteSpaceProfilesOnSpaceLogicalDeletion(SpaceInst spaceInst)
       throws AdminException {
     // delete the space profiles
-    for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
-      deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId());
+    for (final SpaceProfileInst spaceProfileInst : spaceInst.getAllSpaceProfilesInst()) {
+      deleteSpaceProfileInst(spaceProfileInst.getId());
     }
 
     // delete the components profiles
@@ -1867,15 +1856,19 @@ class DefaultAdministration implements Administration {
 
   private void spreadInheritedSpaceProfile(final SpaceProfileInst spaceProfile,
       final Integer spaceId) throws AdminException {
-    if (!spaceProfile.isInherited()) {
+    // spread all the profiles with the given role (both specific and inherited) to both the
+    // subspaces and the component instances. The space profile here is used as a simple data to
+    // propagate to children.
+    SpaceProfileInst fullProfile = new SpaceProfileInst(spaceProfile);
+    if (!fullProfile.isInherited()) {
       SpaceProfileInst inheritedProfile =
-          spaceProfileManager.getInheritedSpaceProfileInstByName(spaceId, spaceProfile.getName());
+          spaceProfileManager.getInheritedSpaceProfileInstByName(spaceId, fullProfile.getName());
       if (inheritedProfile != null) {
-        spaceProfile.addGroups(inheritedProfile.getAllGroups());
-        spaceProfile.addUsers(inheritedProfile.getAllUsers());
+        fullProfile.addGroups(inheritedProfile.getAllGroups());
+        fullProfile.addUsers(inheritedProfile.getAllUsers());
       }
     }
-    spreadSpaceProfile(spaceId, spaceProfile);
+    spreadSpaceProfile(spaceId, fullProfile);
   }
 
   private void deleteSpaceProfileInst(String sSpaceProfileId) throws AdminException {
@@ -5438,7 +5431,7 @@ class DefaultAdministration implements Administration {
     // Creation
     newCompo.setLocalId(-1);
     newCompo.setDomainFatherId(destinationSpace.getId());
-    newCompo.setOrderNum(destinationSpace.getNumComponentInst());
+    newCompo.setOrderNum(destinationSpace.getAllComponentsInst().size());
     newCompo.setCreationDate(new Date());
     newCompo.setCreatorUserId(pasteDetail.getUserId());
     newCompo.setLanguage(lang);
@@ -5512,13 +5505,21 @@ class DefaultAdministration implements Administration {
       // paste space itself
       SpaceInst oldSpace = getSpaceInstById(spaceId);
       SpaceInst newSpace = createPasteSpace(pasteDetail, oldSpace, toSpaceId);
+      newSpace.resetData();
 
-      // Remove inherited profiles from cloned space
-      newSpace.removeInheritedProfiles();
+      // Getting and copying from space to clone the specific profiles
+      oldSpace.getAllSpaceProfilesInst()
+          .stream()
+          .filter(not(SpaceProfileInst::isInherited))
+          .map(SpaceProfileInst::new)
+          .forEach(newSpace::addSpaceProfileInst);
 
-      // Remove components from cloned space
-      List<ComponentInst> components = newSpace.getAllComponentsInst();
-      newSpace.removeAllComponentsInst();
+      // Getting from space to clone the components to copy
+      final List<ComponentInst> componentsToCopy = oldSpace.getAllComponentsInst().stream().map(c -> {
+        final ComponentInst componentInst = new ComponentInst(c);
+        componentInst.setLocalId(c.getLocalId());
+        return componentInst;
+      }).collect(toList());
 
       // Add space
       newSpaceId = addSpaceInst(pasteDetail.getUserId(), newSpace);
@@ -5528,10 +5529,11 @@ class DefaultAdministration implements Administration {
 
       // paste components
       String componentIdAsHomePage =
-          pasteComponentsOfSpace(pasteDetail, newSpaceId, newSpace, components);
+          pasteComponentsOfSpace(pasteDetail, newSpaceId, newSpace, componentsToCopy);
 
       // paste subspaces
-      pasteSubspacesOfSpace(pasteDetail, newSpaceId, newSpace);
+      final List<SpaceInst> subSpacesToCopy = oldSpace.getSubSpaces();
+      pasteSubspacesOfSpace(pasteDetail, subSpacesToCopy, newSpaceId);
 
       // update parameter of space home page if needed
       String newFirstPageExtraParam = null;
@@ -5551,21 +5553,21 @@ class DefaultAdministration implements Administration {
     return newSpaceId;
   }
 
-  private void pasteSubspacesOfSpace(final PasteDetail pasteDetail, final String newSpaceId,
-      final SpaceInst newSpace) throws AdminException, QuotaException {
+  private void pasteSubspacesOfSpace(final PasteDetail pasteDetail,
+      final List<SpaceInst> subSpacesToCopy, final String newSpaceId)
+      throws AdminException, QuotaException {
     PasteDetail subSpacePasteDetail = new PasteDetail(pasteDetail.getUserId());
     subSpacePasteDetail.setOptions(pasteDetail.getOptions());
     subSpacePasteDetail.setToSpaceId(newSpaceId);
-    List<SpaceInst> subSpaceInsts = newSpace.getSubSpaces();
-    for (SpaceInst subSpaceInst : subSpaceInsts) {
-      subSpacePasteDetail.setFromSpaceId(subSpaceInst.getId());
+    for (SpaceInst subSpaceInstToCopy : subSpacesToCopy) {
+      subSpacePasteDetail.setFromSpaceId(subSpaceInstToCopy.getId());
       copyAndPasteSpace(subSpacePasteDetail);
     }
   }
 
   @Nullable
   private String pasteComponentsOfSpace(final PasteDetail pasteDetail, final String newSpaceId,
-      final SpaceInst newSpace, final List<ComponentInst> components)
+      final SpaceInst newSpace, final List<ComponentInst> componentsToCopy)
       throws AdminException, QuotaException {
     // verify space homepage
     String componentIdAsHomePage = null;
@@ -5577,7 +5579,7 @@ class DefaultAdministration implements Administration {
     PasteDetail componentPasteDetail = new PasteDetail(pasteDetail.getUserId());
     componentPasteDetail.setOptions(pasteDetail.getOptions());
     componentPasteDetail.setToSpaceId(newSpaceId);
-    for (ComponentInst component : components) {
+    for (ComponentInst component : componentsToCopy) {
       componentPasteDetail.setFromComponentId(component.getId());
       String componentId = copyAndPasteComponent(componentPasteDetail);
       // check if new component must be used as home page of new space
@@ -5609,20 +5611,19 @@ class DefaultAdministration implements Administration {
       final String toSpaceId) throws AdminException {
     SpaceInst newSpace = new SpaceInst(oldSpace);
     newSpace.setLocalId(-1);
-    List<String> newBrotherIds;
+    final List<String> brotherSpaceIds;
     if (StringUtil.isDefined(toSpaceId)) {
       SpaceInst destinationSpace = getSpaceInstById(toSpaceId);
       newSpace.setDomainFatherId(destinationSpace.getId());
-      List<SpaceInst> brothers = destinationSpace.getSubSpaces();
-      newBrotherIds = new ArrayList<>(brothers.size());
-      for (SpaceInst brother : brothers) {
-        newBrotherIds.add(brother.getId());
-      }
+      brotherSpaceIds = destinationSpace.getSubSpaces()
+          .stream()
+          .map(SpaceInst::getId)
+          .collect(toList());
     } else {
       newSpace.setDomainFatherId("-1");
-      newBrotherIds = Arrays.asList(getAllRootSpaceIds());
+      brotherSpaceIds = Arrays.asList(getAllRootSpaceIds());
     }
-    newSpace.setOrderNum(newBrotherIds.size());
+    newSpace.setOrderNum(brotherSpaceIds.size());
     newSpace.setCreationDate(new Date());
     newSpace.setCreatorUserId(pasteDetail.getUserId());
     String lang = oldSpace.getLanguage();
@@ -5632,11 +5633,11 @@ class DefaultAdministration implements Administration {
     newSpace.setLanguage(lang);
 
     // Rename if spaceName already used in the destination space
-    List<SpaceInstLight> subSpaces = new ArrayList<>();
-    for (String subSpaceId : newBrotherIds) {
-      subSpaces.add(getSpaceInstLight(getDriverSpaceId(subSpaceId)));
+    List<SpaceInstLight> brotherSpaces = new ArrayList<>();
+    for (String subSpaceId : brotherSpaceIds) {
+      brotherSpaces.add(getSpaceInstLight(getDriverSpaceId(subSpaceId)));
     }
-    String name = renameSpace(newSpace.getName(newSpace.getLanguage()), subSpaces);
+    String name = renameSpace(newSpace.getName(newSpace.getLanguage()), brotherSpaces);
     newSpace.setName(name);
 
     return newSpace;
