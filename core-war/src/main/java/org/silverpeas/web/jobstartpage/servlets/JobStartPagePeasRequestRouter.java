@@ -563,14 +563,16 @@ public class JobStartPagePeasRequestRouter extends
       }
     } else if (function.equals("RecoverSpaceRights")) {
       String spaceId = request.getParameter("Id");
+      String recoverDest = START_PAGE_INFO_FULL_DEST;
       if (StringUtil.isDefined(spaceId)) {
         jobStartPageSC.recoverSpaceRights(spaceId);
       } else {
         if (jobStartPageSC.isUserAdmin()) {
           jobStartPageSC.recoverSpaceRights(null);
+          recoverDest = getDestination(START_PAGE_INFO_DEST, jobStartPageSC, request);
         }
       }
-      destination = START_PAGE_INFO_FULL_DEST;
+      destination = recoverDest;
     } else if (function.equals("SpaceManager")) {
       String role = request.getParameter("Role");
       if (!StringUtil.isDefined(role)) {
@@ -724,7 +726,6 @@ public class JobStartPagePeasRequestRouter extends
         setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
 
         request.setAttribute(SPACE_EXTRA_INFOS_ATTR, jobStartPageSC.getManagedSpace());
-        request.setAttribute("NameProfile", jobStartPageSC.getSpaceProfileName(spaceint1));
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
 
         request.setAttribute(INHERITANCE_ATTR, JobStartPagePeasSettings.isInheritanceEnable);

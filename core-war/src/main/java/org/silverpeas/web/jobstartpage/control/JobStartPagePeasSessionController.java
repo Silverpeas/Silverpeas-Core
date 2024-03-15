@@ -639,18 +639,6 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   /**
    * ********************* Gestion des managers d'espaces ****************************************
    */
-  public String getSpaceProfileName(SpaceInst spaceint1) {
-    List<SpaceProfileInst> m_Profile = spaceint1.getAllSpaceProfilesInst();
-    int i = 0;
-    SpaceProfileInst m_SpaceProfileInst;
-    String name = "";
-    if (i < m_Profile.size()) {// only the first profile (manager)
-      m_SpaceProfileInst = m_Profile.get(i);
-      name = m_SpaceProfileInst.getLabel();
-    }
-    return name;
-  }
-
   public SpaceProfile getCurrentSpaceProfile(String role) throws AdminException {
     return getOrganisationController()
         .getSpaceProfile(getManagedSpaceId(), SilverpeasRole.fromString(role));

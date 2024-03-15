@@ -34,9 +34,7 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -101,7 +99,8 @@ public class AdminCache {
 
   public void removeSpaceInst(int spaceId) {
     if (useCache && useSpaceInstCache) {
-      spaceInstCache.remove(spaceId);
+      Optional.ofNullable(spaceInstCache.remove(spaceId))
+          .ifPresent(this::resetParentSpaceData);
     }
   }
 
@@ -362,27 +361,8 @@ public class AdminCache {
    */
   // ----- Spaces -----
   public void opAddSpace(final SpaceInst theSpace) {
-    if ((theSpace.getDomainFatherId() != null)
-        && (theSpace.getDomainFatherId().length() > 0)
-        && (!theSpace.getDomainFatherId().equals("0"))) { // This is a subSpace
-      // -> Reset the Parent
-      // space
-      Integer spaceId = getLocalSpaceId(theSpace.getDomainFatherId());
-      if (spaceId != null) {
-        Optional<SpaceInst> optionalFather = getSpaceInst(spaceId);
-        optionalFather.ifPresent(f -> {
-          final List<SpaceInst> subSpaces = new ArrayList<>(f.getSubSpaces());
-          // ensure distinct space registering
-          subSpaces.stream()
-              .filter(s -> s.getLocalId() == theSpace.getLocalId())
-              .findFirst()
-              .ifPresent(subSpaces::remove);
-          subSpaces.add(theSpace);
-          f.setSubSpaces(subSpaces);
-          resetManageableSpaceIds();
-        });
-      }
-    }
+    resetParentSpaceData(theSpace);
+    resetManageableSpaceIds();
   }
 
   public void opUpdateSpace(SpaceInst theSpace) {
@@ -390,31 +370,25 @@ public class AdminCache {
   }
 
   public void opRemoveSpace(final SpaceInst theSpace) {
-    if ((theSpace.getDomainFatherId() != null)
-        && (theSpace.getDomainFatherId().length() > 0)
-        && (!theSpace.getDomainFatherId().equals("0"))) { // This is a subSpace
-      // -> Reset the Parent
-      // space
-      Integer spaceId = getLocalSpaceId(theSpace.getDomainFatherId());
-      if (spaceId != null) {
-        Optional<SpaceInst> theFather = getSpaceInst(spaceId);
-        theFather.ifPresent(f -> {
-          final List<SpaceInst> subSpaces = new ArrayList<>(f.getSubSpaces());
-          subSpaces.stream()
-              .filter(s -> s.getLocalId() == theSpace.getLocalId())
-              .findFirst()
-              .ifPresent(subSpaces::remove);
-          f.setSubSpaces(subSpaces);
-        });
-      }
-    }
     opResetSpace(theSpace);
+  }
+
+  private void resetParentSpaceData(final SpaceInst theSpace) {
+    if ((theSpace.getDomainFatherId() != null)
+        && (!theSpace.getDomainFatherId().isEmpty())
+        && (!theSpace.getDomainFatherId().equals("0"))) {
+      // this is a subspace, resetting parent space data
+      Optional.ofNullable(getLocalSpaceId(theSpace.getDomainFatherId()))
+          .flatMap(this::getSpaceInst)
+          .ifPresent(SpaceInst::resetData);
+    }
   }
 
   private void opResetSpace(SpaceInst theSpace) {
     // First level cache reset : it's not the best but it's simple : remove all
     // structs from cache that includes the component and all the child's
     // structs
+    resetParentSpaceData(theSpace);
     removeSpaceComponentsInst(theSpace.getLocalId());
     removeSpaceInst(theSpace.getLocalId());
     resetProfileIds();
