@@ -106,17 +106,8 @@ public class SpaceInstManager {
     spaceInst.setInheritanceBlocked(spaceInstToCopy.isInheritanceBlocked());
     spaceInst.setLook(spaceInstToCopy.getLook());
 
-    // Create a copy of array of subspaces ids
-    final List<SpaceInst> subSpacesToCopy = spaceInstToCopy.getSubSpaces();
-    // Create a copy of components
-    final List<ComponentInst> componentInstToCopy = spaceInstToCopy.getAllComponentsInst()
-        .stream()
-        .map(i -> componentInstManager.copy(i))
-        .collect(Collectors.toList());
-    // Create a copy of space profiles
-    final List<SpaceProfileInst> spaceProfilesToCopy = spaceInstToCopy.getAllSpaceProfilesInst();
-    // Copy above data
-    spaceInst.setData(spaceProfilesToCopy, subSpacesToCopy, componentInstToCopy);
+    // Copy data
+    spaceInst.copyDataFrom(spaceInstToCopy);
 
     spaceInst.setLanguage(spaceInstToCopy.getLanguage());
 
@@ -160,8 +151,8 @@ public class SpaceInstManager {
       }
 
       // Create the SpaceProfile nodes
-      for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
-        spaceProfileInstManager.createSpaceProfileInst(spaceInst.getSpaceProfileInst(nI),
+      for (final SpaceProfileInst spaceProfileInst : spaceInst.getAllSpaceProfilesInst()) {
+        spaceProfileInstManager.createSpaceProfileInst(spaceProfileInst,
             spaceInst.getLocalId());
       }
     } catch (Exception e) {
@@ -217,19 +208,20 @@ public class SpaceInstManager {
     final int spaceInstLocalId = spaceInst.getLocalId();
     try {
       // Get the sub spaces
-      final List<SpaceInst> subSpaces = organizationSchema.space()
+      final List<String> subSpaceIds = organizationSchema.space()
           .getDirectSubSpaces(spaceInstLocalId)
           .stream()
           .map(this::spaceRow2SpaceInst)
+          .map(SpaceInst::getId)
           .collect(Collectors.toList());
       // Get the components
       final String[] asCompoIds = organizationSchema.instance().getAllComponentInstanceIdsInSpace(
           spaceInstLocalId);
-      final List<ComponentInst> components = new ArrayList<>(asCompoIds.length);
+      final List<String> componentIds = new ArrayList<>(asCompoIds.length);
       for (String componentId : asCompoIds) {
         ComponentInst componentInst = componentInstManager.getComponentInst(idAsInt(componentId));
         WAComponent.getByName(componentInst.getName())
-            .ifPresent(waComponent -> components.add(componentInst));
+            .ifPresent(waComponent -> componentIds.add(componentInst.getId()));
       }
       // Get the space profiles
       String[] asProfIds = organizationSchema.spaceUserRole().getAllSpaceUserRoleIdsOfSpace(
@@ -240,7 +232,7 @@ public class SpaceInstManager {
             spaceProfileInstManager.getSpaceProfileInst(profileId, false);
         spaceProfiles.add(spaceProfileInst);
       }
-      spaceInst.setData(spaceProfiles, subSpaces, components);
+      spaceInst.setData(spaceProfiles, subSpaceIds, componentIds);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting(SPACE, String.valueOf(spaceInstLocalId)), e);
     }
