@@ -33,11 +33,8 @@ import org.silverpeas.kernel.bundle.SettingBundle;
  */
 public class RegistrationSettings {
 
-  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
-  private static String SELF_AUTHENTICATION_ACTIVATION = "newRegistrationEnabled";
-  private static String SELF_AUTHENTICATION_DOMAINID = "justRegisteredDomainId";
-  private static long PURGE_PERIOD = 10;
   private static final RegistrationSettings instance = new RegistrationSettings();
 
   public static RegistrationSettings getSettings() {
@@ -52,7 +49,7 @@ public class RegistrationSettings {
    * @return true if a user can create an account in Silverpeas. False otherwise.
    */
   public boolean isUserSelfRegistrationEnabled() {
-    return settings.getBoolean(SELF_AUTHENTICATION_ACTIVATION, false);
+    return settings.getBoolean("newRegistrationEnabled", false);
   }
 
   /**
@@ -61,6 +58,15 @@ public class RegistrationSettings {
    * @return specified domain id. "0" otherwise.
    */
   public String userSelfRegistrationDomainId() {
-    return settings.getString(SELF_AUTHENTICATION_DOMAINID, "0");
+    return settings.getString("justRegisteredDomainId", "0");
+  }
+
+  /**
+   * Is the group synchronization enabled when new user registration is enabled.
+   * @return true if enabled, false otherwise.
+   */
+  public boolean isGroupSynchronizationEnabled() {
+    return isUserSelfRegistrationEnabled() &&
+        settings.getBoolean("registrationSynchroGroupEnabled", true);
   }
 }

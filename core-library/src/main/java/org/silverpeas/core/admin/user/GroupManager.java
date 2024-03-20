@@ -524,7 +524,9 @@ public class GroupManager {
     try (Connection connection = DBUtil.openConnection()) {
       // Get groups of domain from Silverpeas database
       final List<GroupDetail> groups = groupDao.getSynchronizedGroups(connection);
-      return setDirectUsersOfGroups(groups);
+      return setDirectUsersOfGroups(groups).stream()
+          .filter(GroupDetail::isSynchronized)
+          .collect(Collectors.toList());
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("synchronized groups", ""), e);
     }

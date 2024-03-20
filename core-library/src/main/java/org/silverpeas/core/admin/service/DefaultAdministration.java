@@ -38,6 +38,7 @@ import org.silverpeas.core.admin.domain.model.DomainCache;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainScheduler;
+import org.silverpeas.core.admin.domain.synchro.SynchroGroupManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupReport;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupScheduler;
 import org.silverpeas.core.admin.persistence.AdminPersistenceException;
@@ -156,7 +157,6 @@ class DefaultAdministration implements Administration {
 
   // Divers
   private final Object semaphore = new Object();
-  private final SynchroGroupScheduler groupSynchroScheduler = new SynchroGroupScheduler();
   private boolean delUsersOnDiffSynchro = true;
   private boolean shouldFallbackGroupNames = true;
   private boolean shouldFallbackUserLogins = false;
@@ -200,6 +200,8 @@ class DefaultAdministration implements Administration {
   private TreeCache treeCache;
   @Inject
   private GroupCache groupCache;
+  @Inject
+  private SynchroGroupManager synchroGroupManager;
 
   private void setup() {
     // Load silverpeas admin resources
@@ -274,19 +276,8 @@ class DefaultAdministration implements Administration {
     domainSynchroScheduler.initialize(domainSynchroCron, synchroDomainIds);
 
     // init synchronization of groups
-    List<GroupDetail> groups = null;
-    try {
-      groups = getSynchronizedGroups();
-    } catch (AdminException e) {
-      SilverLogger.getLogger(this).error(e);
-    }
-    if (groups != null) {
-      List<String> synchronizedGroupIds = groups.stream()
-          .filter(GroupDetail::isSynchronized)
-          .map(GroupDetail::getId)
-          .collect(toList());
-      groupSynchroScheduler.initialize(groupSynchroCron, synchronizedGroupIds);
-    }
+    synchroGroupManager.resetContext();
+    new SynchroGroupScheduler().initialize(groupSynchroCron);
   }
 
   private void addSpaceInTreeCache(SpaceInstLight space, boolean addSpaceToSuperSpace)
@@ -2143,7 +2134,7 @@ class DefaultAdministration implements Administration {
     try {
       final String groupId = groupManager.addGroup(group, onlyInSilverpeas, true);
       group.setId(groupId);
-      groupSynchroScheduler.updateContextWith(group);
+      synchroGroupManager.updateContextWith(group);
       cache.opAddGroup(group);
       return groupId;
     } catch (AdminException e) {
@@ -2161,7 +2152,7 @@ class DefaultAdministration implements Administration {
     }
     try {
       final List<GroupDetail> restoredGroups = groupManager.restoreGroup(group, true);
-      restoredGroups.forEach(groupSynchroScheduler::updateContextWith);
+      restoredGroups.forEach(synchroGroupManager::updateContextWith);
       if (!restoredGroups.isEmpty()) {
         cache.resetCache();
       }
@@ -2181,7 +2172,7 @@ class DefaultAdministration implements Administration {
       final List<GroupDetail> removedGroups = groupManager.removeGroup(group, true);
       // Removing the removed groups from caches
       removedGroups.forEach(g -> {
-        groupSynchroScheduler.removeFromContext(g);
+        synchroGroupManager.removeFromContext(g);
         cache.opRemoveGroup(g);
       });
       return removedGroups;
@@ -2214,7 +2205,7 @@ class DefaultAdministration implements Administration {
       final List<GroupDetail> deletedGroups = groupManager.deleteGroup(group, onlyInSilverpeas);
       // Removing the deleted groups from caches
       deletedGroups.forEach(g -> {
-        groupSynchroScheduler.removeFromContext(g);
+        synchroGroupManager.removeFromContext(g);
         cache.opRemoveGroup(g);
       });
       return deletedGroups;
@@ -2236,7 +2227,7 @@ class DefaultAdministration implements Administration {
   public String updateGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException {
     try {
       String groupId = groupManager.updateGroup(group, onlyInSilverpeas);
-      groupSynchroScheduler.updateContextWith(group);
+      synchroGroupManager.updateContextWith(group);
       cache.resetOnUpdateGroup();
       return groupId;
     } catch (Exception e) {
@@ -4946,7 +4937,7 @@ class DefaultAdministration implements Administration {
     try {
       final List<GroupDetail> removedGroups = groupManager.removeGroup(silverpeasGroup, false);
       removedGroups.forEach(g -> {
-        groupSynchroScheduler.removeFromContext(g);
+        synchroGroupManager.removeFromContext(g);
         cache.opRemoveGroup(g);
         context.getRemovedGroups().put(g.getId(), g);
         context.appendToReport(
