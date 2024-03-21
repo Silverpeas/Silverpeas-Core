@@ -78,7 +78,8 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   @Override
   public boolean isUserAuthorized(String userId, SimpleDocument object,
       final AccessControlContext context) {
-    getComponentExtension(object.getInstanceId()).beforeComputingAuthorizations(context);
+    getComponentExtension(object.getInstanceId()).beforeComputingAuthorizations(userId, object,
+        context);
     Set<SilverpeasRole> componentUserRoles = null;
     boolean componentAccessAuthorized = false;
 

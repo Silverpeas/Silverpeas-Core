@@ -24,12 +24,13 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Base;
 import org.silverpeas.kernel.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.kernel.util.Mutable;
-import org.silverpeas.core.util.ServiceProvider;
 
 import javax.enterprise.util.AnnotationLiteral;
 
@@ -105,5 +106,6 @@ public interface ComponentInstanceSimpleDocumentAccessControlExtension {
     return accessControlExtension.get();
   }
 
-  void beforeComputingAuthorizations(final AccessControlContext context);
+  void beforeComputingAuthorizations(final String userId, final SimpleDocument simpleDocument,
+      final AccessControlContext context);
 }

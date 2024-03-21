@@ -19,27 +19,35 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.security.authorization;
+package org.silverpeas.web.usercalendar.security.authorization;
 
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.kernel.annotation.Base;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.DefaultInstanceSimpleDocumentAccessControlExtension;
 
-import javax.inject.Singleton;
+import javax.inject.Named;
+import java.util.function.Supplier;
+
+import static org.silverpeas.core.calendar.CalendarEvent.getById;
+import static org.silverpeas.web.usercalendar.security.authorization.UserCalendarInstanceAccessControlExtension.CALENDAR_EVENT_INSTANCE_SUPPLIER;
 
 /**
  * @author silveryocha
  */
-@Base
-@Singleton
-public class DefaultInstanceSimpleDocumentAccessControlExtension
-    implements ComponentInstanceSimpleDocumentAccessControlExtension {
+@Named
+@Service
+public class UserCalendarInstanceSimpleDocumentAccessControlExtension
+    extends DefaultInstanceSimpleDocumentAccessControlExtension {
 
   @Override
   public void beforeComputingAuthorizations(final String userId,
       final SimpleDocument simpleDocument, final AccessControlContext context) {
-    // nothing to do by default
+    final Supplier<CalendarEvent> supplier = () -> getById(simpleDocument.getForeignId());
+    context.put(CALENDAR_EVENT_INSTANCE_SUPPLIER, supplier);
   }
 }
