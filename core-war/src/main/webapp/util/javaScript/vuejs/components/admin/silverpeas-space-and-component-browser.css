@@ -1,0 +1,228 @@
+/*
+ * Copyright (C) 2000 - 2024 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+.space-and-component-browser {
+  --couleur-checkbox: #1a73e8;
+}
+
+.space-and-component-browser .breadcrumb {
+  display: inline-flex;
+  background-color: #EEE;
+  border-bottom: 1px solid #DDD;
+  padding: 1em;
+  width: calc(100% - 2em)
+}
+
+/* In popin Situation */
+.silverpeas-popin .space-and-component-browser {
+  min-width: 700px;
+}
+
+.silverpeas-popin .space-and-component-browser .breadcrumb {
+  background-color: #FFF;
+}
+
+/* End in popin Situation */
+
+.space-and-component-browser .breadcrumb a {
+  color: #1c94d4;
+  text-decoration: underline;
+}
+
+.space-and-component-browser .breadcrumb .separator:before {
+  content: '>';
+  padding: 0 2px 0 2px;
+}
+
+.space-and-component-browser .breadcrumb a:first-child {
+  text-indent: -300em;
+  background: transparent url(../../../../../util/icons/Home.gif) 0 -1px no-repeat;
+  display: inline-block;
+  width: 22px;
+  height: 15px;
+}
+
+.space-and-component-browser .breadcrumb a:last-child {
+  color: inherit;
+  text-decoration: none;
+}
+
+.space-and-component-browser .breadcrumb a.component {
+  background: transparent var(--breadcrumb-component-icon) 0 0 no-repeat;
+  background-size: auto 16px;
+  padding-left: 24px;
+  line-height: min(16px);
+  display: inline-block;
+}
+
+.space-and-component-browser .browser {
+  display: flex;
+  flex-direction: row;
+}
+
+.space-and-component-browser .browser > div {
+  padding: 0;
+  margin: 1em 1em 1em 0 !important;
+  min-width: 14em;
+  border: 1px solid #DDD;
+  height: 300px;
+  overflow: auto;
+  overflow-x: hidden;
+  background: #FFF;
+}
+
+.space-and-component-browser .browser:has(div:nth-child(1)) > div {
+  flex-basis: calc(100% - 1em - 2px);
+}
+
+.space-and-component-browser .browser:has(div:nth-child(2)) > div {
+  flex-basis: calc(50% - 1em - 2px);
+}
+
+.space-and-component-browser .browser:has(div:nth-child(3)) > div {
+  flex-basis: calc(33.3% - 1em - 2px);
+}
+
+.space-and-component-browser .browser:has(#treeview) > div:nth-child(1) {
+  flex-basis: calc(25% - 1em - 2px);
+}
+
+.space-and-component-browser .browser:has(#treeview) > div:nth-child(2) {
+  flex-basis: calc(25% - 1em - 2px);
+}
+
+.space-and-component-browser .browser:has(#treeview) > div:nth-child(3) {
+  flex-basis: calc(50% - 1em - 2px);
+}
+
+.space-and-component-browser .browser > div h4 {
+  display: block;
+  text-align: center;
+  border-bottom: 1px solid #DDD;
+  font-weight: bold;
+  padding: 1em 0;
+  margin: 0;
+}
+
+.space-and-component-browser .browser > div ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.space-and-component-browser .browser > div ul li {
+  padding: 1em;
+  line-height: 100%;
+  background: #EFEFEF;
+  border-bottom: 1px solid #DDD;
+  position: relative;
+}
+
+.space-and-component-browser .browser > div ul li .goto span,
+.space-and-component-browser .browser > div ul li span.label {
+  display: inline-block;
+  width: calc(100% - 2em);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: min(16px);
+}
+
+.space-and-component-browser .browser > div ul li:hover {
+  background: #EDEDED;
+}
+
+.space-and-component-browser .browser > div ul li.walkable {
+  cursor: pointer;
+}
+
+.space-and-component-browser .browser > div ul li.walkable:has(.goto):hover {
+  background-image: url(../../../../../admin/jsp/icons/silverpeasV5/extend.gif);
+  background-position: 2px calc(50%);
+  background-repeat: no-repeat;
+}
+
+.space-and-component-browser .browser > div ul li a {
+  display: block;
+}
+
+.space-and-component-browser .browser > div ul li a.goto.children {
+  background: transparent url(../../../../../util/icons/treeview/plus.gif) 0 50% no-repeat;
+  padding-left: 24px;
+  line-height: min(16px);
+}
+
+.space-and-component-browser .browser > div ul li a.select {
+  position: absolute;
+  top: calc(50% - 8px);
+  right: 1em;
+}
+
+.space-and-component-browser .browser > div ul li a.select:before {
+  content: ' ';
+  border: 1px solid #CCC;
+  background-color: #FFF;
+  border-radius: 3px;
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.space-and-component-browser .browser > div ul li a.select:hover:before {
+  border: 1px solid var(--couleur-checkbox);
+}
+
+.space-and-component-browser .browser > div ul li.selected a.select:before {
+  border: 1px solid var(--couleur-checkbox);
+  background-color: var(--couleur-checkbox);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='m9.55 18l-5.7-5.7l1.425-1.425L9.55 15.15l9.175-9.175L20.15 7.4z'/%3E%3C/svg%3E");
+}
+
+.space-and-component-browser .browser > div ul li.selected {
+  background-color: #FFF;
+}
+
+.space-and-component-browser .browser > div ul li.selectable {
+  padding-right: calc(16px + 2em);
+}
+
+.space-and-component-browser .browser > div ul li.selectable:has(.select:hover) {
+  background-color: #DDD;
+}
+
+.space-and-component-browser .browser > div ul li a.select span {
+  display: none;
+}
+
+.space-and-component-browser .components ul li a.goto:has(span),
+.space-and-component-browser .components ul li span.label {
+  background-image: var(--browser-component-icon);
+  background-position: 0 50%;
+  background-repeat: no-repeat;
+  background-size: auto 16px;
+  padding-left: 24px;
+  line-height: min(16px);
+  display: inline-block;
+  width: 100%;
+}

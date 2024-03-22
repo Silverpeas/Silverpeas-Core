@@ -53,13 +53,21 @@ public interface SupportedWebPlugin {
      */
     public static final SupportedWebPlugin JQUERY = () -> "JQUERY";
     /**
-     * Silverpeas admin services (AdminSpaceService and AdminComponentInstanceService).
+     * Silverpeas admin space homepage management plugin.
      */
     public static final SupportedWebPlugin ADMIN_SPACE_HOMEPAGE = () -> "ADMINSPACEHOMEPAGE";
     /**
      * Silverpeas admin services (AdminSpaceService and AdminComponentInstanceService).
      */
     public static final SupportedWebPlugin ADMINSERVICES = () -> "ADMINSERVICES";
+    /**
+     * Silverpeas plugin to browse spaces and components.
+     */
+    public static final SupportedWebPlugin SPACE_AND_COMPONENT_BROWSER = () -> "SPACEANDCOMPONENTBROWSER";
+    /**
+     * Silverpeas plugin to select spaces and components.
+     */
+    public static final SupportedWebPlugin SPACE_AND_COMPONENT_SELECTOR = () -> "SPACEANDCOMPONENTSELECTOR";
     /**
      * Silverpeas plugin to play videos and sounds.
      */
