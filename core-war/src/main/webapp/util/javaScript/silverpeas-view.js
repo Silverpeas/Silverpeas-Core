@@ -246,7 +246,7 @@
     // Size
     if (isDefaultView)  {
       view.height = (height < 480) ? 480 : height;
-      view.width = (width < 680) ? 680 : width;
+      view.width = (width < 700) ? 700 : width;
     } else {
       view.height = height;
       view.width = width;

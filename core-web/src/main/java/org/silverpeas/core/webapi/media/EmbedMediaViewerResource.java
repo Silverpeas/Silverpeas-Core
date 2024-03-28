@@ -50,6 +50,7 @@ import java.nio.file.Paths;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
+import static org.silverpeas.core.viewer.model.ViewerSettings.pdfViewerEditionToolsEnabled;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.viewer.ResourceViewProvider.getAuthorizedResourceView;
 
@@ -204,6 +205,7 @@ public class EmbedMediaViewerResource extends RESTWebService {
 
   private void setCommonRequestViewerAttributes(final ResourceView resource) {
     getHttpServletRequest().setAttribute("downloadEnabled", resource.isDownloadableBy(getUser()));
+    getHttpServletRequest().setAttribute("editionToolsEnabled", pdfViewerEditionToolsEnabled());
     getHttpServletRequest().setAttribute("userLanguage", getUserPreferences().getLanguage());
   }
 

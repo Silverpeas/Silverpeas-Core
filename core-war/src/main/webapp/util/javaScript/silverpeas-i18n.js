@@ -29,24 +29,24 @@
   }
 
   window.SilverpeasPluginBundle = function(bundle) {
-    var translations = bundle ? bundle : {};
+    const translations = bundle ? bundle : {};
     if (!translations.__aggregator && __silverpeasAggregatedBundle) {
       __silverpeasAggregatedBundle.mergeTranslations(translations);
     }
     this.getAsTextProperties = function() {
-      var text = '';
-      for(var key in translations) {
+      let text = '';
+      for(let key in translations) {
         text = text + key + '=' + translations[key] + '\n';
       }
       return text;
     };
     this.get = function() {
-      var key = arguments[0];
-      var translation = translations[key];
+      const key = arguments[0];
+      let translation = translations[key];
 
-      var paramIndex = 0;
-      for (var i = 1; i < arguments.length; i++) {
-        var params = arguments[i];
+      let paramIndex = 0;
+      for (let i = 1; i < arguments.length; i++) {
+        const params = arguments[i];
         if (params && typeof params === 'object' && params.length) {
           params.forEach(function(param) {
             translation =
@@ -58,6 +58,13 @@
         }
       }
       return translation.replace(/[{][0-9]+[}]/g, '');
+    };
+    this.keys = function() {
+      const keys = [];
+      for(let key in translations) {
+        keys.push(key);
+      }
+      return keys;
     };
   };
 
@@ -81,7 +88,7 @@
       if (typeof bundle === 'string') {
         bundle = {bundle : bundle};
       }
-      var options = extendsObject({
+      const options = extendsObject({
         webContext : window.webContext,
         bundle : undefined,
         withGeneral : false,
@@ -93,11 +100,11 @@
         if (!options.webContext) {
           return;
         }
-        var explodedBundle = options.bundle.split('.');
-        var lastIndex = explodedBundle.length - 1;
-        var bundleName = explodedBundle[lastIndex];
+        const explodedBundle = options.bundle.split('.');
+        const lastIndex = explodedBundle.length - 1;
+        const bundleName = explodedBundle[lastIndex];
         explodedBundle.splice(lastIndex, 1);
-        var bundlePath = explodedBundle.join("/");
+        let bundlePath = explodedBundle.join("/");
         if (!options.withGeneral) {
           bundlePath = 'just/' + bundlePath;
         }
@@ -119,11 +126,11 @@
      * @returns {*}
      */
     get : function() {
-      var __isDefined = function(key, value) {
+      const __isDefined = function(key, value) {
         return value && value !== '[' + key + ']';
       };
-      var bundleKey = arguments[0];
-      var bundleValue = undefined;
+      const bundleKey = arguments[0];
+      let bundleValue = undefined;
       try {
         bundleValue = __silverpeasAggregatedBundle.get.apply(__silverpeasAggregatedBundle, arguments);
         if (__isDefined(bundleKey, bundleValue)) {
@@ -133,7 +140,7 @@
       }
       bundleValue = window.i18n.prop(bundleKey);
       if (!__isDefined(bundleKey, bundleValue)) {
-        var topValue = top.window.i18n.prop(bundleKey);
+        const topValue = top.window.i18n.prop(bundleKey);
         if (__isDefined(bundleKey, topValue)) {
           bundleValue = topValue;
         }
@@ -142,7 +149,7 @@
         bundleValue = window.opener.window.sp.i18n.get.apply(this, arguments);
       }
       if (__isDefined(bundleKey, bundleValue)) {
-        var __translationToMerge = {};
+        const __translationToMerge = {};
         __translationToMerge[bundleKey] = bundleValue;
         __silverpeasAggregatedBundle.mergeTranslations(__translationToMerge);
         return __silverpeasAggregatedBundle.get.apply(__silverpeasAggregatedBundle, arguments);
@@ -152,10 +159,10 @@
   };
 
   var __silverpeasAggregatedBundle = new function() {
-    var __translations = {__aggregator : true};
-    var __bundle = new SilverpeasPluginBundle();
+    const __translations = {__aggregator : true};
+    let __bundle = new SilverpeasPluginBundle();
     this.mergeTranslations = function(translations) {
-      for (var key in translations) {
+      for (let key in translations) {
         __translations[key] = translations[key];
       }
       __bundle = new SilverpeasPluginBundle(__translations);

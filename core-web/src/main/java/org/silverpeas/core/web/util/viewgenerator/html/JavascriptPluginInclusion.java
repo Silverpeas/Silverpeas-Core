@@ -56,6 +56,7 @@ import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
 
 import java.text.MessageFormat;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
@@ -222,11 +223,23 @@ public class JavascriptPluginInclusion {
   private JavascriptPluginInclusion() {
   }
 
+  public static Element module(String src) {
+    return script(src, s -> s.setType("module"));
+  }
+
   public static Element script(String src) {
+    return script(src, null);
+  }
+
+  public static Element script(String src, Consumer<script> consumer) {
     String key = "$jsPlugin$script$" + src;
     if (getThreadCacheAccessor().getCache().get(key) == null) {
       getThreadCacheAccessor().getCache().put(key, true);
-      return new script().setType(JAVASCRIPT_TYPE).setSrc(normalizeWebResourceUrl(src));
+      var script = new script().setType(JAVASCRIPT_TYPE).setSrc(normalizeWebResourceUrl(src));
+      if (consumer != null) {
+        consumer.accept(script);
+      }
+      return script;
     } else {
       return new ElementContainer();
     }
@@ -332,26 +345,35 @@ public class JavascriptPluginInclusion {
    * @return the representation of the print css.
    */
   public static Element print(String href) {
-    final Element link = link(href);
-    if (link instanceof link) {
-      ((link) link).setMedia("print");
-    }
-    return link;
+    return link(href, l -> l.setMedia("print"));
   }
 
   /**
    * Centralization of link instantiation.
    *
-   * @param href the URL of the css source.
    * @return the representation of the css.
    */
   public static Element link(String href) {
+    return link(href, null);
+  }
+
+  /**
+   * Centralization of link instantiation.
+   *
+   * @return the representation of the css.
+   */
+  public static Element link(String href, Consumer<link> consumer) {
     String key = "$jsPlugin$css$" + href;
     SimpleCache cache = getThreadCacheAccessor().getCache();
     if (cache.get(key) == null) {
       cache.put(key, true);
-      return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
+      final link link = new link().setType(STYLESHEET_TYPE)
+          .setRel(STYLESHEET_REL)
           .setHref(normalizeWebResourceUrl(href));
+      if (consumer != null) {
+        consumer.accept(link);
+      }
+      return link;
     } else {
       return new ElementContainer();
     }
@@ -701,20 +723,22 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includePdfViewer(final ElementContainer xhtml) {
-    xhtml.addElement(new link()
-        .setHref(getApplicationURL() + "/services/bundles/org/silverpeas/viewer/multilang" +
-            "/viewerBundle?withoutGeneral=true")
-        .setRel("prefetch")
-        .setType("application/l10n"));
+    xhtml.addElement(link(PDF_VIEWER_BASE + "/locale/locale.json", l -> l.setType("application/l10n")));
+    final LocalizationBundle bundle = ResourceLocator.getLocalizationBundle("org.silverpeas.viewer.multilang.viewerBundle", "fr");
+    xhtml.addElement(scriptContent(bundleVariableName("PdfViewerBundle")
+        .add(bundle, bundle.specificKeySet().toArray(new String[0]))
+        .produce()));
     xhtml.addElement(scriptContent(settingVariableName("PdfViewerSettings")
         .add("p.i.p", PDF_VIEWER_BASE + "/images/")
-        .add("p.w.f", PDF_VIEWER_BASE + "/core/pdf.worker.min.js")
+        .add("p.w.s", PDF_VIEWER_BASE + "/core/pdf.worker.min.js")
+        .add("p.s.b.s", PDF_VIEWER_BASE + "/core/pdf.sandbox.min.js")
         .add("p.c.p", PDF_VIEWER_BASE + "/cmaps/")
         .produce()));
     xhtml.addElement(link(PDF_VIEWER_BASE + "/viewer.min.css"));
-    xhtml.addElement(link(PDF_VIEWER_BASE + "/sp-viewer.min.css"));
-    xhtml.addElement(script(PDF_VIEWER_BASE + "/core/pdf.min.js"));
-    xhtml.addElement(script(PDF_VIEWER_BASE + "/viewer.min.js"));
+    xhtml.addElement(link(PDF_VIEWER_BASE + "/sp-viewer.css"));
+    xhtml.addElement(link(PDF_VIEWER_BASE + "/sp-viewer-addon.css"));
+    xhtml.addElement(module(PDF_VIEWER_BASE + "/core/pdf.min.js"));
+    xhtml.addElement(module(PDF_VIEWER_BASE + "/viewer.min.js"));
     return xhtml;
   }
 

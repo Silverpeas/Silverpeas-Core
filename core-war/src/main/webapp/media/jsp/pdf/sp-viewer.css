@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2000 - 2024 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+body {
+  --sp-viewer-bg-color: #ccc;
+  --sp-viewer-dark-bg-color: #777;
+  --sp-toolbar-start-bg-color: #6db344;
+  --sp-toolbar-end-bg-color: #89c659;
+  --main-color: rgb(255, 255, 255);
+  --scrollbar-color: auto;
+  --scrollbar-bg-color: auto;
+  --field-color: var(--main-color);
+  --field-bg-color: rgba(0, 0, 0, 0);
+  --dropdown-btn-bg-color: var(--field-bg-color);
+  --toolbar-box-shadow: 0 1px 0 var(--sp-toolbar-start-bg-color);
+  --toolbar-icon-opacity: 1;
+  --toolbar-icon-bg-color: rgb(255, 255, 255);
+  --toolbar-icon-hover-bg-color: var(--toolbar-icon-bg-color);
+  --button-hover-color: rgb(0, 0, 0, 0.2);
+}
+
+.dropdownToolbarButton:hover {
+  background-color: transparent;
+}
+
+#toolbarViewer {
+  background: linear-gradient(to top, var(--sp-toolbar-start-bg-color), var(--sp-toolbar-start-bg-color), var(--sp-toolbar-end-bg-color));
+}
+
+#viewerContainer,
+#thumbnailView {
+  background-color: var(--sp-viewer-bg-color);
+}
+
+#sidebarContent,
+#toolbarSidebar,
+#toolbarContainer, .findbar, .secondaryToolbar, #secondaryToolbarButtonContainer {
+  background-color: var(--sp-viewer-dark-bg-color);
+}
+
+.secondaryToolbar {
+  padding: 0;
+}
+
+.verticalToolbarSeparator,
+.horizontalToolbarSeparator.spreadModeButtons {
+  display: none;
+}

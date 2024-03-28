@@ -59,10 +59,18 @@ public class ViewerSettings {
 
   /**
    * indicates if pdf viewer is enabled.
-   * @return a string, empty if no licence key.
+   * @return a boolean, true if enabled false otherwise
    */
   public static boolean pdfViewerEnabled() {
     return settings.getBoolean("pdf.viewer.enabled", true);
+  }
+
+  /**
+   * indicates if edition tools of pdf viewer are enabled.
+   * @return a boolean, true if enabled false otherwise
+   */
+  public static boolean pdfViewerEditionToolsEnabled() {
+    return settings.getBoolean("pdf.viewer.tool.edition.enabled", false);
   }
 
   /**

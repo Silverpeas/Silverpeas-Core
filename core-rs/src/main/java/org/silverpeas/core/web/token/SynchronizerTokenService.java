@@ -65,7 +65,7 @@ public class SynchronizerTokenService {
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
   private static final String UNPROTECTED_URI_RULE =
-      "(?i)(?!.*(/qaptcha|rpdcsearch/|rclipboard/|rselectionpeaswrapper/|rusernotification/|services/usernotifications/|blockingNews|services/password/)).*";
+      "(?i)(?!.*(/icons/|/images/|/qaptcha|rpdcsearch/|rclipboard/|rselectionpeaswrapper/|rusernotification/|services/usernotifications/|blockingNews|services/password/)).*";
   private static final String DEFAULT_GET_RULE_KEYWORDS = "(delete|update|creat|save|block)";
   private static final String DEFAULT_GET_RULE_ON_KEYWORD =
       "(?i)^.*" + DEFAULT_GET_RULE_KEYWORDS + ".*$";
