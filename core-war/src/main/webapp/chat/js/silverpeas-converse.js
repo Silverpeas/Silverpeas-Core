@@ -86,7 +86,7 @@
                   newAttrs.forEach(function(t) {
                     newData[t] = vCard[t];
                   });
-                  contact.save(newData).then(function() {
+                  return contact.save(newData).then(function() {
                     sp.log.info('model update success', _curJid);
                     return vCard;
                   }, function() {

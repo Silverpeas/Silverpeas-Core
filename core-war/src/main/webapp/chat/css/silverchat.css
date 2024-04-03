@@ -620,6 +620,10 @@ Converse.js
   display: none;
 }
 
+#conversejs .chat-msg__actions .chat-msg__action-quote {
+  display: none;
+}
+
 #conversejs .controlbox-section .show-profile {
   pointer-events: none;
 }
