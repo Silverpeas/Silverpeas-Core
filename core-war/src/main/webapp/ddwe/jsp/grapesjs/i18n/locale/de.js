@@ -1,34 +1,11 @@
-/*
- * Copyright (C) 2000 - 2024 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+const traitInputAttr = { placeholder: 'z.B. Text hier' }
 
-const traitInputAttr = { placeholder: 'Text einfügen' };
 const gI18n = {
   assetManager: {
     addButton: 'Bild hinzufügen',
-    inputPlh: 'http://chemin/vers/image.jpg',
+    inputPlh: 'https://path/to/the/image.jpg',
     modalTitle: 'Bild auswählen',
-    uploadTitle: 'Ziehen Sie eine Datei hierher oder klicken Sie auf Upload'
+    uploadTitle: 'Dateien hier ablegen oder zum Hochladen anklicken'
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -51,12 +28,12 @@ const gI18n = {
       label: 'Label',
       link: 'Link',
       map: 'Karte',
-      tfoot: 'Tabellen Fußzeile',
-      tbody: 'Tabellen Inhalt',
-      thead: 'Tabellen Kopf',
+      tfoot: 'Tabellenfuß',
+      tbody: 'Tabellenkörßer',
+      thead: 'Tabellenkopf',
       table: 'Tabelle',
-      row: 'Zeile',
-      cell: 'Zelle'
+      row: 'Tabellenzeile',
+      cell: 'Tabellenzelle'
     }
   },
   deviceManager: {
@@ -64,8 +41,8 @@ const gI18n = {
     devices: {
       desktop: 'Desktop',
       tablet: 'Tablet',
-      mobileLandscape: 'Mobile Landscape',
-      mobilePortrait: 'Mobile Portrait'
+      mobileLandscape: 'Mobile horizontal',
+      mobilePortrait: 'Mobile vertikal'
     }
   },
   panels: {
@@ -73,12 +50,12 @@ const gI18n = {
       titles: {
         preview: 'Vorschau',
         fullscreen: 'Vollbild',
-        'sw-visibility': 'Komponente anzeigen',
-        'export-template': 'Endgültigen HTML-Code anzeigen',
-        'open-sm': 'Stil Manager öffnen',
-        'open-tm': 'Parameter',
-        'open-layers': 'Layer Manager öffnen',
-        'open-blocks': 'Block öffnen'
+        'sw-visibility': 'Komponenten anzeigen',
+        'export-template': 'Code anzeigen',
+        'open-sm': 'Style Manager öffnen',
+        'open-tm': 'Einstellungen',
+        'open-layers': 'Ebenen öffnen',
+        'open-blocks': 'Blöcke öffnen'
       }
     }
   },
@@ -93,9 +70,8 @@ const gI18n = {
     }
   },
   styleManager: {
-    empty:
-      "Wählen Sie ein Element aus bevor Sie den Stil Manager nutzen",
-    layer: 'Ebene',
+    empty: 'Wählen Sie ein Element aus, bevor Sie den Style Manager verwenden',
+    layer: 'Ebenen',
     fileButton: 'Bilder',
     sectors: {
       general: 'Allgemein',
@@ -104,11 +80,11 @@ const gI18n = {
       decorations: 'Dekorationen',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Dimension'
+      dimension: 'Größen'
     },
     // The core library generates the name by their `property` name
     properties: {
-      'float' : 'Ausrichtung',
+      'float': 'Ausrichtung',
       display: 'Anzeige',
       position: 'Position',
       top: 'Oben',
@@ -124,6 +100,21 @@ const gI18n = {
       'margin-right': 'Äußerer Abstand rechts',
       'margin-left': 'Äußerer Abstand links',
       'margin-bottom': 'Äußerer Abstand unten',
+      'margin-top-sub': 'Oben',
+      'margin-right-sub': 'Rechts',
+      'margin-bottom-sub': 'Unten',
+      'margin-left-sub': 'Links',
+      'padding-top-sub': 'Oben',
+      'padding-right-sub': 'Rechts',
+      'padding-bottom-sub': 'Unten',
+      'padding-left-sub': 'Links',
+      'border-width-sub': 'Breite',
+      'border-style-sub': 'Stil',
+      'border-color-sub': 'Rarbe',
+      'border-top-left-radius-sub': 'Oben links',
+      'border-top-right-radius-sub': 'Oben rechts',
+      'border-bottom-right-radius-sub': 'Unten rechts',
+      'border-bottom-left-radius-sub': 'Unten links',
       padding: 'Innerer Abstand',
       'padding-top': 'Innerer Abstand oben',
       'padding-left': 'Innerer Abstand links',
@@ -137,10 +128,10 @@ const gI18n = {
       'line-height': 'Zeilenhöhe',
       'text-align': 'Textausrichtung',
       'text-shadow': 'Textschatten',
-      'text-shadow-h': 'Textschatten: horizontal',
-      'text-shadow-v': 'Textschatten: vertikal',
-      'text-shadow-blur': 'Textschatten: unschärfe',
-      'text-shadow-color': 'Textschatten: Farbe',
+      'text-shadow-h': 'X',
+      'text-shadow-v': 'Y',
+      'text-shadow-blur': 'Unschärfe',
+      'text-shadow-color': 'Farbe',
       'border-top-left': 'Rand oben links',
       'border-top-right': 'Rand oben rechts',
       'border-bottom-left': 'Rand unten links',
@@ -155,12 +146,12 @@ const gI18n = {
       'border-style': 'Randstil',
       'border-color': 'Randfarbe',
       'box-shadow': 'Boxschatten',
-      'box-shadow-h': 'Boxschatten: horizontal',
-      'box-shadow-v': 'Boxschatten: vertikal',
-      'box-shadow-blur': 'Boxschatten: Unschärfe',
-      'box-shadow-spread': "Boxschatten: Streuung",
-      'box-shadow-color': "Boxschatten: Farbe",
-      'box-shadow-type': "Boxschatten: Typ",
+      'box-shadow-h': 'X',
+      'box-shadow-v': 'Y',
+      'box-shadow-blur': 'Unschärge',
+      'box-shadow-spread': 'Verteilung',
+      'box-shadow-color': 'Farbe',
+      'box-shadow-type': 'Typ',
       background: 'Hintergrund',
       'background-image': 'Hintergrundbild',
       'background-repeat': 'Hintergrund wiederholen',
@@ -168,18 +159,26 @@ const gI18n = {
       'background-attachment': 'Hintergrundanhang',
       'background-size': 'Hintergrundgröße',
       'background-color': 'Hintergrundfarbe',
+      'background-image-sub': 'Bild',
+      'background-repeat-sub': 'Wiederholung',
+      'background-position-sub': 'Position',
+      'background-attachment-sub': 'Anhang',
+      'background-size-sub': 'Größe',
       transition: 'Übergang',
       'transition-property': 'Übergang: Typ',
       'transition-duration': 'Übergang: Dauer',
       'transition-timing-function': 'Übergang: Zeitfunktion',
+      'transition-property-sub': 'Eigenschaft',
+      'transition-duration-sub': 'Dauer',
+      'transition-timing-function-sub': 'Zeit',
       perspective: 'Perspektive',
       transform: 'Transformation',
-      'transform-rotate-x': 'Transformation: Rotation x',
-      'transform-rotate-y': 'Transformation: Rotation y',
-      'transform-rotate-z': 'Transformation: Rotation z',
-      'transform-scale-x': 'Transformation: Skalierung x',
-      'transform-scale-y': 'Transformation: Skalierung y',
-      'transform-scale-z': 'Transformation: Skalierung z',
+      'transform-rotate-x': 'Rotation X',
+      'transform-rotate-y': 'Rotation Y',
+      'transform-rotate-z': 'Rotation Z',
+      'transform-scale-x': 'Skalierung X',
+      'transform-scale-y': 'Skalierung Y',
+      'transform-scale-z': 'Skalierung Z',
       'flex-direction': 'Flex Ausrichtung',
       'flex-wrap': 'Flex Wrap',
       'justify-content': 'Vertikale Ausrichtung',
@@ -193,9 +192,8 @@ const gI18n = {
     }
   },
   traitManager: {
-    empty:
-      "Wählen Sie ein Element aus bevor Sie den Komponenten Manager nutzen",
-    label: 'Komponenteneinstellungen',
+    empty: 'Wählen Sie ein Element aus, bevor Sie den Eigenschaftsmanager verwenden',
+    label: 'Komponenten Eigenschaften',
     traits: {
       // The core library generates the name by their `name` property
       labels: {
@@ -220,12 +218,15 @@ const gI18n = {
       }
     }
   },
+  storageManager: {
+    recover: 'Möchten Sie ungespeicherte Änderungen wiederherstellen?'
+  },
   richTextEditor : {
     actions : {
       bold : 'Fett (Strg+B)',
       italic : 'Kursiv (Strg+I)',
       underline : 'Unterstrichen (Strg+U)',
-      strikethrough : 'Durchgestrichen'
-    }
-  }
+      strikethrough : 'Durchgestrichen',
+    },
+  },
 };

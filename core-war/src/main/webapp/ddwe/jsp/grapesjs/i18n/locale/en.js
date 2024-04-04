@@ -1,34 +1,11 @@
-/*
- * Copyright (C) 2000 - 2024 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 const traitInputAttr = { placeholder: 'eg. Text here' };
+
 const gI18n = {
   assetManager: {
     addButton: 'Add image',
-    inputPlh: 'http://path/to/the/image.jpg',
+    inputPlh: 'https://path/to/the/image.jpg',
     modalTitle: 'Select Image',
-    uploadTitle: 'Drop files here or click to upload'
+    uploadTitle: 'Drop files here or click to upload',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -38,7 +15,7 @@ const gI18n = {
     },
     categories: {
       // 'category-id': 'Category Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -56,8 +33,8 @@ const gI18n = {
       thead: 'Table head',
       table: 'Table',
       row: 'Table row',
-      cell: 'Table cell'
-    }
+      cell: 'Table cell',
+    },
   },
   deviceManager: {
     device: 'Device',
@@ -65,8 +42,8 @@ const gI18n = {
       desktop: 'Desktop',
       tablet: 'Tablet',
       mobileLandscape: 'Mobile Landscape',
-      mobilePortrait: 'Mobile Portrait'
-    }
+      mobilePortrait: 'Mobile Portrait',
+    },
   },
   panels: {
     buttons: {
@@ -74,13 +51,13 @@ const gI18n = {
         preview: 'Preview',
         fullscreen: 'Fullscreen',
         'sw-visibility': 'View components',
-        'export-template': 'View final HTML code',
+        'export-template': 'View code',
         'open-sm': 'Open Style Manager',
         'open-tm': 'Settings',
         'open-layers': 'Open Layer Manager',
-        'open-blocks': 'Open Blocks'
-      }
-    }
+        'open-blocks': 'Open Blocks',
+      },
+    },
   },
   selectorManager: {
     label: 'Classes',
@@ -89,8 +66,8 @@ const gI18n = {
     states: {
       hover: 'Hover',
       active: 'Click',
-      'nth-of-type(2n)': 'Even/Odd'
-    }
+      'nth-of-type(2n)': 'Even/Odd',
+    },
   },
   styleManager: {
     empty: 'Select an element before using Style Manager',
@@ -103,16 +80,65 @@ const gI18n = {
       decorations: 'Decorations',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Dimension'
+      dimension: 'Dimension',
     },
-    // The core library generates the name by their `property` name
+    // Default names for sub properties in Composite and Stack types.
+    // Other labels are generated directly from their property names (eg. 'font-size' will be 'Font size').
     properties: {
-      // float: 'Float',
-    }
+      'text-shadow-h': 'X',
+      'text-shadow-v': 'Y',
+      'text-shadow-blur': 'Blur',
+      'text-shadow-color': 'Color',
+      'box-shadow-h': 'X',
+      'box-shadow-v': 'Y',
+      'box-shadow-blur': 'Blur',
+      'box-shadow-spread': 'Spread',
+      'box-shadow-color': 'Color',
+      'box-shadow-type': 'Type',
+      'margin-top-sub': 'Top',
+      'margin-right-sub': 'Right',
+      'margin-bottom-sub': 'Bottom',
+      'margin-left-sub': 'Left',
+      'padding-top-sub': 'Top',
+      'padding-right-sub': 'Right',
+      'padding-bottom-sub': 'Bottom',
+      'padding-left-sub': 'Left',
+      'border-width-sub': 'Width',
+      'border-style-sub': 'Style',
+      'border-color-sub': 'Color',
+      'border-top-left-radius-sub': 'Top Left',
+      'border-top-right-radius-sub': 'Top Right',
+      'border-bottom-right-radius-sub': 'Bottom Right',
+      'border-bottom-left-radius-sub': 'Bottom Left',
+      'transform-rotate-x': 'Rotate X',
+      'transform-rotate-y': 'Rotate Y',
+      'transform-rotate-z': 'Rotate Z',
+      'transform-scale-x': 'Scale X',
+      'transform-scale-y': 'Scale Y',
+      'transform-scale-z': 'Scale Z',
+      'transition-property-sub': 'Property',
+      'transition-duration-sub': 'Duration',
+      'transition-timing-function-sub': 'Timing',
+      'background-image-sub': 'Image',
+      'background-repeat-sub': 'Repeat',
+      'background-position-sub': 'Position',
+      'background-attachment-sub': 'Attachment',
+      'background-size-sub': 'Size',
+    },
+    // Translate options in style properties
+    // options: {
+    //   float: { // Id of the property
+    //     ...
+    //     left: 'Left', // {option id}: {Option label}
+    //   }
+    // }
   },
   traitManager: {
     empty: 'Select an element before using Trait Manager',
     label: 'Component settings',
+    categories: {
+      // categoryId: 'Category label',
+    },
     traits: {
       // The core library generates the name by their `name` property
       labels: {
@@ -126,23 +152,26 @@ const gI18n = {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'eg. https://google.com' }
+        href: { placeholder: 'eg. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           'false': 'This window',
-          _blank: 'New window'
-        }
-      }
-    }
+          _blank: 'New window',
+        },
+      },
+    },
+  },
+  storageManager: {
+    recover: 'Do you want to recover unsaved changes?',
   },
   richTextEditor : {
     actions : {
       bold : 'Bold (Ctrl+B)',
       italic : 'Italic (Ctrl+I)',
       underline : 'Underline (Ctrl+U)',
-      strikethrough : 'Strike-through'
-    }
-  }
+      strikethrough : 'Strike-through',
+    },
+  },
 };
