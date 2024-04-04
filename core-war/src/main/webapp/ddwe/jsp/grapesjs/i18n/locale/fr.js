@@ -1,34 +1,11 @@
-/*
- * Copyright (C) 2000 - 2024 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 const traitInputAttr = { placeholder: 'ex. Votre texte ici' };
+
 const gI18n = {
   assetManager: {
     addButton: 'Ajouter image',
-    inputPlh: 'http://chemin/vers/image.jpg',
+    inputPlh: 'https://chemin/vers/image.jpg',
     modalTitle: 'Sélectionner une image',
-    uploadTitle: 'Déposez des fichiers ici ou cliquez pour envoyer des fichiers'
+    uploadTitle: 'Déposez des fichiers ici ou cliquez pour envoyer des fichiers',
   },
   blockManager: {
     labels: {
@@ -36,7 +13,7 @@ const gI18n = {
     },
     categories: {
       // 'category-id': 'Identifiant de la catégorie',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -54,8 +31,8 @@ const gI18n = {
       thead: 'En-tête de tableau',
       table: 'Tableau',
       row: 'Ligne tableau',
-      cell: 'Cellule tableau'
-    }
+      cell: 'Cellule tableau',
+    },
   },
   deviceManager: {
     device: 'Appareil',
@@ -63,8 +40,8 @@ const gI18n = {
       desktop: 'Ordinateur de bureau',
       tablet: 'Tablette',
       mobileLandscape: 'Mobile format paysage',
-      mobilePortrait: 'Mobile format portrait'
-    }
+      mobilePortrait: 'Mobile format portrait',
+    },
   },
   panels: {
     buttons: {
@@ -72,14 +49,13 @@ const gI18n = {
         preview: 'Prévisualisation',
         fullscreen: 'Plein écran',
         'sw-visibility': 'Voir les composants',
-        'export-template': 'Voir le code HTML final',
+        'export-template': 'Voir le code',
         'open-sm': 'Ouvrir le gestionnaire de style',
         'open-tm': 'Paramètres',
         'open-layers': 'Ouvrir le gestionnaire de calques',
         'open-blocks': 'Ouvrir le gestionnaire de blocs',
-        'trash': 'Tout supprimer'
-      }
-    }
+      },
+    },
   },
   selectorManager: {
     label: 'Classes',
@@ -88,12 +64,11 @@ const gI18n = {
     states: {
       hover: 'Survol',
       active: 'Clic',
-      'nth-of-type(2n)': 'Paire/Impaire'
-    }
+      'nth-of-type(2n)': 'Paire/Impaire',
+    },
   },
   styleManager: {
-    empty:
-      "Veuillez sélectionner un élément avant d'utiliser le gestionnaire de style",
+    empty: "Veuillez sélectionner un élément avant d'utiliser le gestionnaire de style",
     layer: 'Calque',
     fileButton: 'Images',
     sectors: {
@@ -103,7 +78,7 @@ const gI18n = {
       decorations: 'Décorations',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Dimension'
+      dimension: 'Dimension',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -188,12 +163,11 @@ const gI18n = {
       'flex-basis': 'Base Flex',
       'flex-grow': 'Flex grow',
       'flex-shrink': 'Flex shrink',
-      'align-self': 'Aligner'
-    }
+      'align-self': 'Aligner',
+    },
   },
   traitManager: {
-    empty:
-      'Veuillez sélectionner un élément pour modifier les paramètres de cet élément',
+    empty: 'Veuillez sélectionner un élément pour modifier les paramètres de cet élément',
     label: 'Paramètres composant',
     traits: {
       // The core library generates the name by their `name` property
@@ -201,30 +175,33 @@ const gI18n = {
         id: 'Identifiant',
         alt: 'Texte alternatif',
         title: 'Titre',
-        href: 'Source lien'
+        href: 'Source lien',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'eg. https://google.com' }
+        href: { placeholder: 'eg. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           'false': 'Cette fenêtre',
-          _blank: 'Nouvelle fenêtre'
-        }
-      }
-    }
+          _blank: 'Nouvelle fenêtre',
+        },
+      },
+    },
+  },
+  storageManager: {
+    recover: 'Voulez-vous restaurer les modifications non sauvegardées ?',
   },
   richTextEditor : {
     actions : {
       bold : 'Gras (Ctrl+B)',
       italic : 'Italique (Ctrl+I)',
       underline : 'Souligné (Ctrl+U)',
-      strikethrough : 'Barré'
-    }
-  }
+      strikethrough : 'Barré',
+    },
+  },
 };
