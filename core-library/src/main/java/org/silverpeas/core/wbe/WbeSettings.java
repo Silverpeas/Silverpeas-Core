@@ -38,11 +38,11 @@ public class WbeSettings {
   }
 
   /**
-   * Indicates if Web Browser Edition is enabled.
+   * Indicates if the administration of Web Browser Edition is enabled.
    * @return true if enabled, false otherwise.
    */
-  public static boolean isEnabled() {
-    return getSettings().getBoolean("wbe.enabled", false);
+  public static boolean isAdminEnabled() {
+    return getSettings().getBoolean("wbe.admin.enabled", false);
   }
 
   /**

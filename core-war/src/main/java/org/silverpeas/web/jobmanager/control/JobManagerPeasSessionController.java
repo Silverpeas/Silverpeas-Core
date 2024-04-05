@@ -256,7 +256,7 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
       if (jobManagerSettings.isPortletDeployerVisible()) {
         setServicesWithIds(ids, portletDeployer);
       }
-      if (WbeSettings.isEnabled()) {
+      if (WbeSettings.isAdminEnabled()) {
         setServicesWithIds(ids, wbe);
       }
       if (DocumentTemplateSettings.isEnabled()) {
