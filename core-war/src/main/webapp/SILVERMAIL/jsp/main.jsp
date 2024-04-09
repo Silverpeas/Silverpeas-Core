@@ -136,8 +136,8 @@
           "SILVERMAIL_UserNotificationDeleted");
       spUserNotification.addEventListener('userNotificationReceived', _handleCheckboxesAndReloadList,
           "SILVERMAIL_UserNotificationReceived");
-      spUserNotification.addEventListener('userNotificationCleared', _reloadList,
-          "SILVERMAIL_UserNotificationCleared");
+      spUserNotification.addEventListener('userNotificationCleaned', _reloadList,
+          "SILVERMAIL_userNotificationCleaned");
     });
   </script>
 </view:sp-head-part>

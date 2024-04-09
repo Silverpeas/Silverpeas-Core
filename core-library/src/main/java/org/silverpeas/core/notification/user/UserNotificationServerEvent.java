@@ -96,7 +96,7 @@ public class UserNotificationServerEvent extends CommonServerEvent {
             .put(IS_CLEAR_ATTR_NAME, false)));
   }
 
-  public static UserNotificationServerEvent clear(final String emitterUserId) {
+  public static UserNotificationServerEvent clean(final String emitterUserId) {
     return new UserNotificationServerEvent(emitterUserId).withData(JSONCodec.encodeObject(
         jsonObject -> jsonObject
             .put(NB_UNREAD_ATTR_NAME, getNbUnreadFor(emitterUserId))

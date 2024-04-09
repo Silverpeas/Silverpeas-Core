@@ -24,14 +24,7 @@
 
 package org.silverpeas.core.webapi.notification.sse;
 
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.web.token.SilverpeasWebTokenService;
-
-import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-
-import static java.util.Optional.ofNullable;
-import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**
  * @author silveryocha
@@ -40,10 +33,7 @@ import static org.silverpeas.core.security.session.SessionManagementProvider.get
 public class CommonServerEventWebSocket extends SilverpeasServerEventWebSocket {
 
   @Override
-  protected SessionInfo getSessionInfo(final Session session) {
-    return ofNullable(session.getPathParameters().get("token"))
-        .flatMap(SilverpeasWebTokenService.get()::consumeIdentifierBy)
-        .map(getSessionManagement()::getSessionInfo)
-        .orElse(SessionInfo.NoneSession);
+  protected String getTokenParameterName() {
+    return "token";
   }
 }

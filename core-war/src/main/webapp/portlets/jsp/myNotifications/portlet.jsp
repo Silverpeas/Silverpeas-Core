@@ -66,8 +66,8 @@
         "SILVERMAIL_portlet_UserNotificationDeleted");
     spUserNotification.addEventListener('userNotificationReceived', _reloadList,
         "SILVERMAIL_portlet_UserNotificationReceived");
-    spUserNotification.addEventListener('userNotificationCleared', _reloadList,
-        "SILVERMAIL_portlet_UserNotificationCleared");
+    spUserNotification.addEventListener('userNotificationCleaned', _reloadList,
+        "SILVERMAIL_portlet_userNotificationCleaned");
   });
 </script>
 <div id="silvermail-portlet-list">

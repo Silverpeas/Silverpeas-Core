@@ -234,7 +234,7 @@ public class SILVERMAILPersistence {
     });
 
     if (nbDeleted > 0) {
-      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clean(currentUserId));
     }
   }
 
@@ -242,7 +242,7 @@ public class SILVERMAILPersistence {
     long nbUpdated = Transaction.performInOne(() -> getRepository()
         .markAsReadAllMessagesByUserIdAndFolderId(currentUserId, "0"));
     if (nbUpdated > 0) {
-      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clean(currentUserId));
     }
   }
 
@@ -254,7 +254,7 @@ public class SILVERMAILPersistence {
     });
 
     if (nbDeleted > 0) {
-      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clean(currentUserId));
     }
   }
 
@@ -262,7 +262,7 @@ public class SILVERMAILPersistence {
     long nbUpdated = Transaction.performInOne(() -> getRepository()
         .markAsReadMessagesByUserIdAndByIds(currentUserId, ids));
     if (nbUpdated > 0) {
-      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clean(currentUserId));
     }
   }
 

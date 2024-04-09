@@ -59,7 +59,7 @@ Silverpeas plugin which handles the behaviour about the user notification.
   var USER_NOTIFICATION_RECEIVED_EVENT_NAME = "userNotificationReceived";
   var USER_NOTIFICATION_READ_EVENT_NAME = "userNotificationRead";
   var USER_NOTIFICATION_DELETED_EVENT_NAME = "userNotificationDeleted";
-  var USER_NOTIFICATION_CLEARED_EVENT_NAME = "userNotificationCleared";
+  var USER_NOTIFICATION_CLEANED_EVENT_NAME = "userNotificationCleaned";
 
   var NB_UNREAD_USER_NOTIFICATIONS_AT_INIT = $window.UserNotificationSettings.get("un.nbu.i");
   var USER_NOTIFICATION_URL = $window.UserNotificationSettings.get("un.v.u");
@@ -100,7 +100,7 @@ Silverpeas plugin which handles the behaviour about the user notification.
       __changeNbNewUserNotification(userNotification);
     };
     this.clear = function(userNotification) {
-      userNotificationApi.dispatchEvent(USER_NOTIFICATION_CLEARED_EVENT_NAME);
+      userNotificationApi.dispatchEvent(USER_NOTIFICATION_CLEANED_EVENT_NAME);
       __changeNbNewUserNotification(userNotification);
     };
   };

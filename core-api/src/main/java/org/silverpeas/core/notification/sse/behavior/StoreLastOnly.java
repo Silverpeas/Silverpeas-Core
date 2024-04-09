@@ -40,6 +40,6 @@ public interface StoreLastOnly extends ServerEvent {
    */
   default String getStoreDiscriminator() {
     final String subType = subType();
-    return subType.length() == 0 ? getName().asString() : (getName().asString() + "|" + subType);
+    return subType.isEmpty() ? getName().asString() : (getName().asString() + "|" + subType);
   }
 }

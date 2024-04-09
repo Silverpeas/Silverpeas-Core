@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.SilverpeasWebSocketContext;
 import org.silverpeas.core.notification.sse.SseLogger;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.web.token.SilverpeasWebTokenService;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -39,9 +40,11 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static java.text.MessageFormat.format;
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unregisterBySessionId;
 import static org.silverpeas.core.notification.sse.SilverpeasWebSocketContext.wrap;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getWebSocketSendTimeout;
+import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**
  * This abstraction defines the behavior the Servlets in charge of responding to EventSource
@@ -56,66 +59,83 @@ public abstract class SilverpeasServerEventWebSocket
   private static final String LAST_EVENT_ID_PARAM = "Last-Event-ID";
 
   /**
+   * Gets the name of the parameter representing the token generated for current authenticated
+   * user and passed in the URI of the WebSocket endpoint.
+   * <p>
+   *   For example:
+   *   With the {@code @ServerEndpoint("/ws/{token}/sse/common")} declaration, "token" MUST be
+   *   returned by this method.
+   * </p>
+   * @return a string representing the parameter name for the token.
+   */
+  protected abstract String getTokenParameterName();
+
+  /**
    * This method is called one time only, when {@link #onOpen(Session)} is executed.
-   * @param session a WebSocket session instance.
+   * @param wsSession a WebSocket session instance.
    * @return a {@link SessionInfo} instance.
    */
-  protected abstract SessionInfo getSessionInfo(final Session session);
+  protected SessionInfo getSessionInfo(final Session wsSession) {
+    return ofNullable(wsSession.getPathParameters().get(getTokenParameterName()))
+        .flatMap(SilverpeasWebTokenService.get()::consumeIdentifierBy)
+        .map(getSessionManagement()::getSessionInfo)
+        .orElse(SessionInfo.NoneSession);
+  }
 
   @OnOpen
-  public void onOpen(final Session session) throws IOException {
+  public void onOpen(final Session wsSession) throws IOException {
     final SilverLogger silverLogger = SseLogger.get();
-    final String requestURI = session.getRequestURI().toString();
-    final String sessionId = session.getId();
-    final SessionInfo spSessionInfo = getSessionInfo(session);
+    final String requestURI = wsSession.getRequestURI().toString();
+    final String wsSessionId = wsSession.getId();
+    final SessionInfo spSessionInfo = getSessionInfo(wsSession);
     if (!spSessionInfo.isDefined() || spSessionInfo.isAnonymous()) {
       silverLogger.debug(
           "Asking for SSE websocket communication from an unhandled session (sessionId={0}) on URI {1}",
-          sessionId, requestURI);
-      session.close();
+          wsSessionId, requestURI);
+      wsSession.close();
       return;
     }
-    session.getAsyncRemote().setSendTimeout(getWebSocketSendTimeout());
+    wsSession.getAsyncRemote().setSendTimeout(getWebSocketSendTimeout());
     final User sessionUser = spSessionInfo.getUser();
     final String userSessionId = spSessionInfo.getSessionId();
     silverLogger.debug("Asking for SSE websocket communication (sessionUser={0}) on URI {1} (SessionId={2})",
         sessionUser.getId(), requestURI, userSessionId);
     // Preparing initial response
-    final Long lastServerEventId = session.getRequestParameterMap()
+    final Long lastServerEventId = wsSession.getRequestParameterMap()
         .getOrDefault(LAST_EVENT_ID_PARAM, Collections.emptyList())
         .stream()
         .filter(StringUtil::isLong)
         .map(Long::parseLong)
         .findFirst()
         .orElse(null);
-    final WebAccessContext wac = new WebAccessContext(requestURI, sessionId, userSessionId, sessionUser);
+    final WebAccessContext wac = new WebAccessContext(requestURI, wsSessionId, userSessionId, sessionUser);
     prepareEventsOnOpening(wac, lastServerEventId);
     // Send initial events
-    final SilverpeasWebSocketContext websocketContext = wrap(session, userSessionId, sessionUser);
+    final SilverpeasWebSocketContext websocketContext = wrap(wsSession, userSessionId, sessionUser);
     try {
       send(wac, websocketContext);
       silverLogger.debug("{0} SSE websockets currently opened (from session opening)",
-          session.getOpenSessions().size());
+          wsSession.getOpenSessions().size());
     } catch (IOException | IllegalStateException e) {
       SilverLogger.getLogger(this).error(e);
     }
   }
 
   @OnClose
-  public void onClose(Session session) {
+  public void onClose(Session wsSession) {
     final SilverLogger silverLogger = SseLogger.get();
-    unregisterBySessionId(session.getId());
+    unregisterBySessionId(wsSession.getId());
     silverLogger.debug("{0} SSE websockets currently opened (from session closing)",
-        session.getOpenSessions().size() - 1);
+        wsSession.getOpenSessions().size() - 1);
   }
 
   @OnError
-  public void onError(Session session, Throwable throwable) {
-    SseLogger.get().warn(format("Error {1} with session {0} ", session.getId(), throwable));
+  public void onError(Session wsSession, Throwable throwable) {
+    SseLogger.get().warn(format("Error {1} with session {0} ", wsSession.getId(), throwable));
   }
 
   @OnMessage
-  public void onMessage(Session session, String message) {
-    SseLogger.get().warn(format("Message {1} received with session {0} ", session.getId(), message));
+  public void onMessage(Session wsSession, String message) {
+    SseLogger.get().warn(format("Message {1} received with session {0} ", wsSession.getId(), message));
   }
 }

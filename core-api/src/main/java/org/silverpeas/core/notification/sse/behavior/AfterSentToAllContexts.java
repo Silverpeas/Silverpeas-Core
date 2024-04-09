@@ -25,15 +25,22 @@
 package org.silverpeas.core.notification.sse.behavior;
 
 import org.silverpeas.core.notification.sse.ServerEvent;
+import org.silverpeas.core.notification.sse.SilverpeasAsyncContext;
 
 /**
  * Implements this interface in order to get "an after sent to all context" behavior.
+ * When it is needed to perform a treatment after the {@link ServerEvent} has been sent to all
+ * registered {@link SilverpeasAsyncContext}, the server event implementation MUST implement this
+ * interface.
+ * <p>
+ *   After the send, {@link #afterAllContexts()} method is invoked.
+ * </p>
  * @author silveryocha
  */
 public interface AfterSentToAllContexts extends ServerEvent {
 
   /**
-   * Called just after the send to all context process.
+   * Called just after the sending to all context process.
    */
   default void afterAllContexts() {
   }
