@@ -24,8 +24,8 @@
 
 /**
  * It is a javascript plugin built upon the JQuery plugin FullCalendar.
- * Its aim is to wraps the JQuery plugin used to display a calendar. It also predefine the look&feel
- * as well to extends it with some additional features.
+ * Its aim is to wraps the JQuery plugin used to display a calendar. It also predefines the
+ * look&feel as well to extends it with some additional features.
  */
 (function($window, $) {
 
@@ -74,23 +74,27 @@
    * The Silverpeas calendar plugin accepts as parameter an object representing the calendar to
    * render and that is defined by the following attributes:
    * {
-   *   view: a value among 'yearly', 'monthly', 'weekly' (by default the view is set at 'monthly'),
+   *   view: a value among 'yearly', 'monthly', 'weekly' (by default the view is set at
+   *   'monthly'); it defines the time windows.
    *   weekends: a boolean indicating whether the week-ends has to be displayed (by default false),
    *   firstDayOfWeek: a number indicating the first day of weeks: 1 for sunday, 2 for monday, ...
-   *     (by default set at monday),
-   *   currentDate: the date that indicates the time window to render in the calendar according to
-   * its view rule (usualy the first day in the time window): for a weekly view, the time window is
-   * the week in which the date is, for a monthly view, the time window is the month in which the
-   * date is, and so on. events: either an URI at which the events can be fetched or an array of
-   * events, all ordered by date. onday: a function that will invoked when an emtpy day in the
-   * calendar view is clicked and with as parameter the clicked date in the format
-   * "yyyy-MM-dd'T'HH:mm", onevent: a function that will invoked when an event is clicked in the
-   * calendar view and with as parameters the clicked event (the object that is passed by the
-   * function mapped with the events attribute)
+   *   (by default set at monday).
+   *   currentDate: the current date in the time window; it defines the frame of the time
+   *   window to render in the calendar according to the view rule (usually the first day in the
+   *   time window):
+   *   - for a weekly view the time window is the week within which the date is included,
+   *   - for a monthly view the time window is the month within which the date is included,
+   *   - and so on.
+   *   events: either an URI at which the events can be fetched or an array of events, all ordered
+   *   by date.
+   *   onday: a function that will be invoked when an empty day in the calendar view is clicked and
+   *   with as parameter the clicked date in the format "yyyy-MM-dd'T'HH:mm".
+   *   onevent: a function that will be invoked when an event is clicked in the calendar view and
+   *   with as parameters the clicked event (the object that is passed by the function mapped with
+   *   the events attribute)
    * }
    * By default the onday and onevent attributes aren't defined. They are taken into account only
-   * in the yearly, monthly and weekly views. Theses callbacks must accept one parameter: a date in
-   * international format "yyyy-MM-dd'T'HH:mm"
+   * in the yearly, monthly and weekly views.
    */
   $.fn.calendar = function(calendar) {
     if (!this.length || !calendar) {
