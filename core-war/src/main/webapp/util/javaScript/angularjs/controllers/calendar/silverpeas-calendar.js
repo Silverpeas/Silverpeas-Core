@@ -104,6 +104,13 @@
             }
             return visibleCalendars;
           };
+          $scope.getNonSynchronizedCalendars = function(calendars) {
+            let nonSyncCalendars = synchronizedFilter(calendars, false);
+            if (nonSyncCalendars && !nonSyncCalendars.length) {
+              nonSyncCalendars = defaultFilter(calendars, true);
+            }
+            return nonSyncCalendars;
+          };
 
           /*
           OCCURRENCE MANAGEMENT
@@ -119,7 +126,14 @@
 
           $scope.loadOccurrenceFromContext = function(editionMode) {
             $scope.loadCalendarsFromContext().then(function(calendars) {
-              $scope.calendars = $scope.getVisibleCalendars(calendars);
+              const nonSynchronizedCalendars = $scope.getNonSynchronizedCalendars(calendars);
+              let potentialCalendars = $scope.getVisibleCalendars(nonSynchronizedCalendars);
+              if (potentialCalendars && !potentialCalendars.length) {
+                // no visible non synchronized calendars: we take then into account all the non sync
+                // calendars
+                potentialCalendars = nonSynchronizedCalendars;
+              }
+              $scope.calendars = potentialCalendars;
               return $scope.reloadEventOccurrence(context.occurrenceUri, editionMode).then(
                   function(reloadedOccurrence) {
                     if (!reloadedOccurrence.uri && context.occurrenceStartDate) {
