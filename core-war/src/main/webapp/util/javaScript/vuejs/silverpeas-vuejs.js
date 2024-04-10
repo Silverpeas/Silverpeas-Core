@@ -255,23 +255,19 @@ window.SpVue = new function() {
   });
 
   const __focusEl = function(el) {
-    setTimeout(function() {
-      sp.element.focus(el);
-    }, 0);
+    sp.element.focus(el);
   }
 
   const __focusSilverpeasInput = function(el) {
-    setTimeout(function() {
-      const potentials = [];
-      ['input', 'textarea', 'select'].forEach(function(i) {
-        const $i = el.querySelector(i);
-        if ($i) {
-          potentials.push($i);
-        }
-      });
-      potentials.push(el);
-      sp.element.focus(potentials[0]);
-    }, 0);
+    const potentials = [];
+    ['input', 'textarea', 'select'].forEach(function(i) {
+      const $i = el.querySelector(i);
+      if ($i) {
+        potentials.push($i);
+      }
+    });
+    potentials.push(el);
+    sp.element.focus(potentials[0]);
   }
 
   /**
@@ -279,11 +275,13 @@ window.SpVue = new function() {
    */
   SpVue.directive('sp-focus', {
     mounted : function(el) {
-      if (el.classList.contains('silverpeas-input')) {
-        __focusSilverpeasInput(el);
-      } else {
-        __focusEl(el);
-      }
+      setTimeout(function() {
+        if (el.classList.contains('silverpeas-input')) {
+          __focusSilverpeasInput(el);
+        } else {
+          __focusEl(el);
+        }
+      }, 0);
     }
   });
 
