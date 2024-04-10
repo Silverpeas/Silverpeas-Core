@@ -133,6 +133,10 @@
   width: 228px;
 }
 
+.basket-element-list .fast-fade-leave-to {
+  display: none;
+}
+
 .basket-element-list .event-period span:first-child::before {
   content: ' ';
   width: 16px;
