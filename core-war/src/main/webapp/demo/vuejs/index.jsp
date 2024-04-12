@@ -40,6 +40,7 @@
   <li><a href="inputs/index.jsp">Simple form inputs</a></li>
   <li><a href="lists/index.jsp">Lists</a></li>
   <li><a href="popins/index.jsp">Mary Popins</a></li>
+  <li><a href="dynamic-components/index.jsp">Dynamic components</a></li>
 </ul>
 </body>
 </html>
