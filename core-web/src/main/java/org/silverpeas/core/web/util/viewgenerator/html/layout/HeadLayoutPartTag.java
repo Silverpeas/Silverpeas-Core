@@ -54,6 +54,7 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
   private boolean minimalSilverpeasScriptEnv;
   private boolean noLookAndFeel;
   private boolean lookContextManagerCallbackOnly;
+  private boolean noLookContextManagerCallback;
   private boolean withFieldsetStyle;
   private boolean withCheckFormScript;
 
@@ -81,6 +82,10 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
     this.lookContextManagerCallbackOnly = lookContextManagerCallbackOnly;
   }
 
+  public void setNoLookContextManagerCallback(final boolean noLookContextManagerCallback) {
+    this.noLookContextManagerCallback = noLookContextManagerCallback;
+  }
+
   public void setWithCheckFormScript(final boolean withCheckFormScript) {
     this.withCheckFormScript = withCheckFormScript;
   }
@@ -95,6 +100,7 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
     minimalSilverpeasScriptEnv = false;
     noLookAndFeel = false;
     lookContextManagerCallbackOnly = false;
+    noLookContextManagerCallback = false;
     withFieldsetStyle = false;
     withCheckFormScript = false;
   }
@@ -142,6 +148,7 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
         lookAndFeel.setWithCheckFormScript(withCheckFormScript);
         lookAndFeel.setWithFieldsetStyle(withFieldsetStyle);
       }
+      lookAndFeel.setNoLookContextManagerCallback(noLookContextManagerCallback);
       head.addElement(lookAndFeel.getContent());
     }
   }

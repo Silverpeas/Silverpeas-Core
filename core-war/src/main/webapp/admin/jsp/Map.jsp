@@ -57,7 +57,7 @@
   String title = message.getString("MyMap");
 %>
 <view:sp-page>
-<view:sp-head-part title="<%=title%>">
+<view:sp-head-part title="<%=title%>" noLookContextManagerCallback="true">
   <script type="text/javascript">
     function openClipboard() {
       sp.navRequest('${silfn:applicationURL()}<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp')

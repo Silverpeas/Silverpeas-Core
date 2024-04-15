@@ -33,17 +33,23 @@ import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.link;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.script;
 import static org.silverpeas.core.web.util.viewgenerator.html.WebCommonLookAndFeel.LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR;
+import static org.silverpeas.core.web.util.viewgenerator.html.WebCommonLookAndFeel.NO_LOOK_CONTEXT_MANAGER_CALLBACK_ATTR;
 
 public class LookAndStyleTag extends TagSupport {
 
   private static final long serialVersionUID = 1L;
 
   private boolean lookContextManagerCallbackOnly;
+  private boolean noLookContextManagerCallback;
   private boolean withFieldsetStyle;
   private boolean withCheckFormScript;
 
   public void setLookContextManagerCallbackOnly(final boolean lookContextManagerCallbackOnly) {
     this.lookContextManagerCallbackOnly = lookContextManagerCallbackOnly;
+  }
+
+  public void setNoLookContextManagerCallback(final boolean noLookContextManagerCallback) {
+    this.noLookContextManagerCallback = noLookContextManagerCallback;
   }
 
   public void setWithFieldsetStyle(final boolean withFieldsetStyle) {
@@ -64,6 +70,7 @@ public class LookAndStyleTag extends TagSupport {
     final ElementContainer elements = new ElementContainer();
     final HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
     request.setAttribute(LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR, lookContextManagerCallbackOnly);
+    request.setAttribute(NO_LOOK_CONTEXT_MANAGER_CALLBACK_ATTR, noLookContextManagerCallback);
     elements.addElement(WebCommonLookAndFeel.getInstance().getCommonHeader(request));
     if (withFieldsetStyle) {
       elements.addElement(link(getApplicationURL() + "/util/styleSheets/fieldset.css"));

@@ -62,6 +62,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 class WebCommonLookAndFeel {
 
   public static final String LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR = "lookContextManagerCallbackOnly";
+  public static final String NO_LOOK_CONTEXT_MANAGER_CALLBACK_ATTR = "noLookContextManagerCallback";
 
   private static final String SILVERPEAS_JS = "silverpeas.js";
   private static final String STANDARD_CSS = "/util/styleSheets/silverpeas-main.css";
@@ -109,7 +110,8 @@ class WebCommonLookAndFeel {
       spaceId = gef.getSpaceIdOfCurrentRequest();
       componentId = gef.getComponentIdOfCurrentRequest();
     }
-    if (request.getAttributeAsBoolean(LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR)) {
+    if (request.getAttributeAsBoolean(LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR) &&
+        !request.getAttributeAsBoolean(NO_LOOK_CONTEXT_MANAGER_CALLBACK_ATTR)) {
       // cas of simple look context management
       return Optional.of(generateSpWindowLookContextUpdate(controller, getLookSettings(controller, spaceId), spaceId, componentId))
           .filter(StringUtil::isDefined)
@@ -208,9 +210,11 @@ class WebCommonLookAndFeel {
 
     code.append(includeLayout(new ElementContainer(),
         LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
-    Optional.of(generateSpWindowLookContextUpdate(controller, lookSettings, spaceId, componentId))
-        .filter(StringUtil::isDefined)
-        .ifPresent(c -> code.append(scriptContent(c)));
+    if (!request.getAttributeAsBoolean(NO_LOOK_CONTEXT_MANAGER_CALLBACK_ATTR)) {
+      Optional.of(generateSpWindowLookContextUpdate(controller, lookSettings, spaceId, componentId))
+          .filter(StringUtil::isDefined)
+          .ifPresent(c -> code.append(scriptContent(c)));
+    }
 
     code.append(includeAngular(new ElementContainer(), language)).append(STR_NEW_LINE);
     code.append(includeVueJs(new ElementContainer())).append(STR_NEW_LINE);

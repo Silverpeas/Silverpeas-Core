@@ -2531,6 +2531,13 @@
       <type>boolean</type>
     </attribute>
     <attribute>
+      <description>The context of LookContextManager MUST NOT be updated. So no callback is performed</description>
+      <name>noLookContextManagerCallback</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
       <description>Include fieldset automatically</description>
       <name>withFieldsetStyle</name>
       <required>false</required>
