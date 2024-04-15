@@ -85,6 +85,43 @@ window.SpVue = new function() {
   };
 
   /**
+   * Merging a component definition with another one by applying a simple strategy.
+   * First a new definition is created and extend with cmpDef1 and then with cmpDef2. So, if both
+   * components have a same attribute, at this time only the definition of the second one is taken
+   * into account.
+   * Then, for special 'provide' and 'data' attributes, a special merge is performed in
+   * order to keep declarations of both components.
+   * @param cmpDef1 a vuejs component definition
+   * @param cmpDef2 another vuejs component definition
+   * @private
+   */
+  this.mergeComponentDefinitions = function(cmpDef1, cmpDef2) {
+    const __extends = function(o1, o2) {
+      const newO = {};
+      for (let key in o1) {
+        newO[key] = o1[key];
+      }
+      for (let key in o2) {
+        newO[key] = o2[key];
+      }
+      return newO;
+    }
+    const newCmpDef = __extends(__extends({}, cmpDef1), cmpDef2);
+    ['provide', 'data'].forEach(function(attrName) {
+      const attrCmp1 = cmpDef1[attrName];
+      const attrCmp2 = cmpDef2[attrName];
+      if (attrCmp1 && attrCmp2) {
+        newCmpDef[attrName] = function() {
+          const cmp1Data = typeof attrCmp1 === 'function' ? attrCmp1() : attrCmp1;
+          const cmp2Data = typeof attrCmp2 === 'function' ? attrCmp2() : attrCmp2;
+          return __extends(__extends({}, cmp1Data), cmp2Data);
+        };
+      }
+    });
+    return newCmpDef;
+  }
+
+  /**
    * Creates the Vue application
    * @param options represents the application configuration which is identical to a component.
    * @returns {*}

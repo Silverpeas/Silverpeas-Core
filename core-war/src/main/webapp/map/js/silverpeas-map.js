@@ -907,9 +907,8 @@
         const $tipComponent = document.createElement('silverpeas-map-tip-marker');
         $tipComponent.setAttribute('v-on:api', 'api = $event');
         $tipComponent.setAttribute('v-bind:marker', 'marker');
-        if (typeof content === 'string') {
-          $tipComponent.innerHTML = content;
-        } else if (typeof content.vuejs_def === 'object') {
+        const contentIsVueJsDefinition = typeof content.vuejs_def === 'object';
+        if (contentIsVueJsDefinition) {
           const $div = document.createElement('div');
           if (typeof content.vuejs_def.template === 'string') {
             $div.innerHTML = content.vuejs_def.template;
@@ -919,22 +918,30 @@
           $div.childNodes.forEach(function(child) {
             $tipComponent.appendChild(child);
           })
+        } else if (typeof content === 'string') {
+          $tipComponent.innerHTML = content;
         } else {
           $tipComponent.appendChild(content);
         }
         __$markerDetail.appendChild($tipComponent);
-        return __createVueJsInstance(__map, __$markerDetail, {
+        // Preparing Vue.js app initialization dedicated for tip marker by defining default handled
+        // data.
+        const defaultVuejsDef = {
           data : function() {
-            const data = {
+            return {
               marker : __self,
               api : undefined
             };
-            if (typeof content.vuejs_def === 'object') {
-              return extendsObject(data, content.vuejs_def.data());
-            }
-            return data;
           }
-        });
+        };
+        // If content is a Vue.js definition one, merging the default and the content ones
+        const finalVueJsDef = contentIsVueJsDefinition
+            ? SpVue.mergeComponentDefinitions(defaultVuejsDef, content.vuejs_def)
+            : defaultVuejsDef;
+        // As the Vue.js template has been above taken into account, removing here the template
+        // before instantiate the Vue.js app.
+        delete finalVueJsDef['template'];
+        return __createVueJsInstance(__map, __$markerDetail, finalVueJsDef);
       }.bind(this)));
     }
     // marker
@@ -1009,14 +1016,15 @@
     });
   }
 
-  function __createVueJsInstance(mapInstance, $el, options) {
+  function __createVueJsInstance(mapInstance, $el, vuejsDef) {
     return new Promise(function(resolve) {
       setTimeout(function() {
-        SpVue.createApp(extendsObject(options, {
+        const finalVuejsDef = SpVue.mergeComponentDefinitions({
           provide : {
             mapInstance: mapInstance
           }
-        })).mount($el);
+        }, vuejsDef);
+        SpVue.createApp(finalVuejsDef).mount($el);
         resolve();
       }, 0);
     });

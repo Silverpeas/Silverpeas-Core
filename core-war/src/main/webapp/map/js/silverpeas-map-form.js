@@ -248,14 +248,14 @@
   /**
    * Dedicated to manage a Map with markers on a Map from data fetch from Silverpeas's
    * Form Services.
-   * @param cssSelector the CSS selector into which the Map MUST be initialized and displayed.
+   * @param domSelector the DOM selector into which the Map MUST be initialized and displayed.
    * @param formData the form data coming from Silverpeas's Form Services.
    * @param adapterClass class of {@link CartoMarkerComponentAdapter} that will be instantiated.
    * @returns {Promise<Awaited<unknown>[]>} a promise that ensure the right loading of context.
    * @constructor
    */
-  window.FormCartoMarkerComponent = function(cssSelector, formData, adapterClass) {
-    this.rootEl = document.querySelector(cssSelector);
+  window.FormCartoMarkerComponent = function(domSelector, formData, adapterClass) {
+    this.rootEl = document.querySelector(domSelector);
     this.userService = new MapUserService();
     this.adapter = new adapterClass(this);
     this.context = {
@@ -306,14 +306,14 @@
 
   /**
    * Create data to display on the map from form data array.
-   * @param cmpInstance the instance of {@link FormCartoMarkerComponent}.
+   * @param mapCmp the instance of {@link FormCartoMarkerComponent}.
    * @private
    */
-  function __createInfoPointsFromFormData(cmpInstance) {
-    const formData = cmpInstance.context.formData;
+  function __createInfoPointsFromFormData(mapCmp) {
+    const formData = mapCmp.context.formData;
     if (Array.isArray(formData)) {
       return formData.map(function(item) {
-        const mapInfoPoint = cmpInstance.adapter.createInfoPoint(item);
+        const mapInfoPoint = mapCmp.adapter.createInfoPoint(item);
         mapInfoPoint.formDataItem = item;
         item.infoPoint = new (MapInfoPoint.extend({
           getCategory : function() {
@@ -335,11 +335,11 @@
   /**
    * Create markers
    */
-  function __createMarkers(cmpInstance) {
-    const context = cmpInstance.context;
+  function __createMarkers(mapCmp) {
+    const context = mapCmp.context;
     if (Array.isArray(context.infoPoints)) {
       return sp.promise.whenAllResolved(context.infoPoints.map(function(point) {
-        return __createMarker(cmpInstance, point);
+        return __createMarker(mapCmp, point);
       }));
     }
     return sp.promise.resolveDirectlyWith();
@@ -348,14 +348,14 @@
   /**
    * Create a styled marker
    */
-  function __createMarker(cmpInstance, infoPoint) {
-    const categories = cmpInstance.categories;
+  function __createMarker(mapCmp, infoPoint) {
+    const categories = mapCmp.categories;
     return infoPoint.getLocation().promiseLonLat().then(function(lonLat) {
       if (!lonLat) {
         return;
       }
       const category = infoPoint.getCategory();
-      const marker = cmpInstance.mapApi.addNewMarker({
+      const marker = mapCmp.mapApi.addNewMarker({
         color : categories.getColor(category),
         classList : categories.getCssClassList(category),
         title : infoPoint.getName(),
@@ -368,6 +368,11 @@
             $baseContainer.classList.add(css);
           });
           if (typeof content.vuejs_def === 'object') {
+            content.vuejs_def.provide = function() {
+              return {
+                cmpInstance : mapCmp
+              }
+            };
             if (typeof content.vuejs_def.template ===  'string') {
               $baseContainer.innerHTML = content.vuejs_def.template;
             } else {
@@ -393,23 +398,23 @@
   /**
    * Create filters
    */
-  function __createFilters(cmpInstance) {
-    if (cmpInstance.categories.size() > 0) {
+  function __createFilters(mapCmp) {
+    if (mapCmp.categories.size() > 0) {
       const $vueJsDoc = document.createElement('div');
-      cmpInstance.mapApi.getRightContainer().appendChild($vueJsDoc);
-      __createVueJsInstance(cmpInstance, $vueJsDoc, {
+      mapCmp.mapApi.getRightContainer().appendChild($vueJsDoc);
+      __createVueJsInstance(mapCmp, $vueJsDoc, {
         template : '<silverpeas-map-form-mapping-filters></silverpeas-map-form-mapping-filters>'
       });
     }
   }
 
-  function __createVueJsInstance(cmpInstance, $el, options) {
+  function __createVueJsInstance(mapCmp, $el, options) {
     return new Promise(function(resolve) {
       setTimeout(function() {
         SpVue.createApp(extendsObject(options, {
           provide : function() {
             return {
-              cmpInstance: cmpInstance
+              cmpInstance: mapCmp
             }
           }
         })).mount($el);
