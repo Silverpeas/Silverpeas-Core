@@ -74,7 +74,7 @@ import static org.silverpeas.core.index.indexing.model.IndexProcessor.doFlush;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doRemoveAll;
 
 /**
- * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
+ * An IndexManager manage all the index in Silverpeas. An IndexManager is NOT thread safe: to share
  * an IndexManager between several threads use an IndexerThread.
  */
 @Technical
