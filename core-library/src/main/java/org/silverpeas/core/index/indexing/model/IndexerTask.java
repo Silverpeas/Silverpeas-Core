@@ -93,7 +93,7 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
     return new IndexerProcessContext(indexManager);
   }
 
-  static class IndexerProcessContext implements AbstractRequestTask.ProcessContext {
+  protected static class IndexerProcessContext implements AbstractRequestTask.ProcessContext {
     private final IndexManager indexManager;
 
     IndexerProcessContext(final IndexManager indexManager) {

@@ -315,7 +315,7 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
       with().pollInterval(1, TimeUnit.SECONDS)
           .await()
           .timeout(1, TimeUnit.MINUTES)
-          .until(() -> !RequestTaskManager.get().isTaskRunning(ServerEventDispatcherTask.class));
+          .until(() -> RequestTaskManager.get().isTaskNotRunning(ServerEventDispatcherTask.class));
       final long end = System.currentTimeMillis();
       final long testPeriod = end - start;
       logger.info("Threads have run into {0}", formatDurationHMS(middle - start));

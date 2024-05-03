@@ -73,7 +73,7 @@ public class IndexFileManager {
   /**
    * get the base directory of index upload path
    *
-   * @return
+   * @return the path of the base directory of the index
    */
   public static String getIndexUpLoadPath() {
     return indexUpLoadPath + separatorChar;

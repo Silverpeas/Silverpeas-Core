@@ -1095,7 +1095,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private void setIndexEntryFromPubDetail(final FullIndexEntry indexEntry,
       final PublicationDetail pubDetail) {
-    indexEntry.setLang("fr");
+    indexEntry.setLang(pubDetail.getLanguage());
     indexEntry.setCreationDate(pubDetail.getCreationDate());
     indexEntry.setLastModificationDate(pubDetail.getLastUpdateDate());
     if (pubDetail.getBeginDate() != null) {

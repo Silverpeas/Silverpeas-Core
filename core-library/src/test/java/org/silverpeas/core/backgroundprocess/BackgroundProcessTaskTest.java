@@ -304,7 +304,7 @@ class BackgroundProcessTaskTest {
     await()
         .timeout(5, TimeUnit.MINUTES)
         .pollInterval(200, TimeUnit.MILLISECONDS)
-        .until(() -> !taskManager.isTaskRunning(BackgroundProcessTask.class));
+        .until(() -> taskManager.isTaskNotRunning(BackgroundProcessTask.class));
   }
 
   private void push(AbstractBackgroundProcessRequest request) {
