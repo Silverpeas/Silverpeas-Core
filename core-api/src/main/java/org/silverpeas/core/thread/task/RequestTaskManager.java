@@ -125,8 +125,7 @@ public class RequestTaskManager {
   /**
    * This method permits to know if the task is running.
    * @param taskClass the class of the {@link AbstractRequestTask} implementation which provides
-   * the
-   * {@link AbstractRequestTask.Request}.
+   * the {@link AbstractRequestTask.Request}.
    * @param <T> the type of the task.
    */
   public <T extends AbstractRequestTask<C>, C extends AbstractRequestTask.ProcessContext>
@@ -137,6 +136,17 @@ public class RequestTaskManager {
       return m;
     });
     return isRunning.get();
+  }
+
+  /**
+   * This method permits to know if the task isn't running anymore.
+   * @param taskClass the class of the {@link AbstractRequestTask} implementation which provides
+   * the {@link AbstractRequestTask.Request}.
+   * @param <T> the type of the task.
+   */
+  public <T extends AbstractRequestTask<C>, C extends AbstractRequestTask.ProcessContext>
+  boolean isTaskNotRunning(Class<T> taskClass) {
+    return !isTaskRunning(taskClass);
   }
 
   /**
@@ -204,7 +214,7 @@ public class RequestTaskManager {
   }
 
   @SuppressWarnings("java:S1452")
-  protected ConcurrentMap<Class<? extends AbstractRequestTask<?>>,
+  ConcurrentMap<Class<? extends AbstractRequestTask<?>>,
       RequestTaskMonitor<? extends AbstractRequestTask<?>, ?>> getTasks() {
     return tasks;
   }

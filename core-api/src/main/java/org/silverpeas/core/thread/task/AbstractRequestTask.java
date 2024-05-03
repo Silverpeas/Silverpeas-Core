@@ -43,7 +43,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
     implements Callable<Void> {
 
   private static final int NO_REQUEST_QUEUE_LIMIT = 0;
-  RequestTaskManager.RequestTaskMonitor<? extends AbstractRequestTask, C> monitor = null;
+  RequestTaskManager.RequestTaskMonitor<? extends AbstractRequestTask<?>, C> monitor = null;
 
   /**
    * Nothing is done for now.

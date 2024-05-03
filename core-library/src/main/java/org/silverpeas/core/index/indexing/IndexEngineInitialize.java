@@ -30,15 +30,14 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * Initializes the indexation engine of Silverpeas.
  */
 @Service
 public class IndexEngineInitialize implements Initialization {
-
-  public IndexEngineInitialize() {
-  }
 
   /**
    * Since version 1.3 of Lucene, lock files are stored in the java.io.tmpdir system's property By
@@ -68,7 +67,9 @@ public class IndexEngineInitialize implements Initialization {
       }
     } else {
       if (theFile.isFile() && isLockFile(theFile.getName())) {
-        if (!theFile.delete()) {
+        try {
+          Files.delete(theFile.toPath());
+        } catch (IOException e) {
           SilverLogger.getLogger(this).error("Cannot delete file " + theFile.getPath());
         }
       }

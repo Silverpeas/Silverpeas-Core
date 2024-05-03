@@ -35,18 +35,15 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.util.Map;
 
 /**
+ * Default implementation of a user notification.
  * @author Yohann Chastagnier
  */
 public class DefaultUserNotification implements UserNotification {
 
-  private NotificationMetaData notification;
+  private final NotificationMetaData notification;
 
   public DefaultUserNotification() {
     this(null, null);
-  }
-
-  public DefaultUserNotification(final NotificationMetaData metaData) {
-    this.notification = metaData;
   }
 
   public DefaultUserNotification(final String title, final String content) {

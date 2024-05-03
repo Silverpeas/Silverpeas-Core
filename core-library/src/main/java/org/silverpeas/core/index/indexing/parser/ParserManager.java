@@ -75,28 +75,31 @@ public final class ParserManager {
         if ("ignored".equals(parserName) || parserName.isEmpty()) {
           continue; // we skip ignored mime type
         }
-
-        try {
-          Parser parser = ServiceProvider.getService(parserName);
-          parserMap.put(mimeType, parser);
-        } catch (IllegalStateException e) {
-          indexingLogger().error("No parser found in silverpeas for {0}: {1}", mimeType, parserName);
-        } catch (Exception e) {
-          indexingLogger().error(e.getMessage(), e);
-        }
+        registerParser(parserName, mimeType);
       }
     } catch (MissingResourceException e) {
       indexingLogger().error(e.getMessage(), e);
     }
   }
 
+  private void registerParser(String parserName, String mimeType) {
+    try {
+      Parser parser = ServiceProvider.getService(parserName);
+      parserMap.put(mimeType, parser);
+    } catch (IllegalStateException e) {
+      indexingLogger().error("No parser found in silverpeas for {0}: {1}", mimeType, parserName);
+    } catch (Exception e) {
+      indexingLogger().error(e.getMessage(), e);
+    }
+  }
+
   /**
-   * Get the parser for a given file format.
-   * @param format a file format.
+   * Get the parser for the given file mimetype.
+   * @param mimeType a known and supported mimetype.
    * @return an optional {@link Parser} instance.
    */
-  public Optional<Parser> getParser(String format) {
-    return ofNullable(parserMap.getOrDefault(format, defaultParser));
+  public Optional<Parser> getParser(String mimeType) {
+    return ofNullable(parserMap.getOrDefault(mimeType, defaultParser));
   }
 
 }

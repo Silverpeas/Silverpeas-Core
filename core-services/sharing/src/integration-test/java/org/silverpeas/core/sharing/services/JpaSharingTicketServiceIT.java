@@ -84,7 +84,7 @@ public class JpaSharingTicketServiceIT {
   @After
   public void clean() {
     await().pollInterval(1, TimeUnit.SECONDS)
-        .until(() -> !requestTaskManager.isTaskRunning(BackgroundProcessTask.class));
+        .until(() -> requestTaskManager.isTaskNotRunning(BackgroundProcessTask.class));
   }
 
   @Deployment
