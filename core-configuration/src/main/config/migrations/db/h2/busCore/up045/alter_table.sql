@@ -1,0 +1,2 @@
+ALTER TABLE st_instance_data
+  ALTER COLUMN value VARCHAR(1000) NOT NULL;
