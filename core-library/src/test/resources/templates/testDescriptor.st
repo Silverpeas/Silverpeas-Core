@@ -1,0 +1,1 @@
+testDescriptor(list) ::= <<la liste donnée est = $list; separator=", "$>>

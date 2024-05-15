@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.util.StringUtil;
@@ -2793,7 +2793,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
    * @throws WorkflowDesignerException when something goes wrong
    */
   public void generateComponentDescriptor() throws WorkflowDesignerException {
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("workflow");
+    SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnCore("workflow");
     final String sureProcessModelFileName = processModelFileName.replace("\\", "/");
     template.setAttribute("processModelFileName", sureProcessModelFileName);
 

@@ -244,9 +244,6 @@
               <filtering>true</filtering>
             </webResource>
           </webResources>
-          <archive>
-            <manifestFile>src/main/webapp/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
         </configuration>
       </plugin>
     </plugins>

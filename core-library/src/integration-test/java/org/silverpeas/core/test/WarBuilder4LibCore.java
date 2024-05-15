@@ -562,7 +562,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addStringTemplateFeatures() {
     if (!contains(SilverpeasTemplate.class)) {
-      addMavenDependencies("org.antlr:stringtemplate");
+      addMavenDependencies("org.antlr:ST4");
       addPackages(true, "org.silverpeas.core.template");
       addAsResource("org/silverpeas/util/stringtemplate.properties");
     }

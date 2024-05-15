@@ -52,7 +52,7 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.util.Pair;
@@ -1260,7 +1260,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
    */
   public SilverpeasTemplate getSilverpeasTemplate() {
     Properties configuration = new Properties(templateConfiguration);
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+    SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplate(configuration);
     return template;
   }
 

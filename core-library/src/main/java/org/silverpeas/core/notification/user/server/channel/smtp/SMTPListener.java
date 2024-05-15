@@ -36,11 +36,11 @@ import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
@@ -121,7 +121,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
 
     StringBuilder body = new StringBuilder();
     SilverpeasTemplate templateHeaderFooter =
-        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
+        SilverpeasTemplates.createSilverpeasTemplateOnCore("notification");
 
     templateHeaderFooter.setAttribute(NOTIFICATION_BASE_SERVER_URL.toString(), baseServerUrl);
     templateHeaderFooter.setAttribute(NOTIFICATION_SERVER_URL.toString(), serverUrl);

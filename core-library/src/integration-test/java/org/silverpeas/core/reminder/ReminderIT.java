@@ -105,7 +105,7 @@ public class ReminderIT {
         .addAdministrationFeatures()
         .addStringTemplateFeatures()
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api")
-        .addMavenDependencies("org.awaitility:awaitility", "org.antlr:stringtemplate")
+        .addMavenDependencies("org.awaitility:awaitility", "org.antlr:ST4")
         .addPackages(true, AbstractContributionTemplateUserNotificationBuilder.class.getPackage().getName())
         .addClasses(CalendarEventUserNotificationReminder.class,
             DefaultContributionReminderUserNotification.class, PublicationTemplateManager.class)

@@ -73,7 +73,7 @@ import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.SilverpeasList;
@@ -966,7 +966,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private SilverpeasTemplate getFragmentTemplate() {
     if (template == null) {
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("directory");
+      template = SilverpeasTemplates.createSilverpeasTemplateOnCore("directory");
     }
     return template;
   }
