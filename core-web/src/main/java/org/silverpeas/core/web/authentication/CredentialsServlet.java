@@ -51,6 +51,8 @@ public class CredentialsServlet extends HttpServlet {
   private static final long serialVersionUID = -7586840606648226466L;
   private static final Map<String, FunctionHandler> handlers = new HashMap<>(20);
 
+  private static final String NEW_REGISTRATION = "NewRegistration";
+
   static {
     initHandlers();
   }
@@ -78,7 +80,7 @@ public class CredentialsServlet extends HttpServlet {
     handlers.put("ResetLoginPassword", new ResetLoginPasswordHandler());
     handlers.put("SendMessage", new SendMessageHandler());
     // User Registration
-    handlers.put("NewRegistration", new NewRegistrationHandler());
+    handlers.put(NEW_REGISTRATION, new NewRegistrationHandler());
     handlers.put("Register", new RegisterHandler());
     // Terms of service
     handlers.put("TermsOfServiceRequest", new TermsOfServiceRequestHandler());
@@ -101,7 +103,8 @@ public class CredentialsServlet extends HttpServlet {
         String domainId = request.getParameter("DomainId");
         String destinationPage = "";
         AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearSession(request);
-        if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
+        if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId) &&
+            !NEW_REGISTRATION.equals(function)) {
           // Verify that the user can login
           UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory.getUserCanLoginVerifier(
               AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
