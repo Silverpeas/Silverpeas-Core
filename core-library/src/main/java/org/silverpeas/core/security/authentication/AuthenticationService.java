@@ -71,9 +71,10 @@ import static java.util.Arrays.stream;
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
  * authentication process as it wraps all the mechanism and the delegation to perform the actual
  * authentication.
- *
+ * <p>
  * This service wraps all the mechanism to perform the authentication process itself. It uses for
  * doing an authentication server that is mapped with the user domain.
+ * </p>
  */
 @Service
 public class AuthenticationService {
@@ -140,9 +141,10 @@ public class AuthenticationService {
   /**
    * Gets all the available user domains. A domain in Silverpeas is a repository of users with its
    * its own authentication process.
-   *
+   * <p>
    * At each user domain is associated an authentication server that is responsible of the
    * authentication of the domain's users.
+   * </p>
    *
    * @return an unmodifiable list of user domains.
    */
@@ -161,10 +163,11 @@ public class AuthenticationService {
 
   /**
    * Authenticates a user with the specified authentication credential.
-   *
+   * <p>
    * If the authentication succeed, the security-related capabilities, mapped to the user's
    * credential, are set from information sent back by the authentication server related to the
    * domain to which the user belongs.
+   * </p>
    *
    * @param userCredential the credential of the user to use to authenticate him.
    * @return an authentication key or null if the authentication fails. The authentication key
@@ -214,10 +217,10 @@ public class AuthenticationService {
   private String checkAuthentication(final AuthenticationCredential userCredential)
       throws AuthenticationException {
     final String key;
-    if (userCredential.isPasswordSet()) {
-      key = authenticateByLoginAndPasswordAndDomain(userCredential);
-    } else {
+    if (userCredential.hasBeenRemotelyAuthenticated()) {
       key = authenticateByLoginAndDomain(userCredential);
+    } else {
+      key = authenticateByLoginAndPasswordAndDomain(userCredential);
     }
     return key;
   }
@@ -518,13 +521,6 @@ public class AuthenticationService {
     onPasswordAndEmailChanged(credential, null);
   }
 
-  /**
-   * Treatments on password change.
-   *
-   * @param credential
-   * @param email
-   * @throws AuthenticationException
-   */
   private void onPasswordAndEmailChanged(AuthenticationCredential credential, final String email)
       throws AuthenticationException {
     UserDetail user = UserDetail.getById(
