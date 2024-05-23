@@ -106,7 +106,8 @@ public class CredentialsServlet extends HttpServlet {
         String destinationPage = "";
         AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier((User) null)
             .clearSession(request);
-        if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId) && !NEW_REGISTRATION.equals(function)) {
+        if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId) &&
+            !NEW_REGISTRATION.equals(function)) {
           // Verify that the user can login
           UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
                   .getUserCanLoginVerifier(getAuthenticationCredential(login, domainId));

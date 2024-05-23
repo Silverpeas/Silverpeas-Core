@@ -196,10 +196,10 @@ public class AuthenticationService implements Authentication {
   private String checkAuthentication(final AuthenticationCredential userCredential)
       throws AuthenticationException {
     final String key;
-    if (userCredential.isPasswordSet()) {
-      key = authenticateByLoginAndPasswordAndDomain(userCredential);
-    } else {
+    if (userCredential.hasBeenRemotelyAuthenticated()) {
       key = authenticateByLoginAndDomain(userCredential);
+    } else {
+      key = authenticateByLoginAndPasswordAndDomain(userCredential);
     }
     return key;
   }
@@ -217,7 +217,7 @@ public class AuthenticationService implements Authentication {
     String password = credential.getPassword();
     String domainId = credential.getDomainId();
     if (password == null || domainId == null) {
-      throw  new AuthenticationException("No login or no domain is specified!");
+      throw new AuthenticationPwdNotAvailException("No password or no domain is specified!");
     }
 
     // Verify that the user can log in

@@ -63,6 +63,7 @@ public class AuthenticationCredential {
   private String login;
   private String password;
   private String domainId;
+  private boolean authenticated;
 
   private AuthenticationCredential() {
   }
@@ -100,6 +101,14 @@ public class AuthenticationCredential {
   public AuthenticationCredential withAsDomainId(String domainId) {
     setDomainId(domainId);
     return this;
+  }
+
+  /**
+   * Sets the principal behind this credential has been already successfully authenticated by a
+   * remote authentication mechanism.
+   */
+  public void setRemotelyAuthenticated() {
+    this.authenticated = true;
   }
 
   /**
@@ -174,13 +183,13 @@ public class AuthenticationCredential {
   }
 
   /**
-   * Is the password set in this credential?
-   * According to some security policy, the password isn't required to participate in an
-   * authentication;
-   * for example in an NTLM negotiation.
-   * @return true if the password attribute is set in this credential, false otherwise.
+   * Is this credential comes from an external authentication mechanism? In this case, the
+   * authentication has been already operated out of Silverpeas and the credential contains only
+   * information to identify the authenticated user.
+   * @return true if the authentication has been already successfully done out of Silverpeas.
+   * False otherwise.
    */
-  public boolean isPasswordSet() {
-    return this.password != null;
+  public boolean hasBeenRemotelyAuthenticated() {
+    return authenticated;
   }
 }

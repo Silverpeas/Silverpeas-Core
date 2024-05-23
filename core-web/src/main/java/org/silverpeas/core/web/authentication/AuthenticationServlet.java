@@ -363,16 +363,16 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       final AuthenticationResponse result;
       if (authenticationParameters.isUserByInternalAuthTokenMode() || authenticationParameters.
           isSsoMode() || authenticationParameters.isCasMode()) {
-        result = authService.authenticate(
-            credential.withAsDomainId(authenticationParameters.getDomainId()));
+        credential.withAsDomainId(authenticationParameters.getDomainId())
+            .setRemotelyAuthenticated();
       } else if (authenticationParameters.isSocialNetworkMode()) {
-        result = authService.authenticate(credential.withAsDomainId(authenticationParameters.
-            getDomainId()));
+        credential.withAsDomainId(authenticationParameters.getDomainId())
+            .setRemotelyAuthenticated();
       } else {
-        result = authService.authenticate(credential
-            .withAsPassword(authenticationParameters.getPassword())
-            .withAsDomainId(authenticationParameters.getDomainId()));
+        credential.withAsPassword(authenticationParameters.getPassword())
+            .withAsDomainId(authenticationParameters.getDomainId());
       }
+      result = authService.authenticate(credential);
       authenticationParameters.setCredential(credential);
       HttpSession session = request.getSession(false);
       for (Map.Entry<String, Serializable> capability : credential.getCapabilities().entrySet()) {
