@@ -182,7 +182,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
       loadTranslations(detail);
       detail.setIndexOperation(indexOperation);
-      createIndex(detail, false);
+      createIndexWithContent(detail, false);
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, detail);
       return detail.getPK();
     } catch (Exception re) {
@@ -354,7 +354,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
 
       if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.ADD_AGAIN) {
-        createIndex(detail.getPK(), true, indexOperation);
+        createIndexWithContent(detail.getPK(), indexOperation);
       } else if (indexOperation == IndexManager.REMOVE) {
         deleteIndex(detail.getPK());
       }
@@ -978,10 +978,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public void createIndex(PublicationDetail pubDetail) {
-    createIndex(pubDetail, true);
+    createIndexWithContent(pubDetail, true);
   }
 
-  private void createIndex(PublicationDetail pubDetail, boolean processContent) {
+  private void createIndexWithContent(PublicationDetail pubDetail, boolean processContent) {
     if (pubDetail.getIndexOperation() == IndexManager.ADD ||
         pubDetail.getIndexOperation() == IndexManager.ADD_AGAIN) {
       try {
@@ -995,7 +995,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public void createIndex(PublicationPK pubPK) {
-    createIndex(pubPK, true);
+    createIndexWithContent(pubPK);
   }
 
   private FullIndexEntry getFullIndexEntry(PublicationDetail publi, boolean processContent) {
@@ -1012,15 +1012,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     return indexEntry;
   }
 
-  private void createIndex(PublicationPK pubPK, boolean processContent, int indexOperation) {
+  private void createIndexWithContent(PublicationPK pubPK, int indexOperation) {
 
     if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.ADD_AGAIN) {
 
       try {
         PublicationDetail pubDetail = getDetail(pubPK);
-        if (pubDetail != null) {
+        if (pubDetail != null && pubDetail.isIndexable()) {
           // Index the Publication Header
-          FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, processContent);
+          FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, true);
           IndexEngineProxy.addIndexEntry(indexEntry);
 
           // process aliases
@@ -1032,8 +1032,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
-  private void createIndex(PublicationPK pubPK, boolean processWysiwygContent) {
-    createIndex(pubPK, processWysiwygContent, IndexManager.ADD);
+  private void createIndexWithContent(PublicationPK pubPK) {
+    createIndexWithContent(pubPK, IndexManager.ADD);
   }
 
   private FullIndexEntry getFullIndexEntry(PublicationDetail pubDetail) {
