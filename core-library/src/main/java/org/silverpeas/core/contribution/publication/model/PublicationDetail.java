@@ -789,7 +789,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public boolean haveGotClone() {
     return cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) &&
-        cloneId.length() > 0;
+        !cloneId.isEmpty();
   }
 
   public boolean isClone() {
