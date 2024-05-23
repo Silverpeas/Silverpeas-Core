@@ -402,10 +402,24 @@ public interface PublicationService {
 
   Collection<PublicationPK> getPubPKsInFatherPK(NodePK fatherPK);
 
+  /**
+   * Indexes with its content the specified publication and its possible aliases. The index is
+   * created only if the publication is indexable.
+   * @param pubPK the unique identifier of a publication.
+   */
   void createIndex(PublicationPK pubPK);
 
+  /**
+   * Indexes with its content the specified publication. If it has aliases, those won't be taken
+   * into account in the indexation.
+   * @param pubDetail the publication to index.
+   */
   void createIndex(PublicationDetail pubDetail);
 
+  /**
+   * Deletes index of the specified publication.
+   * @param pubPK the unique identifier of a publication.
+   */
   void deleteIndex(PublicationPK pubPK);
 
 

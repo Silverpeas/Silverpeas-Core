@@ -982,8 +982,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   private void createIndex(PublicationDetail pubDetail, boolean processContent) {
-    if (pubDetail.getIndexOperation() == IndexManager.ADD ||
-        pubDetail.getIndexOperation() == IndexManager.ADD_AGAIN) {
+    if (pubDetail.isIndexable() && (pubDetail.getIndexOperation() == IndexManager.ADD ||
+        pubDetail.getIndexOperation() == IndexManager.ADD_AGAIN)) {
       try {
         FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, processContent);
         IndexEngineProxy.addIndexEntry(indexEntry);
@@ -1018,7 +1018,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
       try {
         PublicationDetail pubDetail = getDetail(pubPK);
-        if (pubDetail != null) {
+        if (pubDetail != null && pubDetail.isIndexable()) {
           // Index the Publication Header
           FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, true);
           IndexEngineProxy.addIndexEntry(indexEntry);
