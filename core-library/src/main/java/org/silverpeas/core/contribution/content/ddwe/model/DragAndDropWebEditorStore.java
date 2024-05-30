@@ -25,9 +25,7 @@
 package org.silverpeas.core.contribution.content.ddwe.model;
 
 import org.silverpeas.core.ApplicationService;
-import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.SilverpeasResource;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -41,24 +39,15 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.wbe.WbeHostManager;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlValue;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
@@ -90,21 +79,16 @@ public class DragAndDropWebEditorStore implements SilverpeasResource, Serializab
   private static final long serialVersionUID = 996933763895325970L;
 
   private static final String FILE_PREFIX = "ddwecontent_";
-  private final ContributionIdentifier foreignId;
+  private final ContributionIdentifier contributionId;
   private final transient MemoizedSupplier<Contribution> foreignContribution =
       new MemoizedSupplier<>(
-      () -> ApplicationService.getInstance(getForeignId().getComponentInstanceId())
-          .getContributionById(getForeignId())
+      () -> ApplicationService.getInstance(getContributionId().getComponentInstanceId())
+          .getContributionById(getContributionId())
           .orElse(null));
   private File file;
 
-  public DragAndDropWebEditorStore(final ContributionIdentifier foreignId) {
-    this.foreignId = foreignId;
-  }
-
-  public DragAndDropWebEditorStore(final DragAndDropWebEditorStore other) {
-    this.foreignId = other.foreignId;
-    this.file = other.file;
+  public DragAndDropWebEditorStore(final ContributionIdentifier contribution) {
+    this.contributionId = contribution;
   }
 
   /**
@@ -115,8 +99,8 @@ public class DragAndDropWebEditorStore implements SilverpeasResource, Serializab
   public File getFile() {
     if (file == null) {
       final Path filePath = Paths.get(getDirectoryPath().toString(),
-          FILE_PREFIX + getForeignId().getLocalId() + ".xml");
-      file = new File(getForeignId().getComponentInstanceId(), filePath.toString());
+          FILE_PREFIX + getContributionId().getLocalId() + ".xml");
+      file = new File(getContributionId().getComponentInstanceId(), filePath.toString());
     }
     return file;
   }
@@ -151,15 +135,15 @@ public class DragAndDropWebEditorStore implements SilverpeasResource, Serializab
   @SuppressWarnings("unchecked")
   @Override
   public ContributionIdentifier getIdentifier() {
-    return getForeignId();
+    return getContributionId();
   }
 
   /**
    * Gets the {@link ContributionIdentifier} of the contribution the content is linked to.
    * @return a {@link ContributionIdentifier} instance.
    */
-  public ContributionIdentifier getForeignId() {
-    return foreignId;
+  public ContributionIdentifier getContributionId() {
+    return contributionId;
   }
 
   @Override
@@ -203,24 +187,24 @@ public class DragAndDropWebEditorStore implements SilverpeasResource, Serializab
    * @return the path to the directory where the file is to be stored.
    */
   public Path getDirectoryPath() {
-    return Paths.get(FileRepositoryManager.getAbsolutePath(getForeignId().getComponentInstanceId()),
-        "ddwe", getForeignId().getType());
+    return Paths.get(FileRepositoryManager.getAbsolutePath(getContributionId().getComponentInstanceId()),
+        "ddwe", getContributionId().getType());
   }
 
   private Optional<Contribution> getForeignContribution() {
-    return ofNullable(getForeignId()).map(i -> foreignContribution.get());
+    return ofNullable(getContributionId()).map(i -> foreignContribution.get());
   }
 
   @Override
   public boolean canBeAccessedBy(final User user) {
     return ComponentAccessControl.get()
-        .isUserAuthorized(user.getId(), getForeignId().getComponentInstanceId());
+        .isUserAuthorized(user.getId(), getContributionId().getComponentInstanceId());
   }
 
   @Override
   public boolean canBeModifiedBy(final User user) {
     return ComponentAccessControl.get()
-        .isUserAuthorized(user.getId(), getForeignId().getComponentInstanceId(),
+        .isUserAuthorized(user.getId(), getContributionId().getComponentInstanceId(),
             AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
   }
 
@@ -287,7 +271,7 @@ public class DragAndDropWebEditorStore implements SilverpeasResource, Serializab
      * Please use instead {@link DragAndDropWebEditorStore#save()} method.
      */
     @Override
-    public void writeFrom(final InputStream stream) throws IOException {
+    public void writeFrom(final InputStream stream) {
       throw new NotSupportedException("This low level method is not supported, please use DragAndDropWebEditorContent#save() method");
     }
 

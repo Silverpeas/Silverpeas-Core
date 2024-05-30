@@ -24,8 +24,9 @@
 package org.silverpeas.core.contribution.publication.notification;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
+
+import java.io.Serializable;
 
 /**
  * Event about a publication. This event can be about a creation, an update or a deletion of a
@@ -35,12 +36,8 @@ import org.silverpeas.core.notification.system.AbstractResourceEvent;
 public class PublicationEvent extends AbstractResourceEvent<PublicationDetail> {
   private static final long serialVersionUID = 7579870966508990655L;
 
-  protected PublicationEvent() {
-    super();
-  }
-
   /**
-   * @see AbstractResourceEvent#AbstractResourceEvent(ResourceEvent.Type, Object[])
+   * @see AbstractResourceEvent#AbstractResourceEvent(Type, Serializable[])
    */
   public PublicationEvent(Type type, PublicationDetail... publication) {
     super(type, publication);

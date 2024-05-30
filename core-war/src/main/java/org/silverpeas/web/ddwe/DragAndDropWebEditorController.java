@@ -25,19 +25,19 @@ package org.silverpeas.web.ddwe;
 
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.contribution.model.*;
 import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.EncodingException;
+import org.silverpeas.core.importexport.control.RepositoriesTypeManager;
 import org.silverpeas.core.mail.MailAddress;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.wbe.WbeEdition;
 import org.silverpeas.core.wbe.WbeFile;
@@ -50,23 +50,19 @@ import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByIn
 import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.bind.annotation.*;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -78,16 +74,18 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.text.MessageFormat.format;
 import static java.util.function.Predicate.not;
 import static org.silverpeas.core.mail.MailAddress.eMail;
-import static org.silverpeas.kernel.util.StringUtil.EMPTY;
-import static org.silverpeas.kernel.util.StringUtil.normalize;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 import static org.silverpeas.core.util.memory.MemoryUnit.MB;
 import static org.silverpeas.core.wbe.WbeLogger.logger;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.normalize;
 
 /**
  * Handles the Drag&Drop Web Editor.
+ *
  * @author silveryocha
  */
+@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @WebComponentController(DragAndDropWebEditorController.WBE_COMPONENT_NAME)
 public class DragAndDropWebEditorController extends
     org.silverpeas.core.web.mvc.webcomponent.WebComponentController<DragAndDropWebEditorRequestContext> {
@@ -95,8 +93,10 @@ public class DragAndDropWebEditorController extends
   public static final String WBE_COMPONENT_NAME = "ddwe";
   private static final MemoryData DATA_THRESHOLD = UnitUtil.getMemData(10, MB);
 
-  public DragAndDropWebEditorController(final MainSessionController controller, final ComponentContext context) {
-    super(controller, context, "org.silverpeas.ddwe.multilang.ddwe", null, "org.silverpeas.ddwe.ddweSettings");
+  public DragAndDropWebEditorController(final MainSessionController controller,
+      final ComponentContext context) {
+    super(controller, context, "org.silverpeas.ddwe.multilang.ddwe", null, "org.silverpeas.ddwe" +
+        ".ddweSettings");
   }
 
   @Override
@@ -113,6 +113,7 @@ public class DragAndDropWebEditorController extends
   @Path("Main")
   @Homepage
   @RedirectToInternalJsp("editor.jsp")
+  @SuppressWarnings("VoidMethodAnnotatedWithGET")
   public void home(DragAndDropWebEditorRequestContext context) {
     process(context, e -> {
       context.getRequest().setAttribute("DdweUser", e.getUser());
@@ -148,7 +149,7 @@ public class DragAndDropWebEditorController extends
     return process(context, e -> {
       // first creating unique tmp file and copying the request content
       final String tmpFileName =
-          UUID.randomUUID().toString() + "_" + context.getUser().getId() + "_" +
+          UUID.randomUUID() + "_" + context.getUser().getId() + "_" +
               context.getFileId();
       final java.nio.file.Path tmpFile = Paths.get(getTemporaryPath(), tmpFileName);
       try (InputStream is = new BufferedInputStream(context.getRequest().getInputStream())) {
@@ -181,7 +182,8 @@ public class DragAndDropWebEditorController extends
             Status.BAD_REQUEST);
       }
       // persisting the content data
-      try (InputStream is = new ByteArrayInputStream(contentData.getInitialRawContent().getBytes(UTF_8))) {
+      try (InputStream is =
+               new ByteArrayInputStream(contentData.getInitialRawContent().getBytes(UTF_8))) {
         e.getFile().updateFrom(is);
         // cleaning
         Files.deleteIfExists(tmpFile);
@@ -190,6 +192,62 @@ public class DragAndDropWebEditorController extends
       }
       return JSONCodec.encodeObject(o -> o.put("status", "stored"));
     });
+  }
+
+  @POST
+  @Path("thumbnail")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String storeThumbnail(final DragAndDropWebEditorRequestContext context) {
+    return process(context, e -> {
+      if (!context.getRequest().getContentType().contains(MediaType.APPLICATION_JSON)) {
+        throw new WebApplicationException(Status.BAD_REQUEST);
+      }
+      String contributionId = e.getFile().linkedToContribution()
+          .orElseThrow(() -> new WebApplicationException(Status.CONFLICT))
+          .getLocalId();
+      try {
+        String json = new String(context.getRequest().getInputStream().readAllBytes(),
+            Charsets.UTF_8);
+        SimpleContributionEntity detail = JSONCodec.decode(json, SimpleContributionEntity.class);
+        ApplicationService service =
+            ApplicationService.getInstance(detail.getId().getComponentInstanceId());
+        service.getContributionById(detail.getId())
+            .filter(WithThumbnail.class::isInstance)
+            .map(WithThumbnail.class::cast)
+            .map(WithThumbnail::getThumbnail)
+            .flatMap(Thumbnail::getPath)
+            .ifPresent(img -> {
+              var descriptor = new RepositoriesTypeManager.AttachmentDescriptor()
+                  .setCurrentUser(e.getUser().getUser())
+                  .setComponentId(e.getFile().componentInstanceId())
+                  .setResourceId(contributionId)
+                  .setDocumentType(DocumentType.image)
+                  .setFile(img.toFile())
+                  .setContentLanguage(getLanguage())
+                  .setCreationDate(new Date())
+                  .setHasToBeIndexed(false)
+                  .setComponentVersionActivated(false)
+                  .setPublicVersionRequired(false);
+              var thumbnail = copyThumbnail(descriptor);
+              detail.setThumbnailUrl(context.getRequest().getContextPath() +
+                  thumbnail.getAttachmentURL());
+            });
+        return JSONCodec.encode(detail);
+      } catch (EncodingException ex) {
+        throw new WebApplicationException(Status.BAD_REQUEST);
+      } catch (IOException ex) {
+        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      }
+    });
+  }
+
+  private static SimpleDocument copyThumbnail(
+      RepositoriesTypeManager.AttachmentDescriptor descriptor) {
+    try {
+      return RepositoriesTypeManager.handleFileToAttach(descriptor);
+    } catch (IOException ex) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @GET
@@ -218,6 +276,7 @@ public class DragAndDropWebEditorController extends
   @GET
   @Path("result")
   @RedirectToInternalJsp("result.jsp")
+  @SuppressWarnings("VoidMethodAnnotatedWithGET")
   public void result(final DragAndDropWebEditorRequestContext context) {
     process(context, e -> {
       final String currentFileContent = getTemporaryContent(e).getInlinedHtml();
@@ -230,6 +289,7 @@ public class DragAndDropWebEditorController extends
   @GET
   @Path("sendToMe")
   @Produces(MediaType.APPLICATION_JSON)
+  @SuppressWarnings("VoidMethodAnnotatedWithGET")
   public void sendToMe(final DragAndDropWebEditorRequestContext context) {
     process(context, e -> {
       final String currentFileContent = getTemporaryContent(e).getInlinedHtml();
@@ -336,10 +396,32 @@ public class DragAndDropWebEditorController extends
       final String error = format("User {0} can not access the file {1}", user.getId(), wbeFile);
       logger().error(error);
       throw new WebApplicationException(Status.UNAUTHORIZED);
-    } else if (!HttpMethod.GET.equals(context.getRequest().getMethod()) && !wbeFile.canBeModifiedBy(user)){
+    } else if (!HttpMethod.GET.equals(context.getRequest().getMethod()) && !wbeFile.canBeModifiedBy(user)) {
       final String error = format("User {0} can not modify the file {1}", user.getId(), wbeFile);
       logger().error(error);
       throw new WebApplicationException(Status.UNAUTHORIZED);
+    }
+  }
+
+  @XmlRootElement
+  @XmlAccessorType(value = XmlAccessType.FIELD)
+  private static class SimpleContributionEntity {
+    @XmlElement
+    private String id;
+    @XmlElement
+    private String thumbnailUrl;
+
+    @SuppressWarnings("unused")
+    public String getThumbnailUrl() {
+      return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+      this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public ContributionIdentifier getId() {
+      return ContributionIdentifier.decode(id);
     }
   }
 }
