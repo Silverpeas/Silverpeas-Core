@@ -223,6 +223,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
   }
 
+  @SuppressWarnings("UnusedReturnValue")
   public static ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail, int thumbnailWidth,
       int thumbnailHeight) {
     try {
@@ -265,7 +266,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
           String from = getImageDirectory(fromPK.getInstanceId()) + vignette.getOriginalFileName();
 
           String type = FilenameUtils.getExtension(vignette.getOriginalFileName());
-          String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+          String newOriginalImage = System.currentTimeMillis() + "." + type;
 
           String to = getImageDirectory(toPK.getInstanceId()) + newOriginalImage;
           FileRepositoryManager.copyFile(from, to);
@@ -275,7 +276,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
           if (vignette.getCropFileName() != null) {
             from = getImageDirectory(fromPK.getInstanceId()) + vignette.getCropFileName();
             type = FilenameUtils.getExtension(vignette.getCropFileName());
-            String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+            String newThumbnailImage = System.currentTimeMillis() + "." + type;
             to = getImageDirectory(toPK.getInstanceId()) + newThumbnailImage;
             FileRepositoryManager.copyFile(from, to);
             thumbDetail.setCropFileName(newThumbnailImage);
@@ -408,7 +409,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     String path = getImageDirectory(componentId) + fileName;
     try {
       SilverpeasFile image = SilverpeasFileProvider.getFile(path);
-      image.delete();
+      Files.deleteIfExists(image.toPath());
     } catch (Exception e) {
       SilverLogger.getLogger(ThumbnailController.class).warn(e);
     }
@@ -434,6 +435,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
   }
 
+  @SuppressWarnings("UnusedReturnValue")
   private static ThumbnailDetail cropThumbnail(ThumbnailDetail thumbnail, int thumbnailWidth,
       int thumbnailHeight) {
     try {

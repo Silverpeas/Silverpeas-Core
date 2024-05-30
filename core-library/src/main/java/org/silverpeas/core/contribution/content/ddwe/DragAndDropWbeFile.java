@@ -55,16 +55,16 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
  */
 public class DragAndDropWbeFile extends SimpleWbeFile {
 
-  private final DragAndDropWebEditorStore content;
+  private final DragAndDropWebEditorStore store;
 
   public DragAndDropWbeFile(final DragAndDropWebEditorStore store) {
     super(store.getFile());
-    this.content = store;
+    this.store = store;
   }
 
   public Optional<ContributionIdentifier> linkedToContribution() {
-    return Optional.of(getContent())
-        .map(DragAndDropWebEditorStore::getForeignId);
+    return Optional.of(getStore())
+        .map(DragAndDropWebEditorStore::getContributionId);
   }
 
   @Override
@@ -80,12 +80,20 @@ public class DragAndDropWbeFile extends SimpleWbeFile {
 
   @Override
   public String silverpeasId() {
-    return getContent().getIdentifier().asString();
+    return getStore().getIdentifier().asString();
+  }
+
+  /**
+   * Gets the unique identifier of the component instance within which this WBE file is managed.
+   * @return the unique identifier of a component instance.
+   */
+  public String componentInstanceId() {
+    return getStore().getContributionId().getComponentInstanceId();
   }
 
   @Override
   public User owner() {
-    return getContent().getFile().getContainer().getTmpContent()
+    return getStore().getFile().getContainer().getTmpContent()
         .map(Content::getMetadata)
         .map(Content.Metadata::getLastUpdatedBy)
         .map(User::getById)
@@ -94,21 +102,21 @@ public class DragAndDropWbeFile extends SimpleWbeFile {
 
   @Override
   public String name() {
-    return getContent().getName();
+    return getStore().getName();
   }
 
   @Override
   public String mimeType() {
-    return getContent().getFile().getMimeType();
+    return getStore().getFile().getMimeType();
   }
 
   @Override
   public void updateFrom(final InputStream input) throws IOException {
     synchronized (MUTEX) {
       final String exContentValue = IOUtils.toString(input, UTF_8);
-      final Content spContent = getContent().getFile().getContainer().getOrCreateTmpContent();
+      final Content spContent = getStore().getFile().getContainer().getOrCreateTmpContent();
       spContent.setValue(exContentValue);
-      getContent().save();
+      getStore().save();
     }
   }
 
@@ -125,11 +133,11 @@ public class DragAndDropWbeFile extends SimpleWbeFile {
   }
 
   public Optional<String> getTemporaryContent() {
-    return getContent().getFile().getContainer().getTmpContent().map(Content::getValue);
+    return getStore().getFile().getContainer().getTmpContent().map(Content::getValue);
   }
 
   public Optional<String> getFinalContent() {
-    return getContent().getFile().getContainer().getContent().map(Content::getValue);
+    return getStore().getFile().getContainer().getContent().map(Content::getValue);
   }
 
   /**
@@ -141,7 +149,7 @@ public class DragAndDropWbeFile extends SimpleWbeFile {
    */
   public void resetTemporaryContent() {
     synchronized (MUTEX) {
-      final DragAndDropWebEditorStore.Container container = getContent().getFile().getContainer();
+      final DragAndDropWebEditorStore.Container container = getStore().getFile().getContainer();
       container.getContent()
           .map(Content::getValue)
           .ifPresentOrElse(v -> container.getOrCreateTmpContent().setValue(v),
@@ -150,16 +158,11 @@ public class DragAndDropWbeFile extends SimpleWbeFile {
   }
 
   @Override
-  public boolean canBeAccessedBy(final User user) {
-    return true;
-  }
-
-  @Override
   public boolean canBeModifiedBy(final User user) {
     return true;
   }
 
-  private DragAndDropWebEditorStore getContent() {
-    return content;
+  private DragAndDropWebEditorStore getStore() {
+    return store;
   }
 }

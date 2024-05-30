@@ -27,6 +27,7 @@ import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.EntityArrays;
 import org.apache.commons.text.translate.LookupTranslator;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -659,7 +660,7 @@ public class RepositoriesTypeManager {
   }
 
   public static class AttachmentDescriptor {
-    private UserDetail currentUser = null;
+    private User currentUser = null;
     private String componentId = null;
     private String resourceId = null;
     private String oldSilverpeasId = null;
@@ -675,11 +676,11 @@ public class RepositoriesTypeManager {
     private boolean publicVersionRequired;
     private String versionComment;
 
-    public UserDetail getCurrentUser() {
+    public User getCurrentUser() {
       return currentUser;
     }
 
-    public AttachmentDescriptor setCurrentUser(final UserDetail currentUser) {
+    public AttachmentDescriptor setCurrentUser(final User currentUser) {
       this.currentUser = currentUser;
       return this;
     }

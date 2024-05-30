@@ -27,6 +27,8 @@ package org.silverpeas.core.contribution.model;
 import org.silverpeas.core.ResourceReference;
 
 import java.io.Serializable;
+import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * A thumbnail is an image summarizing a type of resource or the content of a contribution. Usually
@@ -100,4 +102,12 @@ public interface Thumbnail extends Serializable {
    * @return the URL of the non cropped thumbnail.
    */
   String getNonCroppedURL();
+
+  /**
+   * Gets the absolute path of this thumbnail in the file system. If no path is defined for this
+   * image (for example the image comes from an hyperlink), then nothing is returned.
+   * @return the path of the thumbnail in the file system or nothing if the image is provided by an
+   * hyperlink.
+   */
+  Optional<Path> getPath();
 }

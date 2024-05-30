@@ -41,7 +41,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -58,14 +57,6 @@ import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = 4084217276750892258L;
 
-  /**
-   * Method declaration
-   * @param req
-   * @param res
-   * @throws IOException
-   * @throws ServletException
-   *
-   */
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) {
     try {
@@ -75,14 +66,6 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
     }
   }
 
-  /**
-   * Method declaration
-   * @param req
-   * @param res
-   * @throws IOException
-   * @throws ServletException
-   *
-   */
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) {
     try {

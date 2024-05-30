@@ -53,7 +53,7 @@ public class SilverpeasFile extends File {
   public static final SilverpeasFile NO_FILE = new SilverpeasFile("", "", "");
 
   private final String instanceId;
-  private String mimeType;
+  private final String mimeType;
 
   /**
    * Creates a new Silverpeas file belonging to the specified component instance and located at the
@@ -171,6 +171,7 @@ public class SilverpeasFile extends File {
    * @throws java.io.IOException if an error occurs while moving this file into the specified
    * directory
    */
+  @SuppressWarnings("UnusedReturnValue")
   public SilverpeasFile moveInto(String directoryPath) throws IOException {
     SilverpeasFile movedFile = NO_FILE;
     if (exists()) {
@@ -193,6 +194,7 @@ public class SilverpeasFile extends File {
    * @throws java.io.IOException if an error occurs while copying this file into the specified
    * directory
    */
+  @SuppressWarnings("unused")
   public SilverpeasFile copyInto(String directoryPath) throws IOException {
     SilverpeasFile copiedFile = NO_FILE;
     if (exists()) {
@@ -241,6 +243,7 @@ public class SilverpeasFile extends File {
    * Indicates if the current file is of type OpenOffice compatible.
    * @return true if it is a OpenOffice compatible file, false otherwise.
    */
+  @SuppressWarnings("unused")
   public boolean isOpenOfficeCompatible() {
     return FileUtil.isOpenOfficeCompatible(getPath());
   }
