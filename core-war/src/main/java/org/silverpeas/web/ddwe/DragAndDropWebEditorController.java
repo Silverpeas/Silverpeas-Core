@@ -25,18 +25,17 @@ package org.silverpeas.web.ddwe;
 
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.contribution.model.*;
 import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.EncodingException;
+import org.silverpeas.core.importexport.control.RepositoriesTypeManager;
 import org.silverpeas.core.mail.MailAddress;
-import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.wbe.WbeEdition;
@@ -59,6 +58,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -67,6 +70,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -148,7 +152,7 @@ public class DragAndDropWebEditorController extends
     return process(context, e -> {
       // first creating unique tmp file and copying the request content
       final String tmpFileName =
-          UUID.randomUUID().toString() + "_" + context.getUser().getId() + "_" +
+          UUID.randomUUID() + "_" + context.getUser().getId() + "_" +
               context.getFileId();
       final java.nio.file.Path tmpFile = Paths.get(getTemporaryPath(), tmpFileName);
       try (InputStream is = new BufferedInputStream(context.getRequest().getInputStream())) {
@@ -190,6 +194,62 @@ public class DragAndDropWebEditorController extends
       }
       return JSONCodec.encodeObject(o -> o.put("status", "stored"));
     });
+  }
+
+  @POST
+  @Path("thumbnail")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String storeThumbnail(final DragAndDropWebEditorRequestContext context) {
+    return process(context, e -> {
+      if (!context.getRequest().getContentType().contains(MediaType.APPLICATION_JSON)) {
+        throw new WebApplicationException(Status.BAD_REQUEST);
+      }
+      String contributionId = e.getFile().linkedToContribution()
+          .orElseThrow(() -> new WebApplicationException(Status.CONFLICT))
+          .getLocalId();
+      try {
+        String json = new String(context.getRequest().getInputStream().readAllBytes(),
+            Charsets.UTF_8);
+        SimpleContributionEntity detail = JSONCodec.decode(json, SimpleContributionEntity.class);
+        ApplicationService service =
+            ApplicationService.getInstance(detail.getId().getComponentInstanceId());
+        service.getContributionById(detail.getId())
+            .filter(WithThumbnail.class::isInstance)
+            .map(WithThumbnail.class::cast)
+            .map(WithThumbnail::getThumbnail)
+            .flatMap(Thumbnail::getPath)
+            .ifPresent(img -> {
+              var descriptor = new RepositoriesTypeManager.AttachmentDescriptor()
+                  .setCurrentUser(e.getUser().getUser())
+                  .setComponentId(e.getFile().componentInstanceId())
+                  .setResourceId(contributionId)
+                  .setDocumentType(DocumentType.image)
+                  .setFile(img.toFile())
+                  .setContentLanguage(getLanguage())
+                  .setCreationDate(new Date())
+                  .setHasToBeIndexed(false)
+                  .setComponentVersionActivated(false)
+                  .setPublicVersionRequired(false);
+              var thumbnail = copyThumbnail(descriptor);
+              detail.setThumbnailUrl(context.getRequest().getContextPath() +
+                  thumbnail.getAttachmentURL());
+            });
+        return JSONCodec.encode(detail);
+      } catch (EncodingException ex) {
+        throw new WebApplicationException(Status.BAD_REQUEST);
+      } catch (IOException ex) {
+        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      }
+    });
+  }
+
+  private static SimpleDocument copyThumbnail(
+      RepositoriesTypeManager.AttachmentDescriptor descriptor) {
+    try {
+      return RepositoriesTypeManager.handleFileToAttach(descriptor);
+    } catch (IOException ex) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @GET
@@ -340,6 +400,28 @@ public class DragAndDropWebEditorController extends
       final String error = format("User {0} can not modify the file {1}", user.getId(), wbeFile);
       logger().error(error);
       throw new WebApplicationException(Status.UNAUTHORIZED);
+    }
+  }
+
+  @XmlRootElement
+  @XmlAccessorType(value = XmlAccessType.FIELD)
+  private static class SimpleContributionEntity {
+    @XmlElement
+    private String id;
+    @XmlElement
+    private String thumbnailUrl;
+
+    @SuppressWarnings("unused")
+    public String getThumbnailUrl() {
+      return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+      this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public ContributionIdentifier getId() {
+      return ContributionIdentifier.decode(id);
     }
   }
 }
