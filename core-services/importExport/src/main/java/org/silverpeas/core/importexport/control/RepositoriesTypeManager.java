@@ -29,6 +29,7 @@ import org.apache.commons.text.translate.LookupTranslator;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
@@ -123,14 +124,6 @@ public class RepositoriesTypeManager {
 
   }
 
-  /**
-   * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
-   * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
-   * @param repositoryTypes - objet contenant toutes les informations de création
-   * des publications du path défini
-   * @return un objet ComponentReport contenant les informations de création des publications
-   * unitaires et nécéssaire au rapport détaillé
-   */
   public void processImport(List<RepositoryType> repositoryTypes, ImportSettings settings,
       ImportReportManager reportManager) {
     for (final RepositoryType repType : repositoryTypes) {
@@ -595,15 +588,6 @@ public class RepositoriesTypeManager {
     }
   }
 
-  /**
-   * Méthode récursive appelée dans le cas de l'importation massive récursive avec création de
-   * nouveau topic: chaque sous dossier entrainera la création d'un topic de même nom.
-   *
-   * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
-   * permettant de le compléter quelque soit le niveau de récursivité.
-   * @return the list of publications created by the import.
-   * @throws ImportExportException
-   */
   public List<PublicationDetail> processImportRecursiveReplicate(ImportReportManager reportManager,
       MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
       ImportSettings settings)
@@ -622,7 +606,7 @@ public class RepositoriesTypeManager {
         }
       } else if (file.isDirectory()) {
         NodeDetail nodeDetail =
-            gedIE.addSubTopicToTopic(file, Integer.valueOf(settings.getFolderId()), massiveReport);
+            gedIE.addSubTopicToTopic(file, Integer.parseInt(settings.getFolderId()), massiveReport);
         // Traitement récursif spécifique
         ImportSettings recursiveSettings = settings.clone();
         recursiveSettings.setPathToImport(file.getAbsolutePath());
@@ -637,6 +621,10 @@ public class RepositoriesTypeManager {
   private List<File> getPathContent(File path) {
     // Récupération du contenu du dossier
     String[] listContenuStringPath = path.list();
+
+    if (listContenuStringPath == null) {
+      return List.of();
+    }
 
     // Tri alphabétique du contenu
     Arrays.sort(listContenuStringPath);
@@ -663,7 +651,7 @@ public class RepositoriesTypeManager {
   }
 
   public static class AttachmentDescriptor {
-    private UserDetail currentUser = null;
+    private User currentUser = null;
     private String componentId = null;
     private String resourceId = null;
     private String oldSilverpeasId = null;
@@ -675,11 +663,11 @@ public class RepositoriesTypeManager {
     private boolean isComponentVersionActivated;
     private boolean publicVersionRequired;
 
-    public UserDetail getCurrentUser() {
+    public User getCurrentUser() {
       return currentUser;
     }
 
-    public AttachmentDescriptor setCurrentUser(final UserDetail currentUser) {
+    public AttachmentDescriptor setCurrentUser(final User currentUser) {
       this.currentUser = currentUser;
       return this;
     }

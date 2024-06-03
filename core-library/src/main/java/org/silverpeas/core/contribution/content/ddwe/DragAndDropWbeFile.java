@@ -150,16 +150,19 @@ public class DragAndDropWbeFile extends SimpleWbeFile {
   }
 
   @Override
-  public boolean canBeAccessedBy(final User user) {
-    return true;
-  }
-
-  @Override
   public boolean canBeModifiedBy(final User user) {
     return true;
   }
 
   private DragAndDropWebEditorStore getContent() {
     return content;
+  }
+
+  /**
+   * Gets the unique identifier of the component instance within which this WBE file is managed.
+   * @return the unique identifier of a component instance.
+   */
+  public String componentInstanceId() {
+    return getContent().getForeignId().getComponentInstanceId();
   }
 }

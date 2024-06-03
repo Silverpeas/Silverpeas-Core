@@ -27,7 +27,11 @@ import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
+
+import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * Representation of a thumbnail of an object.
@@ -174,5 +178,21 @@ public class ThumbnailDetail implements Thumbnail {
     }
     return FileServerUtils.getUrl(getInstanceId(), "thumbnail", image, getMimeType(),
         publicationSettings.getString("imagesSubDirectory"));
+  }
+
+  @Override
+  public Optional<Path> getPath() {
+    String image;
+    if (getCropFileName() != null) {
+      image = getCropFileName();
+    } else {
+      image = getOriginalFileName();
+    }
+    if (image.startsWith("/")) {
+      return Optional.empty();
+    }
+    String directory = FileRepositoryManager.getAbsolutePath(getInstanceId()) +
+        publicationSettings.getString("imagesSubDirectory");
+    return Optional.of(Path.of(directory, image));
   }
 }
