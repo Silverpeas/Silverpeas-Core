@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response;
 /**
  * <p>Openfire server management service</p>
  * <p>It implements the access mechanism to the XMPP server OpenFire.</p>
+ *
  * @author remipassmoilesel
  */
 @Service
@@ -51,8 +52,8 @@ public class OpenfireServer implements ChatServer {
       "Error while creating XMPP relationship: {0}";
   private static final String ERROR_RELATIONSHIP_DEL_PATTERN =
       "Error while deleting XMPP relationship: {0}";
-  
-  private SilverLogger logger = SilverLogger.getLogger(this);
+
+  private final SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
    * URL target of the REST requests.
@@ -72,18 +73,16 @@ public class OpenfireServer implements ChatServer {
   public void createUser(final User user) {
     // get cross domain login and password
     ChatUser chatUser = ChatUser.fromUser(user);
-    Response response = null;
-    try {
-      HttpRequester requester = request(url);
-      response = requester.post(o -> {
-        o.put("username", chatUser.getChatLogin())
-            .put("password", chatUser.getChatPassword())
-            .put("name", chatUser.getDisplayedName());
-        if (StringUtil.isDefined(chatUser.getEmailAddress())) {
-          o.put("email", chatUser.getEmailAddress());
-        }
-        return o;
-      });
+    try (HttpRequester requester = request(url);
+         Response response = requester.post(o -> {
+           o.put("username", chatUser.getChatLogin())
+               .put("password", chatUser.getChatPassword())
+               .put("name", chatUser.getDisplayedName());
+           if (StringUtil.isDefined(chatUser.getEmailAddress())) {
+             o.put("email", chatUser.getEmailAddress());
+           }
+           return o;
+         })) {
 
       if (response.getStatus() != HttpRequester.STATUS_OK) {
         logger.error(ERROR_USER_ADD_PATTERN,
@@ -95,21 +94,14 @@ public class OpenfireServer implements ChatServer {
       logger.error(ERROR_USER_ADD_PATTERN, e.getMessage());
       throw new ChatServerException(
           SilverpeasExceptionMessages.failureOnAdding(XMPP_USER, chatUser.getId()), e);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
     }
   }
 
   @Override
   public void deleteUser(final User user) {
     ChatUser chatUser = ChatUser.fromUser(user);
-    Response response = null;
-    try {
-      HttpRequester requester = request(url, chatUser.getChatLogin());
-      response = requester.delete();
-
+    try (HttpRequester requester = request(url, chatUser.getChatLogin());
+         Response response = requester.delete()) {
       if (response.getStatus() != HttpRequester.STATUS_OK) {
         logger.error(ERROR_USER_DEL_PATTERN,
             response.getStatusInfo().getReasonPhrase());
@@ -120,10 +112,6 @@ public class OpenfireServer implements ChatServer {
       logger.error(ERROR_USER_DEL_PATTERN, e.getMessage());
       throw new ChatServerException(
           SilverpeasExceptionMessages.failureOnDeleting(XMPP_USER, chatUser.getId()), e);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
     }
   }
 
@@ -131,11 +119,10 @@ public class OpenfireServer implements ChatServer {
   public void createRelationShip(final User user1, final User user2) {
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);
-    Response response = null;
-    try {
-      HttpRequester requester = request(url, chatUser1.getChatLogin(), "roster");
-      response =
-          requester.post(o -> o.put("jid", chatUser2.getChatId()).put("subscriptionType", "3"));
+    try (HttpRequester requester = request(url, chatUser1.getChatLogin(), "roster");
+         Response response =
+             requester.post(o -> o.put("jid", chatUser2.getChatId())
+                 .put("subscriptionType", "3"))) {
 
       if (response.getStatus() == HttpRequester.STATUS_CONFLICT) {
         logger.warn("The XMPP relationship between users {0} and {1} already exists!",
@@ -151,10 +138,6 @@ public class OpenfireServer implements ChatServer {
       logger.error(ERROR_RELATIONSHIP_ADD_PATTERN, e.getMessage());
       throw new ChatServerException(SilverpeasExceptionMessages.failureOnAdding(XMPP_RELATIONSHIP,
           chatUser1.getId() + BETWEEN + chatUser2.getId()), e);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
     }
   }
 
@@ -163,10 +146,9 @@ public class OpenfireServer implements ChatServer {
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);
 
-    Response response = null;
-    try {
-      HttpRequester requester = request(chatUser1.getChatLogin(), "roster", chatUser2.getChatId());
-      response = requester.delete();
+    try (HttpRequester requester =
+             request(chatUser1.getChatLogin(), "roster", chatUser2.getChatId());
+         Response response = requester.delete()) {
 
       if (response.getStatus() != HttpRequester.STATUS_OK) {
         logger.error(ERROR_RELATIONSHIP_DEL_PATTERN,
@@ -179,30 +161,20 @@ public class OpenfireServer implements ChatServer {
       logger.error(ERROR_RELATIONSHIP_ADD_PATTERN, e.getMessage());
       throw new ChatServerException(SilverpeasExceptionMessages.failureOnAdding(XMPP_RELATIONSHIP,
           chatUser1.getId() + BETWEEN + chatUser2.getId()), e);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
     }
   }
 
   @Override
   public boolean isUserExisting(final User user) {
     ChatUser chatUser = ChatUser.fromUser(user);
-    Response response = null;
-    try {
-      HttpRequester requester = request(url, chatUser.getChatLogin());
-      response = requester.head();
+    try (HttpRequester requester = request(url, chatUser.getChatLogin());
+         Response response = requester.head()) {
       return response.getStatus() == HttpRequester.STATUS_OK;
 
     } catch (Exception e) {
       logger.error("Error while checking XMPP user: ", e.getMessage());
       throw new ChatServerException(
           SilverpeasExceptionMessages.failureOnGetting(XMPP_USER, chatUser.getId()));
-    } finally {
-      if (response != null) {
-        response.close();
-      }
     }
   }
 

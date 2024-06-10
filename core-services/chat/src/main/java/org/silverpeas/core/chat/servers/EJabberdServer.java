@@ -38,6 +38,7 @@ import java.util.function.UnaryOperator;
 /**
  * Adapter to a remote ejabberd service. It implements the mechanisms to access an ejabberd service
  * in order to register users and to create networking relationships.
+ *
  * @author mmoquillon
  */
 @DefaultChatServer
@@ -56,7 +57,7 @@ public class EJabberdServer implements ChatServer {
   private static final String CONTENT_ATTR = "content";
   private static final String GROUP_ATTR = "group";
 
-  private SilverLogger logger = SilverLogger.getLogger(this);
+  private final SilverLogger logger = SilverLogger.getLogger(this);
 
   private final String url;
 
@@ -173,20 +174,18 @@ public class EJabberdServer implements ChatServer {
 
   private <T> T request(String command, UnaryOperator<JSONObject> argsProvider,
       Function<Response, T> responseProcessor) {
-    Response response = null;
-    try {
-      response = this.requester.at(url, command).header("X-Admin", "true").post(argsProvider);
+    try (Response response =
+             this.requester.at(url,command)
+                 .header("X-Admin", "true")
+                 .post(argsProvider)){
 
       if (response.getStatus() != HttpRequester.STATUS_OK) {
         processError(command, response);
       }
+
       return responseProcessor.apply(response);
-    } catch (Exception e) {
+    } catch(Exception e){
       throw new ChatServerException("Error while performing " + command + ": " + e.getMessage(), e);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
     }
   }
 

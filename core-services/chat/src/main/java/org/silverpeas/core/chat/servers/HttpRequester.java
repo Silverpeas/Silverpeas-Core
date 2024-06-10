@@ -29,11 +29,7 @@ import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.security.GeneralSecurityException;
@@ -41,7 +37,6 @@ import java.util.function.UnaryOperator;
 
 /**
  * An HTTP requester. It wraps the HTTP mechanism to communicate with a REST resource.
- *
  * {@link HttpRequester} instances are heavy-weight objects. Initialization as well as disposal
  * may be a rather expensive operation. It is therefore advised to construct only
  * a small number of {@link HttpRequester} instances in the application. Thoses instances
