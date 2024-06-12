@@ -26,31 +26,32 @@ package org.silverpeas.core.web.filter;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.jcr.webdav.WebDavProtocol;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.SilverpeasWebResource;
 import org.silverpeas.core.web.filter.exception.WebSecurityException;
 import org.silverpeas.core.web.filter.exception.WebSqlInjectionSecurityException;
 import org.silverpeas.core.web.filter.exception.WebXssInjectionSecurityException;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.jcr.webdav.WebDavProtocol;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.UriBuilder;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,6 +63,7 @@ import static org.silverpeas.core.util.URLUtil.getCurrentServerURL;
  * <p>
  * For now, this filter ensures HTTPS is used in secured connections, blocks content sniffing of web
  * browsers, and checks XSS and SQL injections in URLs.
+ *
  * @author Yohann Chastagnier
  */
 public class MassiveWebSecurityFilter implements Filter {
@@ -128,7 +130,7 @@ public class MassiveWebSecurityFilter implements Filter {
   @Override
   public void doFilter(final ServletRequest request, final ServletResponse response,
       final FilterChain chain) throws IOException, ServletException {
-    final HttpRequest httpRequest = (HttpRequest) request;
+    final HttpRequest httpRequest = new HttpRequestWrapper((HttpRequest) request);
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
     try {
       setDefaultSecurity(httpRequest, httpResponse);
@@ -205,8 +207,37 @@ public class MassiveWebSecurityFilter implements Filter {
         // this header isn't taken in charge by all web browsers.
         httpResponse.setHeader("X-XSS-Protection", "1");
       }
+      checkRequestEntityForInjection(httpRequest);
       checkRequestParametersForInjection(httpRequest, isWebSqlInjectionSecurityEnabled,
           isWebXssInjectionSecurityEnabled);
+    }
+  }
+
+  private void checkRequestEntityForInjection(final HttpRequest request)
+      throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
+    long start = System.currentTimeMillis();
+    try {
+      boolean hasSupportedWebEntity = Optional.ofNullable(request.getContentType())
+          .map(String::toLowerCase)
+          .filter(c -> c.contains("json") || c.contains("xml"))
+          .isPresent();
+      if (hasSupportedWebEntity) {
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" :
+            request.getCharacterEncoding();
+        InputStream body = request.getInputStream();
+        if (body.markSupported()) {
+          body.mark(Integer.MAX_VALUE);
+          String entity = new String(body.readAllBytes(), charset);
+          checkValueForInjection(entity, true, true);
+          body.reset();
+        }
+      }
+    } catch (IOException e) {
+      throw new InternalServerErrorException(e);
+    } finally {
+      long end = System.currentTimeMillis();
+      logger.debug("Massive Web Security Verify on request entity: " +
+          DurationFormatUtils.formatDurationHMS(end - start));
     }
   }
 
@@ -231,7 +262,7 @@ public class MassiveWebSecurityFilter implements Filter {
       }
     } finally {
       long end = System.currentTimeMillis();
-      logger.debug("Massive Web Security Verify duration : " +
+      logger.debug("Massive Web Security Verify on request parameters: " +
           DurationFormatUtils.formatDurationHMS(end - start));
     }
   }
@@ -239,36 +270,42 @@ public class MassiveWebSecurityFilter implements Filter {
   private void checkParameterValues(final Map.Entry<String, String[]> parameterEntry,
       final boolean sqlInjectionToVerify, final boolean xssInjectionToVerify)
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
-    Matcher patternMatcherFound;
     for (String parameterValue : parameterEntry.getValue()) {
+      checkValueForInjection(parameterValue, sqlInjectionToVerify, xssInjectionToVerify);
+    }
+  }
 
-      // Each sequence of spaces is replaced by one space
-      parameterValue = parameterValue.replaceAll("\\s+", " ");
+  private void checkValueForInjection(String value, boolean sqlInjectionToVerify,
+      boolean xssInjectionToVerify) throws WebSqlInjectionSecurityException,
+      WebXssInjectionSecurityException {
+    Matcher patternMatcherFound;
+    // Each sequence of spaces is replaced by one space
+    value = value.replaceAll("\\s+", " ");
 
-      // SQL injections?
-      if (sqlInjectionToVerify && (patternMatcherFound =
-          findPatternMatcherFromString(SQL_PATTERNS, parameterValue, true)) != null) {
+    // SQL injections?
+    if (sqlInjectionToVerify && (patternMatcherFound =
+        findPatternMatcherFromString(SQL_PATTERNS, value, true)) != null) {
 
-        if (!verifySqlDeeply(patternMatcherFound, parameterValue)) {
-          patternMatcherFound = null;
-        }
-
-        if (patternMatcherFound != null) {
-          throw new WebSqlInjectionSecurityException();
-        }
+      if (!verifySqlDeeply(patternMatcherFound, value)) {
+        patternMatcherFound = null;
       }
 
-      // XSS injections?
-      if (xssInjectionToVerify &&
-          findPatternMatcherFromString(XSS_PATTERNS, parameterValue, false) != null) {
-        throw new WebXssInjectionSecurityException();
+      if (patternMatcherFound != null) {
+        throw new WebSqlInjectionSecurityException();
       }
+    }
+
+    // XSS injections?
+    if (xssInjectionToVerify &&
+        findPatternMatcherFromString(XSS_PATTERNS, value, false) != null) {
+      throw new WebXssInjectionSecurityException();
     }
   }
 
   /**
    * Verifies deeply a matched SQL string. Indeed, throwing an exception of XSS attack only on SQL
    * detection is not enough. This method tries to detect a known table name from the SQL string.
+   *
    * @param matcherFound a pattern matcher
    * @param statement a SQL statement to check
    * @return true of the SQL statement is considered as safe. False otherwise.
@@ -297,6 +334,7 @@ public class MassiveWebSecurityFilter implements Filter {
   /**
    * Extracts the whole table name matching the given pattern. Indeed, the matcher can find a table
    * name that is a part of another one.
+   *
    * @param matcher a pattern matcher.
    * @param matchedString a SQL statement part
    * @return a whole table name
@@ -330,6 +368,7 @@ public class MassiveWebSecurityFilter implements Filter {
   /**
    * Gets a pattern that permits to check deeply a detected SELECT FROM with known table names. A
    * cache is handled by this method in order to avoid building at every call the same pattern.
+   *
    * @return a regexp pattern.
    */
   private synchronized Pattern getSqlTableNamesPattern() {
@@ -357,6 +396,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
   /**
    * Must the given parameter be skipped from SQL injection verifying?
+   *
    * @param parameterName name of a parameter.
    * @return true if the given parameter has to be skipped. False otherwise.
    */
@@ -367,6 +407,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
   /**
    * Must the given parameter be skipped from XSS injection verifying?
+   *
    * @param parameterName name of a parameter.
    * @return true of the given parameter has to be skipped. False otherwise.
    */
@@ -378,6 +419,7 @@ public class MassiveWebSecurityFilter implements Filter {
   /**
    * Gets the matcher corresponding to the pattern in the given list of patterns and for which the
    * specified string is compliant.
+   *
    * @param patterns a list of pattern to apply on the given string.
    * @param string a string to check.
    * @param startsAndEndsByWholeWord a flag indicating the pattern should match for the first and
@@ -401,6 +443,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
   /**
    * Verifies that the first word of matching starts with a whole word.
+   *
    * @param matcher a matcher.
    * @param matchedString a string.
    * @return true if the first word of matching starts with a whole word
@@ -412,6 +455,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
   /**
    * Verifies that the first word of matching ends with a whole word.
+   *
    * @param matcher a matcher
    * @param matchedString a string
    * @return true if the first word of matching ends with a whole word.
@@ -434,5 +478,137 @@ public class MassiveWebSecurityFilter implements Filter {
   @Override
   public void destroy() {
     // Nothing to do.
+  }
+
+  /**
+   * Wrapper of an {@link HttpRequest} to buffer the input stream on its body in order to
+   * allow access and back-and-forth navigation within the body content through the input
+   * stream.
+   */
+  private static class HttpRequestWrapper extends HttpRequest {
+
+    private BufferedServletInputStream input;
+
+    /**
+     * Constructs a request object wrapping the given request.
+     *
+     * @param request the {@link HttpServletRequest} to be wrapped.
+     * @throws IllegalArgumentException if the request is null
+     */
+    public HttpRequestWrapper(HttpRequest request) {
+      super(request);
+    }
+
+    /**
+     * Gets the input stream on the content of the request's body. The input stream is buffered and,
+     * as such, position in the stream can be marked and hence reset to the last mark (last
+     * marked position in the stream).
+     * @return a buffered {@link ServletInputStream}.
+     * @throws IOException if an error occurs while opening an input stream on the content of the
+     * request's body.
+     */
+    @Override
+    public ServletInputStream getInputStream() throws IOException {
+      if (input == null) {
+        input = new BufferedServletInputStream(super.getInputStream());
+      }
+      return input;
+    }
+
+    private static class BufferedServletInputStream extends ServletInputStream {
+
+      private final ServletInputStream inputStream;
+      private final BufferedInputStream buffer;
+
+      private BufferedServletInputStream(ServletInputStream inputStream) {
+        this.inputStream = inputStream;
+        this.buffer = new BufferedInputStream(inputStream);
+      }
+
+      @Override
+      public boolean isFinished() {
+        try {
+          return this.buffer.available() == 0;
+        } catch (IOException e) {
+          return true;
+        }
+      }
+
+      @Override
+      public boolean isReady() {
+        return !isFinished();
+      }
+
+      @Override
+      public void setReadListener(ReadListener readListener) {
+        this.inputStream.setReadListener(readListener);
+      }
+
+      @Override
+      public int read() throws IOException {
+        return buffer.read();
+      }
+
+      @Override
+      public int read(@NonNull byte[] b, int off, int len) throws IOException {
+        return buffer.read(b, off, len);
+      }
+
+      @Override
+      public long skip(long n) throws IOException {
+        return buffer.skip(n);
+      }
+
+      @Override
+      public int available() throws IOException {
+        return buffer.available();
+      }
+
+      @Override
+      public synchronized void mark(int readLimit) {
+        buffer.mark(readLimit);
+      }
+
+      @Override
+      public synchronized void reset() throws IOException {
+        buffer.reset();
+      }
+
+      @Override
+      public boolean markSupported() {
+        return buffer.markSupported();
+      }
+
+      @Override
+      public void close() throws IOException {
+        buffer.close();
+      }
+
+      @Override
+      public int read(@NonNull byte[] b) throws IOException {
+        return buffer.read(b);
+      }
+
+      @Override
+      public byte[] readAllBytes() throws IOException {
+        return buffer.readAllBytes();
+      }
+
+      @Override
+      public byte[] readNBytes(int len) throws IOException {
+        return buffer.readNBytes(len);
+      }
+
+      @Override
+      public int readNBytes(byte[] b, int off, int len) throws IOException {
+        return buffer.readNBytes(b, off, len);
+      }
+
+      @Override
+      public long transferTo(OutputStream out) throws IOException {
+        return buffer.transferTo(out);
+      }
+
+    }
   }
 }
