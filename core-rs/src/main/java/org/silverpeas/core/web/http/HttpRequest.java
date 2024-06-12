@@ -69,7 +69,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   private List<FileItem> fileItems = null;
 
-  private HttpRequest(HttpServletRequest request) {
+  protected HttpRequest(HttpServletRequest request) {
     super(request);
     // The decorated request is put into attributes in order to provide it to the REST web
     // services that deals with proxies...

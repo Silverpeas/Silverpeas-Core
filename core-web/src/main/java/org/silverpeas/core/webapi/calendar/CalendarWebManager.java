@@ -675,7 +675,7 @@ public class CalendarWebManager {
    * @param startDate the start date of time window.
    * @param endDate the end date of time window.
    * @param users the users to filter on.
-   * @return a list of entities of calendar event occurrences mapped by user identifiers.
+   * @return a map of a list of entities of calendar event occurrences mapped by user identifiers.
    */
   protected Map<String, List<CalendarEventOccurrence>> getAllEventOccurrencesByUserIds(
       final Pair<List<String>, User> currentUserAndComponentInstanceId, LocalDate startDate,
@@ -767,7 +767,7 @@ public class CalendarWebManager {
 
   /**
    * Gets next event time windows from settings.
-   * @return list of integer which represents months.
+   * @return an array of integers representing months.
    */
   protected Integer[] getNextEventTimeWindows() {
     final String[] timeWindows = settings.getString("calendar.nextEvents.time.windows").split(",");
