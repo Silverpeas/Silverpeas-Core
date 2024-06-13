@@ -284,15 +284,23 @@ public class ProcessInstanceImpl
     Calendar now = Calendar.getInstance();
     Date timeOutDate = null;
     String delay = timeOutAction.getDelay();
-    final int delayAsInt = Integer.parseInt(delay.substring(0, delay.length() - 1));
-    if (StringUtil.isDefined(delay) && delay.endsWith("m")) {
-      now.add(Calendar.MONTH, delayAsInt);
-      timeOutDate = now.getTime();
-    } else if (StringUtil.isDefined(delay) && delay.endsWith("d")) {
-      now.add(Calendar.DAY_OF_YEAR, delayAsInt);
-      timeOutDate = now.getTime();
-    } else if (StringUtil.isDefined(delay) && delay.endsWith("h")) {
-      now.add(Calendar.HOUR, delayAsInt);
+
+    if (StringUtil.isDefined(delay) && !StringUtils.isNumeric(delay)) {
+      char unit = delay.charAt(delay.length()-1);
+      final int delayAsInt = Integer.parseInt(delay.substring(0, delay.length() - 1));
+      switch (unit) {
+        case 'm':
+          now.add(Calendar.MONTH, delayAsInt);
+          break;
+        case 'd':
+          now.add(Calendar.DAY_OF_YEAR, delayAsInt);
+          break;
+        case 'h':
+          now.add(Calendar.HOUR, delayAsInt);
+          break;
+        default:
+          now.add(Calendar.MINUTE, delayAsInt);
+      }
       timeOutDate = now.getTime();
     } else if (StringUtil.isDefined(delay) && StringUtils.isNumeric(delay)) {
       // If no unit is specified, we consider the value as a number of minutes
