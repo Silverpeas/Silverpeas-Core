@@ -51,7 +51,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,7 +129,8 @@ public class MassiveWebSecurityFilter implements Filter {
   @Override
   public void doFilter(final ServletRequest request, final ServletResponse response,
       final FilterChain chain) throws IOException, ServletException {
-    final HttpRequest httpRequest = new HttpRequestWrapper((HttpRequest) request);
+    final HttpRequest httpRequest = isWebEntityEmbodiedIn(request) ?
+        BufferedHttpRequest.decorate(request) : HttpRequest.decorate(request);
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
     try {
       setDefaultSecurity(httpRequest, httpResponse);
@@ -217,10 +217,7 @@ public class MassiveWebSecurityFilter implements Filter {
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
     long start = System.currentTimeMillis();
     try {
-      boolean hasSupportedWebEntity = Optional.ofNullable(request.getContentType())
-          .map(String::toLowerCase)
-          .filter(c -> c.contains("json") || c.contains("xml"))
-          .isPresent();
+      boolean hasSupportedWebEntity = isWebEntityEmbodiedIn(request);
       if (hasSupportedWebEntity) {
         String charset = request.getCharacterEncoding() == null ? "UTF-8" :
             request.getCharacterEncoding();
@@ -480,14 +477,37 @@ public class MassiveWebSecurityFilter implements Filter {
     // Nothing to do.
   }
 
+  private static boolean isWebEntityEmbodiedIn(ServletRequest request) {
+    String contentType = request.getContentType();
+    if (StringUtil.isDefined(contentType)) {
+      contentType = contentType.toLowerCase();
+      return contentType.contains("json") || contentType.contains("xml");
+    }
+    return false;
+  }
+
   /**
-   * Wrapper of an {@link HttpRequest} to buffer the input stream on its body in order to
-   * allow access and back-and-forth navigation within the body content through the input
-   * stream.
+   * A specific {@link HttpRequest} in which the input stream on its body is buffered in order to
+   * allow access and back-and-forth navigation within the body content through the input stream.
    */
-  private static class HttpRequestWrapper extends HttpRequest {
+  private static class BufferedHttpRequest extends HttpRequest {
 
     private BufferedServletInputStream input;
+
+    /**
+     * Decorates the specified {@link ServletRequest}.
+     * @param request the incoming request to decorate.
+     * @return an {@link HttpRequest} instance decorating the given incoming request by adding a
+     * buffer capability to the input stream on its body content.
+     */
+    public static HttpRequest decorate(ServletRequest request) {
+      if (request instanceof BufferedHttpRequest) {
+        return (BufferedHttpRequest) request;
+      } else if (request instanceof HttpRequest) {
+        return new BufferedHttpRequest((HttpRequest) request);
+      }
+      return HttpRequest.decorate(new BufferedHttpRequest(request));
+    }
 
     /**
      * Constructs a request object wrapping the given request.
@@ -495,14 +515,23 @@ public class MassiveWebSecurityFilter implements Filter {
      * @param request the {@link HttpServletRequest} to be wrapped.
      * @throws IllegalArgumentException if the request is null
      */
-    public HttpRequestWrapper(HttpRequest request) {
+    private BufferedHttpRequest(ServletRequest request) {
+      super((HttpServletRequest) request);
+    }
+
+    /**
+     * Copy constructor from another {@link HttpRequest}.
+     * @param request the {@link HttpRequest} to copy into this new instance.
+     */
+    private BufferedHttpRequest(HttpRequest request) {
       super(request);
     }
 
     /**
      * Gets the input stream on the content of the request's body. The input stream is buffered and,
-     * as such, position in the stream can be marked and hence reset to the last mark (last
-     * marked position in the stream).
+     * as such, position in the stream can be marked and hence reset to the last mark (last marked
+     * position in the stream).
+     *
      * @return a buffered {@link ServletInputStream}.
      * @throws IOException if an error occurs while opening an input stream on the content of the
      * request's body.
@@ -527,16 +556,12 @@ public class MassiveWebSecurityFilter implements Filter {
 
       @Override
       public boolean isFinished() {
-        try {
-          return this.buffer.available() == 0;
-        } catch (IOException e) {
-          return true;
-        }
+        return inputStream.isFinished();
       }
 
       @Override
       public boolean isReady() {
-        return !isFinished();
+        return inputStream.isReady();
       }
 
       @Override

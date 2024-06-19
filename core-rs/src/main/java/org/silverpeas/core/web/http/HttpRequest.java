@@ -69,11 +69,26 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   private List<FileItem> fileItems = null;
 
+  /**
+   * Constructs a new {@link HttpRequest} by decorating the specified {@link HttpServletRequest}.
+   * @param request the Http servlet request to decorate.
+   */
   protected HttpRequest(HttpServletRequest request) {
     super(request);
     // The decorated request is put into attributes in order to provide it to the REST web
     // services that deals with proxies...
     request.setAttribute(HttpRequest.class.getName(), this);
+  }
+
+  /**
+   * Constructs a new copy of the specified {@link HttpRequest}. Useful for {@link HttpRequest}
+   * subclasses to copy all the HttpRequest attributes and hence keep the up-to-date their state
+   * with the {@link HttpRequest} source.
+   * @param request the {@link HttpRequest} to copy.
+   */
+  protected HttpRequest(HttpRequest request) {
+    super((HttpServletRequest) request.getRequest());
+    this.fileItems = request.fileItems;
   }
 
   /**
