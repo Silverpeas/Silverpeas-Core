@@ -1,0 +1,19 @@
+{
+    "id": "integration-tests",
+    "version": "1.0.0",
+    "installsAfter": ["ghcr.io/devcontainers/features/common-utils"],
+    "name": "Integration Tests Environment",
+    "description": "Set up Widfly and tools required for running integration tests",
+    "options": {
+      "user": {
+        "type": "string",
+        "default": "silveruser",
+        "description": "Name of both the user and group for which Wildfly should run"
+      },
+      "wildfly": {
+        "type": "string",
+        "default": "",
+        "description": "Version of Wildfly to fetch and install"
+      }
+    }
+}

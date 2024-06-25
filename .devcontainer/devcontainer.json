@@ -1,0 +1,52 @@
+{
+  "name": "Silverpeas-Core",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "containerEnv": {
+    // Indicates the UID of the user to create by the environment variable USER_UID
+    "USER_UID": "${localEnv:USER_UID}",
+    // Indicates the GID of the user to create by the environment variable USER_GID
+    "USER_GID": "${localEnv:USER_GID}"
+  },
+  "remoteUser": "silveruser",
+  "mounts": [
+    {
+      "source": "${localEnv:HOME}/.m2",
+      "target": "/home/silveruser/.m2",
+      "type": "bind"
+    },
+    {
+      "source": "${localEnv:HOME}/.ssh",
+      "target": "/home/silveruser/.ssh",
+      "type": "bind"
+    }
+  ],
+  "privileged": true,
+  "features": {
+    // install Java
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "11",
+      "jdkDistro": "ms",
+      "installMaven": "true",
+      "mavenVersion": "3.9.6"
+    },
+    // install Git
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // add a user specific for dev
+    "./additional-user": {
+      "username": "silveruser"
+    },
+    // install tools required to run the integration tests
+    "./integration-tests": {
+      "user": "silveruser",
+      "wildfly": "26.1.3",
+      "installsAfter": [
+        "./additional-user"
+      ]
+    }
+  },
+  "customizations": {
+    "jetbrains": {
+      "backend": "IntelliJ"
+    }
+  }
+}

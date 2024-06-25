@@ -1,0 +1,23 @@
+{
+    "id": "additional-user",
+    "version": "1.0.0",
+    "name": "Additional Container User",
+    "description": "Add a non-root user",
+    "options": {
+        "username": {
+            "type": "string",
+            "default": "",
+            "description": "Enter name of a non-root user to configure or nothing to skip"
+        },
+        "userUid": {
+            "type": "string",
+            "default": "",
+            "description": "Enter UID for non-root user. If not set, either set from environment variable USER_UID or automatically"
+        },
+        "userGid": {
+            "type": "string",
+            "default": "",
+            "description": "Enter GID for non-root user. If not set, either set from environment variable USER_GID or automatically"
+        }
+    }
+}
