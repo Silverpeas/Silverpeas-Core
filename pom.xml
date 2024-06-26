@@ -37,7 +37,7 @@
 
   <groupId>org.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>6.4.1-SNAPSHOT</version>
+  <version>6.4.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
   <url>https://www.silverpeas.org/docs/core</url>
@@ -51,7 +51,7 @@
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
     <url>https://github.com/Silverpeas/Silverpeas-Core</url>
-    <tag>6.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
@@ -79,7 +79,7 @@
 
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
-    <next.release>6.4.1</next.release>
+    <next.release>6.4.2</next.release>
   </properties>
 
   <dependencies>
