@@ -90,9 +90,9 @@ public class MassiveWebSecurityFilter implements Filter {
 
   private static final Pattern SQL_SELECT_FROM_PATTERN = Pattern.compile("(?i)select.*from");
   private static final Pattern SQL_INSERT_VALUES_PATTERN =
-      Pattern.compile("(?i)insert( .*|.* )into.*values");
+      Pattern.compile("(?i)insert.*into.*values");
   private static final Pattern SQL_UPDATE_PATTERN = Pattern.compile("(?i)update.*set");
-  private static final Pattern SQL_DELETE_PATTERN = Pattern.compile("(?i)delete( .*|.* )from");
+  private static final Pattern SQL_DELETE_PATTERN = Pattern.compile("(?i)delete.*from");
   private static String sqlSelectPatternInspectDeeplyCacheKey = null;
 
 
@@ -113,10 +113,18 @@ public class MassiveWebSecurityFilter implements Filter {
 
     SQL_PATTERNS = new ArrayList<>(6);
     SQL_PATTERNS.add(
-        Pattern.compile("(?i)(grant|revoke)(( .*|.* )(select|insert|update|delete))+( .*|.* )on"));
+        Pattern.compile("(?i)grant(([\\s/*]+.*\\s*)(select|insert|update|delete))+" +
+            "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)to"));
     SQL_PATTERNS.add(
-        Pattern.compile("(?i)(grant|revoke)(( .*|.* )(references|alter|index|all))+( .*|.* )on"));
-    SQL_PATTERNS.add(Pattern.compile("(?i)(create|drop|alter)( .*|.* )(table|database|schema)"));
+        Pattern.compile("(?i)revoke(([\\s/*]+.*\\s*)(select|insert|update|delete))+" +
+            "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)from"));
+    SQL_PATTERNS.add(
+        Pattern.compile("(?i)grant(([\\s/*]+.*\\s*)(references|alter|index|all))+" +
+            "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)to"));
+    SQL_PATTERNS.add(
+        Pattern.compile("(?i)revoke(([\\s/*]+.*\\s*)(references|alter|index|all))+" +
+            "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)from"));
+    SQL_PATTERNS.add(Pattern.compile("(?i)(create|drop|alter)([\\s/*]+.*\\s*)(table|database|schema)"));
     SQL_PATTERNS.add(SQL_SELECT_FROM_PATTERN);
     SQL_PATTERNS.add(SQL_INSERT_VALUES_PATTERN);
     SQL_PATTERNS.add(SQL_UPDATE_PATTERN);
@@ -305,7 +313,7 @@ public class MassiveWebSecurityFilter implements Filter {
    *
    * @param matcherFound a pattern matcher
    * @param statement a SQL statement to check
-   * @return true of the SQL statement is considered as safe. False otherwise.
+   * @return true if the SQL statement is considered as safe. False otherwise.
    */
   private boolean verifySqlDeeply(final Matcher matcherFound, String statement) {
     boolean isVerified = true;

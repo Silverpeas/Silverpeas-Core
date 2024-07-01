@@ -61,11 +61,11 @@ public class MassiveWebSecurityFilterIT {
                 .build();
     }
 
-    private final static String COMMON_PARAMETER_NAME = "parameterName";
-    private final static String SKIPPED_PARAMETER_NAME = "editor";
+    private static final String COMMON_PARAMETER_NAME = "parameterName";
+    private static final String SKIPPED_PARAMETER_NAME = "editor";
 
-    private final static String[] PUNCTUATIONS = {",", "?", "-", ".", "!", "&", "~", "'", ";"};
-    private final static String[] SQL_PRIVILEGES =
+    private static final String[] PUNCTUATIONS = {",", "?", "-", ".", "!", "&", "~", "'", ";"};
+    private static final String[] SQL_PRIVILEGES =
             {"seLect", "insert", "upDate", "Delete", "references", "alter", "index", "all"};
 
     @Test
@@ -123,23 +123,24 @@ public class MassiveWebSecurityFilterIT {
         assertSQL(param("s \t\f\nGRANT SELECT ON suppliers TO smithj"), true);
         assertSQL(param("s GRANT SELECT ON suppliers TO smithj"), true);
         assertSQL(param(";GRANT SELECT ON suppliers TO smithj"), true);
-        assertSQL(param("GRANT/* SELECT */ON suppliers FROM smithj"), true);
+        assertSQL(param("GRANT/* SELECT */ON suppliers TO smithj"), true);
+        assertSQL(param("GRANT/* SELECT */ON suppliers FROM smithj"), false);
         assertSQL(param("GRANT/* */SELECT/* */ON suppliers FROM smithj"), false);
         assertSQL(param("GRANT/* */SELECT /* */ON suppliers FROM smithj"), false);
         assertSQL(param("GRANT/* */SELECT/* */ ON suppliers FROM smithj"), false);
-        assertSQL(param("GRANT/* */ SELECT /* */ON suppliers FROM smithj"), true);
-        assertSQL(param("GRANT /* */SELECT/* */ ON suppliers FROM smithj"), true);
-        assertSQL(param("GRANT /* */TOTO,SELECT,UPDATE/* */ ON suppliers FROM smithj"), true);
+        assertSQL(param("GRANT/* */SELECT/* */ON suppliers TO smithj"), true);
+        assertSQL(param("GRANT/* */SELECT/* */ON suppliers/* */TO smithj"), true);
+        assertSQL(param("GRANT /* */TOTO,SELECT,UPDATE/* */ ON suppliers TO smithj"), true);
         assertSQL(param("GRANT SELECT \t\f\rON suppliers TO smithj"), true);
         for (String privilege : SQL_PRIVILEGES) {
             assertSQL(param("GRANT " + privilege + " ON suppliers TO smithj"), true);
             assertSQL(param("GRANT \t\f\n \t\f\n " + privilege + "\t\f\n , \t\f\n" + privilege +
-                    " \t\f\n \t\f\n \t\f\nON suppliers FROM smithj"), true);
+                    " \t\f\n \t\f\n \t\f\nON suppliers TO smithj"), true);
             assertSQL(param("GRANT \t\f\n \t\f\n " + privilege + "\t\f\n \t\f\n" + privilege +
-                    " \t\f\n \t\f\n \t\f\nON suppliers FROM smithj"), true);
-            assertSQL(param("GRANT /*" + privilege + "*/" + privilege + " ON suppliers FROM smithj"),
+                    " \t\f\n \t\f\n \t\f\nON suppliers TO smithj"), true);
+            assertSQL(param("GRANT /*" + privilege + "*/" + privilege + " ON suppliers TO smithj"),
                     true);
-            assertSQL(param("GRANT " + privilege + "S ON suppliers TO smithj"), true);
+            assertSQL(param("GRANT " + privilege + "S ON suppliers TO smithj"), false);
         }
         assertSQL(param("GRANT SELECTON suppliers TO smithj"), false);
         assertSQL(param("GRANTSELECT ON suppliers TO smithj"), false);
@@ -150,7 +151,7 @@ public class MassiveWebSecurityFilterIT {
                     false);
             assertSQL(
                     param(COMMON_PARAMETER_NAME, "GRANT SELECT" + ponctuation + " ON suppliers TO smithj"),
-                    true);
+                    false);
             assertSQL(
                     param(COMMON_PARAMETER_NAME, "GRANT SELECT " + ponctuation + "ON suppliers TO smithj"),
                     true);
@@ -162,7 +163,7 @@ public class MassiveWebSecurityFilterIT {
                     true);
             assertSQL(
                     param(COMMON_PARAMETER_NAME, "GRANT" + ponctuation + " SELECT ON suppliers TO smithj"),
-                    true);
+                    false);
         }
         assertSQL(param("GRANT SELECsT, INSERsT, UPDAsTE, DELsETE ON suppliers TO smithj"), false);
     }
@@ -181,11 +182,12 @@ public class MassiveWebSecurityFilterIT {
         assertSQL(param(";REVOKE SELECT ON suppliers FROM smithj"), true);
         assertSQL(param("REVOKE SELECT ON suppliers FROM smithj"), true);
         assertSQL(param("REVOKE/* SELECT */ON suppliers FROM smithj"), true);
-        assertSQL(param("REVOKE/* */SELECT/* */ON suppliers FROM smithj"), false);
-        assertSQL(param("REVOKE/* */SELECT /* */ON suppliers FROM smithj"), false);
-        assertSQL(param("REVOKE/* */SELECT/* */ ON suppliers FROM smithj"), false);
+        assertSQL(param("REVOKE/* */SELECT/* */ON suppliers TO smithj"), false);
+        assertSQL(param("REVOKE/* */SELECT /* */ON suppliers TO smithj"), false);
+        assertSQL(param("REVOKE/* */SELECT/* */ ON suppliers TO smithj"), false);
         assertSQL(param("REVOKE/* */ SELECT /* */ON suppliers FROM smithj"), true);
         assertSQL(param("REVOKE /* */SELECT/* */ ON suppliers FROM smithj"), true);
+        assertSQL(param("REVOKE /* */SELECT/* */ON suppliers FROM smithj"), true);
         assertSQL(param("REVOKE /* */TOTO,SELECT,UPDATE/* */ ON suppliers FROM smithj"), true);
         assertSQL(param("REVOKE \t\f\nSELECT \t\f\rON suppliers FROM smithj"), true);
         for (String privilege : SQL_PRIVILEGES) {
@@ -194,7 +196,7 @@ public class MassiveWebSecurityFilterIT {
                     " \t\f\n \t\f\n \t\f\nON suppliers FROM smithj"), true);
             assertSQL(param("REVOKE \t\f\n \t\f\n " + privilege + "\t\f\n \t\f\n" + privilege +
                     " \t\f\n \t\f\n \t\f\nON suppliers FROM smithj"), true);
-            assertSQL(param("REVOKE " + privilege + "S ON suppliers FROM smithj"), true);
+            assertSQL(param("REVOKE " + privilege + "S ON suppliers FROM smithj"), false);
         }
         assertSQL(param("REVOKE SELECTON suppliers FROM smithj"), false);
         assertSQL(param("REVOKESELECT ON suppliers FROM smithj"), false);
@@ -205,7 +207,7 @@ public class MassiveWebSecurityFilterIT {
                     false);
             assertSQL(
                     param(COMMON_PARAMETER_NAME, "REVOKE SELECT" + ponctuation + " ON suppliers FROM smithj"),
-                    true);
+                    false);
             assertSQL(
                     param(COMMON_PARAMETER_NAME, "REVOKE SELECT " + ponctuation + "ON suppliers FROM smithj"),
                     true);
@@ -217,7 +219,7 @@ public class MassiveWebSecurityFilterIT {
                     true);
             assertSQL(
                     param(COMMON_PARAMETER_NAME, "REVOKE" + ponctuation + " SELECT ON suppliers FROM smithj"),
-                    true);
+                    false);
         }
         assertSQL(param("\t\f\n \t\f\n REVOKE SELECT,INSERT,UPDATE,DELETE ON suppliers FROM smithj"),
                 true);
@@ -301,7 +303,7 @@ public class MassiveWebSecurityFilterIT {
         assertSQL(param("INSERT inTo/* */catalogs (id) values"), true);
         assertSQL(param("INSERT inTo /* */catalogs (id) values"), true);
         assertSQL(param("INSERT inTo/* */ catalogs (id) values"), true);
-        assertSQL(param("INSERT/* */inTo catalogs (id) values"), false);
+        assertSQL(param("INSERT/* */inTo catalogs (id) values"), true);
         assertSQL(param("INSERT/* */ inTo catalogs (id) values"), true);
         assertSQL(param("INSERT /* */inTo catalogs (id) values"), true);
         assertSQL(param("INSERT inTo catalogs (id)/* */values"), true);
