@@ -114,12 +114,14 @@
     });
   }
 
-  function __isComponentType(el) {
-    if (el?.tagName && el.tagName.toLowerCase() === 'div' && el.classList.contains(componentType)) {
-      return {
-        tagName: 'div',
-        type : componentType
-      };
+  function __componentTypeChecker(componentType) {
+    return function (el) {
+      if (el?.tagName && el.tagName.toLowerCase() === 'div' && el.classList.contains(componentType)) {
+        return {
+          tagName: 'div',
+          type: componentType
+        };
+      }
     }
   }
 
@@ -274,7 +276,7 @@
        * @param el an HTML element.
        * @returns {{type: string}}
        */
-      isComponent : __isComponentType,
+      isComponent : __componentTypeChecker(componentType),
       model : contributionModel,
       view : {
         onRender : function() {
@@ -431,7 +433,7 @@
        * @param el an HTML element.
        * @returns {{type: string}}
        */
-      isComponent : __isComponentType,
+      isComponent : __componentTypeChecker(componentType),
       model : calendarEventModel,
       view : {
         onRender : function() {
@@ -550,7 +552,7 @@
        * @param el an HTML element.
        * @returns {{type: string}}
        */
-      isComponent : __isComponentType,
+      isComponent : __componentTypeChecker(componentType),
       model : imageLinkModel,
       view : {
         onRender : function() {
