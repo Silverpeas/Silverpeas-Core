@@ -174,7 +174,7 @@
                     const sm = gEditor.StyleManager;
                     let backgroundImage = sm.getSelected() && sm.getSelected().getStyle() && sm.getSelected().getStyle()['background-image'];
                     if (backgroundImage) {
-                      currentImageSrc = backgroundImage.replace(/^.*[(]+[']+(.*)[']+[)]+.*/, '$1');
+                      currentImageSrc = backgroundImage.replace(/^.*[(]+'+(.*)'+[)]+.*/, '$1');
                       isBackgroundImg = true;
                       if (currentImageSrc === 'none') {
                         currentImageSrc = undefined;
@@ -438,7 +438,7 @@
          'tlb-clone',
          'tlb-delete',
          'tlb-sp-basket-selector'].forEach(function(command) {
-           labelTitleCommandMapping[command] = sp.i18n.get(command.replace(/[-]/g, '_') + '_Label');
+           labelTitleCommandMapping[command] = sp.i18n.get(command.replace(/-/g, '_') + '_Label');
         });
       }
       const defaultToolbar = model.get('toolbar');
@@ -468,26 +468,29 @@
     };
   }
 
-  function __setupLeavingPage(editor, completedOtions) {
+  function __setupLeavingPage(editor, completedOptions) {
     editor.on('storage:start:store', function(data) {
-      if (completedOtions.store.deferred) {
-        completedOtions.store.deferred.reject();
+      if (completedOptions.store.deferred) {
+        completedOptions.store.deferred.reject();
       }
-      completedOtions.store.deferred = sp.promise.deferred();
+      completedOptions.store.deferred = sp.promise.deferred();
     });
     editor.on('storage:end:store', function(data) {
+      if (!completedOptions.store.deferred) {
+        completedOptions.store.deferred = sp.promise.deferred();
+      }
       if (data && StringUtil.isDefined(data['gjs-inlinedHtml'])) {
-        completedOtions.store.error = false;
-        completedOtions.store.deferred.resolve();
+        completedOptions.store.error = false;
+        completedOptions.store.deferred.resolve();
       } else {
         SilverpeasError.add(sp.i18n.get('storeErrorMsg')).show();
-        completedOtions.store.error = true;
-        completedOtions.store.deferred.reject();
+        completedOptions.store.error = true;
+        completedOptions.store.deferred.reject();
       }
-      completedOtions.store.deferred = undefined;
+      completedOptions.store.deferred = undefined;
     });
     window.addEventListener('beforeunload', function(e) {
-      if (completedOtions.store.error) {
+      if (completedOptions.store.error) {
         e.preventDefault();
         spProgressMessage.hide();
         return e.returnValue = sp.i18n.get('storeWarningMsg');
