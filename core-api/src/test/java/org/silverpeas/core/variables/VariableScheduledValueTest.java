@@ -31,6 +31,7 @@ import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,16 +52,21 @@ class VariableScheduledValueTest {
   }
 
   @Test
-  @DisplayName("A variable's value is defined in a given period of time")
-  void createAValueScheduledInADefinedDatetimePeriod() {
+  @DisplayName("A variable's value is defined in a given period of time in UTC")
+  void createAValueScheduledInADefinedDatetimePeriodInTheSystemTimeZone() {
+    // the value is set for a period of datetime given in the system time zone
+    ZoneId zoneId = ZoneId.systemDefault();
     OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
     OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
     VariableScheduledValue value =
         new VariableScheduledValue("value", Period.between(yesterday, tomorrow));
 
+    // the period in the value is stored in UTC and hence returned in UTC
     assertThat(value.getValue(), is("value"));
-    assertThat(value.getPeriod().getStartDate(), is(yesterday.toLocalDate()));
-    assertThat(value.getPeriod().getEndDate(), is(tomorrow.toLocalDate()));
+    assertThat(value.getPeriod().getStartDate(),
+        is(yesterday.atZoneSameInstant(zoneId).toLocalDate()));
+    assertThat(value.getPeriod().getEndDate(),
+        is(tomorrow.atZoneSameInstant(zoneId).toLocalDate()));
   }
 
   @Test
