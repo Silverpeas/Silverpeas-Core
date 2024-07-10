@@ -938,6 +938,17 @@
       <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
+    <attribute>
+      <description>
+        Defines a Javascript callback on space id element instead of having a
+        computed URL when clicking on space name part.
+        The space id is given as first and only one parameter.
+      </description>
+      <name>spaceJsCallback</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to define an element of a Window browsebar. It should be declared and used before a Window.</description>

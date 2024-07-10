@@ -92,7 +92,8 @@ public class JobStartPagePeasRequestRouter extends
   private static final String COMPONENT_INST_ATTR = "ComponentInst";
   private static final String PROFILES_ATTR = "Profiles";
   private static final String SCOPE_ATTR = "Scope";
-  private static final String NAME_SUB_SPACE_ATTR = "nameSubSpace";
+  private static final String NAME_SPACE_ATTR = "spaceName";
+  private static final String DESCRIPTION_SPACE_ATTR = "spaceDescription";
   private static final String PARAMETERS_ATTR = "Parameters";
   private static final String HAVE_TO_REFRESH_NAV_BAR_ATTR = "haveToRefreshNavBar";
   private static final String START_PAGE_INFO_DEST = "StartPageInfo";
@@ -276,7 +277,7 @@ public class JobStartPagePeasRequestRouter extends
     } else if (GO_TO_CURRENT_COMPONENT_FCT.equals(function)) {
       destination = COMPONENT_INFO_FULL_DEST;
     } else if ("ListComponent".equals(function)) {
-      setSpacesNameInRequest(jobStartPageSC, request);
+      setSpaceNameInRequest(jobStartPageSC, request);
       request.setAttribute("ListComponents", jobStartPageSC.getAllLocalizedComponents());
       destination = "/jobStartPagePeas/jsp/componentsList.jsp";
     } else if (function.equals("CreateInstance")) {
@@ -311,7 +312,7 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("When", "ComponentCreation");
         request.setAttribute("ErrorMessage", sErrorMessage);
 
-        setSpacesNameInRequest(jobStartPageSC, request);
+        setSpaceNameInRequest(jobStartPageSC, request);
 
         destination = ERROR_FULL_DEST;
       }
@@ -334,7 +335,7 @@ public class JobStartPagePeasRequestRouter extends
         // Si la création de l'espace se passe mal alors l'exception n'est pas
         // déportée vers les appelants
         request.setAttribute("When", "ComponentUpdate");
-        setSpacesNameInRequest(jobStartPageSC, request);
+        setSpaceNameInRequest(jobStartPageSC, request);
         destination = ERROR_FULL_DEST;
       }
     } else if (function.equals("DeleteInstance")) {
@@ -503,7 +504,7 @@ public class JobStartPagePeasRequestRouter extends
           START_PAGE_INFO_DEST + "?" + HAVE_TO_REFRESH_NAV_BAR_ATTR + "=true");
       destination = CLOSE_WINDOW_FULL_DEST;
     } else if (function.equals("CreateSpace")) {
-      setSpacesNameInRequest(jobStartPageSC, request);
+      setSpaceNameInRequest(jobStartPageSC, request);
 
       request.setAttribute(SOUS_ESPACE_ATTR, request.getParameter(SOUS_ESPACE_ATTR));
       request.setAttribute(BROTHERS_ATTR, jobStartPageSC.getBrotherSpaces(true));
@@ -524,13 +525,13 @@ public class JobStartPagePeasRequestRouter extends
         // Si la création de l'espace se passe mal alors l'exception n'est pas
         // déportée vers les appelants
         request.setAttribute("When", "SpaceCreation");
-        setSpacesNameInRequest(jobStartPageSC, request);
+        setSpaceNameInRequest(jobStartPageSC, request);
         destination = ERROR_FULL_DEST;
       }
     } else if (function.equals("UpdateSpace")) {
       String translation = request.getParameter("Translation");
       SpaceInst spaceInst = jobStartPageSC.getSpaceInstById();
-      setSpacesNameInRequest(spaceInst, jobStartPageSC, request);
+      setSpaceInfosInRequest(spaceInst, jobStartPageSC, request);
       request.setAttribute(SPACE_TYPE, spaceInst);
       request.setAttribute("Translation", translation);
       request.setAttribute(IS_USER_ADMIN_ATTR, jobStartPageSC.isUserAdmin());
@@ -551,7 +552,7 @@ public class JobStartPagePeasRequestRouter extends
         // déportée vers les appelants
         request.setAttribute("When", "SpaceUpdate");
 
-        setSpacesNameInRequest(jobStartPageSC, request);
+        setSpaceNameInRequest(jobStartPageSC, request);
 
         destination = ERROR_FULL_DEST;
       }
@@ -586,7 +587,7 @@ public class JobStartPagePeasRequestRouter extends
 
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
 
-      setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
+      setSpaceInfosInRequest(spaceint1, jobStartPageSC, request);
 
       // get groups and users which manage current space
       SpaceProfile spaceProfile = jobStartPageSC.getCurrentSpaceProfile(role);
@@ -628,7 +629,7 @@ public class JobStartPagePeasRequestRouter extends
       request.setAttribute(SPACE_EXTRA_INFOS_ATTR, jobStartPageSC.getManagedSpace());
       request.setAttribute(INHERITANCE_ATTR, JobStartPagePeasSettings.isInheritanceEnable);
 
-      setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
+      setSpaceInfosInRequest(spaceint1, jobStartPageSC, request);
 
       // Add spacePosition data
       String configSpacePosition = jobStartPageSC.getConfigSpacePosition();
@@ -728,7 +729,7 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("currentSpaceId", spaceId);
         request.setAttribute("MaintenanceState", jobStartPageSC.getCurrentSpaceMaintenanceState());
 
-        setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
+        setSpaceInfosInRequest(spaceint1, jobStartPageSC, request);
 
         request.setAttribute(SPACE_EXTRA_INFOS_ATTR, jobStartPageSC.getManagedSpace());
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
@@ -783,26 +784,32 @@ public class JobStartPagePeasRequestRouter extends
     request.setAttribute(HAVE_TO_REFRESH_NAV_BAR_ATTR, Boolean.TRUE);
   }
 
-  private void setSpacesNameInRequest(
+  private void setSpaceNameInRequest(
       JobStartPagePeasSessionController jobStartPageSC,
       HttpServletRequest request) {
-    setSpacesNameInRequest(jobStartPageSC.getSpaceInstById(), jobStartPageSC,
+    setSpaceInfosInRequest(jobStartPageSC.getSpaceInstById(), jobStartPageSC,
         request);
   }
 
-  private void setSpacesNameInRequest(SpaceInst spaceint1,
+  private void setSpaceInfosInRequest(SpaceInst spaceint1,
       JobStartPagePeasSessionController jobStartPageSC,
       HttpServletRequest request) {
-    if (spaceint1 != null) {
       request.setAttribute(CURRENT_SPACE_ID_ATTR, spaceint1.getId());
+      request.setAttribute(NAME_SPACE_ATTR, spaceint1.getName(jobStartPageSC.getLanguage()));
+      request.setAttribute(DESCRIPTION_SPACE_ATTR, spaceint1.getDescription(jobStartPageSC.getLanguage()));
+/*
       if (!spaceint1.isRoot()) {// je suis sur un ss-espace
         request.setAttribute(NAME_SUB_SPACE_ATTR, spaceint1.getName(jobStartPageSC.getLanguage()));
+        request.setAttribute(DESCRIPTION_SUB_SPACE_ATTR, spaceint1.getDescription(jobStartPageSC.getLanguage()));
       } else {
         request.setAttribute(NAME_SUB_SPACE_ATTR, null);
+        request.setAttribute(DESCRIPTION_SUB_SPACE_ATTR, null);
       }
     } else {
       request.setAttribute(NAME_SUB_SPACE_ATTR, null);
+      request.setAttribute(DESCRIPTION_SUB_SPACE_ATTR, null);
     }
+    */
   }
 
   private void request2SpaceInst(SpaceInst spaceInst, HttpServletRequest request) {
@@ -900,7 +907,7 @@ public class JobStartPagePeasRequestRouter extends
     String componentName = request.getParameter("ComponentName");
     WAComponent component = sessionController.getComponentByName(componentName);
     if (component != null && component.isVisible()) {
-      setSpacesNameInRequest(sessionController, request);
+      setSpaceNameInRequest(sessionController, request);
       request.setAttribute(PARAMETERS_ATTR, sessionController.getParameters(component, true));
       request.setAttribute("WAComponent", component);
       request.setAttribute(BROTHERS_ATTR, sessionController.getBrotherComponents(true));
