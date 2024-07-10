@@ -44,6 +44,8 @@ public class BrowseBarTag extends NeedWindowTag {
   private String spaceId;
   private String componentId;
   private String componentJsCallback;
+  private String spaceJsCallback;
+
   private boolean ignoreComponentLink = true;
   private boolean clickable = true;
 
@@ -73,6 +75,10 @@ public class BrowseBarTag extends NeedWindowTag {
 
   public void setClickable(boolean clickable) {
     this.clickable = clickable;
+  }
+
+  public void setSpaceJsCallback(final String spaceJsCallback) {
+    this.spaceJsCallback = spaceJsCallback;
   }
 
   @Override
@@ -126,6 +132,9 @@ public class BrowseBarTag extends NeedWindowTag {
   private void applySpaceData() {
     if (isDefined(spaceId)) {
       browseBar.setSpaceId(spaceId);
+    }
+    if (isDefined(spaceJsCallback)) {
+      browseBar.setSpaceJavascriptCallback(spaceJsCallback);
     }
   }
 
