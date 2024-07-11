@@ -353,17 +353,17 @@
               </p>
             </c:if>
 
-            <table width="98%" cellspacing="0" cellpadding="5" border="0" class="tableBoard">
+            <table class="tableBoard">
               <tbody>
               <tr>
                 <td>
-                  <table width="100%" cellspacing="0" cellpadding="5" border="0">
+                  <table>
                     <tbody>
                     <c:if test="${not space.root && isInHeritanceEnable}">
                       <tr>
-                        <td class="txtlibform" valign="top">${InheritanceBlockedComponentLabel} :
+                        <td class="txtlibform">${InheritanceBlockedComponentLabel} :
                         </td>
-                        <td align="left" valign="baseline" width="100%">
+                        <td align="left">
                           <c:if test="${space.inheritanceBlocked}">
                             <input type="radio" disabled="disabled" checked="checked"/>${InheritanceSpaceNotUsedLabel}<br/>
                             <input type="radio" disabled="disabled"/> ${InheritanceSpaceUsedLabel}
@@ -377,7 +377,7 @@
                     </c:if>
                     <tr>
                       <td class="txtlibform">${HomepageTypeLabel} :</td>
-                      <td valign="baseline" width="100%">
+                      <td>
                         <a href="javascript:onClick=spaceHomepageApp.api.open();">
                           ${pageTypesLabels[m_firstPageType]}
                             <c:if test="${m_firstPageType == SpaceHomePageType.HTML_PAGE.ordinal()}">
