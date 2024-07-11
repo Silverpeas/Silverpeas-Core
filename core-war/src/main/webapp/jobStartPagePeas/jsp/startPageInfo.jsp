@@ -25,9 +25,7 @@
 --%>
 <%@page import="org.silverpeas.web.jobstartpage.JobStartPagePeasSettings"%>
 <%@page import="org.silverpeas.core.admin.quota.constant.QuotaLoad" %>
-<%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.admin.space.SpaceHomePageType" %>
-<%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -354,10 +352,12 @@
             </c:if>
 
             <table class="tableBoard">
+              <tr><th/></tr>
               <tbody>
               <tr>
                 <td>
                   <table>
+                    <tr><th/></tr>
                     <tbody>
                     <c:if test="${not space.root && isInHeritanceEnable}">
                       <tr>
