@@ -24,7 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.web.jobstartpage.JobStartPagePeasSettings"%>
-<%@page import="org.silverpeas.core.admin.quota.constant.QuotaLoad" %>
+
 <%@ page import="org.silverpeas.core.admin.space.SpaceHomePageType" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -363,14 +363,14 @@
                       <tr>
                         <td class="txtlibform">${InheritanceBlockedComponentLabel} :
                         </td>
-                        <td align="left">
+                        <td>
                           <c:if test="${space.inheritanceBlocked}">
-                            <input type="radio" disabled="disabled" checked="checked"/>${InheritanceSpaceNotUsedLabel}<br/>
-                            <input type="radio" disabled="disabled"/> ${InheritanceSpaceUsedLabel}
+                            <input type="radio" disabled="disabled" checked="checked"/>&nbsp;${InheritanceSpaceNotUsedLabel}<br/>
+                            <input type="radio" disabled="disabled"/>&nbsp;${InheritanceSpaceUsedLabel}
                           </c:if>
                           <c:if test="${not space.inheritanceBlocked}">
-                            <input type="radio" disabled="disabled"/> ${InheritanceSpaceNotUsedLabel}<br/>
-                            <input type="radio" disabled="disabled" checked="checked"/>${InheritanceSpaceUsedLabel}
+                            <input type="radio" disabled="disabled"/>&nbsp;${InheritanceSpaceNotUsedLabel}<br/>
+                            <input type="radio" disabled="disabled" checked="checked"/>&nbsp;${InheritanceSpaceUsedLabel}
                           </c:if>
                         </td>
                       </tr>
