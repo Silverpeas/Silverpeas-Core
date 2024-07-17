@@ -7,7 +7,7 @@ pipeline {
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild'
+      image 'silverpeas/silverbuild:6.4'
       args '''
         -v $HOME/.m2:/home/silverbuild/.m2 
         -v $HOME/.gitconfig:/home/silverbuild/.gitconfig 
@@ -56,7 +56,7 @@ pipeline {
                   -Dsonar.pullrequest.base=master \\
                   -Dsonar.pullrequest.provider=github \\
                   -Dsonar.host.url=${SONAR_HOST_URL} \\
-                  -Dsonar.login=${SONAR_AUTH_TOKEN} \\
+                  -Dsonar.token=${SONAR_AUTH_TOKEN} \\
                   -Dsonar.scanner.force-deprecated-java-version=true
                 """
           }
@@ -76,7 +76,7 @@ pipeline {
       deleteLockFile(lockFilePath)
       step([$class                  : 'Mailer',
             notifyEveryUnstableBuild: true,
-            recipients              : "miguel.moquillon@silverpeas.org, yohann.chastagnier@silverpeas.org, nicolas.eysseric@silverpeas.org",
+            recipients              : "miguel.moquillon@silverpeas.org, david.lesimple@silverpeas.org, silveryocha@chastagnier.com",
             sendToIndividuals       : true])
     }
   }
