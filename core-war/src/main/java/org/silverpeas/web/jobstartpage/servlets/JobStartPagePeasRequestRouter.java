@@ -72,6 +72,8 @@ public class JobStartPagePeasRequestRouter extends
   private static final String VIEW_BIN_FCT = "ViewBin";
   private static final String GO_TO_COMPONENT_FCT = "GoToComponent";
   private static final String GO_TO_CURRENT_COMPONENT_FCT = "GoToCurrentComponent";
+  private static final String GO_TO_CURRENT_COMPONENT_DEST = "/jobStartPagePeas/jsp" +
+      "/goToCurrentComponent.jsp";
   private static final String SPACE_LOOK_FCT = "SpaceLook";
   private static final String ESPACE_PARAM = "Espace";
   private static final String SPACE_ID_PARAM = "SpaceId";
@@ -300,7 +302,8 @@ public class JobStartPagePeasRequestRouter extends
         jobStartPageSC.setManagedInstanceId(sComponentId);
         jobStartPageSC.setComponentPlace(request.getParameter("ComponentBefore"));
         refreshNavBar(jobStartPageSC, request);
-        destination = getDestination(GO_TO_CURRENT_COMPONENT_FCT, jobStartPageSC, request);
+        request.setAttribute(COMPONENT_ID_PARAM, sComponentId);
+        destination = GO_TO_CURRENT_COMPONENT_DEST;
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas déportée vers les
@@ -324,7 +327,8 @@ public class JobStartPagePeasRequestRouter extends
         if (jobStartPageSC.getScope() == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
           refreshNavBar(jobStartPageSC, request);
         }
-        destination = getDestination(GO_TO_CURRENT_COMPONENT_FCT, jobStartPageSC, request);
+        request.setAttribute(COMPONENT_ID_PARAM, componentId);
+        destination = GO_TO_CURRENT_COMPONENT_DEST;
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas
@@ -382,7 +386,8 @@ public class JobStartPagePeasRequestRouter extends
       jobStartPageSC.setComponentPlace(request.getParameter("ComponentBefore"));
       refreshNavBar(jobStartPageSC, request);
       request.setAttribute(URL_TO_RELOAD_ATTR,
-          GO_TO_CURRENT_COMPONENT_FCT + "?" + HAVE_TO_REFRESH_NAV_BAR_ATTR + "=true");
+          "goToCurrentComponent.jsp?" + HAVE_TO_REFRESH_NAV_BAR_ATTR + "=true&ComponentId=" +
+          jobStartPageSC.getManagedInstanceId());
       destination = CLOSE_WINDOW_FULL_DEST;
     } else if (function.startsWith("copy")) {
       String objectId = request.getParameter("Id");
