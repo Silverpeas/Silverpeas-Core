@@ -24,15 +24,18 @@
 package org.silverpeas.core.persistence.jdbc.bean;
 
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.io.Serializable;
 
 /**
- * SilverpeasBean represents an Entity in old silverpeas persistence layer
- * @deprecated Replaced with a model Entity from org.silverpeas.core.persistence.datasource.model package.
+ * SilverpeasBean represents an entity in the old silverpeas persistence layer (before JPA). All
+ * the entity beans have to extends this abstract class.
+ *
+ * @deprecated
  */
 @Deprecated
-public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {
+public abstract class SilverpeasBean implements SilverpeasEntityBean, Serializable {
 
   private static final long serialVersionUID = -7843189803570333207L;
   private WAPrimaryKey pk;
@@ -51,28 +54,21 @@ public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {
     pk = value;
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_EJBDATASOURCE_SILVERPEAS;
-  }
+  /**
+   * Gets the name of the table in the database in which the bean is persisted and retrieved.
+   * This method is to be used by SivlerpeasBeanDAO implementation for its persistence tasks.
+   * @return the name of the SQL table.
+   */
+  @NonNull
+  protected abstract String getTableName();
 
-  @Override
-  public String _getDatasourceName() {
-    return null;
-  }
-
-  @Override
-  public JdbcData _getJdbcData() {
-    return null;
-  }
-
-  @Override
-  public String _getTableName() {
-    return null;
-  }
-
-  @Override
-  public String getSureString(String theString) {
+  /**
+   * Ensures the specified string is sure. For doing, if it is null, then an empty string is
+   * returned instead.
+   * @param theString the string to ensure it is not null.
+   * @return either the specified string or an empty string otherwise.
+   */
+  protected String getNonNullString(String theString) {
     return (theString == null) ? "" : theString;
   }
 }

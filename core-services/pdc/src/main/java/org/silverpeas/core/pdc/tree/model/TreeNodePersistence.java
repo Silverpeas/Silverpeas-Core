@@ -27,12 +27,9 @@
 package org.silverpeas.core.pdc.tree.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 
-/**
- * Class declaration
- * @author
- */
+@SuppressWarnings("deprecation")
 public class TreeNodePersistence extends SilverpeasBean implements java.io.Serializable {
 
   private static final long serialVersionUID = 4149873143955281302L;
@@ -47,107 +44,10 @@ public class TreeNodePersistence extends SilverpeasBean implements java.io.Seria
   private String fatherId;
   private String lang = null;
 
-  /**
-   * Constructor declaration
-   *
-   */
-  public TreeNodePersistence() {
-    init("0", "", "", "", "", "", "", 0, 0, "0");
-  }
-
-  public TreeNodePersistence(TreeNode node) {
-    setPK(node.getPK());
-    this.treeId = node.getTreeId();
-    this.name = node.getName();
-    this.description = node.getDescription();
-    this.creationDate = node.getCreationDate();
-    this.creatorId = node.getCreatorId();
-    this.path = node.getPath();
-    this.levelNumber = node.getLevelNumber();
-    this.orderNumber = node.getOrderNumber();
-    this.fatherId = node.getFatherId();
-    this.lang = node.getLanguage();
-  }
-
-  /**
-   * Method declaration
-   * @param id
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param creatorId
-   * @param path
-   * @param levelNumber
-   * @param fatherId
-   *
-   */
-  private void init(String id, String treeId, String name, String description,
-      String creationDate, String creatorId, String path, int levelNumber,
-      int orderNumber, String fatherId) {
-    setPK(new TreeNodePK(id));
-    this.treeId = treeId;
-    this.name = name;
-    this.description = description;
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.levelNumber = levelNumber;
-    this.fatherId = fatherId;
-    this.orderNumber = orderNumber;
-  }
-
-  /**
-   * Constructor declaration
-   * @param pk
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param creatorId
-   * @param path
-   * @param levelNumber
-   * @param fatherId
-   *
-   */
-  public TreeNodePersistence(TreeNodePK pk, String treeId, String name,
-      String description, String creationDate, String creatorId, String path,
-      int levelNumber, int orderNumber, String fatherId) {
-    setPK(pk);
-    this.treeId = treeId;
-    this.name = name;
-    this.description = description;
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.levelNumber = levelNumber;
-    this.orderNumber = orderNumber;
-    this.fatherId = fatherId;
-  }
-
-  /**
-   * Constructor declaration
-   * @param id
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param creatorId
-   * @param path
-   * @param levelNumber
-   * @param fatherId
-   *
-   */
-  public TreeNodePersistence(String id, String treeId, String name,
-      String description, String creationDate, String creatorId, String path,
-      int levelNumber, int orderNumber, String fatherId) {
-    init(id, treeId, name, description, creationDate, creatorId, path,
-        levelNumber, orderNumber, fatherId);
-  }
-
-  public TreeNodePersistence(String id, String treeId, String name,
-      String description, String creationDate, String creatorId, String path,
-      int levelNumber, int orderNumber, String fatherId, String lang) {
-    init(id, treeId, name, description, creationDate, creatorId, path,
-        levelNumber, orderNumber, fatherId);
-    this.lang = lang;
+  @Override
+  @NonNull
+  protected String getTableName() {
+    return new TreeNodePK(treeId).getTableName();
   }
 
   public String getTreeId() {
@@ -158,74 +58,34 @@ public class TreeNodePersistence extends SilverpeasBean implements java.io.Seria
     this.treeId = treeId;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getName() {
     return (this.name);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getDescription() {
     return (this.description);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getCreationDate() {
     return (this.creationDate);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getCreatorId() {
     return (this.creatorId);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getPath() {
     return (this.path);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public int getLevelNumber() {
     return (this.levelNumber);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public int getOrderNumber() {
     return (this.orderNumber);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getFatherId() {
     return (this.fatherId);
   }
@@ -238,56 +98,26 @@ public class TreeNodePersistence extends SilverpeasBean implements java.io.Seria
     this.description = description;
   }
 
-  /**
-   * Method declaration
-   * @param date
-   *
-   */
   public void setCreationDate(String date) {
     this.creationDate = date;
   }
 
-  /**
-   * Method declaration
-   * @param creatorId
-   *
-   */
   public void setCreatorId(String creatorId) {
     this.creatorId = creatorId;
   }
 
-  /**
-   * Method declaration
-   * @param fatherId
-   *
-   */
   public void setFatherId(String fatherId) {
     this.fatherId = fatherId;
   }
 
-  /**
-   * Method declaration
-   * @param path
-   *
-   */
   public void setPath(String path) {
     this.path = path;
   }
 
-  /**
-   * Method declaration
-   * @param levelNumber
-   *
-   */
   public void setLevelNumber(int levelNumber) {
     this.levelNumber = levelNumber;
   }
 
-  /**
-   * Method declaration
-   * @param orderNumber
-   *
-   */
   public void setOrderNumber(int orderNumber) {
     this.orderNumber = orderNumber;
   }
@@ -300,22 +130,10 @@ public class TreeNodePersistence extends SilverpeasBean implements java.io.Seria
     this.lang = lang;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String toString() {
     return "(pk = " + getPK().toString() + ", treeId = " + treeId + ", name = "
         + getName() + ", path = " + getPath() + ", levelNumber = "
         + getLevelNumber() + ", fatherId = " + getFatherId() + ")";
-  }
-
-  /**
-   * determine the connection type to the database
-   */
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
 }

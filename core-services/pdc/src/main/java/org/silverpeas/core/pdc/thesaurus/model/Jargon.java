@@ -28,12 +28,15 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
+
+import java.util.Objects;
 
 /**
  * This class contains a full information about a Jargon a Jargon is linked to a Vocabulary and a
  * User (UserDetail or Group)
  */
+@SuppressWarnings("deprecation")
 public class Jargon extends SilverpeasBean {
 
   private static final long serialVersionUID = 2926231339303196258L;
@@ -41,7 +44,7 @@ public class Jargon extends SilverpeasBean {
   private int type;
   private long idVoca;
   private String idUser;
-  private ThesaurusService thesaurus = ThesaurusService.getInstance();
+  private final transient ThesaurusService thesaurus = ThesaurusService.getInstance();
 
   public String readUserName() {
     String userName = null;
@@ -81,7 +84,7 @@ public class Jargon extends SilverpeasBean {
     if (this.type != other.type) {
       return false;
     }
-    return this.idUser == null ? other.idUser == null : this.idUser.equals(other.idUser);
+    return Objects.equals(this.idUser, other.idUser);
   }
 
   @Override
@@ -117,12 +120,9 @@ public class Jargon extends SilverpeasBean {
   }
 
   @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SB_Thesaurus_Jargon";
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

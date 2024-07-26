@@ -25,14 +25,15 @@ package org.silverpeas.core.pdc.thesaurus.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 
 /**
  * This class contains a full information about a Synonym a Synonym is linked to a Vocabulary and a
  * Value (idTree - idTerm)
  */
 
-public class Synonym extends SilverpeasBean implements Comparable {
+@SuppressWarnings("deprecation")
+public class Synonym extends SilverpeasBean implements Comparable<Synonym> {
 
   private static final long serialVersionUID = -8487966625309884721L;
   private long idVoca;
@@ -72,8 +73,9 @@ public class Synonym extends SilverpeasBean implements Comparable {
     this.name = name;
   }
 
-  public int compareTo(Object voca) {
-    return this.getName().compareTo(((Synonym) voca).getName());
+  @Override
+  public int compareTo(Synonym voca) {
+    return this.getName().compareTo((voca).getName());
   }
 
   @Override
@@ -84,7 +86,7 @@ public class Synonym extends SilverpeasBean implements Comparable {
     if (!(o instanceof Synonym)) {
       return false;
     }
-    return compareTo(o) == 0;
+    return compareTo((Synonym) o) == 0;
   }
 
   @Override
@@ -92,11 +94,10 @@ public class Synonym extends SilverpeasBean implements Comparable {
     return new HashCodeBuilder().append(getName()).toHashCode();
   }
 
-  public String _getTableName() {
+  @Override
+  @NonNull
+  protected String getTableName() {
     return "SB_Thesaurus_Synonym";
   }
 
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

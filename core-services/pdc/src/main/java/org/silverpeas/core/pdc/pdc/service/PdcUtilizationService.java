@@ -85,14 +85,6 @@ public interface PdcUtilizationService {
   void deleteUsedAxis(String usedAxisId) throws PdcException;
 
   /**
-   * Delete a collection of used axis
-   * @param usedAxisIds - the ids of the used axis to delete
-   * @throws PdcException
-   *
-   */
-  void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException;
-
-  /**
    * Delete used axis based on a particular axis
    * @param con
    * @param axisId - the axis id

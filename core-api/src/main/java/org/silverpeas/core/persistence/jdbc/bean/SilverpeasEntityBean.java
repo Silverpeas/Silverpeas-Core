@@ -25,20 +25,30 @@ package org.silverpeas.core.persistence.jdbc.bean;
 
 import org.silverpeas.core.WAPrimaryKey;
 
+/**
+ * A persistent entity bean in Silverpeas taken in charge by a {@link SilverpeasBeanDAO} DAO.
+ * <p>
+ * The persistence mechanism based upon {@link SilverpeasBeanDAO} is deprecated in favor of JPA.
+ * </p>
+ *
+ * @deprecated
+ */
 @Deprecated
-public interface SilverpeasBeanIntf {
+public interface SilverpeasEntityBean {
 
-  public WAPrimaryKey getPK();
+  /**
+   * Gets the primary key of this bean in the database.
+   *
+   * @return the primary key of the bean.
+   */
+  WAPrimaryKey getPK();
 
-  public void setPK(WAPrimaryKey value);
+  /**
+   * Sets the primary key of this bean. The primary key is set by the {@link SilverpeasBeanDAO} once
+   * the bean saved the first time into the database.
+   *
+   * @param value the primary key.
+   */
+  void setPK(WAPrimaryKey value);
 
-  public int _getConnectionType();
-
-  public String _getDatasourceName();
-
-  public JdbcData _getJdbcData();
-
-  public String _getTableName();
-
-  public String getSureString(String theString);
 }

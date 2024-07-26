@@ -24,9 +24,9 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.pdc.tree.model.TreeNode;
-import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Value extends TreeNode implements java.io.Serializable {
 
@@ -47,25 +47,26 @@ public class Value extends TreeNode implements java.io.Serializable {
   //
 
 
-  @Override
-  protected Class<TreeNodeI18N> getTranslationType() {
-    return TreeNodeI18N.class;
-  }
-
   public Value() {
     super();
   }
 
-  public Value(String id, String treeId, String name, String description, String creationDate,
-      String creatorId, String path, int level, int order, String fatherId) {
-    super(id, treeId, name, description, creationDate, creatorId, path, level, order, fatherId);
+  public Value(String id, String treeId) {
+    super(id, treeId);
     setValuePK(new ValuePK(id));
   }
 
-  public Value(String id, String treeId, String name, String creationDate, String creatorId,
-      String path, int level, int order, String fatherId) {
-    super(id, treeId, name, null, creationDate, creatorId, path, level, order, fatherId);
-    setValuePK(new ValuePK(id));
+  public Value(TreeNode treeNode) {
+    super(treeNode.getPK().getId(), treeNode.getTreeId());
+    setName(treeNode.getName());
+    setDescription(treeNode.getDescription());
+    setCreationDate(treeNode.getCreationDate());
+    setCreatorId(treeNode.getCreatorId());
+    setPath(treeNode.getPath());
+    setLevelNumber(treeNode.getLevelNumber());
+    setOrderNumber(treeNode.getOrderNumber());
+    setFatherId(treeNode.getFatherId());
+    setValuePK(new ValuePK(treeNode.getPK().getId()));
   }
 
   public final void setValuePK(ValuePK pk) {
@@ -99,10 +100,12 @@ public class Value extends TreeNode implements java.io.Serializable {
     this.nbObjects = nbObjects;
   }
 
+  @SuppressWarnings("unused")
   public void setPathValues(List<Value> pathValues) {
     this.pathValues = pathValues;
   }
 
+  @SuppressWarnings("unused")
   public List<Value> getPathValues() {
     return this.pathValues;
   }
@@ -129,7 +132,7 @@ public class Value extends TreeNode implements java.io.Serializable {
       return false;
     }
     final Value other = (Value) obj;
-    if ((this.axisId == null) ? (other.axisId != null) : !this.axisId.equals(other.axisId)) {
+    if (!Objects.equals(this.axisId, other.axisId)) {
       return false;
     }
     return getFullPath() == null ? other.getFullPath() == null :

@@ -24,12 +24,13 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 
 /**
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can
  * access to the axis main information.
  */
+@SuppressWarnings("deprecation")
 public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Serializable {
 
   private static final long serialVersionUID = 4467724185924160419L;
@@ -63,6 +64,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Ser
   private String description = null;
   private String lang = null;
 
+  @SuppressWarnings("unused")
   public AxisHeaderPersistence() {
   }
 
@@ -106,6 +108,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Ser
    * set a type for an axe
    * @param type - the type of the axe
    */
+  @SuppressWarnings("unused")
   public void setAxisType(String type) {
     this.type = type;
   }
@@ -211,12 +214,8 @@ public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Ser
   }
 
   @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SB_Pdc_Axis";
   }
 

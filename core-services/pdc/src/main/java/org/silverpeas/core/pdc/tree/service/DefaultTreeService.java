@@ -23,22 +23,19 @@
  */
 package org.silverpeas.core.pdc.tree.service;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.pdc.tree.model.TreeManagerException;
-import org.silverpeas.core.pdc.tree.model.TreeNode;
-import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
-import org.silverpeas.core.pdc.tree.model.TreeNodePK;
-import org.silverpeas.core.pdc.tree.model.TreeNodePersistence;
+import org.silverpeas.core.pdc.tree.model.*;
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -46,18 +43,17 @@ import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
+
+import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.*;
 
 @Service
 @Singleton
+@SuppressWarnings("deprecation")
 public class DefaultTreeService implements TreeService {
 
-  private static final String TREE_ID_EQUALS = "treeId = ";
-  private static final String USELESS = "useless";
+  private static final String TREE_ID = "treeId";
+  private static final String ORDER_NUMBER = "orderNumber";
   @Inject
   private TreeI18NDAO treeI18NDAO;
 
@@ -69,12 +65,12 @@ public class DefaultTreeService implements TreeService {
   public TreeNode getRoot(Connection con, String treeId)
       throws TreeManagerException {
 
-    String whereClause = TREE_ID_EQUALS + treeId + " and levelNumber = 0";
     TreeNode root = null;
     try {
       List<TreeNodePersistence> roots =
-          (List<TreeNodePersistence>) getDAO().findByWhereClause(new TreeNodePK(USELESS),
-          whereClause);
+          (List<TreeNodePersistence>) getDAO().findBy(
+              BeanCriteria.addCriterion(TREE_ID, Integer.parseInt(treeId))
+              .and("levelNumber", 0));
       if (!roots.isEmpty()) {
 
         TreeNodePersistence rootPers = roots.get(0);
@@ -117,17 +113,15 @@ public class DefaultTreeService implements TreeService {
     // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à
     // celui
     // du noeud à modifier
-    final String whereClause = "path = (SELECT path FROM SB_Tree_Tree WHERE treeId = "
-        + treeId
-        + " and id = "
-        + nodeId
-        + ") and treeId = "
-        + treeId
-        + " and orderNumber >= " + order + " ORDER BY orderNumber ASC";
-
     try {
-      Collection<TreeNodePersistence> nodesToUpdate = getDAO().findByWhereClause(con, node.getPK(),
-          whereClause);
+      int treeIdAsInt = Integer.parseInt(treeId);
+      BeanCriteria criteria = BeanCriteria.addCriterion(TREE_ID, treeIdAsInt)
+          .and(ORDER_NUMBER, GREATER_OR_EQUAL, order)
+          .andSubQuery("path", EQUALS, "path FROM SB_Tree_Tree",
+              BeanCriteria.addCriterion(TREE_ID, treeIdAsInt).and("id", Integer.parseInt(nodeId)));
+      criteria.setAscOrderBy(ORDER_NUMBER);
+      Collection<TreeNodePersistence> nodesToUpdate = getDAO().findBy(con,
+          criteria);
       boolean nodeHasMoved = true;
       final Iterator<TreeNodePersistence> it = nodesToUpdate.iterator();
       if (it.hasNext()) {
@@ -265,10 +259,12 @@ public class DefaultTreeService implements TreeService {
     TreeNode node = getNode(con, rootPK, treeId);
 
     // Remove all nodes under the rootId
-    String whereClause = TREE_ID_EQUALS + treeId + " and (path LIKE '"
-        + node.getPath() + rootId + "/%' or id = " + rootId + ")";
+    BeanCriteria criteria = BeanCriteria.addCriterion(TREE_ID, Integer.parseInt(treeId))
+        .and(BeanCriteria
+            .addCriterion("path", LIKE, node.getPath() + rootId + "/%")
+              .or("id", Integer.parseInt(rootId)));
     try {
-      getDAO().removeWhere(rootPK, whereClause);
+      getDAO().removeBy(criteria);
 
       // Remove all index of nodes under the rootId
       for (TreeNode nodeToDelete : subTree) {
@@ -299,9 +295,9 @@ public class DefaultTreeService implements TreeService {
 
     List<TreeNode> tree = getTree(con, treeId);
 
-    String whereClause = TREE_ID_EQUALS + treeId;
     try {
-      getDAO().removeWhere(new TreeNodePK(USELESS), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion(TREE_ID, Integer.parseInt(treeId));
+      getDAO().removeBy(criteria);
 
       // remove translations
       treeI18NDAO.deleteTreeTranslations(con, treeId);
@@ -411,10 +407,7 @@ public class DefaultTreeService implements TreeService {
         && !sortedList.get(i).getPK().getId().equals(fatherId)) {
       i++;
     }
-    if (i == sortedList.size()) {
-      // On a pas trouvé le père
-      return i;
-    } else {
+    if (i != sortedList.size()) {
       // On a trouvé le père en i
       // On commence la recherche des freres en i + 1
       i = i + 1;
@@ -427,24 +420,21 @@ public class DefaultTreeService implements TreeService {
         }
         i++;
       }
-      return i;
     }
+    return i;
   }
 
   private List<TreeNodePersistence> getDescendants(Connection con, TreeNode root)
       throws TreeManagerException {
-    String rootId = root.getPK().getId();
-    String treeId = root.getTreeId();
+    int rootId = Integer.parseInt(root.getPK().getId());
+    int treeId = Integer.parseInt(root.getTreeId());
     String path = root.getPath();
-    // String whereClause =
-    StringBuilder whereClause = new StringBuilder();
-    whereClause.append(TREE_ID_EQUALS).append(treeId).append(" and (path LIKE '")
-        .append(path).append(rootId).append("/%' or id = ").append(rootId)
-        .append(")").append(" ORDER BY path ASC, orderNumber ASC");
-
+    BeanCriteria criteria = BeanCriteria.addCriterion(TREE_ID, treeId)
+        .and(BeanCriteria.addCriterion("path", LIKE, path + rootId + "/%")
+            .or("id", rootId));
+    criteria.setAscOrderBy("path, orderNumber");
     try {
-      return (List<TreeNodePersistence>) getDAO().findByWhereClause(con, root.getPK(),
-          whereClause.toString());
+      return (List<TreeNodePersistence>) getDAO().findBy(con, criteria);
     } catch (PersistenceException pe) {
       throw new TreeManagerException(pe);
     }
@@ -454,9 +444,10 @@ public class DefaultTreeService implements TreeService {
       throws TreeManagerException {
     TreeNode node = null;
     try {
-      String whereClause = TREE_ID_EQUALS + treeId + " and id = " + nodePK.getId();
+      BeanCriteria criteria = BeanCriteria.addCriterion(TREE_ID, Integer.parseInt(treeId))
+          .and("id", Integer.parseInt(nodePK.getId()));
       List<TreeNodePersistence> nodes =
-          (List<TreeNodePersistence>) getDAO().findByWhereClause(con, nodePK, whereClause);
+          (List<TreeNodePersistence>) getDAO().findBy(con, criteria);
       if (!nodes.isEmpty()) {
         TreeNodePersistence tnp = nodes.get(0);
         node = new TreeNode(tnp);
@@ -492,11 +483,10 @@ public class DefaultTreeService implements TreeService {
       String nameEncode = encode(nodeName);
       String nameNoAccent = FileServerUtils.replaceAccentChars(nameEncode);
       //search brut and case insensitive + search without accent and case insensitive
-      String whereClause = "LOWER(name) = LOWER('" + nameEncode + "') OR "+
-                            "LOWER(name) = LOWER('" + nameNoAccent + "')";
-      nodes =
-          (List<TreeNodePersistence>) getDAO().findByWhereClause(con, new TreeNodePK(USELESS),
-          whereClause);
+      BeanCriteria criteria = BeanCriteria.emptyCriteria()
+          .andWithFunction("LOWER(name)", nameEncode, "LOWER")
+          .orWithFunction("LOWER(name)", nameNoAccent, "LOWER");
+      nodes = (List<TreeNodePersistence>) getDAO().findBy(con, criteria);
       result = persistence2TreeNode(con, nodes);
     } catch (PersistenceException pe) {
       throw new TreeManagerException(pe);
@@ -643,14 +633,14 @@ public class DefaultTreeService implements TreeService {
     // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à
     // celui
     // du noeud à modifier
-    String whereClause = TREE_ID_EQUALS + treeId + " and fatherId = "
-        + father.getPK().getId() + " and orderNumber >= " + order
-        + " ORDER BY orderNumber ASC";
-
+    BeanCriteria criteria = BeanCriteria.addCriterion(TREE_ID, Integer.parseInt(treeId))
+        .and("fatherId", Integer.parseInt(father.getPK().getId()))
+        .and(ORDER_NUMBER, GREATER_OR_EQUAL, order);
+    criteria.setAscOrderBy(ORDER_NUMBER);
     try {
       // ATTENTION il faut traiter l'ordre des frères
-      Collection<TreeNodePersistence> nodesToUpdate = getDAO().findByWhereClause(con,
-          father.getPK(), whereClause);
+      Collection<TreeNodePersistence> nodesToUpdate = getDAO().findBy(con,
+          criteria);
 
       TreeNode nodeToMove;
       for (TreeNodePersistence tnp : nodesToUpdate) {
@@ -679,12 +669,12 @@ public class DefaultTreeService implements TreeService {
 
   public List<TreeNode> getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
       throws TreeManagerException {
-    String whereClause = TREE_ID_EQUALS + treeId + " and fatherId = "
-        + treeNodePK.getId();
     Collection<TreeNodePersistence> sons;
     List<TreeNode> result;
     try {
-      sons = getDAO().findByWhereClause(con, treeNodePK, whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion(TREE_ID, Integer.parseInt(treeId))
+          .and("fatherId", Integer.parseInt(treeNodePK.getId()));
+      sons = getDAO().findBy(con, criteria);
       result = persistence2TreeNode(con, sons);
     } catch (PersistenceException pe) {
       throw new TreeManagerException(pe);
@@ -730,8 +720,7 @@ public class DefaultTreeService implements TreeService {
   public SilverpeasBeanDAO<TreeNodePersistence> getDAO() throws TreeManagerException {
     SilverpeasBeanDAO<TreeNodePersistence> treeDao;
     try {
-      treeDao = SilverpeasBeanDAOFactory
-          .getDAO("org.silverpeas.core.pdc.tree.model.TreeNodePersistence");
+      treeDao = SilverpeasBeanDAOFactory.getDAO(TreeNodePersistence.class);
     } catch (PersistenceException pe) {
       throw new TreeManagerException(pe);
     }
@@ -744,16 +733,16 @@ public class DefaultTreeService implements TreeService {
     ArrayList<TreeNode> list = new ArrayList<>();
     try {
       // récupère la valeur de la colonne path de la table SB_Tree_Tree
-      StringTokenizer st = new StringTokenizer(path, "/");
-      StringBuilder whereClause =
-          new StringBuilder(TREE_ID_EQUALS).append(treeId).append(" and (1=0 ");
-      while (st.hasMoreTokens()) {
-        whereClause.append(" or id = ").append(st.nextToken());
+      Set<Integer> ids = new HashSet<>();
+      StringTokenizer tokenizer = new StringTokenizer(path, "/");
+      while (tokenizer.hasMoreTokens()) {
+        ids.add(Integer.parseInt(tokenizer.nextToken()));
       }
-      whereClause.append(" or id = ").append(nodePK.getId()).append(") order by levelNumber ASC");
-
-      Collection<TreeNodePersistence> tree =
-          getDAO().findByWhereClause(con, nodePK, whereClause.toString());
+      ids.add(Integer.parseInt(nodePK.getId()));
+      BeanCriteria criteria = BeanCriteria.addCriterion(TREE_ID, Integer.parseInt(treeId))
+          .and("id", ids);
+      criteria.setAscOrderBy("levelNumber");
+      Collection<TreeNodePersistence> tree = getDAO().findBy(con, criteria);
 
       list.addAll(persistence2TreeNode(con, tree));
     } catch (Exception e) {
