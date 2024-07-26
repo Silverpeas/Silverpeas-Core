@@ -607,8 +607,15 @@ public class PdcRequestRouter extends AdminComponentRequestRouter<PdcSessionCont
 
         Value currentValue = pdcSC.getAxisValue(valueId);
         // update the value object
-        Value updatedValue = new Value(valueId, "unknown", valueName,
-            valueDescription, null, null, null, -1, (Integer.parseInt(valueOrder)), null);
+        Value updatedValue = new Value(valueId, "unknown");
+        updatedValue.setName(valueName);
+        updatedValue.setDescription(valueDescription);
+        updatedValue.setCreatorId(null);
+        updatedValue.setCreationDate(null);
+        updatedValue.setPath(null);
+        updatedValue.setLevelNumber(-1);
+        updatedValue.setOrderNumber(Integer.parseInt(valueOrder));
+        updatedValue.setFatherId(null);
 
         // récupération des traductions
         I18NHelper.setI18NInfo(updatedValue, request);
@@ -640,19 +647,7 @@ public class PdcRequestRouter extends AdminComponentRequestRouter<PdcSessionCont
         // create a new value
 
         // get URL parameters
-        String valueName = request.getParameter("Name").trim(); // get the name
-        // of the axe
-        String valueDescription = request.getParameter("Description").trim(); // get
-        // the
-        // description
-        // of
-        // the
-        // axe
-        String valueOrder = extractOrder(request.getParameter("Order"));
-
-        // create the axe
-        Value value = new Value("UNKNOWN", "unknown", valueName,
-            valueDescription, null, null, null, -1, (Integer.parseInt(valueOrder)), null);
+        Value value = createValueFrom(request);
         int status = pdcSC.insertMotherValue(value);
 
         switch (status) {
@@ -673,16 +668,7 @@ public class PdcRequestRouter extends AdminComponentRequestRouter<PdcSessionCont
       } else if (function.startsWith("CreateDaughterValue")) {
         // create a new value
 
-        // get URL parameters
-        String valueName = request.getParameter("Name").trim(); // get the name
-        // of the axe
-        String valueDescription = request.getParameter("Description").trim(); // get
-        // the description of the axe
-        String valueOrder = extractOrder(request.getParameter("Order"));
-
-        // create the axe
-        Value value = new Value("UNKNOWN", "unknown", valueName,
-            valueDescription, null, null, null, -1, (Integer.parseInt(valueOrder)), null);
+        Value value = createValueFrom(request);
         int status = pdcSC.createDaughterValue(value);
 
         I18NHelper.setI18NInfo(value, request);
@@ -760,6 +746,27 @@ public class PdcRequestRouter extends AdminComponentRequestRouter<PdcSessionCont
     }
 
     return destination;
+  }
+
+  private Value createValueFrom(HttpRequest request) {
+    // get URL parameters
+    String valueName = request.getParameter("Name").trim(); // get the name
+    // of the axe
+    String valueDescription = request.getParameter("Description").trim(); // get
+    // the description of the axe
+    String valueOrder = extractOrder(request.getParameter("Order"));
+
+    // create the axe
+    Value value = new Value("UNKNOWN", "unknown");
+    value.setName(valueName);
+    value.setDescription(valueDescription);
+    value.setCreatorId(null);
+    value.setCreationDate(null);
+    value.setPath(null);
+    value.setLevelNumber(-1);
+    value.setOrderNumber(Integer.parseInt(valueOrder));
+    value.setFatherId(null);
+    return value;
   }
 
   /**

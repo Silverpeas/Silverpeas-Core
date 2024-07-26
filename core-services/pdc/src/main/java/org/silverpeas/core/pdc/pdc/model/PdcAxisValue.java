@@ -27,19 +27,13 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -55,7 +49,8 @@ import java.util.function.Consumer;
  */
 @Entity
 @Table(name = "pdcaxisvalue")
-@NamedQuery(name = "findByAxisId", query = "from PdcAxisValue where axisId = :axisId")
+@NamedQuery(name = "findByAxisId",
+    query = "select p from PdcAxisValue p where p.id.axisId = :axisId")
 public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
 
   private static final long serialVersionUID = 2345886411781136417L;
@@ -125,6 +120,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * @return an unmodifiable set of values that are children of this one. If this value is a leaf,
    * then an empty set is returned.
    */
+  @SuppressWarnings("JpaAttributeTypeInspection")
   public Set<PdcAxisValue> getChildValues() {
     try {
       Set<PdcAxisValue> children = new HashSet<>();
@@ -144,6 +140,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * @return the axis value parent of this one or null if this value has no parent (in that case,
    * this value is a base one).
    */
+  @SuppressWarnings("JpaAttributeTypeInspection")
   public PdcAxisValue getParentValue() {
     final PdcAxisValue parent;
     TreeNode node = getTreeNode();
@@ -277,11 +274,6 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
     getNativeId().setValueId(id);
   }
 
-  protected PdcAxisValue withId(String id) {
-    getNativeId().setValueId(Long.valueOf(id));
-    return this;
-  }
-
   protected PdcAxisValue inAxisId(String axisId) {
     getNativeId().setAxisId(Long.valueOf(axisId));
     return this;
@@ -307,12 +299,12 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
       return false;
     }
     final PdcAxisValue other = (PdcAxisValue) obj;
-    if (this.getNativeId().getValueId() != other.getNativeId().getValueId() &&
+    if (!Objects.equals(this.getNativeId().getValueId(), other.getNativeId().getValueId()) &&
         (this.getNativeId().getValueId() == null ||
             !this.getNativeId().getValueId().equals(other.getNativeId().getValueId()))) {
       return false;
     }
-    return this.getNativeId().getAxisId() == other.getNativeId().getAxisId() ||
+    return Objects.equals(this.getNativeId().getAxisId(), other.getNativeId().getAxisId()) ||
         (this.getNativeId().getAxisId() != null &&
             !this.getNativeId().getAxisId().equals(other.getNativeId().getAxisId()));
   }
@@ -336,28 +328,20 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * Converts this PdC axis value to a ClassifyValue instance. This method is for compatibility
    * with the old way to manage the classification.
    * @return a ClassifyValue instance.
-   * @throws PdcException if an error occurs while transforming this value into a ClassifyValue
-   * instance.
    */
   public ClassifyValue toClassifyValue() {
-    ClassifyValue value = new ClassifyValue(Integer.valueOf(getAxisId()), getValuePath() + "/");
+    ClassifyValue value = new ClassifyValue(Integer.parseInt(getAxisId()), getValuePath() + "/");
     List<Value> fullPath = new ArrayList<>();
     for (TreeNode aTreeNode : getTreeNodeParents()) {
-      fullPath.add(new Value(aTreeNode.getPK().getId(), aTreeNode.getTreeId(), aTreeNode.getName(),
-          aTreeNode.getDescription(), aTreeNode.getCreationDate(), aTreeNode.getCreatorId(),
-          aTreeNode.getPath(), aTreeNode.getLevelNumber(), aTreeNode.
-          getOrderNumber(), aTreeNode.getFatherId()));
+      fullPath.add(new Value(aTreeNode));
     }
     TreeNode lastValue = getTreeNode();
-    fullPath.add(new Value(lastValue.getPK().getId(), lastValue.getTreeId(), lastValue.getName(),
-        lastValue.getDescription(), lastValue.getCreationDate(), lastValue.getCreatorId(),
-        lastValue.getPath(), lastValue.getLevelNumber(), lastValue.getOrderNumber(),
-        lastValue.getFatherId()));
+    fullPath.add(new Value(lastValue));
     value.setFullPath(fullPath);
     return value;
   }
 
-  protected TreeNodeList getTreeNodeParents() {
+  private TreeNodeList getTreeNodeParents() {
     if (this.treeNodeParents == null) {
       loadTreeNodes();
     }
@@ -381,7 +365,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
     return PdcManager.get();
   }
 
-  private class TreeNodeList implements Iterable<TreeNode> {
+  private static class TreeNodeList implements Iterable<TreeNode> {
 
     private final List<TreeNode> treeNodes = new ArrayList<>();
 
@@ -403,6 +387,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
     }
 
     @Override
+    @NonNull
     public Iterator<TreeNode> iterator() {
       return this.treeNodes.iterator();
     }

@@ -29,92 +29,147 @@ import java.sql.Connection;
 import java.util.Collection;
 
 /**
- * SilverpeasBeanDAO is the interface to use for instanciable component persistence. To get a
- * SilverpeasBeanDAO instance, use the SilverpeasBeanDAO factory. A SilverpeasBeanDAO instance is
- * linked with a SilverpeasBean specialisation. The code below show you how to build a
- * SilverpeasBeanDAO, enable to create, update... objects for TrainingDetail class. <CODE>
- * // get a dao instance, associated with TrainingDetail bean class
- * SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO("com.stratelia.webactiv.training.model
- * .TrainingDetail");
- * </CODE> Once a dao instance is build, it enables you to create, update, remove and list objects
- * from TrainingDetail. TrainingDetail has to be a SilverpeasBean specialisation. (A SilverpeasBean
- * contains a PK). The persistance mechanism is based on your bean properties. In your bean, you
- * need to have getXXX and setXXX methods for each "column" you want to be persistant. For the
- * moment, SilverpeasBeanDAO is able to work with int, String and Date. This list can grow in the
- * near futur.
- * @param <T> the SilverpeasBeanIntf type
+ * SilverpeasBeanDAO is the interface to use for persistent beans. It is a generic DAO for such
+ * beans. To get a SilverpeasBeanDAO instance, use the SilverpeasBeanDAO factory. A
+ * SilverpeasBeanDAO instance is linked with a SilverpeasBean specialisation. The code below show
+ * you how to build a SilverpeasBeanDAO and then how to save, update or delete a beans.
+ * <pre>
+ *   {@code
+ *   TrainingBean bean = ...
+ *   SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO(TrainingBean.class.getName());
+ *   // persists the bean
+ *   dao.add(bean);
+ *
+ *   // update the state of the bean in database
+ *   dao.update(bean)
+ *
+ *   // remove the bean from the database
+ *   dao.remove(bean)
+ *   }
+ * </pre>
+ * <p>
+ * This persistence mechanism is deprecated in favor of JPA. Nevertheless, for instance, in order
+ * to ensure compatibility with old codes, it is yet maintained.
+ * </p>
+ *
+ * @param <T> the SilverpeasEntityBean type
  * @deprecated Replaced it with the new persistence layer built upon JPA
  */
 @Deprecated
-public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
-
-  int CONNECTION_TYPE_EJBDATASOURCE_SILVERPEAS = 0;
-  int CONNECTION_TYPE_DATASOURCE_SILVERPEAS = 1;
-  int CONNECTION_TYPE_DATASOURCE = 2;
-  int CONNECTION_TYPE_JDBC_CLASSIC = 3;
+public interface SilverpeasBeanDAO<T extends SilverpeasEntityBean> {
 
   /**
    * update the row in db with the new bean properties.
+   *
    * @param bean the SilverpeasBean to update, with its complete primaryKey.
    * @throws PersistenceException if the update fails.
    */
   void update(T bean) throws PersistenceException;
 
+  /**
+   * update the row in db with the new bean properties.
+   *
+   * @param con connection to the database to use for the update.
+   * @param bean the SilverpeasBean to update, with its complete primaryKey.
+   * @throws PersistenceException if the update fails.
+   */
   void update(Connection con, T bean) throws PersistenceException;
 
   /**
    * create the bean and a row in DB.
-   * @param bean the SilverpeasBeanIntf to update, with a primaryKey initialized with only spaceId
+   *
+   * @param bean the SilverpeasEntityBean to update, with a primaryKey initialized with only spaceId
    * and componentId.
    * @return The complete primary key, with the id.
    * @throws PersistenceException if the creation fails.
    */
   WAPrimaryKey add(T bean) throws PersistenceException;
 
+  /**
+   * create the bean and a row in DB.
+   *
+   * @param con connection to the database to use for the adding.
+   * @param bean the SilverpeasEntityBean to update, with a primaryKey initialized with only spaceId
+   * and componentId.
+   * @return The complete primary key, with the id.
+   * @throws PersistenceException if the creation fails.
+   */
   WAPrimaryKey add(Connection con, T bean) throws PersistenceException;
 
   /**
    * remove the row in db represented by the primary key.
-   * @param pk the SilverpeasBeanIntf to update, with a primaryKey initialized with only spaceId
-   * and componentId.
+   *
+   * @param pk the SilverpeasEntityBean to update, with a primaryKey initialized with only spaceId and
+   * componentId.
    * @throws PersistenceException if the deletion fails.
    */
   void remove(WAPrimaryKey pk) throws PersistenceException;
 
+  /**
+   * remove the row in db represented by the primary key.
+   *
+   * @param con connection to the database to use for the removing.
+   * @param pk the SilverpeasEntityBean to update, with a primaryKey initialized with only spaceId and
+   * componentId.
+   * @throws PersistenceException if the deletion fails.
+   */
   void remove(Connection con, WAPrimaryKey pk) throws PersistenceException;
 
   /**
    * remove all row in db represented by the where clause.
-   * @param pk the specific identifier
-   * @param p_WhereClause the where clause.
+   *
+   * @param criteria the criteria the beans to remove have to satisfy.
    * @throws PersistenceException if the deletion fails.
    */
-  void removeWhere(WAPrimaryKey pk, String p_WhereClause) throws PersistenceException;
+  void removeBy(BeanCriteria criteria) throws PersistenceException;
 
-  void removeWhere(Connection con, WAPrimaryKey pk, String p_WhereClause)
+  /**
+   * remove all row in db represented by the where clause.
+   *
+   * @param con connection to the database to use for the removing.
+   * @param criteria the criteria the beans to remove have to satisfy.
+   * @throws PersistenceException if the deletion fails.
+   */
+  void removeBy(Connection con, BeanCriteria criteria)
       throws PersistenceException;
 
   /**
    * get a bean list, representing a specific row selection.
-   * @param pk the beans primary key initialized with at least spaceId and componentId.
-   * @param whereClause The where clause to put in select request. If null, all SilverpeasBeanIntfs
-   * will be selected (all rows in the table).
+   *
+   * @param criteria the criteria the beans to get have to satisfy.
+   * @return a list of {@link SilverpeasEntityBean} objects matching the criteria.
+   * @throws PersistenceException if the finding fails.
+   */
+  Collection<T> findBy(BeanCriteria criteria)
+      throws PersistenceException;
+
+  /**
+   * get a bean list, representing a specific row selection.
+   *
+   * @param con connection to the database to use for the getting.
+   * @param criteria the criteria the beans to get have to satisfy.
    * @return The list of SilverpeasBeanIntfs corresponding to the where clause
    * @throws PersistenceException if the finding fails.
    */
-  Collection<T> findByWhereClause(WAPrimaryKey pk, String whereClause)
-      throws PersistenceException;
-
-  Collection<T> findByWhereClause(Connection con, WAPrimaryKey pk, String whereClause)
+  Collection<T> findBy(Connection con, BeanCriteria criteria)
       throws PersistenceException;
 
   /**
    * get a bean representing a row in db from its pk
+   *
    * @param pk the complete beans primary key
    * @return The SilverpeasBeanIntfs corresponding to the pk, null if not found
    * @throws PersistenceException if the finding fails.
    */
   T findByPrimaryKey(WAPrimaryKey pk) throws PersistenceException;
 
+  /**
+   * get a bean representing a row in db from its pk
+   *
+   * @param con connection to the database to use for the getting.
+   * @param pk the complete beans primary key
+   * @return The SilverpeasBeanIntfs corresponding to the pk, null if not found
+   * @throws PersistenceException if the finding fails.
+   */
   T findByPrimaryKey(Connection con, WAPrimaryKey pk) throws PersistenceException;
 }

@@ -26,21 +26,25 @@ package org.silverpeas.core.persistence.jdbc.bean;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Factory of  {@link SilverpeasBeanDAO} instances.
+ * @deprecated
+ */
 @Deprecated
 public class SilverpeasBeanDAOFactory {
 
-  private static Map<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>> silverpeasBeanDAOs =
-      new HashMap<>();
+  private static final Map<String, SilverpeasBeanDAO<? extends SilverpeasBean>>
+      silverpeasBeanDAOs = new HashMap<>();
 
-  @SuppressWarnings("unchecked")
-  public static <T extends SilverpeasBeanIntf> SilverpeasBeanDAO<T> getDAO(String beanName) throws
-      PersistenceException {
+  public static <T extends SilverpeasBean> SilverpeasBeanDAO<T> getDAO(Class<T> beanClass)
+      throws PersistenceException {
     SilverpeasBeanDAO<T> result;
     synchronized (SilverpeasBeanDAOFactory.class) {
-      result = (SilverpeasBeanDAO<T>) silverpeasBeanDAOs.get(beanName);
+      //noinspection unchecked
+      result = (SilverpeasBeanDAO<T>) silverpeasBeanDAOs.get(beanClass.getName());
       if (result == null) {
-        result = new SilverpeasBeanDAOImpl<>(beanName);
-        silverpeasBeanDAOs.put(beanName, result);
+        result = new SilverpeasBeanDAOImpl<>(beanClass);
+        silverpeasBeanDAOs.put(beanClass.getName(), result);
       }
     }
     return result;

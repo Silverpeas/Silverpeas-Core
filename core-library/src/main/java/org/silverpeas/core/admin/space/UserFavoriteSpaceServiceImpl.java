@@ -26,10 +26,7 @@ package org.silverpeas.core.admin.space;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.*;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -43,23 +40,21 @@ import java.util.List;
 @Service
 @Singleton
 @Default
+@SuppressWarnings("deprecation")
 public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
 
-  private static final String USER_FAVORITE_SPACE_BEAN =
-      "org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean";
+  private static final String USER_ID = "userId";
 
   public List<UserFavoriteSpaceVO> getListUserFavoriteSpace(String userId) {
     List<UserFavoriteSpaceVO> listUserFavoriteSpaces = new ArrayList<>();
     SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
-    IdPK pk = new IdPK();
     Collection<UserFavoriteSpaceBean> beansUserFavoriteSpaces;
-    String whereClause = " userid = " + userId;
     try {
 
       // find all message to display
-      dao = SilverpeasBeanDAOFactory
-          .getDAO(USER_FAVORITE_SPACE_BEAN);
-      beansUserFavoriteSpaces = dao.findByWhereClause(pk, whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion(USER_ID, Integer.parseInt(userId));
+      dao = SilverpeasBeanDAOFactory.getDAO(UserFavoriteSpaceBean.class);
+      beansUserFavoriteSpaces = dao.findBy(criteria);
       // if any
       if (!beansUserFavoriteSpaces.isEmpty()) {
         for (UserFavoriteSpaceBean userFavoriteSpaceBean : beansUserFavoriteSpaces) {
@@ -83,8 +78,7 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
         result = true;
       } else {
         // find all message to display
-        dao = SilverpeasBeanDAOFactory
-            .getDAO(USER_FAVORITE_SPACE_BEAN);
+        dao = SilverpeasBeanDAOFactory.getDAO(UserFavoriteSpaceBean.class);
         dao.add(new UserFavoriteSpaceBean(ufsVO.getUserId(), ufsVO.getSpaceId()));
         result = true;
       }
@@ -98,15 +92,13 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
   private boolean isUserFavoriteSpaceAlreadyExist(int userId, int spaceId) {
     boolean exist = false;
     SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
-    IdPK pk = new IdPK();
     Collection<UserFavoriteSpaceBean> beansUserFavoriteSpaces;
-    String whereClause = " userid = " + userId + " AND spaceId = " + spaceId;
     try {
-
+      BeanCriteria criteria = BeanCriteria.addCriterion(USER_ID, userId)
+          .and("spaceId", spaceId);
       // find all message to display
-      dao = SilverpeasBeanDAOFactory
-          .getDAO(USER_FAVORITE_SPACE_BEAN);
-      beansUserFavoriteSpaces = dao.findByWhereClause(pk, whereClause);
+      dao = SilverpeasBeanDAOFactory.getDAO(UserFavoriteSpaceBean.class);
+      beansUserFavoriteSpaces = dao.findBy(criteria);
       // if any
       if (!beansUserFavoriteSpaces.isEmpty()) {
         exist = true;
@@ -121,29 +113,23 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
   public boolean removeUserFavoriteSpace(UserFavoriteSpaceVO ufsVO) {
     boolean result = false;
     SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
-    StringBuilder whereBuff = new StringBuilder();
+    BeanCriteria criteria = BeanCriteria.emptyCriteria();
     int removedUserId = ufsVO.getUserId();
     int removedSpaceId = ufsVO.getSpaceId();
     if (removedUserId == -1 && removedSpaceId == -1) {
       return true;
     } else {
-      boolean firstCondition = false;
       if (removedUserId != -1) {
-        whereBuff.append(" userid=").append(removedUserId);
-        firstCondition = true;
+        criteria.and(USER_ID, removedUserId);
       }
       if (removedSpaceId != -1) {
-        if (firstCondition) {
-          whereBuff.append(" AND");
-        }
-        whereBuff.append(" spaceid=").append(removedSpaceId);
+        criteria.and("spaceId", removedSpaceId);
       }
     }
     try {
       // find all message to display
-      dao = SilverpeasBeanDAOFactory
-          .getDAO(USER_FAVORITE_SPACE_BEAN);
-      dao.removeWhere(new IdPK(), whereBuff.toString());
+      dao = SilverpeasBeanDAOFactory.getDAO(UserFavoriteSpaceBean.class);
+      dao.removeBy(criteria);
       result = true;
     } catch (PersistenceException e) {
       SilverLogger.getLogger(this)

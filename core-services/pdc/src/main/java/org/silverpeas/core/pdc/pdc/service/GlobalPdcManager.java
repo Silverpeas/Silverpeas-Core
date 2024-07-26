@@ -41,6 +41,7 @@ import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
 import org.silverpeas.core.pdc.tree.service.TreeService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
@@ -61,14 +62,18 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.getComponentName;
+import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.GREATER_OR_EQUAL;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
 
 @Service
+@SuppressWarnings("deprecation")
 public class GlobalPdcManager implements PdcManager {
 
   private static final String UNKNOWN = "unknown";
   private static final String KMELIA_COMPONENT_NAME = "kmelia";
+  private static final String AXIS_TYPE = "AxisType";
+  private static final String AXIS_ORDER = "AxisOrder";
 
   /**
    * SilverpeasBeanDAO is the main link with the SilverPeas persistence. We indicate the Object
@@ -106,8 +111,7 @@ public class GlobalPdcManager implements PdcManager {
    */
   protected GlobalPdcManager() {
     try {
-      dao = SilverpeasBeanDAOFactory.getDAO(
-          "org.silverpeas.core.pdc.pdc.model.AxisHeaderPersistence");
+      dao = SilverpeasBeanDAOFactory.getDAO(AxisHeaderPersistence.class);
     } catch (PersistenceException exceDAO) {
       SilverLogger.getLogger(this).error("Cannot get DAO for AxisHeader", exceDAO);
     }
@@ -137,8 +141,9 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<AxisHeader> getAxisByType(String type) throws PdcException {
     try {
-      Collection<AxisHeaderPersistence> axis = dao.findByWhereClause(new AxisPK("useless"),
-          " AxisType='" + type + "' order by AxisOrder ");
+      BeanCriteria criteria = BeanCriteria.addCriterion(AXIS_TYPE, type);
+      criteria.setAscOrderBy(AXIS_ORDER);
+      Collection<AxisHeaderPersistence> axis = dao.findBy(criteria);
       return persistence2AxisHeaders(axis);
     } catch (PersistenceException exSelect) {
       throw new PdcException(exSelect);
@@ -189,8 +194,9 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<AxisHeader> getAxis() throws PdcException {
     try {
-      Collection<AxisHeaderPersistence> axis = dao.findByWhereClause(new AxisPK("useless"),
-          " 1=1 order by AxisType asc, AxisOrder asc ");
+      BeanCriteria criteria = BeanCriteria.emptyCriteria();
+      criteria.setAscOrderBy(AXIS_TYPE, AXIS_ORDER);
+      Collection<AxisHeaderPersistence> axis = dao.findBy(criteria);
       return persistence2AxisHeaders(axis);
     } catch (PersistenceException exSelect) {
       throw new PdcException(exSelect);
@@ -240,12 +246,12 @@ public class GlobalPdcManager implements PdcManager {
         String type = axisHeader.getAxisType();
         // recupere les axes de meme type ordonnés qui ont un numéro d'ordre
         // >= à celui de l'axe à inserer
-        String whereClause =
-            "AxisType = '" + type + "' and AxisOrder >= " + order + " ORDER BY AxisOrder ASC";
-
+        BeanCriteria criteria = BeanCriteria.addCriterion(AXIS_TYPE, type)
+            .and(AXIS_ORDER, GREATER_OR_EQUAL, order);
+        criteria.setAscOrderBy(AXIS_ORDER);
         // ATTENTION il faut traiter l'ordre des autres axes
         Collection<AxisHeaderPersistence> axisToUpdate =
-            dao.findByWhereClause(axisHeader.getPK(), whereClause);
+            dao.findBy(criteria);
 
         for (AxisHeaderPersistence axisToMove : axisToUpdate) {
           // On modifie l'ordre de l'axe en ajoutant 1 par rapport au nouvel axe
@@ -255,11 +261,15 @@ public class GlobalPdcManager implements PdcManager {
         }
 
         // build of the Value
-        Value value =
-            new Value(UNKNOWN, Integer.toString(axisHeader.getRootId()), axisHeader.getName(),
-                axisHeader.getDescription(), axisHeader.getCreationDate(),
-                axisHeader.getCreatorId(), UNKNOWN, -1, -1, UNKNOWN);
-
+        Value value = new Value(UNKNOWN, Integer.toString(axisHeader.getRootId()));
+        value.setName(axisHeader.getName());
+        value.setDescription(axisHeader.getDescription());
+        value.setCreationDate(axisHeader.getCreationDate());
+        value.setCreatorId(axisHeader.getCreatorId());
+        value.setPath(UNKNOWN);
+        value.setOrderNumber(-1);
+        value.setLevelNumber(-1);
+        value.setFatherId(UNKNOWN);
         value.setLanguage(axisHeader.getLanguage());
         value.setRemoveTranslation(axisHeader.isRemoveTranslation());
         value.setTranslationId(axisHeader.getTranslationId());
@@ -441,12 +451,12 @@ public class GlobalPdcManager implements PdcManager {
     String axisId = axisHeader.getPK().getId();
     // recupere les axes de meme type ordonnés qui ont un numéro d'ordre >= à celui de
     // l'axe à inserer
-    String whereClause =
-        "AxisType = '" + type + "' and AxisOrder >= " + order + " ORDER BY AxisOrder ASC";
+    BeanCriteria criteria = BeanCriteria.addCriterion(AXIS_TYPE, type)
+        .and(AXIS_ORDER, GREATER_OR_EQUAL, order);
+    criteria.setAscOrderBy(AXIS_ORDER);
 
     // ATTENTION il faut traiter l'ordre des autres axes
-    Collection<AxisHeaderPersistence> axisToUpdate = dao.findByWhereClause(con, axisHeader.
-        getPK(), whereClause);
+    Collection<AxisHeaderPersistence> axisToUpdate = dao.findBy(con, criteria);
 
     boolean axisHasMoved = true;
     Iterator<AxisHeaderPersistence> it = axisToUpdate.iterator();
@@ -474,10 +484,15 @@ public class GlobalPdcManager implements PdcManager {
   }
 
   private static TreeNode createTreeNode(AxisHeader axisHeader, TreeNode root) {
-    TreeNode node = new TreeNode(root.getPK().getId(), root.getTreeId(), axisHeader.getName(),
-        axisHeader.getDescription(), root.getCreationDate(), root.
-        getCreatorId(), root.getPath(), root.getLevelNumber(), root.getOrderNumber(),
-        root.getFatherId());
+    TreeNode node = new TreeNode(root.getPK().getId(), root.getTreeId());
+    node.setName(axisHeader.getName());
+    node.setDescription(axisHeader.getDescription());
+    node.setCreationDate(root.getCreationDate());
+    node.setCreatorId(root.getCreatorId());
+    node.setPath(root.getPath());
+    node.setLevelNumber(root.getLevelNumber());
+    node.setOrderNumber(root.getOrderNumber());
+    node.setFatherId(root.getFatherId());
     node.setLanguage(axisHeader.getLanguage());
     node.setRemoveTranslation(axisHeader.isRemoveTranslation());
     node.setTranslationId(axisHeader.getTranslationId());
@@ -1053,13 +1068,7 @@ public class GlobalPdcManager implements PdcManager {
       if (isValueNameExist(daughters, value)) {
         status = 1;
       } else {
-        TreeNode node = new TreeNode(value.getPK().getId(), treeId, value.getName(), value.
-            getDescription(), oldValue.getCreationDate(), oldValue.getCreatorId(),
-            oldValue.getPath(), oldValue.getLevelNumber(), value.
-            getOrderNumber(), oldValue.getFatherId());
-        node.setLanguage(value.getLanguage());
-        node.setRemoveTranslation(value.isRemoveTranslation());
-        node.setTranslationId(value.getTranslationId());
+        TreeNode node = buildTreeNode(treeId, value, oldValue);
         treeService.updateNode(con, node);
       }
     } catch (Exception e) {
@@ -1069,6 +1078,22 @@ public class GlobalPdcManager implements PdcManager {
     }
 
     return status;
+  }
+
+  private static TreeNode buildTreeNode(String treeId, Value value, Value oldValue) {
+    TreeNode node = new TreeNode(value.getPK().getId(), treeId);
+    node.setName(value.getName());
+    node.setDescription(value.getDescription());
+    node.setCreationDate(oldValue.getCreationDate());
+    node.setCreatorId(oldValue.getCreatorId());
+    node.setPath(oldValue.getPath());
+    node.setLevelNumber(oldValue.getLevelNumber());
+    node.setOrderNumber(value.getOrderNumber());
+    node.setFatherId(oldValue.getFatherId());
+    node.setLanguage(value.getLanguage());
+    node.setRemoveTranslation(value.isRemoveTranslation());
+    node.setTranslationId(value.getTranslationId());
+    return node;
   }
 
   /**
@@ -1409,10 +1434,7 @@ public class GlobalPdcManager implements PdcManager {
    */
   private Value createValue(TreeNode treeNode) {
     if (treeNode != null) {
-      Value value = new Value(treeNode.getPK().getId(), treeNode.getTreeId(), treeNode.getName(),
-          treeNode.getDescription(), treeNode.getCreationDate(), treeNode.getCreatorId(),
-          treeNode.getPath(), treeNode.getLevelNumber(), treeNode.getOrderNumber(),
-          treeNode.getFatherId());
+      Value value = new Value(treeNode);
       value.setTranslations(treeNode.getTranslations());
       return value;
     }
@@ -1537,11 +1559,6 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public void deleteUsedAxis(String usedAxisId) throws PdcException {
     pdcUtilizationService.deleteUsedAxis(usedAxisId);
-  }
-
-  @Override
-  public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException {
-    pdcUtilizationService.deleteUsedAxis(usedAxisIds);
   }
 
   /*

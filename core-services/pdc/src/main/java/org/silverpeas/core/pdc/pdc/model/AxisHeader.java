@@ -25,6 +25,8 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.i18n.AbstractI18NBean;
 
+import java.util.Objects;
+
 /**
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can
  * access to the axis main information.
@@ -96,7 +98,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
   }
 
   public AxisHeader(AxisHeaderPersistence persistence) {
-    this.pk = (AxisPK) persistence.getPK();
+    this.pk = new AxisPK(persistence.getPK().getId(), persistence.getPK());
     setName(persistence.getName());
     setDescription(persistence.getDescription());
     this.creationDate = persistence.getCreationDate();
@@ -119,6 +121,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
    * set a type for an axe
    * @param type - the type of the axe
    */
+  @SuppressWarnings("unused")
   public void setAxisType(String type) {
     this.type = type;
   }
@@ -197,7 +200,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
    */
   @Override
   public String toString() {
-    return "(pk = " + getPK() + ", langage = " + getLanguage() + ", name = "
+    return "(pk = " + getPK() + ", language = " + getLanguage() + ", name = "
         + getName() + ", type = " + getAxisType() + ", order = "
         + getAxisOrder() + ", creationDate = " + getCreationDate()
         + ", creatorId = " + getCreatorId() + ", rootId = " + getRootId()
@@ -213,7 +216,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
       return false;
     }
     final AxisHeader other = (AxisHeader) obj;
-    return this.pk == other.pk || (this.pk != null && this.pk.equals(other.pk));
+    return Objects.equals(this.pk, other.pk);
   }
 
   @Override

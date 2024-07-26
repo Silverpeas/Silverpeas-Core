@@ -24,8 +24,9 @@
 package org.silverpeas.core.admin.space.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 
+@SuppressWarnings("deprecation")
 public class UserFavoriteSpaceBean extends SilverpeasBean {
 
   /**
@@ -46,6 +47,7 @@ public class UserFavoriteSpaceBean extends SilverpeasBean {
   /**
    * Default constructor
    */
+  @SuppressWarnings("unused")
   public UserFavoriteSpaceBean() {
   }
 
@@ -70,18 +72,9 @@ public class UserFavoriteSpaceBean extends SilverpeasBean {
     this.spaceId = spaceId;
   }
 
-  /*****************************************************************************/
-  /**
-   *
-   */
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  /**
-   *
-   */
-  public String _getTableName() {
+  @Override
+  @NonNull
+  protected String getTableName() {
     return "ST_UserFavoriteSpaces";
   }
 

@@ -24,12 +24,15 @@
 package org.silverpeas.core.pdc.thesaurus.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
+
+import java.util.Objects;
 
 /**
  * This class contains a full information about a Vocabulary
  */
 
+@SuppressWarnings("deprecation")
 public class Vocabulary extends SilverpeasBean implements Comparable<Vocabulary> {
 
   private static final long serialVersionUID = -5979441125808657400L;
@@ -61,7 +64,7 @@ public class Vocabulary extends SilverpeasBean implements Comparable<Vocabulary>
       return false;
     }
     final Vocabulary other = (Vocabulary) obj;
-    return this.name == null ? other.name == null : this.name.equals(other.name);
+    return Objects.equals(this.name, other.name);
   }
 
   @Override
@@ -77,12 +80,9 @@ public class Vocabulary extends SilverpeasBean implements Comparable<Vocabulary>
   }
 
   @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SB_Thesaurus_Vocabulary";
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

@@ -21,50 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package org.silverpeas.core.pdc.tree.model;
 
 import java.io.Serializable;
+
+import org.apache.jackrabbit.guava.common.base.Objects;
 import org.silverpeas.core.WAPrimaryKey;
 
-/**
- * Class declaration
- * @author
- */
+@SuppressWarnings("deprecation")
 public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = -2135967099552497544L;
 
-  /**
-   * Constructor declaration
-   * @param id
-   * @see
-   */
   public TreeNodePK(String id) {
     super(id);
   }
 
-  /**
-   * Constructor declaration
-   * @param id
-   * @param space
-   * @param componentName
-   * @see
-   */
-  public TreeNodePK(String id, String space, String componentName) {
-    super(id, space, componentName);
-  }
-
-  /**
-   * Constructor declaration
-   * @param id
-   * @param pk
-   * @see
-   */
-  public TreeNodePK(String id, WAPrimaryKey pk) {
-    super(id, pk);
+  public TreeNodePK(WAPrimaryKey pk) {
+    super(pk.getId(), pk);
   }
 
   @Override
@@ -89,7 +63,7 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return Objects.hashCode(id, space, componentName);
   }
 
 }

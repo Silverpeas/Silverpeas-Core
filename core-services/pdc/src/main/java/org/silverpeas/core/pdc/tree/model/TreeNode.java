@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
 
 package org.silverpeas.core.pdc.tree.model;
 
@@ -37,88 +35,40 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Class declaration
- * @author
- */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.Serializable {
 
   private static final long serialVersionUID = 4644891370102942728L;
 
-  private TreeNodePK pk;
+  private TreeNodePK pk = new TreeNodePK("0");
 
-  private String treeId;
-  private String creationDate;
-  private String creatorId;
+  private String treeId = "0";
+  private String creationDate = "";
+  private String creatorId = "";
   @XmlAttribute(name = "pdcValuePath")
-  private String path;
-  private int levelNumber;
-  private int orderNumber;
-  private String fatherId;
+  private String path = "";
+  private int levelNumber = 0;
+  private int orderNumber = 0;
+  private String fatherId = "0";
 
   @Override
   protected Class<TreeNodeI18N> getTranslationType() {
     return TreeNodeI18N.class;
   }
 
-  /**
-   * Constructor declaration
-   *
-   */
   public TreeNode() {
-    init("0", "", "", "", "", "", "", 0, 0, "0");
+    setName("");
+    setDescription("");
   }
 
-  /**
-   * Method declaration
-   * @param id
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param creatorId
-   * @param path
-   * @param levelNumber
-   * @param fatherId
-   *
-   */
-  private void init(String id, String treeId, String name, String description,
-      String creationDate, String creatorId, String path, int levelNumber,
-      int orderNumber, String fatherId) {
+  public TreeNode(String id, String treeId) {
     setPK(new TreeNodePK(id));
     this.treeId = treeId;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.levelNumber = levelNumber;
-    this.fatherId = fatherId;
-    this.orderNumber = orderNumber;
-  }
-
-  /**
-   * Constructor declaration
-   * @param id
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param creatorId
-   * @param path
-   * @param levelNumber
-   * @param fatherId
-   *
-   */
-  public TreeNode(String id, String treeId, String name, String description,
-      String creationDate, String creatorId, String path, int levelNumber,
-      int orderNumber, String fatherId) {
-    init(id, treeId, name, description, creationDate, creatorId, path,
-        levelNumber, orderNumber, fatherId);
   }
 
   public TreeNode(TreeNodePersistence persistence) {
-    this.pk = (TreeNodePK) persistence.getPK();
+    this.pk = new TreeNodePK(persistence.getPK());
     this.treeId = persistence.getTreeId();
     setName(persistence.getName());
     setDescription(persistence.getDescription());
@@ -147,56 +97,26 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
     this.treeId = treeId;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getCreationDate() {
     return (this.creationDate);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getCreatorId() {
     return (this.creatorId);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getPath() {
     return (this.path);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public int getLevelNumber() {
     return (this.levelNumber);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public int getOrderNumber() {
     return (this.orderNumber);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getFatherId() {
     return (this.fatherId);
   }
@@ -205,56 +125,26 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
     return StringUtil.isDefined(getFatherId()) && !"-1".equals(getFatherId());
   }
 
-  /**
-   * Method declaration
-   * @param date
-   *
-   */
   public void setCreationDate(String date) {
     this.creationDate = date;
   }
 
-  /**
-   * Method declaration
-   * @param creatorId
-   *
-   */
   public void setCreatorId(String creatorId) {
     this.creatorId = creatorId;
   }
 
-  /**
-   * Method declaration
-   * @param fatherId
-   *
-   */
   public void setFatherId(String fatherId) {
     this.fatherId = fatherId;
   }
 
-  /**
-   * Method declaration
-   * @param path
-   *
-   */
   public void setPath(String path) {
     this.path = path;
   }
 
-  /**
-   * Method declaration
-   * @param levelNumber
-   *
-   */
   public void setLevelNumber(int levelNumber) {
     this.levelNumber = levelNumber;
   }
 
-  /**
-   * Method declaration
-   * @param orderNumber
-   *
-   */
   public void setOrderNumber(int orderNumber) {
     this.orderNumber = orderNumber;
   }

@@ -362,15 +362,6 @@ public interface PdcManager {
   void deleteUsedAxis(String usedAxisId) throws PdcException;
 
   /**
-   * Method declaration
-   *
-   * @param usedAxisIds
-   * @throws PdcException
-   *
-   */
-  void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException;
-
-  /**
    * Gets the axis used by the specified component instance to classify the specified Silverpeas
    * object. If there is no axis configured to be used in the component instance, then all PdC axis
    * are returned as axis that can be used for classifying a content. If the content is already
