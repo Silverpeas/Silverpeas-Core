@@ -22,13 +22,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//# sourceURL=/silverpeas/util/javaScript/password.js
+
 /**
  * Setting password UI & behaviour and form submit.
  * @param params
  * @return {boolean}
  */
 function handlePasswordForm(params) {
-  var settings = $.extend({
+  const settings = $.extend({
     passwordFormId: '',
     passwordInputId: '',
     passwordFormAction: '',
@@ -41,28 +43,29 @@ function handlePasswordForm(params) {
     bundle : 'org.silverpeas.authentication.multilang.authentication',
     async : true
   });
-  var $pwdInput = $('#' + settings.passwordInputId);
+  let $pwdInput = $('#' + settings.passwordInputId);
   $pwdInput.password();
   $('#' + settings.passwordFormId).on("submit", function() {
-    var errorStack = [];
-    var _self = this;
-    var nextValidations = function() {
+    let errorStack = [];
+    let _self = this;
+    let nextValidations = function (checkId) {
       if ($pwdInput.val() === $('#oldPassword').val()) {
         errorStack.push(sp.i18n.get('authentication.password.newMustBeDifferentToOld'));
       }
       if ($pwdInput.val() !== $('#confirmPassword').val()) {
         errorStack.push(sp.i18n.get('authentication.password.different'));
       }
-      var $submit = function() {
+      let $submit = function () {
         if (errorStack.length) {
           jQuery.popup.error(errorStack.join("\n"));
         } else {
           _self.action = settings.passwordFormAction;
+          $('#' + settings.passwordFormId).append('<input type="hidden" name="checkId" value="' + checkId + '">')
           _self.submit();
         }
       };
       if (typeof settings.extraValidations === 'function') {
-        settings.extraValidations(errorStack).then(function() {
+        settings.extraValidations(errorStack).then(function () {
           $submit();
         });
       } else {
@@ -70,12 +73,12 @@ function handlePasswordForm(params) {
       }
     };
     $pwdInput.password('verify', {
-      onSuccess: function() {
-        nextValidations();
+      onSuccess: function(checkId) {
+        nextValidations(checkId);
       },
       onError: function() {
         errorStack.push(sp.i18n.get('authentication.password.error'));
-        nextValidations();
+        nextValidations('');
       }
     });
     return false;

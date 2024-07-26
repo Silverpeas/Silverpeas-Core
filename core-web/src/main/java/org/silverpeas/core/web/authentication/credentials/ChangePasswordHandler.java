@@ -34,15 +34,17 @@ import javax.servlet.http.HttpServletRequest;
  * Navigation case : user has changed his password.
  * @author ehugonnet
  */
-public class ChangePasswordHandler extends FunctionHandler {
+public class ChangePasswordHandler extends ChangePasswordFunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
     String login = request.getParameter("Login");
     String domainId = request.getParameter("DomainId");
     String password = request.getParameter("password");
+    String checkId = request.getParameter("checkId");
     try {
       // Reset password.
+      assertPasswordHasBeenCorrectlyChecked(checkId, password);
       AuthenticationCredential credential = AuthenticationCredential
           .newWithAsLogin(login)
           .withAsDomainId(domainId);

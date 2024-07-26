@@ -25,6 +25,8 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
+import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,5 +63,21 @@ public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunc
     return performUrlOnBadCredentialError(request, originalUrl,
         AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user),
         "badCredentials");
+  }
+
+  /**
+   * Asserts the specified password has been checked against the password rules and the checking
+   * has been successful.
+   * @param checkId the unique identifier of a password check process.
+   * @param password the password to assert.
+   * @throws AuthenticationException if the password hasn't been successfully checked by the
+   * specidfed ckeck process.
+   */
+  protected void assertPasswordHasBeenCorrectlyChecked(String checkId,String password)
+      throws AuthenticationException {
+    var passwordRuleService = PasswordRulesServiceProvider.getPasswordRulesService();
+    if (!passwordRuleService.isChecked(checkId, password)) {
+      throw new AuthenticationException("Password wasn't checked against the password rules!");
+    }
   }
 }

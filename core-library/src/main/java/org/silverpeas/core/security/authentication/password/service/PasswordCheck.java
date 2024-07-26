@@ -40,11 +40,12 @@ public class PasswordCheck {
   protected static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
 
-  private Collection<PasswordRule> requiredRulesInError = new ArrayList<PasswordRule>();
-  private Collection<PasswordRule> combinedRules = new ArrayList<PasswordRule>();
-  private Collection<PasswordRule> combinedRulesInError = new ArrayList<PasswordRule>();
-  private int nbMatchingCombinedRules;
-  private int nbCombinedErrorsAuthorized;
+  private final Collection<PasswordRule> requiredRulesInError = new ArrayList<>();
+  private final Collection<PasswordRule> combinedRules;
+  private final Collection<PasswordRule> combinedRulesInError = new ArrayList<>();
+  private final int nbMatchingCombinedRules;
+  private final int nbCombinedErrorsAuthorized;
+  private String id;
 
   /**
    * Default hidden constructor
@@ -63,9 +64,17 @@ public class PasswordCheck {
     combinedRulesInError.add(rule);
   }
 
+  void setId(String id) {
+    this.id = id;
+  }
+
+  public String getId() {
+    return id;
+  }
+
   /**
    * Gets required rules in error.
-   * @return
+   * @return a collection of failed required rules
    */
   public Collection<PasswordRule> getRequiredRulesInError() {
     return requiredRulesInError;
@@ -73,7 +82,7 @@ public class PasswordCheck {
 
   /**
    * Gets combined rules in error.
-   * @return
+   * @return a collection of failed combined rules
    */
   public Collection<PasswordRule> getCombinedRulesInError() {
     return combinedRulesInError;
@@ -81,7 +90,7 @@ public class PasswordCheck {
 
   /**
    * Indicated if the checked password is correct.
-   * @return
+   * @return true if the password satisfied all the password rules. False otherwise.
    */
   public boolean isCorrect() {
     return requiredRulesInError.isEmpty() && isRuleCombinationRespected();
@@ -89,7 +98,7 @@ public class PasswordCheck {
 
   /**
    * Indicated if the combination of rules is respected.
-   * @return
+   * @return true if the combined rules has been satisfied by the password. False otherwise.
    */
   public boolean isRuleCombinationRespected() {
     return combinedRulesInError.isEmpty() ||
@@ -98,8 +107,8 @@ public class PasswordCheck {
 
   /**
    * Gets a formatted error message according to the given language
-   * @param language
-   * @return
+   * @param language the ISO 639-1 code of a language in which the message has to be written.
+   * @return a l10n message about the error.
    */
   public String getFormattedErrorMessage(String language) {
     StringBuilder errorMessage = new StringBuilder();
@@ -129,13 +138,6 @@ public class PasswordCheck {
     return formattedMessage.toString();
   }
 
-  /**
-   * Gets a string message according to the given language.
-   * @param key
-   * @param language
-   * @param params
-   * @return
-   */
   protected String getString(final String key, final String language, final String... params) {
     LocalizationBundle messages =
         ResourceLocator.getLocalizationBundle("org.silverpeas.password.multilang.passwordBundle",

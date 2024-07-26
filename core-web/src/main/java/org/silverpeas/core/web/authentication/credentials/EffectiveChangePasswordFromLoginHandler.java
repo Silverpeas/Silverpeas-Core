@@ -46,9 +46,11 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
     String oldPassword = request.getParameter("oldPassword");
     String newPassword = request.getParameter("newPassword");
     String email = request.getParameter("emailAddress");
+    String checkId = request.getParameter("checkId");
     AuthenticationCredential credential = null;
     try {
       // Change password.
+      assertPasswordHasBeenCorrectlyChecked(checkId, newPassword);
       credential = AuthenticationCredential.newWithAsLogin(login)
           .withAsPassword(oldPassword)
           .withAsDomainId(domainId);
