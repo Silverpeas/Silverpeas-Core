@@ -35,7 +35,7 @@
     extraRuleMessage: null
   };
 
-  var __uiPromises = [];
+  const __uiPromises = [];
   if (webContext) {
     __uiPromises.push(sp.i18n.load({
       bundle : 'org.silverpeas.password.multilang.passwordBundle',
@@ -48,16 +48,16 @@
       $.password.extraRuleMessage = $.trim(policy.extraRuleMessage);
     }));
   }
-  var __uiReady = Promise.all(__uiPromises);
+  const __uiReady = Promise.all(__uiPromises);
 
   /**
    * The different password methods handled by the plugin.
    */
-  var methods = {
+  const methods = {
     /**
      * Prepare UI and behavior
      */
-    init: function() {
+    init: function () {
       return __init($(this));
     },
     /**
@@ -65,14 +65,14 @@
      * - displaying rules
      * - showing to user the validated and unvalidated rules
      */
-    verify: function(options) {
+    verify: function (options) {
       return __verify($(this), options)
     }
   };
 
   /**
    * The password Silverpeas plugin based on JQuery.
-   * This JQuery plugin abstrats the way an HTML element (usually a form or a div) is rendered
+   * This JQuery plugin abstracts the way an HTML element (usually a form or a div) is rendered
    * within a JQuery UI dialog.
    *
    * Here the password namespace in JQuery.
@@ -101,13 +101,13 @@
     }
 
     return $targets.each(function() {
-      var $this = $(this);
+      const $this = $(this);
 
       // Root id
-      var infoBoxId = __getInfoBoxId($this);
+      const infoBoxId = __getInfoBoxId($this);
 
       // Clean if necessary
-      var $box = $('#' + infoBoxId);
+      let $box = $('#' + infoBoxId);
       if ($box.length === 0) {
         $box = __prepareUI($this);
       }
@@ -125,7 +125,7 @@
    * @private
    */
   function __checking($target, $box, options) {
-    var deferred = new $.Deferred();
+    const deferred = new $.Deferred();
 
     // Checking
     __postJSonData($.password.webServiceContext + '/password/policy/checking',
@@ -136,7 +136,7 @@
 
             // All rules are verified by default
             $box.find('li').each(function() {
-              var $rule = $(this);
+              const $rule = $(this);
               if ($rule.attr('id')) {
                 if (!$rule.hasClass('combined')) {
                   __switchStatusStyleClass($rule, 'success');
@@ -153,13 +153,13 @@
             try {
               if (passwordCheck.isCorrect) {
                 if (options.onSuccess) {
-                  options.onSuccess.call(this);
+                  options.onSuccess.call(this, passwordCheck.checkId);
                 }
               } else {
                 // Indicate the rules in error
                 $.each(passwordCheck.requiredRuleIdsInError, function(index, value) {
                   $box.find('li[id="' + value + '"]').each(function() {
-                    var $rule = $(this);
+                    const $rule = $(this);
                     if (!$rule.hasClass('combined')) {
                       __switchStatusStyleClass($rule, 'error');
                     }
@@ -221,10 +221,10 @@
     //  </div>
 
     // Root id
-    var infoBoxId = __getInfoBoxId($target);
+    const infoBoxId = __getInfoBoxId($target);
 
     // Clean if necessary
-    var $box = $('#' + infoBoxId);
+    let $box = $('#' + infoBoxId);
     if ($box.length > 0) {
       $box.remove();
     }
@@ -232,8 +232,8 @@
     // Common body
     $box = $('<div>').css('display', 'none').css('z-index', '100000').attr('id',
             infoBoxId).addClass('password-box-info');
-    $box.append($('<span>').append(__getFromBundleKey('password.rule.requirements')));
-    var $rules = $('<ul>');
+    $box.append($('<span>').append(__getFromBundleKey('password.rule.requirements', null)));
+    const $rules = $('<ul>');
     $box.append($rules);
 
     // Rules
@@ -246,8 +246,8 @@
       $rules.append($('<li>').attr('id',
               __getCombinedRuleId()).addClass('info').append(__getFromBundleKey('password.rule.combination',
               $.password.nbMatchingCombinedRules)));
-      var $combinedRule = $('<li>');
-      var $combinedRuleDetails = $('<ul>');
+      const $combinedRule = $('<li>');
+      const $combinedRuleDetails = $('<ul>');
       $combinedRule.append($combinedRuleDetails);
       $.each($.password.combinedRules, function(name, rule) {
         $combinedRuleDetails.append($('<li>').attr('id',
@@ -263,7 +263,7 @@
 
     // Events
     $target.on("keyup", function(event) {
-      var deferred = new $.Deferred();
+      const deferred = new $.Deferred();
       // Toggle info box display on 'Escape'
       if (event.keyCode === 27) {
         $box.toggle();
@@ -280,7 +280,7 @@
       }
 
       deferred.then(function() {
-        var deferred2 = new $.Deferred();
+        const deferred2 = new $.Deferred();
         // Position
         if ($box.css('display') !== 'none') {
           // Checking when displaying the box from 'Escape' key event
@@ -305,7 +305,7 @@
       }
     });
     $target.on("focus", function() {
-      var deferred = new $.Deferred();
+      const deferred = new $.Deferred();
       if ($target.val()) {
         __checking($target, $box, {}).then(function() {
           deferred.resolve();
@@ -350,8 +350,8 @@
    * @private
    */
   function __setBoxInfoPosition($target, $box) {
-    var top = $target.offset().top + $target.outerHeight(true) + 8;
-    var left = $target.offset().left - ($box.outerWidth(true) / 2) + ($target.outerWidth(true) / 2);
+    const top = $target.offset().top + $target.outerHeight(true) + 8;
+    const left = $target.offset().left - ($box.outerWidth(true) / 2) + ($target.outerWidth(true) / 2);
     $box.offset({top: top, left: left});
   }
 
@@ -408,16 +408,16 @@
    * Private function that performs an ajax request.
    */
   function __performAjaxRequest(settings) {
-    var deferred = new $.Deferred();
+    const deferred = new $.Deferred();
 
     // Default options.
     // url, type, dataType are missing.
-    var options = {
-      cache : false,
-      success : function(data) {
+    let options = {
+      cache: false,
+      success: function (data) {
         deferred.resolve(data);
       },
-      error : function(jqXHR, textStatus, errorThrown) {
+      error: function (jqXHR, textStatus, errorThrown) {
         window.console &&
         window.console.log('Silverpeas Check Password Request - ERROR - ' + errorThrown);
         deferred.reject();
@@ -434,9 +434,9 @@
 
   /**
    * Private method that handles i18n.
-   * @param key
-   * @param params
-   * @return message
+   * @param key the identifier of the l10n message
+   * @param params optionally parameters to pass to the value to build the final message
+   * @return message the message bound to the specified key.
    * @private
    */
   function __getFromBundleKey(key, params) {

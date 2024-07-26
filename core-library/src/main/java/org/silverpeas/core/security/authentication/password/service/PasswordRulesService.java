@@ -29,53 +29,62 @@ import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import java.util.Collection;
 
 /**
- * User: Yohann Chastagnier
- * Date: 07/01/13
+ * A service to access password rules and to check a password satisfies the rules.
+ * @author Yohann Chastagnier
  */
 public interface PasswordRulesService {
 
   /**
-   * Gets a server password rule from its type.
-   * @return
+   * Gets a server password rule by its type.
+   * @return a password rule or null if no such rule of this type exists
    */
   PasswordRule getRule(PasswordRuleType passwordRuleType);
 
   /**
-   * Gets server password rules.
-   * @return
+   * Gets all defined the password rules.
+   * @return a collection of all the possible password rules
    */
   Collection<PasswordRule> getRules();
 
   /**
-   * Gets server required password rules.
-   * @return
+   * Gets all the required password rules.
+   * @return a collection of all rules a password has to satisfy.
    */
   Collection<PasswordRule> getRequiredRules();
 
   /**
-   * Gets server combined password rules.
-   * @return
+   * Gets the combined password rules.
+   * @return a collection of combined password rules.
    */
   Collection<PasswordRule> getCombinedRules();
 
   /**
-   * Checks server required and combined password rule on the given password.
-   * @param password
+   * Checks the specified password satisfy both the required and the combined rules.
+   * @param password the password to check
    * @return Password rules in error if any.
    */
   PasswordCheck check(String password);
 
   /**
-   * Generates a random password from existing rules.
-   * @return
+   * Is the specified password has been successfully checked by the service?
+   * @param checkId the unique identifier of a possible previous check.
+   * @param password a password.
+   * @return true if the given password has been checked by the given check process and the
+   * checking result was successful. False otherwise.
+   */
+  boolean isChecked(String checkId, String password);
+
+  /**
+   * Generates a random password satisfying the existing rules.
+   * @return a new random password.
    */
   String generate();
 
   /**
    * Gets additional rule message.
-   * All rules explicited in this message are not verifiable within Silverpeas services.
-   * @param language
-   * @return
+   * All rules explicated in this message are not verifiable within Silverpeas services.
+   * @param language the ISO 639-1 code of the language in which is written the message.
+   * @return the message about the extra rule.
    */
   String getExtraRuleMessage(String language);
 }

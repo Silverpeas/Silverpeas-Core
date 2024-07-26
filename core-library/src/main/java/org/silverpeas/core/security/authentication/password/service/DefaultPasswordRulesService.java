@@ -25,6 +25,8 @@ package org.silverpeas.core.security.authentication.password.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 import org.silverpeas.core.security.authentication.password.rule.AtLeastXDigitPasswordRule;
 import org.silverpeas.core.security.authentication.password.rule.AtLeastXLowercasePasswordRule;
@@ -37,6 +39,8 @@ import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.rule.SequentialForbiddenPasswordRule;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.cache.model.ExternalCache;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
@@ -127,7 +131,20 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
         passwordCheck.addCombinedError(rule);
       }
     }
+    if (passwordCheck.isCorrect()) {
+      ExternalCache cache = CacheAccessorProvider.getApplicationCacheAccessor().getCache();
+      // put the password in the application cache for 1mn.
+      String id = cache.add(password, 60, 0);
+      passwordCheck.setId(id);
+    }
     return passwordCheck;
+  }
+
+  @Override
+  public boolean isChecked(String checkId, String password) {
+    ExternalCache cache = CacheAccessorProvider.getApplicationCacheAccessor().getCache();
+    return StringUtil.isDefined(checkId) && StringUtil.isDefined(password) &&
+        password.equals(cache.get(checkId));
   }
 
   @Override

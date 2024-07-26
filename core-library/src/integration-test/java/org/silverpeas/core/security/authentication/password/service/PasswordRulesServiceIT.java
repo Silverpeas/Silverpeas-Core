@@ -73,7 +73,7 @@ public class PasswordRulesServiceIT {
         .addSilverpeasExceptionBases()
         .addCommonBasicUtilities()
         .addStringTemplateFeatures()
-        .testFocusedOn((warBuilder) -> {
+        .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.core.security.authentication.password.constant");
           warBuilder.addPackages(true, "org.silverpeas.core.security.authentication.password.service");
           warBuilder.addClasses(AbstractPasswordRule.class, AtLeastXDigitPasswordRule.class,
@@ -123,7 +123,10 @@ public class PasswordRulesServiceIT {
 
   @Test
   public void check() {
-    assertThat(passwordRulesService.check("aA0$1234").isCorrect(), is(true));
+    String password = "aA0$1234";
+    PasswordCheck check = passwordRulesService.check(password);
+    assertThat(check.isCorrect(), is(true));
+    assertThat(passwordRulesService.isChecked(check.getId(), password), is(true));
 
     // Min length is not validated
     assertCheckRequired("aA0$123", PasswordRuleType.MIN_LENGTH);
@@ -146,7 +149,10 @@ public class PasswordRulesServiceIT {
     // - Min length is not validated
     // - At least one uppercase is not validated
     // - At least one special char is not validated
-    assertThat(passwordRulesService.check("ab0c123").getRequiredRulesInError().size(), is(3));
+    String badPassword = "ab0c123";
+    PasswordCheck badCheck = passwordRulesService.check(badPassword);
+    assertThat(badCheck.getRequiredRulesInError().size(), is(3));
+    assertThat(passwordRulesService.isChecked(badCheck.getId(), badPassword), is(false));
   }
 
   private void assertCheckRequired(String password, PasswordRuleType typeExpected) {
@@ -158,7 +164,11 @@ public class PasswordRulesServiceIT {
   @Test
   public void checkWithCombination() {
     setCombinationSettings();
-    assertThat(passwordRulesService.check("aABC;0$1234").isCorrect(), is(true));
+
+    String password = "aABC;0$1234";
+    PasswordCheck check = passwordRulesService.check(password);
+    assertThat(check.isCorrect(), is(true));
+    assertThat(passwordRulesService.isChecked(check.getId(), password), is(true));
 
     // Min length is not validated and combination fail
     assertCheckRequiredAndCombined("aA0$123", PasswordRuleType.MIN_LENGTH, false,
@@ -170,9 +180,11 @@ public class PasswordRulesServiceIT {
     // - Min length is not validated
     // - Blank forbidden
     // - Sequential forbidden
-    PasswordCheck passwordCheck = passwordRulesService.check("ab0 c1123");
+    String badPassword = "ab0 c1123";
+    PasswordCheck passwordCheck = passwordRulesService.check(badPassword);
     assertThat(passwordCheck.getRequiredRulesInError().size(), is(3));
     assertThat(passwordCheck.getCombinedRulesInError().size(), is(2));
+    assertThat(passwordRulesService.isChecked(passwordCheck.getId(), badPassword), is(false));
   }
 
   private void assertCheckRequiredAndCombined(String password,

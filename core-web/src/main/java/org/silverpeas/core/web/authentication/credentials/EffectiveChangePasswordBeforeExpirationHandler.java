@@ -57,6 +57,8 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswo
       String domainId = ud.getDomainId();
       String oldPassword = request.getParameter("oldPassword");
       String newPassword = request.getParameter("newPassword");
+      String checkId = request.getParameter("checkId");
+      assertPasswordHasBeenCorrectlyChecked(checkId, newPassword);
       AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
           .withAsPassword(oldPassword).withAsDomainId(domainId);
       AuthenticationService authenticator = AuthenticationServiceProvider.getService();
