@@ -36,11 +36,11 @@ public abstract class ChangeCredentialFunctionHandler extends FunctionHandler {
 
   /**
    * Handle bad credential error.
-   * @param request
-   * @param originalUrl
-   * @param userCanTryAgainToLoginVerifier
-   * @param messageBundleKey
-   * @return destination url
+   * @param request the incoming request asking for credential change.
+   * @param originalUrl the targeted original URL by the request.
+   * @param userCanTryAgainToLoginVerifier verifier of user login attempts.
+   * @param messageBundleKey the key of a l10n message to pass in the case of an error.
+   * @return destination url the URL to which the request has to be redirected in case of error.
    */
   protected String performUrlOnBadCredentialError(HttpServletRequest request, String originalUrl,
       UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier, String messageBundleKey) {
