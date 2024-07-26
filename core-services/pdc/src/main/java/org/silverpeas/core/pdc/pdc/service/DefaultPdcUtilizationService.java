@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
@@ -45,7 +46,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -230,25 +230,6 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   }
 
   /**
-   * @param usedAxisIds
-   * @throws PdcException
-   */
-  @Override
-  public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException {
-    try {
-      Iterator<String> it = usedAxisIds.iterator();
-      StringBuilder whereClause = new StringBuilder(" 0 = 1 ");
-      while (it.hasNext()) {
-        final String usedAxisId = it.next();
-        whereClause.append(" or " + usedAxisId);
-      }
-      dao.removeWhere(new UsedAxisPK(USELESS), whereClause.toString());
-    } catch (Exception e) {
-      throw new PdcException(e);
-    }
-  }
-
-  /**
    * Method declaration
    * @param con
    * @param axisId
@@ -259,7 +240,8 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   public void deleteUsedAxisByAxisId(Connection con, String axisId) throws PdcException {
     try {
       Objects.requireNonNull(con);
-      dao.removeWhere(con, new UsedAxisPK(USELESS), AXIS_ID_EQUALS + axisId);
+      BeanCriteria criteria = BeanCriteria.addCriterion("axisId", axisId);
+      dao.removeWhere(con, new UsedAxisPK(USELESS), criteria);
     } catch (Exception e) {
       throw new PdcException(e);
     }
@@ -274,8 +256,9 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   private void deleteUsedAxisByValueId(Connection con, int valueId, int axisId)
       throws PdcException {
     try {
-      dao.removeWhere(con, new UsedAxisPK(USELESS),
-          AXIS_ID_EQUALS + axisId + " and baseValue = " + valueId);
+      BeanCriteria criteria = BeanCriteria.addCriterion("axisId", axisId)
+              .and("baseValue", valueId);
+      dao.removeWhere(con, new UsedAxisPK(USELESS), criteria);
     } catch (Exception e) {
       throw new PdcException(e);
     }
@@ -292,9 +275,12 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   public void deleteUsedAxisByMotherValue(Connection con, String valueId, String axisId,
       String treeId) throws PdcException {
     try {
-      dao.removeWhere(con, new UsedAxisPK(USELESS), AXIS_ID_EQUALS + axisId +
-          " and baseValue in ( select id from SB_Tree_Tree where treeId = " + treeId +
-          " and (path like '%/" + valueId + "/%' or id = " + valueId + " ))");
+      BeanCriteria queryCriteria = BeanCriteria.addCriterion("treeId", treeId)
+          .and(BeanCriteria.addCriterion("path", "%/" + valueId + "/%", BeanCriteria.OPERATOR.LIKE)
+              .or("id", valueId));
+      BeanCriteria criteria = BeanCriteria.addCriterion("axisId", axisId)
+              .andSubQuery("baseValue", "id from SB_Tree", queryCriteria, BeanCriteria.OPERATOR.IN);
+      dao.removeWhere(con, new UsedAxisPK(USELESS), criteria);
     } catch (Exception e) {
       throw new PdcException(e);
     }

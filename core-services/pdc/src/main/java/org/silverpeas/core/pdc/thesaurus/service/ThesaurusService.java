@@ -29,10 +29,7 @@ import org.silverpeas.core.pdc.thesaurus.model.Synonym;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.pdc.thesaurus.model.Vocabulary;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.*;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
@@ -250,7 +247,8 @@ public class ThesaurusService {
       throws ThesaurusException {
     try {
       IdPK pk = new IdPK();
-      getSynonymDao().removeWhere(con, pk, ID_VOCA_EQUALS + idVoca);
+      BeanCriteria criteria = BeanCriteria.addCriterion("idVoca", idVoca);
+      getSynonymDao().removeWhere(con, pk, criteria);
     } catch (PersistenceException e) {
       throw new ThesaurusException(VOCABULARY_SYNONYMS_DELETION_FAILED, e);
     }
@@ -267,7 +265,8 @@ public class ThesaurusService {
       throws ThesaurusException {
     try {
       IdPK pk = new IdPK();
-      getJargonDao().removeWhere(con, pk, ID_VOCA_EQUALS + idVoca);
+      BeanCriteria criteria = BeanCriteria.addCriterion("idVoca", idVoca);
+      getJargonDao().removeWhere(con, pk, criteria);
     } catch (PersistenceException e) {
       throw new ThesaurusException(VOCABULARY_JARGON_DELETION_FAILED, e);
     }
@@ -432,8 +431,10 @@ public class ThesaurusService {
     try {
       SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
-      daoS.removeWhere(con, pk,
-          ID_VOCA_EQUALS + idVoca + AND_ID_TREE_EQUALS + idTree + AND_ID_TERM_EQUALS + idTerm);
+      BeanCriteria criteria = BeanCriteria.addCriterion("idVoca", idVoca)
+              .and("idTree", idTree)
+              .and("idTerm", idTerm);
+      daoS.removeWhere(con, pk, criteria);
     } catch (PersistenceException e) {
       throw new ThesaurusException(VOCABULARY_SYNONYMS_DELETION_FAILED, e);
     }
@@ -485,7 +486,8 @@ public class ThesaurusService {
     try {
       SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
-      daoS.removeWhere(con, pk, " idTree=" + idTree);
+      BeanCriteria criteria = BeanCriteria.addCriterion("idTree", idTree);
+      daoS.removeWhere(con, pk, criteria);
     } catch (PersistenceException e) {
       throw new ThesaurusException("Vocabulary synonyms axis deletion failed", e);
     }
@@ -523,7 +525,9 @@ public class ThesaurusService {
     try {
       SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
-      daoS.removeWhere(con, pk, " idTree=" + idTree + AND_ID_TERM_EQUALS + idTerm);
+      BeanCriteria criteria = BeanCriteria.addCriterion("idTree", idTree)
+          .and("idTerm", idTerm);
+      daoS.removeWhere(con, pk, criteria);
     } catch (PersistenceException e) {
       throw new ThesaurusException("Vocabulary synonyms term deletion failed", e);
     }

@@ -1539,11 +1539,6 @@ public class GlobalPdcManager implements PdcManager {
     pdcUtilizationService.deleteUsedAxis(usedAxisId);
   }
 
-  @Override
-  public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException {
-    pdcUtilizationService.deleteUsedAxis(usedAxisIds);
-  }
-
   /*
    * *********************************************
    * ******** PDC CLASSIFY METHODS ***************

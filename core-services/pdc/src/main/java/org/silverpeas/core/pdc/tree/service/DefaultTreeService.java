@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.tree.service;
 
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -265,10 +266,12 @@ public class DefaultTreeService implements TreeService {
     TreeNode node = getNode(con, rootPK, treeId);
 
     // Remove all nodes under the rootId
-    String whereClause = TREE_ID_EQUALS + treeId + " and (path LIKE '"
-        + node.getPath() + rootId + "/%' or id = " + rootId + ")";
+    BeanCriteria criteria = BeanCriteria.addCriterion("treeId", treeId)
+        .and(BeanCriteria
+            .addCriterion("path", node.getPath() + rootId + "/%", BeanCriteria.OPERATOR.LIKE)
+              .or("id", rootId));
     try {
-      getDAO().removeWhere(rootPK, whereClause);
+      getDAO().removeWhere(rootPK, criteria);
 
       // Remove all index of nodes under the rootId
       for (TreeNode nodeToDelete : subTree) {
@@ -299,9 +302,9 @@ public class DefaultTreeService implements TreeService {
 
     List<TreeNode> tree = getTree(con, treeId);
 
-    String whereClause = TREE_ID_EQUALS + treeId;
     try {
-      getDAO().removeWhere(new TreeNodePK(USELESS), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("treeId", treeId);
+      getDAO().removeWhere(new TreeNodePK(USELESS), criteria);
 
       // remove translations
       treeI18NDAO.deleteTreeTranslations(con, treeId);

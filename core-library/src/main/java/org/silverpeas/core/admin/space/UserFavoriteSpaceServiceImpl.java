@@ -26,10 +26,7 @@ package org.silverpeas.core.admin.space;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.*;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -121,29 +118,23 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
   public boolean removeUserFavoriteSpace(UserFavoriteSpaceVO ufsVO) {
     boolean result = false;
     SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
-    StringBuilder whereBuff = new StringBuilder();
+    BeanCriteria criteria = BeanCriteria.emptyCriteria();
     int removedUserId = ufsVO.getUserId();
     int removedSpaceId = ufsVO.getSpaceId();
     if (removedUserId == -1 && removedSpaceId == -1) {
       return true;
     } else {
-      boolean firstCondition = false;
       if (removedUserId != -1) {
-        whereBuff.append(" userid=").append(removedUserId);
-        firstCondition = true;
+        criteria.and("userId", removedUserId);
       }
       if (removedSpaceId != -1) {
-        if (firstCondition) {
-          whereBuff.append(" AND");
-        }
-        whereBuff.append(" spaceid=").append(removedSpaceId);
+        criteria.and("spaceId", removedSpaceId);
       }
     }
     try {
       // find all message to display
-      dao = SilverpeasBeanDAOFactory
-          .getDAO(USER_FAVORITE_SPACE_BEAN);
-      dao.removeWhere(new IdPK(), whereBuff.toString());
+      dao = SilverpeasBeanDAOFactory.getDAO(USER_FAVORITE_SPACE_BEAN);
+      dao.removeWhere(new IdPK(), criteria);
       result = true;
     } catch (PersistenceException e) {
       SilverLogger.getLogger(this)

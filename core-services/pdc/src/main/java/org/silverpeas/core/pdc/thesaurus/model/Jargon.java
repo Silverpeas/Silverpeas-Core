@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 /**
  * This class contains a full information about a Jargon a Jargon is linked to a Vocabulary and a
@@ -121,8 +120,4 @@ public class Jargon extends SilverpeasBean {
     return "SB_Thesaurus_Jargon";
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

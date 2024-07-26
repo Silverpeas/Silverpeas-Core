@@ -25,6 +25,10 @@ package org.silverpeas.core.persistence.jdbc.bean;
 
 import org.silverpeas.core.WAPrimaryKey;
 
+/**
+ * @deprecated
+ */
+@Deprecated
 public class IdPK extends WAPrimaryKey {
 
   private static final long serialVersionUID = -5451371913200985128L;
@@ -57,7 +61,7 @@ public class IdPK extends WAPrimaryKey {
   }
 
   public long getIdAsLong() {
-    return new Integer(getId()).longValue();
+    return Integer.valueOf(getId()).longValue();
   }
 
   @Override

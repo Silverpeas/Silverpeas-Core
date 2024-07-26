@@ -27,7 +27,6 @@
 package org.silverpeas.core.pdc.tree.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 /**
  * Class declaration
@@ -309,13 +308,6 @@ public class TreeNodePersistence extends SilverpeasBean implements java.io.Seria
     return "(pk = " + getPK().toString() + ", treeId = " + treeId + ", name = "
         + getName() + ", path = " + getPath() + ", levelNumber = "
         + getLevelNumber() + ", fatherId = " + getFatherId() + ")";
-  }
-
-  /**
-   * determine the connection type to the database
-   */
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
 }

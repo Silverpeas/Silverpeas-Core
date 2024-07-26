@@ -25,7 +25,7 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+
 import java.util.List;
 
 /**
@@ -236,13 +236,6 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
         + ", axisId = " + getAxisId() + ", baseValue = " + getBaseValue()
         + ", mandatory = " + getMandatory() + ", variant = " + getVariant()
         + ")";
-  }
-
-  /**
-   * determine the connection type to the database
-   */
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   /**

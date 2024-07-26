@@ -24,7 +24,6 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 /**
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can
@@ -208,11 +207,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Ser
         + getAxisType() + ", order = " + getAxisOrder() + ", creationDate = "
         + getCreationDate() + ", creatorId = " + getCreatorId() + ", rootId = "
         + getRootId() + ", description = " + getDescription() + ")";
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   @Override

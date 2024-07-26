@@ -25,7 +25,6 @@ package org.silverpeas.core.pdc.thesaurus.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 /**
  * This class contains a full information about a Synonym a Synonym is linked to a Vocabulary and a
@@ -96,7 +95,4 @@ public class Synonym extends SilverpeasBean implements Comparable {
     return "SB_Thesaurus_Synonym";
   }
 
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

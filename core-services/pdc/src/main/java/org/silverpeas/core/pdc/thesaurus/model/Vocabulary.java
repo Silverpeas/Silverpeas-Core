@@ -24,7 +24,6 @@
 package org.silverpeas.core.pdc.thesaurus.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 /**
  * This class contains a full information about a Vocabulary
@@ -81,8 +80,4 @@ public class Vocabulary extends SilverpeasBean implements Comparable<Vocabulary>
     return "SB_Thesaurus_Vocabulary";
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

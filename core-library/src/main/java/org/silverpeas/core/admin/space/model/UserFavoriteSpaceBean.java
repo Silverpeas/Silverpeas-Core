@@ -24,7 +24,6 @@
 package org.silverpeas.core.admin.space.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 public class UserFavoriteSpaceBean extends SilverpeasBean {
 
@@ -71,12 +70,6 @@ public class UserFavoriteSpaceBean extends SilverpeasBean {
   }
 
   /*****************************************************************************/
-  /**
-   *
-   */
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 
   /**
    *

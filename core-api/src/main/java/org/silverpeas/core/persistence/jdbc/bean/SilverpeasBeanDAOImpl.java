@@ -56,13 +56,11 @@ import java.util.stream.Collectors;
  * @deprecated
  */
 @Deprecated(forRemoval = false)
-public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements SilverpeasBeanDAO<T> {
+public class SilverpeasBeanDAOImpl<T extends SilverpeasBean> implements SilverpeasBeanDAO<T> {
 
   private final List<PropertyDescriptor> validProperties;
   private Class<T> silverpeasBeanClass;
   // how to make connection with the database
-  private int connectionType;
-  private JdbcData jdbcConnectionParameters = null;
   private String tableName;
 
   @SuppressWarnings("unchecked")
@@ -70,10 +68,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
     try {
       silverpeasBeanClass = (Class<T>) Class.forName(beanClassName);
       T object = silverpeasBeanClass.newInstance();
-
-      if (!(object instanceof SilverpeasBean)) {
-        throw new PersistenceException("{0} isn't a Silverpeas persistent bean", beanClassName);
-      }
       BeanInfo infos = Introspector.getBeanInfo(silverpeasBeanClass);
       validProperties = Arrays.stream(infos.getPropertyDescriptors()).filter(p -> {
         final String type = p.getPropertyType().getName();
@@ -94,11 +88,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         }
         return true;
       }).collect(Collectors.toList());
-
-      connectionType = object._getConnectionType();
-      if (connectionType == CONNECTION_TYPE_JDBC_CLASSIC) {
-        jdbcConnectionParameters = object._getJdbcData();
-      }
       tableName = object._getTableName();
     } catch (IntrospectionException | IllegalAccessException | InstantiationException | ClassNotFoundException ex) {
       throw new PersistenceException("Cannot initialize bean " + beanClassName, ex);
@@ -125,16 +114,17 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
   }
 
   @Override
-  public void removeWhere(WAPrimaryKey pk, String whereClause) throws PersistenceException {
-    removeWhere(null, pk, whereClause);
+  public void removeWhere(WAPrimaryKey pk, BeanCriteria criteria) throws PersistenceException {
+    removeWhere(null, pk, criteria);
   }
 
   @Override
-  public void removeWhere(Connection connection, WAPrimaryKey pk, String whereClause)
+  public void removeWhere(Connection connection, WAPrimaryKey pk, BeanCriteria criteria)
       throws PersistenceException {
-    String updateStatement = "delete from " + getTableName(pk) + " where " + whereClause;
+    String updateStatement = "delete from " + getTableName(pk);
     perform(connection, con -> {
-      try (PreparedStatement prepStmt = con.prepareStatement(updateStatement)) {
+      try (PreparedStatement prepStmt =
+               criteria.withConnection(connection).applyTo(updateStatement)) {
         prepStmt.executeUpdate();
       } catch (Exception e) {
         throw new PersistenceException(
@@ -295,17 +285,8 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       return connection;
     }
     try {
-      final Connection con;
-      if (connectionType == CONNECTION_TYPE_JDBC_CLASSIC) {
-        SilverLogger.getLogger(this).warn("CONNECTION TYPE BASIC JDBC!");
-        Class.forName(jdbcConnectionParameters.JDBCdriverName);
-        con = DriverManager.getConnection(jdbcConnectionParameters.JDBCurl,
-            jdbcConnectionParameters.JDBClogin, jdbcConnectionParameters.JDBCpassword);
-      } else {
-        con = DBUtil.openConnection();
-      }
-      return con;
-    } catch (ClassNotFoundException | SQLException e) {
+      return DBUtil.openConnection();
+    } catch (SQLException e) {
       throw new PersistenceException("Datasource connection opening failure!", e);
     }
   }
