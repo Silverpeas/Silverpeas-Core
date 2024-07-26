@@ -23,9 +23,6 @@
  */
 package org.silverpeas.core.webapi.password;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.owasp.encoder.Encode;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 
@@ -52,13 +49,17 @@ public class PasswordCheckEntity implements Serializable {
   @XmlElement
   private boolean isRuleCombinationRespected;
 
+  /* indicates the identifier of the check process */
+  @XmlElement
+  private String checkId;
+
   /* List of password required rule ids that are not verified */
   @XmlElement
-  private Collection<String> requiredRuleIdsInError = new ArrayList<>();
+  private final Collection<String> requiredRuleIdsInError = new ArrayList<>();
 
   /* List of password combined rule ids that are not verified */
   @XmlElement
-  private Collection<String> combinedRuleIdsInError = new ArrayList<>();
+  private final Collection<String> combinedRuleIdsInError = new ArrayList<>();
 
   /**
    * Creates a new password check entity
@@ -75,6 +76,7 @@ public class PasswordCheckEntity implements Serializable {
   private PasswordCheckEntity(final PasswordCheck passwordCheck) {
     isCorrect = passwordCheck.isCorrect();
     isRuleCombinationRespected = passwordCheck.isRuleCombinationRespected();
+    checkId = passwordCheck.getId();
     for (PasswordRule rule : passwordCheck.getRequiredRulesInError()) {
       requiredRuleIdsInError.add(rule.getType().name());
     }
@@ -84,6 +86,10 @@ public class PasswordCheckEntity implements Serializable {
   }
 
   protected PasswordCheckEntity() {
+  }
+
+  public String getCheckId() {
+    return this.checkId;
   }
 
   public boolean isCorrect() {
