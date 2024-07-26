@@ -41,7 +41,6 @@ import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -63,8 +62,6 @@ public class PdcServiceProvider {
 
   @Inject
   private PdcManager pdcManager;
-  @Inject
-  private ThesaurusManager thesaurusManager;
   @Inject
   private ContentManagementEngine contentMgtEngine;
   @Inject
@@ -278,7 +275,6 @@ public class PdcServiceProvider {
    */
   public List<UsedAxis> getAxisUsedInClassificationsByCriteria(final PdcFilterCriteria criteria)
       throws PdcException {
-    List<UsedAxis> usedAxis = new ArrayList<>();
 
     ComponentSearchCriteria searchCriteria = new ComponentSearchCriteria().
         onComponentInstances(criteria.getComponentInstanceIds()).
@@ -290,7 +286,7 @@ public class PdcServiceProvider {
 
     List<AxisHeader> allAxis = getPdcManager().getAxisByType(PdcManager.PRIMARY_AXIS);
     List<UsedAxis> filteredAxis = filterAxis(allAxis, searchContext, availableComponents);
-    usedAxis.addAll(filteredAxis);
+    List<UsedAxis> usedAxis = new ArrayList<>(filteredAxis);
 
     if (criteria.hasSecondaryAxisToBeIncluded()) {
       allAxis = getPdcManager().getAxisByType(PdcManager.SECONDARY_AXIS);
@@ -311,7 +307,7 @@ public class PdcServiceProvider {
     List<AxisHeader> headers = getPdcManager().getAxis();
     for (AxisHeader aHeader : headers) {
       String treeId = getPdcManager().getTreeId(aHeader.getPK().getId());
-      List<Value> values = getPdcManager().getAxisValues(Integer.valueOf(treeId));
+      List<Value> values = getPdcManager().getAxisValues(Integer.parseInt(treeId));
       pdcAxis.add(new Axis(aHeader, values));
     }
     return pdcAxis;

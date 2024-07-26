@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderPersistence;
-import org.silverpeas.core.pdc.pdc.model.AxisPK;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxisPK;
@@ -37,6 +37,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -45,24 +46,23 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author
- */
+import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.IN;
+import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.LIKE;
+
 @Service
+@SuppressWarnings("deprecation")
 public class DefaultPdcUtilizationService implements PdcUtilizationService,
     ComponentInstanceDeletion {
 
-  private static final String USELESS = "useless";
-  private static final String AXIS_ID_EQUALS = " axisId = ";
+  private static final String AXIS_ID = "axisId";
   @Inject
   private ClassifyEngine classifyEngine;
 
   /**
-   * SilverpeasBeanDAO is the main link with the SilverPeas persitence. We indicate the Object
+   * SilverpeasBeanDAO is the main link with the SilverPeas persistence. We indicate the Object
    * SilverPeas which map the database.
    */
   private SilverpeasBeanDAO<UsedAxis> dao = null;
@@ -72,7 +72,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
 
   protected DefaultPdcUtilizationService() {
     try {
-      dao = SilverpeasBeanDAOFactory.getDAO("org.silverpeas.core.pdc.pdc.model.UsedAxis");
+      dao = SilverpeasBeanDAOFactory.getDAO(UsedAxis.class);
     } catch (PersistenceException e) {
       SilverLogger.getLogger(this).error("Failed to get the DAO for UsedAxis", e);
     }
@@ -80,7 +80,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
 
   /**
    * Returns an axis used by an instance
-   * @param usedAxisId - the whished used axis.
+   * @param usedAxisId - the wished used axis.
    * @return an UsedAxis
    */
   @Override
@@ -120,25 +120,10 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
 
     try (Connection con = DBUtil.openConnection()) {
       List<Integer> ids = classifyEngine.getPertinentAxisByInstanceIds(instanceIds);
-
-      if (ids == null || ids.isEmpty()) {
-        return new ArrayList<>(0);
-      }
-
-      StringBuilder inClause = new StringBuilder(1000);
-      boolean first = true;
-      for (Integer instanceId : ids) {
-        if (!first) {
-          inClause.append(",");
-        }
-        inClause.append(instanceId);
-        first = false;
-      }
-
       SilverpeasBeanDAO<AxisHeaderPersistence> theDao = SilverpeasBeanDAOFactory.getDAO(
-              "org.silverpeas.core.pdc.pdc.model.AxisHeaderPersistence");
-      Collection<AxisHeaderPersistence> result =
-          theDao.findByWhereClause(con, new AxisPK(USELESS), "id IN (" + inClause.toString() + ")");
+              AxisHeaderPersistence.class);
+      BeanCriteria criteria = BeanCriteria.addCriterion("id", ids);
+      Collection<AxisHeaderPersistence> result = theDao.findBy(con, criteria);
 
       List<AxisHeader> axisHeaders = new ArrayList<>();
       if (result != null) {
@@ -158,10 +143,11 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
    * Returns the usedAxis based on a defined axis
    * @param axisId - the id of the axis
    */
-  private List<UsedAxis> getUsedAxisByAxisId(Connection con, int axisId) throws PdcException {
+  private List<UsedAxis> getUsedAxisByAxisId(@NonNull Connection con, int axisId)
+      throws PdcException {
     try {
-      return (List<UsedAxis>) dao.findByWhereClause(con, new UsedAxisPK(USELESS),
-          "axisId = " + axisId);
+      Objects.requireNonNull(con);
+      return (List<UsedAxis>) dao.findBy(con, BeanCriteria.addCriterion(AXIS_ID, axisId));
     } catch (Exception e) {
       throw new PdcException(e);
     }
@@ -169,9 +155,9 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
 
   /**
    * Create an used axis into the data base.
-   * @param usedAxis - the object which contains all data about utilization of an axis
-   * @param treeId
-   * @return usedAxisId
+   * @param usedAxis the object which contains all data about utilization of an axis
+   * @param treeId the identifier of the PdC tree
+   * @return usedAxisId the unique identifier of the used axis in the tree.
    */
   @Override
   public int addUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException {
@@ -196,10 +182,10 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   @Override
   public int updateUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException {
     try (Connection con = DBUtil.openConnection()) {
-      // test si la valeur de base a été modifiée
+      // check if the value has been modified
       int newBaseValue = usedAxis.getBaseValue();
       int oldBaseValue = (getUsedAxis(usedAxis.getPK().getId())).getBaseValue();
-      // si elle a été modifiée alors on reporte la modification.
+      // if updated, the modification is reported
       if (newBaseValue != oldBaseValue &&
           utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
             Integer.parseInt(usedAxis.getPK().getId()), usedAxis.getAxisId(),
@@ -207,8 +193,8 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
           return 1;
       }
       dao.update(usedAxis);
-      // une fois cette axe modifié, il faut tenir compte de la propagation des
-      // choix aux niveaux obligatoire/facultatif et variant/invariante
+      // once this axis modified, we have to take into account about the propagation of the choices
+      // to the mandatory/optional and variant/non-variant levels
       utilizationDAO.updateAllUsedAxis(con, usedAxis);
       return 0;
     } catch (Exception e) {
@@ -229,72 +215,38 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
     }
   }
 
-  /**
-   * @param usedAxisIds
-   * @throws PdcException
-   */
-  @Override
-  public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException {
-    try {
-      Iterator<String> it = usedAxisIds.iterator();
-      StringBuilder whereClause = new StringBuilder(" 0 = 1 ");
-      while (it.hasNext()) {
-        final String usedAxisId = it.next();
-        whereClause.append(" or " + usedAxisId);
-      }
-      dao.removeWhere(new UsedAxisPK(USELESS), whereClause.toString());
-    } catch (Exception e) {
-      throw new PdcException(e);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @param axisId
-   * @throws PdcException
-   * @see
-   */
   @Override
   public void deleteUsedAxisByAxisId(Connection con, String axisId) throws PdcException {
     try {
       Objects.requireNonNull(con);
-      dao.removeWhere(con, new UsedAxisPK(USELESS), AXIS_ID_EQUALS + axisId);
+      BeanCriteria criteria = BeanCriteria.addCriterion(AXIS_ID, Integer.parseInt(axisId));
+      dao.removeBy(con, criteria);
     } catch (Exception e) {
       throw new PdcException(e);
     }
   }
 
-  /**
-   * Method declaration
-   * @param valueId
-   * @throws PdcException
-   * @see
-   */
-  private void deleteUsedAxisByValueId(Connection con, int valueId, int axisId)
+  private void deleteUsedAxisByValueId(@NonNull Connection con, int valueId, int axisId)
       throws PdcException {
     try {
-      dao.removeWhere(con, new UsedAxisPK(USELESS),
-          AXIS_ID_EQUALS + axisId + " and baseValue = " + valueId);
+      Objects.requireNonNull(con);
+      BeanCriteria criteria = BeanCriteria.addCriterion(AXIS_ID, axisId).and("baseValue", valueId);
+      dao.removeBy(con, criteria);
     } catch (Exception e) {
       throw new PdcException(e);
     }
   }
 
-  /**
-   * @param con
-   * @param valueId
-   * @param axisId
-   * @param treeId
-   * @throws PdcException
-   */
   @Override
   public void deleteUsedAxisByMotherValue(Connection con, String valueId, String axisId,
       String treeId) throws PdcException {
     try {
-      dao.removeWhere(con, new UsedAxisPK(USELESS), AXIS_ID_EQUALS + axisId +
-          " and baseValue in ( select id from SB_Tree_Tree where treeId = " + treeId +
-          " and (path like '%/" + valueId + "/%' or id = " + valueId + " ))");
+      BeanCriteria queryCriteria = BeanCriteria.addCriterion("treeId", Integer.parseInt(treeId))
+          .and(BeanCriteria.addCriterion("path", LIKE, "%/" + valueId + "/%")
+              .or("id", Integer.parseInt(valueId)));
+      BeanCriteria criteria = BeanCriteria.addCriterion(AXIS_ID, Integer.parseInt(axisId))
+              .andSubQuery("baseValue", IN, "id from SB_Tree_Tree", queryCriteria);
+      dao.removeBy(con, criteria);
     } catch (Exception e) {
       throw new PdcException(e);
     }
@@ -317,17 +269,19 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
       int axisId, String treeId) throws PdcException {
     Objects.requireNonNull(con);
     final List<UsedAxis> usedAxisList = getUsedAxisByAxisId(con, axisId);
-    // pour chaque instance, on vérifie que la modification est possible
+    // for each instance, check the modification is allowed
     boolean updateAllowed;
     for (UsedAxis anUsedAxisList : usedAxisList) {
-      final UsedAxis usedAxis = anUsedAxisList;
-      final String instanceId = usedAxis.getInstanceId();
-      if (usedAxis.getBaseValue() == baseValueToUpdate) {
+      final String instanceId = anUsedAxisList.getInstanceId();
+      if (anUsedAxisList.getBaseValue() == baseValueToUpdate) {
         try {
-          // test si la nouvelle valeur est autorisée comme nouvelle valeur de base
-          updateAllowed = !utilizationDAO
-              .isAlreadyAdded(con, instanceId, Integer.parseInt(usedAxis.getPK().getId()), axisId,
-                  newBaseValue, treeId);
+          // check the new value is allowed as base value.
+          updateAllowed = !utilizationDAO.isAlreadyAdded(con,
+                  instanceId,
+                  Integer.parseInt(anUsedAxisList.getPK().getId()),
+                  axisId,
+                  newBaseValue,
+                  treeId);
         } catch (Exception e) {
           throw new PdcException(e);
         }
