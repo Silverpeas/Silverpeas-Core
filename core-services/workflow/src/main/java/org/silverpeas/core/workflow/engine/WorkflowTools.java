@@ -26,6 +26,7 @@ import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.external.ExternalAction;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -70,7 +71,6 @@ class WorkflowTools {
     // Compute eligibility for states
     states = setEligibleStates(instance, oldActiveStates, eligibleStates);
 
-    Consequence consequence;
     try {
       // Saving data of step and process instance
       if (event.getDataRecord() != null) {
@@ -86,39 +86,35 @@ class WorkflowTools {
       // Retrieves action's consequences
       Action action = model.getAction(event.getActionName());
       Consequences consequences = action.getConsequences();
-
-      // Find first consequence according to comparisons
-      consequence = getFirstMatchingConsequence(instance, consequences);
-      Objects.requireNonNull(consequence);
-
-      SilverLogger.getLogger(WorkflowTools.class)
-          .info("Process action {0}: item = {1}, operator = {2}, value = {3}",
-              event.getActionName(), consequence.getItem(), consequence.getOperator(),
-              consequence.getValue());
-
-      // if no consequence is verified, then last one will be used
-      if (consequence.getKill()) {
-        for (final String state : states) {
-          removeAffectations(instance, model.getState(state));
+      List<Consequence> matchingConsequences = getMatchingConsequences(instance, consequences);
+      for (Consequence consequence : matchingConsequences) {
+        // Find first consequence according to comparisons
+        Objects.requireNonNull(consequence);
+        SilverLogger.getLogger(WorkflowTools.class)
+            .info("Process action {0}: item = {1}, operator = {2}, value = {3}",
+                event.getActionName(), consequence.getItem(), consequence.getOperator(),
+                consequence.getValue());
+        if (consequence.getKill()) {
+          for (final String state : states) {
+            removeAffectations(instance, model.getState(state));
+          }
         }
+        State[] targetStates = consequence.getTargetStates();
+        State[] unsetStates = consequence.getUnsetStates();
 
-        // process external actions
+        // for each target state, set eligibility to true
+        addStatesToEligibility(eligibleStates, targetStates);
+
+        // for each unset state, set eligibility to false
+        removeStatesFromEligibility(eligibleStates, unsetStates);
+
+        // Process external actions
         processTriggers(consequence, instance, event);
 
-        return true;
+        // notify users
+        List<QualifiedUsers> notifiedUsersList = consequence.getNotifiedUsers();
+        notifyUsers(instance, event, taskManager, action, notifiedUsersList);
       }
-      State[] targetStates = consequence.getTargetStates();
-      State[] unsetStates = consequence.getUnsetStates();
-
-      // for each target state, set eligibility to true
-      addStatesToEligibility(eligibleStates, targetStates);
-
-      // for each unset state, set eligibility to false
-      removeStatesFromEligibility(eligibleStates, unsetStates);
-
-      // notify user
-      List<QualifiedUsers> notifiedUsersList = consequence.getNotifiedUsers();
-      notifyUsers(instance, event, taskManager, action, notifiedUsersList);
     } catch (Exception e) {
       // change the action status of the step : Process Failed
       step.setActionStatus(ActionStatus.PROCESS_FAILED);
@@ -127,10 +123,6 @@ class WorkflowTools {
           "workflowEngine.EX_ERR_PROCESS_EVENT", e);
     }
 
-    // change the action status of the step
-    step.setActionStatus(ActionStatus.PROCESS_FAILED); // Processed
-    instance.updateHistoryStep(step);
-
     // Compute states and affectations
     computeStates(instance, event, eligibleStates, oldActiveStates);
 
@@ -138,9 +130,6 @@ class WorkflowTools {
     // Affectations done
     step.setActionStatus(ActionStatus.AFFECTATIONS_DONE);
     instance.updateHistoryStep(step);
-
-    // Process external actions
-    processTriggers(consequence, instance, event);
 
     return false;
   }
@@ -193,13 +182,11 @@ class WorkflowTools {
     }
   }
 
-  private static Consequence getFirstMatchingConsequence(final UpdatableProcessInstance instance,
+  private static List<Consequence> getMatchingConsequences(final UpdatableProcessInstance instance,
       final Consequences consequences) throws FormException, WorkflowException {
-    Iterator<Consequence> iConsequences = consequences.getConsequenceList().iterator();
     boolean verified = false;
-    Consequence consequence = null;
-    while (!verified && iConsequences.hasNext()) {
-      consequence = iConsequences.next();
+    List<Consequence> matchingConsequences = new ArrayList<>();
+    for (Consequence consequence:consequences.getConsequenceList()) {
       if (consequence.getItem() != null) {
         Field fieldToCompare = instance.getFolder().getField(consequence.getItem());
         if (fieldToCompare != null && fieldToCompare.getStringValue() != null) {
@@ -208,8 +195,10 @@ class WorkflowTools {
       } else {
         verified = true;
       }
+      if (verified)
+        matchingConsequences.add(consequence);
     }
-    return consequence;
+    return matchingConsequences;
   }
 
   private static String[] setEligibleStates(final UpdatableProcessInstance instance,
