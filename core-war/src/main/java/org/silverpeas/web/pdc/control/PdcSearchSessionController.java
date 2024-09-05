@@ -44,7 +44,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchEngineException;
 import org.silverpeas.core.index.search.model.SearchResult;
@@ -65,7 +64,7 @@ import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -121,7 +120,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private static final String KMELIA_COMPONENT = "kmelia";
   private static final String KMAX_COMPONENT = "kmax";
   private static final String TOOLBOX_COMPONENT = "toolbox";
-  private static final String DIRECTORY_SERVICE = "users";
+  private static final String DIRECTORY_SERVICE = UserIndexation.COMPONENT_ID;
   private static final String PDC_SERVICE = "pdc";
   private static final String SPACES_INDEX = "Spaces";
   private static final String COMPONENTS_INDEX = "Components";
@@ -138,7 +137,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List<GlobalSilverResult> filteredSR = new ArrayList<>();
   private int indexOfFirstItemToDisplay = 1;
   private int nbItemsPerPage = -1;
-  private final Value currentValue = null;
   // Pagination of result list (search Engine)
   private int indexOfFirstResultToDisplay = 0;
   // All,  Res or Req
@@ -1235,17 +1233,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     gsr.setDownloadAllowedForReaders(document.isDownloadAllowedForReaders());
     gsr.setUserAllowedToDownloadFile(document.isDownloadAllowedForRolesFrom(getUserDetail()));
 
-    String urlAttachment = document.getAttachmentURL();
+    String urlAttachment = getUrlAttachment(document);
+    return FileServerUtils.getApplicationContext() + urlAttachment;
+  }
 
-    // Utilisation de l'API Acrobat Reader pour ouvrir le document PDF en mode
-    // recherche (paramètre 'search')
-    // Transmet au PDF la requête tapée par l'utilisateur via l'URL d'accès
-    // http://partners.adobe.com/public/developer/en/acrobat/sdk/pdf/pdf_creation_apis_and_specs/PDFOpenParameters.pdf
+  private String getUrlAttachment(SimpleDocument document) {
+    String urlAttachment = document.getAttachmentURL();
     if (queryParameters != null) {
       String keywords = queryParameters.getKeywords();
       if (keywords != null && !keywords.trim().isEmpty()
           && MimeTypes.PDF_MIME_TYPE.equals(document.getContentType())) {
-        // Suppression des éventuelles quotes (ne sont pas acceptées)
+        // remove of any quotes (not supported)
         if (keywords.startsWith("\"")) {
           keywords = keywords.substring(1);
         }
@@ -1253,11 +1251,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           keywords = keywords.substring(0, keywords.length() - 1);
         }
 
-        // Ajout du paramètre search à la fin de l'URL
+        // add of the search parameter at the end of the URL
         urlAttachment += "#search=%22" + keywords + "%22";
       }
     }
-    return FileServerUtils.getApplicationContext() + urlAttachment;
+    return urlAttachment;
   }
 
   private String getVersioningUrl(GlobalSilverResult gsr) {
@@ -1284,10 +1282,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return FileServerUtils.getApplicationContext() + document.getAttachmentURL();
     }
     return null;
-  }
-
-  public Value getCurrentValue() {
-    return this.currentValue;
   }
 
   public void setSecondaryAxis(String secondAxis) {
@@ -1386,8 +1380,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
       parsedSynonyms.insert(0, header);
     } catch (IOException e) {
-      throw new PdcPeasRuntimeException("PdcSearchSessionController.setSynonymsQueryString",
-          SilverpeasException.ERROR, "pdcPeas.EX_GET_SYNONYMS", e);
+      throw new SilverpeasRuntimeException(e);
     }
     return parsedSynonyms.toString();
   }
@@ -1402,9 +1395,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       return thesaurus.getSynonyms(mot, getUserId());
     } catch (ThesaurusException e) {
-      throw new PdcPeasRuntimeException(
-          "PdcSearchSessionController.getSynonym", SilverpeasException.ERROR,
-          "pdcPeas.EX_GET_SYNONYMS", e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -1448,9 +1439,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       ic.setOwnerID(userId);
       return InterestsManager.getInstance().createInterests(ic);
     } catch (Exception e) {
-      throw new PdcPeasRuntimeException(
-          "PdcSearchSessionController.saveICenter", SilverpeasException.ERROR,
-          "pdcPeas.EX_SAVE_IC", e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -1459,9 +1448,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       int id = Integer.parseInt(getUserId());
       return InterestsManager.getInstance().getInterestsByUserId(id);
     } catch (Exception e) {
-      throw new PdcPeasRuntimeException(
-          "PdcSearchSessionController.getICenters", SilverpeasException.ERROR,
-          "pdcPeas.EX_GET_IC", e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -1480,9 +1467,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
       return ic;
     } catch (Exception e) {
-      throw new PdcPeasRuntimeException(
-          "PdcSearchSessionController.loadICenter", SilverpeasException.ERROR,
-          "pdcPeas.EX_LOAD_IC", e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -1615,9 +1600,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           loadPublicationTemplate(fileName);
       this.xmlTemplate = template;
     } catch (PublicationTemplateException e) {
-      throw new PdcPeasRuntimeException(
-          "PdcSearchSessionController.setXmlTemplate()",
-          SilverpeasException.ERROR, "pdcPeas.CANT_LOAD_TEMPLATE", e);
+      throw new SilverpeasRuntimeException(e);
     }
     return template;
   }
@@ -2036,22 +2019,22 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public void initXMLSearch(HttpRequest request)
       throws PublicationTemplateException, FormException {
-    getQueryParameters().clearXmlQuery();
-    getQueryParameters().clear();
+    QueryParameters parameters = getQueryParameters();
+    parameters.clearXmlQuery();
+    parameters.clear();
 
     List<FileItem> items = HttpRequest.decorate(request).getFileItems();
-
     String title = request.getParameter("TitleNotInXMLForm");
-    getQueryParameters().setKeywords(title);
+    parameters.setKeywords(title);
 
     String updatedFor = request.getParameter(XmlSearchForm.EXTRA_FIELD_PERIOD);
     if (StringUtil.isDefined(updatedFor)) {
       LocalDate updateDate = LocalDate.now().minusDays(Integer.parseInt(updatedFor));
-      getQueryParameters().setAfterUpdateDate(updateDate);
+      parameters.setAfterUpdateDate(updateDate);
     }
 
     String limitedToSpace = request.getParameter(XmlSearchForm.EXTRA_FIELD_SPACE);
-    getQueryParameters().setSpaceId(limitedToSpace);
+    parameters.setSpaceId(limitedToSpace);
     buildComponentListWhereToSearch(limitedToSpace, null);
 
     PublicationTemplateImpl template;
@@ -2060,37 +2043,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       template = setXmlTemplate(templateFileName);
     } else {
       template = getXmlTemplate();
-      templateFileName = template.getFileName();
     }
 
-    // build a dataRecord object storing user's entries
-    RecordTemplate searchTemplate = template.getSearchTemplate();
-    DataRecord data = searchTemplate.getEmptyRecord();
-
-    pageContext = getXMLContext();
-
-    XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
-    searchForm.update(items, data, pageContext);
+    DataRecord data =
+        parameters.setByXmlSearchForm(template, templateFileName, items, getXMLContext());
 
     // xmlQuery is in the data object, store it into session
     setXmlData(data);
-
-    // build the xmlSubQuery according to the dataRecord object
-    String templateName = templateFileName.substring(0, templateFileName.lastIndexOf('.'));
-    String[] fieldNames = searchTemplate.getFieldNames();
-    for (String fieldName : fieldNames) {
-      Field field = data.getField(fieldName);
-      String fieldValue = field.getStringValue();
-      if (fieldValue != null && !fieldValue.trim().isEmpty()) {
-        String fieldQuery = fieldValue.trim();
-        if (fieldValue.contains("##")) {
-          String operator = FileUploadUtil.getParameter(items, fieldName + "Operator");
-          pageContext.setSearchOperator(fieldName, operator);
-          fieldQuery = fieldQuery.replace("##", " "+operator+" ");
-        }
-        getQueryParameters().addXmlSubQuery(templateName + "$$" + fieldName, fieldQuery);
-      }
-    }
 
     setIndexOfFirstResultToDisplay(0);
   }

@@ -157,11 +157,11 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    * Return the RecordTemplate of the publication data item.
    *
-   * @param loadIfNull
+   * @param loadIfNull even if the record template is null, load it
    * @return the record template, or a dummy record template if not found (never return
    * <code>null</code> if <code>loadIfNull</code> is <code>true</code>), or <code>null</code> if not
    * loaded and <code>loadIfNull</code> is <code>false</code>.
-   * @throws PublicationTemplateException
+   * @throws PublicationTemplateException if an error occurs
    */
   public RecordTemplate getRecordTemplate(boolean loadIfNull) throws PublicationTemplateException {
     if ((template != null) || !loadIfNull) {
@@ -179,12 +179,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return getRecordTemplate(true);
   }
 
-  /**
-   * Return the RecordSet of all the records built from this template.
-   *
-   * @return the record set or a dummy record set if not found (never return <code>null</code>).
-   * @throws PublicationTemplateException
-   */
   @Override
   public RecordSet getRecordSet() throws PublicationTemplateException {
     try {
@@ -249,6 +243,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    * Returns the RecordTemplate of the publication search item.
    */
+  @Override
   public RecordTemplate getSearchTemplate() throws PublicationTemplateException {
     return getSearchTemplate(true);
   }
@@ -331,8 +326,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    * Merge the data template with the form template
    *
-   * @param formTemplate
-   * @throws PublicationTemplateException
+   * @param formTemplate the form template with which the data template will be updated.
+   * @throws PublicationTemplateException if an error occurs during the merge.
    */
   private void mergeTemplate(RecordTemplate formTemplate) throws PublicationTemplateException {
     RecordTemplate dataTemplate = getRecordTemplate();
@@ -469,7 +464,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    * This method saves current templates inside a sub directory
    *
-   * @throws PublicationTemplateException
+   * @throws PublicationTemplateException the saving fails.
    */
   public void saveRecordTemplates() throws PublicationTemplateException {
     String subDir = fileName.substring(0, fileName.lastIndexOf('.'))
@@ -497,7 +492,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
    * @param recordTemplate the object to save as xml File
    * @param subDir the sub directory where saving the xml file
    * @param xmlFileName the xml file name
-   * @throws PublicationTemplateException
+   * @throws PublicationTemplateException if the saving fails.
    */
   private void saveRecordTemplate(RecordTemplate recordTemplate, String subDir,
       String xmlFileName) throws PublicationTemplateException {
@@ -622,7 +617,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   @Override
   public boolean isSearchable() {
-    return (searchFileName != null && searchFileName.trim().length() > 0);
+    return (searchFileName != null && !searchFileName.trim().isEmpty());
   }
 
   /**

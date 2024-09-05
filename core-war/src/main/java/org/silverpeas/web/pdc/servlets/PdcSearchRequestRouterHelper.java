@@ -28,10 +28,9 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.control.Keys;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
@@ -285,9 +284,7 @@ public class PdcSearchRequestRouterHelper {
     }
     request.setAttribute("NbItemsPerPage", pdcSC.getNbItemsPerPage());
     request.setAttribute("FirstItemIndex", pdcSC.getIndexOfFirstItemToDisplay());
-
-    Value value = pdcSC.getCurrentValue();
-    request.setAttribute("SelectedValue", value);
+    request.setAttribute("SelectedValue", null);
   }
 
   /**
