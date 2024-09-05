@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.util.SharingContext;
 
@@ -366,7 +367,7 @@ public class PagesContext implements Serializable {
   public static PagesContext getDirectoryContext(String userId, String contributorId,
       String userLanguage) {
     PagesContext context = new PagesContext();
-    context.setComponentId("directory");
+    context.setComponentId(UserDetail.USER_COMPONENT);
     context.setObjectId(userId);
     context.setUserId(contributorId);
     context.setLanguage(userLanguage);

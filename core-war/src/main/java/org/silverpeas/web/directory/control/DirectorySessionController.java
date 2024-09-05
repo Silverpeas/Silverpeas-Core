@@ -47,18 +47,13 @@ import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.service.ContactService;
 import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -95,6 +90,7 @@ import org.silverpeas.web.directory.model.DirectoryItemList;
 import org.silverpeas.web.directory.model.DirectorySource;
 import org.silverpeas.web.directory.model.UserFragmentVO;
 import org.silverpeas.web.directory.model.UserItem;
+import org.silverpeas.web.pdc.QueryParameters;
 
 import java.text.ParseException;
 import java.util.*;
@@ -862,88 +858,53 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return xmlTemplate;
   }
 
-  private void saveExtraRequest(List<FileItem> items) {
-    PublicationTemplateImpl extraTemplate = (PublicationTemplateImpl) getExtraTemplate();
-    if (extraTemplate != null) {
-      // build a dataRecord object storing user's entries
-      try {
-        RecordTemplate searchTemplate = extraTemplate.getSearchTemplate();
-        DataRecord data = searchTemplate.getEmptyRecord();
-
-        XmlSearchForm searchForm = (XmlSearchForm) extraTemplate.getSearchForm();
-        searchForm.update(items, data, extraFormContext);
-
-        // xmlQuery is in the data object, store it into session
-        xmlData = data;
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e);
-      }
-    }
-  }
-
   public QueryDescription buildSimpleQuery(String query, final boolean globalSearch) {
-    if (globalSearch && getCurrentDomains().isEmpty()) {
-      setCurrentDirectory(DIRECTORY_DEFAULT);
-    }
+    setDomainScopeSearch(globalSearch);
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.setSearchingUser(getUserId());
     queryDescription.setRequestedLanguage("*");
+    setComponentsScope(queryDescription);
+    setCurrentQuery(query);
+    return queryDescription;
+  }
+
+  private void setDomainScopeSearch(boolean globalSearch) {
+    if (globalSearch && getCurrentDomains().isEmpty()) {
+      setCurrentDirectory(DIRECTORY_DEFAULT);
+    }
+  }
+
+  private void setComponentsScope(final QueryDescription queryDescription) {
     if (getCurrentDirectory() == DIRECTORY_COMPONENT) {
       queryDescription.addComponent(getCurrentComponent().getId());
     } else {
-      queryDescription.addComponent("users");
+      queryDescription.addComponent(UserDetail.USER_COMPONENT);
       if (isUseContacts()) {
         for (String appId : getContactComponentIds()) {
           queryDescription.addComponent(appId);
         }
       }
     }
-    setCurrentQuery(query);
-    return queryDescription;
   }
 
   public QueryDescription buildQuery(List<FileItem> items, final boolean globalSearch) {
-    String query = FileUploadUtil.getParameter(items, "key");
-    QueryDescription queryDescription = buildSimpleQuery(query, globalSearch);
-    saveExtraRequest(items);
-    buildExtraQuery(queryDescription, items);
+    String keywords = FileUploadUtil.getParameter(items, "key");
+    setDomainScopeSearch(globalSearch);
+
+    QueryParameters queryParameters = new QueryParameters();
+    queryParameters.setKeywords(keywords);
+    PublicationTemplate extraTemplate = getExtraTemplate();
+    if (extraTemplate != null) {
+      try {
+        queryParameters.setByXmlSearchForm(extraTemplate, null, items, getExtraFormContext());
+      } catch (FormException | PublicationTemplateException e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+
+    QueryDescription queryDescription = queryParameters.getQueryDescription(getUserId(), "*");
+    setComponentsScope(queryDescription);
     return queryDescription;
-  }
-
-  private void buildExtraQuery(QueryDescription query, List<FileItem> items) {
-    PublicationTemplateImpl extraTemplate = (PublicationTemplateImpl) getExtraTemplate();
-    if (extraTemplate == null) {
-      return;
-    }
-    // build the xmlSubQuery according to the dataRecord object
-    String templateFileName = extraTemplate.getFileName();
-    String templateName = templateFileName.substring(0, templateFileName.lastIndexOf('.'));
-    if (xmlData != null) {
-      for (String fieldName : xmlData.getFieldNames()) {
-        FieldDescription fieldQuery = buildFieldDescription(fieldName, templateName, items);
-        query.addFieldQuery(fieldQuery);
-      }
-    }
-  }
-
-  private FieldDescription buildFieldDescription(String fieldName, String templateName,
-      List<FileItem> items) {
-    try {
-      Field field = xmlData.getField(fieldName);
-      String fieldValue = field.getStringValue();
-      if (fieldValue != null && !fieldValue.trim().isEmpty()) {
-        String fieldQuery = fieldValue.trim();
-        if (fieldValue.contains("##")) {
-          String operator = FileUploadUtil.getParameter(items,fieldName+"Operator");
-          getExtraFormContext().setSearchOperator(fieldName, operator);
-          fieldQuery = fieldQuery.replace("##", " "+operator+" ");
-        }
-        return new FieldDescription(templateName + "$$" + fieldName, fieldQuery, getLanguage());
-      }
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
-    }
-    return null;
   }
 
   public void clearSearchCriteria() {

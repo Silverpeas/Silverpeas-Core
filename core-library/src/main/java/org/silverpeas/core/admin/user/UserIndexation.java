@@ -24,16 +24,17 @@
 package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -106,7 +107,8 @@ public class UserIndexation {
     PublicationTemplateManager manager = PublicationTemplateManager.getInstance();
     List<PublicationTemplate> templates = manager.getDirectoryTemplates();
     for (PublicationTemplate template : templates) {
-      manager.setDataIntoIndex(template.getFileName(), "directory", userId, indexEntry);
+      manager.setDataIntoIndex(template.getFileName(), UserDetail.USER_COMPONENT, userId,
+          indexEntry);
     }
   }
 

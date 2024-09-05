@@ -327,9 +327,15 @@ public class IndexSearcher {
     BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
     for (String language : languages) {
       final Analyzer analyzer = indexManager.getAnalyzer(language);
-      QueryParser parser = new QueryParser(getFieldName(fieldName, language), analyzer);
-      parser.setDefaultOperator(defaultOperator);
-      Query query = parse(parser, queryStr);
+      Query query;
+      if (queryStr.startsWith("Regexp:")) {
+        queryStr = queryStr.substring(7);
+        query = new RegexpQuery(new Term(getFieldName(fieldName, language), queryStr));
+      } else {
+        QueryParser parser = new QueryParser(getFieldName(fieldName, language), analyzer);
+        parser.setDefaultOperator(QueryParser.Operator.OR);
+        query = parse(parser, "+" + queryStr);
+      }
       if (query != null) {
         booleanQueryBuilder.add(query, BooleanClause.Occur.SHOULD);
       }
@@ -362,8 +368,7 @@ public class IndexSearcher {
    * @param scoreDoc occurrence of Lucene search result
    * @param requestedLanguage a language as short string
    * @param searcher the index search result instance
-   * @return MatchingIndexEntry wraps the Lucene search result, null if the lucene result is not
-   * expected according to possible components.
+   * @return MatchingIndexEntry wraps the Lucene search result
    * @throws IOException if there is a problem when searching Lucene index
    */
   private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,

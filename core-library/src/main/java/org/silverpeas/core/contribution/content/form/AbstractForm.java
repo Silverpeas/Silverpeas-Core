@@ -48,7 +48,7 @@ import java.util.List;
  */
 public abstract class AbstractForm implements Form {
 
-  private List<FieldTemplate> fieldTemplates;
+  private final List<FieldTemplate> fieldTemplates;
   private String title = "";
   private String name = "";
   private String formName = "";
@@ -108,7 +108,7 @@ public abstract class AbstractForm implements Form {
   }
 
   /**
-   * Prints the javascripts which will be used to control the new values given to the data record
+   * Prints the javascript which will be used to control the new values given to the data record
    * fields. The error messages may be adapted to a local language. The RecordTemplate gives the
    * field type and constraints. The RecordTemplate gives the local label too. Never throws an
    * Exception but log a a trace and writes an empty string when :
@@ -570,7 +570,7 @@ public abstract class AbstractForm implements Form {
     input.setName("ignoreThisForm");
     input.setID("ignoreThisForm");
 
-    return div.toString() + input.toString();
+    return div + input.toString();
   }
 
   private void printJavascriptSkippableSnippet(PrintWriter out) {

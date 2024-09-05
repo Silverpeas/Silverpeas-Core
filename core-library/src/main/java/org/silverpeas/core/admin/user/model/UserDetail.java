@@ -69,6 +69,11 @@ public class UserDetail implements User {
 
   public static final String BLANK_NAME = "_Anonymous_";
   public static final String SYSTEM_USER_ID = "-1";
+  /**
+   * The identifier to use with some API when managing resources mapped with the users. This
+   * identifier is mainly to be used by the Silverpeas internal mechanisms.
+   */
+  public static final String USER_COMPONENT = "users";
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   private static final String DEFAULT_AVATAR_PROPERTY = "login";
