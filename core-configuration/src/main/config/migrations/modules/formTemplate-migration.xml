@@ -29,10 +29,14 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://silverpeas.org/xml/ns/migration https://www.silverpeas.org/xsd/migration.xsd">
 
-  <current version="009">
+  <current version="010">
     <script name="create_table.sql" type="sql"/>
     <script name="create_constraint.sql" type="sql"/>
     <script name="create_index.sql" type="sql"/>
   </current>
+
+  <upgrade fromVersion="009">
+    <script name="updateDirectoryFolder.groovy" type="groovy"/>
+  </upgrade>
 
 </migration>

@@ -126,7 +126,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
       // get all crypted forms
       List<PublicationTemplate> forms;
       try {
-        forms = PublicationTemplateManager.getInstance().getCryptedPublicationTemplates();
+        forms = PublicationTemplateManager.getInstance().getEncryptedPublicationTemplates();
       } catch (PublicationTemplateException e) {
         throw new FormRuntimeException("FormEncryptionContentIterator", SilverpeasException.ERROR,
             "form.EXP_SELECT_FAILED", e);

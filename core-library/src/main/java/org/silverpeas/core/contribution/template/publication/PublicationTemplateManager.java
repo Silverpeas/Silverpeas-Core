@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.template.publication;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -49,6 +50,7 @@ import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -170,10 +172,12 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   /**
    * Returns the PublicationTemplate having the given externalId.
-   * @param externalId
-   * @param templateFileName
-   * @return
-   * @throws PublicationTemplateException
+   * @param externalId the identifier of an instance of the asked publication template. The
+   * external identifier is the identifier of a template instance used for a resource in an external
+   * Silverpeas component.
+   * @param templateFileName the name of the file in which is stored the template.
+   * @return the publication template used to generate the specified template instance.
+   * @throws PublicationTemplateException if an error occurs while getting the template.
    */
   public PublicationTemplate getPublicationTemplate(String externalId, String templateFileName)
       throws PublicationTemplateException {
@@ -192,7 +196,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
           }
         } catch (Exception e) {
           throw new PublicationTemplateException(
-              "Fail to get publication template " + templateFileName + " for " + externalId, e);
+              "Fail to get publication template for " + externalId, e);
         }
       }
       thePubTemplate = loadPublicationTemplate(currentTemplateFileName);
@@ -205,8 +209,10 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   /**
    * Removes the PublicationTemplate having the given externalId.
-   * @param externalId
-   * @throws PublicationTemplateException
+   * @param externalId the identifier of an instance of the publication template to remove. The
+   * external identifier is the identifier of a template instance used for a resource in an external
+   * Silverpeas component.
+   * @throws PublicationTemplateException if the deletion fails.
    */
   public void removePublicationTemplate(String externalId) throws PublicationTemplateException {
     try {
@@ -237,7 +243,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
    * load a publicationTemplate definition from xml file to java objects
    * @param xmlFileName the xml file name that contains publication template definition
    * @return a PublicationTemplate object
-   * @throws PublicationTemplateException
+   * @throws PublicationTemplateException if the loading fails.
    */
   public PublicationTemplate loadPublicationTemplate(String xmlFileName)
       throws PublicationTemplateException {
@@ -275,8 +281,8 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   /**
    * Save a publicationTemplate definition from java objects to xml file
    * @param template the PublicationTemplate to save
-   * @throws PublicationTemplateException
-   * @throws CryptoException
+   * @throws PublicationTemplateException if the saving of the publication template fails.
+   * @throws CryptoException if the encryption of the template data fails.
    */
   public void savePublicationTemplate(PublicationTemplate template)
       throws PublicationTemplateException, CryptoException {
@@ -315,7 +321,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
    * @param onlyVisible only visible templates boolean
    * @return only visible PublicationTemplates if onlyVisible is true, all the publication templates
    * else if
-   * @throws PublicationTemplateException
+   * @throws PublicationTemplateException if the getting of the templates fails
    */
   public List<PublicationTemplate> getPublicationTemplates(boolean onlyVisible)
       throws PublicationTemplateException {
@@ -332,7 +338,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
         String extension = FileRepositoryManager.getFileExtension(fileName);
         if ("xml".equalsIgnoreCase(extension)) {
           PublicationTemplate template = loadPublicationTemplate(
-              fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length()));
+              fileName.substring(fileName.lastIndexOf(File.separator) + 1));
           if (onlyVisible) {
             if (template.isVisible()) {
               publicationTemplates.add(template);
@@ -351,19 +357,19 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   /**
    * @return only the visible PublicationTemplates
-   * @throws PublicationTemplateException
+   * @throws PublicationTemplateException if the getting of the templates fails.
    */
   public List<PublicationTemplate> getPublicationTemplates() throws PublicationTemplateException {
     return getPublicationTemplates(true);
   }
 
   /**
-   * @param globalContext componentName It can be null. It is usefull when componentId is not
-   * defined.
-   * @return
-   * @throws PublicationTemplateException
+   * @param globalContext the global context in which is indicated the components in which the
+   * templates are used. It can be null to get all the publication templates.
+   * @return a list of publication templates matching the specified global context.
+   * @throws PublicationTemplateException if an error occurs while getting the templates
    */
-  public List<PublicationTemplate> getPublicationTemplates(GlobalContext globalContext)
+  public List<PublicationTemplate> getPublicationTemplates(@Nullable GlobalContext globalContext)
       throws PublicationTemplateException {
     List<PublicationTemplate> theTemplates = getPublicationTemplates(true);
     if (globalContext == null) {
@@ -412,32 +418,21 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     // template is restricted
     // check it according to current space and component
     if (template.isRestrictedVisibilityToInstance()) {
-      if (isTemplateVisibleAccordingToInstance(template, globalContext)) {
-        return true;
-      }
+      return isTemplateVisibleAccordingToInstance(template, globalContext);
     } else {
-      if (isAllowed(template, globalContext)) {
-        return true;
-      }
+      return isAllowed(template, globalContext);
     }
-
-    return false;
   }
 
   private boolean isAllowed(final PublicationTemplate template, final GlobalContext globalContext) {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    boolean allowed = true;
-    if (template.isRestrictedVisibilityToApplication() &&
-        !isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
-      allowed = false;
-    }
+    boolean allowed = !template.isRestrictedVisibilityToApplication() ||
+        isTemplateVisibleAccordingToApplication(template, globalContext, oc);
     if (allowed) {
       if (!template.isRestrictedVisibilityToSpace()) {
         return true;
       } else {
-        if (isTemplateVisibleAccordingToSpace(template, globalContext, oc)) {
-          return true;
-        }
+        return isTemplateVisibleAccordingToSpace(template, globalContext, oc);
       }
     }
     return false;
@@ -475,7 +470,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   /**
    * @return the list of PublicationTemplate which contains a search form
-   * @throws PublicationTemplateException
+   * @throws PublicationTemplateException if the templates cannot be got.
    */
   public List<PublicationTemplate> getSearchablePublicationTemplates()
       throws PublicationTemplateException {
@@ -498,21 +493,21 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   }
 
   /**
-   * @return the list of PublicationTemplate which are crypted
-   * @throws PublicationTemplateException
+   * @return the list of PublicationTemplate which are encrypted
+   * @throws PublicationTemplateException if the getting of the templates fails.
    */
-  public List<PublicationTemplate> getCryptedPublicationTemplates()
+  public List<PublicationTemplate> getEncryptedPublicationTemplates()
       throws PublicationTemplateException {
-    List<PublicationTemplate> cryptedTemplates = new ArrayList<>();
+    List<PublicationTemplate> encryptedTemplates = new ArrayList<>();
 
     List<PublicationTemplate> publicationTemplates = getPublicationTemplates();
     for (PublicationTemplate template : publicationTemplates) {
       if (template.isDataEncrypted()) {
-        cryptedTemplates.add(template);
+        encryptedTemplates.add(template);
       }
     }
 
-    return cryptedTemplates;
+    return encryptedTemplates;
   }
 
   /**
@@ -544,6 +539,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     return GenericRecordSetManager.getInstance();
   }
 
+  @SuppressWarnings("unused")
   protected void registerForRenewingContentCipher() {
     EncryptionContentIterator contentIterator = new FormEncryptionContentIterator();
     ContentEncryptionServiceProvider.getContentEncryptionService()
@@ -686,7 +682,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   private void setExternalId(PublicationTemplate template) {
     String shortName = getShortName(template.getFileName());
-    String externalId = "directory" + ":" + shortName;
+    String externalId = UserDetail.USER_COMPONENT + ":" + shortName;
     template.setExternalId(externalId);
   }
 

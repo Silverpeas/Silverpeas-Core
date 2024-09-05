@@ -52,6 +52,13 @@ public interface PublicationTemplate {
   RecordTemplate getRecordTemplate() throws PublicationTemplateException;
 
   /**
+   * Gets the template of records used for searching publications related by this template.
+   * @return a record template used for a search of publications data items.
+   * @throws PublicationTemplateException if an error occurs while getting the search template.
+   */
+  RecordTemplate getSearchTemplate() throws PublicationTemplateException;
+
+  /**
    * Returns the RecordSet of all the records built from this template.
    */
   RecordSet getRecordSet() throws PublicationTemplateException;
@@ -65,7 +72,7 @@ public interface PublicationTemplate {
    * Returns the XML Form used to create and update the records built from this template.
    * Even if an HTML layer exists (HTMLForm), the XML one is returned.
    * @return the XMLForm
-   * @throws PublicationTemplateException
+   * @throws PublicationTemplateException if an error occurs while getting the XML update form
    */
   XmlForm getUpdateFormAsXMLOne() throws PublicationTemplateException;
 
@@ -105,7 +112,7 @@ public interface PublicationTemplate {
 
   /**
    * Is the publication records described by this template can be searchable?
-   * @return true if the records are searchable, false othersise.
+   * @return true if the records are searchable, false otherwise.
    */
   boolean isSearchable();
 
