@@ -327,9 +327,11 @@ public class JobStartPagePeasRequestRouter extends
       if (StringUtil.isDefined(componentId)) {
         if (jobStartPageSC.getScope() == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
           refreshNavBar(jobStartPageSC, request);
+          request.setAttribute(COMPONENT_ID_PARAM, componentId);
+          destination = GO_TO_CURRENT_COMPONENT_DEST;
+        } else {
+          destination = getDestination(GO_TO_CURRENT_COMPONENT_FCT, jobStartPageSC, request);
         }
-        request.setAttribute(COMPONENT_ID_PARAM, componentId);
-        destination = GO_TO_CURRENT_COMPONENT_DEST;
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas
