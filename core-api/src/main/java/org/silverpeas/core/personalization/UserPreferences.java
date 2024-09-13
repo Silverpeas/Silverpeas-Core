@@ -24,23 +24,23 @@
 package org.silverpeas.core.personalization;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.ZoneId;
+import java.util.Objects;
 
 @Entity
 @Table(name = "personalization")
-@NamedQueries({@NamedQuery(name = "UserPreferences.findByDefaultSpace",
-    query = "from UserPreferences p WHERE p.collaborativeWorkSpaceId = :space")})
+@NamedQuery(name = "UserPreferences.findByDefaultSpace",
+    query = "select p from UserPreferences p WHERE p.collaborativeWorkSpaceId = :space")
 public class UserPreferences
     extends BasicJpaEntity<UserPreferences, ExternalStringIdentifier>
     implements Serializable {
@@ -118,14 +118,6 @@ public class UserPreferences
     this.look = look;
   }
 
-  public String getCollaborativeWorkSpaceId() {
-    return collaborativeWorkSpaceId;
-  }
-
-  public void setCollaborativeWorkSpaceId(String collaborativeWorkSpaceId) {
-    this.collaborativeWorkSpaceId = collaborativeWorkSpaceId;
-  }
-
   public String getPersonalWorkSpaceId() {
     return collaborativeWorkSpaceId;
   }
@@ -181,19 +173,16 @@ public class UserPreferences
     if ((getId() == null) ? (other.getId() != null) : !getId().equals(other.getId())) {
       return false;
     }
-    if ((this.language == null) ? (other.language != null) : !this.language.equals(
-        other.language)) {
+    if (!Objects.equals(this.language, other.language)) {
       return false;
     }
-    if ((this.zoneId == null) ? (other.zoneId != null) : !this.zoneId.equals(other.zoneId)) {
+    if (!Objects.equals(this.zoneId, other.zoneId)) {
       return false;
     }
-    if ((this.look == null) ? (other.look != null) : !this.look.equals(other.look)) {
+    if (!Objects.equals(this.look, other.look)) {
       return false;
     }
-    if ((this.collaborativeWorkSpaceId == null) ? (other.collaborativeWorkSpaceId != null)
-        : !this.collaborativeWorkSpaceId.
-        equals(other.collaborativeWorkSpaceId)) {
+    if (!Objects.equals(this.collaborativeWorkSpaceId, other.collaborativeWorkSpaceId)) {
       return false;
     }
     if (this.thesaurusStatus != other.thesaurusStatus) {

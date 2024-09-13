@@ -27,13 +27,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIde
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -48,10 +42,9 @@ import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
  */
 @Entity
 @Table(name = "st_notificationresource")
-@NamedQueries({
-    @NamedQuery(name = "NotificationResourceData.deleteResources",
-        query = "delete from NotificationResourceData r where not exists (from DelayedNotificationData d where d.resource.id = r.id)")
-})
+@NamedQuery(name = "NotificationResourceData.deleteResources",
+    query = "delete from NotificationResourceData r where not exists (select d from " +
+        "DelayedNotificationData d where d.resource.id.id = r.id.id)")
 public class NotificationResourceData
     extends BasicJpaEntity<NotificationResourceData, UniqueLongIdentifier> {
   public static final String LOCATION_SEPARATOR = "@#@#@";
@@ -130,8 +123,8 @@ public class NotificationResourceData
     forcesNullValues();
   }
 
-  @PreUpdate
-  public void beforeUpdate() {
+  @Override
+  protected void performBeforeUpdate() {
     forcesNullValues();
   }
 

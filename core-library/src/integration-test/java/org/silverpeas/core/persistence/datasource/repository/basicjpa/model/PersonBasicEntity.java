@@ -86,11 +86,6 @@ public class PersonBasicEntity extends BasicJpaEntity<PersonBasicEntity, UuidIde
     return animals;
   }
 
-  public PersonBasicEntity setAnimals(final List<AnimalBasicEntity> animalCustomEntities) {
-    this.animals = animalCustomEntities;
-    return this;
-  }
-
   public PersonBasicEntity copy() {
     PersonBasicEntity entity = new PersonBasicEntity();
     entity.firstName = firstName;

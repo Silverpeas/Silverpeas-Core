@@ -94,11 +94,6 @@ public class AnimalBasicEntity
     return equipments;
   }
 
-  public AnimalBasicEntity setEquipments(final List<EquipmentBasicEntity> equipmentCustomEntities) {
-    this.equipments = equipmentCustomEntities;
-    return this;
-  }
-
   public AnimalBasicEntity copy() {
     AnimalBasicEntity entity = new AnimalBasicEntity();
     entity.type = type;

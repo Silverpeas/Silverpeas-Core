@@ -28,32 +28,29 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ST_SilverMailMessage")
-@NamedQueries({
-    @NamedQuery(name = "markAllMessagesAsReadByUserIdAndIds",
-        query = "update SILVERMAILMessageBean m set m.readen = 1 where m.userId = :userId " +
-            "and m.readen != 1 and m.id in :ids"),
-    @NamedQuery(name = "getLongTextIdsOfAllMessagesByUserIdAndIds",
-        query = "select distinct m.body from SILVERMAILMessageBean m where m.userId = :userId " +
-            "and m.id in :ids"),
-    @NamedQuery(name = "deleteAllMessagesByUserIdAndIds",
-        query = "delete SILVERMAILMessageBean m where m.userId = :userId " +
-            "and m.id in :ids"),
-    @NamedQuery(name = "markAllMessagesAsReadByUserIdAndFolderId",
-        query = "update SILVERMAILMessageBean m set m.readen = 1 where m.userId = :userId " +
-            "and m.folderId = :folderId and m.readen != 1"),
-    @NamedQuery(name = "getLongTextIdsOfAllMessagesByUserIdAndFolderId",
-        query = "select distinct m.body from SILVERMAILMessageBean m where m.userId = :userId " +
-            "and m.folderId = :folderId"),
-    @NamedQuery(name = "deleteAllMessagesByUserIdAndFolderId",
-        query = "delete SILVERMAILMessageBean m where m.userId = :userId " +
-            "and m.folderId = :folderId")})
+@NamedQuery(name = "markAllMessagesAsReadByUserIdAndIds",
+    query = "update SILVERMAILMessageBean m set m.readen = 1 where m.userId = :userId " +
+        "and m.readen != 1 and m.id in :ids")
+@NamedQuery(name = "getLongTextIdsOfAllMessagesByUserIdAndIds",
+    query = "select distinct m.body from SILVERMAILMessageBean m where m.userId = :userId " +
+        "and m.id in :ids")
+@NamedQuery(name = "deleteAllMessagesByUserIdAndIds",
+    query = "delete SILVERMAILMessageBean m where m.userId = :userId and m.id in :ids")
+@NamedQuery(name = "markAllMessagesAsReadByUserIdAndFolderId",
+    query = "update SILVERMAILMessageBean m set m.readen = 1 where m.userId = :userId " +
+        "and m.folderId = :folderId and m.readen != 1")
+@NamedQuery(name = "getLongTextIdsOfAllMessagesByUserIdAndFolderId",
+    query = "select distinct m.body from SILVERMAILMessageBean m where m.userId = :userId " +
+        "and m.folderId = :folderId")
+@NamedQuery(name = "deleteAllMessagesByUserIdAndFolderId",
+    query = "delete SILVERMAILMessageBean m where m.userId = :userId and m.folderId = :folderId")
 public class SILVERMAILMessageBean
     extends BasicJpaEntity<SILVERMAILMessageBean, UniqueLongIdentifier> {
   private static final long serialVersionUID = -3073514330044912996L;
@@ -185,30 +182,30 @@ public class SILVERMAILMessageBean
     if (userId != that.userId) {
       return false;
     }
-    if (body != null ? !body.equals(that.body) : that.body != null) {
+    if (!Objects.equals(body, that.body)) {
       return false;
     }
-    if (dateMsg != null ? !dateMsg.equals(that.dateMsg) : that.dateMsg != null) {
+    if (!Objects.equals(dateMsg, that.dateMsg)) {
       return false;
     }
-    if (senderName != null ? !senderName.equals(that.senderName) : that.senderName != null) {
+    if (!Objects.equals(senderName, that.senderName)) {
       return false;
     }
-    if (source != null ? !source.equals(that.source) : that.source != null) {
+    if (!Objects.equals(source, that.source)) {
       return false;
     }
-    if (subject != null ? !subject.equals(that.subject) : that.subject != null) {
+    if (!Objects.equals(subject, that.subject)) {
       return false;
     }
-    return url != null ? url.equals(that.url) : that.url == null;
+    return Objects.equals(url, that.url);
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
     result = 31 * result + (getId() != null ? getId().hashCode():0);
-    result = 31 * result + (int) (userId ^ (userId >>> 32));
-    result = 31 * result + (int) (folderId ^ (folderId >>> 32));
+    result = 31 * result + Long.hashCode(userId);
+    result = 31 * result + Long.hashCode(folderId);
     result = 31 * result + (senderName != null ? senderName.hashCode() : 0);
     result = 31 * result + (subject != null ? subject.hashCode() : 0);
     result = 31 * result + (source != null ? source.hashCode() : 0);

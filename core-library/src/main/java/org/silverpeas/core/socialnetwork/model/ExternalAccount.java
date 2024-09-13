@@ -23,19 +23,19 @@
  */
 package org.silverpeas.core.socialnetwork.model;
 
+import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "sb_sn_externalaccount")
-@NamedQueries({@NamedQuery(name = "ExternalAccount.findBySilverpeasUserId",
-    query = "select e FROM ExternalAccount e WHERE e.silverpeasUserId = :silverpeasUserId")})
+@NamedQuery(name = "ExternalAccount.findBySilverpeasUserId",
+    query = "select e FROM ExternalAccount e WHERE e.silverpeasUserId = :silverpeasUserId")
 public class ExternalAccount
     extends BasicJpaEntity<ExternalAccount, ExternalAccountIdentifier>
     implements Serializable {
@@ -44,7 +44,7 @@ public class ExternalAccount
   private String silverpeasUserId = null;
 
   public void setExternalId(SocialNetworkID socialNetworkID, String profileId) {
-    setId(socialNetworkID.name() + ExternalAccountIdentifier.COMPOSITE_SEPARATOR + profileId);
+    setId(socialNetworkID.name() + CompositeEntityIdentifier.COMPOSITE_SEPARATOR + profileId);
   }
 
   public SocialNetworkID getNetworkId() {
@@ -52,7 +52,7 @@ public class ExternalAccount
   }
 
   private String[] getStringIds() {
-    return getId().split(ExternalAccountIdentifier.COMPOSITE_SEPARATOR);
+    return getId().split(CompositeEntityIdentifier.COMPOSITE_SEPARATOR);
   }
 
   public String getProfileId() {

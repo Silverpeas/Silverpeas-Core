@@ -58,27 +58,12 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
     return "FileSharing";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   */
   @Override
   public FileSharingSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new FileSharingSessionController(mainSessionCtrl, componentContext);
   }
 
-  /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param fileSharingSC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
-   */
   @Override
   public String getDestination(String function, FileSharingSessionController fileSharingSC,
       HttpRequest request) {
@@ -168,7 +153,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
       ticket.setEndDate(endDate);
       ticket.setNbAccessMax(maxAccessNb);
     } else {
-      ticket.setContinuous();
+      ticket.setAsUnlimited();
     }
 
     return ticket;

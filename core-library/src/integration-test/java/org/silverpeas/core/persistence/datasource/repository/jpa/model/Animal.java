@@ -30,7 +30,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * User: Yohann Chastagnier Date: 20/11/13
@@ -92,11 +91,6 @@ public class Animal extends SilverpeasJpaEntity<Animal, UniqueLongIdentifier> im
 
   public List<Equipment> getEquipments() {
     return equipments;
-  }
-
-  public Animal setEquipments(final List<Equipment> equipments) {
-    this.equipments = equipments;
-    return this;
   }
 
   public Animal copy() {

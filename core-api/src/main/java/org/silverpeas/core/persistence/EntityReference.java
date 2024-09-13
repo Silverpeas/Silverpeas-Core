@@ -28,16 +28,17 @@ import java.lang.reflect.Type;
 
 /**
  * A reference to an entity in Silverpeas.
- *
+ * <p>
  * An entity is a business object in Silverpeas that is persisted in a data source. Some times,
  * instead of referring a peculiar entity, an object can refer an entity whatever its type; this is
  * why it refers such objects with an <code>EntityReference</code> instance.
- *
+ * </p>
+ * <p>
  * The type of the entity referred by a such reference is defined by the type of the reference
  * itself; An entity reference must be concrete and its type carries the type of the entity it is
  * upon. For example, you can implement a reference to a user by naming it
  * <code>UserReference&lt;UserDetail&gt;</code>.
- *
+ * </p>
  * @param <T> the type of the entity on which this reference is about.
  * @author mmoquillon
  */

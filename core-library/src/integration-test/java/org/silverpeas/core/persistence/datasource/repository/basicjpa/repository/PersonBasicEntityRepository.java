@@ -41,7 +41,7 @@ public class PersonBasicEntityRepository
     extends BasicJpaEntityRepository<PersonBasicEntity> {
 
   public PersonBasicEntity getByFirstName(String firstName) {
-    String jpqlQuery = "from PersonBasicEntity p where p.firstName = :firstName";
+    String jpqlQuery = "select p from PersonBasicEntity p where p.firstName = :firstName";
     return getFromJpqlString(jpqlQuery, newNamedParameters().add("firstName", firstName));
   }
 

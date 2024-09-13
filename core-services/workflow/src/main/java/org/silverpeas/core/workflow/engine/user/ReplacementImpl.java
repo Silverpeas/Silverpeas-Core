@@ -129,6 +129,7 @@ public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidId
     return this;
   }
 
+  @SuppressWarnings("UnusedReturnValue")
   ReplacementImpl setWorkflowId(final String workflowId) {
     StringUtil.requireDefined(workflowId,
         "The unique identifier of the workflow instance must be non-null");

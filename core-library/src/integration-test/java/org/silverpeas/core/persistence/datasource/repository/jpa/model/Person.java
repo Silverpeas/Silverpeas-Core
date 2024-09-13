@@ -26,15 +26,9 @@ package org.silverpeas.core.persistence.datasource.repository.jpa.model;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +39,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "test_persons")
-@NamedQuery(name = "getPersonsByName", query = "from Person p where p.lastName = :name")
+@NamedQuery(name = "getPersonsByName", query = "select p from Person p where p.lastName = :name")
 public class Person extends SilverpeasJpaEntity<Person, UuidIdentifier> implements Serializable {
 
   @Column(name = "firstName", nullable = false)
@@ -96,11 +90,6 @@ public class Person extends SilverpeasJpaEntity<Person, UuidIdentifier> implemen
 
   public List<Animal> getAnimals() {
     return animals;
-  }
-
-  public Person setAnimals(final List<Animal> animals) {
-    this.animals = animals;
-    return this;
   }
 
   public Person copy() {

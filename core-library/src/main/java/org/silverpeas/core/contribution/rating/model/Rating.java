@@ -28,7 +28,6 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -38,21 +37,20 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "SB_Notation_Notation")
-@NamedQueries({
-    @NamedQuery(name = "deleteAllByContribution",
-        query = "delete from Rating where contributionId = :contributionId and instanceId = " +
-            ":instanceId and contributionType = :contributionType"),
-    @NamedQuery(name = "deleteByInstanceId",
-        query = "delete from Rating where instanceId = :instanceId"),
-    @NamedQuery(name = "findByAuthorRating",
-        query = "from Rating where contributionId = :contributionId and instanceId = " +
-            ":instanceId and contributionType = :contributionType and authorId = :authorId"),
-    @NamedQuery(name = "findByContributions",
-        query = "from Rating where instanceId = :instanceId and contributionType = " +
-            ":contributionType and contributionId in :contributionIds"),
-    @NamedQuery(name = "updateInstanceId",
-        query = "update Rating set instanceId = :newInstanceId where instanceId = :instanceId " +
-            "and contributionId = :contributionId and contributionType = :contributionType")})
+@NamedQuery(name = "deleteAllByContribution",
+    query = "delete from Rating r where r.contributionId = :contributionId and r.instanceId = " +
+        ":instanceId and r.contributionType = :contributionType")
+@NamedQuery(name = "deleteByInstanceId",
+    query = "delete from Rating r where r.instanceId = :instanceId")
+@NamedQuery(name = "findByAuthorRating",
+    query = "select r from Rating r where r.contributionId = :contributionId and r.instanceId = " +
+        ":instanceId and r.contributionType = :contributionType and r.authorId = :authorId")
+@NamedQuery(name = "findByContributions",
+    query = "select r from Rating r where r.instanceId = :instanceId and r.contributionType = " +
+        ":contributionType and r.contributionId in :contributionIds")
+@NamedQuery(name = "updateInstanceId",
+    query = "update Rating r set r.instanceId = :newInstanceId where r.instanceId = :instanceId " +
+        "and r.contributionId = :contributionId and r.contributionType = :contributionType")
 public class Rating extends BasicJpaEntity<Rating, UniqueIntegerIdentifier> {
 
   @Column(name = "author", nullable = false)

@@ -23,44 +23,42 @@
  */
 package org.silverpeas.core.datereminder.persistence;
 
-import org.silverpeas.kernel.util.StringUtil;
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
+import org.silverpeas.core.datereminder.exception.DateReminderValidationException;
 import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.persistence.ResourceBelonging;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.datereminder.exception.DateReminderValidationException;
-import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+
+import javax.persistence.*;
+import java.util.Date;
 
 /**
- * A persistent date reminder used to identify uniquely a resource.
- *
- * This date reminder has the particularity to be persisted in a data source and to refer the resource it
- * identifies uniquely both by the resource identifier and by the resource type.
+ * A persistent date reminder used to identify uniquely a resource. This date reminder has the
+ * particularity to be persisted in a data source and to refer the resource it identifies uniquely
+ * both by the resource identifier and by the resource type.
  *
  * @author Cécile Bonin
  */
 @Entity
 @Table(name = "st_dateReminder")
-@NamedQuery(name = "getResource", query = "from PersistentResourceDateReminder where " +
-        "resourceType = :type and resourceId = :resourceId")
-@NamedQuery(name = "getListResourceByDeadLine", query = "from PersistentResourceDateReminder " +
-        "where processStatus = 0 and dateReminder <= :dateReminder")
+@NamedQuery(name = "getResource", query =
+    "select p from PersistentResourceDateReminder p " +
+        "where p.resourceType = :type and p.resourceId = :resourceId")
+@NamedQuery(name = "getListResourceByDeadLine", query =
+    "select p from PersistentResourceDateReminder p " +
+        "where p.processStatus = 0 and p.dateReminder <= :dateReminder")
 public class PersistentResourceDateReminder
-    extends SilverpeasJpaEntity<PersistentResourceDateReminder, UuidIdentifier> {
+    extends SilverpeasJpaEntity<PersistentResourceDateReminder, UuidIdentifier>
+    implements ResourceBelonging {
 
   private static final long serialVersionUID = 5956074363457906409L;
 
   /**
    * Represents none dateReminder to replace in more typing way the null keyword.
    */
-  public static final PersistentResourceDateReminder NONEDATEREMINDER = new PersistentResourceDateReminder();
+  public static final PersistentResourceDateReminder NONEDATEREMINDER =
+      new PersistentResourceDateReminder();
 
   @Column(name = "resourceType", nullable = false)
   private String resourceType = EntityReference.UNKNOWN_TYPE;
@@ -100,47 +98,16 @@ public class PersistentResourceDateReminder
     return getId() == null;
   }
 
-  /**
-   * Validates data
-   *
-   * @throws DateReminderValidationException
-   */
   public void validate() throws DateReminderValidationException {
     if (this.resourceType == null || EntityReference.UNKNOWN_TYPE.equals(resourceType)
         || !StringUtil.isDefined(resourceId)) {
-      throw new DateReminderValidationException("The dateReminder isn't valid! Missing resource reference");
+      throw new DateReminderValidationException("The dateReminder isn't valid! Missing resource " +
+          "reference");
     }
 
     if (this.dateReminder == null) {
       throw new DateReminderValidationException("The dateReminder isn't valid! Missing the date");
     }
-  }
-
-
-  /**
-   * Gets a reference to the resource this dateReminder is for.
-   *
-   * @param <E> the concrete type of the entity.
-   * @param <R> the concrete type of the reference to the entity.
-   * @param referenceClass the expected concrete class of the <code>EntityReference</code>. This
-   * class must be conform to the type of the resource.
-   * @return a reference to the resource that owns this dateReminder or null if there is neither no
-   * resource defined for this dateReminder nor no reference defined for the targeted type of resource.
-   */
-  public <E, R extends EntityReference<E>> R getResource(Class<R> referenceClass) {
-    R ref = null;
-    if (resourceType != null && !resourceType.equals(EntityReference.UNKNOWN_TYPE) && StringUtil.
-        isDefined(resourceId)) {
-      try {
-        ref = referenceClass.getConstructor(String.class).newInstance(resourceId);
-        if (!ref.getType().equals(resourceType)) {
-          ref = null;
-        }
-      } catch (Exception ex) {
-        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      }
-    }
-    return ref;
   }
 
   /**
@@ -155,13 +122,14 @@ public class PersistentResourceDateReminder
     }
   }
 
-  /**
-   * Get the resource type if the resource.
-   *
-   * @return the resource type
-   */
+  @Override
   public String getResourceType() {
     return resourceType;
+  }
+
+  @Override
+  public String getResourceId() {
+    return resourceId;
   }
 
   /**
@@ -172,18 +140,10 @@ public class PersistentResourceDateReminder
         this.getCreatorId(), this.getLastUpdaterId());
   }
 
-  /**
-   * Sets the creatorId
-   * @param userId
-   */
   private void setCreatorId(String userId) {
     super.createdBy(userId);
   }
 
-  /**
-   * Sets the updaterId
-   * @param userId
-   */
   private void setUpdaterId(String userId) {
     super.lastUpdatedBy(userId);
   }
@@ -191,7 +151,7 @@ public class PersistentResourceDateReminder
   /**
    * Sets the date, message, processStatus, creatorId and updaterId
    *
-   * @param dateReminder
+   * @param dateReminder the date reminder detail with which to set data.
    */
   public void setDateReminder(DateReminderDetail dateReminder) {
     if (dateReminder != null) {
@@ -215,7 +175,8 @@ public class PersistentResourceDateReminder
 
   @Override
   public String toString() {
-    return "PersistentResourceDateReminder{" + "resourceType='" + resourceType + '\'' + ", resourceId='"
+    return "PersistentResourceDateReminder{" + "resourceType='" + resourceType + '\'' + ", " +
+        "resourceId='"
         + resourceId + '\'' + ", dateReminder ='" + dateReminder + '\'' + ", message ='" + message + '\'' + '}';
   }
 

@@ -43,7 +43,7 @@ public class DownloadDetailJpaRepository extends BasicJpaEntityRepository<Downlo
   public SilverpeasList<DownloadDetail> getDownloadsByTicket(final Ticket ticket,
       final PaginationCriterion paginationCriterion, final QUERY_ORDER_BY orderBy) {
     final StringBuilder sb = new StringBuilder();
-    sb.append("from DownloadDetail d where d.ticket = :ticket");
+    sb.append("select d from DownloadDetail d where d.ticket = :ticket");
     if (orderBy != null) {
       OrderBy.append(sb, orderBy.getOrderBy());
     }

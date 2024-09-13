@@ -27,7 +27,6 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.calendar.notification.CalendarLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
@@ -46,20 +45,16 @@ import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.kernel.util.Mutable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -72,23 +67,22 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
  * at different times or on different dates throughout the years.
- *
+ * <p>
  * Before adding any events or activities into a calendar, it requires to be persisted into the
  * Silverpeas data source (use the {@code save} method for doing). Once saved, a collection of
  * planned events is then set up for this calendar and through which the events of the calendar
  * can be managed.
+ * </p>
  * @author mmoquillon
  */
 @Entity
-@NamedQueries({
 @NamedQuery(
     name = "calendarsByComponentInstanceIds",
-    query = "from Calendar c where c.componentInstanceId in :componentInstanceIds " +
-            "order by c.componentInstanceId, c.title, c.id"),
+    query = "select c from Calendar c where c.componentInstanceId in :componentInstanceIds " +
+            "order by c.componentInstanceId, c.title, c.id")
 @NamedQuery(
     name = "synchronizedCalendars",
-    query = "from Calendar c where c.externalUrl is not null"
-)})
+    query = "select c from Calendar c where c.externalUrl is not null")
 @Table(name = "sb_cal_calendar")
 public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> implements Securable {
 

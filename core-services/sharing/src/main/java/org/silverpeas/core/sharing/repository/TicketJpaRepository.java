@@ -50,7 +50,7 @@ public class TicketJpaRepository extends BasicJpaEntityRepository<Ticket>
 
   @Override
   public long countAllReservationsForUser(final String userId) {
-    return countFromJpqlString("FROM Ticket t WHERE t.creatorId = :userId",
+    return countFromJpqlString("SELECT t FROM Ticket t WHERE t.creatorId = :userId",
         newNamedParameters().add("userId", userId));
   }
 

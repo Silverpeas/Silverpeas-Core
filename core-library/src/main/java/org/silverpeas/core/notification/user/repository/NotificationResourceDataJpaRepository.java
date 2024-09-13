@@ -48,17 +48,16 @@ public class NotificationResourceDataJpaRepository
     NamedParameters parameters = newNamedParameters();
 
     // Query
-    final StringBuilder query = new StringBuilder("from NotificationResourceData where");
-    query.append(" resourceId = :");
-    query.append(parameters.add("resourceId", resourceId).getLastParameterName());
-    query.append(" and resourceType = :");
-    query.append(parameters.add("resourceType", resourceType).getLastParameterName());
-    query.append(" and componentInstanceId = :");
-    query.append(parameters.add("componentInstanceId", componentInstanceId).getLastParameterName());
+    String query = "select d from NotificationResourceData d where" +
+        " d.resourceId = :" + parameters.add("resourceId", resourceId).getLastParameterName() +
+        " and d.resourceType = :" +
+        parameters.add("resourceType", resourceType).getLastParameterName() +
+        " and d.componentInstanceId = :" +
+        parameters.add("componentInstanceId", componentInstanceId).getLastParameterName();
 
     // Result
     final List<NotificationResourceData> resources =
-        listFromJpqlString(query.toString(), parameters, NotificationResourceData.class);
+        listFromJpqlString(query, parameters, NotificationResourceData.class);
     if (resources.size() == 1) {
       return resources.get(0);
     }

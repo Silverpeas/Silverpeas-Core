@@ -24,6 +24,7 @@
 package org.silverpeas.core.security.token.persistent;
 
 import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.persistence.ResourceBelonging;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.security.token.Token;
@@ -32,20 +33,12 @@ import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.security.token.persistent.service.PersistentResourceTokenService;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * A persistent token used to identify uniquely a resource.
- *
  * This token has the particularity to be persisted in a data source and to refer the resource it
  * identifies uniquely both by the resource identifier and by the resource type.
  *
@@ -54,13 +47,14 @@ import java.util.Date;
 @Entity
 @Table(name = "st_token")
 @TokenGenerator(PersistentResourceTokenGenerator.class)
-@NamedQueries({@NamedQuery(name = "PersistentResourceToken.getByTypeAndResourceId",
-    query = "from PersistentResourceToken where resourceType = :type and resourceId = :resourceId"),
-    @NamedQuery(name = "PersistentResourceToken.getByToken",
-        query = "from PersistentResourceToken where token = :token")})
+@NamedQuery(name = "PersistentResourceToken.getByTypeAndResourceId",
+    query = "select p from PersistentResourceToken p where p.resourceType = :type " +
+        "and p.resourceId = :resourceId")
+@NamedQuery(name = "PersistentResourceToken.getByToken",
+    query = "select p from PersistentResourceToken p where p.value = :token")
 public class PersistentResourceToken
     extends BasicJpaEntity<PersistentResourceToken, UniqueLongIdentifier>
-    implements Token {
+    implements Token, ResourceBelonging {
 
   private static final long serialVersionUID = 5956074363457906409L;
 
@@ -95,39 +89,23 @@ public class PersistentResourceToken
    * @param resource a reference to the resource for which this token is constructed.
    * @param value the token value.
    */
-  protected PersistentResourceToken(final EntityReference resource, String value) {
+  protected PersistentResourceToken(final EntityReference<?> resource, String value) {
     this.value = value;
     this.resourceId = resource.getId();
     this.resourceType = resource.getType();
   }
 
   /**
-   * Creates a token for the specified resource.
-   *
-   * If the specified resource has already a token, then renews it. Otherwise a new token is
-   * generated and persisted into the data source.
-   *
-   * @param resource the resource for which the token has to be generated.
-   * @return a token for the specified resource.
-   * @throws TokenException
-   */
-  public static PersistentResourceToken createToken(final EntityReference resource) throws
-      TokenException {
-    PersistentResourceTokenService service = PersistentResourceTokenService.get();
-    return service.initialize(resource);
-  }
-
-  /**
    * Gets a token for the specified resource and creates it if it doesn't exist.
-   *
+   * <p>
    * If the specified resource has already a token, then returns it. Otherwise a new token is
    * generated and persisted into the data source.
-   *
+   * </p>
    * @param resource the resource for which the token has to be generated.
    * @return a token for the specified resource.
-   * @throws TokenException
+   * @throws TokenException if the token cannot be created
    */
-  public static PersistentResourceToken getOrCreateToken(final EntityReference resource) throws
+  public static PersistentResourceToken getOrCreateToken(final EntityReference<?> resource) throws
       TokenException {
     PersistentResourceTokenService service = PersistentResourceTokenService.get();
     PersistentResourceToken token = service.get(resource);
@@ -154,7 +132,7 @@ public class PersistentResourceToken
    *
    * @param resource the resource for which the token has to be removed.
    */
-  public static void removeToken(final EntityReference resource) {
+  public static void removeToken(final EntityReference<?> resource) {
     PersistentResourceTokenService service = PersistentResourceTokenService.get();
     service.remove(resource);
   }
@@ -197,7 +175,7 @@ public class PersistentResourceToken
   /**
    * Validates data
    *
-   * @throws TokenValidationException
+   * @throws TokenValidationException if the data aren't valid.
    */
   public void validate() throws TokenValidationException {
     if (this.resourceType == null || EntityReference.UNKNOWN_TYPE.equals(resourceType)
@@ -214,37 +192,11 @@ public class PersistentResourceToken
   }
 
   /**
-   * Gets a reference to the resource this token is for.
-   *
-   * @param <E> the concrete type of the entity.
-   * @param <R> the concrete type of the reference to the entity.
-   * @param referenceClass the expected concrete class of the <code>EntityReference</code>. This
-   * class must be conform to the type of the resource.
-   * @return a reference to the resource that owns this token or null if there is neither no
-   * resource defined for this token nor no reference defined for the targeted type of resource.
-   */
-  public <E, R extends EntityReference<E>> R getResource(Class<R> referenceClass) {
-    R ref = null;
-    if (resourceType != null && !resourceType.equals(EntityReference.UNKNOWN_TYPE) && StringUtil.
-        isDefined(resourceId)) {
-      try {
-        ref = referenceClass.getConstructor(String.class).newInstance(resourceId);
-        if (!ref.getType().equals(resourceType)) {
-          ref = null;
-        }
-      } catch (Exception ex) {
-        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      }
-    }
-    return ref;
-  }
-
-  /**
    * Sets the resource to which this token belongs.
    *
    * @param resource an identifier of the resource for which this token is.
    */
-  public void setResource(final EntityReference resource) {
+  public void setResource(final EntityReference<?> resource) {
     if (resource != null) {
       this.resourceType = resource.getType();
       this.resourceId = resource.getId();
@@ -303,5 +255,15 @@ public class PersistentResourceToken
   @Override
   public boolean isDefined() {
     return this.exists() && this != NoneToken;
+  }
+
+  @Override
+  public String getResourceType() {
+    return this.resourceType;
+  }
+
+  @Override
+  public String getResourceId() {
+    return this.resourceId;
   }
 }

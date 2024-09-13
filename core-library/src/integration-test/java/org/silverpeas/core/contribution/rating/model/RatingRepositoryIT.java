@@ -94,8 +94,8 @@ public class RatingRepositoryIT {
     });
 
     List<Rating> ratings = RatingFinder.getSomeByQuery(
-        "from Rating where contributionId = '365' and instanceId = 'kmelia12' and " +
-            "contributionType = 'Publication'");
+        "select r from Rating r where r.contributionId = '365' and r.instanceId = 'kmelia12' and " +
+            "r.contributionType = 'Publication'");
     assertThat(ratings.isEmpty(), is(true));
   }
 
@@ -118,7 +118,8 @@ public class RatingRepositoryIT {
       return null;
     });
 
-    List<Rating> ratings = RatingFinder.getSomeByQuery("from Rating where instanceId = 'kmelia12'");
+    List<Rating> ratings = RatingFinder.getSomeByQuery("select r from Rating r where " +
+        "r.instanceId = 'kmelia12'");
     assertThat(ratings.isEmpty(), is(true));
   }
 
@@ -201,7 +202,8 @@ public class RatingRepositoryIT {
       return null;
     });
 
-    List<Rating> ratings = RatingFinder.getSomeByQuery("from Rating where instanceId = 'kmelia100'");
+    List<Rating> ratings =
+        RatingFinder.getSomeByQuery("select r from Rating r where r.instanceId = 'kmelia100'");
     assertThat(ratings.size(), is(2));
     assertThat(ratings.get(0).getId(), is("0"));
     assertThat(ratings.get(0).getAuthorId(), is("42"));
@@ -226,7 +228,8 @@ public class RatingRepositoryIT {
       return null;
     });
 
-    List<Rating> ratings = RatingFinder.getSomeByQuery("from Rating where instanceId = 'Todo100'");
+    List<Rating> ratings =
+        RatingFinder.getSomeByQuery("select r from Rating r where r.instanceId = 'Todo100'");
     assertThat(ratings.size(), is(0));
   }
 

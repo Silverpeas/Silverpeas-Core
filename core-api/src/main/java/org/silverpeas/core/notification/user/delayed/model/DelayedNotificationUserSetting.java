@@ -30,7 +30,6 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -42,11 +41,11 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "st_delayednotifusersetting")
-@NamedQueries({
-    @NamedQuery(name = "DelayedNotificationUserSetting.findByUserId",
-      query = "SELECT d FROM DelayedNotificationUserSetting d WHERE userId = :userId"),
-    @NamedQuery(name = "DelayedNotificationUserSetting.findByUserIdAndChannel",
-      query = "SELECT d FROM DelayedNotificationUserSetting d WHERE userId = :userId and channel = :channel")})
+@NamedQuery(name = "DelayedNotificationUserSetting.findByUserId",
+    query = "SELECT d FROM DelayedNotificationUserSetting d WHERE d.userId = :userId")
+@NamedQuery(name = "DelayedNotificationUserSetting.findByUserIdAndChannel",
+    query = "SELECT d FROM DelayedNotificationUserSetting d WHERE d.userId = :userId " +
+        "AND d.channel = :channel")
 public class DelayedNotificationUserSetting
     extends BasicJpaEntity<DelayedNotificationUserSetting, UniqueIntegerIdentifier>
     implements Serializable {
@@ -66,13 +65,6 @@ public class DelayedNotificationUserSetting
    */
   public DelayedNotificationUserSetting() {
     // NTD
-  }
-
-  public DelayedNotificationUserSetting(final int userId, final NotifChannel channelId,
-      final DelayedNotificationFrequency frequency) {
-    setUserId(userId);
-    setChannel(channelId);
-    setFrequency(frequency);
   }
 
   public Integer getUserId() {

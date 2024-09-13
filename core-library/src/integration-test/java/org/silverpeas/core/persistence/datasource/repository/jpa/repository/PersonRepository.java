@@ -40,7 +40,7 @@ import java.util.List;
 public class PersonRepository extends SilverpeasJpaEntityRepository<Person> {
 
   public Person getByFirstName(String firstName) {
-    String jpqlQuery = "from Person p where p.firstName = :firstName";
+    String jpqlQuery = "select p from Person p where p.firstName = :firstName";
     return getFromJpqlString(jpqlQuery, newNamedParameters().add("firstName", firstName));
   }
 

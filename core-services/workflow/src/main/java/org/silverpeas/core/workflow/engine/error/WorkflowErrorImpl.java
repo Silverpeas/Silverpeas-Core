@@ -23,34 +23,28 @@
  */
 package org.silverpeas.core.workflow.engine.error;
 
-import java.util.*;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.State;
-import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.user.User;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.Date;
 
 @Entity
 @Table(name = "sb_workflow_error")
-@NamedQueries({@NamedQuery(name = "processInstance.findErrors",
-    query = "SELECT error FROM WorkflowErrorImpl error WHERE error.instanceId = :id"),
-    @NamedQuery(name = "processInstance.deleteErrors",
-        query = "DELETE WorkflowErrorImpl error WHERE error.instanceId = :id")})
+@NamedQuery(name = "processInstance.findErrors",
+    query = "SELECT error FROM WorkflowErrorImpl error WHERE error.instanceId = :id")
+@NamedQuery(name = "processInstance.deleteErrors",
+    query = "DELETE FROM WorkflowErrorImpl error WHERE error.instanceId = :id")
 public class WorkflowErrorImpl extends BasicJpaEntity<WorkflowErrorImpl, UniqueIntegerIdentifier> implements WorkflowError {
 
   @Column
@@ -73,16 +67,16 @@ public class WorkflowErrorImpl extends BasicJpaEntity<WorkflowErrorImpl, UniqueI
   private String stateName = null;
 
   @Transient
-  private State state = null;
+  private transient State state = null;
 
   @Transient
-  private ProcessInstance processInstance = null;
+  private transient ProcessInstance processInstance = null;
 
   @Transient
-  private User user = null;
+  private transient User user = null;
 
   @Transient
-  private Action action = null;
+  private transient Action action = null;
 
   protected WorkflowErrorImpl() {
   }

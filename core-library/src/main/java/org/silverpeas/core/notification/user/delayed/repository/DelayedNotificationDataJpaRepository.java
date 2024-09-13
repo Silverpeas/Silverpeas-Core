@@ -47,17 +47,19 @@ public class DelayedNotificationDataJpaRepository
     extends BasicJpaEntityRepository<DelayedNotificationData>
     implements DelayedNotificationDataRepository {
 
+  private static final String CHANNELS = "channels";
+
   @Override
   public List<Integer> findAllUsersToBeNotified(final Collection<Integer> aimedChannels) {
     return listFromNamedQuery("DelayedNotificationData.findDistinctUserByChannel",
-        newNamedParameters().add("channels", aimedChannels), Integer.class);
+        newNamedParameters().add(CHANNELS, aimedChannels), Integer.class);
   }
 
   @Override
   public List<DelayedNotificationData> findByUserId(final int userId,
       final Collection<Integer> aimedChannels) {
     return listFromNamedQuery("DelayedNotificationData.findByUserId",
-        newNamedParameters().add("userId", userId).add("channels", aimedChannels));
+        newNamedParameters().add("userId", userId).add(CHANNELS, aimedChannels));
   }
 
   @Override
@@ -80,7 +82,7 @@ public class DelayedNotificationDataJpaRepository
     query.append("left outer join DelayedNotificationUserSetting p on ");
     query.append("  d.userId = p.userId and d.channel = p.channel ");
     query.append("where d.channel in (:");
-    query.append(namedParameters.add("channels", toIds(aimedChannels)).getLastParameterName());
+    query.append(namedParameters.add(CHANNELS, toIds(aimedChannels)).getLastParameterName());
     query.append(") and ( ");
     query.append("  (p.id is not null and p.frequency in (:");
     query.append(
@@ -103,45 +105,41 @@ public class DelayedNotificationDataJpaRepository
     NamedParameters namedParameters = newNamedParameters();
 
     // Query
-    final StringBuilder query = new StringBuilder("from DelayedNotificationData where");
-    query.append(" userId = :");
-    query.append(
-        namedParameters.add("userId", delayedNotification.getUserId()).getLastParameterName());
-    query.append(" and fromUserId = :");
-    query.append(namedParameters.add("fromUserId", delayedNotification.getFromUserId())
-        .getLastParameterName());
-    query.append(" and channel = :");
-    query.append(namedParameters.add("channel", delayedNotification.getChannel().getId())
-        .getLastParameterName());
-    query.append(" and action = :");
-    query.append(namedParameters.add("action", delayedNotification.getAction().getId())
-        .getLastParameterName());
-    query.append(" and language = :");
-    query.append(
-        namedParameters.add("language", delayedNotification.getLanguage()).getLastParameterName());
-    Date date = delayedNotification.getCreationDate();
-    if (date == null) {
-      date = new Date();
-    }
-    query.append(" and creationDate between :");
-    query.append(
-        namedParameters.add("creationDateMin", addSeconds(date, -45), TemporalType.TIMESTAMP)
+    final StringBuilder query = new StringBuilder("select d from DelayedNotificationData d where");
+    query.append(" d.userId = :")
+        .append(namedParameters.add("userId", delayedNotification.getUserId())
             .getLastParameterName());
-    query.append(" and :");
-    query.append(
-        namedParameters.add("creationDateMax", addSeconds(date, 45), TemporalType.TIMESTAMP)
+    query.append(" and d.fromUserId = :")
+        .append(namedParameters.add("fromUserId", delayedNotification.getFromUserId())
             .getLastParameterName());
-    query.append(" and notificationResourceId = :");
-    query.append(namedParameters.add("resourceId", delayedNotification.getResource())
-        .getLastParameterName());
+    query.append(" and d.channel = :")
+        .append(namedParameters.add("channel", delayedNotification.getChannel().getId())
+            .getLastParameterName());
+    query.append(" and d.action = :")
+        .append(namedParameters.add("action", delayedNotification.getAction().getId())
+            .getLastParameterName());
+    query.append(" and d.language = :")
+        .append(namedParameters.add("language", delayedNotification.getLanguage())
+            .getLastParameterName());
+
+    Date date = delayedNotification.getCreationDate() == null ? new Date() :
+        delayedNotification.getCreationDate();
+    query.append(" and d.creationDate between :")
+        .append(namedParameters.add("creationDateMin", addSeconds(date, -45), TemporalType.TIMESTAMP)
+            .getLastParameterName())
+        .append(" and :")
+        .append(namedParameters.add("creationDateMax", addSeconds(date, 45), TemporalType.TIMESTAMP)
+            .getLastParameterName());
+    query.append(" and d.resource = :")
+        .append(namedParameters.add("resourceId", delayedNotification.getResource())
+            .getLastParameterName());
 
     // resourceDescription parameter
     if (StringUtils.isNotBlank(delayedNotification.getMessage())) {
-      query.append(" and message = :");
-      query.append(
+      query.append(" and d.message = :").append(
           namedParameters.add("message", delayedNotification.getMessage()).getLastParameterName());
     } else {
-      query.append(" and message is null");
+      query.append(" and d.message is null");
     }
 
     // Result

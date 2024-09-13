@@ -38,7 +38,7 @@ public interface UserSettings {
 
   String getComponentId();
 
-  List<UserInfo> getUserInfos();
+  <T extends UserInfo> List<T> getUserInfos();
 
   /**
    * @return UserInfo

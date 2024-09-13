@@ -28,19 +28,18 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ST_ServerMessage")
-@NamedQueries({@NamedQuery(name = "findByUserIdAndSessionId",
+@NamedQuery(name = "findByUserIdAndSessionId",
     query = "select m from ServerMessageBean m where m.id in (select min(s.id) from " +
-        "ServerMessageBean s where s.userId=:userId and s.sessionId=:sessionId)"),
-    @NamedQuery(name = "deleteByUserIdAndSessionId",
-        query = "delete from ServerMessageBean m where m.userId = :userId and m.sessionId = " +
-            ":sessionId")})
+        "ServerMessageBean s where s.userId=:userId and s.sessionId=:sessionId)")
+@NamedQuery(name = "deleteByUserIdAndSessionId",
+    query = "delete from ServerMessageBean m where m.userId = :userId and m.sessionId = :sessionId")
 public class ServerMessageBean
     extends BasicJpaEntity<ServerMessageBean, UniqueLongIdentifier> {
   private static final long serialVersionUID = 769537113068849221L;
@@ -105,17 +104,17 @@ public class ServerMessageBean
     if (userId != bean.userId) {
       return false;
     }
-    if (body != null ? !body.equals(bean.body) : bean.body != null) {
+    if (!Objects.equals(body, bean.body)) {
       return false;
     }
-    return sessionId != null ? sessionId.equals(bean.sessionId) : bean.sessionId == null;
+    return Objects.equals(sessionId, bean.sessionId);
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
     result = 31 * result + (getId() != null ? getId().hashCode() : 0);
-    result = 31 * result + (int) (userId ^ (userId >>> 32));
+    result = 31 * result + Long.hashCode(userId);
     result = 31 * result + (body != null ? body.hashCode() : 0);
     result = 31 * result + (sessionId != null ? sessionId.hashCode() : 0);
     return result;

@@ -30,28 +30,19 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "sb_workflow_usersettings")
 @AttributeOverride(name = "id", column = @Column(name = "settingsid"))
-@NamedQueries({
-    @NamedQuery(name = "findByUserAndComponent",
-        query = "from UserSettingsImpl where userId = :userId and peasId = :componentId")})
+@NamedQuery(name = "findByUserAndComponent",
+    query = "select s from UserSettingsImpl s where s.userId = :userId and s.peasId = :componentId")
 public class UserSettingsImpl extends BasicJpaEntity<UserSettingsImpl, UniqueIntegerIdentifier>
     implements UserSettings {
 
@@ -112,9 +103,10 @@ public class UserSettingsImpl extends BasicJpaEntity<UserSettingsImpl, UniqueInt
     return null;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
-  public List<UserInfo> getUserInfos() {
-    return (List) userInfos;
+  public List<UserInfoImpl> getUserInfos() {
+    return userInfos;
   }
 
   /**

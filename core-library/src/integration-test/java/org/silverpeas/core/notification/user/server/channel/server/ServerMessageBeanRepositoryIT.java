@@ -111,7 +111,7 @@ public class ServerMessageBeanRepositoryIT {
     long count = ServerMessageBeanFinder.count();
     assertThat(count, is(1L));
     List<ServerMessageBean> beans = ServerMessageBeanFinder.getSomeByQuery(
-        "from ServerMessageBean where userId = 0 and sessionId = '1234'");
+        "select m from ServerMessageBean m where m.userId = 0 and m.sessionId = '1234'");
     assertThat(beans.isEmpty(), is(true));
   }
 
