@@ -50,7 +50,7 @@ public class PublicationDateReminderUserNotification
       final PersistentResourceDateReminder resourceDateReminder) {
     super(resourceDateReminder);
     PublicationNoteReference pubNoteReference = resourceDateReminder.getResource(PublicationNoteReference.class);
-    this.pubDetail = pubNoteReference.getEntity();
+    this.pubDetail = pubNoteReference != null ? pubNoteReference.getEntity() : null;
   }
 
   @Override

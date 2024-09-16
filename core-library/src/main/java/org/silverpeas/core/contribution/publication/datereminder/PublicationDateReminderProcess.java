@@ -30,7 +30,6 @@ import org.silverpeas.core.datereminder.provider.DateReminderProcess;
 import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.text.MessageFormat;
@@ -57,20 +56,22 @@ public class PublicationDateReminderProcess implements DateReminderProcess, Init
     DateReminderProcessRegistration.unregister(PublicationDetail.class, this);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public EntityReference perform(final PersistentResourceDateReminder resourceDateReminder) {
+  public PublicationNoteReference perform(final PersistentResourceDateReminder resourceDateReminder) {
     final PublicationNoteReference pubNoteReference =
         resourceDateReminder.getResource(PublicationNoteReference.class);
 
-    if (pubNoteReference.getEntity() != null) {
-      //Perform date reminder about publication : send a notification
+    if (pubNoteReference != null && pubNoteReference.getEntity() != null) {
+      //Perform date reminder about publication: send a notification
       final PublicationDateReminderUserNotification publicationDateReminderUserNotification =
           new PublicationDateReminderUserNotification(resourceDateReminder);
       UserNotificationHelper.buildAndSend(publicationDateReminderUserNotification);
     } else {
+      String id = pubNoteReference == null ? "unknown" : pubNoteReference.getId();
       SilverLogger.getLogger(this).warn(MessageFormat
           .format("publication with id {0} does not exist anymore, reminder is marked as processed",
-              pubNoteReference.getId()));
+              id));
     }
 
     //Return EntityReference

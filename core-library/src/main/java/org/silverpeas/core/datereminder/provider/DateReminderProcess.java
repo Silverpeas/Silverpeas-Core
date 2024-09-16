@@ -28,15 +28,16 @@ import org.silverpeas.core.datereminder.persistence.PersistentResourceDateRemind
 import org.silverpeas.core.persistence.EntityReference;
 
 /**
+ * Processor of a date reminder.
  * @author Cécile Bonin
  */
 public interface DateReminderProcess {
   /**
-   * Perform the date reminder
-   * @param dateReminder
+   * Perform the task mapped with the specified date reminder.
+   * @param dateReminder the date reminder
    * @return the resource
    */
-  EntityReference perform(PersistentResourceDateReminder dateReminder)
+  <T> EntityReference<T> perform(PersistentResourceDateReminder dateReminder)
       throws NotificationException;
 
 }
