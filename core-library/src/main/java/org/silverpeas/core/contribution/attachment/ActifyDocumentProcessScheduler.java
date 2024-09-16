@@ -173,7 +173,7 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener, I
 
           // Directory to process?
           if (isManagedBySilverpeas(element)
-              && (lastModified + delayBeforeProcess * 1000L * 60L < now)) {
+              && (lastModified + delayBeforeProcess * 1000L * 60L <= now)) {
             int separatorIdx = dirName.lastIndexOf('_');
             boolean isVersioned = dirName.startsWith("v_");
             componentId = dirName.
