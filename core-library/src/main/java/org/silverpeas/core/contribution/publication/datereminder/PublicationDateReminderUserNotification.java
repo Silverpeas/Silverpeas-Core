@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Set parameters for user notifications sended automatically for date reminder.
+ * Set parameters for user notifications sent automatically for date reminder.
  * @author Cécile Bonin
  */
 public class PublicationDateReminderUserNotification
@@ -50,7 +50,7 @@ public class PublicationDateReminderUserNotification
       final PersistentResourceDateReminder resourceDateReminder) {
     super(resourceDateReminder);
     PublicationNoteReference pubNoteReference = resourceDateReminder.getResource(PublicationNoteReference.class);
-    this.pubDetail = pubNoteReference.getEntity();
+    this.pubDetail = pubNoteReference != null ?pubNoteReference.getEntity() : null;
   }
 
   @Override

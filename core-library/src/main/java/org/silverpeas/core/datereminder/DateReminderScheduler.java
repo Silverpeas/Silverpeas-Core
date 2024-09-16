@@ -90,7 +90,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
     Collection<PersistentResourceDateReminder> listResourceDateReminder =
         DateReminderServiceProvider.getDateReminderService().listAllDateReminderMaturing(deadLine);
     boolean performed;
-    EntityReference entityReference = null;
+    EntityReference<?> entityReference = null;
     for (PersistentResourceDateReminder resourceDateReminder : listResourceDateReminder) {
       for (DateReminderProcess dateReminderProcess : DateReminderProcessRegistration
           .getProcesses(resourceDateReminder)) {
