@@ -62,7 +62,7 @@ public class PersonalizationRepositoryIT {
 
   @Resource(lookup = "java:/datasources/silverpeas")
   private DataSource dataSource;
-  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
+  private final DbSetupTracker dbSetupTracker = new DbSetupTracker();
 
   public static final Operation TABLES_CREATION =
       Operations.sql("CREATE TABLE IF NOT EXISTS Personalization (" +
@@ -93,12 +93,12 @@ public class PersonalizationRepositoryIT {
     return WarBuilder4LibCore.onWarForTestClass(PersonalizationRepositoryIT.class)
         .addAdministrationFeatures()
         .testFocusedOn(
-            (warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.core.personalization"))
+            warBuilder -> warBuilder.addPackages(true, "org.silverpeas.core.personalization"))
         .build();
   }
 
   @Test
-  public void testGetPersonalizedDetail() throws Exception {
+  public void testGetPersonalizedDetail() {
     String userId = "1000";
     UserPreferences expectedDetail = actualUserPreferencesForUserId(userId);
     UserPreferences detail = dao.getById(userId);
@@ -124,7 +124,7 @@ public class PersonalizationRepositoryIT {
   }
 
   @Test
-  public void testFindByDefaultSpace() throws Exception {
+  public void testFindByDefaultSpace() {
     String spaceId = "WA26";
     List<UserPreferences> userPreferencesList = dao.findByDefaultSpace(spaceId);
     assertThat(userPreferencesList, hasSize(2));
@@ -134,62 +134,82 @@ public class PersonalizationRepositoryIT {
   }
 
   @Test
-  public void testInsertPersonalizeDetail() throws Exception {
+  public void testInsertPersonalizeDetail() {
     String userId = "1020";
 
     // Verifying that the user does not exist
     assertThat(dao.getById(userId), nullValue());
 
-    final UserPreferences expectedDetail_1020 =
-        new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"), "Test", "WA500", false, false,
-            false, UserMenuDisplay.BOOKMARKS);
+    final UserPreferences expectedDetail1020 =
+        new UserPreferences(userId, "fr", ZoneId.of("Europe/London"));
+    expectedDetail1020.setLook("Test");
+    expectedDetail1020.setPersonalWorkSpaceId("WA500");
+    expectedDetail1020.setDisplay(UserMenuDisplay.BOOKMARKS);
+    expectedDetail1020.enableThesaurus(false);
+    expectedDetail1020.enableDragAndDrop(false);
+    expectedDetail1020.enableWebdavEdition(false);
 
-    Transaction.performInOne(() -> dao.save(expectedDetail_1020));
+    Transaction.performInOne(() -> dao.save(expectedDetail1020));
 
     UserPreferences detail = dao.getById(userId);
     assertThat(detail, notNullValue());
-    assertThat(detail, PersonalizationMatcher.matches(expectedDetail_1020));
+    assertThat(detail, PersonalizationMatcher.matches(expectedDetail1020));
     assertThat(detail, PersonalizationMatcher.matches(actualUserPreferencesForUserId(userId)));
 
     userId = "1030";
-    final UserPreferences expectedDetail_1030 =
-        new UserPreferences(userId, "en", ZoneId.of("UTC"), "Silverpeas", "WA26", true, false,
-            false, UserMenuDisplay.DISABLE);
+    final UserPreferences expectedDetail1030 =
+        new UserPreferences(userId, "en", ZoneId.of("UTC"));
+    expectedDetail1030.setLook("Silverpeas");
+    expectedDetail1030.setPersonalWorkSpaceId("WA26");
+    expectedDetail1030.setDisplay(UserMenuDisplay.DISABLE);
+    expectedDetail1030.enableThesaurus(true);
+    expectedDetail1030.enableDragAndDrop(false);
+    expectedDetail1030.enableWebdavEdition(false);
 
-    Transaction.performInOne(() -> dao.save(expectedDetail_1030));
+    Transaction.performInOne(() -> dao.save(expectedDetail1030));
 
     detail = dao.getById(userId);
     assertThat(detail, notNullValue());
-    assertThat(detail, PersonalizationMatcher.matches(expectedDetail_1030));
+    assertThat(detail, PersonalizationMatcher.matches(expectedDetail1030));
     assertThat(detail, PersonalizationMatcher.matches(actualUserPreferencesForUserId(userId)));
 
     userId = "1040";
-    final UserPreferences expectedDetail_1040 =
-        new UserPreferences(userId, "de", ZoneId.of("Europe/Berlin"), "Silverpeas_V", "WA38", false,
-            true, false, UserMenuDisplay.ALL);
+    final UserPreferences expectedDetail1040 =
+        new UserPreferences(userId, "de", ZoneId.of("Europe/Berlin"));
+    expectedDetail1040.setLook("Silverpeas_V");
+    expectedDetail1040.setPersonalWorkSpaceId("WA38");
+    expectedDetail1040.setDisplay(UserMenuDisplay.ALL);
+    expectedDetail1040.enableThesaurus(false);
+    expectedDetail1040.enableDragAndDrop(true);
+    expectedDetail1040.enableWebdavEdition(false);
 
-    Transaction.performInOne(() -> dao.save(expectedDetail_1040));
+    Transaction.performInOne(() -> dao.save(expectedDetail1040));
 
     detail = dao.getById(userId);
     assertThat(detail, notNullValue());
-    assertThat(detail, PersonalizationMatcher.matches(expectedDetail_1040));
+    assertThat(detail, PersonalizationMatcher.matches(expectedDetail1040));
     assertThat(detail, PersonalizationMatcher.matches(actualUserPreferencesForUserId(userId)));
 
     userId = "1050";
-    final UserPreferences expectedDetail_1050 =
-        new UserPreferences(userId, "dl", ZoneId.of("Europe/Berlin"), "Silverpeas_V6", "WA38",
-            false, false, true, UserMenuDisplay.DEFAULT);
+    final UserPreferences expectedDetail1050 =
+        new UserPreferences(userId, "dl", ZoneId.of("Europe/Berlin"));
+    expectedDetail1050.setLook("Silverpeas_V6");
+    expectedDetail1050.setPersonalWorkSpaceId("WA38");
+    expectedDetail1050.setDisplay(UserMenuDisplay.DEFAULT);
+    expectedDetail1050.enableThesaurus(false);
+    expectedDetail1050.enableDragAndDrop(false);
+    expectedDetail1050.enableWebdavEdition(true);
 
-    Transaction.performInOne(() -> dao.save(expectedDetail_1050));
+    Transaction.performInOne(() -> dao.save(expectedDetail1050));
 
     detail = dao.getById(userId);
     assertThat(detail, notNullValue());
-    assertThat(detail, PersonalizationMatcher.matches(expectedDetail_1050));
+    assertThat(detail, PersonalizationMatcher.matches(expectedDetail1050));
     assertThat(detail, PersonalizationMatcher.matches(actualUserPreferencesForUserId(userId)));
   }
 
   @Test
-  public void testUpdatePersonalizeDetail() throws Exception {
+  public void testUpdatePersonalizeDetail() {
     String userId = "1000";
     final UserPreferences expectedDetail = actualUserPreferencesForUserId(userId);
     UserPreferences detail = dao.getById(userId);
@@ -208,7 +228,7 @@ public class PersonalizationRepositoryIT {
   }
 
   @Test
-  public void testDeletePersonalizeDetail() throws Exception {
+  public void testDeletePersonalizeDetail() {
     String userId = "1000";
     final UserPreferences expectedDetail = actualUserPreferencesForUserId(userId);
     UserPreferences detail = dao.getById(userId);
@@ -231,9 +251,17 @@ public class PersonalizationRepositoryIT {
               "webdavEditingStatus, menuDisplay")
           .from("personalization")
           .where("id = ?", userId).executeUnique(
-          row -> new UserPreferences(row.getString(1), row.getString(2),
-              ZoneId.of(row.getString(3)), row.getString(4), row.getString(5), row.getBoolean(6),
-              row.getBoolean(7), row.getBoolean(8), UserMenuDisplay.valueOf(row.getString(9))));
+          row -> {
+            var preferences = new UserPreferences(row.getString(1), row.getString(2),
+                ZoneId.of(row.getString(3)));
+            preferences.setLook(row.getString(4));
+            preferences.setPersonalWorkSpaceId(row.getString(5));
+            preferences.setDisplay(UserMenuDisplay.valueOf(row.getString(9)));
+            preferences.enableThesaurus(row.getBoolean(6));
+            preferences.enableDragAndDrop(row.getBoolean(7));
+            preferences.enableWebdavEdition(row.getBoolean(8));
+            return preferences;
+          });
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

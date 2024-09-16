@@ -426,10 +426,15 @@ class MyLinksResourceTest {
 
     protected MyLinksResource4Test() {
       this.user = mock(User.class);
+      var preferences = new UserPreferences(CURRENT_USER_ID, "de", ZoneId.of("Europe/Berlin"));
+      preferences.setLook(null);
+      preferences.setPersonalWorkSpaceId(null);
+      preferences.setDisplay(UserMenuDisplay.ALL);
+      preferences.enableThesaurus(false);
+      preferences.enableDragAndDrop(false);
+      preferences.enableWebdavEdition(false);
       when(user.getId()).thenReturn(CURRENT_USER_ID);
-      when(user.getUserPreferences()).thenReturn(
-          new UserPreferences(CURRENT_USER_ID, "de", ZoneId.of("Europe/Berlin"), null, null, false,
-              false, false, UserMenuDisplay.ALL));
+      when(user.getUserPreferences()).thenReturn(preferences);
     }
 
     @Override

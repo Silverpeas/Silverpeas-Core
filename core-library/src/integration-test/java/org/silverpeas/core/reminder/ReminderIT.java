@@ -109,7 +109,7 @@ public class ReminderIT {
         .addPackages(true, AbstractContributionTemplateUserNotificationBuilder.class.getPackage().getName())
         .addClasses(CalendarEventUserNotificationReminder.class,
             DefaultContributionReminderUserNotification.class, PublicationTemplateManager.class)
-        .testFocusedOn((warBuilder) ->
+        .testFocusedOn(warBuilder ->
           warBuilder.addAsResource("org/silverpeas/core/scheduler/create_quartz_tables.sql")
               .addAsResource("org/silverpeas/core/admin/create_space_components_database.sql")
               .addAsResource("org/silverpeas/core/reminder/create_table.sql")
@@ -516,8 +516,14 @@ public class ReminderIT {
 
     @Override
     public UserPreferences getUserSettings(final String userId) {
-      return new UserPreferences(userId, "fr", ZoneId.of("UTC"), "", "", false, false, false,
-          UserMenuDisplay.DEFAULT);
+      var preferences = new UserPreferences(userId, "fr", ZoneId.of("UTC"));
+      preferences.setLook("");
+      preferences.setPersonalWorkSpaceId("");
+      preferences.setDisplay(UserMenuDisplay.DEFAULT);
+      preferences.enableThesaurus(false);
+      preferences.enableDragAndDrop(false);
+      preferences.enableWebdavEdition(false);
+      return preferences;
     }
   }
 }

@@ -61,7 +61,7 @@ public class PersonalizationServiceIT {
 
   @Resource(lookup = "java:/datasources/silverpeas")
   private DataSource dataSource;
-  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
+  private final DbSetupTracker dbSetupTracker = new DbSetupTracker();
 
   public static final Operation TABLES_CREATION =
       Operations.sql("CREATE TABLE IF NOT EXISTS Personalization (" +
@@ -93,7 +93,7 @@ public class PersonalizationServiceIT {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(PersonalizationServiceIT.class)
         .addAdministrationFeatures()
-        .testFocusedOn((warBuilder) -> {
+        .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.core.personalization");
           warBuilder.addAsResource(
               "org/silverpeas/personalization/settings/personalizationPeasSettings" +
@@ -104,11 +104,16 @@ public class PersonalizationServiceIT {
 
 
   @Test
-  public void testGetUserSettings() throws Exception {
+  public void testGetUserSettings() {
     String userId = "1000";
-    UserPreferences expectedDetail =
-        new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"), "Initial", "", false, true,
-            true, UserMenuDisplay.DISABLE);
+    UserPreferences expectedDetail = new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"));
+    expectedDetail.setLook("Initial");
+    expectedDetail.setPersonalWorkSpaceId("");
+    expectedDetail.setDisplay(UserMenuDisplay.DISABLE);
+    expectedDetail.enableThesaurus(false);
+    expectedDetail.enableDragAndDrop(true);
+    expectedDetail.enableWebdavEdition(true);
+
     UserPreferences detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
     assertThat(detail, PersonalizationMatcher.matches(expectedDetail));
@@ -116,24 +121,38 @@ public class PersonalizationServiceIT {
     userId = "1010";
     detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new UserPreferences(userId, "en", ZoneId.of("UTC"), "Silverpeas", "WA26", false, true, true,
-        UserMenuDisplay.ALL);
+    expectedDetail = new UserPreferences(userId, "en", ZoneId.of("UTC"));
+    expectedDetail.setLook("Silverpeas");
+    expectedDetail.setPersonalWorkSpaceId("WA26");
+    expectedDetail.setDisplay(UserMenuDisplay.ALL);
+    expectedDetail.enableThesaurus(false);
+    expectedDetail.enableDragAndDrop(true);
+    expectedDetail.enableWebdavEdition(true);
     assertThat(detail, PersonalizationMatcher.matches(expectedDetail));
 
     userId = "5000";
     detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"), "Initial", "", false, true, true,
-        UserMenuDisplay.DEFAULT);
+    expectedDetail = new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"));
+    expectedDetail.setLook("Initial");
+    expectedDetail.setPersonalWorkSpaceId("");
+    expectedDetail.setDisplay(UserMenuDisplay.DEFAULT);
+    expectedDetail.enableThesaurus(false);
+    expectedDetail.enableDragAndDrop(true);
+    expectedDetail.enableWebdavEdition(true);
     assertThat(detail, PersonalizationMatcher.matches(expectedDetail));
   }
 
   @Test
-  public void testInsertPersonalizeDetail() throws Exception {
+  public void testInsertPersonalizeDetail() {
     String userId = "1020";
-    UserPreferences expectedDetail =
-        new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"), "Test", "WA500", false, false,
-            false, UserMenuDisplay.BOOKMARKS);
+    UserPreferences expectedDetail = new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"));
+    expectedDetail.setLook("Test");
+    expectedDetail.setPersonalWorkSpaceId("WA500");
+    expectedDetail.setDisplay(UserMenuDisplay.BOOKMARKS);
+    expectedDetail.enableThesaurus(false);
+    expectedDetail.enableDragAndDrop(false);
+    expectedDetail.enableWebdavEdition(false);
     service.saveUserSettings(expectedDetail);
     UserPreferences detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());

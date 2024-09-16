@@ -78,9 +78,14 @@ class MyLinksWebManagerTest {
 
   @BeforeEach
   void setup() {
-    when(personalizationService.getUserSettings(CURRENT_USER_ID)).thenReturn(
-        new UserPreferences(CURRENT_USER_ID, FR, ZoneId.of("UTC"), "", "", false, false, false,
-            UserMenuDisplay.DEFAULT));
+    var preferences = new UserPreferences(CURRENT_USER_ID, FR, ZoneId.of("UTC"));
+    preferences.setLook("");
+    preferences.setPersonalWorkSpaceId("");
+    preferences.setDisplay(UserMenuDisplay.DEFAULT);
+    preferences.enableThesaurus(false);
+    preferences.enableDragAndDrop(false);
+    preferences.enableWebdavEdition(false);
+    when(personalizationService.getUserSettings(CURRENT_USER_ID)).thenReturn(preferences);
     bundle.put(FR, "myLinks.messageConfirm", "added");
     bundle.put(FR, "myLinks.updateLink.messageConfirm", "updated");
     bundle.put(FR, "myLinks.deleteLinks.messageConfirm", "deleted");

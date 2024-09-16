@@ -104,8 +104,14 @@ public class DefaultPersonalizationService implements PersonalizationService {
   }
 
   private UserPreferences getDefaultUserSettings(String userId) {
-    return new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(),
-        DisplayI18NHelper.getDefaultZoneId(), DEFAULT_LOOK, "", getDefaultThesaurusStatus(),
-        getDefaultDragNDropStatus(), getDefaultWebDAVEditingStatus(), getDefaultMenuDisplay());
+    var preferences = new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(),
+        DisplayI18NHelper.getDefaultZoneId());
+    preferences.setDisplay(getDefaultMenuDisplay());
+    preferences.setLook(DEFAULT_LOOK);
+    preferences.setPersonalWorkSpaceId("");
+    preferences.enableThesaurus(getDefaultThesaurusStatus());
+    preferences.enableDragAndDrop(getDefaultDragNDropStatus());
+    preferences.enableWebdavEdition(getDefaultWebDAVEditingStatus());
+    return preferences;
   }
 }

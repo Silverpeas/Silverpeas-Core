@@ -384,8 +384,16 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
 
     @Override
     public UserPreferences getUserSettings(final String userId) {
-      return new UserPreferences("fr", ZoneId.of("Europe/Paris"), "", "",
-          false, false, false, UserMenuDisplay.DEFAULT);
+      var preferences = new UserPreferences();
+      preferences.setLanguage("fr");
+      preferences.setZoneId(ZoneId.of("Europe/Paris"));
+      preferences.setLook("");
+      preferences.setPersonalWorkSpaceId("");
+      preferences.setDisplay(UserMenuDisplay.DEFAULT);
+      preferences.enableThesaurus(false);
+      preferences.enableDragAndDrop(false);
+      preferences.enableWebdavEdition(false);
+      return preferences;
     }
   }
 }

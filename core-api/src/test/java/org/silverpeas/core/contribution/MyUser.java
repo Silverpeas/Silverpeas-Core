@@ -223,8 +223,14 @@ public class MyUser implements User {
 
   @Override
   public UserPreferences getUserPreferences() {
-    return new UserPreferences(getId(), "fr", ZoneId.of("Europe/Paris"), "Initial", "", false, true,
-        true, UserMenuDisplay.DEFAULT);
+    UserPreferences preferences = new UserPreferences(getId(), "fr", ZoneId.of("Europe/Paris"));
+    preferences.setLook("Initial");
+    preferences.setPersonalWorkSpaceId("");
+    preferences.setDisplay(UserMenuDisplay.DEFAULT);
+    preferences.enableThesaurus(false);
+    preferences.enableDragAndDrop(true);
+    preferences.enableWebdavEdition(true);
+    return preferences;
   }
 
   @Override

@@ -141,9 +141,13 @@ class DefaultContributionReminderUserNotificationTest {
         UriBuilder.fromPath("")
             .build());
 
-    UserPreferences userPreferences =
-        new UserPreferences("26", "fr", ZoneId.systemDefault(), null, null, false, false, false,
-            UserMenuDisplay.DEFAULT);
+    UserPreferences userPreferences = new UserPreferences("26", "fr", ZoneId.systemDefault());
+    userPreferences.setLook(null);
+    userPreferences.setPersonalWorkSpaceId(null);
+    userPreferences.setDisplay(UserMenuDisplay.DEFAULT);
+    userPreferences.enableThesaurus(false);
+    userPreferences.enableDragAndDrop(false);
+    userPreferences.enableWebdavEdition(false);
     when(receiver.getId()).thenReturn("26");
     when(receiver.getUserPreferences()).thenReturn(userPreferences);
 

@@ -55,36 +55,21 @@ public class UserPreferences
   @Column(name = "personalwspace")
   private String collaborativeWorkSpaceId;
   @Column(name = "thesaurusstatus")
-  private int thesaurusStatus;
+  private int thesaurusStatus = 0;
   @Column(name = "draganddropstatus")
-  private int dragAndDropStatus;
+  private int dragAndDropStatus = 0;
   @Column(name = "webdaveditingstatus")
-  private int webdavEditionStatus;
+  private int webdavEditionStatus = 0;
   @Column(name = "menuDisplay")
   private String menuDisplay = UserMenuDisplay.DEFAULT.name();
 
-  protected UserPreferences() {
+  public UserPreferences() {
   }
 
-  public UserPreferences(String userId, String language, final ZoneId zoneId, String look,
-      String collaborativeWorkSpaceId, boolean thesaurusEnabled, boolean dragAndDropEnabled,
-      boolean webdavEditionEnabled, UserMenuDisplay display) {
-    this(language, zoneId, look, collaborativeWorkSpaceId, thesaurusEnabled, dragAndDropEnabled,
-        webdavEditionEnabled, display);
+  public UserPreferences(String userId, String language, final ZoneId zoneId) {
     setId(userId);
-  }
-
-  public UserPreferences(String language, final ZoneId zoneId, String look,
-      String collaborativeWorkSpaceId, boolean thesaurusEnabled, boolean dragAndDropEnabled,
-      boolean webdavEditionEnabled, UserMenuDisplay display) {
     this.language = language;
     this.zoneId = zoneId.toString();
-    this.look = look;
-    this.collaborativeWorkSpaceId = collaborativeWorkSpaceId;
-    this.thesaurusStatus = thesaurusEnabled ? 1 : 0;
-    this.dragAndDropStatus = dragAndDropEnabled ? 1 : 0;
-    this.webdavEditionStatus = webdavEditionEnabled ? 1 : 0;
-    this.menuDisplay = display.name();
   }
 
   public User getUser() {
@@ -114,8 +99,9 @@ public class UserPreferences
   public void setLook(String look) {
     if (!StringUtil.isDefined(look)) {
       this.look = PersonalizationService.DEFAULT_LOOK;
+    } else {
+      this.look = look;
     }
-    this.look = look;
   }
 
   public String getPersonalWorkSpaceId() {

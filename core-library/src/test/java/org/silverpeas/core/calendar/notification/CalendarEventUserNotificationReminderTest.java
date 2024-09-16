@@ -38,11 +38,7 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.CalendarEventOccurrenceBuilder;
-import org.silverpeas.core.calendar.CalendarEventStubBuilder;
-import org.silverpeas.core.calendar.CalendarMockBuilder;
+import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -51,32 +47,26 @@ import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.kernel.test.annotations.TestManagedBeans;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -167,9 +157,7 @@ class CalendarEventUserNotificationReminderTest {
         componentInstanceRoutingMapProvider);
     when(componentInstanceRoutingMapProvider.absolute()).thenReturn(componentInstanceRoutingMap);
 
-    UserPreferences userPreferences =
-        new UserPreferences("26", "fr", ZoneId.systemDefault(), null, null, false, false, false,
-            UserMenuDisplay.DEFAULT);
+    UserPreferences userPreferences = new UserPreferences("26", "fr", ZoneId.systemDefault());
     receiver = mock(User.class);
     when(receiver.getId()).thenReturn("26");
     when(receiver.getUserPreferences()).thenReturn(userPreferences);

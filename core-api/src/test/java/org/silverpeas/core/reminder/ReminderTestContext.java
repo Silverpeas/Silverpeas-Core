@@ -77,10 +77,15 @@ public class ReminderTestContext {
 
   private void setUpUsers() {
     UserProvider userProvider = ServiceProvider.getService(UserProvider.class);
+    var preferences = new UserPreferences("2", "fr", ZoneId.of("UTC"));
+    preferences.setLook("");
+    preferences.setPersonalWorkSpaceId("");
+    preferences.setDisplay(UserMenuDisplay.DEFAULT);
+    preferences.enableThesaurus(false);
+    preferences.enableDragAndDrop(false);
+    preferences.enableWebdavEdition(false);
     when(user.getId()).thenReturn("2");
-    when(user.getUserPreferences()).thenReturn(
-        new UserPreferences("2", "fr", ZoneId.of("UTC"), "", "", false, false, false,
-            UserMenuDisplay.DEFAULT));
+    when(user.getUserPreferences()).thenReturn(preferences);
     when(userProvider.getUser("2")).thenAnswer(a -> user);
   }
 
@@ -109,18 +114,18 @@ public class ReminderTestContext {
     when(applicationService.getContributionById(any(ContributionIdentifier.class))).thenAnswer(
         invocation -> {
           ContributionIdentifier id = invocation.getArgument(0);
-          Contribution contribution;
+          Contribution contrib;
           if (PlannableOnCalendar.class.getSimpleName()
               .equals(id.getType())) {
-            contribution = new MyPlannableContribution(id).startingAt(OffsetDateTime.now()
+            contrib = new MyPlannableContribution(id).startingAt(OffsetDateTime.now()
                 .plusMonths(1));
           } else {
             Date publicationDate = Date.from(OffsetDateTime.now()
                 .plusWeeks(1)
                 .toInstant());
-            contribution = new MyContribution(id).publishedAt(publicationDate);
+            contrib = new MyContribution(id).publishedAt(publicationDate);
           }
-          return Optional.of(contribution);
+          return Optional.of(contrib);
         });
   }
 

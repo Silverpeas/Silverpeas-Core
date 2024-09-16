@@ -236,9 +236,14 @@ public abstract class CMISEnvForTests {
     currentUser.setCreationDate(creationDate);
     currentUser.setSaveDate(creationDate);
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
-    when(personalizationService.getUserSettings("42")).thenReturn(
-        new UserPreferences("42", "en", ZoneId.of("Europe/London"), "Aurora", "WA1", false, true,
-            true, UserMenuDisplay.DEFAULT));
+    final UserPreferences preferences = new UserPreferences("42", "en", ZoneId.of("Europe/London"));
+    preferences.setLook("Aurora");
+    preferences.setPersonalWorkSpaceId("WA1");
+    preferences.setDisplay(UserMenuDisplay.DEFAULT);
+    preferences.enableThesaurus(false);
+    preferences.enableDragAndDrop(true);
+    preferences.enableWebdavEdition(true);
+    when(personalizationService.getUserSettings("42")).thenReturn(preferences);
     return currentUser;
   }
 
