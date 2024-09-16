@@ -131,7 +131,7 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener, I
           for (File element : elementsList) {
             long lastModified = element.lastModified();
             if (element.isDirectory()
-                && lastModified + delayBeforePurge * 1000L * 60L < now) {
+                && lastModified + delayBeforePurge * 1000L * 60L <= now) {
               FileUtils.deleteQuietly(new File(element.getAbsolutePath()));
             }
           }
