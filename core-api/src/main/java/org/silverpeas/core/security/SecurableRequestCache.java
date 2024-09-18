@@ -33,10 +33,14 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * A common tool to handled securable implementation with a request cache.
- * <p>Indeed, the computing about secured access can be costly about performances and using a
- * request cache could be interesting when access authorization is computed several times for a same
- * entity into the context of a same request.</p>
+ * A common tool to handle authorization on resources with a request cache in order to avoid
+ * multiple authorization computations for a given user within the same request flow.
+ * <p>
+ * Indeed, the computation of access grant can be costly in performances and using a request cache
+ * is useful when the access authorization to a given resource and for a given user is computed
+ * several times within the context of the same user request.
+ * </p>
+ *
  * @author Yohann Chastagnier
  */
 public class SecurableRequestCache {
@@ -55,11 +59,16 @@ public class SecurableRequestCache {
   }
 
   /**
-   * @param user a user in Silverpeas.
-   * @param uniqueIdentifier a unique identifier.
-   * @param authorization the supplier of the result of access authorization computing.
+   * Applies the specified access authorization mechanism to the given resource for the specified
+   * user and caches the result.
+   *
+   * @param user the user behind the current incoming request and wanting to access the resource.
+   * @param uniqueIdentifier the unique identifier of the resource for which the access grant is
+   * computed.
+   * @param authorization the authorization computer.
    * @param keySuffix the key suffix to distinguish the different types of accessibility.
-   * @return the authorization
+   * @return the authorization result. True if the user is granted to access the resource, false
+   * otherwise.
    */
   private static boolean handle(final User user, final String uniqueIdentifier,
       Predicate<User> authorization, final String keySuffix) {
@@ -90,11 +99,12 @@ public class SecurableRequestCache {
   }
 
   /**
-   * Indicates if the given user can access the data managed by the object instance.
+   * Is the given user can access the specified resource?
+   *
    * @param user a user in Silverpeas.
-   * @param uniqueIdentifier a unique identifier.
-   * @param canBeAccessedBy the supplier of the result of access authorization computing.
-   * @return true if the user can access the data managed by this instance, false otherwise.
+   * @param uniqueIdentifier the unique identifier of the accessed resource.
+   * @param canBeAccessedBy the access grant computation.
+   * @return true if the user is granted to access the specified resource, false otherwise.
    */
   public static boolean canBeAccessedBy(User user, String uniqueIdentifier,
       Predicate<User> canBeAccessedBy) {
@@ -102,11 +112,14 @@ public class SecurableRequestCache {
   }
 
   /**
-   * Indicates if the given user can modify the data managed by the object instance.
+   * Is the given user can modify the specified resource or the data managed by the specified
+   * resource.
+   *
    * @param user a user in Silverpeas.
-   * @param uniqueIdentifier a unique identifier.
-   * @param canBeModifiedBy the supplier of the result of access authorization computing.
-   * @return true if the user can modify the data managed by this instance, false otherwise.
+   * @param uniqueIdentifier the unique identifier of the resource.
+   * @param canBeModifiedBy the modification grant computation.
+   * @return true if the user is granted to modify the resource (or the data managed by the
+   * resource), false otherwise.
    */
   public static boolean canBeModifiedBy(User user, String uniqueIdentifier,
       Predicate<User> canBeModifiedBy) {
@@ -114,11 +127,14 @@ public class SecurableRequestCache {
   }
 
   /**
-   * Indicates if the given user can delete the data managed by the object instance.
+   * Is the the given user can delete the specified resource or the data managed by the specified
+   * resource.
+   *
    * @param user a user in Silverpeas.
-   * @param uniqueIdentifier a unique identifier.
-   * @param canBeDeletedBy the supplier of the result of access authorization computing.
-   * @return true if the user can delete the data managed by this instance, false otherwise.
+   * @param uniqueIdentifier the unique identifier of the resource.
+   * @param canBeDeletedBy the deletion grant computation.
+   * @return true if the user is granted to delete the resource (or the data managed by the
+   * resource), false otherwise.
    */
   public static boolean canBeDeletedBy(User user, String uniqueIdentifier,
       Predicate<User> canBeDeletedBy) {
@@ -126,8 +142,10 @@ public class SecurableRequestCache {
   }
 
   /**
-   * Clears the cache linked to an entity represented by the given unique identifier.
-   * @param uniqueIdentifier an identifier which represents a unique entity.
+   * Clears the authorization caches for the specified resource.
+   *
+   * @param uniqueIdentifier the unique identifier of a resource for which an authorization has
+   * been computed.
    */
   public static void clear(String uniqueIdentifier) {
     final String keyPart = "@@@" + uniqueIdentifier + "@@@" + CAN_BE;
@@ -144,9 +162,10 @@ public class SecurableRequestCache {
   }
 
   /**
-   * Computes the base of the cache key from given data.
+   * Computes the base of the cache key by the user accessing the specified resource.
+   *
    * @param user a user in Silverpeas.
-   * @param uniqueIdentifier a unique identifier.
+   * @param uniqueIdentifier the unique identifier of a resource.
    * @param keySuffix the key suffix to distinguish the different types of accessibility.
    * @return the base of cache key.
    */
