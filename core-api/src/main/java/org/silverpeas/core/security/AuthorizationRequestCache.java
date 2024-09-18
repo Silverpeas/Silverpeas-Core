@@ -43,19 +43,19 @@ import java.util.function.Predicate;
  *
  * @author Yohann Chastagnier
  */
-public class SecurableRequestCache {
+public class AuthorizationRequestCache {
 
   private static final String CAN_BE = "canBe";
   static final String CAN_BE_ACCESSED_BY_KEY_SUFFIX = CAN_BE + "AccessedBy";
   static final String CAN_BE_MODIFIED_BY_KEY_SUFFIX = CAN_BE + "ModifiedBy";
   static final String CAN_BE_DELETED_BY_KEY_SUFFIX = CAN_BE + "DeletedBy";
-  private static final Object ALL_KEYS = "SecurableRequestCache@@@allKeys";
+  private static final Object ALL_KEYS = "AuthorizationRequestCache@@@allKeys";
   private static final int DEFAULT_NB_HANDLED_KEYS = 100;
 
   /**
    * Hidden constructor.
    */
-  private SecurableRequestCache() {
+  private AuthorizationRequestCache() {
   }
 
   /**
@@ -89,7 +89,7 @@ public class SecurableRequestCache {
   private static Set<String> getHandledKeys() {
     synchronized (ALL_KEYS) {
       SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
-      Set<String> handledKeys = (Set) cache.get(ALL_KEYS, Set.class);
+      Set<String> handledKeys = cache.get(ALL_KEYS, Set.class);
       if (handledKeys == null) {
         handledKeys = new HashSet<>(DEFAULT_NB_HANDLED_KEYS);
         cache.put(ALL_KEYS, handledKeys);
@@ -171,7 +171,7 @@ public class SecurableRequestCache {
    */
   static String getCacheKey(final User user, final String uniqueIdentifier,
       final String keySuffix) {
-    return "SecurableRequestCache@@@user_" + user.getId() + "@@@" + uniqueIdentifier + "@@@" +
+    return "AuthorizationRequestCache@@@user_" + user.getId() + "@@@" + uniqueIdentifier + "@@@" +
         keySuffix;
   }
 }

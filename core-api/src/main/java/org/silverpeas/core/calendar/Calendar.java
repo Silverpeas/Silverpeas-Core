@@ -36,8 +36,8 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
+import org.silverpeas.core.security.AuthorizationRequestCache;
 import org.silverpeas.core.security.Securable;
-import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
@@ -223,13 +223,13 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   @Override
   protected void performBeforePersist() {
     super.performBeforePersist();
-    SecurableRequestCache.clear(getId());
+    AuthorizationRequestCache.clear(getId());
   }
 
   @Override
   protected void performBeforeUpdate() {
     super.performBeforeUpdate();
-    SecurableRequestCache.clear(getId());
+    AuthorizationRequestCache.clear(getId());
   }
 
   /**
@@ -534,13 +534,13 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    return SecurableRequestCache.canBeAccessedBy(user, getId(),
+    return AuthorizationRequestCache.canBeAccessedBy(user, getId(),
         u -> ComponentAccessControl.get().isUserAuthorized(u.getId(), getComponentInstanceId()));
   }
 
   @Override
   public boolean canBeModifiedBy(final User user) {
-    return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
+    return AuthorizationRequestCache.canBeModifiedBy(user, getId(), u -> {
       if (isMain()) {
         return false;
       }

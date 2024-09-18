@@ -26,8 +26,8 @@ package org.silverpeas.core.security;
 import org.silverpeas.core.admin.user.model.User;
 
 /**
- * A securable object is an object for which some operations on it requires for the user to be
- * authorized. For doing, it defines for each basic kind of operations in Silverpeas (access,
+ * A securable resource is an object for which some operations on it requires for the user to be
+ * granted. For doing, it defines for each basic kind of operations in Silverpeas (access,
  * modification, ...) a method to control the rights of the user to perform such an operation.
  * @author Yohann Chastagnier
  */

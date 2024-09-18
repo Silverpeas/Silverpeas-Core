@@ -42,7 +42,7 @@ import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadC
 /**
  * @author Yohann Chastagnier
  */
-public class SecurableRequestCacheTest {
+public class AuthorizationRequestCacheTest {
 
   private static final String ENTITY_A_UUID = "entity_A_uuid";
   private static final String ENTITY_B_UUID = "entity_B_uuid";
@@ -69,12 +69,12 @@ public class SecurableRequestCacheTest {
 
   @Test
   public void canBeAccessedByShouldBeCached() throws Exception {
-    final String cacheKey = SecurableRequestCache
-        .getCacheKey(USER_26, ENTITY_A_UUID, SecurableRequestCache.CAN_BE_ACCESSED_BY_KEY_SUFFIX);
+    final String cacheKey = AuthorizationRequestCache
+        .getCacheKey(USER_26, ENTITY_A_UUID, AuthorizationRequestCache.CAN_BE_ACCESSED_BY_KEY_SUFFIX);
     assertThat(getRequestCache().get(cacheKey), nullValue());
     for (int i = 0; i < 10; i++) {
       boolean canBeAccessedBy =
-          SecurableRequestCache.canBeAccessedBy(USER_26, ENTITY_A_UUID, (u) -> {
+          AuthorizationRequestCache.canBeAccessedBy(USER_26, ENTITY_A_UUID, (u) -> {
             authorizedSupplierCallCount.add("ACCESSION CONTEXT CALL");
             return true;
           });
@@ -86,12 +86,12 @@ public class SecurableRequestCacheTest {
 
   @Test
   public void canBeModifiedByShouldBeCached() throws Exception {
-    final String cacheKey = SecurableRequestCache
-        .getCacheKey(USER_38, ENTITY_B_UUID, SecurableRequestCache.CAN_BE_MODIFIED_BY_KEY_SUFFIX);
+    final String cacheKey = AuthorizationRequestCache
+        .getCacheKey(USER_38, ENTITY_B_UUID, AuthorizationRequestCache.CAN_BE_MODIFIED_BY_KEY_SUFFIX);
     assertThat(getRequestCache().get(cacheKey), nullValue());
     for (int i = 0; i < 10; i++) {
       boolean canBeModifiedBy =
-          SecurableRequestCache.canBeModifiedBy(USER_38, ENTITY_B_UUID, (u) -> {
+          AuthorizationRequestCache.canBeModifiedBy(USER_38, ENTITY_B_UUID, (u) -> {
             authorizedSupplierCallCount.add("MODIFICATION CONTEXT CALL");
             return false;
           });
@@ -103,11 +103,11 @@ public class SecurableRequestCacheTest {
 
   @Test
   public void canBeDeletedByShouldBeCached() throws Exception {
-    final String cacheKey = SecurableRequestCache
-        .getCacheKey(USER_26, ENTITY_A_UUID, SecurableRequestCache.CAN_BE_DELETED_BY_KEY_SUFFIX);
+    final String cacheKey = AuthorizationRequestCache
+        .getCacheKey(USER_26, ENTITY_A_UUID, AuthorizationRequestCache.CAN_BE_DELETED_BY_KEY_SUFFIX);
     assertThat(getRequestCache().get(cacheKey), nullValue());
     for (int i = 0; i < 10; i++) {
-      boolean canBeDeletedBy = SecurableRequestCache.canBeDeletedBy(USER_26, ENTITY_A_UUID, (u) -> {
+      boolean canBeDeletedBy = AuthorizationRequestCache.canBeDeletedBy(USER_26, ENTITY_A_UUID, (u) -> {
         authorizedSupplierCallCount.add("DELETION CONTEXT CALL");
         return false;
       });
@@ -129,12 +129,12 @@ public class SecurableRequestCacheTest {
     callAllVerificationSeveralTimes(USER_38, ENTITY_B_UUID);
     assertThat(authorizedSupplierCallCount, hasSize(3));
     // Cache cleared
-    SecurableRequestCache.clear(ENTITY_B_UUID);
+    AuthorizationRequestCache.clear(ENTITY_B_UUID);
     // Cache again
     callAllVerificationSeveralTimes(USER_38, ENTITY_B_UUID);
     assertThat(authorizedSupplierCallCount, hasSize(6));
     // Call the clear about an other entity, no data cleared from cache
-    SecurableRequestCache.clear(ENTITY_A_UUID);
+    AuthorizationRequestCache.clear(ENTITY_A_UUID);
     callAllVerificationSeveralTimes(USER_38, ENTITY_B_UUID);
     // So already cached
     assertThat(authorizedSupplierCallCount, hasSize(6));
@@ -148,7 +148,7 @@ public class SecurableRequestCacheTest {
     callAllVerificationSeveralTimes(USER_26, ENTITY_B_UUID);
     assertThat(authorizedSupplierCallCount, hasSize(15));
     // Clear cache about entity B
-    SecurableRequestCache.clear(ENTITY_B_UUID);
+    AuthorizationRequestCache.clear(ENTITY_B_UUID);
     // Data about entity A have not been cleared otherwise authorizedSupplierCallCount size
     // should be 27 instead of 21
     callAllVerificationSeveralTimes(USER_38, ENTITY_A_UUID);
@@ -161,15 +161,15 @@ public class SecurableRequestCacheTest {
   private void callAllVerificationSeveralTimes(final User user, final String uuid) {
     final String suffix = user.getId() + "_" + uuid;
     for (int i = 0; i < 10; i++) {
-      SecurableRequestCache.canBeAccessedBy(user, uuid, (u) -> {
+      AuthorizationRequestCache.canBeAccessedBy(user, uuid, (u) -> {
         authorizedSupplierCallCount.add("ACCESSION CONTEXT CALL_" + suffix);
         return true;
       });
-      SecurableRequestCache.canBeModifiedBy(user, uuid, (u) -> {
+      AuthorizationRequestCache.canBeModifiedBy(user, uuid, (u) -> {
         authorizedSupplierCallCount.add("MODIFICATION CONTEXT CALL_" + suffix);
         return true;
       });
-      SecurableRequestCache.canBeDeletedBy(user, uuid, (u) -> {
+      AuthorizationRequestCache.canBeDeletedBy(user, uuid, (u) -> {
         authorizedSupplierCallCount.add("DELETION CONTEXT CALL_" + suffix);
         return true;
       });

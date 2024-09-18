@@ -47,7 +47,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.security.Securable;
-import org.silverpeas.core.security.SecurableRequestCache;
+import org.silverpeas.core.security.AuthorizationRequestCache;
 import org.silverpeas.core.util.ResourcePath;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -402,13 +402,13 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @Override
   protected void performBeforePersist() {
     super.performBeforePersist();
-    SecurableRequestCache.clear(getId());
+    AuthorizationRequestCache.clear(getId());
   }
 
   @Override
   protected void performBeforeUpdate() {
     super.performBeforeUpdate();
-    SecurableRequestCache.clear(getId());
+    AuthorizationRequestCache.clear(getId());
   }
 
   @Override
@@ -1176,7 +1176,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    return SecurableRequestCache.canBeAccessedBy(user, getId(), u -> {
+    return AuthorizationRequestCache.canBeAccessedBy(user, getId(), u -> {
       boolean canBeAccessed = getCalendar().canBeAccessedBy(u) || isUserParticipant(u);
       if (!canBeAccessed && PUBLIC == getVisibilityLevel()) {
         SilverpeasComponentInstance componentInstance =
@@ -1197,7 +1197,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @Override
   public boolean canBeModifiedBy(final User user) {
-    return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
+    return AuthorizationRequestCache.canBeModifiedBy(user, getId(), u -> {
       boolean isCalendarSynchronized = getCalendar().getExternalCalendarUrl() != null;
       if (!isCalendarSynchronized && canBeAccessedBy(u)) {
         var mayBeCompInst =
