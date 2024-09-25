@@ -34,7 +34,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "sb_workflow_interesteduser")
-public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueIntegerIdentifier> {
+public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueIntegerIdentifier>
+    implements RolePlayer {
 
   @Column
   private String userId = null;
@@ -63,14 +64,17 @@ public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueInteger
 
   /**
    * Get role name under which user can access to this instance
+   *
    * @return role name
    */
+  @Override
   public String getRole() {
     return role;
   }
 
   /**
    * Set role name for which user is affected
+   *
    * @param role role name
    */
   public void setRole(String role) {
@@ -79,14 +83,17 @@ public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueInteger
 
   /**
    * Get state name for which user can access to this instance
+   *
    * @return state name
    */
+  @Override
   public String getState() {
     return state;
   }
 
   /**
    * Set state name for which user can access to this instance
+   *
    * @param state state name
    */
   public void setState(String state) {
@@ -95,14 +102,17 @@ public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueInteger
 
   /**
    * Get the user id
+   *
    * @return user id
    */
+  @Override
   public String getUserId() {
     return userId;
   }
 
   /**
    * Set the user id
+   *
    * @param userId user id
    */
   public void setUserId(String userId) {
@@ -111,6 +121,7 @@ public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueInteger
 
   /**
    * Get the user role
+   *
    * @return user role name
    */
   public String getUsersRole() {
@@ -119,6 +130,7 @@ public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueInteger
 
   /**
    * Set the user role
+   *
    * @param usersRole role
    */
   public void setUsersRole(String usersRole) {
@@ -135,6 +147,7 @@ public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueInteger
 
   /**
    * Get the instance to which user is interested
+   *
    * @return instance
    */
   public ProcessInstanceImpl getProcessInstance() {
@@ -143,6 +156,7 @@ public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueInteger
 
   /**
    * Set the instance to which user is interested
+   *
    * @param processInstance instance
    */
   public void setProcessInstance(ProcessInstanceImpl processInstance) {
@@ -157,7 +171,7 @@ public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueInteger
   public boolean equals(Object theOther) {
     if (theOther instanceof String) {
       return getKey().equals(theOther);
-    } else if (theOther instanceof InterestedUser){
+    } else if (theOther instanceof InterestedUser) {
       return getKey().equals(((InterestedUser) theOther).getKey());
     }
     return false;

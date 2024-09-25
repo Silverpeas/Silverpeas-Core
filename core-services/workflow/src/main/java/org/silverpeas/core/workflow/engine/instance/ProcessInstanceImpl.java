@@ -78,6 +78,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -436,29 +437,31 @@ public class ProcessInstanceImpl
    * @param role role name under which the user can make an action
    */
   private void addWorkingUser(User user, String state, String role, String groupId) {
-    WorkingUser wkUser = new WorkingUser();
+    addRolePlayer(ADD_WORKING_USER, user, state, role, groupId, WorkingUser::new,
+        workingUsers);
+  }
 
-    /*
-     * 3 use cases, define working user : - by userId - by a role - by a groupId
-     */
+  private <T extends RolePlayer>  void addRolePlayer(String actionName, User user,
+      String state, String role, String groupId, Supplier<T> playerSupplier, Set<T> players) {
+    T player = playerSupplier.get();
     if (user != null) {
-      wkUser.setUserId(user.getUserId());
+      player.setUserId(user.getUserId());
     } else if (StringUtil.isDefined(groupId)) {
-      wkUser.setGroupId(groupId);
+      player.setGroupId(groupId);
     } else {
-      wkUser.setUsersRole(role);
+      player.setUsersRole(role);
     }
-    wkUser.setState(state);
-    wkUser.setRole(role);
-    wkUser.setProcessInstance(this);
-    workingUsers.add(wkUser);
+    player.setState(state);
+    player.setRole(role);
+    player.setProcessInstance(this);
+    players.add(player);
 
     // add this operation in undo history
     if (!inUndoProcess) {
       if (user != null) {
-        this.addUndoHistoryStep(ADD_WORKING_USER, user.getUserId() + "##" + state + "##" + role);
+        this.addUndoHistoryStep(actionName, user.getUserId() + "##" + state + "##" + role);
       } else {
-        this.addUndoHistoryStep(ADD_WORKING_USER, state + "##" + role);
+        this.addUndoHistoryStep(actionName, state + "##" + role);
       }
     }
   }
@@ -475,27 +478,31 @@ public class ProcessInstanceImpl
    * @param role role name under which the user could make an action
    */
   private void removeWorkingUser(User user, String state, String role) {
-    WorkingUser userToDelete;
-
     // Build virtual working user to find the true one end delete it
-    userToDelete = new WorkingUser();
+    removeRolePlayer(REMOVE_WORKING_USER, user, state, role, WorkingUser::new,
+        workingUsers);
+  }
+
+  private <T extends RolePlayer>  void removeRolePlayer(String actionName,
+      User user, String state, String role, Supplier<T> playerSupplier, Set<T> players) {
+    T player = playerSupplier.get();
     if (user != null) {
-      userToDelete.setUserId(user.getUserId());
+      player.setUserId(user.getUserId());
     } else {
-      userToDelete.setUsersRole(role);
+      player.setUsersRole(role);
     }
-    userToDelete.setState(state);
-    userToDelete.setRole(role);
+    player.setState(state);
+    player.setRole(role);
 
     // try to find and delete the right working user
-    workingUsers.remove(userToDelete);
+    players.remove(player);
 
     // add this operation in undo history
     if (!inUndoProcess) {
       if (user != null) {
-        this.addUndoHistoryStep(REMOVE_WORKING_USER, user.getUserId() + "##" + state + "##" + role);
+        this.addUndoHistoryStep(actionName, user.getUserId() + "##" + state + "##" + role);
       } else {
-        this.addUndoHistoryStep(REMOVE_WORKING_USER, state + "##" + role);
+        this.addUndoHistoryStep(actionName, state + "##" + role);
       }
     }
   }
@@ -518,31 +525,8 @@ public class ProcessInstanceImpl
    * @param role role name under which the user is interested
    */
   private void addInterestedUser(User user, String state, String role, String groupId) {
-
-    InterestedUser intUser = new InterestedUser();
-    /*
-     * 3 use cases, define working user : - by userId - by a role - by a groupId
-     */
-    if (user != null) {
-      intUser.setUserId(user.getUserId());
-    } else if (StringUtil.isDefined(groupId)) {
-      intUser.setGroupId(groupId);
-    } else {
-      intUser.setUsersRole(role);
-    }
-    intUser.setState(state);
-    intUser.setRole(role);
-    intUser.setProcessInstance(this);
-    interestedUsers.add(intUser);
-
-    // add this operation in undo history
-    if (!inUndoProcess) {
-      if (user != null) {
-        this.addUndoHistoryStep(ADD_INTERESTED_USER, user.getUserId() + "##" + state + "##" + role);
-      } else {
-        this.addUndoHistoryStep(ADD_INTERESTED_USER, state + "##" + role);
-      }
-    }
+    addRolePlayer(ADD_INTERESTED_USER, user, state, role, groupId, InterestedUser::new
+        , interestedUsers);
   }
 
   @Override
@@ -550,32 +534,10 @@ public class ProcessInstanceImpl
     this.removeInterestedUser(user, state.getName(), role);
   }
 
-
   private void removeInterestedUser(User user, String state, String role) {
-    InterestedUser userToDelete;
-
     // Build virtual interestedUser user to find the true one end delete it
-    userToDelete = new InterestedUser();
-    if (user != null) {
-      userToDelete.setUserId(user.getUserId());
-    } else {
-      userToDelete.setUsersRole(role);
-    }
-    userToDelete.setState(state);
-    userToDelete.setRole(role);
-
-    // try to find and delete the right interestedUser user
-    interestedUsers.remove(userToDelete);
-
-    // add this operation in undo history
-    if (!inUndoProcess) {
-      if (user != null) {
-        this.addUndoHistoryStep(REMOVE_INTERESTED_USER,
-            user.getUserId() + "##" + state + "##" + role);
-      } else {
-        this.addUndoHistoryStep(REMOVE_INTERESTED_USER, state + "##" + role);
-      }
-    }
+    removeRolePlayer(REMOVE_INTERESTED_USER, user, state, role, InterestedUser::new,
+        interestedUsers);
   }
 
   /**
@@ -1003,8 +965,8 @@ public class ProcessInstanceImpl
 
       // special case : searched stateName is null or empty (the step is
       // representing the creation)
-      if (stateName == null || stateName.length() == 0) {
-        if (step.getResolvedState() == null || step.getResolvedState().length() == 0) {
+      if (stateName == null || stateName.isEmpty()) {
+        if (step.getResolvedState() == null || step.getResolvedState().isEmpty()) {
           stepMatch = true;
         }
       } else if (step.getResolvedState() != null && step.getResolvedState().equals(stateName)) {
@@ -1068,45 +1030,33 @@ public class ProcessInstanceImpl
 
   @Override
   public void removeWorkingUsers(State state) {
-    Iterator<WorkingUser> itWkUsers = workingUsers.iterator();
-    while (itWkUsers.hasNext()) {
-      WorkingUser wkUser = itWkUsers.next();
-      if (wkUser.getState().equals(state.getName())) {
-        // add this operation in undo history
-        if (!inUndoProcess) {
-          if (wkUser.getUserId() != null) {
-            this.addUndoHistoryStep(REMOVE_WORKING_USER,
-                wkUser.getUserId() + "##" + state.getName() + "##" + wkUser.getRole());
-          } else {
-            this.addUndoHistoryStep(REMOVE_WORKING_USER, state.getName() + "##" + wkUser.getRole());
-          }
-        }
-
-        // remove it
-        itWkUsers.remove();
-      }
-    }
+    removeUsersInStateFromHistory(REMOVE_WORKING_USER, workingUsers, state);
   }
 
   @Override
   public void removeInterestedUsers(State state) {
-    Iterator<InterestedUser> itIntUsers = interestedUsers.iterator();
-    while (itIntUsers.hasNext()) {
-      InterestedUser intUser = itIntUsers.next();
-      if (intUser.getState().equals(state.getName())) {
+    removeUsersInStateFromHistory(REMOVE_INTERESTED_USER, interestedUsers, state);
+  }
+
+  private void removeUsersInStateFromHistory(String actionName, Set<? extends RolePlayer> users,
+      State state) {
+    Iterator<? extends RolePlayer> iterator = users.iterator();
+    while (iterator.hasNext()) {
+      RolePlayer user = iterator.next();
+      if (user.getState().equals(state.getName())) {
         // add this operation in undo history
         if (!inUndoProcess) {
-          if (intUser.getUserId() != null) {
-            this.addUndoHistoryStep(REMOVE_INTERESTED_USER,
-                intUser.getUserId() + "##" + state.getName() + "##" + intUser.getRole());
+          if (user.getUserId() != null) {
+            this.addUndoHistoryStep(actionName,
+                user.getUserId() + "##" + state.getName() + "##" + user.getRole());
           } else {
-            this.addUndoHistoryStep(REMOVE_INTERESTED_USER,
-                state.getName() + "##" + intUser.getRole());
+            this.addUndoHistoryStep(actionName,
+                state.getName() + "##" + user.getRole());
           }
         }
 
         // remove it
-        itIntUsers.remove();
+        iterator.remove();
       }
     }
   }
@@ -1381,7 +1331,7 @@ public class ProcessInstanceImpl
 
       String relation = relatedUser.getRelation();
       for (User user : users) {
-        if (relation != null && relation.length() != 0 && !relation.equals("itself")) {
+        if (relation != null && !relation.isEmpty() && !relation.equals("itself")) {
           user = userManager.getRelatedUser(user, relation, modelId);
         }
 
@@ -1801,35 +1751,42 @@ public class ProcessInstanceImpl
     // Parse active states
     if (this.activeStates != null && !this.activeStates.isEmpty()) {
       for (ActiveState activeState : activeStates) {
-        try {
-          // Look for an active state with a timeoutDate in the past
-          if (activeState.getTimeoutDate() != null && activeState.getTimeoutDate().before(dateRef)) {
-            // found, now look which timeout is concerned
-            int theTimeoutStatus = activeState.getTimeoutStatus();
-
-            // then parse all timeoutAction to return the right one (the one with order =
-            // timeoutstatus+1)
-            State state = getProcessModel().getState(activeState.getState());
-            SilverLogger.getLogger(this).debug(() -> activeState.getProcessInstance() != null ?
-                "getTimeOutAction - State = " + activeState.getState() +
-                    " - instanceId " + activeState.getProcessInstance().getInstanceId() :
-                "No process instance in active state");
-            TimeOutAction[] actions = state.getTimeOutActions();
-            Mutable<ActionAndState> foundActionAndState = Mutable.empty();
-            Stream.of(actions)
-                .filter(a -> a.getOrder() == theTimeoutStatus + 1)
-                .findFirst()
-                .ifPresent(a -> foundActionAndState.set(new ActionAndState(a.getAction(), state)));
-            return foundActionAndState.get();
-          }
-        } catch (Exception e) {
-          SilverLogger.getLogger(this)
-              .error(
-                  "Unable to getTimeoutAction for this state {0} id={1}", activeState.getState(), activeState.getId());
+        var actionAndState = computeActionAndState(activeState, dateRef);
+        if (actionAndState.isPresent()) {
+          return actionAndState.get();
         }
       }
     }
     return null;
+  }
+
+  private Optional<ActionAndState> computeActionAndState(ActiveState activeState, Date dateRef) {
+    try {
+      // Look for an active state with a timeoutDate in the past
+      if (activeState.getTimeoutDate() != null && activeState.getTimeoutDate().before(dateRef)) {
+        // found, now look which timeout is concerned
+        int theTimeoutStatus = activeState.getTimeoutStatus();
+
+        // then parse all timeoutAction to return the right one (the one with order =
+        // timeoutstatus+1)
+        State state = getProcessModel().getState(activeState.getState());
+        SilverLogger.getLogger(this).debug(() -> activeState.getProcessInstance() != null ?
+            "getTimeOutAction - State = " + activeState.getState() +
+                " - instanceId " + activeState.getProcessInstance().getInstanceId() :
+            "No process instance in active state");
+        TimeOutAction[] actions = state.getTimeOutActions();
+        Mutable<ActionAndState> foundActionAndState = Mutable.empty();
+        Stream.of(actions)
+            .filter(a -> a.getOrder() == theTimeoutStatus + 1)
+            .findFirst()
+            .ifPresent(a -> foundActionAndState.set(new ActionAndState(a.getAction(), state)));
+        return Optional.ofNullable(foundActionAndState.get());
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error("Unable to getTimeoutAction for this state {0} id={1}",
+              activeState.getState(), activeState.getId());
+    }
+    return Optional.empty();
   }
 
   @Override

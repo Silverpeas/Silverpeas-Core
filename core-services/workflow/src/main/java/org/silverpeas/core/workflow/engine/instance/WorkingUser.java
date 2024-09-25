@@ -45,7 +45,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "sb_workflow_workinguser")
-public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdentifier> {
+public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdentifier>
+    implements RolePlayer {
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "instanceid", nullable = false)
@@ -68,14 +69,17 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Get state name for which user is affected
+   *
    * @return state name
    */
+  @Override
   public String getState() {
     return (state == null) ? "" : state;
   }
 
   /**
    * Set state name for which user is affected
+   *
    * @param state state name
    */
   public void setState(String state) {
@@ -84,14 +88,17 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Get state role for which user is affected
+   *
    * @return state role
    */
+  @Override
   public String getRole() {
     return role;
   }
 
   /**
    * Get state role for which user is affected
+   *
    * @return state role
    */
   public List<String> getRoles() {
@@ -100,6 +107,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Set state role for which user is affected
+   *
    * @param role state role
    */
   public void setRole(String role) {
@@ -108,14 +116,17 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Get the user id
+   *
    * @return user id
    */
+  @Override
   public String getUserId() {
     return userId;
   }
 
   /**
    * Set the user id
+   *
    * @param userId user id
    */
   public void setUserId(String userId) {
@@ -124,6 +135,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Get the user role
+   *
    * @return user role name
    */
   public String getUsersRole() {
@@ -132,6 +144,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Set the user role
+   *
    * @param usersRole role
    */
   public void setUsersRole(String usersRole) {
@@ -148,6 +161,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Get the instance for which user is affected
+   *
    * @return instance
    */
   public ProcessInstanceImpl getProcessInstance() {
@@ -156,6 +170,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Set the instance for which user is affected
+   *
    * @param processInstance instance
    */
   public void setProcessInstance(ProcessInstanceImpl processInstance) {
@@ -164,6 +179,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Converts WorkingUser to Actors
+   *
    * @return an object implementing Actor interface
    */
   public Collection<Actor> toActors() throws WorkflowException {
@@ -199,9 +215,11 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * Get User information from an array of workingUsers
+   *
    * @param workingUsers an array of WorkingUser objects
    * @return an array of objects implementing User interface and containing user details
    */
+  @SuppressWarnings("unused")
   public static User[] toUser(WorkingUser[] workingUsers) throws WorkflowException {
     String[] userIds = new String[workingUsers.length];
 
@@ -214,6 +232,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
 
   /**
    * This method has to be implemented by the referrable object it has to compute the unique key
+   *
    * @return The unique key.
    */
   private String getKey() {
