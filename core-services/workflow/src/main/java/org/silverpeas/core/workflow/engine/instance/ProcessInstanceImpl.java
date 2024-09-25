@@ -1797,31 +1797,38 @@ public class ProcessInstanceImpl
   }
 
   @Override
-  public ActionAndState getTimeOutAction(Date dateRef) throws WorkflowException {
-
+  public ActionAndState getTimeOutAction(Date dateRef) {
     // Parse active states
     if (this.activeStates != null && !this.activeStates.isEmpty()) {
       for (ActiveState activeState : activeStates) {
+        try {
+          // Look for an active state with a timeoutDate in the past
+          if (activeState.getTimeoutDate() != null && activeState.getTimeoutDate().before(dateRef)) {
+            // found, now look which timeout is concerned
+            int theTimeoutStatus = activeState.getTimeoutStatus();
 
-        // Look for an active state with a timeoutDate in the past
-        if (activeState.getTimeoutDate() != null && activeState.getTimeoutDate().before(dateRef)) {
-          // found, now look which timeout is concerned
-          int theTimeoutStatus = activeState.getTimeoutStatus();
-
-          // then parse all timeoutAction to return the right one (the one with order =
-          // timeoutstatus+1)
-          State state = getProcessModel().getState(activeState.getState());
-          TimeOutAction[] actions = state.getTimeOutActions();
-          Mutable<ActionAndState> foundActionAndState = Mutable.empty();
-          Stream.of(actions)
-              .filter(a -> a.getOrder() == theTimeoutStatus + 1)
-              .findFirst()
-              .ifPresent(a -> foundActionAndState.set(new ActionAndState(a.getAction(), state)));
-          return foundActionAndState.get();
+            // then parse all timeoutAction to return the right one (the one with order =
+            // timeoutstatus+1)
+            State state = getProcessModel().getState(activeState.getState());
+            SilverLogger.getLogger(this).debug(() -> activeState.getProcessInstance() != null ?
+                "getTimeOutAction - State = " + activeState.getState() +
+                    " - instanceId " + activeState.getProcessInstance().getInstanceId() :
+                "No process instance in active state");
+            TimeOutAction[] actions = state.getTimeOutActions();
+            Mutable<ActionAndState> foundActionAndState = Mutable.empty();
+            Stream.of(actions)
+                .filter(a -> a.getOrder() == theTimeoutStatus + 1)
+                .findFirst()
+                .ifPresent(a -> foundActionAndState.set(new ActionAndState(a.getAction(), state)));
+            return foundActionAndState.get();
+          }
+        } catch (Exception e) {
+          SilverLogger.getLogger(this)
+              .error(
+                  "Unable to getTimeoutAction for this state {0} id={1}", activeState.getState(), activeState.getId());
         }
       }
     }
-
     return null;
   }
 
