@@ -23,11 +23,9 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -42,19 +40,23 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.rs.HTTPAuthentication;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
+import org.silverpeas.core.web.util.WebRedirection;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
@@ -96,7 +98,6 @@ public class SilverpeasSessionOpener {
    * occurred during the session opening (for example, the user wasn't authenticated).
    */
   public String openSession(HttpRequest request, String authKey) {
-    HttpSession session = request.getSession(false);
     // a session should exist: it could be either an authentication session opened for the
     // authentication process or an already opened user specific session.
     try {
@@ -104,6 +105,7 @@ public class SilverpeasSessionOpener {
       // is the current session is valid? If it is valid, then the information about the session
       // is updated with, for example, the timestamp of the last access (this one), and then it
       // is returned.
+      HttpSession session = request.getSession(false);
       SessionInfo sessionInfo = sessionManagement.validateSession(session.getId());
       MainSessionController controller;
       if (!sessionInfo.isDefined() || sessionInfo.isAnonymous()) {
@@ -127,8 +129,7 @@ public class SilverpeasSessionOpener {
             MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
       }
 
-      // Notify user about password expiration if needed
-      String redirectURL = notifyAboutPasswordExpiration(session, controller);
+      String redirectURL = getAnyRedirection(request, controller);
       // Put the main session controller in the session
       return getHomePageUrl(request, redirectURL, true);
     } catch (Exception e) {
@@ -137,6 +138,17 @@ public class SilverpeasSessionOpener {
 
     SilverLogger.getLogger(this).error("No user found with the authentication key {0}", authKey);
     return getErrorPageUrl(request);
+  }
+
+  private String getAnyRedirection(HttpServletRequest request, MainSessionController controller) {
+    // Notify user about password expiration if needed
+    String redirectURL = notifyAboutPasswordExpiration(request, controller);
+    if (StringUtil.isNotDefined(redirectURL)) {
+      // otherwise get the redirection URL if any
+      return new WebRedirection().getRedirectionURL(request);
+    }
+
+    return redirectURL;
   }
 
   /**
@@ -183,7 +195,7 @@ public class SilverpeasSessionOpener {
       }
 
       // Notify user about password expiration if needed
-      String redirectURL = notifyAboutPasswordExpiration(session, controller);
+      String redirectURL = notifyAboutPasswordExpiration(request, controller);
       // Put the main session controller in the session
       return getHomePageUrl(request, redirectURL, true);
     } catch (Exception e) {
@@ -197,13 +209,14 @@ public class SilverpeasSessionOpener {
 
   /**
    * Notifies, if necessary, the user behind the session that his password is expiring.
-   * @param session a valid HTTP session
+   * @param request the incoming HTTP request.
    * @param controller a valid main controller.
    * @return the URL of the page that permits to the user to change its password, null if no
    * password change is needed.
    */
-  private String notifyAboutPasswordExpiration(final HttpSession session,
+  private String notifyAboutPasswordExpiration(final HttpServletRequest request,
       final MainSessionController controller) {
+    HttpSession session = request.getSession(false);
     Boolean alertUserAboutPwdExpiration =
         (Boolean) session.getAttribute(AuthenticationProtocol.PASSWORD_IS_ABOUT_TO_EXPIRE);
     String redirectURL = null;

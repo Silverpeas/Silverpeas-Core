@@ -26,6 +26,7 @@ package org.silverpeas.core.web.session;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.web.util.WebRedirection;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpSession;
@@ -86,7 +87,7 @@ public class HTTPSessionInfo extends SessionInfo {
         if (spName.startsWith("Silverpeas_") || spName.startsWith("WYSIWYG_")) {
           controllers.add(httpSession.getAttribute(spName));
         }
-        if (!spName.startsWith("Redirect") && !"gotoNew".equals(spName)
+        if (!spName.startsWith("Redirect") && !WebRedirection.REDIRECT_URL.equals(spName)
             && !AuthenticationProtocol.PASSWORD_CHANGE_ALLOWED.equals(spName)
             && !AuthenticationProtocol.PASSWORD_IS_ABOUT_TO_EXPIRE.equals(spName)) {
           httpSession.removeAttribute(spName);

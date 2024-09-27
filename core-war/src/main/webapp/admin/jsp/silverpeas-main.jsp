@@ -37,14 +37,18 @@
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
+<%@ page import="org.silverpeas.core.web.util.WebRedirection" %>
+<%@ page import="static org.silverpeas.core.web.util.WebRedirection.REDIRECT_TO_COMPONENT" %>
+<%@ page import="static org.silverpeas.core.web.util.WebRedirection.REDIRECT_TO_SPACE" %>
+<%@ page import="static org.silverpeas.core.web.util.WebRedirection.*" %>
 
 <%
-  String componentIdFromRedirect = (String) session.getAttribute("RedirectToComponentId");
-  String spaceIdFromRedirect = (String) session.getAttribute("RedirectToSpaceId");
+  String componentIdFromRedirect = (String) session.getAttribute(REDIRECT_TO_COMPONENT);
+  String spaceIdFromRedirect = (String) session.getAttribute(REDIRECT_TO_SPACE);
   if (!StringUtil.isDefined(spaceIdFromRedirect)) {
-    spaceIdFromRedirect = request.getParameter("RedirectToSpaceId");
+    spaceIdFromRedirect = request.getParameter(REDIRECT_TO_SPACE);
   }
-  String attachmentId = (String) session.getAttribute("RedirectToAttachmentId");
+  String attachmentId = (String) session.getAttribute(REDIRECT_TO_ATTACHMENT);
   LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(language);
   StringBuilder frameBottomParams = new StringBuilder().append("{");
   boolean login = StringUtil.getBooleanValue(request.getParameter("Login"));
@@ -101,7 +105,7 @@
 
   if (!"silverpeas-main.jsp".equalsIgnoreCase(helper.getMainFrame()) &&
       !"/admin/jsp/silverpeas-main.jsp".equalsIgnoreCase(helper.getMainFrame())) {
-    session.setAttribute("RedirectToSpaceId", spaceIdFromRedirect);
+    session.setAttribute(REDIRECT_TO_SPACE, spaceIdFromRedirect);
     String topLocation = gef.getLookFrame();
     if (!topLocation.startsWith("/")) {
       topLocation = "/admin/jsp/" + topLocation;
@@ -176,8 +180,8 @@
 </head>
 <body>
 <% if (attachmentId != null) {
-  session.setAttribute("RedirectToAttachmentId", null);
-  String mapping = (String) session.getAttribute("RedirectToMapping");
+  session.setAttribute(REDIRECT_TO_ATTACHMENT, null);
+  String mapping = (String) session.getAttribute(WebRedirection.REDIRECT_RESOURCE_TYPE);
 %>
 <script type="text/javascript">
   SP_openWindow('<%=m_sContext%>/<%=mapping%>/<%=attachmentId%>', 'Fichier', '800', '600',

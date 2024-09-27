@@ -37,6 +37,7 @@ import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVe
 import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.core.util.*;
+import org.silverpeas.core.web.util.WebRedirection;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -400,6 +401,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       boolean secure) {
     String cookieValue = URLEncoder.encode(value, Charsets.UTF_8);
     Cookie cookie = new Cookie(name, cookieValue);
+    cookie.setHttpOnly(true);
     cookie.setSecure(secure);
     cookie.setMaxAge(duration);
     cookie.setPath("/");
@@ -410,7 +412,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     HttpSession session = request.getSession(false);
     Map<String, Object> attrs = new HashMap<>();
     session.getAttributeNames().asIterator().forEachRemaining(a -> {
-      if (a.startsWith("Redirect") || a.equals("gotoNew")) {
+      if (a.startsWith("Redirect") || a.equals(WebRedirection.REDIRECT_URL)) {
         attrs.put(a, session.getAttribute(a));
       }
     });
