@@ -28,6 +28,7 @@
 <%@ page import="org.silverpeas.core.web.look.LookHelper"%>
 <%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.core.web.util.WebRedirection" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -42,7 +43,7 @@
   <jsp:useBean id="helper" type="org.silverpeas.core.web.look.LookHelper"/>
 
 <%
-String strGoToNew 	= (String) session.getAttribute("gotoNew");
+String strGoToNew 	= (String) session.getAttribute(WebRedirection.REDIRECT_URL);
 String spaceId 		= request.getParameter("SpaceId");
 String subSpaceId 	= request.getParameter("SubSpaceId");
 String componentId	= request.getParameter("ComponentId");
@@ -93,9 +94,9 @@ if (displayLoginHomepage) {
 }
 
 session.removeAttribute("goto");
-session.removeAttribute("gotoNew");
-session.removeAttribute("RedirectToComponentId");
-session.removeAttribute("RedirectToSpaceId");
+session.removeAttribute(WebRedirection.REDIRECT_URL);
+session.removeAttribute(WebRedirection.REDIRECT_TO_COMPONENT);
+session.removeAttribute(WebRedirection.REDIRECT_TO_SPACE);
 %>
 <style type="text/css">
 
