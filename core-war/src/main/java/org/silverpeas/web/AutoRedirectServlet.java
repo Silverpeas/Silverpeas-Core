@@ -28,16 +28,19 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +52,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,25 +64,27 @@ import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.*;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
-import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralLocalizationBundle;
-import static org.silverpeas.kernel.util.StringUtil.*;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.isAppInMaintenance;
+import static org.silverpeas.core.web.util.WebRedirection.*;
 import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.scriptContent;
+import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 /**
+ * This servlet aims to process the Web redirection requests by taking into account the access
+ * rights of the user on the resource targeted by the redirection.
+ *
  * @author ehugonnet
  */
 public class AutoRedirectServlet extends HttpServlet {
   private static final long serialVersionUID = -8962464286320797737L;
-  private static final String REDIRECT_TO_COMPONENT_ID_ATTR = "RedirectToComponentId";
-  private static final String REDIRECT_TO_SPACE_ID_ATTR = "RedirectToSpaceId";
-  private static final String GOTO_NEW_ATTR = "gotoNew";
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+   *
    * @param request servlet request
    * @param response servlet response
    */
@@ -107,8 +114,10 @@ public class AutoRedirectServlet extends HttpServlet {
       final MainSessionController mainController, final GraphicElementFactory gef)
       throws IOException {
     final List<Status> errorStatuses = Stream.of(
-            getComponentAccessStatus(context.getComponentId(), mainController),
-            getSpaceAccessStatus(context.getSpaceId(), mainController))
+            getAttachmentAccessStatus(context, mainController),
+            getPublicationAccessStatus(context, mainController),
+            getComponentAccessStatus(context, mainController),
+            getSpaceAccessStatus(context, mainController))
         .filter(s -> s.getStatusCode() >= 400)
         .collect(Collectors.toList());
     if (!errorStatuses.isEmpty()) {
@@ -135,7 +144,7 @@ public class AutoRedirectServlet extends HttpServlet {
       loginUrl.set(loginUrl.get() + "?DomainId=" + domainId);
     }
     if (context.isFromResponsiveWindow()) {
-      context.getSession().setAttribute(GOTO_NEW_ATTR, context.getGotoUrl());
+      context.getSession().setAttribute(REDIRECT_URL, context.getGotoUrl());
       sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("mainUrl", loginUrl.get())));
     } else {
       sendHtmlRedirectResponse(context, loginUrl.get());
@@ -145,7 +154,8 @@ public class AutoRedirectServlet extends HttpServlet {
   private void forbiddenPageRedirection(final Context context) throws IOException {
     if (context.isFromResponsiveWindow()) {
       sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
-          getGeneralLocalizationBundle(context.getLanguage()).getString("GML.ForbiddenAccessContent"))));
+          getGeneralLocalizationBundle(context.getLanguage()).getString("GML" +
+              ".ForbiddenAccessContent"))));
     } else {
       context.getResponse().sendRedirect(getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
     }
@@ -181,8 +191,9 @@ public class AutoRedirectServlet extends HttpServlet {
       boolean isPersoComp = isPersonalComponent.get();
       sendJsonResponse(context, JSONCodec.encodeObject(o ->
           o.put("contentUrl", context.getGotoUrl())
-           .put(isPersoComp ? "RedirectToPersonalComponentId" : REDIRECT_TO_COMPONENT_ID_ATTR, componentId)
-           .put(REDIRECT_TO_SPACE_ID_ATTR, spaceId)));
+              .put(isPersoComp ? "RedirectToPersonalComponentId" : REDIRECT_TO_COMPONENT,
+                  componentId)
+              .put(REDIRECT_TO_SPACE, spaceId)));
     } else {
       String mainFrame = context.getGraphicElementFactory().getLookFrame();
       if (!mainFrame.startsWith("/")) {
@@ -190,7 +201,7 @@ public class AutoRedirectServlet extends HttpServlet {
       } else if (!mainFrame.startsWith(getApplicationURL())) {
         mainFrame = getApplicationURL() + mainFrame;
       }
-      final String url = mainFrame + "?RedirectToComponentId=" + componentId;
+      final String url = mainFrame + "?" + REDIRECT_TO_COMPONENT + "=" + componentId;
       sendHtmlRedirectResponse(context, url);
     }
   }
@@ -214,7 +225,8 @@ public class AutoRedirectServlet extends HttpServlet {
     response.setStatus(SC_CREATED);
   }
 
-  private Status getSpaceAccessStatus(String spaceId, MainSessionController mainController) {
+  private Status getSpaceAccessStatus(Context context, MainSessionController mainController) {
+    String spaceId = context.getSpaceId();
     return isDefined(spaceId) ?
         of(spaceId)
             .map(i -> OrganizationController.get().getSpaceInstLightById(i))
@@ -229,8 +241,8 @@ public class AutoRedirectServlet extends HttpServlet {
         SEE_OTHER;
   }
 
-  private Status getComponentAccessStatus(String componentId,
-      MainSessionController mainController) {
+  private Status getComponentAccessStatus(Context context, MainSessionController mainController) {
+    String componentId = context.getComponentId();
     return isDefined(componentId) ?
         of(componentId)
             .filter(not(StringUtils::isAlpha))
@@ -238,7 +250,42 @@ public class AutoRedirectServlet extends HttpServlet {
             .filter(not(SilverpeasComponentInstance::isRemoved))
             .filter(i -> isAtLeastOneRemovedSpaceFrom(i.getSpaceId()))
             .map(i -> {
-              if (ComponentAccessControl.get().isUserAuthorized(mainController.getUserId(), i.getId())) {
+              if (ComponentAccessControl.get().isUserAuthorized(mainController.getUserId(),
+                  i.getId())) {
+                return OK;
+              }
+              return FORBIDDEN;
+            })
+            .orElse(NOT_FOUND) :
+        SEE_OTHER;
+  }
+
+  private Status getPublicationAccessStatus(Context context, MainSessionController mainController) {
+    String componentId = context.getComponentId();
+    String publicationId = context.getPublicationId();
+    return isDefined(publicationId) && isDefined(componentId) ?
+        of(publicationId)
+            .filter(StringUtils::isNumeric)
+            .map(i -> {
+              if (PublicationAccessControl.get().isUserAuthorized(mainController.getUserId(),
+                  new PublicationPK(publicationId, componentId))) {
+                return OK;
+              }
+              return FORBIDDEN;
+            })
+            .orElse(NOT_FOUND) :
+        SEE_OTHER;
+  }
+
+  private Status getAttachmentAccessStatus(Context context, MainSessionController mainController) {
+    String componentId = context.getComponentId();
+    String attachmentId = context.getAttachmentId();
+    return isDefined(attachmentId) && isDefined(componentId) ?
+        of(attachmentId)
+            .filter(StringUtils::isNumeric)
+            .map(i -> {
+              if (SimpleDocumentAccessControl.get().isUserAuthorized(mainController.getUserId(),
+                  new PublicationPK(attachmentId, componentId))) {
                 return OK;
               }
               return FORBIDDEN;
@@ -257,6 +304,7 @@ public class AutoRedirectServlet extends HttpServlet {
 
   /**
    * Handles the HTTP <code>GET</code> method.
+   *
    * @param request servlet request
    * @param response servlet response
    */
@@ -267,6 +315,7 @@ public class AutoRedirectServlet extends HttpServlet {
 
   /**
    * Handles the HTTP <code>POST</code> method.
+   *
    * @param request servlet request
    * @param response servlet response
    */
@@ -277,6 +326,7 @@ public class AutoRedirectServlet extends HttpServlet {
 
   /**
    * Returns a short description of the servlet.
+   *
    * @return a String containing servlet description
    */
   @Override
@@ -297,6 +347,7 @@ public class AutoRedirectServlet extends HttpServlet {
     private final boolean forceToLogin;
     private String gotoUrl;
     private String componentId = null;
+    private String publicationId = null;
     private String spaceId = null;
     private final String language;
 
@@ -304,8 +355,10 @@ public class AutoRedirectServlet extends HttpServlet {
       this.request = request;
       this.session = request.getSession();
       this.response = response;
-      this.mainSessionController = (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-      this.graphicElementFactory = (GraphicElementFactory) session.getAttribute(GE_FACTORY_SESSION_ATT);
+      this.mainSessionController =
+          (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+      this.graphicElementFactory =
+          (GraphicElementFactory) session.getAttribute(GE_FACTORY_SESSION_ATT);
       this.componentIdGoTo = request.getParameter("ComponentId");
       this.spaceIdGoTo = request.getParameter("SpaceId");
       this.attachmentIdGoTo = request.getParameter("AttachmentId");
@@ -320,7 +373,7 @@ public class AutoRedirectServlet extends HttpServlet {
     private static boolean isSilverpeasIdValid(String silverpeasId) {
       return isDefined(silverpeasId)
           && !StringUtils.isAlpha(silverpeasId)
-          && StringUtils.isAlphanumeric(silverpeasId.replaceAll("[-_]",""));
+          && StringUtils.isAlphanumeric(silverpeasId.replaceAll("[-_]", ""));
     }
 
     private void setIntoSession(String name, Serializable value) {
@@ -330,47 +383,66 @@ public class AutoRedirectServlet extends HttpServlet {
     }
 
     public Context init() {
-      session.removeAttribute(GOTO_NEW_ATTR);
-      session.removeAttribute(REDIRECT_TO_COMPONENT_ID_ATTR);
-      session.removeAttribute(REDIRECT_TO_SPACE_ID_ATTR);
-      session.removeAttribute("RedirectToAttachmentId");
-      session.removeAttribute("RedirectToMapping");
+      session.removeAttribute(REDIRECT_URL);
+      session.removeAttribute(REDIRECT_TO_COMPONENT);
+      session.removeAttribute(REDIRECT_TO_SPACE);
+      session.removeAttribute(REDIRECT_TO_ATTACHMENT);
+      session.removeAttribute(REDIRECT_RESOURCE_TYPE);
       if (isDefined(gotoUrl)) {
-        setIntoSession(GOTO_NEW_ATTR, gotoUrl);
-        String urlToParse = gotoUrl;
-        final String extractedComponentId;
-        if (gotoUrl.startsWith("/RpdcSearch/")) {
-          int indexOf = urlToParse.indexOf("&componentId=");
-          extractedComponentId = urlToParse.substring(indexOf + 13);
-        } else {
-          urlToParse = urlToParse.substring(1);
-          int indexBegin = urlToParse.indexOf('/') + 1;
-          int indexEnd = urlToParse.indexOf('/', indexBegin);
-          extractedComponentId = urlToParse.substring(indexBegin, indexEnd);
-        }
+        setIntoSession(REDIRECT_URL, gotoUrl);
+        final String extractedComponentId = extractComponentId();
+        publicationId = extractPublicationId();
         if (isSilverpeasIdValid(extractedComponentId)) {
           componentId = extractedComponentId;
-          setIntoSession(REDIRECT_TO_COMPONENT_ID_ATTR, componentId);
+          setIntoSession(REDIRECT_TO_COMPONENT, componentId);
         }
       } else if (isSilverpeasIdValid(componentIdGoTo)) {
         componentId = componentIdGoTo;
-        setIntoSession(REDIRECT_TO_COMPONENT_ID_ATTR, componentId);
+        setIntoSession(REDIRECT_TO_COMPONENT, componentId);
         final String foreignId = request.getParameter("ForeignId");
         if (isDefined(attachmentIdGoTo) && isSilverpeasIdValid(foreignId)) {
           final String type = request.getParameter("Mapping");
           // Contruit l'url vers l'objet du composant contenant le fichier
-          gotoUrl = URLUtil.getURL(null, componentId) + "searchResult?Type=Publication&Id=" + foreignId;
-          setIntoSession(GOTO_NEW_ATTR, gotoUrl);
+          gotoUrl =
+              URLUtil.getURL(null, componentId) + "searchResult?Type=Publication&Id=" + foreignId;
+          setIntoSession(REDIRECT_URL, gotoUrl);
           // Ajoute l'id de l'attachment pour ouverture automatique
-          setIntoSession("RedirectToAttachmentId", attachmentIdGoTo);
-          setIntoSession("RedirectToMapping", type);
+          setIntoSession(REDIRECT_TO_ATTACHMENT, attachmentIdGoTo);
+          setIntoSession(REDIRECT_RESOURCE_TYPE, type);
         }
       } else if (isSilverpeasIdValid(spaceIdGoTo)) {
         spaceId = spaceIdGoTo;
-        setIntoSession(REDIRECT_TO_SPACE_ID_ATTR, spaceId);
+        setIntoSession(REDIRECT_TO_SPACE, spaceId);
       }
 
       return this;
+    }
+
+    private String extractComponentId() {
+      String urlToParse = gotoUrl;
+      final String extractedComponentId;
+      if (gotoUrl.startsWith("/RpdcSearch/")) {
+        int indexOf = urlToParse.indexOf("&componentId=");
+        extractedComponentId = urlToParse.substring(indexOf + 13);
+      } else {
+        urlToParse = urlToParse.substring(1);
+        int indexBegin = urlToParse.indexOf('/') + 1;
+        int indexEnd = urlToParse.indexOf('/', indexBegin);
+        extractedComponentId = urlToParse.substring(indexBegin, indexEnd);
+      }
+      return extractedComponentId;
+    }
+
+    private String extractPublicationId() {
+      String extractedPublicationId = null;
+      if (gotoUrl.contains("Type=Publication")) {
+        var p = Pattern.compile(".+Id=(\\d{1,10}).*");
+        Matcher m = p.matcher(gotoUrl);
+        if (m.matches()) {
+          extractedPublicationId = m.group(1);
+        }
+      }
+      return extractedPublicationId;
     }
 
     HttpSession getSession() {
@@ -395,6 +467,14 @@ public class AutoRedirectServlet extends HttpServlet {
 
     boolean notExistsGoto() {
       return isNotDefined(gotoUrl) && isNotDefined(componentIdGoTo) && isNotDefined(spaceIdGoTo);
+    }
+
+    public String getAttachmentId() {
+      return attachmentIdGoTo;
+    }
+
+    public String getPublicationId() {
+      return publicationId;
     }
 
     public String getComponentId() {

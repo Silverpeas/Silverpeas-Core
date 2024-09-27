@@ -26,8 +26,8 @@ package org.silverpeas.core.admin.user.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -77,7 +77,7 @@ public enum SilverpeasRole {
   private final String name;
 
   // Unfortunately, several codes of role can define the same role nature in Silverpeas ...
-  public static final Set<SilverpeasRole> READER_ROLES = EnumSet.of(USER, READER);
+  public static final Set<SilverpeasRole> READER_ROLES = Set.of(USER, READER);
 
   SilverpeasRole(final String name) {
     this.name = name;
