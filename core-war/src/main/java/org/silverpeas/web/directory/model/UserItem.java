@@ -26,6 +26,7 @@ package org.silverpeas.web.directory.model;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.control.DirectoryUserFullRequestCache;
 

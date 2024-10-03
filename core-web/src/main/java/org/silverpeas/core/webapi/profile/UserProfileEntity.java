@@ -60,8 +60,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   private static final long serialVersionUID = -5011846708353591604L;
 
-  private transient ServletContext context = ServiceProvider.getService(ServletContext.class);
-  private UserDetail user;
+  private final transient ServletContext context = ServiceProvider.getService(ServletContext.class);
+  private final UserDetail user;
   @XmlElement(required = true)
   private URI uri;
   @XmlElement
@@ -126,7 +126,7 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
    *
    * @param users a list of details on some users.
    * @param usersUri the URI at which the specified users are defined.
-   * @return a list of web entities representing the profile of the specified users.
+   * @return an array of web entities representing the profile of the specified users.
    */
   public static UserProfileEntity[] fromUsers(final List<? extends UserDetail> users, URI usersUri) {
     UserProfileEntity[] selectableUsers = new UserProfileEntity[users.size()];
@@ -342,10 +342,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
       Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
     }
     return this;
-  }
-
-  public UserDetail toUserDetail() {
-    return this.user;
   }
 
   @Override

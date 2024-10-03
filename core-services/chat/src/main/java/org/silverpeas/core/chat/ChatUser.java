@@ -80,6 +80,9 @@ public class ChatUser extends UserDetail {
    * @return a Chat service user.
    */
   public static ChatUser fromUser(User user) {
+    if (user instanceof ChatUser) {
+      return (ChatUser) user;
+    }
     return new ChatUser(user);
   }
 
