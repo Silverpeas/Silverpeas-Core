@@ -67,8 +67,9 @@ function _spWindow_isSilverpeasMainWindow() {
             link.__linkHook = function(event) {
               event.stopPropagation();
               event.preventDefault();
-              const webContextIndex = link.href.indexOf(webContext);
-              const normalizedLink = webContextIndex >= 0 ? link.href.substr(webContextIndex) : link.href;
+              const pattern = new RegExp('https*://.+(' + webContext + '/.+)');
+              const matches = pattern.exec(link.href);
+              const normalizedLink = matches ? matches[1] : link.href;
               const options = {};
               if (link.classList.contains('sp-hide-navigation')) {
                 options.hideNavigation = true;
