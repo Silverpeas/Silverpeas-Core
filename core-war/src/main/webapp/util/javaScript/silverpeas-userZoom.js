@@ -143,7 +143,7 @@
    * Returns the HTML element with the user interaction tool (including links to chat, to send
    * messages, to send an invitation, ...)
    */
-  function interactionWith(user) {
+  function interactionWith(user, chatEnabled) {
     let disabledCss = '', interactionBox = $('<div>').addClass('userzoom-tooltip-interaction');
     let interactionActions = $('<div>').addClass('userzoom-tooltip-interaction-action');
     if (!user.connected) {
@@ -159,7 +159,7 @@
       sp.messager.open('', {recipientUsers: user.id, recipientEdition: false});
       $.userZoom.clear();
     }));
-    if (user.chatEnabled) {
+    if (user.chatEnabled && chatEnabled) {
       interactionBox.addClass('chat-enabled').append($('<a>', {
         href: '#'
       }).addClass('userzoom-tooltip-interaction-accessChat' + disabledCss).append($('<span>').append(__getLabel('chat'))).click(function() {
@@ -377,11 +377,12 @@
           __markRenderingDone(target);
           return;
         }
+        const chatEnabled = $.userZoom.currentUser.chatEnabled;
         $.userZoom.currentUser.onMyInvitations().then(function() {
-          let element = tooltip(target, user);
+          let element = tooltip(target, user, chatEnabled);
           $.userZoom.set(target, element);
           __markRenderingDone(target);
-        });
+        }.bind(this));
       }, 750);
     }, function(){
       __markRenderingDone(target);
@@ -407,7 +408,7 @@
    * Creates into the specified target the tooltip with short information about the specified user
    * and with an interaction tool to communicate with him through Silverpeas.
    */
-  function tooltip(target, user) {
+  function tooltip(target, user, chatEnabled) {
     let userinfo = $('<div>').addClass('userzoom-tooltip').
             append($('<div>').addClass('userzoom-tooltip-profilPhoto profilPhoto').
                     append($('<a>', {
@@ -422,7 +423,7 @@
                     }).append(user.fullName))).
                     append($('<div>').addClass('userzoom-tooltip-info-infoConnection').append(connectionStatus(user))).
                     append($('<div>').addClass('userzoom-tooltip-info-status').append(user.status))).
-            append(interactionWith(user)).
+            append(interactionWith(user, chatEnabled)).
             appendTo($(document.body));
     __adjustingPositions(userinfo, target);
     return userinfo;

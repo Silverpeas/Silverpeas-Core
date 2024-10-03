@@ -24,12 +24,12 @@
 package org.silverpeas.core.webapi.profile;
 
 import org.silverpeas.core.chat.ChatUser;
-import org.silverpeas.core.chat.servers.ChatServer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * The profile of a user that is registered into a chat service.
@@ -73,6 +73,20 @@ public class ChatUserProfileEntity extends UserProfileEntity {
    */
   @XmlElement
   public boolean isChatEnabled() {
-    return ChatServer.isEnabled();
+    return chatUser.isChatEnabled();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    ChatUserProfileEntity that = (ChatUserProfileEntity) o;
+    return Objects.equals(chatUser, that.chatUser);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), chatUser);
   }
 }
