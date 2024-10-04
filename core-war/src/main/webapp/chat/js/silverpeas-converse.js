@@ -309,7 +309,8 @@
               if (typeof model.setChatState === 'function') {
                 _converse.minimize.maximize(model);
               } else if (model.get('closed')) {
-                const $toggle = document.querySelector('converse-controlbox-toggle a');
+                const $toggle =
+                    document.querySelector('converse-controlbox-toggle a');
                 if ($toggle) {
                   $toggle.click();
                 }
@@ -327,7 +328,8 @@
           }, 0);
         };
         _converse.api.listen.once('controlBoxOpened', function() {
-          document.querySelector('converse-minimized-chats').addEventListener('dblclick', __maximizeAll);
+          document.querySelector('converse-minimized-chats')
+              .addEventListener('dblclick', __maximizeAll);
         });
       }
     });
@@ -347,33 +349,12 @@
         const urlAsDataPromise = sp.base64.urlAsData(chatOptions.userAvatarUrl);
         const refreshUserAvatar = function() {
           return _converse.api.waitUntil('rosterContactsFetched').then(function() {
-            // This method MUST be removed once https://github.com/conversejs/converse.js/issues/2925 is resolved
-            const __updateToolbars = function() {
-              sp.element.querySelectorAll('.chat-toolbar').forEach(function(toolbarView) {
-                toolbarView.requestUpdate();
-              });
-            };
             return _converse.api.vcard.get(chatOptions.jid, true).then(function(vCard) {
               urlAsDataPromise.then(function(data) {
                 const avatarData = data['justData'];
                 if (avatarData !== vCard['image']) {
                   vCard['image'] = avatarData;
                   vCard['image_type'] = data['type'];
-                  try {
-                    _converse.api.vcard.set(chatOptions.jid, vCard).then(function() {
-                      sp.log.info('vcard update success');
-                      __updateToolbars();
-                    }, function() {
-                      sp.log.error('vcard update error', arguments);
-                      __updateToolbars();
-                    });
-                  } catch (e) {
-                    sp.log.error('vcard update error', e);
-                    __updateToolbars();
-                  }
-                } else {
-                  sp.log.info('vcard is up to date');
-                  __updateToolbars();
                 }
               });
             });
@@ -381,7 +362,9 @@
         };
         const __aclUiHandler = function() {
           setTimeout(function() {
-            sp.element.querySelectorAll('#conversejs .show-add-muc-modal').forEach(function($el) {
+            sp.element
+                .querySelectorAll('#conversejs .show-add-muc-modal')
+                .forEach(function($el) {
               if (!chatOptions.acl.groupchat.creation) {
                 $el.remove();
               } else if (!$el.classList.contains('authorized')) {
@@ -501,6 +484,7 @@
           'allow_contact_removal' : false,
           'allow_contact_requests' : false,
           'allow_registration' : false,
+          'allow_non_roster_messaging' : true,
           'show_controlbox_by_default' : false,
           'discover_connection_methods' : false,
           'jitsimeet_start_option' : "into_new_tab",
@@ -521,7 +505,8 @@
       });
     };
     this.stop = function() {
-      const $controlBoxCloseButton = document.querySelector('.chatbox-btn.close-chatbox-button');
+      const $controlBoxCloseButton =
+          document.querySelector('.chatbox-btn.close-chatbox-button');
       if ($controlBoxCloseButton) {
         $controlBoxCloseButton.click();
       }
@@ -532,7 +517,8 @@
         if (StringUtil.isDefined(jid)) {
           __converse.api.chats.open(jid, {}, true);
         } else {
-          const contact = __converse.roster && __converse.roster.findWhere({'nickname' : userFullName});
+          const contact = __converse.roster &&
+              __converse.roster.findWhere({'nickname' : userFullName});
           if (contact && contact.attributes) {
             __converse.api.chats.open(contact.attributes.jid, {}, true);
           }
