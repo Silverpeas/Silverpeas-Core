@@ -57,12 +57,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * It represents the web entity of a user in Silverpeas from which a representation (usually in
- * JSON) can be produced. This web entity gather common usual user information and an entry point
- * (a URI) to its more complete profile. It is usually used in other web entities to refer a
- * user (for example the author of a contribution represented by the web entity).
+ * JSON) can be produced. This web entity gather common usual user information and an entry point (a
+ * URI) to its more complete profile. It is usually used in other web entities to refer a user (for
+ * example the author of a contribution represented by the web entity).
+ *
  * @author mmoquillon
  */
 @XmlRootElement
@@ -113,6 +115,22 @@ public class UserEntity implements Serializable {
 
   public String getFullName() {
     return fullName;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    UserEntity that = (UserEntity) o;
+    return Objects.equals(uri, that.uri)
+        && Objects.equals(id, that.id)
+        && Objects.equals(firstName, that.firstName)
+        && Objects.equals(lastName, that.lastName)
+        && Objects.equals(fullName, that.fullName);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(uri, id, firstName, lastName, fullName);
   }
 }
   

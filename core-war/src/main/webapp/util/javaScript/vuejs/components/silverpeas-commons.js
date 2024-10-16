@@ -1317,10 +1317,6 @@
   const __FormInputMixin = {
     mixins : [VuejsFormInputMixin],
     props : {
-      placeholder: {
-        'type': String,
-        'default': ''
-      },
       size: {
         'type': Number,
         'default': 60
@@ -1330,17 +1326,9 @@
         'default': 150
       }
     },
-    mounted : function() {
-      this.updateInputElementAttribute('placeholder');
-    },
     methods : {
       getInputElementName : function() {
         return 'input';
-      }
-    },
-    watch : {
-      'placeholder' : function() {
-        this.updateInputElementAttribute('placeholder');
       }
     }
   };

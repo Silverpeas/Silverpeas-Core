@@ -687,6 +687,10 @@ window.SpVue = new function() {
         'type': String,
         'default': ''
       },
+      placeholder: {
+        'type': String,
+        'default': ''
+      },
       disabled: {
         'type': Boolean,
         'default': false
@@ -715,6 +719,9 @@ window.SpVue = new function() {
           return !this.validateMandatory();
         }
       });
+    },
+    mounted : function() {
+      this.updateInputElementAttribute('placeholder');
     },
     methods : {
       getLabelByForAttribute : function(id) {
@@ -795,6 +802,9 @@ window.SpVue = new function() {
       },
       'disabled' : function() {
         this.updateInputElementDisabled();
+      },
+      'placeholder': function () {
+        this.updateInputElementAttribute('placeholder');
       }
     },
     computed : {
