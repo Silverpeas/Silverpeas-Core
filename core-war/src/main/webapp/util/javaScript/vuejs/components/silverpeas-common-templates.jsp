@@ -301,6 +301,7 @@
     <textarea v-bind:cols="cols" v-bind:rows="rows"
               v-bind:id="id" v-bind:name="name" v-bind:class="inputClass"
               v-bind:maxlength="maxlength" v-bind:disabled="disabled"
+              v-bind:placeholder="placeholder"
               v-model="model"></textarea>
     <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
   </div>
