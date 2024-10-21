@@ -38,11 +38,11 @@ import static org.silverpeas.kernel.logging.Level.DEBUG;
 public class AnAnnotatedObjectWithAMessage {
 
   public void doSomething() {
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
 
   public void raiseAnError() throws SilverpeasException {
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
     throw new SilverpeasException("A failure!");
   }
 }

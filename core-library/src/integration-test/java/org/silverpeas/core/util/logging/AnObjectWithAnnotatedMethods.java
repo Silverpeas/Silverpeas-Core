@@ -38,12 +38,12 @@ public class AnObjectWithAnnotatedMethods {
 
   @Log(dualRecord = true)
   public void doSomething() {
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
 
   @Log(message = "I love to do anything for you")
   public void doAnotherThing() {
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
 
   @Log(dualRecord = true)
@@ -51,7 +51,7 @@ public class AnObjectWithAnnotatedMethods {
     assert param2 > 0.0;
     Objects.requireNonNull(param1);
     Objects.requireNonNull(param3);
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
 
   @Log(message = "I''d like to do {0} {1} times for you at {2}", dualRecord = true)
@@ -59,12 +59,12 @@ public class AnObjectWithAnnotatedMethods {
     assert param2 > 0.0;
     Objects.requireNonNull(param1);
     Objects.requireNonNull(param3);
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
 
   @Error
   public void raiseAnError() throws SilverpeasException {
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
     throw new SilverpeasException("A failure!");
   }
 
@@ -73,13 +73,13 @@ public class AnObjectWithAnnotatedMethods {
     assert param2 > 0.0;
     Objects.requireNonNull(param1);
     Objects.requireNonNull(param3);
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
     throw new SilverpeasException("A failure!");
   }
 
   @Error(message = "Oops, an error occurred!")
   public void raiseAnotherError() throws SilverpeasException {
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
     throw new SilverpeasException("A failure!");
   }
 
@@ -89,7 +89,7 @@ public class AnObjectWithAnnotatedMethods {
     assert param2 > 0.0;
     Objects.requireNonNull(param1);
     Objects.requireNonNull(param3);
-    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    await().pollDelay(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
     throw new SilverpeasException("A failure!");
   }
 }
