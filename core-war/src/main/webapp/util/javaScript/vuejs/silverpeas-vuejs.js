@@ -721,7 +721,21 @@ window.SpVue = new function() {
       });
     },
     mounted : function() {
+      if (this.$el.classList) {
+        this.$el.classList.add('silverpeas-input');
+      }
+      if (this.includedIntoFormPane) {
+        this.rootFormApi.handleFormInputComponent(this);
+      }
       this.updateInputElementAttribute('placeholder');
+      this.updateInputElementAttribute('title');
+      this.updateInputElementReadOnly();
+      this.updateInputElementDisabled();
+    },
+    unmounted : function() {
+      if (this.includedIntoFormPane) {
+        this.rootFormApi.unhandleFormInputComponent(this);
+      }
     },
     methods : {
       getLabelByForAttribute : function(id) {
@@ -775,22 +789,6 @@ window.SpVue = new function() {
           }
         }
         return mandatoryError;
-      }
-    },
-    mounted : function() {
-      if (this.$el.classList) {
-        this.$el.classList.add('silverpeas-input');
-      }
-      if (this.includedIntoFormPane) {
-        this.rootFormApi.handleFormInputComponent(this);
-      }
-      this.updateInputElementAttribute('title');
-      this.updateInputElementReadOnly();
-      this.updateInputElementDisabled();
-    },
-    unmounted : function() {
-      if (this.includedIntoFormPane) {
-        this.rootFormApi.unhandleFormInputComponent(this);
       }
     },
     watch : {
