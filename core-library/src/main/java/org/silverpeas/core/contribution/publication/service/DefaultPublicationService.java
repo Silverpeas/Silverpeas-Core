@@ -33,21 +33,8 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.Thumbnail;
-import org.silverpeas.core.contribution.publication.dao.DistributionTreeCriteria;
-import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
-import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
-import org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO;
-import org.silverpeas.core.contribution.publication.dao.PublicationI18NDAO;
-import org.silverpeas.core.contribution.publication.dao.SeeAlsoDAO;
-import org.silverpeas.core.contribution.publication.dao.ValidationStepsDAO;
-import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.Location;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationI18N;
-import org.silverpeas.core.contribution.publication.model.PublicationLink;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
-import org.silverpeas.core.contribution.publication.model.ValidationStep;
+import org.silverpeas.core.contribution.publication.dao.*;
+import org.silverpeas.core.contribution.publication.model.*;
 import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
@@ -75,14 +62,15 @@ import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Pagination;
-import org.silverpeas.kernel.util.Pair;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -209,7 +197,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public void movePublication(PublicationPK pk, NodePK toFatherPK, boolean indexIt) {
     try (Connection con = getConnection()) {
       deleteIndex(pk);
-      if (! toFatherPK.getInstanceId().equals(pk.getInstanceId())) {
+      if (!toFatherPK.getInstanceId().equals(pk.getInstanceId())) {
         // move to another component instance
         PublicationDAO.changeInstanceId(con, pk, toFatherPK.getInstanceId());
         moveRating(pk, toFatherPK.getInstanceId());
@@ -445,6 +433,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
+  @SuppressWarnings("DuplicatedCode")
   private void copyPublicationDetail(final PublicationDetail pubDetail,
       final PublicationDetail publi, final boolean forceUpdateDate) {
     if (pubDetail.getName() != null) {
@@ -690,7 +679,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
     if (!newAliases.isEmpty() || !removedAliases.isEmpty()) {
       // aliases have changed... index it
-      indexAliases(pubPK, null);
+      indexAllAliases(pubPK, null);
     }
 
     return Pair.of(newAliases, removedAliases);
@@ -712,7 +701,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       } catch (SQLException e) {
         throw new PublicationRuntimeException(e);
       }
-      indexAliases(pubPK, null);
+      indexAllAliases(pubPK, null);
     }
   }
 
@@ -720,7 +709,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final Collection<Location> aliases) throws SQLException {
     for (Location location : aliases) {
       PublicationFatherDAO.removeAlias(connection, pubPK, location);
-      unindexAlias(pubPK, location);
+      // update the index in which the alias is referenced by removing within it any reference to
+      // the alias (if there is no more aliases referenced in the index, remove it)
+      updateAliasesIndex(pubPK, location.getInstanceId());
     }
   }
 
@@ -802,7 +793,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try {
       SeeAlsoDAO.deleteLink(id);
     } catch (Exception e) {
-      throw new SilverpeasRuntimeException("Can't delete seeAlso "+id, e);
+      throw new SilverpeasRuntimeException("Can't delete seeAlso " + id, e);
     }
   }
 
@@ -838,9 +829,11 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     return getByIds(publicationIds, null);
   }
 
-  private List<PublicationDetail> getByIds(final Collection<String> publicationIds, final Set<PublicationPK> indexedPks) {
+  private List<PublicationDetail> getByIds(final Collection<String> publicationIds,
+      final Set<PublicationPK> indexedPks) {
     try (Connection con = getConnection()) {
-      final List<PublicationDetail> publications = PublicationDAO.getByIds(con, publicationIds, indexedPks);
+      final List<PublicationDetail> publications = PublicationDAO.getByIds(con, publicationIds,
+          indexedPks);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }
@@ -854,7 +847,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public SilverpeasList<PublicationDetail> getPublicationsByCriteria(final PublicationCriteria criteria) {
     long startTime = System.currentTimeMillis();
     try (Connection con = getConnection()) {
-      final SilverpeasList<PublicationDetail> publications = PublicationDAO.selectPublicationsByCriteria(con, criteria);
+      final SilverpeasList<PublicationDetail> publications =
+          PublicationDAO.selectPublicationsByCriteria(con, criteria);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }
@@ -937,6 +931,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   /**
    * Method declaration
+   *
    * @return a connection
    */
   private Connection getConnection() {
@@ -955,7 +950,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
         Collection<String> languages = pubDetail.getLanguages();
         languages.forEach(l ->
-          WysiwygController.addToIndex(indexEntry, new ResourceReference(pubPK), l));
+            WysiwygController.addToIndex(indexEntry, new ResourceReference(pubPK), l));
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
@@ -998,22 +993,19 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     createIndex(pubPK, IndexManager.ADD);
   }
 
-  private FullIndexEntry getFullIndexEntry(PublicationDetail publi, boolean processContent) {
-    FullIndexEntry indexEntry = null;
-    if (publi != null) {
-      // Index the Publication Header
-      indexEntry = getFullIndexEntry(publi);
-      // Index the Publication Content
-      if (processContent) {
-        updateIndexEntryWithWysiwygContent(indexEntry, publi);
-        updateIndexEntryWithXMLFormContent(indexEntry, publi);
-      }
+  private FullIndexEntry getFullIndexEntry(@NonNull PublicationDetail publi,
+      boolean processContent) {
+    // Index the Publication Header
+    FullIndexEntry indexEntry = getFullIndexEntry(publi);
+    // Index the Publication Content
+    if (processContent) {
+      updateIndexEntryWithWysiwygContent(indexEntry, publi);
+      updateIndexEntryWithXMLFormContent(indexEntry, publi);
     }
     return indexEntry;
   }
 
   private void createIndex(PublicationPK pubPK, int indexOperation) {
-
     if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.ADD_AGAIN) {
 
       try {
@@ -1024,7 +1016,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           IndexEngineProxy.addIndexEntry(indexEntry);
 
           // process aliases
-          indexAliases(pubPK, indexEntry);
+          indexAllAliases(pubPK, indexEntry);
         }
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
@@ -1078,7 +1070,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final List<String> mainLocations = getAllLocations(pubDetail.getPK()).stream()
           .filter(l -> !l.isAlias())
           .sorted(comparing((Location l) -> !l.getInstanceId().equals(pubDetail.getInstanceId()))
-          .thenComparing(Location::getInstanceId))
+              .thenComparing(Location::getInstanceId))
           .map(l -> nodeService.getDetail(l).getFullPath())
           .collect(Collectors.toList());
       indexEntry.setPaths(mainLocations.isEmpty() ? null : mainLocations);
@@ -1126,48 +1118,73 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public void deleteIndex(PublicationPK pubPK) {
     IndexEntryKey indexEntry = getIndexEntryPK(pubPK.getComponentName(), pubPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
-    unindexAlias(pubPK);
+    // get all apps where the aliases are and remove publication index in these apps
+    Collection<Location> aliases = getAllAliases(pubPK);
+    for (Location alias : aliases) {
+      IndexEngineProxy.removeIndexEntry(getIndexEntryPK(alias.getInstanceId(), pubPK.getId()));
+    }
   }
 
   private IndexEntryKey getIndexEntryPK(String instanceId, String publiId) {
     return new IndexEntryKey(instanceId, "Publication", publiId);
   }
 
-  private void unindexAlias(PublicationPK pk, Location location) {
-    IndexEngineProxy.removeIndexEntry(getIndexEntryPK(location.getInstanceId(), pk.getId()));
-  }
-
-  private void unindexAlias(PublicationPK pk) {
-    // get all apps where alias are and remove publication index in these apps
-    Collection<Location> aliases = getAllAliases(pk);
-    for (Location alias : aliases) {
-      IndexEngineProxy.removeIndexEntry(getIndexEntryPK(alias.getInstanceId(), pk.getId()));
+  private void updateAliasesIndex(PublicationPK pubPK, String instanceId) {
+    final PublicationDetail publication = getDetail(pubPK);
+    Objects.requireNonNull(publication, "The publication " + pubPK.getId() + " does not exist!");
+    FullIndexEntry mainIndexEntry = getFullIndexEntry(publication, true);
+    IndexEntryKey currentIndexEntry = getIndexEntryPK(instanceId, pubPK.getId());
+    boolean isMainIndex = currentIndexEntry.equals(mainIndexEntry.getPK());
+    List<String> paths = isMainIndex && mainIndexEntry.getPaths() != null
+        ? new ArrayList<>(mainIndexEntry.getPaths())
+        : new ArrayList<>();
+    getLocationsInComponentInstance(pubPK, instanceId).stream()
+        .filter(Location::isAlias)
+        .forEach(l -> {
+          try {
+            NodeDetail node = nodeService.getDetail(new NodePK(l.getId(), l.getInstanceId()));
+            paths.add(node.getFullPath());
+          } catch (Exception e) {
+            SilverLogger.getLogger(this).warn("Alias target {0} in component {1} no more exists",
+                l.getId(), l.getInstanceId());
+          }
+        });
+    if (paths.isEmpty()) {
+      IndexEngineProxy.removeIndexEntry(getIndexEntryPK(instanceId, pubPK.getId()));
+    } else {
+      FullIndexEntry aliasIndexEntry = mainIndexEntry.getCopy();
+      aliasIndexEntry.setPK(currentIndexEntry);
+      aliasIndexEntry.setPaths(paths);
+      aliasIndexEntry.setAlias(!currentIndexEntry.getComponentId().equals(pubPK.getInstanceId()));
+      IndexEngineProxy.addIndexEntry(aliasIndexEntry);
     }
   }
 
   /**
-   * Indexes the alias of publication represented by the given {@link PublicationPK}.
+   * Indexes all the alias of the publication identified by the given {@link PublicationPK}.
    * <p>
    * If given {@link FullIndexEntry} is null, the index of aimed publication is fully processed and
    * indexes of aliases on other component instances are also processed.
    * </p>
    * <p>
-   * If given {@link FullIndexEntry} is already initialized (which MUST concern the main one of
-   * the publication), only indexes of aliases on other component instances are processed.
+   * If given {@link FullIndexEntry} is already initialized (which MUST concern the main one of the
+   * publication), only indexes of aliases on other component instances are processed.
    * </p>
    * <p>
    * Into context of indexation, an index concerning the component instance host MUST NEVER be
    * checked as an alias one.
    * </p>
+   *
    * @param pubPK the identifier of the publication.
    * @param addedMainIndexEntry the optionally initialized and registered index of publication.
    */
-  private void indexAliases(PublicationPK pubPK, FullIndexEntry addedMainIndexEntry) {
+  private void indexAllAliases(PublicationPK pubPK, FullIndexEntry addedMainIndexEntry) {
     Objects.requireNonNull(pubPK);
     final FullIndexEntry index;
     final boolean indexMainAndAliases = addedMainIndexEntry == null;
     if (indexMainAndAliases) {
       final PublicationDetail publi = getDetail(pubPK);
+      Objects.requireNonNull(publi, "The publication " + pubPK.getId() + " does not exist!");
       index = getFullIndexEntry(publi, true);
     } else {
       index = addedMainIndexEntry;
@@ -1321,6 +1338,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   /**
    * Gets the coordinates of the specified publication in the PdC.
+   *
    * @param pubId a publication identifier
    * @param componentId a component instance identifier
    * @return a collection of coordinates of the publication in a tree of classification
@@ -1350,7 +1368,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       while (pointsIt.hasNext()) {
         CoordinatePoint point = pointsIt.next();
         try {
-          NodeDetail node = nodeService.getHeader(new NodePK(String.valueOf(point.getNodeId()), componentId));
+          NodeDetail node = nodeService.getHeader(new NodePK(String.valueOf(point.getNodeId()),
+              componentId));
           point.setName(node.getName());
           point.setLevel(node.getLevel());
           point.setPath(node.getPath());
@@ -1367,6 +1386,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   /**
    * Updates the publication links
+   *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    * @
@@ -1395,13 +1415,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   /**
    * get my list of SocialInformationPublication according to options and number of Item and the
    * first Index
+   *
    * @param userId a user identifier
    * @param begin date
    * @param end date
    * @return List <SocialInformation>
    */
   @Override
-  public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId, Date begin,
+  public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
+      Date begin,
       Date end) {
     try (Connection con = getConnection()) {
       return PublicationDAO.getAllPublicationsIDbyUserid(con, userId, begin, end);
@@ -1411,8 +1433,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   /**
-   * Get list of SocialInformationPublication of my contacts according to options and number of
-   * Item and the first Index.
+   * Get list of SocialInformationPublication of my contacts according to options and number of Item
+   * and the first Index.
+   *
    * @param myContactsIds a list of unique identifiers of my contacts.
    * @param options a list of options to apply when filtering the information to get.
    * @param begin the date at which the temporal interval starts.
@@ -1447,24 +1470,28 @@ public class DefaultPublicationService implements PublicationService, ComponentI
             .asList(Pair.of(200, 10), Pair.of(1000, 5), Pair.of(100000, 2))) {
           final Pagination<PublicationDetail> filteredPagination =
               getAuthorizedPaginatedPublicationsForUserByCriteria(
-              con, userId, criteria.paginateBy(pagination), window.getFirst(), window.getSecond());
+                  con, userId, criteria.paginateBy(pagination), window.getFirst(),
+                  window.getSecond());
           final SilverpeasList<PublicationDetail> filteredPubs = filteredPagination.execute();
           if (!filteredPagination.isNbMaxDataSourceCallLimitReached()) {
             authorizedPublications = filteredPubs;
             break;
           }
           SilverLogger.getLogger(PublicationService.class).debug(() -> MessageFormat.format(
-              " trying {0} times to retrieve {1} authorized publications without success (for requested {2})",
+              " trying {0} times to retrieve {1} authorized publications without success (for " +
+                  "requested {2})",
               window.getSecond(), window.getFirst(), pagination));
         }
         if (authorizedPublications == null) {
           SilverLogger.getLogger(PublicationService.class).debug(() -> MessageFormat.format(
-              " retrieving paginated authorized publications failed with {0} directive, searching on all data",
+              " retrieving paginated authorized publications failed with {0} directive, searching" +
+                  " on all data",
               pagination));
         }
       }
       if (authorizedPublications == null) {
-        final SilverpeasList<PublicationDetail> publications = PublicationDAO.selectPublicationsByCriteria(con, criteria.paginateBy(null));
+        final SilverpeasList<PublicationDetail> publications =
+            PublicationDAO.selectPublicationsByCriteria(con, criteria.paginateBy(null));
         authorizedPublications = PublicationAccessControl.get()
             .filterAuthorizedByUser(userId, publications)
             .collect(SilverpeasList.collector(publications));
@@ -1496,7 +1523,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         .limitDataSourceCallsTo(nbMaxSqlQueryPerforming)
         .paginatedDataSource(p -> {
           try {
-            final SilverpeasList<PublicationPK> pubPks = PublicationDAO.selectPksByCriteria(con, criteria.paginateBy(p));
+            final SilverpeasList<PublicationPK> pubPks = PublicationDAO.selectPksByCriteria(con,
+                criteria.paginateBy(p));
             final Set<PublicationPK> indexedPks = new HashSet<>(pubPks.size());
             final List<String> pubIds = pubPks.stream().map(pk -> {
               indexedPks.add(pk);

@@ -23,24 +23,27 @@
  */
 package org.silverpeas.core;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import com.google.common.base.Objects;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
 
 /**
- * Reference to a resource managed by a component instance in Silverpeas. Such a reference is
- * a {@link ComponentResourceIdentifier} used to identify any kinds of resources in Silverpeas
- * without having knowledge on what this resource is. It is dedicated to be used to refer a given
- * resource without having to pass it explicitly; information about the resource can be then passed
- * from service to service without any coupling between them or with the underlying resource.
- *
+ * Reference to a resource managed by a component instance in Silverpeas. Such a reference is a
+ * {@link ComponentResourceIdentifier} used to identify any kinds of resources in Silverpeas without
+ * having knowledge on what this resource is. It is dedicated to be used to refer a given resource
+ * without having to pass it explicitly; information about the resource can be then passed from
+ * service to service without any coupling between them or with the underlying resource.
+ * <p>
+ * A resource is referred by such a reference by both its local identifier and the
+ * identifier of the component instance it belongs to.
+ * </p>
  * <p>
  * For compatibility reason, {@link ResourceReference} extends {@link WAPrimaryKey} but this
  * inheritance will be removed in the future.
  * </p>
+ *
  * @author Nicolas Eysseric
  * @author mmoquillon
  */
@@ -58,6 +61,7 @@ public class ResourceReference extends WAPrimaryKey
 
   /**
    * Constructs a new reference to the specified contribution.
+   *
    * @param identifier the unique identifier of a contribution.
    */
   public ResourceReference(ContributionIdentifier identifier) {
@@ -66,8 +70,9 @@ public class ResourceReference extends WAPrimaryKey
 
   /**
    * Constructs a new reference to a resource with the specified identifier. The resource doesn't
-   * belong to a component instance or that component instance isn't required to refer uniquely
-   * the resource.
+   * belong to a component instance or that component instance isn't required to refer uniquely the
+   * resource.
+   *
    * @param id the unique identifier of a resource from which it can be explicitly and uniquely
    * referred in the whole Silverpeas.
    */
@@ -78,6 +83,7 @@ public class ResourceReference extends WAPrimaryKey
   /**
    * Constructs a new reference to a resource with the specified identifier and that is managed by
    * the specified component instance.
+   *
    * @param id the identifier of the resource, unique in the given component instance.
    * @param componentInstanceId the unique identifier of the component instance.
    */
@@ -87,6 +93,7 @@ public class ResourceReference extends WAPrimaryKey
 
   /**
    * Constructs a new reference to a resource from the old and deprecated WAPrimaryKey object.
+   *
    * @param pk a WAPrimaryKey object used to identify uniquely a resource in Silverpeas.
    */
   public ResourceReference(WAPrimaryKey pk) {
@@ -95,6 +102,7 @@ public class ResourceReference extends WAPrimaryKey
 
   /**
    * Gets a reference to the specified resource managed by a component instance.
+   *
    * @param resource the unique identifier of a resource managed by a component.
    * @return a {@link ResourceReference} instance.
    */
@@ -103,7 +111,11 @@ public class ResourceReference extends WAPrimaryKey
   }
 
   /**
-   * Is the an another object is a {@link ResourceReference} instance and is equal to this object.
+   * Is this reference refers the same resource than the specified other reference? Two
+   * references refer the same resource if the pair local identifier of the referred
+   * resource and identifier of the application instance the resource belongs to are equal in the
+   * references.
+   *
    * @param other the object to compare to this reference.
    * @return true if other is equals to this reference. False otherwise.
    */
@@ -113,18 +125,19 @@ public class ResourceReference extends WAPrimaryKey
       return false;
     }
     final ResourceReference otherRef = (ResourceReference) other;
-    return new EqualsBuilder().append(this.getId(), otherRef.getId())
-        .append(getInstanceId(), otherRef.getInstanceId())
-        .build();
+    return Objects.equal(getLocalId(), otherRef.getLocalId())
+        && Objects.equal(getComponentInstanceId(), otherRef.getComponentInstanceId());
   }
 
   /**
-   * Gets the hash code of this reference.
-   * @return an integer
+   * Gets the hash code of this reference. It is computed on the local identifier of the referred
+   * resource and on the identifier of the component instance the resource belongs to.
+   *
+   * @return the hash code of this reference.
    */
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(this.getId()).append(this.getInstanceId()).toHashCode();
+    return Objects.hashCode(getLocalId(), getComponentInstanceId());
   }
 
   @Override

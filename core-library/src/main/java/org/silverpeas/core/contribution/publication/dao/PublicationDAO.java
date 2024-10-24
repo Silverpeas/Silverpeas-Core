@@ -37,31 +37,15 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.jdbc.AbstractDAO;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.MapUtil;
-import org.silverpeas.core.util.SilverpeasArrayList;
-import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.*;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -69,15 +53,16 @@ import static java.time.OffsetDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO.PUBLICATION_FATHER_TABLE_NAME;
 import static org.silverpeas.core.util.DateUtil.formatDate;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * This is the Publication Data Access Object.
+ *
  * @author Nicolas Eysseric
  */
+@SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve", "SqlSourceToSinkFlow"})
 public class PublicationDAO extends AbstractDAO {
   // if beginDate is null, it will be replace in database with it
   private static final String NULL_BEGIN_DATE = "0000/00/00";
@@ -128,6 +113,7 @@ public class PublicationDAO extends AbstractDAO {
 
   /**
    * Deletes all publications linked to the component instance represented by the given identifier.
+   *
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
    * @throws SQLException on SQL error
@@ -142,7 +128,7 @@ public class PublicationDAO extends AbstractDAO {
     int result = 0;
     PublicationPK pubPK = new PublicationPK(UNDEFINED_ID, fatherPK);
 
-    if (fatherPath.length() > 0) {
+    if (!fatherPath.isEmpty()) {
       final String selectStatement =
           "select count(F.pubId) from " + pubPK.getTableName() + "Father F, " +
               pubPK.getTableName() + " P, " + fatherPK.getTableName() + " N " +
@@ -162,19 +148,7 @@ public class PublicationDAO extends AbstractDAO {
 
         prepStmt.setString(1, fatherPK.getComponentName());
         prepStmt.setString(2, fatherPK.getComponentName());
-
-        prepStmt.setString(3, dateNow);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, dateNow);
-        prepStmt.setString(6, dateNow);
-        prepStmt.setString(7, hourNow);
-        prepStmt.setString(8, dateNow);
-        prepStmt.setString(9, dateNow);
-        prepStmt.setString(10, hourNow);
-        prepStmt.setString(11, dateNow);
-        prepStmt.setString(12, dateNow);
-        prepStmt.setString(13, hourNow);
-        prepStmt.setString(14, hourNow);
+        setDateVisibility(prepStmt, dateNow, hourNow, true);
 
         try (ResultSet rs = prepStmt.executeQuery()) {
           if (rs.next()) {
@@ -184,6 +158,25 @@ public class PublicationDAO extends AbstractDAO {
       }
     }
     return result;
+  }
+
+  @SuppressWarnings("DuplicatedCode")
+  private static void setDateVisibility(PreparedStatement prepStmt, String dateNow,
+      String hourNow, boolean withRangeHour) throws SQLException {
+    prepStmt.setString(3, dateNow);
+    prepStmt.setString(4, dateNow);
+    prepStmt.setString(5, dateNow);
+    prepStmt.setString(6, dateNow);
+    prepStmt.setString(7, hourNow);
+    prepStmt.setString(8, dateNow);
+    prepStmt.setString(9, dateNow);
+    prepStmt.setString(10, hourNow);
+    prepStmt.setString(11, dateNow);
+    prepStmt.setString(12, dateNow);
+    if (withRangeHour) {
+      prepStmt.setString(13, hourNow);
+      prepStmt.setString(14, hourNow);
+    }
   }
 
   public static Map<String, Integer> getDistributionTree(final Connection con,
@@ -512,18 +505,7 @@ public class PublicationDAO extends AbstractDAO {
 
       prepStmt.setString(1, pubPK.getComponentName());
       prepStmt.setInt(2, Integer.parseInt(fatherPK.getId()));
-      prepStmt.setString(3, dateNow);
-      prepStmt.setString(4, dateNow);
-      prepStmt.setString(5, dateNow);
-      prepStmt.setString(6, dateNow);
-      prepStmt.setString(7, hourNow);
-      prepStmt.setString(8, dateNow);
-      prepStmt.setString(9, dateNow);
-      prepStmt.setString(10, hourNow);
-      prepStmt.setString(11, dateNow);
-      prepStmt.setString(12, dateNow);
-      prepStmt.setString(13, hourNow);
-      prepStmt.setString(14, hourNow);
+      setDateVisibility(prepStmt, dateNow, hourNow, true);
 
       ArrayList<PublicationDetail> list = new ArrayList<>();
       try (ResultSet rs = prepStmt.executeQuery()) {
@@ -615,16 +597,7 @@ public class PublicationDAO extends AbstractDAO {
       if (filterOnVisibilityPeriod) {
         prepStmt.setString(1, dateNow);
         prepStmt.setString(2, dateNow);
-        prepStmt.setString(3, dateNow);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, hourNow);
-        prepStmt.setString(6, dateNow);
-        prepStmt.setString(7, dateNow);
-        prepStmt.setString(8, hourNow);
-        prepStmt.setString(9, dateNow);
-        prepStmt.setString(10, dateNow);
-        prepStmt.setString(11, hourNow);
-        prepStmt.setString(12, hourNow);
+        setDateVisibility(prepStmt, dateNow, hourNow, false);
       }
 
       try (ResultSet rs = prepStmt.executeQuery()) {
@@ -665,9 +638,15 @@ public class PublicationDAO extends AbstractDAO {
   }
 
   /**
-   * Selects massively simple data about publications.
+   * Selects massively simple data about the publications identified by their specified Silverpeas
+   * identifiers. Because a publication can be aliased in others locations (in the same application
+   * or in others ones), only its unique local identifier is taken into account, whatever the
+   * component instance identifier referred by the {@link PublicationPK} values: by doing this we
+   * ensure to get the original publication (this is possible because the local identifier of a
+   * publication is unique whatever the component instance).
    * <p>
    * For now, only the following data are retrieved:
+   * </p>
    *   <ul>
    *     <li>pubId</li>
    *     <li>pubStatus</li>
@@ -681,9 +660,11 @@ public class PublicationDAO extends AbstractDAO {
    *     <li>pubcreatorid</li>
    *     <li>pubupdaterid</li>
    *   </ul>
+   * <p>
    *   This method is designed for process performance needs.<br/>
    *   The result is not necessarily into same ordering as the one of given parameter.
    * </p>
+   *
    * @param con the database connection.
    * @param ids the instance ids aimed.
    * @return a list of {@link PublicationDetail} instances.
@@ -691,19 +672,21 @@ public class PublicationDAO extends AbstractDAO {
    */
   public static List<PublicationDetail> getMinimalDataByIds(Connection con,
       Collection<PublicationPK> ids) throws SQLException {
-    final Map<PublicationPK, Integer> indexedPubPks = ids.stream()
-        .collect(toMap(p -> p, p -> Integer.parseInt(p.getId())));
+    final List<Integer> pubIds = ids.stream()
+        .map(p -> Integer.parseInt(p.getId()))
+        .collect(Collectors.toList());
     final List<PublicationDetail> result = new ArrayList<>(ids.size());
-    JdbcSqlQuery.executeBySplittingOn(indexedPubPks.values(), (idBatch, ignore) ->
+    JdbcSqlQuery.executeBySplittingOn(pubIds, (subListOfPubIds, ignore) ->
         JdbcSqlQuery.select("pubId, instanceId, pubStatus, pubCloneId, pubCloneStatus,")
             .addSqlPart("pubBeginDate, pubEndDate, pubBeginHour, pubEndHour,")
             .addSqlPart("pubcreatorid, pubupdaterid")
             .from(SB_PUBLICATION_PUBLI_TABLE)
-            .where(PUB_ID).in(idBatch)
+            .where(PUB_ID).in(subListOfPubIds)
             .executeWith(con, r -> {
+              int thePubId = r.getInt(1);
               final PublicationPK pk =
-                  new PublicationPK(Integer.toString(r.getInt(1)), r.getString(2));
-              if (indexedPubPks.containsKey(pk)) {
+                  new PublicationPK(Integer.toString(thePubId), r.getString(2));
+              if (pubIds.contains(thePubId)) {
                 final PublicationDetail pubDetail = PublicationDetail.builder().setPk(pk).build();
                 pubDetail.setStatus(r.getString(3));
                 pubDetail.setCloneId(Integer.toString(r.getInt(4)));
@@ -923,47 +906,6 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static Collection<PublicationDetail> selectByBeginDateDescAndStatus(Connection con,
-      PublicationPK pubPK, String status) throws SQLException {
-    final String selectStatement =
-        "select * from SB_Publication_Publi where pubStatus like '" + status + "' " +
-            " and instanceId = ? " + AND + "( ? > pubBeginDate AND ? < pubEndDate ) OR " +
-            "( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR " +
-            "( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR " +
-            "( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )" +
-            " ) " + " order by pubCreationDate DESC, pubBeginDate DESC, pubId DESC";
-
-    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
-      java.util.Date now = new java.util.Date();
-      String dateNow = formatDate(now);
-      String hourNow = DateUtil.formatTime(now);
-
-      prepStmt.setString(1, pubPK.getComponentName());
-      prepStmt.setString(2, dateNow);
-      prepStmt.setString(3, dateNow);
-      prepStmt.setString(4, dateNow);
-      prepStmt.setString(5, dateNow);
-      prepStmt.setString(6, hourNow);
-      prepStmt.setString(7, dateNow);
-      prepStmt.setString(8, dateNow);
-      prepStmt.setString(9, hourNow);
-      prepStmt.setString(10, dateNow);
-      prepStmt.setString(11, dateNow);
-      prepStmt.setString(12, hourNow);
-      prepStmt.setString(13, hourNow);
-
-      ArrayList<PublicationDetail> list = new ArrayList<>();
-      try (ResultSet rs = prepStmt.executeQuery()) {
-        PublicationDetail pub;
-        while (rs.next()) {
-          pub = resultSet2PublicationDetail(rs);
-          list.add(pub);
-        }
-      }
-      return list;
-    }
-  }
-
   public static Collection<PublicationDetail> getOrphanPublications(Connection con,
       final String componentId) throws SQLException {
     final String query = SELECT_FROM + PUBLICATION_TABLE_NAME +
@@ -975,53 +917,6 @@ public class PublicationDAO extends AbstractDAO {
       try (ResultSet rs = stmt.executeQuery()) {
         while (rs.next()) {
           PublicationDetail pub = resultSet2PublicationDetail(rs);
-          list.add(pub);
-        }
-      }
-      return list;
-    }
-  }
-
-  public static Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(
-      Connection con, PublicationPK pubPK, String publisherId, String nodeId)
-      throws SQLException {
-    StringBuilder selectStatement = new StringBuilder(128);
-    selectStatement.append(SELECT_FROM)
-        .append(pubPK.getTableName())
-        .append(" P, ")
-        .append(pubPK.getTableName())
-        .append(FATHER_F);
-    selectStatement.append(" where P.instanceId = ? ");
-    selectStatement.append(AND_F_PUB_ID_EQUAL_P_PUB_ID);
-    selectStatement.append(" AND (F.nodeId = ").append(nodeId);
-    selectStatement.append(" OR ( ? < pubBeginDate ) ");
-    selectStatement.append(" OR ( pubBeginDate = ? AND ? < pubBeginHour )");
-    selectStatement.append(" OR ( ? > pubEndDate ) ");
-    selectStatement.append(" OR ( pubEndDate = ? AND ? > pubEndHour))");
-    if (publisherId != null) {
-      selectStatement.append(" and P.pubCreatorId = ? ");
-    }
-
-    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
-      prepStmt.setString(1, pubPK.getComponentName());
-      java.util.Date now = new java.util.Date();
-      String formattedDate = formatDate(now);
-      String formattedHour = DateUtil.formatTime(now);
-      prepStmt.setString(2, formattedDate);
-      prepStmt.setString(3, formattedDate);
-      prepStmt.setString(4, formattedHour);
-      prepStmt.setString(5, formattedDate);
-      prepStmt.setString(6, formattedDate);
-      prepStmt.setString(7, formattedHour);
-      if (publisherId != null) {
-        prepStmt.setString(8, publisherId);
-      }
-
-      List<PublicationDetail> list = new ArrayList<>();
-      try (ResultSet rs = prepStmt.executeQuery()) {
-        PublicationDetail pub;
-        while (rs.next()) {
-          pub = resultSet2PublicationDetail(rs);
           list.add(pub);
         }
       }

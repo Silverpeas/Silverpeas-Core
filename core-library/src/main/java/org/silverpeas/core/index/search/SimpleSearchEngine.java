@@ -28,33 +28,24 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.index.search.model.DidYouMeanSearcher;
-import org.silverpeas.core.index.search.model.IndexSearcher;
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
-import org.silverpeas.core.index.search.model.ParseException;
-import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.index.search.model.SearchCompletion;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.index.search.model.*;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.security.authorization.ComponentAuthorization.ComponentResourceReference;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,9 +58,12 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  * A SimpleSearchEngine search Silverpeas indexes index and give access to the retrieved index
  * entries.
  */
+@Service
 @Singleton
 public class SimpleSearchEngine implements SearchEngine {
 
+  private static final List<String> EXTERNAL_CONTRIBUTION_TYPE = List.of("Versioning",
+      "Publication", "Node");
   private static final Function<FilterMatchingIndexEntryItem, ComponentResourceReference>
       itemAsContributionIdentifier = i -> {
     // Currently, there is no authorization rules on objects that are linked to another object.
@@ -83,6 +77,8 @@ public class SimpleSearchEngine implements SearchEngine {
   private DidYouMeanSearcher didYouMeanSearcher;
   @Inject
   private IndexSearcher indexSearcher;
+  @Inject
+  private OrganizationController organization;
   private final SettingBundle pdcSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
   private final float minScore = pdcSettings.getFloat("wordSpellingMinScore", 0.5f);
@@ -125,6 +121,7 @@ public class SimpleSearchEngine implements SearchEngine {
 
   /**
    * check if the results score is low enough to suggest spelling words
+   *
    * @return true if the max results score is under the defined threshold
    */
   private boolean isSpellingNeeded(List<MatchingIndexEntry> results) {
@@ -138,6 +135,7 @@ public class SimpleSearchEngine implements SearchEngine {
 
   /**
    * gets a list of suggestion from a partial String
+   *
    * @param keywordFragment string to execute the search
    * @return a set of result sorted by alphabetic order
    */
@@ -152,23 +150,25 @@ public class SimpleSearchEngine implements SearchEngine {
     if (matchingIndexEntries == null || matchingIndexEntries.isEmpty()) {
       return new ArrayList<>();
     }
-    // This permits to optimize search (instead of requesting admin on each result of type 'Component')
+    // This allows to optimize search (instead of requesting the organization on each result of
+    // type 'Component')
     final Set<String> allowedComponentIds = isDefined(userId)
-        ? Stream.of(OrganizationController.get().getAvailCompoIds(userId)).collect(Collectors.toSet())
+        ? Stream.of(organization.getAvailCompoIds(userId)).collect(Collectors.toSet())
         : emptySet();
     // Convert into items
     final List<FilterMatchingIndexEntryItem> filterItems = matchingIndexEntries.stream()
         .map(FilterMatchingIndexEntryItem::new)
         .collect(Collectors.toList());
-    // Filtering external entries
+    // Filtering external entries: we remove them and get only the non external entries (hence
+    // those not yet processed)
     final boolean enableExternalSearch = pdcSettings.getBoolean("external.search.enable", false);
-    List<FilterMatchingIndexEntryItem> otherItems =
-        removeNonPublicationAndNonNodeExternalEntries(filterItems, enableExternalSearch);
+    List<FilterMatchingIndexEntryItem> nonProcessedItems =
+        removeExternalEntries(filterItems, enableExternalSearch);
     // Filtering by all existing implementations of ComponentAuthorization interface
     final Iterator<ComponentAuthorization> it = ComponentAuthorization.getAll().iterator();
-    while (it.hasNext() && !otherItems.isEmpty()) {
+    while (it.hasNext() && !nonProcessedItems.isEmpty()) {
       final ComponentAuthorization componentAuthorization = it.next();
-      otherItems = checkAccessAuthorization(userId, otherItems, componentAuthorization);
+      nonProcessedItems = checkAccessAuthorization(userId, nonProcessedItems, componentAuthorization);
     }
     // Finalizing the filtering
     return filterItems.stream()
@@ -179,10 +179,10 @@ public class SimpleSearchEngine implements SearchEngine {
 
   @Nonnull
   private List<FilterMatchingIndexEntryItem> checkAccessAuthorization(final String userId,
-      List<FilterMatchingIndexEntryItem> otherItems,
+      final List<FilterMatchingIndexEntryItem> items,
       final ComponentAuthorization componentAuthorization) {
-    final List<FilterMatchingIndexEntryItem> processedItems = new ArrayList<>(otherItems.size());
-    otherItems = otherItems.stream()
+    final List<FilterMatchingIndexEntryItem> processedItems = new ArrayList<>(items.size());
+    var nonRelatedItems = items.stream()
         .filter(i -> {
           final boolean relatedTo = componentAuthorization.isRelatedTo(i.getEntry().getComponent());
           if (relatedTo) {
@@ -197,28 +197,30 @@ public class SimpleSearchEngine implements SearchEngine {
           .filter(processedItems, itemAsContributionIdentifier, userId, SEARCH)
           .forEach(FilterMatchingIndexEntryItem::keep);
     }
-    return otherItems;
+    return nonRelatedItems;
   }
 
   @Nonnull
-  private List<FilterMatchingIndexEntryItem> removeNonPublicationAndNonNodeExternalEntries(
+  private List<FilterMatchingIndexEntryItem> removeExternalEntries(
       final List<FilterMatchingIndexEntryItem> filterItems, final boolean enableExternalSearch) {
     return filterItems.stream()
-          .filter(i -> {
-            final MatchingIndexEntry mie = i.getEntry();
-            if (enableExternalSearch && isExternalComponent(mie.getServerName())) {
-              i.processed();
-              mie.setExternalResult(true);
-              // Filter only Publication and Node data
-              final String objectType = mie.getObjectType();
-              if ("Versioning".equals(objectType) || "Publication".equals(objectType) ||
-                  "Node".equals(objectType)) {
-                i.keep();
-              }
-            }
-            return !i.isProcessed();
-          })
-          .collect(Collectors.toList());
+        .map(i ->
+            Optional.of(i.getEntry())
+                .filter(e -> enableExternalSearch
+                    && isExternalComponent(e.getServerName()))
+                .map(e -> {
+                  i.processed();
+                  e.setExternalResult(true);
+                  // Filter only Publication and Node data
+                  final String objectType = e.getObjectType();
+                  if (EXTERNAL_CONTRIBUTION_TYPE.contains(objectType)) {
+                    i.keep();
+                  }
+                  return i;
+                })
+                .orElse(i))
+        .filter(Predicate.not(FilterMatchingIndexEntryItem::isProcessed))
+        .collect(Collectors.toList());
   }
 
   private boolean isMatchingIndexEntryAvailable(final FilterMatchingIndexEntryItem item,
@@ -254,7 +256,7 @@ public class SimpleSearchEngine implements SearchEngine {
       return Administration.get().isSpaceAvailable(userId, spaceId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn("Can't test if space {0} is available for user {1}",
-          new String[] {spaceId, userId}, e);
+          new String[]{spaceId, userId}, e);
       return false;
     }
   }
@@ -302,7 +304,7 @@ public class SimpleSearchEngine implements SearchEngine {
       return entry;
     }
 
-     void processed() {
+    void processed() {
       this.processed = true;
     }
 
