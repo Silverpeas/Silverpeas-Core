@@ -27,7 +27,15 @@ package org.silverpeas.core.contribution.publication.model;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
+import java.util.Objects;
+
 /**
+ * Unique identifier of a publication. As a publication can be located in different locations in
+ * different component instances, it is always uniquely identified by its alone local identifier and
+ * not by the pair local identifier/component instance identifier like with any others
+ * contributions. This is why, the equality and the hash computation is done only on its local
+ * unique identifier.
+ *
  * @author silveryocha
  */
 class PublicationIdentifier extends ContributionIdentifier {
@@ -41,5 +49,19 @@ class PublicationIdentifier extends ContributionIdentifier {
   @Override
   public ResourceReference toReference() {
     return new PublicationPK(getLocalId(), getComponentInstanceId());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof PublicationIdentifier) {
+      PublicationIdentifier that = (PublicationIdentifier) o;
+      return Objects.equals(that.getLocalId(), getLocalId());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getLocalId());
   }
 }
