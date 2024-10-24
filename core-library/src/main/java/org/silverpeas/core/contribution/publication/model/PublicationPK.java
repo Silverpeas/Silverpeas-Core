@@ -27,9 +27,11 @@ package org.silverpeas.core.contribution.publication.model;
 import org.silverpeas.core.ResourceReference;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
- * It's the Publication PrimaryKey object It identify a Publication
+ * A reference to a publication in Silverpeas.
+ *
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -55,6 +57,7 @@ public class PublicationPK extends ResourceReference implements Serializable {
 
   /**
    * Return the object root table name
+   *
    * @return the root table name of the object
    * @since 1.0
    */
@@ -65,6 +68,7 @@ public class PublicationPK extends ResourceReference implements Serializable {
 
   /**
    * Return the object table name
+   *
    * @return the table name of the object
    * @since 1.0
    */
@@ -74,7 +78,11 @@ public class PublicationPK extends ResourceReference implements Serializable {
   }
 
   /**
-   * Check if an another object is equal to this object
+   * Check if this reference refers the same publication than the specified one. A publication is
+   * uniquely identified by its identifier, whatever the component instance it belongs to. Two
+   * instances in different component instances but with the same identifier refer the same
+   * publication; this means the same publication can be referred from different location.
+   *
    * @param obj the object to compare to this PublicationPK
    * @return true if other is equals to this object
    * @see java.lang.Object#equals(java.lang.Object)
@@ -91,19 +99,18 @@ public class PublicationPK extends ResourceReference implements Serializable {
       return false;
     }
     PublicationPK other = (PublicationPK) obj;
-    if (id == null) {
-      return (other.id == null);
-    }
-    return (id.equals(other.id));
+    return Objects.equals(id, other.id);
   }
 
   /**
-   * Returns a hash code for the key
+   * Returns a hash code for the key. In opposite to the default behavior of the
+   * {@link ResourceReference}, it is computed only on the publication identifier.
+   *
    * @return A hash code for this object
    * @see java.lang.Object#hashCode()
    */
   @Override
   public int hashCode() {
-    return id.hashCode();
+    return Objects.hash(id);
   }
 }

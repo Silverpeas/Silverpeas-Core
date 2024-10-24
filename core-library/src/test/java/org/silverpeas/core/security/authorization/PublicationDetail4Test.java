@@ -79,4 +79,12 @@ class PublicationDetail4Test extends PublicationDetail {
   List<Location> getLocations() {
     return locations;
   }
+
+  @Override
+  public String toString() {
+    return "PublicationDetail4Test{" +
+        "id=" + getId() +
+        ", instanceId=" + getInstanceId() +
+        '}';
+  }
 }
