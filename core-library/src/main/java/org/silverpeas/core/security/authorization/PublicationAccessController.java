@@ -64,6 +64,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
 
 /**
  * Check the access to a publication for a user.
+ *
  * @author neysseric
  */
 @Service
@@ -187,17 +188,17 @@ public class PublicationAccessController extends AbstractAccessController<Public
                   publicationDetail.isVisible()));
       // Verifying sharing
       authorized.filter(a -> a && isSharingActionFrom(operations))
-                .ifPresent(a -> {
-          final User user = User.getById(userId);
-          final ComponentAccessController.DataManager componentDataManager =
-              ComponentAccessController.getDataManager(context);
-          authorized.set(!user.isAnonymous() && !user.isAccessGuest() &&
-              componentDataManager.isPublicationSharingEnabledForRole(instanceId,
-                  safeHighestUserRole));
-        });
+          .ifPresent(a -> {
+            final User user = User.getById(userId);
+            final ComponentAccessController.DataManager componentDataManager =
+                ComponentAccessController.getDataManager(context);
+            authorized.set(!user.isAnonymous() && !user.isAccessGuest() &&
+                componentDataManager.isPublicationSharingEnabledForRole(instanceId,
+                    safeHighestUserRole));
+          });
       // Verifying persist actions
       authorized.filter(a -> a && isPersistActionFrom(operations))
-                .ifPresent(a -> authorized.set(canPublicationBePersistedOrDeleted.getAsBoolean()));
+          .ifPresent(a -> authorized.set(canPublicationBePersistedOrDeleted.getAsBoolean()));
     }
     // Result
     return authorized.get();
@@ -268,6 +269,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
   /**
    * Fills given userRoles with the given context.
+   *
    * @param userRoles the {@link Set} to fill.
    * @param context the context.
    * @param userId the identifier of the current user.
@@ -324,15 +326,21 @@ public class PublicationAccessController extends AbstractAccessController<Public
     if (!isPersistActionFrom(operations) &&
         !existsExternalMainLocationLinkedToRemovedComponentInstance(context, pubPk)) {
       try {
+       boolean isSearch = isSearchActionFrom(operations);
         final Collection<Location> locations =
             getDataManager(context).getAllPublicationAliases(pubPk);
         for (final Location location : locations) {
-          final Set<SilverpeasRole> nodeUserRoles =
-              nodeAccessController.getUserRoles(userId, location, context);
-          if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
-            // In case of alias, only user role is taken into account
-            userRoles.add(SilverpeasRole.USER);
-            break;
+          if (!isSearch || location.getInstanceId().equals(pubPk.getInstanceId())) {
+            // in the case of a search, we are looking for the user rights on the aliases of the
+            // publication in the same component instance. Out of a search, any authorized alias in
+            // any component instance is ok.
+            final Set<SilverpeasRole> nodeUserRoles =
+                nodeAccessController.getUserRoles(userId, location, context);
+            if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
+              // In case of alias, only user role is taken into account
+              userRoles.add(SilverpeasRole.USER);
+              break;
+            }
           }
         }
       } catch (Exception e) {
@@ -369,7 +377,38 @@ public class PublicationAccessController extends AbstractAccessController<Public
   }
 
   /**
-   * Data manager.
+   * Reference to a publication in a given application instance. The publication is uniquely
+   * referred by the couple local identifier of the publication and the identifier of the component
+   * instance it belongs. The application instance in which is located the publication is here
+   * important in the computation of the access rights, even if the publication is just an alias of
+   * an original one in another application instance.
+   */
+  private static class PubInAppInstanceRef extends PublicationPK {
+
+    public PubInAppInstanceRef(PublicationPK pk) {
+      super(pk.getLocalId(), pk);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj instanceof PublicationPK) {
+        PublicationPK other = (PublicationPK) obj;
+        return Objects.equals(getLocalId(), other.getLocalId())
+            && Objects.equals(getInstanceId(), other.getInstanceId());
+      }
+      return false;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(getLocalId(), getInstanceId());
+    }
+  }
+
+  /**
+   * A manager of the data relative to publications. Its goal is to abstract the access to the
+   * publications for which the access rights have to be computed and checked. So it can
+   * handle a data cache in a transparent way.
    */
   static class DataManager {
     private final AccessControlContext context;
@@ -390,10 +429,22 @@ public class PublicationAccessController extends AbstractAccessController<Public
       this.publicationService = PublicationService.get();
     }
 
+    /**
+     * Loads the caches backed by this data manger with the specified publication. The publication
+     * can be an alias of an original one.
+     * @param pub the publication to put into the caches
+     */
     void loadCachesWithLoadedPublication(final PublicationDetail pub) {
       loadPublicationCacheByDetails(singletonList(pub));
     }
 
+    /**
+     * Loads the caches backed by this data manager with the specified publications. Some of the
+     * given publications can be aliases of original ones.
+     * @param userId the unique identifier of the user operating on the specified publications.
+     * @param pubs the publications accessed by the user.
+     * @return itself.
+     */
     DataManager loadCachesWithLoadedPublications(final String userId,
         final Collection<PublicationDetail> pubs) {
       loadPublicationCacheByDetails(pubs);
@@ -412,6 +463,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
               publicationCache.values().stream()
                   .filter(not(DataManager::isItAClone))
                   .map(PublicationDetail::getPK)
+                  .map(PubInAppInstanceRef::new)
                   .collect(Collectors.toList()) :
               this.givenPublicationPks;
       final Set<String> instanceIds = pubRefs.stream()
@@ -441,7 +493,10 @@ public class PublicationAccessController extends AbstractAccessController<Public
       if (givenPublicationPks != null) {
         return;
       }
-      givenPublicationPks = pks.stream().distinct().collect(Collectors.toList());
+      givenPublicationPks = pks.stream()
+          .map(PubInAppInstanceRef::new)
+          .distinct()
+          .collect(Collectors.toList());
       if (isSearchActionFrom(operations)) {
         publicationCache = emptyMap();
       } else {
@@ -456,7 +511,11 @@ public class PublicationAccessController extends AbstractAccessController<Public
         return;
       }
       givenPublicationPks =
-          pubs.stream().map(PublicationDetail::getPK).distinct().collect(Collectors.toList());
+          pubs.stream()
+              .map(PublicationDetail::getPK)
+              .map(PubInAppInstanceRef::new)
+              .distinct()
+              .collect(Collectors.toList());
       if (isSearchActionFrom(operations)) {
         publicationCache = emptyMap();
       } else {
@@ -477,7 +536,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
       }
       final int cacheSize = publications.size() + masterPubs.size();
       publicationCache = new HashMap<>(cacheSize);
-      final Consumer<PublicationDetail> cacheSupplier = p -> publicationCache.put(p.getPK(), p);
+      final Consumer<PublicationDetail> cacheSupplier = p ->
+          publicationCache.put(new PubInAppInstanceRef(p.getPK()), p);
       publications.forEach(cacheSupplier);
       masterPubs.forEach(cacheSupplier);
     }
@@ -508,6 +568,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
     /**
      * Gets the aliases on the component instance referenced by the given {@link PublicationPK}.
+     *
      * @param pk the publication primary key.
      * @return a list of {@link Location} on the component instance.
      */
@@ -523,6 +584,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
      * <p>
      * Caching is handled.
      * </p>
+     *
      * @param pk the primary key of a publication.
      * @return a {@link Supplier} of {@link List} of {@link Location} instances.
      */
@@ -546,6 +608,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
     /**
      * Return the current loaded publication.
+     *
      * @return the {@link PublicationDetail} instance.
      */
     PublicationDetail getCurrentPublication() {
@@ -558,6 +621,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
      * <p>
      * Caching is handled.
      * </p>
+     *
      * @param pk the primary key of a publication.
      * @return the {@link PublicationDetail} instance.
      */
@@ -579,7 +643,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
     private PublicationDetail getPublicationData(final PublicationPK pk) {
       if (publicationCache != null) {
-        return publicationCache.get(pk);
+        return publicationCache.get(new PubInAppInstanceRef(pk));
       }
       return publicationService.getMinimalDataByIds(singleton(pk)).stream().findFirst()
           .orElse(null);
