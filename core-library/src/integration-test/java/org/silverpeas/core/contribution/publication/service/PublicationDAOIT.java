@@ -43,14 +43,12 @@ import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static junit.framework.TestCase.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.test.integration.rule.DbSetupRule.getSafeConnection;
 
 /**
@@ -147,6 +145,7 @@ public class PublicationDAOIT {
     try (Connection con = getSafeConnection()) {
       PublicationPK primaryKey = new PublicationPK("100", "kmelia200");
       PublicationDetail result = PublicationDAO.selectByPrimaryKey(con, primaryKey);
+      assertThat(result, is(notNullValue()));
       assertEquals(primaryKey, result.getPK());
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
@@ -294,11 +293,9 @@ public class PublicationDAOIT {
   public void testSelectByFatherPK_5args() throws Exception {
     try (Connection con = getSafeConnection()) {
       NodePK fatherPK = new NodePK("110", "kmelia200");
-      String sorting = null;
-      boolean filterOnVisibilityPeriod = false;
       String userId = "100";
-      Collection<PublicationDetail> result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting,
-          filterOnVisibilityPeriod, userId);
+      Collection<PublicationDetail> result =
+          PublicationDAO.selectByFatherPK(con, fatherPK, null, false, userId);
       assertNotNull(result);
       assertEquals(1, result.size());
       Iterator<PublicationDetail> iter = result.iterator();
@@ -323,9 +320,7 @@ public class PublicationDAOIT {
       assertEquals("300", detail.getValidatorId());
       assertEquals("Publication 1", detail.getTitle());
 
-      filterOnVisibilityPeriod = true;
-      result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod,
-          userId);
+      result = PublicationDAO.selectByFatherPK(con, fatherPK, null, true, userId);
       assertNotNull(result);
       assertEquals(1, result.size());
       iter = result.iterator();
@@ -367,7 +362,7 @@ public class PublicationDAOIT {
       List<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, "kmelia200",
           sorting, status,
           filterOnVisibilityPeriod);
-      assertEquals(result.size(), 2);
+      assertThat(result.size(), is(2));
 
       // Test on an empty node
       fatherIds.clear();
@@ -375,7 +370,7 @@ public class PublicationDAOIT {
 
       result = PublicationDAO.selectByFatherIds(con, fatherIds, "kmelia200", sorting, status,
           filterOnVisibilityPeriod);
-      assertEquals(result.size(), 0);
+      assertThat(result.size(), is(0));
     }
   }
 
@@ -390,13 +385,13 @@ public class PublicationDAOIT {
           PublicationCriteria
               .excludingTrashNodeOnComponentInstanceIds("kmelia200")
               .ofStatus(status));
-      assertEquals(result.size(), 2);
+      assertThat(result.size(), is(2));
 
       status = "Draft";
       result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds("kmelia200")
           .ofStatus(status));
-      assertEquals(result.size(), 0);
+      assertThat(result.size(), is(0));
     }
   }
 
@@ -414,20 +409,20 @@ public class PublicationDAOIT {
           PublicationCriteria
               .excludingTrashNodeOnComponentInstanceIds(componentIds)
               .ofStatus(status));
-      assertEquals(result.size(), 2);
+      assertThat(result.size(), is(2));
 
       status = "Draft";
       result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(status));
-      assertEquals(result.size(), 0);
+      assertThat(result.size(), is(0));
 
       status = "Valid";
       componentIds.remove("kmelia200");
       result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(status));
-      assertEquals(result.size(), 0);
+      assertThat(result.size(), is(0));
     }
   }
 
@@ -698,9 +693,9 @@ public class PublicationDAOIT {
       List<SocialInformationPublication> list101DOA =
           PublicationDAO.getAllPublicationsIDbyUserid(con,
               user101, begin, end);
-      assertTrue("Must be equal", list101.get(0).equals(list101DOA.get(0)));
+      assertThat(list101.get(0), is(list101DOA.get(0)));
 
-//who updated pub1 and pub2
+      //who updated pub1 and pub2
       begin = DateUtil.parse("2009/11/01");
       end = DateUtil.parse("2009/11/30");
       SocialInformationPublication sp1User200 = new SocialInformationPublication(
@@ -731,8 +726,7 @@ public class PublicationDAOIT {
       list200DOA = PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds,
           options, begin, end);
       assertNotNull("SocialInformationPublication of my contact must be not null", list200DOA);
-      assertTrue(
-          "SocialInformationPublication of my contact must be not empty", !list200DOA.isEmpty());
+      assertThat(list200DOA.isEmpty(), is(false));
     }
   }
 }

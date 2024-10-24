@@ -107,7 +107,20 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.kernel.util.StringUtil.split;
 
 /**
- * This object contains the description of a publication
+ * A publication is a contribution that contains both a localized content and attachments, and it
+ * can be subject of a validation process according to the application managing it. A publication
+ * can be also be exported through the Silverpeas XML export engine and its modifications are
+ * tracked.
+ * <p>
+ * Because a publication, according to the application managing it, can be located in different
+ * locations (either in the same application or in others ones), it is uniquely identified by its
+ * local identifier whatever the component instance (the application) it belongs to; this is why the
+ * local identifier of the publication is also its global identifier. This characteristic has to be
+ * taken with caution when comparing references to contributions between them
+ * ({@link ResourceReference} because this can cause unexpected behaviour, as by default two
+ * references are equal if they refer the same contribution (id est contributions having both same
+ * local identifier and same component instance identifier).
+ * </p>
  */
 @XmlRootElement(namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -185,6 +198,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * Gets a builder of {@link PublicationDetail} instances for the default language as defined in
    * {@link I18n#getDefaultLanguage()}. All the textual properties (name, description and keywords)
    * will be related to this language.
+   *
    * @return a {@link Builder} instance
    */
   public static Builder builder() {
@@ -194,6 +208,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   /**
    * Gets a builder of {@link PublicationDetail} instances for the specified language. All the
    * textual properties (name, description and keywords) will be related to this language.
+   *
    * @param language a ISO 639-1 code of a supported language.
    * @return a {@link Builder} instance
    */
@@ -380,6 +395,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * <p>
    * The corresponding {@link ThumbnailDetail} is loaded once and cached into publication instance.
    * </p>
+   *
    * @return the {@link ThumbnailDetail} instance if any.
    */
   @Override
@@ -618,7 +634,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       } catch (Exception e) {
         SilverLogger.getLogger(this)
             .warn(failureOnGetting("field value with",
-                MessageFormat.format("pubid {0} and fieldName {1}", getPK().getId(), fieldName)),
+                    MessageFormat.format("pubid {0} and fieldName {1}", getPK().getId(),
+                        fieldName)),
                 e);
       }
 
@@ -741,11 +758,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     indexOperation = i;
   }
 
-  public String getDefaultUrl(String componentName) {
-    return "/R" + componentName + "/" + getPK().getInstanceId() +
-        "/searchResult?Type=Publication&Id=" + getPK().getId();
-  }
-
   public boolean isStatusMustBeChecked() {
     return statusMustBeChecked;
   }
@@ -762,20 +774,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.targetValidatorId = targetValidatorId;
   }
 
-  public String getTargetValidatorNames() {
-    StringBuilder validatorNames = new StringBuilder();
-    String[] validatorIds = getTargetValidatorIds();
-    if (validatorIds != null) {
-      for (String valId : validatorIds) {
-        if (validatorNames.length() > 0) {
-          validatorNames.append(", ");
-        }
-        validatorNames.append(User.getById(valId).getDisplayedName());
-      }
-    }
-    return validatorNames.toString();
-  }
-
   public String[] getTargetValidatorIds() {
     return split(getTargetValidatorId(), ',');
   }
@@ -789,8 +787,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public boolean haveGotClone() {
-    return cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) &&
-        cloneId.length() > 0;
+    return cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId)
+        && !cloneId.isEmpty();
   }
 
   public boolean isClone() {
@@ -859,12 +857,13 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   /**
    * Indicates if the update data MUST be set.
    * <p>
-   *   The update data are:
+   * The update data are:
    *   <ul>
    *     <li>the last update date</li>
    *     <li>the last updater</li>
    *   </ul>
    * </p>
+   *
    * @return true if update data MUST be set, false otherwise.
    */
   public boolean isUpdateDataMustBeSet() {
@@ -948,6 +947,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * A user can access a publication if he has enough rights to access both the application instance
    * in which is managed this publication and one of the nodes to which this publication belongs
    * to.
+   *
    * @param user a user in Silverpeas.
    * @return true if the user can access this publication, false otherwise.
    */
@@ -962,6 +962,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * A user can access a publication on persist context if he has enough rights to access both the
    * application instance in which is managed this publication and one of the nodes to which this
    * publication belongs to.
+   *
    * @param user a user in Silverpeas.
    * @return true if the user can access this publication, false otherwise.
    */
@@ -974,6 +975,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   /**
    * Is the specified user can file in this publication attachments?
+   *
    * @param user a user in Silverpeas.
    * @return true if the user has modification rights on this publication. In this case, he can
    * attach documents to this publication. False otherwise.
@@ -985,6 +987,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   /**
    * The type of this resource
+   *
    * @return the same value returned by getContributionType()
    */
   public static String getResourceType() {
@@ -1006,6 +1009,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   /**
    * Gets the rating informations linked with the current publication.
+   *
    * @return the rating of the publication.
    */
   @Override
@@ -1033,6 +1037,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * <p>
    * Giving a null location means that alias data MUST be cleared.
    * </p>
+   *
    * @param location a {@link Location} instance.
    */
   public void setAuthorizedLocation(final Location location) {
@@ -1095,6 +1100,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * Is this publication a new one? A publication is considered as a new one when it was created or
    * updated before a given amount of day. This amount is a parameter that is set in the
    * <code>publicationSettings.properties</code> properties file.
+   *
    * @return true of this publication was created or updated recently. False otherwise
    */
   public boolean isNew() {
@@ -1113,8 +1119,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
 
     /**
-     * Builds a {@link PublicationDetail} instance from the properties that were previously set
-     * with this builder.
+     * Builds a {@link PublicationDetail} instance from the properties that were previously set with
+     * this builder.
+     *
      * @return a {@link PublicationDetail} instance.
      */
     public PublicationDetail build() {
@@ -1126,6 +1133,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets the unique identifier of the {@link PublicationDetail} instance to build.
+     *
      * @param pk a unique identifier of a publication.
      * @return itself.
      */
@@ -1136,6 +1144,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets the creation properties of the {@link PublicationDetail} instance to build.
+     *
      * @param creationDate the date at which the publication was created.
      * @param creatorId the identifier of the user that created the publication.
      * @return itself.
@@ -1148,6 +1157,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets the update properties of the {@link PublicationDetail} instance to build.
+     *
      * @param updateDate the date at which the publication was lastly updated.
      * @param updaterId the identifier of the user that lastly updated the publication.
      * @return itself.
@@ -1160,6 +1170,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets the validation properties of the {@link PublicationDetail} instance to build.
+     *
      * @param validateDate the date at which the publication was validated.
      * @param validatorId the identifier of the user that validated the publication.
      * @return itself.
@@ -1171,7 +1182,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
 
     /**
-     * Sets the visibility begin date properties of the {@link PublicationDetail} instance to build.
+     * Sets the visibility begin date properties of the {@link PublicationDetail} instance to
+     * build.
+     *
      * @param date the day at which the publication begins to be visible.
      * @param hour the hour at which the publication begins to be visible.
      * @return itself.
@@ -1184,6 +1197,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets the visibility end date properties of the {@link PublicationDetail} instance to build.
+     *
      * @param date the day at which the publication ends to be visible.
      * @param hour the hour at which the publication ends to be visible.
      * @return itself.
@@ -1196,6 +1210,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets the importance of the {@link PublicationDetail} instance to build.
+     *
      * @param importance the importance of the publication. Lower value means more importance.
      * @return itself.
      */
@@ -1206,6 +1221,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets the keywords of the {@link PublicationDetail} instance to build.
+     *
      * @param keywords the keywords of the publication.
      * @return itself.
      */
@@ -1215,8 +1231,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
 
     /**
-     * Sets the URL path where is located the content of the {@link PublicationDetail} instance
-     * to build.
+     * Sets the URL path where is located the content of the {@link PublicationDetail} instance to
+     * build.
+     *
      * @param contentPagePath the path of the content of the publication.
      * @return itself.
      */
@@ -1227,6 +1244,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets the version of the {@link PublicationDetail} instance to build.
+     *
      * @param version the version of the publication.
      * @return itself.
      */
@@ -1237,6 +1255,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     /**
      * Sets in the default language the given name and description of the publication to build.
+     *
      * @param name the name of the publication.
      * @param description the description of the publication.
      * @return itself.
