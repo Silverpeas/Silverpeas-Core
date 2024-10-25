@@ -27,6 +27,7 @@
  */
 package org.silverpeas.core.comment.dao;
 
+import org.exparity.hamcrest.date.DateMatchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -36,7 +37,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.comment.dao.jdbc.JDBCCommentRequester;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
@@ -55,6 +59,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import static org.exparity.hamcrest.date.DateMatchers.isToday;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -87,6 +92,9 @@ public class CommentRequesterIT {
 
   @Before
   public void prepareTest() throws Exception {
+    SessionCacheAccessor sessionCacheAccessor = CacheAccessorProvider.getSessionCacheAccessor();
+    User currentUser = aUser();
+    sessionCacheAccessor.newSessionCache(currentUser);
     con = DBUtil.openConnection();
   }
 
@@ -100,10 +108,9 @@ public class CommentRequesterIT {
     CommentId id = new CommentId("kmelia18", null);
     String resourceType = "RtypeTest";
     ResourceReference resourceRef = new ResourceReference("200", "kmelia18");
-    UserDetail author = aUser();
+    UserDetail requester = aUser();
     String message = "A dummy message";
-    Date creationDate = aDate();
-    Comment cmt = new Comment(id, author.getId(), resourceType, resourceRef, creationDate);
+    Comment cmt = new Comment(id, "10", resourceType, resourceRef, aDate());
     cmt.setMessage(message);
     Comment result = commentRequester.saveComment(con, cmt);
     assertNotNull(result);
@@ -113,10 +120,10 @@ public class CommentRequesterIT {
     Comment savedComment = commentRequester.getComment(con, result.getIdentifier());
     assertNotNull(savedComment);
     assertEquals(resourceType, savedComment.getResourceType());
-    assertEquals(author.getId(), savedComment.getCreatorId());
+    assertEquals(savedComment.getCreatorId(), requester.getId());
     assertEquals(message, savedComment.getMessage());
-    assertEquals(creationDate, savedComment.getCreationDate());
-    assertEquals(creationDate, savedComment.getLastUpdateDate());
+    assertThat(savedComment.getCreationDate(), isToday());
+    assertThat(savedComment.getLastUpdateDate(), isToday());
   }
 
   @Test

@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.comment.service;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.test.CommentBuilder;
 import org.silverpeas.core.comment.test.MyCommentActionListener;
@@ -53,6 +56,7 @@ public class DefaultCommentServiceIT {
   private static final String TABLE_CREATION_SCRIPT = "/org/silverpeas/core/comment/create-database.sql";
   private static final String DATASET_SCRIPT = "/org/silverpeas/core/comment/comment-dataset.sql";
   private static final String TEST_RESOURCE_TYPE = "RtypeTest";
+  private static final String USER_ID = "10";
 
   @Inject
   private MyCommentActionListener listener;
@@ -75,6 +79,9 @@ public class DefaultCommentServiceIT {
     assertThat(listener, notNullValue());
     assertThat(commentService, notNullValue());
     listener.reset();
+    SessionCacheAccessor sessionCacheAccessor = CacheAccessorProvider.getSessionCacheAccessor();
+    User currentUser = User.getById(USER_ID);
+    sessionCacheAccessor.newSessionCache(currentUser);
   }
 
   @After
@@ -96,7 +103,7 @@ public class DefaultCommentServiceIT {
   @Test
   public void subscribersShouldBeInvokedAtCommentAdding() {
     getCommentService()
-        .createComment(CommentBuilder.getBuilder().buildWith("10", "Vu à la télé"));
+        .createComment(CommentBuilder.getBuilder().buildWith(USER_ID, "Vu à la télé"));
     assertThat(listener.isInvoked(), is(true));
     assertThat(1, is(listener.getInvocationCount()));
     assertThat(listener.isCommentAdded(), is(true));

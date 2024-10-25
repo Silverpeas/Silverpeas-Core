@@ -38,15 +38,16 @@ import static org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle;
 public class Comment implements SilverpeasContent {
 
   private static final long serialVersionUID = 3738544756345055840L;
-  private static SettingBundle settingBundle = getSettingBundle("org.silverpeas.util.comment.Comment");
+  private static final SettingBundle settingBundle =
+      getSettingBundle("org.silverpeas.util.comment.Comment");
   public static final String CONTRIBUTION_TYPE = "Comment";
-  private CommentId id;
-  private String resourceType;
-  private ResourceReference resource;
+  private final CommentId id;
+  private final String resourceType;
+  private final ResourceReference resource;
   private String message;
-  private Date creationDate;
+  private final Date creationDate;
   private Date updateDate;
-  private String authorId;
+  private final String authorId;
 
   /**
    * Constructs a comment about the given resource and written by the specified author at the given

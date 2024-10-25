@@ -25,8 +25,8 @@ package org.silverpeas.core.comment.dao.jdbc;
 
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
@@ -34,25 +34,19 @@ import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.util.ArgumentAssertion.assertDefined;
+import static org.silverpeas.core.util.ArgumentAssertion.assertNotNull;
 import static org.silverpeas.core.util.DateUtil.*;
 
 /**
@@ -86,7 +80,9 @@ public class JDBCCommentRequester {
   /**
    * Saves the specified comment with the specified connection onto a data source. Once saved, the
    * comment passed as argument isn't updated with the persistence information and hence the
-   * returned comment instance should be used for further handling.
+   * returned comment instance should be used for further handling. Whatever the author and
+   * creation date setting, it isn't taken into account: the current requester and the current
+   * date are taken into account as author and creation date.
    * @param con the connection to a data source.
    * @param cmt the comment to save.
    * @return the comment that is saved into the data source with its unique identifier.
@@ -96,18 +92,17 @@ public class JDBCCommentRequester {
     String insertQuery = "INSERT INTO sb_comment_comment (commentId , commentOwnerId, " +
         "commentCreationDate, commentModificationDate, commentComment, resourceType, resourceId, " +
         "instanceId) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+    String errorMessage = "The comment should be created by an authenticated user";
     int newId = DBUtil.getNextId(COMMENT_TABLE, COMMENT_ID);
+    User author = User.getCurrentRequester();
+    assertNotNull(author, errorMessage);
+    assertDefined(author.getId(), errorMessage);
+    String now = date2SQLDate(new Date());
     try (PreparedStatement prepStmt = con.prepareStatement(insertQuery)) {
       prepStmt.setInt(1, newId);
-      prepStmt.setInt(2, Integer.parseInt(cmt.getCreatorId()));
-      prepStmt.setString(3, date2SQLDate(cmt.getCreationDate()));
-      String updateDate;
-      if (cmt.getLastUpdateDate() != null) {
-        updateDate = date2SQLDate(cmt.getLastUpdateDate());
-      } else {
-        updateDate = null;
-      }
-      prepStmt.setString(4, updateDate);
+      prepStmt.setInt(2, Integer.parseInt(author.getId()));
+      prepStmt.setString(3, now);
+      prepStmt.setString(4, now);
       prepStmt.setString(5, cmt.getMessage());
       prepStmt.setString(6, cmt.getResourceType());
       prepStmt.setString(7, cmt.getResourceReference().getLocalId());
