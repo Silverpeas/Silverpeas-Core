@@ -168,7 +168,7 @@
 
   <script type="text/JavaScript">
     (function() {
-      var options = {
+      let options = {
         domSelector : '${domSelector}',
         componentInstanceId : "${componentInstanceId}",
         onCompletedUrl : "${uploadCompletedUrl}",
@@ -177,7 +177,8 @@
         helpCoverClass : "${helpCoverClass}"
       };
 
-      var _performDdWithContributionModificationManagement = function (fileUpload, resolve, reject) {
+      const _performDdWithContributionModificationManagement =
+              function (fileUpload, resolve, reject) {
         let rejectOnClose = true;
         if (${isHandledModificationContext}) {
           jQuery.contributionModificationContext.validateOnUpdate({
@@ -201,7 +202,8 @@
         }
       };
 
-      var _performDdWithPotentialNotification = function (fileUpload, userModificationContextResponse, resolve, reject) {
+      const _performDdWithPotentialNotification =
+              function (fileUpload, userModificationContextResponse, resolve, reject) {
         function __applyModificationContextResponse(ajaxOptions) {
           if (userModificationContextResponse) {
             ajaxOptions = userModificationContextResponse.applyOnAjaxOptions(ajaxOptions);
@@ -231,7 +233,7 @@
           },
           callback : function(userResponse) {
             rejectOnClose = false;
-            var ajaxOptions = userResponse.applyOnAjaxOptions();
+            let ajaxOptions = userResponse.applyOnAjaxOptions();
             ajaxOptions = __applyModificationContextResponse(ajaxOptions);
             fileUpload.uploadSession.onCompleted.urlHeaders = ajaxOptions.headers;
             resolve();
@@ -256,20 +258,20 @@
           return Promise.resolve();
         }
         return new Promise(function(resolve, reject) {
-          var rejectOnClose = true;
+          let rejectOnClose = true;
           jQuery('#validationDialog${domIdSuffix}').popup('validation', {
             title : '<fmt:message key="attachment.dragAndDrop.title" />',
             buttonDisplayed : true,
             isMaxWidth : true,
             callback : function() {
               rejectOnClose = false;
-              var uploadCompletedUrl = '${uploadCompletedUrl}';
+              let uploadCompletedUrl = '${uploadCompletedUrl}';
               <c:if test="${_ddIsI18n}">
-              var contentLanguage = jQuery('select[name=ddLangCreate${domIdSuffix}]', this).val();
+              let contentLanguage = jQuery('select[name=ddLangCreate${domIdSuffix}]', this).val();
               uploadCompletedUrl += '&ContentLanguage=' + contentLanguage;
               </c:if>
               <c:if test="${isVersionActive}">
-              var version = jQuery('input[name=versionType${domIdSuffix}]:checked', this).val();
+              let version = jQuery('input[name=versionType${domIdSuffix}]:checked', this).val();
               uploadCompletedUrl += '&Type=' + version;
               </c:if>
               fileUpload.uploadSession.onCompleted.url = uploadCompletedUrl;

@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="java.time.ZoneId" %>
 <%@ page import="org.silverpeas.kernel.util.StringUtil" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
@@ -60,7 +61,7 @@ if (publications.isEmpty()) { %>
 			first = false;
 		}
 %>
-	<a class="sp-link" href="<%=url %>"><strong><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></strong></a>
+	<a class="sp-link" href="<%=url %>"><strong><%=Encode.forHtml(pub.getName(language))%></strong></a>
     <% if (pubUpdater != null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), userZoneId, language)%>
     <% } %>

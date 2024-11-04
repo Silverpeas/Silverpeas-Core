@@ -22,8 +22,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//# sourceURL=/util/javaScript/silverpeas-ddUpload.js
+
 // Check for the various File API support.
-var dragAndDropUploadEnabled = window.File;
+const dragAndDropUploadEnabled = window.File;
 
 (function() {
 
@@ -31,14 +33,14 @@ var dragAndDropUploadEnabled = window.File;
     window.DragAndDropUploadBundle = new SilverpeasPluginBundle();
   }
 
-  var dragAndDropUploadDebug = false;
+  let dragAndDropUploadDebug = false;
 
   // Web Context
-  if (!webContext) {
-    var webContext = '/silverpeas';
+  if (!window.webContext) {
+     window.webContext = '/silverpeas';
   }
 
-  var firstDropEventHandled = false;
+  let firstDropEventHandled = false;
 
   /**
    * Drag & Drop Upload File.
@@ -47,8 +49,8 @@ var dragAndDropUploadEnabled = window.File;
    * @param options
    * @constructor
    */
-  DragAndDropUpload = function(options) {
-    var __ready = new Promise(function(resolve, reject) {
+  window.DragAndDropUpload = function(options) {
+    let __ready = new Promise(function(resolve, reject) {
       this.containerRendered = resolve;
     }.bind(this));
     if (!options.domSelector && !options.domSelector.length) {
@@ -90,7 +92,7 @@ var dragAndDropUploadEnabled = window.File;
     this.monitor = new DragAndDropUploadMonitor(this);
 
     this.sendFilesManually = function(files) {
-      var fileList = Array.isArray(files) ? files : [files];
+      let fileList = Array.isArray(files) ? files : [files];
       // Simulating a drop
       dropHandler({
         stopPropagation : function() {},
@@ -99,7 +101,7 @@ var dragAndDropUploadEnabled = window.File;
       })
     };
 
-    var dropHandler = function(event) {
+    let dropHandler = function(event) {
       if (!this.context.mute) {
         event.stopPropagation();
         event.preventDefault();
@@ -123,7 +125,7 @@ var dragAndDropUploadEnabled = window.File;
 
       if (!firstDropEventHandled) {
         firstDropEventHandled = true;
-        var _root = document.querySelector('body').parentNode;
+        let _root = document.querySelector('body').parentNode;
         _root.addEventListener('dragover', function(event) {
           if (!this.context.mute) {
             event.preventDefault();
@@ -168,8 +170,8 @@ var dragAndDropUploadEnabled = window.File;
    * @param uploadInstance
    * @constructor
    */
-  var DragAndDropUploadMonitor = function(uploadInstance) {
-    var monitorCtx = {};
+  const DragAndDropUploadMonitor = function(uploadInstance) {
+    let monitorCtx = {};
     this.show = function() {
       if (this.isClosed()) {
         monitorCtx.notyInstanceReady = new Promise(function(resolve, reject) {
@@ -218,20 +220,20 @@ var dragAndDropUploadEnabled = window.File;
     }.bind(this);
     this.reset();
 
-    var percentBar = document.createElement('span');
+    let percentBar = document.createElement('span');
     percentBar.classList.add('percentage-progress-bar');
-    var percentValue = document.createElement('span');
+    let percentValue = document.createElement('span');
     percentValue.classList.add('percentage-progress-value');
-    var percentContainer = document.createElement('div');
+    let percentContainer = document.createElement('div');
     percentContainer.classList.add('percentage-progress');
     percentContainer.appendChild(percentBar);
     percentContainer.appendChild(percentValue);
-    var container = document.createElement('div');
+    let container = document.createElement('div');
     container.classList.add('upload-state');
     container.innerHTML = DragAndDropUploadBundle.get("upload.inprogress");
     container.appendChild(percentContainer);
 
-    var __update = function() {
+    let __update = function() {
       if (monitorCtx.total || monitorCtx.performedTotalFiles) {
         var uploadedTotalPercentage = monitorCtx.total ?
             parseInt((monitorCtx.uploadedTotal / monitorCtx.total) * 100) : 100;
@@ -248,7 +250,7 @@ var dragAndDropUploadEnabled = window.File;
       __internalQueuePromise.then(function() {
         __update();
       });
-    }.bind(this));
+    });
 
     this.add = function(fileUpload) {
       fileUpload.addEventListener('startsend', function() {
@@ -297,10 +299,10 @@ var dragAndDropUploadEnabled = window.File;
     });
     uploadInstance.monitor.reset();
 
-    var firstDropPerformed = false;
-    var firstLoadPending = false;
-    var firstLoadCompleted = false;
-    var nbFilePerformed = 0;
+    let firstDropPerformed = false;
+    let firstLoadPending = false;
+    let firstLoadCompleted = false;
+    let nbFilePerformed = 0;
     this.id = '';
     this.severalFilesToUpload = false;
     this.existsAtLeastOneFolder = false;
@@ -334,7 +336,7 @@ var dragAndDropUploadEnabled = window.File;
 
       internalQueue.push(function() {
         file.componentInstanceId = uploadInstance.context.componentInstanceId;
-        var fileUpload = new FileUpload(uploadInstance, this, file);
+        let fileUpload = new FileUpload(uploadInstance, this, file);
         uploadInstance.monitor.add(fileUpload);
         this.filesToSend.push(fileUpload);
         nbFilePerformed++;
@@ -352,18 +354,18 @@ var dragAndDropUploadEnabled = window.File;
      * @type {function(this:UploadSession)|*}
      * @private
      */
-    var _performUploadEnd = function() {
+    let _performUploadEnd = function() {
       uploadInstance.context.currentUploadSession = false;
       if (jQuery && jQuery.progressMessage) {
         jQuery.progressMessage();
       }
       __logDebug("performUploadEnd - calling onAllFilesProcessed callback");
-      for (var i = 0; i < uploadInstance.context.onAllFilesProcessed.length; i++) {
+      for (let i = 0; i < uploadInstance.context.onAllFilesProcessed.length; i++) {
         uploadInstance.context.onAllFilesProcessed[i].call(this);
       }
       if (this.onCompleted.url) {
         __logDebug("performUploadEnd - performing ajax call on '" + this.onCompleted.url + "'");
-        var onCompletedUrlHeaders = {
+        let onCompletedUrlHeaders = {
           "X-UPLOAD-SESSION" : this.id
         };
         if (typeof this.onCompleted.urlHeaders === 'object') {
@@ -402,7 +404,7 @@ var dragAndDropUploadEnabled = window.File;
      * @type {function(this:UploadSession)|*}
      * @private
      */
-    var _consume = function() {
+    let _consume = function() {
       if (!this.filesToSend.length || sendMonitor.isFull()) {
         if (!this.filesToSend.length) {
           __logDebug("consume - no more file to send");
@@ -422,7 +424,7 @@ var dragAndDropUploadEnabled = window.File;
       }
 
       sendMonitor.register();
-      var file;
+      let file;
       if (!firstLoadPending && !firstLoadCompleted) {
         firstLoadPending = true;
         file = this.filesToSend.shift();
@@ -443,7 +445,7 @@ var dragAndDropUploadEnabled = window.File;
 
           try {
             __logDebug("performUploadEnd - calling onFileSendError callback");
-            for (var i = 0; i < uploadInstance.context.onFileSendError.length; i++) {
+            for (let i = 0; i < uploadInstance.context.onFileSendError.length; i++) {
               uploadInstance.context.onFileSendError[i].call(this, file);
             }
           } catch (e) {
@@ -474,7 +476,7 @@ var dragAndDropUploadEnabled = window.File;
      * @type {function(this:UploadSession)|*}
      * @private
      */
-    var _send = function(file) {
+    let _send = function(file) {
       if (file.isSent) {
 
         __logDebug("_send - file '" + file.fullPath + "' already sent");
@@ -520,8 +522,8 @@ var dragAndDropUploadEnabled = window.File;
   /**
    * Permits to manage a treatment queue.
    */
-  var __internalQueuePromise = Promise.resolve();
-  var internalQueue = new function() {
+  const __internalQueuePromise = Promise.resolve();
+  const internalQueue = new function() {
     this.push = function(callback) {
       __internalQueuePromise.then(callback);
     };
@@ -534,26 +536,26 @@ var dragAndDropUploadEnabled = window.File;
    * @param file the file to send.
    * @constructor
    */
-  var FileUpload = function(uploadInstance, uploadSession, file) {
+  const FileUpload = function(uploadInstance, uploadSession, file) {
     extendsObject(this, file);
     this.uploadSession = uploadSession;
-    var onstartsend = [];
-    var onprogress = [];
-    var onsenderror = [];
-    var onsendsuccess = [];
+    let onStartSend = [];
+    let onProgress = [];
+    let onSendError = [];
+    let onSendSuccess = [];
     this.addEventListener = function(type, callback) {
       switch (type) {
         case 'startsend':
-          onstartsend.push(callback);
+          onStartSend.push(callback);
           break;
         case 'progress' :
-          onprogress.push(callback);
+          onProgress.push(callback);
           break;
         case 'senderror' :
-          onsenderror.push(callback);
+          onSendError.push(callback);
           break;
         case 'sendsuccess' :
-          onsendsuccess.push(callback);
+          onSendSuccess.push(callback);
           break;
       }
     };
@@ -561,13 +563,13 @@ var dragAndDropUploadEnabled = window.File;
     this.uploadedSize = 0;
     this.uploadedRatio = 0;
     this.previousUploadedSize = 0;
-    var __error = function(request) {
+    let __error = function(request) {
 
       __logDebug("FileUpload.send() - '" + file.fullPath +
           "' not uploaded due to errors (HTTP status in error)");
 
-      for (var i = 0; i < onsenderror.length; i++) {
-        onsenderror[i].call(this, this);
+      for (let i = 0; i < onSendError.length; i++) {
+        onSendError[i].call(this, this);
       }
 
       return Promise.reject({
@@ -575,9 +577,9 @@ var dragAndDropUploadEnabled = window.File;
       });
     }.bind(this);
 
-    var sendFile = function() {
+    let sendFile = function() {
 
-      var headers = {
+      let headers = {
         "Content-Type" : 'application/octet-stream',
         "X-FULL-PATH" : encodeURIComponent(file.fullPath)
       };
@@ -604,18 +606,18 @@ var dragAndDropUploadEnabled = window.File;
             this.previousUploadedSize = this.uploadedSize;
             this.uploadedSize = event.loaded;
             this.uploadedRatio = event.loaded / this.size;
-            for (var i = 0; i < onprogress.length; i++) {
-              onprogress[i].call(this, this);
+            for (let i = 0; i < onProgress.length; i++) {
+              onProgress[i].call(this, this);
             }
             __logDebug("FileUpload.send() - upload in progress for '" + file.fullPath +
                 "' -> ratio=" + this.uploadedRatio);
           }
         }.bind(this)
       }).then(function(request) {
-        var element = document.createElement('div');
+        let element = document.createElement('div');
         element.innerHTML = request.response;
-        var jsonAsString = element.firstChild.innerHTML;
-        var fileInfo = extendsObject({
+        let jsonAsString = element.firstChild.innerHTML;
+        let fileInfo = extendsObject({
           "uploadSessionId" : '',
           "fullPath" : '',
           "name" : '',
@@ -628,8 +630,8 @@ var dragAndDropUploadEnabled = window.File;
 
         this.uploadSessionId = fileInfo.uploadSessionId;
 
-        for (var i = 0; i < onsendsuccess.length; i++) {
-          onsendsuccess[i].call(this, this);
+        for (let i = 0; i < onSendSuccess.length; i++) {
+          onSendSuccess[i].call(this, this);
         }
 
         return {
@@ -640,7 +642,7 @@ var dragAndDropUploadEnabled = window.File;
 
     this.send = function() {
 
-      var headers = {};
+      let headers = {};
       if (this.uploadSessionId) {
         headers['X-UPLOAD-SESSION'] = this.uploadSessionId;
       }
@@ -662,8 +664,8 @@ var dragAndDropUploadEnabled = window.File;
         return uploadInstance.context.beforeSend(this).then(function() {
           // Resolve case
           __logDebug("performUploadEnd - calling onStartSend callback");
-          for (var i = 0; i < onstartsend.length; i++) {
-            onstartsend[i].call(this);
+          for (let i = 0; i < onStartSend.length; i++) {
+            onStartSend[i].call(this);
           }
           return sendFile();
         }, function() {
@@ -681,9 +683,9 @@ var dragAndDropUploadEnabled = window.File;
   /**
    * Avoids to get more than 3 ajax upload between all instances of DragAndDropUpload.
    */
-  var sendMonitor = new (function() {
-    var parallelSend = 3;
-    var nbSend = 0;
+  let sendMonitor = new (function() {
+    let parallelSend = 3;
+    let nbSend = 0;
     this.register = function() {
       nbSend++;
       __logDebug("sendMonitor - register - nbSend=" + nbSend);
@@ -760,8 +762,8 @@ var dragAndDropUploadEnabled = window.File;
 
   function __performFileFromOldWay(uploadSession, files) {
     if (files && files.length) {
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
+      for (let i = 0; i < files.length; i++) {
+        let file = files[i];
         if (file.type || file.size) {
           file.fullPath = '/' + file.name;
           uploadSession.push(file);
@@ -787,10 +789,8 @@ var dragAndDropUploadEnabled = window.File;
           }
         }
       });
-    } else {
-      if (uploadSession.folderError.closed) {
+    } else if (uploadSession.folderError.closed) {
         uploadSession.folderError.show();
-      }
     }
   }
 
@@ -801,13 +801,13 @@ var dragAndDropUploadEnabled = window.File;
    * @param instance
    * @private
    */
-  var __readFileTree = function(itemEntry, instance) {
+  let __readFileTree = function(itemEntry, instance) {
     if (itemEntry.isFile) {
       __readFile(itemEntry, instance);
     } else if (itemEntry.isDirectory) {
-      var dirReader = itemEntry.createReader();
+      let dirReader = itemEntry.createReader();
       dirReader.readEntries(function(entries) {
-        var idx = entries.length;
+        let idx = entries.length;
         while (idx--) {
           __readFileTree(entries[idx], instance);
         }
@@ -821,7 +821,7 @@ var dragAndDropUploadEnabled = window.File;
    * @param uploadSession
    * @private
    */
-  var __readFile = function(fileEntry, uploadSession) {
+  let __readFile = function(fileEntry, uploadSession) {
     //Get File object from FileEntry
     fileEntry.file(function(instance, fileEntry, file) {
       if (instance && fileEntry) {
@@ -837,12 +837,12 @@ var dragAndDropUploadEnabled = window.File;
    * @private
    */
   function __renderContainer(uploadInstance) {
-    var pluginContainer = typeof uploadInstance.context.domSelector === 'object' ?
+    let pluginContainer = typeof uploadInstance.context.domSelector === 'object' ?
         uploadInstance.context.domSelector :
         document.querySelector(uploadInstance.context.domSelector);
     pluginContainer.classList.add('droparea-cover');
 
-    var pluginHelp = document.createElement('div');
+    let pluginHelp = document.createElement('div');
     pluginHelp.classList.add('droparea-cover-help');
     if (uploadInstance.context.helpCoverClass) {
       pluginHelp.classList.add(uploadInstance.context.helpCoverClass);
@@ -850,11 +850,11 @@ var dragAndDropUploadEnabled = window.File;
     pluginHelp.innerHTML = '<img src="' + webContext + '/util/icons/dndHelp.png" alt="?" />';
     pluginContainer.appendChild(pluginHelp);
 
-    var pluginOverlay = document.createElement('div');
+    let pluginOverlay = document.createElement('div');
     pluginOverlay.classList.add('droparea-cover-overlay');
     pluginContainer.appendChild(pluginOverlay);
 
-    var isHelpForceDisplay = function() {
+    let isHelpForceDisplay = function() {
       if (!window.MutationObserver || uploadInstance.context.mute) {
         return false;
       }
@@ -865,13 +865,13 @@ var dragAndDropUploadEnabled = window.File;
     };
 
     // Drop area events
-    var mouseEnter = function() {
+    let mouseEnter = function() {
       if (!uploadInstance.context.mute && !isHelpForceDisplay()) {
         pluginContainer.showHelp();
         return false;
       }
     };
-    var mouseLeave = function() {
+    let mouseLeave = function() {
       if (!isHelpForceDisplay()) {
         pluginContainer.hideHelp();
         return false;
@@ -894,7 +894,7 @@ var dragAndDropUploadEnabled = window.File;
       return false;
     });
 
-    var getHelpHighlightContainer = function() {
+    let getHelpHighlightContainer = function() {
       var helpHighlightContainer = !uploadInstance.context.helpHighlightSelector ? '' :
           pluginContainer.querySelector(uploadInstance.context.helpHighlightSelector);
       if (!helpHighlightContainer) {
@@ -902,13 +902,13 @@ var dragAndDropUploadEnabled = window.File;
       }
       return helpHighlightContainer;
     };
-    var helpHighlightContainer;
-    var originalHelpContainerBorderStyle;
+    let helpHighlightContainer;
+    let originalHelpContainerBorderStyle;
     pluginContainer.showHelp = function() {
       if (pluginHelp.style.display !== 'block') {
         pluginHelp.style.display = 'block';
         helpHighlightContainer = getHelpHighlightContainer();
-        var computedStyle = helpHighlightContainer.currentStyle ||
+        let computedStyle = helpHighlightContainer.currentStyle ||
             getComputedStyle(helpHighlightContainer);
         originalHelpContainerBorderStyle = computedStyle.borderStyle;
         if (!originalHelpContainerBorderStyle || originalHelpContainerBorderStyle === 'none') {
@@ -936,7 +936,7 @@ var dragAndDropUploadEnabled = window.File;
       }
     };
     if (window.MutationObserver && uploadInstance.context.helpForceDisplay) {
-      var observer = new MutationObserver(function() {
+      let observer = new MutationObserver(function() {
         if (isHelpForceDisplay()) {
           pluginContainer.showHelp();
         } else {
@@ -962,10 +962,10 @@ var dragAndDropUploadEnabled = window.File;
     // Help
     if (uploadInstance.context.helpContentUrl) {
       silverpeasAjax(uploadInstance.context.helpContentUrl).then(function(request) {
-        var helpContentContainer = document.createElement('div');
+        let helpContentContainer = document.createElement('div');
         helpContentContainer.classList.add('droparea-cover-help-content');
         helpContentContainer.innerHTML = request.response;
-        var qtipOptions = {
+        let qtipOptions = {
           prerender : true, style : {
             classes : "qtip-shadow qtip-yellow"
           }, content : {

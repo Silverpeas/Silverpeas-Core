@@ -38,6 +38,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
@@ -60,6 +61,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -142,7 +144,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
     try {
       // Update the attachment
-      String normalizedFileName = StringUtil.normalize(filename);
+      String normalizedFileName = StringUtil.normalize(URLDecoder.decode(filename, Charsets.UTF_8));
       SimpleDocumentEntity entity = updateSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {

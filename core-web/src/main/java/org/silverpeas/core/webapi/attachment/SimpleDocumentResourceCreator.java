@@ -29,38 +29,26 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
-import org.silverpeas.core.contribution.attachment.model.UnlockOption;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
 import org.silverpeas.core.documenttemplate.DocumentTemplate;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.web.http.RequestFile;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -69,10 +57,10 @@ import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
-import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.attachment.SimpleDocumentUploadData.decode;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author ehugonnet
@@ -100,7 +88,8 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
     try {
 
       // Create the attachment
-      final String normalizedFileName = StringUtil.normalize(filename);
+      final String normalizedFileName =
+          StringUtil.normalize(URLDecoder.decode(filename, Charsets.UTF_8));
       final SimpleDocumentEntity entity = createSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
