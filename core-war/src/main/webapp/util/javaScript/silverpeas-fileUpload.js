@@ -22,6 +22,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//# sourceURL=/util/javaScript/silverpeas-fileUpload.js
+
 (function($) {
 
   // Check for the various File API support.
@@ -65,7 +67,7 @@
 
   /**
    * The fileUpload Silverpeas plugin based on JQuery.
-   * This JQuery plugin abstrats the way an HTML element (usually a form or a div) is rendered
+   * This JQuery plugin abstracts the way an HTML element (usually a form or a div) is rendered
    * within a JQuery UI dialog.
    *
    * Here the fileUpload namespace in JQuery.
@@ -381,7 +383,7 @@
 
     // File
     $uploadBloc.empty();
-    let $img = undefined;
+    let $img;
     if (params.options.dragAndDropDisplayIcon) {
       $img = $('<div>').append($('<img>', {
         title: chooseFileLabel,
@@ -528,6 +530,7 @@
             return;
           }
 
+
           const uploadCommons = __performAppendUploadCommons(params, [file]);
 
           // Perform uploads
@@ -584,7 +587,8 @@
       waitingMessage =
               params.options.labels.sendingFiles.replace(/@number@/, uploadContext.nbFiles);
     }
-    const $waitingEndOfUploadContainer = $('<div>').addClass('inlineMessage-waiting').append(waitingMessage);
+    const $waitingEndOfUploadContainer = $('<div>').addClass('inlineMessage-waiting')
+        .append($('<span>').text(waitingMessage));
 
     // Adding to the DOM the waiting message
     params.$waitingUploadList.append($waitingEndOfUploadContainer);
@@ -643,13 +647,11 @@
      * Aborts the send.
      */
     this.abort = function() {
-      if (xhr) {
-        if (xhr && xhr.abort) {
-          xhr.abort();
-          window.console &&
-                  window.console.log('Silverpeas File Upload JQuery Plugin - INFO - File sending aborted successfully');
-          xhr = null;
-        }
+      if (xhr?.abort) {
+        xhr.abort();
+        window.console &&
+        window.console.log('Silverpeas File Upload JQuery Plugin - INFO - File sending aborted successfully');
+        xhr = null;
       }
     };
 
@@ -726,7 +728,7 @@
         }
       };
 
-      // Progress informations
+      // Progress information
       const $loadInfo = $('<span>').appendTo($waitingEndOfUploadContainer);
       const $loadBar = $('<div>').addClass('progress-bar').appendTo($waitingEndOfUploadContainer);
       xhr.upload.addEventListener("progress", function(event) {
@@ -920,7 +922,7 @@
     this.setUploadFileData = function(file) {
       uploadHandler = file.uploadHandler;
       $waitingEndOfUploadContainer = file.$waitingEndOfUploadContainer;
-      $('span', $fileDetails).html(file.fileName);
+      $('span', $fileDetails).text(file.fileName);
       self.setFileIcon(webContext + '/util/icons/uploading.gif');
       $deleteAction.hide().show();
     };
@@ -943,7 +945,7 @@
 
       // Header - details
       self.setFileIcon(uploadedFileData.iconUrl);
-      $('span', $fileDetails).empty().append(uploadedFileData.name, ' - ',
+      $('span', $fileDetails).empty().html(uploadedFileData.name, ' - ',
               uploadedFileData.formattedSize);
 
       // Body - title and description

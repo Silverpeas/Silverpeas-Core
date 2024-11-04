@@ -78,7 +78,7 @@
 
   <script type="text/JavaScript">
     (function() {
-      var options = {
+      let options = {
         domSelector : '${domSelector}',
         componentInstanceId : "${componentInstanceId}",
         onCompletedUrl : "${uploadCompletedUrl}",

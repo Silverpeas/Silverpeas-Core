@@ -1,9 +1,10 @@
-var offset = 0;
-var currentScope = '';
+let offset = 0;
+let currentScope = '';
+
 function init(scope) {
   currentScope = scope;
   offset = 0;
-  var url = getFeedURL() + '&type=' + scope + '&offset=0&Init=true';
+  const url = getFeedURL() + '&type=' + scope + '&offset=0&Init=true';
   displayFeedContent(url);
 }
 
@@ -12,21 +13,21 @@ function displayFeedContent(url) {
   $('.linkMore').hide();
   url += "&IEFix=" + Math.round(new Date().getTime());
   $.getJSON(url, function(data) {
-    var listEmpty = true;
-    var html = '';
+    let listEmpty = true;
+    let html = '';
     $.each(data, function(key, map) {
       $.each(map, function(i, listSocialInfo) {
         // for each pertinent day...
         listEmpty = false;
-        if (i == 0) {
+        if (i === 0) {
           html += '<p class="date textePetitBold">' + listSocialInfo.day + '</p>';
           html += getSeparator();
         } else {
           $.each(listSocialInfo, function(index, socialInfo) {
             // for each information
-            if (socialInfo.type == 'RELATIONSHIP') {
+            if (socialInfo.type === 'RELATIONSHIP') {
               html += getRelationFragment(socialInfo);
-            } else if (socialInfo.type == 'STATUS') {
+            } else if (socialInfo.type === 'STATUS') {
               html += getStatusFragment(socialInfo);
             } else {
               html += getFragment(socialInfo);
@@ -48,12 +49,12 @@ function displayFeedContent(url) {
 }
 
 function getNext() {
-  var url = getFeedURL() + '&type=' + currentScope + '&offset=' + offset;
+  const url = getFeedURL() + '&type=' + currentScope + '&offset=' + offset;
   displayFeedContent(url);
 }
 
 function getFragment(socialInfo) {
-  var fragment = '';
+  let fragment = '';
 
   fragment += '<div class="' + socialInfo.type.toLowerCase() + ' a_new">';
   fragment += getAvatarFragment(socialInfo.author);
@@ -61,7 +62,7 @@ function getFragment(socialInfo) {
   fragment += '<p><a href="' + getApplicationContext() + '/Rprofil/jsp/Main?userId=' +
   socialInfo.author.id + '" class="name">' + socialInfo.author.displayedName + '</a> ' +
   socialInfo.label + ' <a href="' + socialInfo.url + '" class="publicationName txtColor sp-link">' +
-  socialInfo.title + '</a> ' + socialInfo.hour + '</p>';
+  socialInfo.title.escapeHTML() + '</a> ' + socialInfo.hour + '</p>';
   fragment += '<p class="detail decoration-' + socialInfo.type.toLowerCase() + '">' +
   socialInfo.description + '&nbsp;</p>';
   fragment += '</div>';
@@ -80,7 +81,7 @@ function getStatusFragment(socialInfo) {
   fragment += '<div class="txt">';
   fragment += '<p><a href="' + getApplicationContext() + '/Rprofil/jsp/Main?userId=' +
   socialInfo.author.id + '" class="name">' + socialInfo.author.displayedName + '</a> ' +
-  socialInfo.title + ' ' + socialInfo.hour + '</p>';
+  socialInfo.title.escapeHTML() + ' ' + socialInfo.hour + '</p>';
   fragment += '<p class="detail decoration-' + socialInfo.type.toLowerCase() + '">' +
   socialInfo.description + '</p>';
   fragment += '</div>';

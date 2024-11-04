@@ -33,6 +33,7 @@
 <%@ page import="java.time.ZoneId" %>
 <%@ page import="org.silverpeas.core.date.TemporalConverter" %>
 <%@ page import="org.silverpeas.kernel.util.StringUtil" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -60,7 +61,7 @@ for (PublicationDetail pub : publications) {
 <% } else {
     first = false;
   }%>
-  <a class="sp-link" href="<%=url %>"><strong><%=WebEncodeHelper.javaStringToHtmlString(pub.getName(language))%></strong></a>
+  <a class="sp-link" href="<%=url %>"><strong><%=Encode.forHtml(pub.getName(language))%></strong></a>
     <% if (pubUpdater != null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), userZoneId, language)%>
     <% } %>
@@ -69,7 +70,7 @@ for (PublicationDetail pub : publications) {
     <% } %>
     <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil
         .isDefined(pub.getDescription(language))) { %>
-      <br/><%=WebEncodeHelper.convertBlanksForHtml(WebEncodeHelper.javaStringToHtmlString(pub.getDescription(language))) %>
+      <br/><%=WebEncodeHelper.convertBlanksForHtml(Encode.forHtml(pub.getDescription(language))) %>
     <% } %>
 <% } %>
 <br/>
