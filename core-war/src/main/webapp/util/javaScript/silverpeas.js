@@ -25,9 +25,9 @@
 if (!Array.prototype.indexOf) {
   Object.defineProperty(Array.prototype, 'indexOf', {
     enumerable : false, value : function(elt /*, from*/) {
-      var len = this.length >>> 0;
+      const len = this.length >>> 0;
 
-      var from = Number(arguments[1]) || 0;
+      let from = Number(arguments[1]) || 0;
       from = (from < 0) ? Math.ceil(from) : Math.floor(from);
       if (from < 0) {
         from += len;
@@ -53,19 +53,19 @@ if (!Array.prototype.addElement) {
   });
   Object.defineProperty(Array.prototype, 'indexOfElement', {
     enumerable : false, value : function(elt /*, discriminator*/) {
-      var discriminator = arguments.length > 1 ? arguments[1] : undefined;
-      var discLeft = discriminator, discRight = discriminator;
-      var isPos = typeof discriminator === 'number';
-      var isDisc = typeof discriminator === 'string';
+      const discriminator = arguments.length > 1 ? arguments[1] : undefined;
+      let discLeft = discriminator, discRight = discriminator;
+      let isPos = typeof discriminator === 'number';
+      let isDisc = typeof discriminator === 'string';
       if (isDisc) {
-        var discParts = discriminator.split('=', 2);
+        let discParts = discriminator.split('=', 2);
         if (discParts.length > 1) {
           discLeft = discParts[0];
           discRight = discParts[1];
         }
       }
-      for (var i = 0; i < this.length; i++) {
-        var element = this[i];
+      for (let i = 0; i < this.length; i++) {
+        const element = this[i];
         if ((element === elt) || (isPos && discriminator === i) ||
             (isDisc && element[discLeft] === elt[discRight])) {
           return i;
@@ -76,7 +76,7 @@ if (!Array.prototype.addElement) {
   });
   Object.defineProperty(Array.prototype, 'getElement', {
     enumerable : false, value : function(elt /*, discriminator*/) {
-      var index = this.indexOfElement.apply(this, arguments);
+      let index = this.indexOfElement.apply(this, arguments);
       if (index >= 0) {
         return this[index];
       }
@@ -90,7 +90,7 @@ if (!Array.prototype.addElement) {
   });
   Object.defineProperty(Array.prototype, 'updateElement', {
     enumerable : false, value : function(elt /*, discriminator*/) {
-      var index = this.indexOfElement.apply(this, arguments);
+      let index = this.indexOfElement.apply(this, arguments);
       if (index >= 0) {
         this[index] = elt;
         return true;
@@ -100,7 +100,7 @@ if (!Array.prototype.addElement) {
   });
   Object.defineProperty(Array.prototype, 'removeElement', {
     enumerable : false, value : function(elt /*, discriminator*/) {
-      var index = this.indexOfElement.apply(this, arguments);
+      let index = this.indexOfElement.apply(this, arguments);
       if (index >= 0) {
         this.splice(index, 1);
         return true;
@@ -134,10 +134,10 @@ if (!Array.prototype.addElement) {
       if (!options.lastSeparator) {
         options.lastSeparator = options.separator;
       }
-      var join = '';
-      for (var i = 0; i < this.length ; i++) {
+      let join = '';
+      for (let i = 0; i < this.length ; i++) {
         if (join.length) {
-          var lastItemIndex = (this.length - 1);
+          let lastItemIndex = (this.length - 1);
           if (i !== lastItemIndex) {
             join += options.separator;
           } else {
@@ -151,12 +151,12 @@ if (!Array.prototype.addElement) {
   });
   Object.defineProperty(Array.prototype, 'extractElementAttribute', {
     enumerable : false, value : function(attributeName, mapper) {
-      var isMapper = typeof mapper === 'function';
-      var attributeValues = [];
-      for (var i = 0; i < this.length; i++) {
-        var element = this[i];
+      const isMapper = typeof mapper === 'function';
+      let attributeValues = [];
+      for (let i = 0; i < this.length; i++) {
+        let element = this[i];
         if (element) {
-          var attributeValue = element[attributeName];
+          let attributeValue = element[attributeName];
           if (typeof attributeValue !== 'undefined') {
             if (isMapper) {
               attributeValue = mapper.call(this, attributeValue);
@@ -178,21 +178,21 @@ if (!String.prototype.startsWith) {
 
 if (!String.prototype.endsWith) {
   String.prototype.endsWith = function(str) {
-    var endIndex = this.indexOf(str) + str.length;
+    let endIndex = this.indexOf(str) + str.length;
     return endIndex === this.length;
   };
 }
 
 if (!String.prototype.replaceAllByRegExpAsString) {
   String.prototype.replaceAllByRegExpAsString = function(search, replacement) {
-    var target = this;
+    let target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
   };
 }
 
 if (!String.prototype.isDefined) {
   String.prototype.isDefined = function() {
-    var withoutWhitespaces = this.replace(/[ \r\n\t]/g, '');
+    let withoutWhitespaces = this.replace(/[ \r\n\t]/g, '');
     return withoutWhitespaces.length > 0 && withoutWhitespaces !== 'null';
   };
 }
@@ -217,6 +217,12 @@ if (!String.prototype.unescapeHTML) {
   };
 }
 
+if (!String.prototype.escapeHTML) {
+  String.prototype.escapeHTML = function() {
+    return new Option(this).innerHTML;
+  };
+}
+
 if (!String.prototype.convertNewLineAsHtml) {
   String.prototype.convertNewLineAsHtml = function() {
     return this.replace(/\n/g, '<br/>');
@@ -234,7 +240,7 @@ if (!String.prototype.noHTML) {
 
 if (!String.prototype.asInteger) {
   String.prototype.asInteger = function(defaultValue) {
-    var value = parseInt(this, 10);
+    let value = parseInt(this, 10);
     return isNaN(value) ? defaultValue : value;
   };
 }
@@ -281,8 +287,8 @@ if (!String.prototype.format) {
 if (!Number.prototype.roundDown) {
   Number.prototype.roundDown = function(digit) {
     if (digit || digit === 0) {
-      var digitCoef = Math.pow(10, digit);
-      var result = Math.floor(this * digitCoef);
+      const digitCoef = Math.pow(10, digit);
+      let result = Math.floor(this * digitCoef);
       return result / digitCoef;
     }
     return this;
@@ -291,9 +297,9 @@ if (!Number.prototype.roundDown) {
 if (!Number.prototype.roundHalfDown) {
   Number.prototype.roundHalfDown = function(digit) {
     if (digit || digit === 0) {
-      var digitCoef = Math.pow(10, digit);
-      var result = Math.floor(this * digitCoef);
-      var half = Math.floor((this * (digitCoef * 10))) % 10;
+      const digitCoef = Math.pow(10, digit);
+      let result = Math.floor(this * digitCoef);
+      let half = Math.floor((this * (digitCoef * 10))) % 10;
       if (5 < half && half <= 9) {
         result++;
       }
@@ -306,9 +312,9 @@ if (!Number.prototype.roundHalfDown) {
 if (!Number.prototype.roundHalfUp) {
   Number.prototype.roundHalfUp = function(digit) {
     if (digit || digit === 0) {
-      var digitCoef = Math.pow(10, digit);
-      var result = Math.floor(this * digitCoef);
-      var half = Math.floor((this * (digitCoef * 10))) % 10;
+      let digitCoef = Math.pow(10, digit);
+      let result = Math.floor(this * digitCoef);
+      let half = Math.floor((this * (digitCoef * 10))) % 10;
       if (5 <= half && half <= 9) {
         result++;
       }
@@ -321,8 +327,8 @@ if (!Number.prototype.roundHalfUp) {
 if (!Number.prototype.roundUp) {
   Number.prototype.roundUp = function(digit) {
     if (digit || digit === 0) {
-      var digitCoef = Math.pow(10, digit);
-      var result = Math.ceil(this * digitCoef);
+      let digitCoef = Math.pow(10, digit);
+      let result = Math.ceil(this * digitCoef);
       return result / digitCoef;
     }
     return this;
@@ -331,7 +337,7 @@ if (!Number.prototype.roundUp) {
 
 if (!window.StringUtil) {
   window.StringUtil = new function() {
-    var _self = this;
+    let _self = this;
     this.isDefined = function(aString) {
       return typeof aString === 'string' && aString.isDefined();
     };
@@ -339,7 +345,7 @@ if (!window.StringUtil) {
       return !_self.isDefined(aString);
     };
     this.defaultStringIfNotDefined = function(aString, aDefaultString) {
-      var defaultString = typeof aDefaultString === 'undefined' ? '' : aDefaultString;
+      let defaultString = typeof aDefaultString === 'undefined' ? '' : aDefaultString;
       return _self.isDefined(aString) ? aString : defaultString;
     };
     this.nbChars = function(aString) {
@@ -374,8 +380,8 @@ if (!window.StringUtil) {
 
 if (!window.SilverpeasError) {
   window.SilverpeasError = new function() {
-    var _self = this;
-    var _errors = [];
+    let _self = this;
+    let _errors = [];
     this.reset = function() {
       _errors = [];
     };
@@ -418,7 +424,7 @@ if (!window.SelectionPipeline) {
    */
   window.SelectionPipeline = function(value) {
     this.either = function(decision) {
-      var result = decision(value);
+      let result = decision(value);
       return {
         or : function(anotherDesision) {
           if (!result) {
@@ -436,42 +442,42 @@ if (!window.SelectionPipeline) {
 }
 
 function SP_openWindow(page, name, width, height, options) {
-  var top = (screen.height - height) / 2;
-  var left = (screen.width - width) / 2;
+  let top = (screen.height - height) / 2;
+  let left = (screen.width - width) / 2;
   if (screen.height - 20 <= height) {
     top = 0;
   }
   if (screen.width - 10 <= width) {
     left = 0;
   }
-  var features = "top=" + top + ",left=" + left + ",width=" + width + ",height=" + height + "," +
+  let features = "top=" + top + ",left=" + left + ",width=" + width + ",height=" + height + "," +
       options;
   if (typeof page === 'object') {
-    var pageOptions = extendsObject({
+    let pageOptions = extendsObject({
       "params" : ''
     }, page);
     if (typeof pageOptions.params === 'string') {
       return window.open(pageOptions.url + pageOptions.params, name, features);
     }
-    var selector = "form[target=" + name + "]";
-    var form = document.querySelector(selector);
+    let selector = "form[target=" + name + "]";
+    let form = document.querySelector(selector);
     if (!form) {
       form = document.createElement('form');
-      var formContainer = document.createElement('div');
+      let formContainer = document.createElement('div');
       formContainer.style.display = 'none';
       formContainer.appendChild(form);
       document.body.appendChild(formContainer);
     }
-    var actionUrl = pageOptions.url;
-    var pivotIndex = actionUrl.indexOf("?");
+    let actionUrl = pageOptions.url;
+    let pivotIndex = actionUrl.indexOf("?");
     if (pivotIndex > 0) {
-      var splitParams = actionUrl.substring(pivotIndex + 1).split("&");
+      let splitParams = actionUrl.substring(pivotIndex + 1).split("&");
       actionUrl = actionUrl.substring(0, pivotIndex);
       splitParams.forEach(function(param) {
-        var splitParam = param.split("=");
+        let splitParam = param.split("=");
         if (splitParam.length === 2) {
-          var key = splitParam[0];
-          var value = splitParam[1];
+          let key = splitParam[0];
+          let value = splitParam[1];
           pageOptions.params[key] = value;
         }
       });
@@ -481,15 +487,15 @@ function SP_openWindow(page, name, width, height, options) {
     form.setAttribute('target', name);
     form.innerHTML = '';
     applyTokenSecurity(form.parentNode);
-    for (var paramKey in pageOptions.params) {
-      var paramValue = pageOptions.params[paramKey];
-      var paramInput = document.createElement("input");
+    for (let paramKey in pageOptions.params) {
+      let paramValue = pageOptions.params[paramKey];
+      let paramInput = document.createElement("input");
       paramInput.setAttribute("type", "hidden");
       paramInput.setAttribute("name", paramKey);
       paramInput.value = paramValue;
       form.appendChild(paramInput);
     }
-    var __window = window.open('', name, features);
+    let __window = window.open('', name, features);
     form.submit();
     return __window;
   }
@@ -506,35 +512,35 @@ function SP_openUserPanel(page, name, options) {
  */
 if (!window.currentPopupResize) {
   window.currentPopupResize = function() {
-    var log = function(message) {
+    let log = function(message) {
       //console.log("POPUP RESIZE - " + message);
     };
     return whenSilverpeasEntirelyLoaded().then(function() {
-      var $document = jQuery(document.body);
+      let $document = jQuery(document.body);
       $document.removeClass("popup-compute-finally");
       $document.addClass("popup-compute-settings");
-      var widthOffset = window.outerWidth - $document.width();
-      var heightOffset = window.outerHeight - window.innerHeight;
+      let widthOffset = window.outerWidth - $document.width();
+      let heightOffset = window.outerHeight - window.innerHeight;
       $document.removeClass("popup-compute-settings");
       $document.addClass("popup-compute-finally");
-      var limitH = 0;
-      var scrollBarExistence = getWindowScrollBarExistence();
+      let limitH = 0;
+      let scrollBarExistence = getWindowScrollBarExistence();
       if (scrollBarExistence.h) {
         // Scroll left exists, so scroll bar is displayed
         limitH = Math.max(document.body.scrollHeight, document.body.offsetHeight,
             document.documentElement.clientHeight, document.documentElement.scrollHeight,
             document.documentElement.offsetHeight);
       }
-      var wWidthBefore = window.outerWidth;
-      var wHeightBefore = window.outerHeight;
-      var wWidth = Math.min((screen.width - 250), (widthOffset + 10 + $document.width() + limitH));
-      var wHeight = Math.min((screen.height - 100), (heightOffset + 10 + $document.height()));
+      let wWidthBefore = window.outerWidth;
+      let wHeightBefore = window.outerHeight;
+      let wWidth = Math.min((screen.width - 250), (widthOffset + 10 + $document.width() + limitH));
+      let wHeight = Math.min((screen.height - 100), (heightOffset + 10 + $document.height()));
       // Setting if necessary new sizes and new position
       if ((wWidthBefore !== wWidth || wHeightBefore !== wHeight) && wHeight > 200) {
         log("resizeTo width = " + wWidth + ', height = ' + wHeight);
         window.resizeTo(wWidth, wHeight);
-        var top = (screen.height - window.outerHeight) / 2;
-        var left = (screen.width - window.outerWidth) / 2;
+        let top = (screen.height - window.outerHeight) / 2;
+        let left = (screen.width - window.outerWidth) / 2;
         log("moveTo left = " + left + ', height = ' + top);
         window.moveTo(left, top);
       } else {
@@ -551,8 +557,8 @@ if (!window.currentPopupResize) {
  * @return {{h: boolean, v: boolean}}
  */
 function getWindowScrollBarExistence() {
-  var document = window.document, c = document.compatMode;
-  var r = c && /CSS/.test(c) ? document.documentElement : document.body;
+  let document = window.document, c = document.compatMode;
+  let r = c && /CSS/.test(c) ? document.documentElement : document.body;
   if (typeof window.innerWidth == 'number') {
     // incredibly the next two lines serves equally to the scope
     // I prefer the first because it resembles more the feature
@@ -569,7 +575,7 @@ function getWindowScrollBarExistence() {
  * @return {{h: number, v: number}}
  */
 function getWindowScrollBarThicknessSize() {
-  var document = window.document, body = document.body, r = {h : 0, v : 0}, t;
+  let document = window.document, body = document.body, r = {h : 0, v : 0}, t;
   if (body) {
     t = document.createElement('div');
     t.style.cssText =
@@ -604,9 +610,9 @@ if (typeof window.extendsObject === 'undefined') {
    * @returns {*}
    */
   window.extendsObject = function() {
-    var params = [];
+    let params = [];
     Array.prototype.push.apply(params, arguments);
-    var firstArgumentType = params[0];
+    let firstArgumentType = params[0];
     if (typeof firstArgumentType === 'object') {
       params.splice(0, 0, true);
     } else if (typeof firstArgumentType === 'boolean' && !params[0]) {
@@ -621,27 +627,29 @@ if (typeof window.SilverpeasClass === 'undefined') {
     this.initialize && this.initialize.apply(this, arguments);
   };
   SilverpeasClass.extend = function(childPrototype) {
-    var parent = this;
-    var child = function() {
+    let parent = this;
+    let child = function() {
       return parent.apply(this, arguments);
     };
     child.extend = parent.extend;
-    var Surrogate = function() {};
+    let Surrogate = function() {
+      // empty anonym object
+    };
     Surrogate.prototype = parent.prototype;
     child.prototype = new Surrogate();
-    for (var prop in childPrototype) {
-      var childProtoTypeValue = childPrototype[prop];
-      var parentProtoTypeValue = parent.prototype[prop];
+    for (let prop in childPrototype) {
+      let childProtoTypeValue = childPrototype[prop];
+      let parentProtoTypeValue = parent.prototype[prop];
       if (typeof childProtoTypeValue !== 'function' || !parentProtoTypeValue) {
         child.prototype[prop] = childProtoTypeValue;
         continue;
       }
       child.prototype[prop] = (function(parentMethod, childMethod) {
-        var _super = function() {
+        let _super = function() {
           return parentMethod.apply(this, arguments);
         };
         return function() {
-          var __super = this._super, returnedValue;
+          let __super = this._super, returnedValue;
           this._super = _super;
           returnedValue = childMethod.apply(this, arguments);
           this._super = __super;
@@ -660,7 +668,7 @@ if (!window.SilverpeasCache) {
     }
 
     function __getCache(storage, name) {
-      var cache = storage.getItem(name);
+      let cache = storage.getItem(name);
       if (!cache) {
         cache = {};
         __setCache(storage, name, cache);
@@ -685,16 +693,16 @@ if (!window.SilverpeasCache) {
         __clearCache(this.getCacheStorage(), this.cacheName);
       },
       put : function(key, value) {
-        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        let cache = __getCache(this.getCacheStorage(), this.cacheName);
         cache[key] = value;
         __setCache(this.getCacheStorage(), this.cacheName, cache);
       },
       get : function(key) {
-        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        let cache = __getCache(this.getCacheStorage(), this.cacheName);
         return cache[key];
       },
       remove : function(key) {
-        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        let cache = __getCache(this.getCacheStorage(), this.cacheName);
         delete cache[key];
         __setCache(this.getCacheStorage(), this.cacheName, cache);
       }
@@ -1022,11 +1030,11 @@ if (typeof window.silverpeasAjax === 'undefined') {
         window.jQuery.progressMessage();
       }
     }
-    var selector = "form[target=silverpeasFormSubmit]";
-    var form = document.querySelector(selector);
+    let selector = "form[target=silverpeasFormSubmit]";
+    let form = document.querySelector(selector);
     if (!form) {
       form = document.createElement('form');
-      var formContainer = document.createElement('div');
+      let formContainer = document.createElement('div');
       formContainer.style.display = 'none';
       formContainer.appendChild(form);
       document.body.appendChild(formContainer);
@@ -1038,9 +1046,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
     if(!silverpeasFormConfig.getMethod().startsWith('G')) {
       applyTokenSecurity(form.parentNode);
     }
-    for (var paramKey in silverpeasFormConfig.getParams()) {
-      var paramValue = silverpeasFormConfig.getParams()[paramKey];
-      var paramInput = document.createElement("input");
+    for (let paramKey in silverpeasFormConfig.getParams()) {
+      let paramValue = silverpeasFormConfig.getParams()[paramKey];
+      let paramInput = document.createElement("input");
       paramInput.setAttribute("type", "hidden");
       paramInput.setAttribute("name", paramKey);
       paramInput.value = paramValue;
@@ -1343,7 +1351,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    * @returns {Promise}
    */
   window.applyReadyBehaviorOn = function(instance) {
-    var promise = new Promise(function(resolve, reject) {
+    let promise = new Promise(function(resolve, reject) {
       this.notifyReady = resolve;
       this.notifyError = reject;
     }.bind(instance));
@@ -1429,7 +1437,6 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
 }
 
 if (typeof window.sp === 'undefined') {
-  var debug = true;
   window.sp = {
     log : {
       infoActivated : true,
@@ -1438,9 +1445,9 @@ if (typeof window.sp === 'undefined') {
       debugActivated : false,
       formatMessage : function(levelPrefix, messages) {
         try {
-          var message = levelPrefix + " -";
-          for (var i = 0; i < messages.length; i++) {
-            var item = messages[i];
+          let message = levelPrefix + " -";
+          for (let i = 0; i < messages.length; i++) {
+            let item = messages[i];
             if (typeof item === 'object') {
               item = JSON.stringify(item);
             }
@@ -1449,7 +1456,7 @@ if (typeof window.sp === 'undefined') {
           return message;
         } catch (ignore) {
         }
-        var safeMessage = [levelPrefix];
+        let safeMessage = [levelPrefix];
         Array.prototype.push.apply(safeMessage, messages);
         return safeMessage;
       },
@@ -1642,7 +1649,7 @@ if (typeof window.sp === 'undefined') {
         };
       };
       this.isEmpty = function (o) {
-        for (var k in o) {
+        for (let k in o) {
           return k === undefined;
         }
         return true;
@@ -1652,7 +1659,7 @@ if (typeof window.sp === 'undefined') {
         if (level >= 10) {
           return value;
         }
-        var __value = value;
+        let __value = value;
         if (typeof value === 'object') {
           if (Array.isArray(value)) {
             __value = [];
@@ -1661,10 +1668,10 @@ if (typeof window.sp === 'undefined') {
             }.bind(this));
           } else {
             __value = {};
-            var __keyValueMap = [];
-            for (var attrName in value) {
+            let __keyValueMap = [];
+            for (let attrName in value) {
               if (value.hasOwnProperty(attrName)) {
-                var attrValue = value[attrName];
+                let attrValue = value[attrName];
                 if (attrValue) {
                   __keyValueMap.push(attrName);
                   __keyValueMap[attrName] = this.normalizeExistingValuesOf(attrValue, level);
@@ -1708,7 +1715,7 @@ if (typeof window.sp === 'undefined') {
     },
     promise : {
       deferred : function() {
-        var deferred = {};
+        let deferred = {};
         deferred.promise = new Promise(function(resolve, reject){
           deferred.resolve = resolve;
           deferred.reject = reject;
@@ -1885,15 +1892,15 @@ if (typeof window.sp === 'undefined') {
        * @private
        */
       adjustTimeMinutes : function(date, hasToCurrentTime) {
-        var myMoment = sp.moment.make(date);
+        let myMoment = sp.moment.make(date);
         if (hasToCurrentTime) {
-          var $timeToSet = moment();
+          let $timeToSet = moment();
           myMoment.hour($timeToSet.hour());
           myMoment.minute($timeToSet.minute());
         }
-        var minutes = myMoment.minutes();
-        var minutesToAdjust = minutes ? minutes % 10 : 0;
-        var offset = minutesToAdjust < 5 ? 0 : 10;
+        let minutes = myMoment.minutes();
+        let minutesToAdjust = minutes ? minutes % 10 : 0;
+        let offset = minutesToAdjust < 5 ? 0 : 10;
         return myMoment.add((offset - minutesToAdjust), 'm');
       },
       /**
@@ -1902,7 +1909,7 @@ if (typeof window.sp === 'undefined') {
        * @private
        */
       nthDayOfMonth : function(date) {
-        var dayInMonth = sp.moment.make(date).date();
+        let dayInMonth = sp.moment.make(date).date();
         return Math.ceil(dayInMonth / 7);
       },
       /**
@@ -1970,13 +1977,13 @@ if (typeof window.sp === 'undefined') {
        * @returns {*}
        */
       formatText : function(text) {
-        var formattedText = text;
-        var dateOrDateTimeRegExp = /\$\{([^,]+),date(time|)}/g;
-        var match = dateOrDateTimeRegExp.exec(text);
+        let formattedText = text;
+        let dateOrDateTimeRegExp = /\$\{([^,]+),date(time|)}/g;
+        let match = dateOrDateTimeRegExp.exec(text);
         while (match) {
-          var toReplace = match[0];
-          var temporal = match[1];
-          var isTime = match[2];
+          let toReplace = match[0];
+          let temporal = match[1];
+          let isTime = match[2];
           if (isTime) {
             formattedText = formattedText.replace(toReplace, sp.moment.displayAsDateTime(temporal));
           } else {
@@ -2001,13 +2008,13 @@ if (typeof window.sp === 'undefined') {
     },
     url : {
       explode : function(url) {
-        var pivotIndex = url.indexOf("?");
+        let pivotIndex = url.indexOf("?");
         if (pivotIndex > 0) {
-          var splitParams = url.substring(pivotIndex + 1).split("&");
-          var urlWithoutParam = url.substring(0, pivotIndex);
-          var params = {};
+          let splitParams = url.substring(pivotIndex + 1).split("&");
+          let urlWithoutParam = url.substring(0, pivotIndex);
+          let params = {};
           splitParams.forEach(function(param) {
-            var splitParam = param.split("=");
+            let splitParam = param.split("=");
             if (splitParam.length === 2) {
               params[splitParam[0]] = splitParam[1];
             }
@@ -2021,11 +2028,11 @@ if (typeof window.sp === 'undefined') {
         return sp.url.format(explodedUrl.base, explodedUrl.parameters);
       },
       format : function(url, params) {
-        var paramPart = url.indexOf('?') >= 0 ? '&' : '?';
+        let paramPart = url.indexOf('?') >= 0 ? '&' : '?';
         if (params) {
-          for (var key in params) {
-            var paramList = params[key];
-            var typeOfParamList = typeof paramList;
+          for (let key in params) {
+            let paramList = params[key];
+            let typeOfParamList = typeof paramList;
             if (!paramList && typeOfParamList !== 'number' && typeOfParamList !== 'boolean') {
               continue;
             }
@@ -2062,16 +2069,16 @@ if (typeof window.sp === 'undefined') {
       return ajaxRequest.loadTarget(targetOrArrayOfTargets, isGettingFullHtmlContent);
     },
     updateTargetWithHtmlContent : function(targetOrArrayOfTargets, html, isGettingFullHtmlContent) {
-      var targetIsArrayOfCssSelector = typeof targetOrArrayOfTargets === 'object' && Array.isArray(targetOrArrayOfTargets);
-      var targets = !targetIsArrayOfCssSelector ? [targetOrArrayOfTargets] : targetOrArrayOfTargets;
+      let targetIsArrayOfCssSelector = typeof targetOrArrayOfTargets === 'object' && Array.isArray(targetOrArrayOfTargets);
+      let targets = !targetIsArrayOfCssSelector ? [targetOrArrayOfTargets] : targetOrArrayOfTargets;
       targets.forEach(function(target) {
-        var targetIsCssSelector = typeof target === 'string';
+        let targetIsCssSelector = typeof target === 'string';
         if (!isGettingFullHtmlContent || !targetIsCssSelector) {
           jQuery(target).html(html);
         } else {
-          var $container = jQuery('<div>');
+          let $container = jQuery('<div>');
           $container.html(html);
-          var $content = jQuery(target, $container);
+          let $content = jQuery(target, $container);
           jQuery(target).replaceWith($content);
         }
       });
@@ -2305,14 +2312,14 @@ if (typeof window.sp === 'undefined') {
       getRealStyleValues : function(el, styleNames, depthComputationLimit, depthComputation) {
         depthComputationLimit = depthComputationLimit ? depthComputationLimit : 0;
         depthComputation = depthComputation ? depthComputation : 0;
-        var values = {};
-        var styles = getComputedStyle(el);
+        let values = {};
+        let styles = getComputedStyle(el);
         styleNames.forEach(function(name) {
           values[name] = styles[name].asInteger(0);
         });
         if (depthComputation < depthComputationLimit && depthComputation < 10) {
-          for(var i = 0 ; i < el.children.length ; i++) {
-            var childValues = sp.element.getRealStyleValues(el.children[i], styleNames, depthComputationLimit, depthComputation + 1);
+          for(let i = 0 ; i < el.children.length ; i++) {
+            let childValues = sp.element.getRealStyleValues(el.children[i], styleNames, depthComputationLimit, depthComputation + 1);
             styleNames.forEach(function(name) {
               values[name] = Math.max(values[name], childValues[name]);
             });
@@ -2321,13 +2328,13 @@ if (typeof window.sp === 'undefined') {
         return values;
       },
       offset: function(elementOrCssSelector, intoElement) {
-        var result = {top : 0, left : 0};
-        var into = typeof intoElement !== 'undefined' ? intoElement : document.body;
-        var $jqIntoElement = jQuery(into);
-        var $jqElement = jQuery(elementOrCssSelector);
+        let result = {top : 0, left : 0};
+        let into = typeof intoElement !== 'undefined' ? intoElement : document.body;
+        let $jqIntoElement = jQuery(into);
+        let $jqElement = jQuery(elementOrCssSelector);
         if ($jqElement.length) {
-          var $intoElement = $jqIntoElement[0];
-          var $currentElement = $jqElement[0];
+          let $intoElement = $jqIntoElement[0];
+          let $currentElement = $jqElement[0];
           result.top = $currentElement.offsetTop;
           result.left = $currentElement.offsetLeft;
           $currentElement = $currentElement.offsetParent;
@@ -2340,20 +2347,20 @@ if (typeof window.sp === 'undefined') {
         return result;
       },
       isInView: function (elementOrCssSelector, fullyInView, $view) {
-        var isInView = false;
-        var $jqElement = jQuery(elementOrCssSelector);
+        let isInView = false;
+        let $jqElement = jQuery(elementOrCssSelector);
         if (sp.element.isVisible($jqElement[0])) {
           if (typeof $view === 'undefined') {
             $view = document.body;
           }
-          var $jqWindow = jQuery(window);
-          var $jqView = jQuery($view);
+          let $jqWindow = jQuery(window);
+          let $jqView = jQuery($view);
           $view = $jqView[0];
-          var isWindow = $view === document.body;
-          var viewTop = isWindow ? $jqWindow.scrollTop() : $jqView.offset().top;
-          var viewBottom = viewTop + (isWindow ? $jqWindow.height() : $jqView.height());
-          var elementTop = $jqElement.offset().top;
-          var elementBottom = elementTop + $jqElement.height();
+          let isWindow = $view === document.body;
+          let viewTop = isWindow ? $jqWindow.scrollTop() : $jqView.offset().top;
+          let viewBottom = viewTop + (isWindow ? $jqWindow.height() : $jqView.height());
+          let elementTop = $jqElement.offset().top;
+          let elementBottom = elementTop + $jqElement.height();
 
           if (fullyInView === true) {
             isInView = ((viewTop < elementTop) && (viewBottom > elementBottom));
@@ -2370,11 +2377,11 @@ if (typeof window.sp === 'undefined') {
         return jQuery(element)[0];
       },
       querySelector: function(cssSelector, fromElement) {
-        var from = typeof fromElement !== 'undefined' ? fromElement : document;
+        let from = typeof fromElement !== 'undefined' ? fromElement : document;
         return from.querySelector(cssSelector);
       },
       querySelectorAll: function(cssSelector, fromElement) {
-        var from = typeof fromElement !== 'undefined' ? fromElement : document;
+        let from = typeof fromElement !== 'undefined' ? fromElement : document;
         return [].slice.call(from.querySelectorAll(cssSelector), 0);
       },
       scrollToIfNotFullyInView : function(elementOrCssSelector, $view, options) {
@@ -2389,16 +2396,16 @@ if (typeof window.sp === 'undefined') {
         if (typeof $view === 'undefined') {
           $view = document.body;
         }
-        var $jqWindow = jQuery(window);
-        var $jqView = jQuery($view);
-        var $jqItem = jQuery(elementOrCssSelector);
+        let $jqWindow = jQuery(window);
+        let $jqView = jQuery($view);
+        let $jqItem = jQuery(elementOrCssSelector);
         $view = $jqView[0];
-        var isWindow = $view === document.body;
+        let isWindow = $view === document.body;
         if ($jqItem.length) {
-          var currentScrollTop = isWindow ? $jqWindow.scrollTop() : $view.scrollTop;
-          var viewHeight = isWindow ? $jqWindow.height() : $jqView.height();
-          var offsetHeight = viewHeight - ($jqItem.outerHeight(true) - options.bottomOffset);
-          var scrollTop = sp.element.offset($jqItem[0], $view).top;
+          let currentScrollTop = isWindow ? $jqWindow.scrollTop() : $view.scrollTop;
+          let viewHeight = isWindow ? $jqWindow.height() : $jqView.height();
+          let offsetHeight = viewHeight - ($jqItem.outerHeight(true) - options.bottomOffset);
+          let scrollTop = sp.element.offset($jqItem[0], $view).top;
           if (currentScrollTop < scrollTop) {
             scrollTop = scrollTop - offsetHeight;
           }
@@ -2425,8 +2432,8 @@ if (typeof window.sp === 'undefined') {
         if (typeof $view === 'undefined') {
           $view = document.body;
         }
-        var $jqView = jQuery($view);
-        var isWindow = $jqView[0] === document.body;
+        let $jqView = jQuery($view);
+        let isWindow = $jqView[0] === document.body;
         if (isWindow) {
           jQuery(window).scrollTop(scrollTop);
         } else {
@@ -2435,7 +2442,7 @@ if (typeof window.sp === 'undefined') {
       },
       createPositionManager : function(attachedElement, toElement) {
         return new function() {
-          var options = {};
+          let options = {};
           this.setOptions = function(newOptions) {
             options = extendsObject({
               depthComputation : 1,
@@ -2454,15 +2461,15 @@ if (typeof window.sp === 'undefined') {
               nbAttempts = 1;
               extendsObject(options, options.orig);
             }
-            var baseTop = toElement.offsetTop;
-            var baseLeft = toElement.offsetLeft;
-            var baseHeight = toElement.offsetHeight;
-            var baseWidth = toElement.offsetWidth;
-            var attachedStyles = sp.element.getRealStyleValues(attachedElement, ['width', 'maxWidth', 'height', 'maxHeight'], 1);
-            var attachedHeight = Math.max(attachedElement.offsetHeight, attachedStyles.height, attachedStyles.maxHeight);
-            var attachedWidth = Math.max(attachedElement.offsetWidth, attachedStyles.width, attachedStyles.maxWidth);
-            var top = 0;
-            var left = 0;
+            let baseTop = toElement.offsetTop;
+            let baseLeft = toElement.offsetLeft;
+            let baseHeight = toElement.offsetHeight;
+            let baseWidth = toElement.offsetWidth;
+            let attachedStyles = sp.element.getRealStyleValues(attachedElement, ['width', 'maxWidth', 'height', 'maxHeight'], 1);
+            let attachedHeight = Math.max(attachedElement.offsetHeight, attachedStyles.height, attachedStyles.maxHeight);
+            let attachedWidth = Math.max(attachedElement.offsetWidth, attachedStyles.width, attachedStyles.maxWidth);
+            let top = 0;
+            let left = 0;
             if (options.anchorPoint.ofBase.startsWith('top')) {
               top = baseTop;
             } else if (options.anchorPoint.ofBase.startsWith('center')) {
@@ -2491,11 +2498,11 @@ if (typeof window.sp === 'undefined') {
             attachedElement.style.top = top + 'px';
             attachedElement.style.left = left + 'px';
             if (nbAttempts < 4 && options.flip) {
-              var viewportHeight = options.viewport.offsetHeight;
-              var viewportWidth = options.viewport.offsetWidth;
-              var offset = sp.element.offset(attachedElement, options.viewport);
-              var flipHorizontally = offset.left < 0 || offset.left > viewportWidth;
-              var flipVertically = offset.top < 0 || offset.top > viewportHeight;
+              let viewportHeight = options.viewport.offsetHeight;
+              let viewportWidth = options.viewport.offsetWidth;
+              let offset = sp.element.offset(attachedElement, options.viewport);
+              let flipHorizontally = offset.left < 0 || offset.left > viewportWidth;
+              let flipVertically = offset.top < 0 || offset.top > viewportHeight;
               if (flipHorizontally) {
                 __flipHorizontally();
               }
@@ -2507,7 +2514,7 @@ if (typeof window.sp === 'undefined') {
               }
             }
           };
-          var __flipHorizontally = function() {
+          let __flipHorizontally = function() {
             if (options.anchorPoint.ofBase.endsWith('right')) {
               options.anchorPoint.ofBase = options.anchorPoint.ofBase.replace('-right', '-left');
             } else if (options.anchorPoint.ofBase.endsWith('left')) {
@@ -2519,7 +2526,7 @@ if (typeof window.sp === 'undefined') {
               options.anchorPoint.ofAttached = options.anchorPoint.ofAttached.replace('-left', '-right');
             }
           };
-          var __flipVertically = function() {
+          let __flipVertically = function() {
             if (options.anchorPoint.ofBase.startsWith('top')) {
               options.anchorPoint.ofBase = options.anchorPoint.ofBase.replace('top-', 'bottom-');
             } else if (options.anchorPoint.ofBase.startsWith('bottom')) {
@@ -2670,7 +2677,7 @@ if (typeof window.sp === 'undefined') {
     },
     arrayPane : {
       ajaxControls : function(containerCssSelector, options) {
-        var __refreshFromRequestResponse = function(request) {
+        let __refreshFromRequestResponse = function(request) {
           return sp.updateTargetWithHtmlContent(containerCssSelector, request.responseText, true)
               .then(function(html) {
                 if (window.spProgressMessage) {
@@ -2681,7 +2688,7 @@ if (typeof window.sp === 'undefined') {
                 return html
               });
         };
-        var params = {
+        let params = {
           before : false,
           success : __refreshFromRequestResponse
         };
@@ -2690,17 +2697,17 @@ if (typeof window.sp === 'undefined') {
         } else if (typeof options === 'object') {
           params = extendsObject(params, options);
         }
-        var $container = jQuery(containerCssSelector);
-        var __ajaxRequest = function(url, forcedParams) {
-          var __options = extendsObject({}, params, forcedParams);
-          var ajaxRequest = sp.ajaxRequest(url);
+        let $container = jQuery(containerCssSelector);
+        let __ajaxRequest = function(url, forcedParams) {
+          let __options = extendsObject({}, params, forcedParams);
+          let ajaxRequest = sp.ajaxRequest(url);
           ajaxRequest.withParam("ajaxRequest", true);
           if (typeof __options.before === 'function') {
             __options.before(ajaxRequest);
           }
           return ajaxRequest.send().then(function(request) {
             if (typeof __options.success === 'function') {
-              var result = __options.success(request);
+              let result = __options.success(request);
               if (sp.promise.isOne(result)) {
                 return result;
               }
@@ -2708,12 +2715,12 @@ if (typeof window.sp === 'undefined') {
             return sp.promise.resolveDirectlyWith();
           });
         };
-        var __routingUrl;
-        var __clickHandler = function(index, linkElement) {
-          var url = linkElement.href;
+        let __routingUrl;
+        let __clickHandler = function(index, linkElement) {
+          let url = linkElement.href;
           if (url && '#' !== url && !url.startsWith('javascript')) {
             if (!__routingUrl) {
-              var explodedUrl = sp.url.explode(url);
+              let explodedUrl = sp.url.explode(url);
               delete explodedUrl.parameters['ArrayPaneTarget'];
               delete explodedUrl.parameters['ArrayPaneAction'];
               __routingUrl = sp.url.formatFromExploded(explodedUrl);
@@ -2732,14 +2739,14 @@ if (typeof window.sp === 'undefined') {
         });
         if (__routingUrl) {
           jQuery('.exportlinks a', $container).each(function(index, linkElement) {
-            var url = linkElement.href;
+            let url = linkElement.href;
             if (url.indexOf('/Export/ArrayPane?') < 0) {
               return;
             }
             linkElement.href = 'javascript:void(0)';
             linkElement.addEventListener('click', function() {
               window.top.spProgressMessage.show();
-              var explodedUrl = sp.url.explode(__routingUrl);
+              let explodedUrl = sp.url.explode(__routingUrl);
               explodedUrl.parameters['ArrayPaneAjaxExport'] = true;
               __ajaxRequest(sp.url.formatFromExploded(explodedUrl), {
                 success : function() {
@@ -2756,7 +2763,7 @@ if (typeof window.sp === 'undefined') {
     },
     volatileIdentifier : {
       newOn : function(componentInstanceId) {
-        var url = webContext + '/services/volatile/' + componentInstanceId + '/new';
+        let url = webContext + '/services/volatile/' + componentInstanceId + '/new';
         return sp.ajaxRequest(url).send().then(function(request) {
           return request.responseText;
         });
@@ -2765,7 +2772,7 @@ if (typeof window.sp === 'undefined') {
     editor : {
       wysiwyg : {
         configFor : function(componentInstanceId, resourceType, resourceId, options) {
-          var params = extendsObject({
+          let params = extendsObject({
             configName : undefined,
             height : undefined,
             width : undefined,
@@ -2775,15 +2782,15 @@ if (typeof window.sp === 'undefined') {
             fileBrowserDisplayed : undefined,
             stylesheet : undefined
           }, options);
-          var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceType + '/' + resourceId;
+          let url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceType + '/' + resourceId;
           return sp.ajaxRequest(url).withParams(params).sendAndPromiseJsonResponse();
         },
         promiseFirstEditorInstance : function() {
-          var deferred = sp.promise.deferred();
+          let deferred = sp.promise.deferred();
           whenSilverpeasReady(function() {
             CKEDITOR.on('instanceReady', function() {
-              var editor;
-              for(var editorName in CKEDITOR.instances) {
+              let editor;
+              for(let editorName in CKEDITOR.instances) {
                 editor = CKEDITOR.instances[editorName];
                 break;
               }
@@ -2793,7 +2800,7 @@ if (typeof window.sp === 'undefined') {
           return deferred.promise;
         },
         promiseEditorInstanceById : function(id) {
-          var deferred = sp.promise.deferred();
+          let deferred = sp.promise.deferred();
           whenSilverpeasReady(function() {
             CKEDITOR.on('instanceReady', function() {
               deferred.resolve(CKEDITOR.instances[id]);
@@ -2804,7 +2811,7 @@ if (typeof window.sp === 'undefined') {
         fullScreenOnMaximize : function(editorIdOrName) {
           sp.editor.wysiwyg.promiseEditorInstanceById(editorIdOrName).then(function(editor) {
             editor.on('maximize', function() {
-              var _fullscreen = spLayout.getBody().getContent().toggleFullscreen();
+              let _fullscreen = spLayout.getBody().getContent().toggleFullscreen();
               spFscreen.onfullscreenchange(function() {
                 if (_fullscreen && spFscreen.fullscreenElement() === null) {
                   editor.execCommand('maximize');
@@ -2814,30 +2821,30 @@ if (typeof window.sp === 'undefined') {
           });
         },
         backupManager : function(options) {
-          var instance = new function() {
-            var params = extendsObject({
+          let instance = new function() {
+            let params = extendsObject({
               componentInstanceId : undefined,
               resourceType : undefined,
               resourceId : undefined,
               unvalidatedContentCallback : undefined
             }, options);
-            var _editor;
-            var timer = 0;
-            var dataOnLastClear;
-            var cacheKey = 'sp.editor.wysiwyg.writingCacheHandler_' +
+            let _editor;
+            let timer = 0;
+            let dataOnLastClear;
+            let cacheKey = 'sp.editor.wysiwyg.writingCacheHandler_' +
                 currentUserId + '#' + params.componentInstanceId + '#' + params.resourceType +
                 '#' + params.resourceId;
             cacheKey = cacheKey.replace(/[#](null|undefined)/g, '#');
-            var cache = new SilverpeasCache(cacheKey);
+            let cache = new SilverpeasCache(cacheKey);
 
-            var __stash = function() {
+            let __stash = function() {
               if (typeof dataOnLastClear === 'string' && dataOnLastClear === _editor.getData()) {
                 dataOnLastClear = undefined;
                 return;
               }
               cache.put("data", _editor.getData());
             }.bind(this);
-            var __unStash = function() {
+            let __unStash = function() {
               if (this.existsUnvalidatedContent()) {
                 if (typeof params.unvalidatedContentCallback === 'function') {
                   params.unvalidatedContentCallback();
@@ -2866,10 +2873,10 @@ if (typeof window.sp === 'undefined') {
             sp.editor.wysiwyg.promiseFirstEditorInstance().then(function(editor) {
               _editor = editor;
               if (this.existsUnvalidatedContent()) {
-                var confirmationUrl = webContext +
+                let confirmationUrl = webContext +
                     '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
-                var url = sp.url.format(confirmationUrl);
-                var deferredOpen = sp.promise.deferred();
+                let url = sp.url.format(confirmationUrl);
+                let deferredOpen = sp.promise.deferred();
                 jQuery.popup.load(url).show('confirmation', {
                   openPromise : deferredOpen.promise,
                   callback : __unStash,
@@ -2943,7 +2950,7 @@ if (typeof window.sp === 'undefined') {
         if (typeof queryDescription === 'string') {
           queryDescription = {query : queryDescription};
         }
-        var params = extendsObject({
+        let params = extendsObject({
           query : undefined,
           taxonomyPosition : undefined,
           spaceId : undefined,
@@ -2952,7 +2959,7 @@ if (typeof window.sp === 'undefined') {
           endDate : undefined,
           form : undefined
         }, queryDescription);
-        var url = webContext + '/services/search';
+        let url = webContext + '/services/search';
         return sp.ajaxRequest(url).withParams(params).sendAndPromiseJsonResponse();
       }
     },
@@ -2960,16 +2967,16 @@ if (typeof window.sp === 'undefined') {
       id : {
         from : function() {
           if (arguments.length > 2) {
-            var instanceId = arguments[0];
-            var type = arguments[1];
-            var localId = arguments[2];
+            let instanceId = arguments[0];
+            let type = arguments[1];
+            let localId = arguments[2];
             return new SilverpeasContributionIdentifier(instanceId, type, localId);
           } else {
-            var contributionId = arguments[0];
+            let contributionId = arguments[0];
             if (contributionId instanceof SilverpeasContributionIdentifier) {
               return contributionId;
             } else {
-              var decodedContributionId = sp.contribution.id.fromString(contributionId);
+              let decodedContributionId = sp.contribution.id.fromString(contributionId);
               if (!decodedContributionId) {
                 decodedContributionId = sp.contribution.id.fromBase64(contributionId);
               }
@@ -2978,12 +2985,12 @@ if (typeof window.sp === 'undefined') {
           }
         },
         fromString : function(contributionId) {
-          var contributionIdRegExp = /^([^:]+):([^:]+):(.+)$/g;
-          var match = contributionIdRegExp.exec(contributionId);
+          let contributionIdRegExp = /^([^:]+):([^:]+):(.+)$/g;
+          let match = contributionIdRegExp.exec(contributionId);
           if (match) {
-            var instanceId = match[1];
-            var type = match[2];
-            var localId = match[3];
+            let instanceId = match[1];
+            let type = match[2];
+            let localId = match[3];
             return new SilverpeasContributionIdentifier(instanceId, type, localId);
           }
         },

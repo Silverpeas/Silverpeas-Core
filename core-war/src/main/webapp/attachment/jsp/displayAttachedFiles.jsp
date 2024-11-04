@@ -293,7 +293,7 @@
             </c:if>
             <c:choose>
               <c:when test="${! silfn:isDefined(currentAttachment.title) || ! showTitle}">
-                <c:set var="title" value="${currentAttachment.filename}" />
+                <c:set var="title" value="${silfn:escapeHtml(currentAttachment.filename)}" />
               </c:when>
               <c:otherwise>
                 <c:set var="title" value="${silfn:escapeHtml(currentAttachment.title)}" />
@@ -734,7 +734,7 @@ const _afManager${domIdSuffix} = new function() {
         }, __vuejsCtx), function(formPaneData) {
           return new Promise(function(resolve) {
             let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
-            submitUrl = submitUrl + '/' + encodeURIComponent(formPaneData.fileName);
+            submitUrl = submitUrl + '/' + encodeURIComponent(formPaneData.fileName.unescapeHTML());
             _performActionWithContributionModificationManagement(function() {
               spProgressMessage.show();
               const formData = new FormData();
@@ -886,7 +886,7 @@ const _afManager${domIdSuffix} = new function() {
       _self_ui.get$deleteAttachment().dialog({
       autoOpen: false,
       open:function() {
-        const filename = $(this).data("filename");
+        const filename = $(this).data("filename").escapeHTML();
         const $dialog = _self_ui.get$deleteAttachment().parent();
         $dialog.find(".attachment-delete-warning-message").html('${silfn:escapeJs(deleteConfirmMsg)}'.replace(/([ ?]+)$/, ' <b>' + filename + '</b>$1'));
         $dialog.find("#button-delete-all${domIdSuffix}").hide();

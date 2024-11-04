@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.notificationuser.servlets;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.security.html.HtmlSanitizer;
@@ -86,7 +87,7 @@ public class UserNotificationRequestRouter
         final NotificationContext context = getNotificationContext(request);
         UserNotification notification = nuSC.prepareNotification(context);
         final String title = notification.getNotificationMetaData().getTitle(nuSC.getLanguage());
-        request.setAttribute(MESSAGE_TITLE, title);
+        request.setAttribute(MESSAGE_TITLE, Encode.forHtml(title));
         String recipientUsers = request.getParameter(RECIPIENT_USERS);
         String recipientGroups = request.getParameter(RECIPIENT_GROUPS);
         if (recipientUsers != null || recipientGroups != null) {
