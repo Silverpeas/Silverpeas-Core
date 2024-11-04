@@ -91,13 +91,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param pk
-   * @return
-   *
-   */
   private NodeDetail findNode(NodePK pk) {
     Connection con = getConnection();
     try {
@@ -147,8 +140,8 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
           nodeDetail.getName(), nodeDetail.getDescription());
       nodeDetail.addTranslation(nodeI18NDetail);
       List<NodeI18NDetail> translations = getTranslations(pk.getId());
-      for (int t = 0; translations != null && t < translations.size(); t++) {
-        nodeI18NDetail = translations.get(t);
+      for (NodeI18NDetail translation : translations) {
+        nodeI18NDetail = translation;
         nodeDetail.addTranslation(nodeI18NDetail);
       }
       return nodeDetail;
@@ -158,12 +151,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
   }
 
-  /**
-   * Get Translations of the node
-   *
-   * @param nodeId
-   * @return List of translations
-   */
   private List<NodeI18NDetail> getTranslations(String nodeId) {
     Connection con = getConnection();
     try {
@@ -247,11 +234,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       ArrayList<NodeDetail> result = new ArrayList<>();
       if (level == 0) {
         root = tree.get(root.getNodePK().getId());
-        result = (ArrayList<NodeDetail>) processNode(result, root);
+        processNode(result, root);
       } else {
-        for (NodeDetail header : headers) {
-          result.add(header);
-        }
+        result.addAll(headers);
       }
       return result;
     } catch (SQLException re) {
@@ -261,7 +246,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     }
   }
 
-  private List<NodeDetail> processNode(List<NodeDetail> result, NodeDetail node) {
+  private void processNode(List<NodeDetail> result, NodeDetail node) {
     result.add(node);
     Collection<NodeDetail> children = node.getChildrenDetails();
     if (children != null) {
@@ -269,7 +254,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         processNode(result, child);
       }
     }
-    return result;
   }
 
   @Override
@@ -296,7 +280,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
           node.setFatherPK(toNode);
           node.setOrder(root.getChildrenNumber());
         }
-        delete(node.getNodePK());
 
         // change data
         String newPath = node.getPath().replaceAll(oldRootPath, newRootPath);
@@ -311,9 +294,8 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
           node.setRightsDependsOn(NO_RIGHTS_DEPENDENCY);
         }
         node.setUseId(true);
-        NodePK newNodePK = save(node);
-        NodeDetail newNode = getDetail(newNodePK);
-        createIndex(newNode, true);
+        nodeDAO.moveNode(con, node);
+        createIndex(node, true);
       }
 
       nodeDAO.unvalidateTree(con, nodePK);
@@ -370,7 +352,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     Connection con = getConnection();
     try {
       if (nd.isRemoveTranslation()) {
-        removeTranslation(con, nd);
+        removeTranslation(con, oldNodeDetail, nd);
       } else {
         addOrUpdateTranslation(con, oldNodeDetail, nd);
       }
@@ -411,26 +393,27 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         nodeDAO.unvalidateTree(con, nd.getNodePK());
       } else {
         // the default language is modified
-        updateNodeDetail(con, nd);
+        update(con, updateNodeDetailWith(oldNodeDetail, nd));
       }
     } else {
       // No i18n managed by this object
-      updateNodeDetail(con, nd);
+      update(con, updateNodeDetailWith(oldNodeDetail, nd));
     }
   }
 
-  private void removeTranslation(final Connection con, final NodeDetail nd) throws SQLException {
+  private void removeTranslation(final Connection con, final NodeDetail oldNodeDetail,
+      final NodeDetail nd) throws SQLException {
     // Remove of a translation is required
     if ("-1".equals(nd.getTranslationId())) {
       // Default language = translation
       List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, nd.getId());
-      if (translations != null && !translations.isEmpty()) {
+      if (!translations.isEmpty()) {
         NodeI18NDetail translation = translations.get(0);
         nd.setLanguage(translation.getLanguage());
         nd.setName(translation.getName());
         nd.setDescription(translation.getDescription());
         NodeI18NDAO.removeTranslation(con, translation.getId());
-        updateNodeDetail(con, nd);
+        update(con, updateNodeDetailWith(oldNodeDetail, nd));
       }
     } else {
       NodeI18NDAO.removeTranslation(con, nd.getTranslationId());
@@ -499,15 +482,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param pk
-   * @param level
-   * @return
-   * @
-   *
-   */
   @Override
   public List<NodeDetail> getHeadersByLevel(NodePK pk, int level) {
     Connection con = getConnection();
@@ -520,14 +494,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param nodePK
-   * @return
-   * @
-   *
-   */
   @Override
   public Collection<NodeDetail> getAllNodes(NodePK nodePK) {
     Connection con = getConnection();
@@ -606,15 +572,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     }
   }
 
-  /**
-   * Create a new Node object.
-   *
-   * @param nd the NodeDetail which contains data
-   * @return the NodePK of the new Node
-   * @see NodeDetail
-   * @throws javax.ejb.CreateException
-   * @since 1.0
-   */
   private NodePK save(NodeDetail nd) {
     NodePK newNodePK;
     Connection con = getConnection();
@@ -638,10 +595,17 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     return newNodePK;
   }
 
+  /**
+   * Updates the node referred by the identifier of the specified node with the attributes of the
+   * given node. Children of the node aren't processed.
+   *
+   * @param detail the node with which its counter part in the data source has to be updated.
+   */
   private void updateNodeDetail(NodeDetail detail) {
     Connection con = getConnection();
     try {
-      updateNodeDetail(con, detail);
+      NodeDetail oldDetail = getHeader(detail.getNodePK());
+      update(con, updateNodeDetailWith(oldDetail, detail));
     } catch (SQLException ex) {
       throw new NodeRuntimeException(ex);
     } finally {
@@ -649,55 +613,63 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     }
   }
 
-  private void updateNodeDetail(Connection con, NodeDetail detail) throws SQLException {
-    NodeDetail currentNode = nodeDAO.loadRow(con, detail.getNodePK());
-    if (detail.getName() != null) {
-      currentNode.setName(detail.getName());
+  /**
+   * Updates the specified node got directly from the database with the attributes of the another
+   * node. Children of the node aren't processed.
+   *
+   * @param nodeToUpdate the node to update. It must represents the current state of the node and
+   * as such it has to be provided from the database.
+   * @param newState the new state of the node.
+   * @return the updated node.
+   */
+  private NodeDetail updateNodeDetailWith(NodeDetail nodeToUpdate, NodeDetail newState) {
+    if (newState.getDescription() != null) {
+      nodeToUpdate.setDescription(newState.getDescription());
     }
-    if (detail.getDescription() != null) {
-      currentNode.setDescription(detail.getDescription());
+    if (newState.getName() != null) {
+      nodeToUpdate.setName(newState.getName());
     }
-    if (detail.getCreationDate() != null) {
-      currentNode.setCreationDate(detail.getCreationDate());
+    if (newState.getCreationDate() != null) {
+      nodeToUpdate.setCreationDate(newState.getCreationDate());
     }
-    if (detail.getCreatorId() != null) {
-      currentNode.setCreatorId(detail.getCreatorId());
+    if (newState.getCreatorId() != null) {
+      nodeToUpdate.setCreatorId(newState.getCreatorId());
     }
-    if (detail.getModelId() != null) {
-      currentNode.setModelId(detail.getModelId());
+    if (newState.getModelId() != null) {
+      nodeToUpdate.setModelId(newState.getModelId());
     }
-    if (detail.getStatus() != null) {
-      currentNode.setStatus(detail.getStatus());
+    if (newState.getStatus() != null) {
+      nodeToUpdate.setStatus(newState.getStatus());
     }
-    if (detail.getNodeType() != null) {
-      currentNode.setNodeType(detail.getNodeType());
+    if (newState.getNodeType() != null) {
+      nodeToUpdate.setNodeType(newState.getNodeType());
     }
-    if (NodeDetail.FILE_LINK_TYPE.equals(detail.getNodeType())) {
-      currentNode.setPath(detail.getPath());
+    if (NodeDetail.FILE_LINK_TYPE.equals(newState.getNodeType())) {
+      nodeToUpdate.setPath(newState.getPath());
     }
-    if (detail.getFatherPK() != null
-        && StringUtil.isInteger(detail.getFatherPK().getId())
-        && StringUtil.isDefined(detail.getFatherPK().getInstanceId())) {
-      currentNode.setFatherPK(detail.getFatherPK());
+    if (newState.getFatherPK() != null
+        && StringUtil.isInteger(newState.getFatherPK().getId())
+        && StringUtil.isDefined(newState.getFatherPK().getInstanceId())) {
+      nodeToUpdate.setFatherPK(newState.getFatherPK());
     }
-    if (StringUtil.isDefined(detail.getPath())) {
-      currentNode.setPath(detail.getPath());
+    if (StringUtil.isDefined(newState.getPath())) {
+      nodeToUpdate.setPath(newState.getPath());
     }
-    currentNode.setRightsDependsOn(detail.getRightsDependsOn());
-    currentNode.setOrder(detail.getOrder());
-    currentNode.setLanguage(detail.getLanguage());
-    nodeDAO.storeRow(con, currentNode);
+    nodeToUpdate.setRightsDependsOn(newState.getRightsDependsOn());
+    nodeToUpdate.setOrder(newState.getOrder());
+    nodeToUpdate.setLanguage(newState.getLanguage());
+    return nodeToUpdate;
   }
 
-  private void delete(NodePK nodePK) {
-    Connection con = getConnection();
-    try {
-      nodeDAO.deleteRow(con, nodePK);
-    } catch (SQLException ex) {
-      throw new NodeRuntimeException(ex);
-    } finally {
-      DBUtil.close(con);
-    }
+  /**
+   * Updates in the data source the specified node.
+   *
+   * @param con the connection to the datasource
+   * @param detail the node from which its counterpart in the datasource is updated.
+   * @throws SQLException if an error occurs while updating the node in the datasource.
+   */
+  private void update(Connection con, NodeDetail detail) throws SQLException {
+    nodeDAO.storeRow(con, detail);
   }
 
   private void createTranslations(Connection con, NodeDetail node) throws SQLException {
@@ -887,28 +859,16 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
   private void createIndex(NodeDetail nodeDetail, boolean processWysiwygContent) {
     Objects.requireNonNull(nodeDetail);
-    final FullIndexEntry indexEntry =
-        new FullIndexEntry(new IndexEntryKey(nodeDetail.getNodePK().getComponentName(), "Node",
-            nodeDetail.getNodePK().getId()));
-
-    final Collection<String> languages = nodeDetail.getLanguages();
-    languages.forEach(l -> {
-      NodeI18NDetail translation = nodeDetail.getTranslations().get(l);
-      indexEntry.setTitle(translation.getName(), l);
-      indexEntry.setPreview(translation.getDescription(), l);
-      if (processWysiwygContent) {
-        updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), l);
-      }
-    });
+    final FullIndexEntry indexEntry = getFullIndexEntry(nodeDetail, processWysiwygContent);
 
     indexEntry.setCreationDate(nodeDetail.getCreationDate());
     final String userId;
-    // cas d'une creation (avec creatorId, creationDate)
+    // case of a creation (with creatorId and creationDate)
     if (nodeDetail.getCreatorId() != null) {
       userId = nodeDetail.getCreatorId();
       indexEntry.setCreationUser(userId);
     } else {
-      // cas d'une modification
+      // case of a modification
       NodeDetail node = getHeader(nodeDetail.getNodePK());
       indexEntry.setCreationDate(node.getCreationDate());
       userId = node.getCreatorId();
@@ -923,6 +883,23 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       }
     }
     IndexEngineProxy.addIndexEntry(indexEntry);
+  }
+
+  private FullIndexEntry getFullIndexEntry(NodeDetail nodeDetail, boolean processWysiwygContent) {
+    final FullIndexEntry indexEntry =
+        new FullIndexEntry(new IndexEntryKey(nodeDetail.getNodePK().getComponentName(), "Node",
+            nodeDetail.getNodePK().getId()));
+
+    final Collection<String> languages = nodeDetail.getLanguages();
+    languages.forEach(l -> {
+      NodeI18NDetail translation = nodeDetail.getTranslations().get(l);
+      indexEntry.setTitle(translation.getName(), l);
+      indexEntry.setPreview(translation.getDescription(), l);
+      if (processWysiwygContent) {
+        updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), l);
+      }
+    });
+    return indexEntry;
   }
 
   private void updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry, NodePK nodePK,

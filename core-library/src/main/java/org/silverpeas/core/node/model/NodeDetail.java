@@ -380,8 +380,8 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   }
 
   /**
-   * Méthode nécéssaire au marshalling JAXB
-   * @param id
+   * Sets the unique identifier of this node. Used by the persistence.
+   * @param id the unique identifier of the node.
    */
   public void setId(int id) {
     getNodePK().setId(Integer.toString(id));
@@ -532,6 +532,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
     return fullPath;
   }
 
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
   public boolean isFatherOf(NodeDetail node) {
     boolean isFather = false;
     // Compare componentId
