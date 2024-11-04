@@ -103,7 +103,7 @@ public class NodeDAO extends AbstractDAO {
    * Deletes all nodes linked to the component instance represented by the given identifier.
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
-   * @throws SQLException
+   * @throws SQLException if a SQL error occurs
    */
   public void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
     JdbcSqlQuery.deleteFrom("sb_node_node").where("instanceId = ?", componentInstanceId)
@@ -129,7 +129,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param nd A NodeDetail contains new node data to compare
    * @return true if there is already a node with same name with same father false else
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodeDetail
    * @since 1.0
    */
@@ -161,7 +161,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param nd A NodeDetail contains new node data to compare
    * @return true if there is already a node with same name with same father false else
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodeDetail
    * @since 1.0
    */
@@ -196,7 +196,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param nodePK A NodePK
    * @return A collection of NodePK
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodePK
    * @since 1.0
    */
@@ -232,7 +232,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param nodePK A NodePK
    * @return A collection of NodePK
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodePK
    * @since 1.0
    */
@@ -282,7 +282,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param nodePK A NodePK
    * @return A List of NodeDetail
-   * @throws SQLException
+   * @throws SQLException if a SQL error occurs
    * @see NodePK
    * @since 1.6
    */
@@ -319,7 +319,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param node A NodeDetail
    * @return A List of NodeDetail
-   * @throws SQLException
+   * @throws SQLException if a SQL error occurs
    * @since 4.07
    */
   public List<NodeDetail> getDescendantDetails(Connection con, NodeDetail node)
@@ -348,10 +348,10 @@ public class NodeDAO extends AbstractDAO {
   /**
    * Get nodeDetails by level.
    * @param con A connection to the database
-   * @param nodePK
-   * @param level
+   * @param nodePK the primary key of the node to get
+   * @param level the level of the node to get
    * @return A collection of NodeDetail
-   * @throws SQLException
+   * @throws SQLException if a SQL error occurs
    * @since 1.6
    */
   public List<NodeDetail> getHeadersByLevel(Connection con, NodePK nodePK, int level)
@@ -394,8 +394,7 @@ public class NodeDAO extends AbstractDAO {
     node.addTranslation(nodeI18NDetail);
     if (I18NHelper.isI18nContentActivated) {
       List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, node.getId());
-      for (int t = 0; translations != null && t < translations.size(); t++) {
-        final NodeI18NDetail anotherNodeI18NDetail = translations.get(t);
+      for (final NodeI18NDetail anotherNodeI18NDetail : translations) {
         node.addTranslation(anotherNodeI18NDetail);
       }
     }
@@ -470,33 +469,23 @@ public class NodeDAO extends AbstractDAO {
   /**
    * Get all nodeDetails
    * @param con A connection to the database
-   * @param nodePK
+   * @param nodePK the node primary key in which is defined the component instance identifier
    * @return A collection of NodeDetail
-   * @throws SQLException
+   * @throws SQLException if a SQL error occurs
    * @since 1.6
    */
   public List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK) throws SQLException {
     return getAllHeaders(con, nodePK, null, 0);
   }
 
-  public List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, String sorting)
-      throws SQLException {
-    return getAllHeaders(con, nodePK, sorting, 0);
-  }
-
-  public List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, int level)
-      throws SQLException {
-    return getAllHeaders(con, nodePK, null, level);
-  }
-
   /**
    * Get all nodeDetails
    * @param con A connection to the database
-   * @param nodePK
-   * @param sorting
-   * @param level
+   * @param nodePK the node primary key in which is defined the component instance identifier
+   * @param sorting the sorting to apply
+   * @param level the level of the nodes to get
    * @return A collection of NodeDetail
-   * @throws SQLException
+   * @throws SQLException if a SQL error occurs
    * @since 1.6
    */
   public List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, String sorting,
@@ -556,7 +545,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param nodePK A NodePK
    * @return A {@link NodePath} instance.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodePK
    * @see NodeDetail
    * @since 1.0
@@ -576,14 +565,11 @@ public class NodeDAO extends AbstractDAO {
   }
 
   /**
-   * ********************* Database Routines ***********************
-   */
-  /**
    * Create a NodeDetail from a ResultSet
    * @param rs the ResultSet which contains data
-   * @param nodePK
+   * @param nodePK build the node from the specified result set
    * @return the NodeDetail
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodeDetail
    * @since 1.0
    */
@@ -630,7 +616,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param nodePK the PK of the Node
    * @return a NodeDetail
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodeDetail
    * @since 1.0
    */
@@ -656,9 +642,9 @@ public class NodeDAO extends AbstractDAO {
   /**
    * Get the header of each child of the node
    * @param con A connection to the database
-   * @param nodePK
+   * @param nodePK the primary key of the node
    * @return a NodeDetail collection
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodeDetail
    * @since 1.0
    */
@@ -666,7 +652,7 @@ public class NodeDAO extends AbstractDAO {
       throws SQLException {
     String nodeId = nodePK.getId();
     final String selectQuery = SELECT_FROM + nodePK.getTableName() +
-        " where nodeFatherId = ? and instanceId = ? order by orderNumber asc";
+        " where nodeFatherId = ? and instanceId = ? order by orderNumber";
     try (final PreparedStatement prepStmt = con.prepareStatement(selectQuery)) {
       prepStmt.setInt(1, Integer.parseInt(nodeId));
       prepStmt.setString(2, nodePK.getComponentName());
@@ -689,9 +675,9 @@ public class NodeDAO extends AbstractDAO {
   /**
    * Get the children number of this node
    * @param con A connection to the database
-   * @param nodePK
+   * @param nodePK the primary key of the node
    * @return a int
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @since 1.0
    */
   public int getChildrenNumber(Connection con, NodePK nodePK) throws SQLException {
@@ -722,7 +708,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con A connection to the database
    * @param nd the NodeDetail which contains data
    * @return a NodePK which contains the new row id
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodeDetail
    * @since 1.0
    */
@@ -787,7 +773,7 @@ public class NodeDAO extends AbstractDAO {
    * Delete into the database a node but not it's descendants.
    * @param con a connection to the database
    * @param nodePK the node PK to delete.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodeDetail
    * @since 1.0
    */
@@ -806,7 +792,7 @@ public class NodeDAO extends AbstractDAO {
    * @param con the current connection to the database.
    * @param pk the node PK to find
    * @return the fat pk (pk + detail)
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @see NodePK
    * @since 1.0
    */
@@ -841,10 +827,10 @@ public class NodeDAO extends AbstractDAO {
   /**
    * Load node attributes from database
    * @param con a connection to the database
-   * @param nodePK
-   * @param getTranslations
+   * @param nodePK the primary key of the node to load
+   * @param getTranslations a flag indicating if the translations has to be loaded
    * @return the loaded node details.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException if a SQL error occurs
    * @since 1.0
    */
   public NodeDetail loadRow(Connection con, NodePK nodePK, boolean getTranslations)
@@ -895,8 +881,8 @@ public class NodeDAO extends AbstractDAO {
   /**
    * Store node attributes into database
    * @param con a connection to the database
-   * @param nodeDetail
-   * @throws java.sql.SQLException
+   * @param nodeDetail the node to store
+   * @throws java.sql.SQLException if a SQL error occurs
    * @since 1.0
    */
   public void storeRow(Connection con, NodeDetail nodeDetail) throws SQLException {
@@ -916,8 +902,8 @@ public class NodeDAO extends AbstractDAO {
       prepStmt.setInt(8, nodeDetail.getOrder());
       prepStmt.setString(9, nodeDetail.getLanguage());
       prepStmt.setInt(10, Integer.parseInt(nodeDetail.getRightsDependsOn()));
-      prepStmt.setInt(11, Integer.parseInt(nodeDetail.getNodePK().getId()));
-      prepStmt.setString(12, nodeDetail.getNodePK().getComponentName());
+      prepStmt.setString(11, nodeDetail.getNodePK().getComponentName());
+      prepStmt.setInt(12, Integer.parseInt(nodeDetail.getNodePK().getId()));
       rowCount = prepStmt.executeUpdate();
       unvalidateTree(con, nodeDetail.getNodePK());
     }
@@ -961,6 +947,7 @@ public class NodeDAO extends AbstractDAO {
     }
   }
 
+  @SuppressWarnings("SqlResolve")
   public void sortNodes(Connection con, List<NodePK> nodePKs) throws SQLException {
     final String query = "UPDATE SB_Node_Node SET orderNumber = ? WHERE nodeId = ? ";
     try (final PreparedStatement prepStmt = con.prepareStatement(query)) {
