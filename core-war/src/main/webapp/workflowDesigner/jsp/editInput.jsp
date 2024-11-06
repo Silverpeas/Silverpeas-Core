@@ -199,14 +199,14 @@
     row = inputPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("GML.requiredField") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellCheckbox( "mandatory", "true", input.isMandatory() );
+    row.addArrayCellCheckbox( "mandatory", "true", null, input.isMandatory() );
 
     // Readonly
     //
     row = inputPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.readonly") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellCheckbox( "readonly", "true", input.isReadonly() );
+    row.addArrayCellCheckbox( "readonly", "true", null, input.isReadonly() );
 
     out.println(window.printBefore());
     out.println(frame.printBefore());

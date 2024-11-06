@@ -167,7 +167,7 @@
     row = statePane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.notifyAdmin") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellCheckbox( "notifyAdmin", "true", state.getTimeoutNotifyAdmin() );
+    row.addArrayCellCheckbox( "notifyAdmin", "true", null, state.getTimeoutNotifyAdmin() );
 
     // Interested users and working users
     //
@@ -297,7 +297,7 @@
         else
             fChecked = false;
 
-        row.addArrayCellCheckbox( "allow", astrActionValues[i], fChecked );
+        row.addArrayCellCheckbox( "allow", astrActionValues[i], null, fChecked );
         row.addArrayCellText( astrActionValues[i] );
     }
 
