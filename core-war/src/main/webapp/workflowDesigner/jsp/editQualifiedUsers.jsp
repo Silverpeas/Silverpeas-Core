@@ -152,7 +152,7 @@
         cellText.setStyleSheet( "txtlibform" );
 
         final boolean checked = qualifiedUsers.getLinkDisabled() != null && qualifiedUsers.getLinkDisabled();
-        row.addArrayCellCheckbox( "linkDisabled", Boolean.TRUE.toString(), checked);
+        row.addArrayCellCheckbox( "linkDisabled", Boolean.TRUE.toString(), null, checked);
     }
 
     // User In Role - print a list of role names, based on the 'roles' element
@@ -167,7 +167,7 @@
         row = inRolePane.addArrayLine();
         fChecked = qualifiedUsers.getUserInRole( astrRoleValues[i] ) != null;
 
-        row.addArrayCellCheckbox( "userInRole", astrRoleValues[i], fChecked );
+        row.addArrayCellCheckbox( "userInRole", astrRoleValues[i], null, fChecked );
         row.addArrayCellText( astrRoleValues[i] );
     }
 

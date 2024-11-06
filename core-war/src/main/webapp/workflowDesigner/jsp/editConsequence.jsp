@@ -176,7 +176,7 @@
     row = consequencePane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.kill") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellCheckbox( "kill", "true", consequence.getKill() );
+    row.addArrayCellCheckbox( "kill", "true", null, consequence.getKill() );
 
     //Fill the 'set/unset' state section
     //
