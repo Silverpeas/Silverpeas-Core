@@ -115,7 +115,7 @@ for ( int i = 0; i < astrFolderItemNames.length; i++ )
 {
     row = columnPane.addArrayLine();
     row.addArrayCellCheckbox( "column",
-                              astrFolderItemNames[i],
+                              astrFolderItemNames[i],null,
                               columns.getColumn( astrFolderItemNames[i] ) != null );
     row.addArrayCellText( astrFolderItemNames[i] );
 }

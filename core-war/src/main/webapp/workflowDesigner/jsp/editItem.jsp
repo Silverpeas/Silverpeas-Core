@@ -101,7 +101,7 @@
     row = itemPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.computed") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellCheckbox( "computed", "true", item.isComputed() );
+    row.addArrayCellCheckbox( "computed", "true", null, item.isComputed() );
 
     // Map to
     //
@@ -128,7 +128,7 @@
     row = itemPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.readonly") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellCheckbox( "readonly", "true", item.isReadonly() );
+    row.addArrayCellCheckbox( "readonly", "true", null, item.isReadonly() );
 
     // Formula
     //
