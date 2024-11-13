@@ -322,7 +322,7 @@ public class ImportExport extends AbstractExportProcess {
         tempDir = FileRepositoryManager.getTemporaryPath();
         fileExportDir = new File(tempDir + thisExportDir);
         publicationsType = pubTypMgr.processExport(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath(), false, true, rootPK);
+            fileExportDir.getPath(), true, true, rootPK);
       }
       silverPeasExch.setPublicationsType(publicationsType);
 
@@ -664,7 +664,7 @@ public class ImportExport extends AbstractExportProcess {
       // création des répertoires avec le nom des publications
       publicationsType =
           pubTypMgr.processExport(exportReport, userDetail, itemsToExport, fileExportDir.getPath(),
-              false, true, null);
+              true, true, null);
 
       // Récupération de la liste de id des composants
       Set<String> listComponentId = new HashSet<>();

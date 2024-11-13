@@ -175,9 +175,11 @@ public class PublicationsTypeManager {
           exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
         }
       // To avoid problems with Winzip
+      /*
       if (exportPublicationPath.length() > 250) {
         return Collections.emptyList();
       }
+      */
 
       // Copie des fichiers de contenu s'il en existe
       PublicationContentType pubContent = publicationType.getPublicationContentType();
@@ -358,6 +360,7 @@ public class PublicationsTypeManager {
     List<NodeDetail> listNodes = new ArrayList<>(nodeImportExport.getPathOfNode(pk));
     Collections.reverse(listNodes);
     boolean rootFound = false;
+
     for (NodeDetail nodeDetail : listNodes) {
       if (nodeDetail.getNodePK().equals(rootPK)) {
         rootFound = true;
@@ -420,13 +423,19 @@ public class PublicationsTypeManager {
       List<NodeDetail> listNodes = new ArrayList<>(nodeImportExport.getPathOfNode(new NodePK(String.
           valueOf(topicId), "useless", componentId)));
       Collections.reverse(listNodes);
+      int nbNodes = listNodes.size();
+      int cptNode = 0;
+
       for (NodeDetail nodeDetail : listNodes) {
         String nodeNameForm = nodeDetail.getNodePK().getId();
         if (useNameForFolders) {
           nodeNameForm = DirectoryUtils.formatToDirectoryNamingCompliant(nodeDetail.getName());
         }
-        pathToCreate.append(separator).append(nodeNameForm);
-        relativeExportPath.append(separator).append(nodeNameForm);
+        if (cptNode+2>nbNodes) {
+          pathToCreate.append(separator).append(nodeNameForm);
+          relativeExportPath.append(separator).append(nodeNameForm);
+        }
+        cptNode++;
       }
     }
     relativeExportPath.append(separator).append(pubNameForm);
