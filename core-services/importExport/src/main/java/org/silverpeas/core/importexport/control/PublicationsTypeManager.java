@@ -174,12 +174,6 @@ public class PublicationsTypeManager {
                   bExportPublicationPath);
           exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
         }
-      // To avoid problems with Winzip
-      /*
-      if (exportPublicationPath.length() > 250) {
-        return Collections.emptyList();
-      }
-      */
 
       // Copie des fichiers de contenu s'il en existe
       PublicationContentType pubContent = publicationType.getPublicationContentType();
