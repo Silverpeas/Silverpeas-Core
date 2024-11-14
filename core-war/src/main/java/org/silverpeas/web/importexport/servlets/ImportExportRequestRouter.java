@@ -36,6 +36,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.importexport.control.ImportExportSessionController;
 
 import java.io.File;
@@ -107,7 +108,7 @@ public class ImportExportRequestRouter extends
         destination = "/importExportPeas/jsp/selectExportMode.jsp";
       } else if ("ExportSavedItems".equals(function)) {
         String mode = request.getParameter("ExportMode");
-        importExportSC.processExportOfSavedItems(mode);
+        importExportSC.processExportOfSavedItems(mode, isNameUsedForFolders(request));
         destination = "/importExportPeas/jsp/pingExport.jsp";
       } else if ("ExportItems".equals(function)) {
         @SuppressWarnings("unchecked")
@@ -115,7 +116,7 @@ public class ImportExportRequestRouter extends
             "selectedResultsWa");
         NodePK rootPK = (NodePK) request.getAttribute("RootPK");
         if (itemPKs != null && !itemPKs.isEmpty()) {
-          importExportSC.processExport(itemPKs, rootPK);
+          importExportSC.processExport(itemPKs, rootPK, true);
           destination = "/importExportPeas/jsp/pingExport.jsp";
         } else {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
@@ -147,19 +148,18 @@ public class ImportExportRequestRouter extends
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
         }
       } else if (function.equals("KmaxExportComponent")) {
-        @SuppressWarnings("unchecked")
+
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         if (itemPKs != null && !itemPKs.isEmpty()) {
           ExportReport report =
-              importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, null, null);
+              importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, null, null, isNameUsedForFolders(request));
           request.setAttribute("ExportReport", report);
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         } else {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
         }
       } else if (function.equals("KmaxExportPublications")) {
-        @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         List combination = (List) request.getAttribute("Combination");
@@ -167,7 +167,7 @@ public class ImportExportRequestRouter extends
 
         if (itemPKs != null && !itemPKs.isEmpty()) {
           ExportReport report = importExportSC.processExportKmax(importExportSC.getLanguage(),
-              itemPKs, combination, timeCriteria);
+              itemPKs, combination, timeCriteria, isNameUsedForFolders(request));
           request.setAttribute("ExportReport", report);
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         } else {
@@ -182,5 +182,16 @@ public class ImportExportRequestRouter extends
     }
 
     return destination;
+  }
+
+  /** use Name or Id for folders
+   * @param request
+   **/
+  private boolean isNameUsedForFolders(HttpRequest request) {
+    boolean useNameForFolders = true;
+    if (StringUtil.isDefined(request.getParameter("UseIdForFolders"))) {
+      useNameForFolders = !Boolean.parseBoolean(request.getParameter("UseIdForFolders"));
+    }
+    return useNameForFolders;
   }
 }

@@ -36,14 +36,16 @@ public class ExportXMLTask extends ExportTask {
   private final String language;
   private final NodePK rootPK;
   private final int mode;
+  private final boolean useNameForFolders;
 
   ExportXMLTask(ImportExportSessionController toAwake, List<WAAttributeValuePair> pks,
-      String language, NodePK rootPK, int mode) {
+      String language, NodePK rootPK, int mode, boolean useNameForFolders) {
     super(toAwake);
     pksToExport = pks;
     this.language = language;
     this.rootPK = rootPK;
     this.mode = mode;
+    this.useNameForFolders = useNameForFolders;
   }
 
   @Override
@@ -52,7 +54,7 @@ public class ExportXMLTask extends ExportTask {
       final ImportExport importExport = ServiceProvider.getService(ImportExport.class);
       exportReport =
           importExport.processExport(super.toAwake.getUserDetail(), language, pksToExport,
-          rootPK, mode);
+          rootPK, mode, useNameForFolders);
     } catch (Exception e) {
       errorOccurred = e;
     } finally {

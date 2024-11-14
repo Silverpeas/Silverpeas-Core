@@ -175,9 +175,11 @@ public class PublicationsTypeManager {
           exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
         }
       // To avoid problems with Winzip
+      /*
       if (exportPublicationPath.length() > 250) {
         return Collections.emptyList();
       }
+      */
 
       // Copie des fichiers de contenu s'il en existe
       PublicationContentType pubContent = publicationType.getPublicationContentType();
@@ -445,7 +447,7 @@ public class PublicationsTypeManager {
   }
 
   public void processExportOfFilesOnly(ExportReport exportReport, UserDetail userDetail,
-      List<WAAttributeValuePair> listItemsToExport, String exportPath, NodePK nodeRootPK)
+      List<WAAttributeValuePair> listItemsToExport, String exportPath, NodePK nodeRootPK, boolean useNameForFolders)
       throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     GEDImportExport gedIE = null;
@@ -481,7 +483,7 @@ public class PublicationsTypeManager {
             }
             if (rightFolderPK != null) {
               String attachmentsExportPath =
-                  createDirectoryPathForExport(exportPath, nodeRootPK, rightFolderPK, true);
+                  createDirectoryPathForExport(exportPath, nodeRootPK, rightFolderPK, useNameForFolders);
               exportAttachments(attachmentIE, null, pk, "", attachmentsExportPath);
               break;
             }
