@@ -28,39 +28,33 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ include file="check.jsp" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel/>
-<script type="text/javascript">
-function ping() {
-	$.progressMessage();
-	window.setTimeout("doIdle();", 5000);
-}
+<view:sp-page>
+  <view:sp-head-part>
+    <script type="text/javascript">
+    function ping() {
+      $.progressMessage();
+      window.setTimeout("doIdle();", 5000);
+    }
 
-function doIdle() {
-    self.location.href = "/silverpeas/RimportExportPeas/jsp/ExportItemsPing";
-}
-</script>
-</head>
-<body onload="ping()">
-<%
-browseBar.setComponentName(resource.getString("importExportPeas.Export"));
+    function doIdle() {
+        self.location.href = "/silverpeas/RimportExportPeas/jsp/ExportItemsPing";
+    }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part onLoad="ping()">
+    <view:browseBar>
+      <view:browseBarElt link="" label="<fmt:message key='importExportPeas.Export'/>"/>
+    </view:browseBar>
 
-out.println(window.printBefore());
-%>
-<view:frame>
-<view:board>
-<center>
-<table>
-<tr><td class="txtlibform"><%=resource.getString("importExportPeas.InProgress")%></td></tr>
-</table>
-</center>
-</view:board>
-</view:frame>
-<%
-out.println(window.printAfter());
-%>
-<view:progressMessage/>
-</body>
-</html>
+    <view:window>
+      <view:frame>
+        <view:board>
+        <table>
+          <tr><td class="txtlibform"><fmt:message key="importExportPeas.InProgress"/></td></tr>
+        </table>
+        </view:board>
+      </view:frame>
+    </view:window>
+    <view:progressMessage/>
+  </view:sp-body-part>
+</view:sp-page>
