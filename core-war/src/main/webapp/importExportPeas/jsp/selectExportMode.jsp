@@ -38,46 +38,44 @@
 <fmt:message var="closeButton" key="GML.cancel"/>
 <fmt:message var="exportButton" key="GML.validate"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>ZIP export</title>
-<view:looknfeel/>
-<script type="text/javascript">
-function exportData() {
-	$.progressMessage();
-	document.exportForm.submit();
-}
-</script>
-</head>
-<body>
-<view:browseBar>
-  <view:browseBarElt link="" label="${browseBarExport}"/>
-</view:browseBar>
-<view:window>
-  <view:frame>
-    <view:board>
-    <div class="inlineMessage">
-	<fmt:message key="importExportPeas.export.warning"/>
-    </div>
-    <form name="exportForm" action="/silverpeas/RimportExportPeas/jsp/ExportSavedItems" method="post">
-      <fieldset>
-	<legend><fmt:message key="importExportPeas.export.what"/></legend>
-	<input type="radio" name="ExportMode" value="<%=ImportExport.EXPORT_FILESONLY %>" checked="checked"/> <fmt:message key="importExportPeas.export.mode.filesOnly"/><br/>
-	<input type="radio" name="ExportMode" value="<%=ImportExport.EXPORT_PUBLICATIONSONLY %>"/> <fmt:message key="importExportPeas.export.mode.pubsOnly"/><br/>
-	<input type="radio" name="ExportMode" value="<%=ImportExport.EXPORT_FULL %>"/> <fmt:message key="importExportPeas.export.mode.full"/>
-      </fieldset>
-    </form>
-    </view:board>
-    <br/>
-    <center>
-      <view:buttonPane>
-	<view:button label="${exportButton}" action="javascript:exportData();"/>
-	<view:button label="${closeButton}" action="javascript:window.close();"/>
-      </view:buttonPane>
-    </center>
-  </view:frame>
-</view:window>
-<view:progressMessage/>
-</body>
-</html>
+<view:sp-page>
+  <view:sp-head-part title="Export">
+  <script type="text/javascript">
+    function exportData() {
+      $.progressMessage();
+      document.exportForm.submit();
+    }
+  </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <view:browseBar>
+      <view:browseBarElt link="" label="${browseBarExport}"/>
+    </view:browseBar>
+    <view:window>
+      <view:frame>
+        <view:board>
+          <div class="inlineMessage">
+            <fmt:message key="importExportPeas.export.warning"/>
+          </div>
+          <form name="exportForm" action="/silverpeas/RimportExportPeas/jsp/ExportSavedItems" method="post">
+            <fieldset>
+              <legend><fmt:message key="importExportPeas.export.what"/></legend>
+              <input type="radio" name="ExportMode" value="<%=ImportExport.EXPORT_FILESONLY %>" checked="checked"/> <fmt:message key="importExportPeas.export.mode.filesOnly"/><br/>
+              <input type="radio" name="ExportMode" value="<%=ImportExport.EXPORT_PUBLICATIONSONLY %>"/> <fmt:message key="importExportPeas.export.mode.pubsOnly"/><br/>
+              <input type="radio" name="ExportMode" value="<%=ImportExport.EXPORT_FULL %>"/> <fmt:message key="importExportPeas.export.mode.full"/>
+              <br/><br/>
+              <legend><fmt:message key="importExportPeas.export.options"/></legend>
+              <input type="checkbox" name="UseIdForFolders" value="true"/> <fmt:message key="importExportPeas.export.useIdForFolders"/><br/>
+            </fieldset>
+          </form>
+        </view:board>
+        <br/>
+          <view:buttonPane verticalPosition="center">
+          <view:button label="${exportButton}" action="javascript:exportData();"/>
+          <view:button label="${closeButton}" action="javascript:window.close();"/>
+          </view:buttonPane>
+      </view:frame>
+    </view:window>
+    <view:progressMessage/>
+  </view:sp-body-part>
+</view:sp-page>

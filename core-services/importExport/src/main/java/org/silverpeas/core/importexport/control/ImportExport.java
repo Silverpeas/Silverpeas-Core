@@ -262,24 +262,24 @@ public class ImportExport extends AbstractExportProcess {
   }
 
   public ExportReport processExport(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK, int mode)
+      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK, int mode, boolean useNameForFolders)
       throws ImportExportException {
     ExportReport report = null;
     switch (mode) {
       case ImportExport.EXPORT_FULL:
-        report = processExport(userDetail, language, listItemsToExport, rootPK);
+        report = processExport(userDetail, language, listItemsToExport, rootPK, useNameForFolders);
         break;
       case ImportExport.EXPORT_FILESONLY:
-        report = processExportOfFilesOnly(userDetail, listItemsToExport, rootPK);
+        report = processExportOfFilesOnly(userDetail, listItemsToExport, rootPK, useNameForFolders);
         break;
       default:
-        report = processExportOfPublicationsOnly(userDetail, listItemsToExport, rootPK);
+        report = processExportOfPublicationsOnly(userDetail, listItemsToExport, rootPK, useNameForFolders);
     }
     return report;
   }
 
   private ExportReport processExport(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
+      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK, boolean useNameForFolders) throws ImportExportException {
     // pour le multilangue
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.importExport.multilang.importExportBundle", language);
@@ -304,9 +304,9 @@ public class ImportExport extends AbstractExportProcess {
       }
       // Exportation des publications
       List<PublicationType> publicationsType;
-      // création des répertoires avec le nom des thèmes et des publications
+      // création des répertoires avec le nom des dossiers et des publications
       publicationsType = pubTypMgr.processExport(exportReport, userDetail, listItemsToExport,
-          fileExportDir.getPath(), true, true, rootPK);
+          fileExportDir.getPath(), useNameForFolders, true, rootPK);
       if (publicationsType.isEmpty()) {
         // les noms des thèmes et des publication est trop long ou au moins > 200 caractères
         // création des répertoires avec les Id des thèmes et des publications
@@ -322,7 +322,7 @@ public class ImportExport extends AbstractExportProcess {
         tempDir = FileRepositoryManager.getTemporaryPath();
         fileExportDir = new File(tempDir + thisExportDir);
         publicationsType = pubTypMgr.processExport(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath(), false, true, rootPK);
+            fileExportDir.getPath(), useNameForFolders, true, rootPK);
       }
       silverPeasExch.setPublicationsType(publicationsType);
 
@@ -337,7 +337,7 @@ public class ImportExport extends AbstractExportProcess {
           listClassifyPosition.addAll(pdcPos);
         }
       }
-      List<String> listComponentId = new ArrayList<String>(componentIds);
+      List<String> listComponentId = new ArrayList<>(componentIds);
       // Exportation des composants liés aux publications exportées
       silverPeasExch.setComponentsType(adminIE.getComponents(listComponentId));
       // Exportation des Arbres de topics liés aux publications exportées
@@ -499,9 +499,11 @@ public class ImportExport extends AbstractExportProcess {
   }
 
   /**
+   *
    * @param userDetail
    * @param itemsToExport
-   * @return
+   * @param rootPK
+   * @return ExportPDFReport
    * @throws ImportExportException
    */
   public ExportPDFReport processExportPDF(UserDetail userDetail,
@@ -632,7 +634,7 @@ public class ImportExport extends AbstractExportProcess {
    * @throws ImportExportException
    */
   public ExportReport processExportKmax(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> itemsToExport, List<String> combination, String timeCriteria)
+      List<WAAttributeValuePair> itemsToExport, List<String> combination, String timeCriteria, boolean useNameForFolders)
       throws ImportExportException {
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.importExport.multilang.importExportBundle", language);
@@ -664,7 +666,7 @@ public class ImportExport extends AbstractExportProcess {
       // création des répertoires avec le nom des publications
       publicationsType =
           pubTypMgr.processExport(exportReport, userDetail, itemsToExport, fileExportDir.getPath(),
-              false, true, null);
+              useNameForFolders, true, null);
 
       // Récupération de la liste de id des composants
       Set<String> listComponentId = new HashSet<>();
@@ -827,6 +829,7 @@ public class ImportExport extends AbstractExportProcess {
             try {
               fileWriter.close();
             } catch (Exception ex) {
+              SilverLogger.getLogger(this).error(ex.getMessage(), ex);
             }
           }
         }
@@ -962,7 +965,7 @@ public class ImportExport extends AbstractExportProcess {
   }
 
   private ExportReport processExportOfFilesOnly(UserDetail userDetail,
-      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
+      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK, boolean useNameForFolders) throws ImportExportException {
     PublicationsTypeManager pubTypMgr = getPublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
@@ -972,7 +975,7 @@ public class ImportExport extends AbstractExportProcess {
     // Export files attached to publications
     try {
       pubTypMgr.processExportOfFilesOnly(exportReport, userDetail, listItemsToExport,
-          fileExportDir.getPath(), rootPK);
+          fileExportDir.getPath(), rootPK, useNameForFolders);
     } catch (IOException e1) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_EXPORT_FILES", e1);
     }
@@ -982,7 +985,7 @@ public class ImportExport extends AbstractExportProcess {
   }
 
   private ExportReport processExportOfPublicationsOnly(UserDetail userDetail,
-      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
+      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK, boolean useNameForFolders) throws ImportExportException {
     PublicationsTypeManager pubTypMgr = getPublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
@@ -993,7 +996,7 @@ public class ImportExport extends AbstractExportProcess {
 
     // création des répertoires avec le nom des thèmes et des publications
     pubTypMgr.processExport(exportReport, userDetail, listItemsToExport, fileExportDir.getPath(),
-        true, rootPK != null, rootPK);
+        useNameForFolders, rootPK != null, rootPK);
 
     // Création du zip
     createZipFile(fileExportDir, exportReport);

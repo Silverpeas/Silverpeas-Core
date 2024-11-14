@@ -69,13 +69,13 @@ public class ImportExportSessionController extends AbstractAdminComponentSession
     return importReport;
   }
 
-  public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK) {
-    processExport(itemsToExport, rootPK, ImportExport.EXPORT_FULL);
+  public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK, boolean useNamesForFolders) {
+    processExport(itemsToExport, rootPK, ImportExport.EXPORT_FULL, useNamesForFolders);
   }
 
-  private void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK, int mode) {
+  private void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK, int mode, boolean useNamesForFolders) {
     if (exportTask == null) {
-      exportTask = new ExportXMLTask(this, itemsToExport, getLanguage(), rootPK, mode);
+      exportTask = new ExportXMLTask(this, itemsToExport, getLanguage(), rootPK, mode, useNamesForFolders);
       errorOccured = null;
       exportReport = null;
       exportTask.startTheExport();
@@ -126,13 +126,13 @@ public class ImportExportSessionController extends AbstractAdminComponentSession
    * @throws ImportExportException
    */
   public ExportReport processExportKmax(String language, List<WAAttributeValuePair> itemsToExport,
-      List combination, String timeCriteria) throws ImportExportException {
+      List combination, String timeCriteria, boolean useNamesForFolders) throws ImportExportException {
     return importExport.processExportKmax(getUserDetail(),
-        language, itemsToExport, combination, timeCriteria);
+        language, itemsToExport, combination, timeCriteria, useNamesForFolders);
   }
 
-  public void processExportOfSavedItems(String mode) {
-    processExport(this.items, this.rootPK, Integer.parseInt(mode));
+  public void processExportOfSavedItems(String mode, boolean useNamesForFolders) {
+    processExport(this.items, this.rootPK, Integer.parseInt(mode), useNamesForFolders);
   }
 
   public void saveItems(List<WAAttributeValuePair> items, NodePK rootPK) {
