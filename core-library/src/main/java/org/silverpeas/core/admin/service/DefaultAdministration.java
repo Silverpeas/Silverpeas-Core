@@ -318,9 +318,8 @@ class DefaultAdministration implements Administration {
 
   @Override
   public void createSpaceIndex(SpaceInstLight spaceInst) {
-    String spaceId = spaceInst.getId();
-    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(INDEX_SPACE_SCOPE, "Space",
-        spaceId));
+    FullIndexEntry indexEntry = new FullIndexEntry(
+        new IndexEntryKey(INDEX_SPACE_SCOPE, "Space", spaceInst.getId()));
     // index all translations
     Map<String, SpaceI18N> translations = spaceInst.getTranslations();
     for (Map.Entry<String, SpaceI18N> translation : translations.entrySet()) {
@@ -2985,7 +2984,7 @@ class DefaultAdministration implements Administration {
       final boolean isAppInMaintenance) {
     if (synchroDomain.isSynchroOnLoginEnabled() && !isAppInMaintenance) {
       try {
-        synchronizeUser(sUserId, synchroDomain.isSynchroOnLoginRecursToGroups());
+        synchronizeUser(sUserId, synchroDomain.isSynchroOnLoginRecursToGroups(), false);
       } catch (Exception ex) {
         SilverLogger.getLogger(this).error(ex);
       }
@@ -4299,7 +4298,8 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public String synchronizeUser(String userId, boolean recurs) throws AdminException {
+  public String synchronizeUser(String userId, boolean recurs, boolean force)
+      throws AdminException {
     Collection<UserDetail> listUsersUpdate = new ArrayList<>();
     UserDetail theUserDetail = getUserDetail(userId);
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
@@ -4324,6 +4324,8 @@ class DefaultAdministration implements Administration {
         mergeDistantUserIntoSilverpeasUser(ud, theUserDetail);
         userManager.updateUser(theUserDetail, true);
         cache.opUpdateUser(userManager.getUserDetail(userId));
+      } else if (force) {
+        domainDriverManager.indexUser(userId);
       }
       // Synchro manuelle : Ajoute ou Met à jour l'utilisateur
       listUsersUpdate.add(ud);
@@ -4353,7 +4355,6 @@ class DefaultAdministration implements Administration {
         cache.opAddUserInGroup(userId);
       }
 
-      // traitement spécifique des users selon l'interface implémentée
       processSpecificSynchronization(theUserDetail.getDomainId(), null, listUsersUpdate, null);
 
       // return user id
@@ -4371,7 +4372,7 @@ class DefaultAdministration implements Administration {
     ud.setDomainId(domainId);
     String userId = addUser(ud, true);
     // Synchronizes the user to add it to the groups and recursively add the groups
-    synchronizeUser(userId, recurs);
+    synchronizeUser(userId, recurs, false);
     return userId;
   }
 
@@ -4383,7 +4384,7 @@ class DefaultAdministration implements Administration {
     ud.setDomainId(domainId);
     String userId = addUser(ud, true);
     // Synchronizes the user to add it to the groups and recursively add the groups
-    synchronizeUser(userId, recurs);
+    synchronizeUser(userId, recurs, false);
     return userId;
   }
 

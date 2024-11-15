@@ -1212,7 +1212,7 @@ public class AdminController implements java.io.Serializable {
 
   public String synchronizeUser(String userId) {
     try {
-      return admin.synchronizeUser(userId, true);
+      return admin.synchronizeUser(userId, true, true);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
