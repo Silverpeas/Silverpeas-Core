@@ -35,10 +35,10 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:set var="preferences" value="${requestScope['preferences']}"/>
-<!--
 <%
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
   pageContext.setAttribute("availableLooks", gef.getAvailableLooksForUser());
-%>-->
+%>
 <div id="settings">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
   <table border="0" cellspacing="0" cellpadding="5" width="100%">

@@ -26,22 +26,16 @@ package org.silverpeas.web.socialnetwork.myprofil.servlets;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
@@ -49,6 +43,10 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.socialnetwork.user.model.SNFullUser;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.servlets.ImageProfile;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 
@@ -62,13 +60,9 @@ import java.util.Random;
 
 import static org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes.*;
 
-/**
- * @author azzedine
- */
 public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessionController> {
 
   private static final long serialVersionUID = -9194682447286602180L;
-  private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
 
   @Override
   public String getSessionControlBeanName() {
@@ -81,12 +75,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     return new MyProfilSessionController(mainSessionCtrl, componentContext);
   }
 
-  /**
-   * @param function
-   * @param myProfilSC
-   * @param request
-   * @return String
-   */
   @Override
   public String getDestination(String function, MyProfilSessionController myProfilSC,
       HttpRequest request) {
@@ -95,12 +83,11 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     }
     String destination = "#";
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
-    MyProfileRoutes route = valueOf(function);
+    MyProfileRoutes route = MyProfileRoutes.valueOf(function);
     SocialNetworkHelper socialNetworkHelper = ServiceProvider.getService(SocialNetworkHelper.class);
 
     try {
       if (route == Main || route == MyInfos) {
-        // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
 
         boolean updateIsAllowed = domainRW && ((myProfilSC.isPasswordChangeAllowed() || (snUserFull.
@@ -110,7 +97,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         request.setAttribute("userObject", snUserFull.getUserFull());
         request.setAttribute("UpdateIsAllowed", updateIsAllowed);
         request.setAttribute("isPasswordChangeAllowed", myProfilSC.isPasswordChangeAllowed());
-        request.setAttribute("View", "MyInfos");
+        request.setAttribute("View", MyInfos.name());
         setUserSettingsIntoRequest(request, myProfilSC);
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == MyProfileRoutes.UpdatePhoto) {
@@ -162,7 +149,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         request.setAttribute("View", function);
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == MyProfileRoutes.MyFeed) {
-        request.setAttribute("View", MyProfileRoutes.MyFeed.toString());
+        request.setAttribute("View", function);
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if ("MyEvents".equalsIgnoreCase(function)) {
         try {
@@ -207,14 +194,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     return destination;
   }
 
-  /**
-   * method to change profile Photo
-   * @param request
-   * @param nameAvatar
-   * @return String
-   * @throws UtilException
-   */
-  protected String saveAvatar(HttpRequest request, String nameAvatar) throws UtilException {
+  protected void saveAvatar(HttpRequest request, String nameAvatar) {
     List<FileItem> parameters = request.getFileItems();
     String removeImageFile = FileUploadUtil.getParameter(parameters, "removeImageFile");
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
@@ -228,43 +208,35 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
       if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
           equalsIgnoreCase(extension) && !"webp".equalsIgnoreCase(extension)) {
-        throw new UtilException("MyProfilRequestRouter.saveAvatar()",
-            SilverpeasRuntimeException.ERROR, "", "Bad extension, .gif or .jpg or .png or .webp expected.");
+        throw new org.silverpeas.kernel.SilverpeasRuntimeException(
+            "Bad extension, .gif or .jpg or .png or .webp expected.");
       }
       try (InputStream fis = file.getInputStream()) {
         img.saveImage(fis);
       } catch (IOException e) {
-        throw new UtilException("MyProfilRequestRouter.saveAvatar()",
-            SilverpeasRuntimeException.ERROR, "", "Problem while saving image.");
+        throw new org.silverpeas.kernel.SilverpeasRuntimeException("Problem while saving image.");
       }
     } else if ("yes".equals(removeImageFile)) {// Remove
       img.removeImage();
     }
-    return nameAvatar;
   }
 
-  /**
-   * method to choose (x) contacts for display it in the page profil x is the number of contacts
-   * the
-   * methode use Random rule
-   * @param contactIds
-   * @return List<SNContactUser>
-   */
   private List<UserDetail> getContactsToDisplay(List<String> contactIds,
       MyProfilSessionController sc) {
-    int numberOfContactsTodisplay =
-        sc.getSettings().getInteger("numberOfContactsTodisplay", NUMBER_CONTACTS_TO_DISPLAY);
+    int maxDisplayedContactNumber = 3;
+    int numberOfContactsToDisplay =
+        sc.getSettings().getInteger("numberOfContactsTodisplay", maxDisplayedContactNumber);
     List<UserDetail> contacts = new ArrayList<>();
-    if (contactIds.size() <= numberOfContactsTodisplay) {
+    if (contactIds.size() <= numberOfContactsToDisplay) {
       for (String userId : contactIds) {
         contacts.add(sc.getUserDetail(userId));
       }
     } else {
       Random random = new Random();
-      int indexContactsChoosed = random.nextInt(contactIds.size());
-      for (int i = 0; i < numberOfContactsTodisplay; i++) {
+      int indexContactsChosen = random.nextInt(contactIds.size());
+      for (int i = 0; i < numberOfContactsToDisplay; i++) {
         contacts.add(sc.getUserDetail(
-            contactIds.get((indexContactsChoosed + i) % numberOfContactsTodisplay)));
+            contactIds.get((indexContactsChosen + i) % numberOfContactsToDisplay)));
       }
     }
 
@@ -277,7 +249,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings");
     UserDetail currentUser = sc.getUserDetail();
-    // Update informations only if updateMode is allowed for each field
+    // Update information only if updateMode is allowed for each field
     try {
       boolean updateFirstNameIsAllowed = rl.getBoolean("updateFirstName", false);
       boolean updateLastNameIsAllowed = rl.getBoolean("updateLastName", false);
@@ -298,8 +270,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       if (StringUtil.isDefined(userLoginAnswer)) {
         userLoginAnswer = WebEncodeHelper.htmlStringToJavaString(userLoginAnswer);
         // encrypt the answser if needed
-        boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerEncrypted", false);
-        if (answerCrypted) {
+        boolean answerEncrypted = authenticationSettings.getBoolean("loginAnswerEncrypted", false);
+        if (answerEncrypted) {
           userLoginAnswer = CryptMD5.encrypt(userLoginAnswer);
         }
       } else {
@@ -351,10 +323,10 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     preferences.setLanguage(request.getParameter("SelectedUserLanguage"));
     preferences.setZoneId(ZoneId.of(request.getParameter("SelectedUserZoneId")));
     preferences.setLook(request.getParameter("SelectedLook"));
-    preferences.enableThesaurus(Boolean.valueOf(request.getParameter("opt_thesaurusStatus")));
-    preferences.enableDragAndDrop(Boolean.valueOf(request.getParameter("opt_dragDropStatus")));
+    preferences.enableThesaurus(Boolean.parseBoolean(request.getParameter("opt_thesaurusStatus")));
+    preferences.enableDragAndDrop(Boolean.parseBoolean(request.getParameter("opt_dragDropStatus")));
     preferences
-        .enableWebdavEdition(Boolean.valueOf(request.getParameter("opt_webdavEditingStatus")));
+        .enableWebdavEdition(Boolean.parseBoolean(request.getParameter("opt_webdavEditingStatus")));
     LookHelper lookHelper = getLookHelper(request);
     if (lookHelper != null && lookHelper.isMenuPersonalisationEnabled() &&
         StringUtil.isDefined(request.getParameter("MenuDisplay"))) {

@@ -36,7 +36,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-	List invitations = null;
+	List invitations;
 	String receivedCssClass = "";
 	String sentCssClass = "";
 	boolean outbox = view.equals(MyProfileRoutes.MySentInvitations.toString());

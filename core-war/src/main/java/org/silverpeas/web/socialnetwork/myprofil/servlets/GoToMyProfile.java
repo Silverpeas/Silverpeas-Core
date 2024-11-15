@@ -24,6 +24,7 @@
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,11 +40,9 @@ public class GoToMyProfile extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
 
-    StringBuilder gotoURL = new StringBuilder();
-    gotoURL.append(URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null));
-    gotoURL.append(objectId);
+    String gotoURL = URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null) + objectId;
 
-    return "goto=" + URLEncoder.encode(gotoURL.toString(), "UTF-8");
+    return "goto=" + URLEncoder.encode(gotoURL, StandardCharsets.UTF_8);
   }
 
 }
