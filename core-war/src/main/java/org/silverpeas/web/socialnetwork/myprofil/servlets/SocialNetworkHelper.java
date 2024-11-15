@@ -36,6 +36,9 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+import static org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes.LinkToSVP;
+import static org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes.PublishStatus;
+
 public class SocialNetworkHelper {
 
   @Inject
@@ -63,14 +66,10 @@ public class SocialNetworkHelper {
     StringBuilder redirectURL = new StringBuilder();
     redirectURL.append(URLUtil.getFullApplicationURL(request));
 
-    switch (route) {
-      case LinkToSVP:
-        redirectURL.append("/RMyProfil/jsp/AddLinkToSVP?&networkId=");
-        break;
-
-      case PublishStatus:
-        redirectURL.append("/RMyProfil/jsp/DoPublishStatus?&networkId=");
-        break;
+    if (route == LinkToSVP) {
+      redirectURL.append("/RMyProfil/jsp/AddLinkToSVP?&networkId=");
+    } else if (route == PublishStatus) {
+      redirectURL.append("/RMyProfil/jsp/DoPublishStatus?&networkId=");
     }
 
     redirectURL.append(networkId);
@@ -93,7 +92,7 @@ public class SocialNetworkHelper {
     try {
       authorizationToken =
           connector.exchangeForAccessToken(request, getRedirectURL(networkId, request,
-          MyProfileRoutes.LinkToSVP));
+              LinkToSVP));
     } catch (SocialNetworkAuthorizationException e) {
       request.setAttribute("errorMessage", "authorizationFailed");
       return;
@@ -105,7 +104,8 @@ public class SocialNetworkHelper {
     socialNetworkService.createExternalAccount(networkId, mpsc.getUserId(), profileId);
   }
 
-  public void unlinkFromSilverpeas(MyProfilSessionController myProfilSC, HttpServletRequest request) {
+  public void unlinkFromSilverpeas(MyProfilSessionController myProfilSC,
+      HttpServletRequest request) {
     myProfilSC.unlinkSocialNetworkFromSilverpeas(SocialNetworkID.valueOf(request
         .getParameter("networkId")));
   }
@@ -118,7 +118,7 @@ public class SocialNetworkHelper {
     try {
       authorizationToken =
           connector.exchangeForAccessToken(request, getRedirectURL(networkId, request,
-          MyProfileRoutes.PublishStatus));
+              PublishStatus));
     } catch (SocialNetworkAuthorizationException e) {
       request.setAttribute("errorMessage", "authorizationFailed");
       return;

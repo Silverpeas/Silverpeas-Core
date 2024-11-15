@@ -33,6 +33,8 @@
 <%@page import="org.silverpeas.kernel.bundle.SettingBundle"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserFull" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 
 <%
   MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
@@ -42,6 +44,8 @@
 
   boolean updateIsAllowed = (Boolean) request.getAttribute("UpdateIsAllowed");
   boolean isPasswordChangeAllowed = (Boolean) request.getAttribute("isPasswordChangeAllowed");
+  UserFull userFull = (UserFull) request.getAttribute("UserFull");
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
   String fieldAttribute = " disabled=\"disabled\" ";
   if (updateIsAllowed) {

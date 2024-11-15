@@ -33,141 +33,76 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 
-<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
-<%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
-<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
-<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
-<%@ page import="org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil" %>
+
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<%
-	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-
-    String language = SilverpeasWebUtil.get().getUserLanguage(request);
-    MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
-    LocalizationBundle multilang = ResourceLocator
-        .getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle", language);
-    UserFull userFull = (UserFull) request.getAttribute("UserFull");
-    String view = (String) request.getAttribute("View");
-
-    List<UserDetail> contacts = (List<UserDetail>) request.getAttribute("Contacts");
-
-    String m_context = URLUtil.getApplicationURL();
-%>
 <c:set var="defaultAvatar"><%= User.DEFAULT_AVATAR_PATH %></c:set>
 <c:set var="nbContacts" value="${requestScope.ContactsNumber}" />
 <c:set var="contacts" value="${requestScope.Contacts}" />
 <c:set var="currentUser" value="${requestScope.UserFull}" />
 <c:url var="currentUserAvatarUrl" value="${currentUser.avatar}"/>
+<c:set var="view" value="${requestScope.view}"/>
 <c:set var="userSelfDeletionAccountEnabled" value="${requestScope.UserSelfDeletionAccountEnabled}"/>
 <fmt:message key="myProfile.actions.deleteAccount.confirm" var="deleteAccountConfirm"/>
+
 <view:sp-page>
 <view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
 <view:includePlugin name="password"/>
 <view:includePlugin name="myprofile"/>
-<script type="text/javascript">
-function statusPublishFailed() {
-	$("#statusPublishFailedDialog").dialog("open");
-}
-
-function statusPublished() {
-	$("#statusPublishedDialog").dialog("open");
-}
-</script>
 
 <script type="text/javascript" src="<c:url value='/socialNetwork/jsp/js/statusFacebook.js' />"></script>
 <script type="text/javascript" src="<c:url value='/socialNetwork/jsp/js/statusLinkedIn.js' />"></script>
 
 <script type="text/javascript">
 function statusPublishFailed() {
-	$("#statusPublishFailedDialog").dialog("open");
+	jQuery('#statusPublishFailedDialog').popup('information', {
+		title: "<fmt:message key="profil.actions.changeStatus" />",
+		callback : function() {
+			return true;
+		}
+	});
 }
 
 function statusPublished() {
-	$("#statusPublishedDialog").dialog("open");
+	jQuery('#statusPublishedDialog').popup('information', {
+		title: "<fmt:message key="profil.actions.changeStatus" />",
+		callback : function() {
+			return true;
+		}
+	});
 }
 
 function editStatus() {
-	$("#statusDialog").dialog("open");
+	jQuery('#statusDialog').popup('validation', {
+		title: "<fmt:message key="profil.actions.changeStatus" />",
+		callback: function() {
+			const $status = $("#newStatus");
+			const url = webContext + '/RmyProfilJSON';
+			const newStatus = {
+				status: $status.val()
+			};
+			sp.ajaxRequest(url)
+					.byPostMethod()
+					.sendAndPromiseJsonResponse(newStatus)
+					.then(function(data) {
+				if(data.status === "silverpeastimeout") {
+					notyWarning("<fmt:message key="myProfile.status.timeout" />");
+				} else {
+					$( "#myProfileFiche .statut").html(data.status.escapeHTML());
+					$("#newStatus").html(data.status);
+				}
+			});
+		}
+	});
 }
 
 function updateAvatar() {
   myProfileApp.manager.openMyPhoto();
 }
-
-$(document).ready(function(){
-    var statusDialogOpts = {
-      resizable: false,
-      modal: true,
-      autoOpen: false,
-      height: "auto",
-      width: 400,
-      title: "<fmt:message key="profil.actions.changeStatus" />",
-      buttons: {
-				"<fmt:message key="GML.ok"/>": function() {
-						var status = $("#newStatus");
-            var url = "<%=m_context %>/RmyProfilJSON?Action=updateStatus";
-						url+='&status='+encodeURIComponent(status.val());
-						// prevents from IE amazing cache
-						url+='&IEFix='+Math.round(new Date().getTime());
-            $.getJSON(url, function(data){
-						  if(data.status === "silverpeastimeout") {
-							  alert("<fmt:message key="myProfile.status.timeout" />")
-						  } else {
-                $( "#myProfileFiche .statut").html(data.status);
-                $("#newStatus").html(data.status);
-              }
-            });
-						$( this ).dialog( "close" );
-				},
-				"<fmt:message key="GML.cancel"/>": function() {
-					$(this).dialog( "close" );
-				}
-			}
-    };
-
-    $("#statusDialog").dialog(statusDialogOpts);    //end dialog
-
-    var statusPublishedDialogOpts = {
-		resizable: false,
-            modal: true,
-            autoOpen: false,
-            height: "auto",
-            width: 300,
-            title: "<fmt:message key="profil.actions.changeStatus" />",
-            buttons: {
-				"<fmt:message key="GML.close"/>": function() {
-					$(this).dialog( "close" );
-				}
-			}
-    };
-    $("#statusPublishedDialog").dialog(statusPublishedDialogOpts);    //end dialog
-
-    var statusPublishFailedDialogOpts = {
-		resizable: false,
-            modal: true,
-            autoOpen: false,
-            height: "auto",
-            width: 300,
-            title: "<fmt:message key="profil.actions.changeStatus" />",
-            buttons: {
-				"<fmt:message key="GML.close"/>": function() {
-					$(this).dialog( "close" );
-				}
-			}
-    };
-    $("#statusPublishFailedDialog").dialog(statusPublishFailedDialogOpts);    //end dialog
-
-    $("#newStatus").html("<%=WebEncodeHelper.javaStringToJsString(userFull.getStatus())%>");
-
-});
 
 function deleteAccount() {
   $('#removeAccountDialog').popup('confirmation', {
@@ -201,39 +136,51 @@ whenSilverpeasReady(function() {
   <div id="my-profile-app">
     <silverpeas-my-profile-management v-on:api="manager = $event"
                                       v-bind:profile="profile"
-                                      v-on:my-photo-change="myPhotoChange"></silverpeas-my-profile-management>
+                                      v-on:my-photo-change="myPhotoChange">
+	</silverpeas-my-profile-management>
   </div>
 
-<c:out value="${FB_loadSDK}" escapeXml="false"/>
-<c:out value="${LI_loadSDK}" escapeXml="false"/>
+<c:out value="${requestScope.FB_loadSDK}" escapeXml="false"/>
+<c:out value="${requestScope.LI_loadSDK}" escapeXml="false"/>
 
 <view:window>
 
 <div id="myProfileFiche" >
 
-	<div class="info tableBoard">
+	<div id="userinfo" class="info tableBoard">
 		<h2 class="userName"><c:out value="${currentUser.firstName}" /> <br /><c:out value="${currentUser.lastName}" /></h2>
 	  <p class="statut"><c:out value="${silfn:escapeHtmlWhitespaces(currentUser.status)}" escapeXml="false" /></p>
     <div class="action">
-		  <a href="#" class="link updateStatus" onclick="editStatus();"><fmt:message key="profil.actions.changeStatus" /></a>
+		  <button type="button" class="link updateStatus" onclick="editStatus()"><fmt:message
+                  key="profil.actions.changeStatus" /></button>
       <br />
-      <a href="#" class="link updateAvatar" onclick="updateAvatar()"><fmt:message key="profil.actions.changePhoto" /></a>
+      <button type="button" class="link updateAvatar" onclick="updateAvatar()"><fmt:message
+			  key="profil.actions.changePhoto" /></button>
       <br/>
-			<a href="#" class="link" onclick="logIntoFB();" id="FBLoginButton"><fmt:message key="profil.actions.connectTo" /> FACEBOOK</a>
-			<a href="#" class="link" onclick="publishToFB();" id="FBPublishButton"><fmt:message key="profil.actions.publishStatus"/> FACEBOOK</a>
+			<button type="button" class="link" onclick="logIntoFB();"
+				   id="FBLoginButton"><fmt:message	key="profil.actions.connectTo" />
+                FACEBOOK</button>
+			<button type="button" class="link" onclick="publishToFB();"
+			   id="FBPublishButton"><fmt:message key="profil.actions.publishStatus"/>
+                FACEBOOK</button>
       <br/>
-			<a href="#" class="link" onclick="logIntoLinkedIN();" id="LinkedInLoginButton"><fmt:message key="profil.actions.connectTo" /> LINKEDIN</a>
-			<a href="#" class="link" onclick="publishToLinkedIN();" id="LinkedInPublishButton"><fmt:message key="profil.actions.publishStatus" /> LINKEDIN</a>
+			<button  type="button" class="link" onclick="logIntoLinkedIN();"
+               id="LinkedInLoginButton"><fmt:message key="profil.actions.connectTo" />
+                LINKEDIN</button>
+			<button type="button" class="link" onclick="publishToLinkedIN();"
+        id="LinkedInPublishButton"><fmt:message key="profil.actions.publishStatus" />
+                LINKEDIN</button>
     </div>
     <div class="profilPhoto">
 			<view:image src="${currentUser.avatar}" type="avatar.profil" alt="viewUser" css="avatar"/>
     </div>
-    <br clear="all" />
+    <br/>
 	</div>
 
   <c:if test="${userSelfDeletionAccountEnabled}">
   <div id="removeMyAccount">
-    <a class="sp_button" href="javascript:deleteAccount()"><fmt:message key="myProfile.actions.deleteAccount"/></a>
+    <button type="button" class="sp_button" onclick="deleteAccount()"><fmt:message
+            key="myProfile.actions.deleteAccount"/></button>
   </div>
 
   <div id="removeAccountDialog" style="display: none">
@@ -244,7 +191,7 @@ whenSilverpeasReady(function() {
           <textarea name="message" id="message" cols="70" rows="5"></textarea>
         </div>
         <div class="removeAccount-forgetMe">
-          <label><fmt:message key="myProfile.deleteAccount.forgetMe" /> : </label>
+          <label for="forgetMe"><fmt:message key="myProfile.deleteAccount.forgetMe" />: </label>
           <input type="radio" id="forgetMe1" name="forgetMe" value="no" checked="checked">&nbsp;<label for="forgetMe1"><fmt:message key="GML.no" /></label>
           <input type="radio" id="forgetMe2" name="forgetMe" value="yes"><label for="forgetMe2">&nbsp;<fmt:message key="GML.yes" /></label>
         </div>
@@ -253,25 +200,26 @@ whenSilverpeasReady(function() {
   </div>
   </c:if>
 
-	<div id="statusDialog">
-		<form>
-		<textarea id="newStatus" cols="49" rows="4"></textarea><br/>
+	<div id="statusDialog" style="display:none;">
+		<form name="updateUserStatus" action="/RmyProfilJSON" method="POST">
+			<input type="hidden" name="Action" value="updateStatus"/>
+			<textarea id="newStatus" name="status" cols="49"
+					  rows="4"><c:out value="${currentUser.status}" /></textarea>
 		</form>
 	</div>
 
-	<div id="statusPublishedDialog">
+	<div id="statusPublishedDialog" style="display:none;">
 		<fmt:message key="profil.msg.statusPublished"/>
 	</div>
 
-	<div id="statusPublishFailedDialog">
+	<div id="statusPublishFailedDialog" style="display:none;">
 		<fmt:message key="profil.errors.statusPublishFailed"/>
 	</div>
     <c:if test="${nbContacts > 0}">
 	<h3><c:out value="${nbContacts}"/> <fmt:message key="myProfile.contacts" /></h3>
 	<!-- allContact  -->
 	<div id="allContact">
-    <c:forEach items="${requestScope.Contacts}" var="contact">
-		<!-- unContact  -->
+    <c:forEach items="${contacts}" var="contact">
 	<div class="unContact">
 		<div class="profilPhotoContact">
             <a href="<c:url value='/Rprofil/jsp/Main'><c:param name='userId' value='${contact.id}'/></c:url>"><view:image css="avatar" alt="viewUser" type="avatar" src="${contact.avatar}" /></a>
@@ -279,17 +227,19 @@ whenSilverpeasReady(function() {
               <a href="<c:url value='/Rprofil/jsp/Main'><c:param name='userId' value='${contact.id}'/></c:url>" class="contactName"><c:out value="${contact.displayedName}"/></a>
 		</div> <!-- /unContact  -->
     </c:forEach>
-    <c:if test="${not empty requestScope.Contacts}">
-	     <br clear="all" />
+    <c:if test="${not empty contacts}">
+	     <br />
        <a href="<c:url value='/Rdirectory/jsp/Main'><c:param name='UserId' value='${currentUser.id}' /></c:url>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
-	     <br clear="all" />
+	     <br />
     </c:if>
 	</div><!-- /allContact  -->
     </c:if>
 
 </div>
 
-
+<%
+	String view = (String) request.getAttribute("View");
+%>
 
 <div id="publicProfileContenu">
 
@@ -302,12 +252,12 @@ whenSilverpeasReady(function() {
 	<view:tabs>
 		<view:tab label="${feed}" action="<%=MyProfileRoutes.MyFeed.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyFeed.toString().equals(view)) %>" />
 		<view:tab label="${wall}" action="<%=MyProfileRoutes.MyWall.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyWall.toString().equals(view)) %>" />
-	<view:tab label="${profile}" action="<%=MyProfileRoutes.MyInfos.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInfos.toString().equals(view)) %>" />
+		<view:tab label="${profile}" action="<%=MyProfileRoutes.MyInfos.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInfos.toString().equals(view)) %>" />
 		<% if (SocialNetworkID.oneIsEnable()) {%>
 		<view:tab label="${networks}" action="<%=MyProfileRoutes.MyNetworks.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyNetworks.toString().equals(view)) %>" />
 		<%}%>
-	<view:tab label="${invitations}" action="<%=MyProfileRoutes.MyInvitations.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) %>" />
-	<view:tab label="${settings}" action="<%=MyProfileRoutes.MySettings.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MySettings.toString().equals(view)) %>" />
+		<view:tab label="${invitations}" action="<%=MyProfileRoutes.MyInvitations.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) %>" />
+		<view:tab label="${settings}" action="<%=MyProfileRoutes.MySettings.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MySettings.toString().equals(view)) %>" />
 	</view:tabs>
 
 	<% if (MyProfileRoutes.MyInfos.toString().equals(view)) { %>
