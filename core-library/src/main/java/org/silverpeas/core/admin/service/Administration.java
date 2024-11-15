@@ -1307,32 +1307,37 @@ public interface Administration {
   String synchronizeRemoveGroup(String groupId) throws AdminException;
 
   /**
-   * Synchronize Users and groups between cache and domain's datastore
-   * @param userId the identifier of the user performing the synchronization
-   * @param recurs the synchronization should be recursive?
-   * @return the identifier of the user invoking this method
-   * @throws AdminException if an error occurs
+   * Synchronizes the specified user between the Silverpeas datasource the domain's datastore.
+   * The cache is then updated.
+   * @param userId the identifier of the Silverpeas user to synchronize with the domain's datastore.
+   * @param recurs does synchronization should be recursive?
+   * @param force does synchronization should be performed, even when no changes are detected? In
+   * the case of no changes, the user is just indexed again.
+   * @return the identifier of the synchronized user
+   * @throws AdminException if the synchronization fails
    */
-  String synchronizeUser(String userId, boolean recurs) throws AdminException;
+  String synchronizeUser(String userId, boolean recurs, boolean force) throws AdminException;
 
   /**
-   * Synchronize Users and groups between cache and domain's datastore
+   * Synchronizes between the Silverpeas datasource the domain's datastore the user, identified
+   * by both his login and the domain he belongs to. The cache is then updated.
    * @param domainId the identifier of the domain concerned by the import
    * @param userLogin the login of a user in the given domain
-   * @param recurs the synchronization should be recursive?
-   * @return the identifier of the user invoking this method
-   * @throws AdminException if an error occurs
+   * @param recurs does synchronization should be recursive?
+   * @return the identifier of the synchronized user.
+   * @throws AdminException if the synchronization fails.
    */
   String synchronizeImportUserByLogin(String domainId, String userLogin, boolean recurs)
       throws AdminException;
 
   /**
-   * Synchronize Users and groups between cache and domain's datastore
+   * Synchronizes the specified user between the Silverpeas datasource the domain's datastore.
+   * The cache is then updated.
    * @param domainId the identifier of the domain concerned by the import
-   * @param specificId the identifier of the user specific to the given domain
-   * @param recurs the synchronization should be recursive?
-   * @return the identifier of the user invoking this method
-   * @throws AdminException if an error occurs
+   * @param specificId the specific identifier of the user in the given domain
+   * @param recurs does synchronization should be recursive?
+   * @return the identifier of the synchronized user
+   * @throws AdminException if the synchronization fails
    */
   String synchronizeImportUser(String domainId, String specificId, boolean recurs)
       throws AdminException;
