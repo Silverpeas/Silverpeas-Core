@@ -26,9 +26,9 @@ package org.silverpeas.web.socialnetwork.myprofil.servlets;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,41 +40,55 @@ import java.io.PrintWriter;
 public class JSONServlet extends SilverpeasHttpServlet {
 
   private static final long serialVersionUID = -843491398398079951L;
-  private static final String STATUS = "status";
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
       HttpSession session = request.getSession();
       MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
           MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      StatusEntity status = new StatusEntity();
       if (mainSessionCtrl == null) {
         PrintWriter out = response.getWriter();
-        out.println(JSONCodec.encodeObject(json -> json.put(STATUS, "silverpeastimeout")));
+        status.setStatus("silverpeastimeout");
+        out.println(JSONCodec.encode(status));
         return;
       }
       if (User.getCurrentRequester().isAnonymous() || User.getCurrentRequester().isAccessGuest()) {
         throwHttpForbiddenError("anonymous or guest user cannot access my profil features");
       }
       String userId = mainSessionCtrl.getUserId();
-      String action = request.getParameter("Action");
-      if ("updateStatus".equalsIgnoreCase(action)) {
-        SocialNetworkService socialNetworkService = new SocialNetworkService(userId);
-        String status = request.getParameter(STATUS);
-        // if status is empty or set with a text, update it (an empty status means no status)
-        if (status != null) {
-          status = socialNetworkService.changeStatus(status);
-        } else {
-          // if status equal null don't do update status and do get Last status
-          status = Encode.forHtml(socialNetworkService.getLastStatus());
-        }
-        final String jsonStatus = status;
-        PrintWriter out = response.getWriter();
-        out.println(JSONCodec.encodeObject(json -> json.put(STATUS, jsonStatus)));
+      StatusEntity newStatus = JSONCodec.decode(request.getInputStream(), StatusEntity.class);
+      SocialNetworkService socialNetworkService = new SocialNetworkService(userId);
+      // if status is empty or set with a text, update it (an empty status means no status)
+      if (newStatus.isDefined()) {
+        status.setStatus(socialNetworkService.changeStatus(newStatus.getStatus()));
+      } else {
+        // if status equal null don't do update status and do get Last status
+        String lastStatus = Encode.forHtml(socialNetworkService.getLastStatus());
+        status.setStatus(lastStatus);
       }
+      PrintWriter out = response.getWriter();
+      out.println(JSONCodec.encode(status));
     } catch (IOException e) {
       SilverLogger.getLogger(this).error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public static class StatusEntity {
+    private String status;
+
+    public String getStatus() {
+      return status;
+    }
+
+    public void setStatus(String status) {
+      this.status = status;
+    }
+
+    public boolean isDefined() {
+      return status != null;
     }
   }
 }

@@ -2684,6 +2684,13 @@ caption {
   margin-top:5px;
 }
 
+button.link {
+  border:0;
+  border-radius:0;
+  background:transparent;
+  text-align: left;
+}
+
 #myProfileFiche  .action .link ,   #contactCommun .link,   #allContact .link,
 #publicProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
   color:#333366;
