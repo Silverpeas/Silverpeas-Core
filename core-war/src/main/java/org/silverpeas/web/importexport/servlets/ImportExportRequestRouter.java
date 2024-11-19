@@ -111,7 +111,7 @@ public class ImportExportRequestRouter extends
         importExportSC.processExportOfSavedItems(mode, isNameUsedForFolders(request));
         destination = "/importExportPeas/jsp/pingExport.jsp";
       } else if ("ExportItems".equals(function)) {
-        @SuppressWarnings("unchecked")
+        /** Export from search engine results */
         List<WAAttributeValuePair> itemPKs = (List<WAAttributeValuePair>) request.getAttribute(
             "selectedResultsWa");
         NodePK rootPK = (NodePK) request.getAttribute("RootPK");

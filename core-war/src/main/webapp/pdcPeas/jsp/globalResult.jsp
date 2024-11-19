@@ -277,7 +277,7 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 
 		chemin = url + "?query=&selectedIds=" + selectItems + "&notSelectedIds=" + notSelectItems;
 		largeur = "700";
-		hauteur = "500";
+		hauteur = "300";
 		SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
 	}
 
