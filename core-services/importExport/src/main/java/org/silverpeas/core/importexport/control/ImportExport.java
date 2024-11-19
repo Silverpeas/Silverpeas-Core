@@ -499,9 +499,9 @@ public class ImportExport extends AbstractExportProcess {
   }
 
   /**
-   *
-   * @param userDetail
-   * @param itemsToExport
+   * Merge selected PDF into one PDF document
+   * @param userDetail User who exports
+   * @param itemsToExport List of PDF document
    * @param rootPK
    * @return ExportPDFReport
    * @throws ImportExportException
