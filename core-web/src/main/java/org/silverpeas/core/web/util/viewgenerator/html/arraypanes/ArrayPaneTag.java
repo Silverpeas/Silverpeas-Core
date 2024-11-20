@@ -56,7 +56,8 @@ public class ArrayPaneTag extends TagSupport {
     title = null;
     summary = null;
     routingAddress = null;
-    numberLinesPerPage = 10;
+    numberLinesPerPage =
+        GraphicElementFactory.getSettings().getInteger("Pagination.NumberPerPageThreshold", 10);
   }
 
   @Override
