@@ -279,6 +279,15 @@
     </example>
   </function>
   <function>
+    <description>Function to format a date's hour.</description>
+    <name>formatDateHour</name>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputHour(java.util.Date,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatDateHour(date, "fr")}">
+    </example>
+  </function>
+  <function>
     <description>Function to format a Temporal into a Date</description>
     <name>toDate</name>
     <function-class>org.silverpeas.core.date.TemporalConverter</function-class>
