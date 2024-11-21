@@ -23,12 +23,19 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.Printable;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.kernel.annotation.Nullable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -121,6 +128,104 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
       throw new FormException("Incorrect field value type. Expected {0}", TextField.TYPE);
     }
     return new ArrayList<>();
+  }
+
+  protected Printable setImage(input textInput, @Nullable img image) {
+    if (image != null) {
+      ElementContainer container = new ElementContainer();
+      container.addElement(textInput);
+      container.addElement("&nbsp;");
+      container.addElement(image);
+      return container;
+    } else {
+      return textInput;
+    }
+  }
+
+  protected static input makeTextInput(FieldProperties fieldProps,
+      final String cssClass) {
+    var template = fieldProps.getTemplate();
+    var fieldName = fieldProps.getFieldName();
+    var parameters = fieldProps.getParameters();
+    input textInput = new input();
+    textInput.setName(fieldName);
+    textInput.setID(fieldName);
+    textInput.setValue(fieldProps.getValue());
+    textInput.setType(template.isHidden() ? input.hidden : input.text);
+    textInput.setMaxlength(parameters.getOrDefault(TextField.PARAM_MAXLENGTH, "1000"));
+    textInput.setSize(parameters.getOrDefault("size", "50"));
+    if (parameters.containsKey("border")) {
+      textInput.setBorder(Integer.parseInt(parameters.get("border")));
+    }
+    if (template.isDisabled()) {
+      textInput.setDisabled(true);
+    } else if (template.isReadOnly()) {
+      textInput.setReadOnly(true);
+    }
+    if (StringUtil.isDefined(cssClass)) {
+      textInput.setClass(cssClass);
+    }
+    return textInput;
+  }
+
+  protected FieldProperties getFieldProperties(FieldTemplate template, TextField field,
+      PagesContext pagesContext) {
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
+    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
+
+    String defaultValue = getDefaultValue(template, pagesContext);
+    String value = (!field.isNull() ? field.getValue(pagesContext.getLanguage()) : defaultValue);
+    if (pagesContext.isBlankFieldsUse()) {
+      value = "";
+    }
+    return new FieldProperties()
+        .setTemplate(template)
+        .setFieldName(fieldName)
+        .setParameters(parameters)
+        .setValue(value);
+  }
+
+  protected static class FieldProperties {
+    private FieldTemplate template;
+    private String fieldName;
+    private String value;
+    private Map<String, String> parameters;
+
+    public FieldTemplate getTemplate() {
+      return template;
+    }
+
+    private FieldProperties setTemplate(FieldTemplate template) {
+      this.template = template;
+      return this;
+    }
+
+    public String getFieldName() {
+      return fieldName;
+    }
+
+    private FieldProperties setFieldName(String fieldName) {
+      this.fieldName = fieldName;
+      return this;
+    }
+
+    public String getValue() {
+      return Encode.forHtml(value);
+    }
+
+    private FieldProperties setValue(String value) {
+      this.value = value;
+      return this;
+    }
+
+    public Map<String, String> getParameters() {
+      return parameters;
+    }
+
+    private FieldProperties setParameters(Map<String, String> parameters) {
+      this.parameters = parameters;
+      return this;
+    }
   }
 
 }

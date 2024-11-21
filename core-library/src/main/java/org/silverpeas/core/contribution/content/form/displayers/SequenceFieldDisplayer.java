@@ -43,13 +43,14 @@ import java.util.Map;
 /**
  * A SequenceFieldDisplayer is an object which can display a value corresponding to the setting of a
  * sequence. A such value is only readable to guaranty validity of each value belonging to the
- * sequence (unicity for instance).
+ * sequence (unity for instance).
  *
  * @see Field
  * @see FieldTemplate
  * @see Form
  * @see FieldDisplayer
  */
+@SuppressWarnings("unused")
 public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField> {
 
   /**
@@ -60,14 +61,8 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
   public void display(PrintWriter out, SequenceField field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
-    if (!template.getTypeName().equals(SequenceField.TYPE)) {
-
-    }
-
     SequenceField sequenceField = null;
-    if (!SequenceField.TYPE.equals(field.getTypeName())) {
-
-    } else {
+    if (SequenceField.TYPE.equals(field.getTypeName())) {
       sequenceField = field;
     }
 
@@ -104,7 +99,7 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
     input.setSize(value.length() + 2);
     input.setReadOnly(true);
 
-    out.println(input.toString());
+    out.println(input);
   }
 
   /**
@@ -114,9 +109,7 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
-    if (!template.getTypeName().equals(SequenceField.TYPE)) {
-
-    }
+    // nothing to do
   }
 
   /**

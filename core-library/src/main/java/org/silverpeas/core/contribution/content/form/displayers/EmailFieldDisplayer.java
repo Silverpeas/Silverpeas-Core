@@ -23,23 +23,13 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
-import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
-import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
-import java.util.Map;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextField in HTML the content of a
@@ -52,11 +42,8 @@ import java.util.Map;
  */
 public class EmailFieldDisplayer extends AbstractTextFieldDisplayer {
 
-  public final static String PARAM_MAILTO = "mailto";
-  public final static String PARAM_SIZE = "size";
-
-  public EmailFieldDisplayer() {
-  }
+  public static final String PARAM_MAILTO = "mailto";
+  public static final String PARAM_SIZE = "size";
 
   @Override
   public void addSpecificScript(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
@@ -64,86 +51,46 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer {
     String label = template.getLabel(language);
 
     if (template.isMandatory() && pageContext.useMandatory()) {
-      StringBuilder script = new StringBuilder(10000);
 
-      script.append("   if (!checkemail(field.value)) {\n");
-      script.append("     errorMsg+=\"  - '").append(label).append("' ").
-          append(Util.getString("GML.MustContainsEmail", language)).append("\\n\";\n");
-      script.append("     errorNb++;\n");
-      script.append("   }\n");
+      String script = "   if (!checkemail(field.value)) {\n" +
+          "     errorMsg+=\"  - '" + label + "' " +
+          Util.getString("GML.MustContainsEmail", language) + "\\n\";\n" +
+          "     errorNb++;\n" +
+          "   }\n";
 
-      out.print(script.toString());
+      out.print(script);
     }
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
-    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-
-    String defaultValue = getDefaultValue(template, pageContext);
-    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
-    if (pageContext.isBlankFieldsUse()) {
-      value = "";
-    }
+    FieldProperties fieldProps = getFieldProperties(template, field, pageContext);
 
     if (template.isReadOnly() && !template.isHidden()) {
-      if (StringUtil.isDefined(value)) {
-        if (StringUtil.getBooleanValue(parameters.get(PARAM_MAILTO))) {
+      if (StringUtil.isDefined(fieldProps.getValue())) {
+        if (StringUtil.getBooleanValue(fieldProps.getParameters().get(PARAM_MAILTO))) {
           a mailto = new a();
-          mailto.setHref("mailto:"+value);
-          mailto.addElement(value);
-          out.println(mailto.toString());
+          mailto.setHref("mailto:"+fieldProps.getValue());
+          mailto.addElement(fieldProps.getValue());
+          out.println(mailto);
         } else {
-          out.println(value);
+          out.println(fieldProps.getValue());
         }
       }
     } else {
       input inputField = new input();
-      inputField.setName(fieldName);
-      inputField.setID(fieldName);
-      inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
+      inputField.setName(fieldProps.getFieldName());
+      inputField.setID(fieldProps.getFieldName());
+      inputField.setValue(fieldProps.getValue());
       inputField.setType(template.isHidden() ? input.hidden : input.text);
       inputField.setMaxlength(100);
-      inputField.setSize(parameters.containsKey(PARAM_SIZE) ? parameters.get(PARAM_SIZE) : "50");
-      if (parameters.containsKey("border")) {
-        inputField.setBorder(Integer.parseInt(parameters.get("border")));
+      inputField.setSize(fieldProps.getParameters().getOrDefault(PARAM_SIZE, "50"));
+      if (fieldProps.getParameters().containsKey("border")) {
+        inputField.setBorder(Integer.parseInt(fieldProps.getParameters().get("border")));
       }
-      if (template.isDisabled()) {
-        inputField.setDisabled(true);
-      } else if (template.isReadOnly()) {
-        inputField.setReadOnly(true);
-      }
-
-      img image = null;
-      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-          && !template.isHidden() && pageContext.useMandatory()) {
-        image = new img();
-        image.setSrc(Util.getIcon("mandatoryField"));
-        image.setWidth(5);
-        image.setHeight(5);
-        image.setBorder(0);
-      }
-
-      // print field
-      if (image != null) {
-        ElementContainer container = new ElementContainer();
-        container.addElement(inputField);
-        container.addElement("&nbsp;");
-        container.addElement(image);
-        out.println(container.toString());
-      } else {
-        out.println(inputField.toString());
-      }
+      var elt = initInputField(template, inputField, pageContext);
+      out.println(elt);
     }
   }
 }

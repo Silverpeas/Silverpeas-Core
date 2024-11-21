@@ -28,7 +28,6 @@ import org.silverpeas.core.contribution.content.form.FormRuntimeException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
@@ -47,12 +46,12 @@ import java.util.stream.Collectors;
 
 public class FormEncryptionContentIterator implements EncryptionContentIterator {
 
-  String formName;
-  Iterator<Map<String, String>> contents;
-  Connection con;
+  private String formName;
+  private Iterator<Map<String, String>> contents;
+  private Connection con;
 
   public FormEncryptionContentIterator() {
-
+    // default constructor
   }
 
   public FormEncryptionContentIterator(String formName) {
@@ -114,23 +113,23 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
 
   @Override
   public void init() {
-    List<Map<String, String>>contents = new ArrayList<>();
+    List<Map<String, String>>theContents = new ArrayList<>();
     if (StringUtil.isDefined(formName)) {
       // encrypting/decrypting values...
       Map<String, String> toProcess = getFormData(formName);
-      contents.add(toProcess);
+      theContents.add(toProcess);
     } else {
-      // get all crypted forms
+      // get all encrypted forms
       List<PublicationTemplate> forms;
       try {
         forms = PublicationTemplateManager.getInstance().getEncryptedPublicationTemplates();
       } catch (PublicationTemplateException e) {
         throw new FormRuntimeException("Encrypted forms getting failure", e);
       }
-      contents.addAll(
+      theContents.addAll(
           forms.stream().map(form -> getFormData(form.getFileName())).collect(Collectors.toList()));
     }
-    this.contents = contents.iterator();
+    this.contents = theContents.iterator();
     openConnection();
   }
 
@@ -148,8 +147,6 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
     for (RecordRow row : rows) {
       toProcess.put(row.getRecordId()+"$SP$"+row.getFieldName(), row.getFieldValue());
     }
-
-
 
     return toProcess;
   }

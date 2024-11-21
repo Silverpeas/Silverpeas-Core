@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.content.form.displayers;
 
 import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -47,7 +48,6 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -104,7 +104,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
     String fieldName = template.getFieldName();
     String language = pageContext.getLanguage();
-    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
+    String label = Encode.forHtml(template.getLabel(language));
     if (!template.isReadOnly()) {
       out.println("var oEditor = CKEDITOR.instances." + fieldName + ";");
       out.println("var thecode = oEditor.getData();");
@@ -189,7 +189,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
     out.println("<td valign=\"top\">");
     out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName
-        + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
+        + "\" rows=\"10\" cols=\"10\">" + Encode.forHtml(code) + "</textarea>");
     out.println("<script type=\"text/javascript\">");
 
     StringBuilder stringBuilder = new StringBuilder();

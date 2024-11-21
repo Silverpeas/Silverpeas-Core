@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 public class EntityIdentifierConverter {
 
-  private Class<? extends EntityIdentifier> entityIdentifierClass;
+  private final Class<? extends EntityIdentifier> entityIdentifierClass;
 
   /**
    * Constructs a converter of identities with the specified class.
@@ -53,7 +53,7 @@ public class EntityIdentifierConverter {
   @SuppressWarnings("unchecked")
   public <T extends EntityIdentifier> T convertToEntityIdentifier(String idAsString) {
     try {
-      T identifier = (T) getEntityIdentifierClass().newInstance();
+      T identifier = (T) getEntityIdentifierClass().getDeclaredConstructor().newInstance();
       identifier.fromString(idAsString);
       return identifier;
     } catch (Exception e) {
@@ -67,6 +67,7 @@ public class EntityIdentifierConverter {
    * @param idsAsString one or more identifier as String value(s).
    * @return a collection of entity identifiers from their String representations.
    */
+  @SuppressWarnings("unused")
   public <T extends EntityIdentifier> Collection<T> convertToEntityIdentifiers(
       String... idsAsString) {
     return convertToEntityIdentifiers(
