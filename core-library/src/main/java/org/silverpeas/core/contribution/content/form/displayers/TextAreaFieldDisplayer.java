@@ -23,19 +23,11 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
-import java.util.Map;
 
 /**
  * A TextAreaFieldDisplayer is an object which can display a TextField in HTML the content of a
@@ -48,23 +40,9 @@ import java.util.Map;
  */
 public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
 
-  static public final String PARAM_ROWS = "rows";
-  static public final String PARAM_COLS = "cols";
+  public static final String PARAM_ROWS = "rows";
+  public static final String PARAM_COLS = "cols";
 
-  /**
-   * Constructor
-   */
-  public TextAreaFieldDisplayer() {
-  }
-
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul></li>
-   * <li>the field type is not a managed type.</li>
-   * </ul></li>
-   */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
@@ -73,14 +51,10 @@ public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
     String html = "";
     String cssClass = null;
 
-    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
-    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+    FieldProperties fieldProps = getFieldProperties(template, field, pageContext);
 
-    String defaultValue = getDefaultValue(template, pageContext);
-    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
-
-    if (parameters.containsKey("class")) {
-      cssClass = parameters.get("class");
+    if (fieldProps.getParameters().containsKey("class")) {
+      cssClass = fieldProps.getParameters().get("class");
       if (StringUtil.isDefined(cssClass)) {
         cssClass = "class=\"" + cssClass + "\"";
       }
@@ -90,15 +64,16 @@ public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
       html += "<span " + cssClass + ">";
     }
 
-    html += "<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+    html += "<textarea id=\"" + fieldProps.getFieldName() + "\" name=\"" +
+        fieldProps.getFieldName() + "\"";
 
-    if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_ROWS)) {
-      rows = parameters.get(TextAreaFieldDisplayer.PARAM_ROWS);
+    if (fieldProps.getParameters().containsKey(TextAreaFieldDisplayer.PARAM_ROWS)) {
+      rows = fieldProps.getParameters().get(TextAreaFieldDisplayer.PARAM_ROWS);
     }
     html += " rows=\"" + rows + "\"";
 
-    if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_COLS)) {
-      cols = parameters.get(TextAreaFieldDisplayer.PARAM_COLS);
+    if (fieldProps.getParameters().containsKey(TextAreaFieldDisplayer.PARAM_COLS)) {
+      cols = fieldProps.getParameters().get(TextAreaFieldDisplayer.PARAM_COLS);
     }
     html += " cols=\"" + cols + "\"";
 
@@ -108,7 +83,7 @@ public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
       html += " readonly=\"readonly\"";
     }
 
-    html += " >" + WebEncodeHelper.javaStringToHtmlString(value) + "</textarea>";
+    html += " >" + fieldProps.getValue() + "</textarea>";
 
     if (StringUtil.isDefined(cssClass)) {
       html += "</span>";

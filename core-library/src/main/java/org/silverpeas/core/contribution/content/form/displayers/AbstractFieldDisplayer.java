@@ -47,6 +47,10 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.Printable;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -117,5 +121,39 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
     String defaultParam = parameters.getOrDefault("default", "");
     return ((pageContext.isCreation() || pageContext.isDesignMode()) &&
         !pageContext.isIgnoreDefaultValues()) ? defaultParam : "";
+  }
+
+  protected static img getMandatoryIcon(final FieldTemplate template,
+      final PagesContext pageContext) {
+    img image = null;
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.
+        isHidden() && pageContext.useMandatory()) {
+      image = new img();
+      image.setSrc(Util.getIcon("mandatoryField"));
+      image.setWidth(5);
+      image.setHeight(5);
+      image.setBorder(0);
+    }
+    return image;
+  }
+
+  protected static Printable initInputField(FieldTemplate template, input inputField,
+      PagesContext pageContext) {
+    if (template.isDisabled()) {
+      inputField.setDisabled(true);
+    } else if (template.isReadOnly()) {
+      inputField.setReadOnly(true);
+    }
+
+    img image = getMandatoryIcon(template, pageContext);
+    if (image != null) {
+      ElementContainer container = new ElementContainer();
+      container.addElement(inputField);
+      container.addElement("&nbsp;");
+      container.addElement(image);
+      return container;
+    } else {
+      return inputField;
+    }
   }
 }

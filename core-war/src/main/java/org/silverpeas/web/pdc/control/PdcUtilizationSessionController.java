@@ -37,19 +37,19 @@ import java.util.List;
 
 public class PdcUtilizationSessionController extends AbstractComponentSessionController {
 
-  private static String SETTINGS_FILE = "org.silverpeas.pdcPeas.settings.pdcPeasSettings";
+  private static final String SETTINGS_FILE = "org.silverpeas.pdcPeas.settings.pdcPeasSettings";
 
   private String currentView = "P";
   private Axis currentAxis = null;
   private PdcManager pdcManager = null;
 
   // PDC field manager.
-  private PdcFieldTemplateManager pdcFieldTemplateManager =
+  private final PdcFieldTemplateManager pdcFieldTemplateManager =
       ServiceProvider.getService(PdcFieldTemplateManager.class);
 
   public PdcUtilizationSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext, String multilangBundle, String iconBundle) {
-    super(mainSessionCtrl, componentContext, multilangBundle, iconBundle, SETTINGS_FILE);
+      ComponentContext componentContext, String l10nBundle, String iconBundle) {
+    super(mainSessionCtrl, componentContext, l10nBundle, iconBundle, SETTINGS_FILE);
   }
 
   public void init(String componentId) {
@@ -84,11 +84,11 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
     return pdcManager;
   }
 
-  public void setCurrentView(String view) throws PdcException {
+  public void setCurrentView(String view) {
     currentView = view;
   }
 
-  public String getCurrentView() throws PdcException {
+  public String getCurrentView() {
     return currentView;
   }
 
@@ -96,20 +96,12 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
     currentAxis = axis;
   }
 
-  public Axis getCurrentAxis() throws PdcException {
+  public Axis getCurrentAxis() {
     return currentAxis;
   }
 
   public PdcFieldTemplateManager getPdcFieldTemplateManager() {
     return pdcFieldTemplateManager;
-  }
-
-  public List<AxisHeader> getPrimaryAxis() throws PdcException {
-    return getPdcManager().getAxisByType("P");
-  }
-
-  public List<AxisHeader> getSecondaryAxis() throws PdcException {
-    return getPdcManager().getAxisByType("S");
   }
 
   public List<AxisHeader> getAxis() throws PdcException {
@@ -139,7 +131,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
   }
 
   public int addUsedAxis(UsedAxis usedAxis) throws PdcException {
-    usedAxis.setAxisId(new Integer(getCurrentAxis().getAxisHeader().getPK().getId()).intValue());
+    usedAxis.setAxisId(Integer.parseInt(getCurrentAxis().getAxisHeader().getPK().getId()));
     if (pdcFieldTemplateManager.isEnabled()) {
       pdcFieldTemplateManager.addUsedAxis(usedAxis);
       return 0;
@@ -155,7 +147,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
       return 0;
     } else {
       usedAxis.setInstanceId(getComponentId());
-      usedAxis.setAxisId(new Integer(getCurrentAxis().getAxisHeader().getPK().getId()).intValue());
+      usedAxis.setAxisId(Integer.parseInt(getCurrentAxis().getAxisHeader().getPK().getId()));
       return getPdcManager().updateUsedAxis(usedAxis);
     }
   }

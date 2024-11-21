@@ -46,7 +46,7 @@ public class Parameter implements Serializable {
   public Parameter() {
   }
 
-  public Parameter(String name, String value) {
+  public Parameter(String name) {
     this.name = name;
   }
 
@@ -60,7 +60,7 @@ public class Parameter implements Serializable {
       ParameterValue pValue = null;
       while (values.hasNext()) {
         pValue = values.next();
-        if (language != null && pValue.getLang().equalsIgnoreCase(language)) {
+        if (pValue.getLang().equalsIgnoreCase(language)) {
           return pValue.getValue();
         }
       }

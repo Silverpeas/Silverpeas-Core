@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -100,9 +101,9 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
     html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName)
         .append("\" type=\"text\" size=\"80\"");
     if (value != null) {
-      html.append(" value=\"").append(value).append("\"");
+      html.append(" value=\"").append(Encode.forHtml(value)).append("\"");
     } else {
-      html.append(" value=\"").append(currentAccessPath).append("\"");
+      html.append(" value=\"").append(Encode.forHtml(currentAccessPath)).append("\"");
     }
     if (template.isDisabled() || template.isReadOnly()) {
       html.append(" disabled=\"disabled\"");
