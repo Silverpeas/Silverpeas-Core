@@ -51,11 +51,6 @@ import java.util.StringTokenizer;
  */
 public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
-  /**
-   * Constructeur
-   */
-  public ListBoxFieldDisplayer() {
-  }
 
   /**
    * Returns the name of the managed types.
@@ -64,30 +59,12 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     return new String[]{TextField.TYPE};
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     produceMandatoryCheck(out, template, pagesContext);
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
@@ -95,7 +72,6 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     String values;
     StringBuilder html = new StringBuilder();
     String language = pageContext.getLanguage();
-    String cssClass = null;
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
@@ -105,27 +81,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       value = field.getValue(language);
     }
 
-    if (parameters.containsKey("class")) {
-      cssClass = parameters.get("class");
-      if (StringUtil.isDefined(cssClass)) {
-        cssClass = "class=\"" + cssClass + "\"";
-      }
-    }
-    if (StringUtil.isDefined(cssClass)) {
-      html.append("<select ")
-          .append(cssClass)
-          .append(" id=\"")
-          .append(fieldName)
-          .append("\" name=\"")
-          .append(fieldName)
-          .append("\"");
-    } else {
-      html.append("<select id=\"")
-          .append(fieldName)
-          .append("\" name=\"")
-          .append(fieldName)
-          .append("\"");
-    }
+    generateCssClass(html, fieldName, parameters);
 
     if (template.isDisabled() || template.isReadOnly()) {
       html.append(" disabled");
@@ -136,13 +92,10 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       keys = parameters.get("keys");
     }
 
-    if (parameters.containsKey("values")) {
-      values = parameters.get("values");
-    } else {
-      values = keys;
-    }
-
+    values = parameters.getOrDefault("values", keys);
+    //noinspection StringTokenizerDelimiter
     StringTokenizer stKeys = new StringTokenizer(keys, "##");
+    //noinspection StringTokenizerDelimiter
     StringTokenizer stValues = new StringTokenizer(values, "##");
     String optKey;
     String optValue;
@@ -172,24 +125,39 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       html.append(Util.getMandatorySnippet());
     }
 
-    out.println(html.toString());
+    out.println(html);
+  }
+
+  private static void generateCssClass(StringBuilder html, String fieldName, Map<String, String> parameters) {
+    String cssClass = null;
+    if (parameters.containsKey("class")) {
+      cssClass = parameters.get("class");
+      if (StringUtil.isDefined(cssClass)) {
+        cssClass = "class=\"" + cssClass + "\"";
+      }
+    }
+    if (StringUtil.isDefined(cssClass)) {
+      html.append("<select ")
+          .append(cssClass)
+          .append(" id=\"")
+          .append(fieldName)
+          .append("\" name=\"")
+          .append(fieldName)
+          .append("\"");
+    } else {
+      html.append("<select id=\"")
+          .append(fieldName)
+          .append("\" name=\"")
+          .append(fieldName)
+          .append("\"");
+    }
   }
 
   @Override
   public List<String> update(String newValue, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
 
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-
-    if (field.acceptValue(newValue, PagesContext.getLanguage())) {
-      field.setValue(newValue, PagesContext.getLanguage());
-    } else {
-      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
-    }
+    CheckBoxDisplayer.setFieldValue(newValue, field, pagesContext);
     return new ArrayList<>();
   }
 

@@ -143,14 +143,12 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
       PagesContext pagesContext)
       throws FormException {
     if (!SequenceField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("SequenceFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          SequenceField.TYPE);
+      throw new FormException("Incorrect field type '{0}', expected; {0}", SequenceField.TYPE);
     }
     if (field.acceptValue(value, pagesContext.getLanguage())) {
       field.setValue(value, pagesContext.getLanguage());
     } else {
-      throw new FormException("SequenceFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          SequenceField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", SequenceField.TYPE);
     }
     return new ArrayList<>();
   }

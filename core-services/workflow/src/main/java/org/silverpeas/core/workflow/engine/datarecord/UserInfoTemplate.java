@@ -40,9 +40,9 @@ import org.silverpeas.core.workflow.engine.user.UserSettingsService;
  * A UserInfoTemplate builds fields giving information about user
  */
 public class UserInfoTemplate extends ProcessInstanceFieldTemplate {
-  private String role;
-  private String lang;
-  private Item item;
+  private final String role;
+  private final String lang;
+  private final Item item;
 
   public UserInfoTemplate(String fieldName, Item item, String role, String lang) {
     super(fieldName, item.getType(), item.getType(), item.getLabel(role, lang));
@@ -66,7 +66,7 @@ public class UserInfoTemplate extends ProcessInstanceFieldTemplate {
       if (step != null) {
         shortFieldName = shortFieldName.substring(index + 7);
 
-        if (item.getMapTo() != null && item.getMapTo().length() != 0) {
+        if (item.getMapTo() != null && !item.getMapTo().isEmpty()) {
           User user = Workflow.getUserManager().getUser(
               step.getUser().getUserId());
 
@@ -89,8 +89,7 @@ public class UserInfoTemplate extends ProcessInstanceFieldTemplate {
 
       return field;
     } catch (WorkflowException e) {
-      throw new FormException("UserInfoTemplate", "form.EXP_UNKNOWN_FIELD",
-          getFieldName());
+      throw new FormException("Unknown field " + getFieldName());
     }
   }
 }

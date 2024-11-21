@@ -64,10 +64,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author ehugonnet
- * @param <T>
- */
 public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDisplayer<T> {
 
   @Override
@@ -75,12 +71,18 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
           PagesContext pageContext) throws FormException {
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     String value = FileUploadUtil.getParameter(items, fieldName, null, pageContext.getEncoding());
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-            && !StringUtil.isDefined(value)) {
+    return applyUpdate(field, value, template, pageContext);
+  }
+
+  protected List<String> applyUpdate(T field, String value, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
+    if (pagesContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
+        && !StringUtil.isDefined(value)) {
       return new ArrayList<>(0);
     }
-    return update(value, field, template, pageContext);
+    return update(value, field, template, pagesContext);
   }
+
 
   @Override
   public void index(FullIndexEntry indexEntry, String key, String fieldName, T field,
@@ -102,8 +104,8 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
       String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
       out.println(
           "   if (!ignoreMandatory && isWhitespace(stripInitialWhitespace(field.value))) {\n");
-      out.println((new StringBuilder()).append("      errorMsg+=\"  - '").append(label).append("' ")
-          .append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n").toString());
+      out.println("      errorMsg+=\"  - '" + label + "' " +
+          Util.getString("GML.MustBeFilled", language) + "\\n\";\n");
       out.println("      errorNb++;\n");
       out.println("   }\n");
     }

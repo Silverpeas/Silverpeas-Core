@@ -26,21 +26,16 @@ package org.silverpeas.core.contribution.content.form.displayers;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.FileField;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,8 +58,8 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     ADD, UPDATE, DELETION
   }
 
-  protected SimpleDocument createSimpleDocument(String objectId, String componentId, FileItem item,
-      String fileName, String userId, boolean versionned) throws IOException {
+  private SimpleDocument createSimpleDocument(String objectId, String componentId, FileItem item,
+      String fileName, String userId) throws IOException {
     SimpleDocumentPK documentPk = new SimpleDocumentPK(null, componentId);
     SimpleAttachment attachment = SimpleAttachment.builder()
         .setFilename(fileName)
@@ -72,12 +67,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
         .setContentType(FileUtil.getMimeType(fileName))
         .setCreationData(userId, new Date())
         .build();
-    SimpleDocument document;
-    if (versionned) {
-      document = new HistorisedDocument(documentPk, objectId, 0, attachment);
-    } else {
-      document = new SimpleDocument(documentPk, objectId, 0, false, null, attachment);
-    }
+    SimpleDocument document = new SimpleDocument(documentPk, objectId, 0, false, null, attachment);
     document.setDocumentType(DocumentType.form);
     try (InputStream in = item.getInputStream()) {
       return AttachmentServiceProvider.getAttachmentService()
@@ -108,10 +98,10 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   }
 
   /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
+   * Prints the javascript which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
+   * and constraints. The FieldTemplate gives the local label too. Never throws an Exception but
+   * log a message and writes an empty string when:
    * <ul>
    * <li>the fieldName is unknown by the template.</li>
    * <li>the field type is not a managed type.</li>
@@ -120,7 +110,6 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   @Override
   public void displayScripts(final PrintWriter out, final FieldTemplate template,
       final PagesContext pageContext) {
-    checkFieldType(template.getTypeName(), "AbstractFileFieldDisplayer.displayScripts");
     String language = pageContext.getLanguage();
     String fieldName = template.getFieldName();
     String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
@@ -151,13 +140,10 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   @Override
   public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    List<String> attachmentIds = new ArrayList<>();
 
     String attachmentId = processInput(items, field, pageContext);
 
-    attachmentIds.addAll(update(attachmentId, field, template, pageContext));
-
-    return attachmentIds;
+    return new ArrayList<>(update(attachmentId, field, template, pageContext));
   }
 
   protected String processInput(List<FileItem> items, FileField field, PagesContext pageContext) {
@@ -215,8 +201,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
         updated.add(attachmentId);
       }
     } else {
-      throw new FormException("FileFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          FileField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", FileField.TYPE);
     }
     return updated;
   }
@@ -256,7 +241,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
         long size = item.getSize();
         if (size > 0L) {
           SimpleDocument document = createSimpleDocument(objectId, componentId, item, fileName,
-              userId, false);
+              userId);
           attachmentId = document.getId();
         }
       }
@@ -269,14 +254,4 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     return true;
   }
 
-  /**
-   * Checks the type of the field is as expected. The field must be of type file.
-   *
-   * @param typeName the name of the type.
-   * @param contextCall the context of the call: which is the caller of this method. This parameter
-   * is used for trace purpose.
-   */
-  protected void checkFieldType(final String typeName, final String contextCall) {
-    // nothing for instance
-  }
 }

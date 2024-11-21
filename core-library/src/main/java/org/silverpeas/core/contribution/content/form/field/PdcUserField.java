@@ -114,7 +114,7 @@ public class PdcUserField extends AbstractField {
         end = theUserCardIds.indexOf(',', begin);
       }
 
-      if (!names.toString().equals("")) {
+      if (!names.toString().isEmpty()) {
         names.deleteCharAt(names.length() - 1);
       }
 
@@ -185,8 +185,7 @@ public class PdcUserField extends AbstractField {
     if (value instanceof String) {
       setUserCardIds((String) value);
     } else {
-      throw new FormException("PdcUserField.setObjectValue",
-          "form.EXP_NOT_AN_USER");
+      throw new FormException("Incorrect field value type. Expected a user identifier");
     }
   }
 
@@ -289,7 +288,7 @@ public class PdcUserField extends AbstractField {
   @Override
   public int hashCode() {
     String s = getUserCardIds();
-    return ("" + s).hashCode();
+    return s.hashCode();
   }
   /**
    * The referenced userCardIds.

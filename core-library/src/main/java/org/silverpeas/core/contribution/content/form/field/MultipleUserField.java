@@ -187,7 +187,7 @@ public class MultipleUserField extends AbstractField {
     } else if (value == null) {
       this.userIds = ArrayUtil.emptyStringArray();
     } else {
-      throw new FormException("MultipleUserField.setObjectValue", "form.EXP_NOT_AN_USERS_ARRAY");
+      throw new FormException("Incorrect field value type. Expected array of users");
     }
   }
 
@@ -291,7 +291,7 @@ public class MultipleUserField extends AbstractField {
 
   @Override
   public int hashCode() {
-    return ("" + Arrays.toString(this.userIds)).hashCode();
+    return (Arrays.toString(this.userIds)).hashCode();
   }
 
   /**

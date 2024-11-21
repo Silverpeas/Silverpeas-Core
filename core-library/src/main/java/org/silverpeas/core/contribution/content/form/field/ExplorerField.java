@@ -155,8 +155,7 @@ public class ExplorerField extends AbstractField {
     } else if (value == null) {
       setNodePK(null);
     } else {
-      throw new FormException("ExplorerField.setObjectValue",
-          "form.EXP_NOT_A_NODE");
+      throw new FormException("The value " + value + " isn't a node!");
     }
   }
 
@@ -244,7 +243,7 @@ public class ExplorerField extends AbstractField {
 
   public int hashCode() {
     String s = getNodePK();
-    return ("" + s).hashCode();
+    return s.hashCode();
   }
 
   /**

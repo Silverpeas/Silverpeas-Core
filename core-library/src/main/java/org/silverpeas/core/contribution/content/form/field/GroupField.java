@@ -76,7 +76,7 @@ public class GroupField extends AbstractField {
     if (getGroupId() == null) {
       return null;
     }
-    if (getGroupId().equals("")) {
+    if (getGroupId().isEmpty()) {
       return "";
     }
 
@@ -152,7 +152,7 @@ public class GroupField extends AbstractField {
     } else if (value == null) {
       setGroupId("");
     } else {
-      throw new FormException("GroupField.setObjectValue", "form.EXP_NOT_A_GROUP");
+      throw new FormException("The value " + value + " isn't a user group!");
     }
   }
 
@@ -236,7 +236,7 @@ public class GroupField extends AbstractField {
   @Override
   public int hashCode() {
     String s = getGroupId();
-    return ("" + s).hashCode();
+    return s.hashCode();
   }
 
   /**

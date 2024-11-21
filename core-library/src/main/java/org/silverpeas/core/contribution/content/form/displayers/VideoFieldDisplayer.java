@@ -45,8 +45,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 
 /**
- * A displayer of a video. The underlying video player is FlowPlayer
- * (http://flowplayer.org/index.html).
+ * A displayer of a video. The underlying video player is
+ * <a href="https://flowplayer.org/index.html">FlowPlayer</a>
  */
 public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
 
@@ -79,7 +79,6 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
   @Override
   public void display(PrintWriter out, FileField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
-    checkFieldType(template.getTypeName(), "VideoFieldDisplayer.display");
     String attachmentId = field.getValue();
     if (!StringUtil.isDefined(attachmentId)) {
       attachmentId = "";
@@ -94,7 +93,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
         displayVideoFormInput(videoPlayer, attachmentId, template, xhtmlContainer, pagesContext, field);
       }
 
-      out.println(xhtmlContainer.toString());
+      out.println(xhtmlContainer);
     }
   }
 
@@ -134,12 +133,12 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
   }
 
   /**
-   * Displays the video refered by the specified URL into the specified XHTML container.
+   * Displays the video referred by the specified URL into the specified XHTML container.
    *
    * @param videoPlayer the video player to display.
    * @param attachmentId the identifier of the attached file containing the video to display.
    * @param template the template of the field to which is mapped the video.
-   * @param xhtmlContainer the XMLHTML container into which the video is displayed.
+   * @param xhtmlContainer the XHTML container into which the video is displayed.
    */
   private void displayVideo(final VideoPlayer videoPlayer, final String attachmentId,
       final FieldTemplate template, final ElementContainer xhtmlContainer,
@@ -232,13 +231,12 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
    */
   private void initVideoPlayer(final VideoPlayer videoPlayer, String videoURL,
       Map<String, String> parameters) {
-    int width = Integer.valueOf(
-        parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH) : DEFAULT_WIDTH);
-    int height = Integer.valueOf(
-        parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT) :
-            DEFAULT_HEIGHT);
-    boolean autoplay = parameters.containsKey(PARAMETER_AUTOPLAY) ?
-        Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)) : false;
+    int width = Integer.parseInt(
+        parameters.getOrDefault(PARAMETER_WIDTH, DEFAULT_WIDTH));
+    int height = Integer.parseInt(
+        parameters.getOrDefault(PARAMETER_HEIGHT, DEFAULT_HEIGHT));
+    boolean autoplay = parameters.containsKey(PARAMETER_AUTOPLAY) &&
+        Boolean.parseBoolean(parameters.get(PARAMETER_AUTOPLAY));
     videoPlayer.setVideoURL(videoURL);
     videoPlayer.setAutoplay(autoplay);
     videoPlayer.setWidth(width);

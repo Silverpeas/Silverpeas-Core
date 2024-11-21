@@ -53,10 +53,8 @@ import java.util.List;
  * @see Form
  * @see FieldDisplayer
  */
+@SuppressWarnings("unused")
 public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer<TextField> {
-
-  public UniqueIdFieldDisplayer() {
-  }
 
   public String[] getManagedTypes() {
     return new String[] { TextField.TYPE };
@@ -65,9 +63,6 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer<TextField> {
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
-    if (!template.getTypeName().equals(TextField.TYPE)) {
-
-    }
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
@@ -77,10 +72,6 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       throws FormException {
     if (field == null) {
       return;
-    }
-
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-
     }
 
     String fieldName = template.getFieldName();
@@ -103,26 +94,17 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     input.setID(fieldName);
     input.setValue(WebEncodeHelper.javaStringToHtmlString(value));
     input.setType(template.isHidden() ? Input.hidden : Input.text);
-    input.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
+    input.setSize(parameters.getOrDefault("size", "50"));
     input.setReadOnly(true);
 
-    out.println(input.toString());
+    out.println(input);
   }
 
   @Override
   public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("UniqueIdFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-    if (field.acceptValue(newValue, pagesContext.getLanguage())) {
-      field.setValue(newValue, pagesContext.getLanguage());
-    } else {
-      throw new FormException("UniqueIdFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
-    }
+    CheckBoxDisplayer.setFieldValue(newValue, field, pagesContext);
     return Collections.emptyList();
   }
 

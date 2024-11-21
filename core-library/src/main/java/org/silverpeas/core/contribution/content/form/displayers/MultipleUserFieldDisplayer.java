@@ -60,36 +60,15 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
 
   private static final int NB_HTML_ELEMENTS = 2;
 
-  /**
-   * Returns the name of the managed types.
-   */
   public String[] getManagedTypes() {
     return new String[]{MultipleUserField.TYPE};
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     produceMandatoryCheck(out, template, pagesContext);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
   @Override
   public void display(PrintWriter out, MultipleUserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
@@ -129,13 +108,6 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     out.println(selectUsers.produce());
   }
 
-  /**
-   * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
-   * the request.
-   *
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
-   */
   @Override
   public List<String> update(String newIds, MultipleUserField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
@@ -146,8 +118,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
         field.setStringValue(newIds);
       }
     } else {
-      throw new FormException("UserFieldDisplayer.update",
-          "form.EX_NOT_CORRECT_VALUE", UserField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", UserField.TYPE);
     }
     return new ArrayList<>();
   }
@@ -157,28 +128,14 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
       PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.
-        isDefined(value)) {
-      return new ArrayList<>();
-    }
-    return update(value, field, template, pageContext);
+    return applyUpdate(field, value, template, pageContext);
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   */
   @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   */
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template,
       PagesContext pagesContext) {

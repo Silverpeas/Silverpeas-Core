@@ -54,16 +54,6 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
 
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
@@ -102,7 +92,7 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
         append(Util.getString("Characters", language)).append(JS_CARRIAGE_RETURN);
     script.append(JS_NB_ERROR_INCREMENT);
     script.append(JS_CLOSING_BRACE);
-    out.print(script.toString());
+    out.print(script);
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
@@ -121,15 +111,14 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
   public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("AbstractTextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+      throw new FormException("Incorrect field type '{0}', expected; {0}", field.getTypeName(),
           TextField.TYPE);
     }
 
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {
-      throw new FormException("AbstractTextFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", TextField.TYPE);
     }
     return new ArrayList<>();
   }

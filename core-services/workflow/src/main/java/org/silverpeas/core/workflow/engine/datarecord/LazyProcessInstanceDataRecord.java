@@ -62,7 +62,6 @@ import java.util.Map;
 public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord {
 
   private static final long serialVersionUID = 1L;
-  private static final String LAZY_PROCESS_INSTANCE_DATA_RECORD = "LazyProcessInstanceDataRecord";
   private static final String ACTOR = ".actor.";
 
   /**
@@ -122,12 +121,10 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
       else if (fieldName.contains(ACTOR)) {
         return getRelationRoField(fieldName);
       } else {
-        throw new FormFatalException(LAZY_PROCESS_INSTANCE_DATA_RECORD,
-            "form.EXP_FIELD_NOT_FOUND", fieldName);
+        throw new FormFatalException("Field {0} not found", fieldName);
       }
     } catch (Exception e) {
-      throw new FormFatalException(LAZY_PROCESS_INSTANCE_DATA_RECORD,
-          "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldName);
+      throw new FormFatalException(e);
     }
 
   }
@@ -147,7 +144,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
     HistoryStep step = instance.getMostRecentStep(actionName);
     Item item = instance.getProcessModel().getUserInfos().getItem(shortFieldName);
     if (step != null && item != null) {
-      if (item.getMapTo() != null && item.getMapTo().length() != 0) {
+      if (item.getMapTo() != null && !item.getMapTo().isEmpty()) {
         User user = Workflow.getUserManager().getUser(step.getUser().getUserId());
 
         Field field = new TextFieldImpl();
@@ -208,8 +205,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
 
       return field;
     } catch (Exception e) {
-      throw new FormFatalException(LAZY_PROCESS_INSTANCE_DATA_RECORD,
-          "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldName);
+      throw new FormFatalException(e);
     }
 
   }
@@ -236,12 +232,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
     return -1;
   }
 
-  @Override
-  public String[] getFieldNames() {
-    return new String[0];
-  }
-
-  final String role;
-  final String lang;
+  private final String role;
+  private final String lang;
   private final Map<String, String> rawValues = new HashMap<>();
 }

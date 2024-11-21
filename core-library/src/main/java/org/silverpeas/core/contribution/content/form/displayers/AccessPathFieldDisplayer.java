@@ -46,13 +46,8 @@ import java.util.List;
  * @see Form
  * @see FieldDisplayer
  */
+@SuppressWarnings("unused")
 public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathField> {
-
-  /**
-   * Constructeur
-   */
-  public AccessPathFieldDisplayer() {
-  }
 
   /**
    * Returns the name of the managed types.
@@ -62,17 +57,17 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
   }
 
   /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
+   * Prints the javascript which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
+   * and constraints. The FieldTemplate gives the local label too. Never throws an Exception but
+   * log a message and writes an empty string when:
    * <UL>
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws java.io.IOException {
     // not applicable
   }
@@ -80,29 +75,27 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
+   * form input. Never throws an Exception but log a message and writes an empty string when:
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
    */
   @Override
   public void display(PrintWriter out, AccessPathField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
     String value = null;
     StringBuilder html = new StringBuilder();
 
     String fieldName = template.getFieldName();
     String currentAccessPath = "";
-    if (!AccessPathField.TYPE.equals(field.getTypeName())) {
-
-    } else {
+    if (AccessPathField.TYPE.equals(field.getTypeName())) {
       currentAccessPath = field
-          .getAccessPath(PagesContext.getComponentId(), PagesContext.getNodeId(),
-              PagesContext.getContentLanguage());
+          .getAccessPath(pagesContext.getComponentId(), pagesContext.getNodeId(),
+              pagesContext.getContentLanguage());
     }
 
     if (!field.isNull()) {
-      value = field.getValue(PagesContext.getLanguage());
+      value = field.getValue(pagesContext.getLanguage());
     }
     html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName)
         .append("\" type=\"text\" size=\"80\"");
@@ -117,7 +110,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
     html.append("/>\n");
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-        !template.isHidden() && PagesContext.useMandatory()) {
+        !template.isHidden() && pagesContext.useMandatory()) {
       html.append(Util.getMandatorySnippet());
     }
     out.println(html);
@@ -131,18 +124,16 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
    */
   @Override
   public List<String> update(String newValue, AccessPathField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
 
     if (!AccessPathField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("AccessPathFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          AccessPathField.TYPE);
+      throw new FormException("Incorrect field type '{0}', expected; {0}", AccessPathField.TYPE);
     }
 
-    if (field.acceptValue(newValue, PagesContext.getLanguage())) {
-      field.setValue(newValue, PagesContext.getLanguage());
+    if (field.acceptValue(newValue, pagesContext.getLanguage())) {
+      field.setValue(newValue, pagesContext.getLanguage());
     } else {
-      throw new FormException("AccessPathFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          AccessPathField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", AccessPathField.TYPE);
     }
     return new ArrayList<>();
   }

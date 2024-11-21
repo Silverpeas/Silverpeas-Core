@@ -143,8 +143,7 @@ public abstract class TextField extends AbstractField {
       setStringValue((String) value);
     } else {
       if (value != null) {
-        throw new FormException("TextField.setObjectValue",
-            "form.EXP_NOT_A_STRING");
+        throw new FormException("Incorrect field value type. Expected a text");
       } else {
         setNull();
       }
@@ -164,7 +163,7 @@ public abstract class TextField extends AbstractField {
    */
   @Override
   public boolean isNull() {
-    return (getStringValue() == null || getStringValue().trim().equals(""));
+    return (getStringValue() == null || getStringValue().trim().isEmpty());
   }
 
   /**
@@ -228,6 +227,6 @@ public abstract class TextField extends AbstractField {
   @Override
   public int hashCode() {
     String s = getStringValue();
-    return ("" + s).toLowerCase().hashCode();
+    return s.toLowerCase().hashCode();
   }
 }

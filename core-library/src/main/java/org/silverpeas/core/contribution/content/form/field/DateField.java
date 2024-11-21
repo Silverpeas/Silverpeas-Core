@@ -75,7 +75,7 @@ public abstract class DateField extends AbstractField {
   }
 
   private String formatClient(String value, String language) {
-    if ((value != null) && (!value.equals(""))) {
+    if ((value != null) && (!value.isEmpty())) {
       try {
         value = DateUtil.getInputDate(value, language);
       } catch (ParseException pe) {
@@ -124,8 +124,7 @@ public abstract class DateField extends AbstractField {
       setStringValue((String) value);
     } else {
       if (value != null) {
-        throw new FormException("DateField.setObjectValue",
-            "form.EXP_NOT_A_STRING");
+        throw new FormException("The value " + value + " isn't a string!");
       } else {
         setNull();
       }
@@ -139,7 +138,7 @@ public abstract class DateField extends AbstractField {
 
   @Override
   public boolean isNull() {
-    return (getStringValue() == null || getStringValue().trim().equals(""));
+    return (getStringValue() == null || getStringValue().trim().isEmpty());
   }
 
   @Override
@@ -191,6 +190,6 @@ public abstract class DateField extends AbstractField {
   @Override
   public int hashCode() {
     String s = getStringValue();
-    return ("" + s).hashCode();
+    return s.hashCode();
   }
 }

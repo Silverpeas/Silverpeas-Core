@@ -72,31 +72,12 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     return MANAGED_TYPES;
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.</li>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     produceMandatoryCheck(out, template, pagesContext);
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, JdbcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
@@ -129,7 +110,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
       generateDefaultView(html, template, fieldName, valueFieldType);
 
     }
-    out.println(html.toString());
+    out.println(html);
 
   }
 
@@ -163,7 +144,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
   private Collection<String> getResponses(final String currentUserId, final JdbcField field,
       final Map<String, String> parameters) throws FormException {
-    Collection<String> listRes = null;
+    Collection<String> listRes;
     Connection jdbcConnection = null;
     try {
       jdbcConnection =
@@ -217,6 +198,20 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
                   "left:16em;top:5px\"/>\n");
     }
 
+    generateFragmentHTML(entries, html, fieldName);
+    html.append(" this.oACDS").append(fieldName).
+        append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
+    html.append(THIS_O_AUTO_COMP).append(fieldName).append(" = new YAHOO.widget.AutoComplete('")
+        .
+        append(fieldName).append("','container").append(fieldName).append("', this.oACDS").
+        append(fieldName).append(");\n");
+    html.append(THIS_O_AUTO_COMP).append(fieldName).append(
+        ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
+    LdapFieldDisplayer.generateAutoComp(fieldName, valueFieldType, html, THIS_O_AUTO_COMP);
+    LdapFieldDisplayer.generateYahooCode(fieldName, html);
+  }
+
+  static void generateFragmentHTML(Collection<String> entries, StringBuilder html, String fieldName) {
     html.append("<script type=\"text/javascript\">\n");
     html.append("listArray").append(fieldName).append(" = [\n");
 
@@ -233,33 +228,6 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     html.append("</script>\n");
 
     html.append("<script type=\"text/javascript\">\n");
-    html.append(" this.oACDS").append(fieldName).
-        append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
-    html.append(THIS_O_AUTO_COMP).append(fieldName).append(" = new YAHOO.widget.AutoComplete('")
-        .
-        append(fieldName).append("','container").append(fieldName).append("', this.oACDS").
-        append(fieldName).append(");\n");
-    html.append(THIS_O_AUTO_COMP).append(fieldName).append(
-        ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
-    html.append(THIS_O_AUTO_COMP).append(fieldName).append(".typeAhead = true;\n");
-    html.append(THIS_O_AUTO_COMP).append(fieldName).append(".useShadow = true;\n");
-    html.append(THIS_O_AUTO_COMP).append(fieldName).append(".minQueryLength = 0;\n");
-
-    if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint a la liste ou 2 =
-      // saisie libre, par defaut 1
-      html.append(THIS_O_AUTO_COMP).append(fieldName).append(".forceSelection = true;\n");
-    }
-
-    html.append(THIS_O_AUTO_COMP).append(fieldName).append(
-        ".textboxFocusEvent.subscribe(function(){\n");
-    html.append("  var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
-        "').value;\n");
-    html.append("  if(sInputValue.length == 0) {\n");
-    html.append("   var oSelf = this;\n");
-    html.append("   setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
-    html.append("  }\n");
-    html.append(" });\n");
-    html.append("</script>\n");
   }
 
   private void getListboxFragment(FieldTemplate template, String fieldValue,
@@ -296,15 +264,13 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
   public List<String> update(String newValue, JdbcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (!JdbcField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("JdbcFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          JdbcField.TYPE);
+      throw new FormException("Incorrect field type '{0}', expected; {0}", JdbcField.TYPE);
     }
 
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {
-      throw new FormException("JdbcFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          JdbcField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", JdbcField.TYPE);
     }
     return new ArrayList<>();
   }
