@@ -24,20 +24,12 @@
 package org.silverpeas.core.contribution.content.form.displayers;
 
 import com.novell.ldap.LDAPConnection;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.LdapField;
-import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,13 +45,9 @@ import java.util.Map;
 public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
 
   private static final String[] MANAGED_TYPES = new String[]{LdapField.TYPE};
-  private static final String mandatoryImg = Util.getIcon("mandatoryField");
+  private static final String MANDATORY_IMG = Util.getIcon("mandatoryField");
+  private static final String THIS_O_AUTO_COMP = " this.oAutoComp";
 
-  /**
-   * Constructeur
-   */
-  public LdapFieldDisplayer() {
-  }
 
   /**
    * Returns the name of the managed types.
@@ -68,31 +56,12 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
     return MANAGED_TYPES;
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.</li>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     produceMandatoryCheck(out, template, pagesContext);
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, LdapField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
@@ -115,9 +84,121 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
     if (!field.isNull()) {
       value = field.getValue(language);
     }
-    Collection<String> listRes = null;
+    Collection<String> listRes;
 
     // Parameters
+    Params params = getParams(parameters);
+    listRes = requestLDAPService(ldapField, params, currentUserId);
+    StringBuilder html = new StringBuilder(10000);
+    if (listRes != null && !listRes.isEmpty()) {
+      generateHTMLFields(template, pagesContext, html, fieldName, value, listRes, params);
+    } else {
+      generateEmptyHTMLFields(template, params, html, fieldName);
+    }
+    out.println(html);
+  }
+
+  private static void generateEmptyHTMLFields(FieldTemplate template, Params params, StringBuilder html, String fieldName) {
+    if ("1".equals(params.valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste
+      // ou 2 =
+      // saisie libre, par défaut 1
+      html.append("<select name=\"").append(fieldName).append("\"");
+      if (template.isDisabled() || template.isReadOnly()) {
+        html.append(" disabled=\"disabled\"");
+      }
+      html.append(" >\n");
+      html.append("</select>\n");
+
+      if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly())
+          && (!template.isHidden())) {
+        html.append("&nbsp;<img src=\"").append(MANDATORY_IMG).append(
+            "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n");
+      }
+    } else {
+      html.append("<input type=\"text\" name=\"").append(fieldName).append("\"");
+      if (template.isDisabled() || template.isReadOnly()) {
+        html.append(" disabled=\"disabled\"");
+      }
+      html.append(" />\n");
+      if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly())
+          && (!template.isHidden())) {
+        html.append("&nbsp;<img src=\"").append(MANDATORY_IMG);
+        html.append("\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n");
+      }
+    }
+  }
+
+  private static void generateHTMLFields(FieldTemplate template, PagesContext pagesContext, StringBuilder html, String fieldName, String value, Collection<String> listRes, Params params) {
+    int zindex = 100;
+    html.append("<style type=\"text/css\">\n").append(" #listAutocomplete").append(fieldName);
+    html.append(" {\n ").append("  width:15em;\n").append("  padding-bottom:2em;\n");
+    html.append(" }\n").append(" #container").append(fieldName).append(" {\n");
+    html.append("  z-index:").append(zindex);
+    html
+        .append("; /* z-index needed on top instance for ie & sf absolute inside relative issue" +
+            " ");
+    html.append("*/\n").append(" }\n").append(" #").append(fieldName).append(" {\n");
+    html.append("  _position:absolute; /* abs pos needed for ie quirks */\n").append(" }\n");
+    html.append("</style>\n").append("<div id=\"listAutocomplete").append(fieldName).append(
+        "\">\n");
+    html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName);
+    html.append("\" type=\"text\"");
+    if (value != null) {
+      html.append(" value=\"").append(value).append("\"");
+    }
+    if (template.isDisabled() || template.isReadOnly()) {
+      html.append(" disabled");
+    }
+    html.append("/>\n").append("<div id=\"container").append(fieldName).append("\"/>\n");
+    html.append("</div>\n");
+
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+        && !template.isHidden() && pagesContext.useMandatory()) {
+      html.append("<img src=\"").append(MANDATORY_IMG).append("\" width=\"5\" height=\"5\" ");
+      html.append("border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
+    }
+
+    JdbcFieldDisplayer.generateFragmentHTML(listRes, html, fieldName);
+    html.append(" this.oACDS").append(fieldName);
+    html.append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
+    html.append(THIS_O_AUTO_COMP).append(fieldName).append(" = new YAHOO.widget.AutoComplete('");
+    html.append(fieldName).append("','container").append(fieldName).append("', this.oACDS");
+    html.append(fieldName).append(");\n").append(THIS_O_AUTO_COMP).append(fieldName);
+    html.append(".prehighlightClassName = \"yui-ac-prehighlight\";\n");
+    generateAutoComp(fieldName, params.valueFieldType, html, THIS_O_AUTO_COMP);
+    generateYahooCode(fieldName, html);
+  }
+
+  private static Collection<String> requestLDAPService(LdapField ldapField, Params params, String currentUserId) throws FormException {
+    Collection<String> listRes;
+    LDAPConnection ldapConnection = null;
+    try {
+      ldapConnection = ldapField.connectLdap(params.host, params.port);
+
+      // Bind LDAP
+      byte[] tabPassword = null;
+      if (params.password != null) {
+        tabPassword = params.password.getBytes();
+      }
+      ldapField.bindLdap(ldapConnection, params.version, params.baseDN, tabPassword);
+
+      // Set max result displayed
+      if (params.maxResultDisplayed != null) {
+        ldapField.setConstraintLdap(ldapConnection, params.maxResultDisplayed);
+      }
+
+      // LDAP request
+      boolean boolSearchTypeOnly = "true".equals(params.searchTypeOnly);
+      listRes = ldapField.searchLdap(ldapConnection, params.searchBase, params.searchScope,
+          params.searchFilter,
+          params.searchAttribute, boolSearchTypeOnly, currentUserId);
+    } finally {
+      ldapField.disconnectLdap(ldapConnection);
+    }
+    return listRes;
+  }
+
+  private static Params getParams(Map<String, String> parameters) {
     String host = null;
     String port = null;
     String version = null;
@@ -169,134 +250,61 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
       // restreint à la liste ou 2 =
       // saisie libre, par défaut 1
     }
+    Params params = new Params();
+    params.host = host;
+    params.port = port;
+    params.version = version;
+    params.baseDN = baseDN;
+    params.password = password;
+    params.searchBase = searchBase;
+    params.searchScope = searchScope;
+    params.searchFilter = searchFilter;
+    params.searchAttribute = searchAttribute;
+    params.searchTypeOnly = searchTypeOnly;
+    params.maxResultDisplayed = maxResultDisplayed;
+    params.valueFieldType = valueFieldType;
+    return params;
+  }
 
-    if (ldapField != null) {
-      LDAPConnection ldapConnection = null;
-      try {
-        ldapConnection = ldapField.connectLdap(host, port);
+  private static class Params {
+    String host;
+    String port;
+    String version;
+    String baseDN;
+    String password;
+    String searchBase;
+    String searchScope;
+    String searchFilter;
+    String searchAttribute;
+    String searchTypeOnly;
+    String maxResultDisplayed;
+    String valueFieldType;
+  }
 
-        // Bind LDAP
-        byte[] tabPassword = null;
-        if (password != null) {
-          tabPassword = password.getBytes();
-        }
-        ldapField.bindLdap(ldapConnection, version, baseDN, tabPassword);
+  static void generateAutoComp(String fieldName, String valueFieldType, StringBuilder html,
+      String thisOAutoComp) {
+    html.append(thisOAutoComp).append(fieldName).append(".typeAhead = true;\n");
+    html.append(thisOAutoComp).append(fieldName).append(".useShadow = true;\n");
+    html.append(thisOAutoComp).append(fieldName).append(".minQueryLength = 0;\n");
 
-        // Set max result displayed
-        if (maxResultDisplayed != null) {
-          ldapField.setConstraintLdap(ldapConnection, maxResultDisplayed);
-        }
-
-        // Requête LDAP
-        boolean boolSearchTypeOnly = "true".equals(searchTypeOnly);
-        listRes = ldapField.searchLdap(ldapConnection, searchBase, searchScope, searchFilter,
-            searchAttribute, boolSearchTypeOnly, currentUserId);
-      } finally {
-        ldapField.disconnectLdap(ldapConnection);
-      }
-    }
-    StringBuilder html = new StringBuilder(10000);
-    if (listRes != null && !listRes.isEmpty()) {
-      int zindex = 100;
-      html.append("<style type=\"text/css\">\n").append("	#listAutocomplete").append(fieldName);
-      html.append(" {\n").append("		width:15em;\n").append("		padding-bottom:2em;\n");
-      html.append("	}\n").append("	#container").append(fieldName).append(" {\n");
-      html.append("		z-index:").append(zindex);
-      html
-          .append("; /* z-index needed on top instance for ie & sf absolute inside relative issue ");
-      html.append("*/\n").append("	}\n").append("	#").append(fieldName).append(" {\n");
-      html.append("		_position:absolute; /* abs pos needed for ie quirks */\n").append("	}\n");
-      html.append("</style>\n").append("<div id=\"listAutocomplete").append(fieldName).append(
-          "\">\n");
-      html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName);
-      html.append("\" type=\"text\"");
-      if (value != null) {
-        html.append(" value=\"").append(value).append("\"");
-      }
-      if (template.isDisabled() || template.isReadOnly()) {
-        html.append(" disabled");
-      }
-      html.append("/>\n").append("<div id=\"container").append(fieldName).append("\"/>\n");
-      html.append("</div>\n");
-
-      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-          && !template.isHidden() && pagesContext.useMandatory()) {
-        html.append("<img src=\"").append(mandatoryImg).append("\" width=\"5\" height=\"5\" ");
-        html.append("border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
-      }
-
-      html.append("<script type=\"text/javascript\">\n");
-      html.append("listArray").append(fieldName).append(" = [\n");
-
-      Iterator<String> itRes = listRes.iterator();
-      while (itRes.hasNext()) {
-        html.append("\"").
-            append(WebEncodeHelper.javaStringToJsString(itRes.next())).append("\"");
-        if (itRes.hasNext()) {
-          html.append(",\n");
-        }
-      }
-      html.append("];\n");
-      html.append("</script>\n");
-
-      html.append("<script type=\"text/javascript\">\n");
-      html.append(" this.oACDS").append(fieldName);
-      html.append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
-      html.append("	this.oAutoComp").append(fieldName).append(" = new YAHOO.widget.AutoComplete('");
-      html.append(fieldName).append("','container").append(fieldName).append("', this.oACDS");
-      html.append(fieldName).append(");\n").append("	this.oAutoComp").append(fieldName);
-      html.append(".prehighlightClassName = \"yui-ac-prehighlight\";\n");
-      html.append("	this.oAutoComp").append(fieldName).append(".typeAhead = true;\n");
-      html.append("	this.oAutoComp").append(fieldName).append(".useShadow = true;\n");
-      html.append("	this.oAutoComp").append(fieldName).append(".minQueryLength = 0;\n");
-
-      if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
-        // saisie libre, par défaut 1
-        html.append("	this.oAutoComp").append(fieldName).append(".forceSelection = true;\n");
-      }
-
-      html.append("	this.oAutoComp").append(fieldName).append(
-          ".textboxFocusEvent.subscribe(function(){\n");
-      html.append("		var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
-          "').value;\n");
-      html.append("		if(sInputValue.length == 0) {\n");
-      html.append("			var oSelf = this;\n");
-      html.append("			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
-      html.append("		}\n");
-      html.append("	});\n");
-      html.append("</script>\n");
-
-    } else {
-
-      if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
-        // saisie libre, par défaut 1
-        html.append("<select name=\"").append(fieldName).append("\"");
-        if (template.isDisabled() || template.isReadOnly()) {
-          html.append(" disabled=\"disabled\"");
-        }
-        html.append(" >\n");
-        html.append("</select>\n");
-
-        if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly())
-            && (!template.isHidden())) {
-          html.append("&nbsp;<img src=\"").append(mandatoryImg).append(
-              "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n");
-        }
-      } else {
-        html.append("<input type=\"text\" name=\"").append(fieldName).append("\"");
-        if (template.isDisabled() || template.isReadOnly()) {
-          html.append(" disabled=\"disabled\"");
-        }
-        html.append(" />\n");
-        if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly())
-            && (!template.isHidden())) {
-          html.append("&nbsp;<img src=\"").append(mandatoryImg);
-          html.append("\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n");
-        }
-      }
+    if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
+      // saisie libre, par défaut 1
+      html.append(thisOAutoComp).append(fieldName).append(".forceSelection = true;\n");
     }
 
-    out.println(html.toString());
+    html.append(thisOAutoComp).append(fieldName).append(
+        ".textboxFocusEvent.subscribe(function(){\n");
+  }
+
+  static void generateYahooCode(String fieldName, StringBuilder html) {
+    html.append("  var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
+        "').value;\n");
+    html.append("  if(sInputValue.length == 0) {\n");
+    html.append("   var oSelf = this;\n");
+    html.append("   setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
+    html.append("  }\n");
+    html.append(" });\n");
+    html.append("</script>\n");
   }
 
   /**
@@ -311,15 +319,13 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
       PagesContext pagesContext) throws FormException {
 
     if (!LdapField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("LdapFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          LdapField.TYPE);
+      throw new FormException("Incorrect field type '{0}', expected; {0}", LdapField.TYPE);
     }
 
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {
-      throw new FormException("LdapFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          LdapField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", LdapField.TYPE);
     }
     return new ArrayList<>();
   }

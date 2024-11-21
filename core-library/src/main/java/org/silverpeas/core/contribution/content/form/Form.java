@@ -37,10 +37,10 @@ import java.util.List;
  */
 public interface Form {
   /**
-   * Prints the javascripts which will be used to control the new values given to the data record
+   * Prints the javascript which will be used to control the new values given to the data record
    * fields. The error messages may be adapted to a local language. The RecordTemplate gives the
    * field type and constraints. The RecordTemplate gives the local label too. Never throws an
-   * Exception but log a silvertrace and writes an empty string when :
+   * Exception but log a message and writes an empty string when :
    * <ul>
    * <li>a field is unknown by the template.</li>
    * <li>a field has not the required type.</li>
@@ -50,8 +50,8 @@ public interface Form {
 
   /**
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
-   * informations. The value formats may be adapted to a local language. Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * information. The value formats may be adapted to a local language. Never throws an Exception
+   * but log a message and writes an empty string when :
    * <ul>
    * <li>a field is unknown by the template.</li>
    * <li>a field has not the required type.</li>

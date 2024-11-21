@@ -52,6 +52,7 @@ import java.util.Map;
  * @see Form
  * @see FieldDisplayer
  */
+@SuppressWarnings("unused")
 public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField> {
 
   /**
@@ -61,16 +62,6 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
     return new String[]{ExplorerField.TYPE};
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.</li>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
     if (!ExplorerField.TYPE.equals(template.getTypeName())) {
@@ -81,18 +72,10 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
     Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, ExplorerField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
+    //noinspection DuplicatedCode
     String language = pageContext.getLanguage();
     String selectImg = Util.getIcon("explorer");
     String selectLabel = Util.getString("field.explorer.browse", language);
@@ -158,8 +141,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
         field.setNodePK(newId);
       }
     } else {
-      throw new FormException("ExplorerFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          ExplorerField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", ExplorerField.TYPE);
     }
     return Collections.emptyList();
   }

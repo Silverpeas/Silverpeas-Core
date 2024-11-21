@@ -23,80 +23,24 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Thrown by the form components.
  */
 public class FormException extends SilverpeasException {
 
-  private static final long serialVersionUID = 1937108365995722235L;
+  private static final long serialVersionUID = 1937108365995722240L;
 
-  /**
-   * Returns the module name.
-   */
-  public String getModule() {
-    return "form";
+  public FormException(String message, String... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Set the caller and the error message
-   */
-  public FormException(String caller, String message) {
-    super(caller, SilverpeasException.ERROR, message);
+  public FormException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Set the caller, the error message and the nested exception.
-   */
-  public FormException(String caller, String message, Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, nestedException);
-  }
-
-  /**
-   * Set the caller, infos and the error message
-   */
-  public FormException(String caller, String message, String infos) {
-    super(caller, SilverpeasException.ERROR, message, infos);
-  }
-
-  /**
-   * Set the caller, the error message, infos and the nested exception.
-   */
-  public FormException(String caller, String message, String infos,
-      Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, infos, nestedException);
-  }
-
-  /**
-   * Set the caller, the level and the error message. Used only by the FatalFormException
-   */
-  protected FormException(String caller, int level, String message) {
-    super(caller, level, message);
-  }
-
-  /**
-   * Set the caller, the level, the error message and the nested exception. Used only by the
-   * FatalFormException
-   */
-  protected FormException(String caller, int level, String message,
-      Exception nestedException) {
-    super(caller, level, message, nestedException);
-  }
-
-  /**
-   * Set the caller, the level, the error message and infos. Used only by the FatalFormException
-   */
-  protected FormException(String caller, int level, String message, String infos) {
-    super(caller, level, message, infos);
-  }
-
-  /**
-   * Set the caller, the level, the error message, infos and the nested exception. Used only by the
-   * FatalFormException
-   */
-  protected FormException(String caller, int level, String message,
-      String infos, Exception nestedException) {
-    super(caller, level, message, infos, nestedException);
+  public FormException(Throwable cause) {
+    super(cause);
   }
 }

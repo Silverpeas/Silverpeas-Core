@@ -346,7 +346,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
         ids.put(original.getId(), clonePk.getId());
       }
     } catch (AttachmentException e) {
-      throw new FormException("form", "", e);
+      throw new FormException(e);
     }
 
     // copy data stored in database
@@ -400,7 +400,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
       }
       replaceIds(ids, record);
     } catch (AttachmentException e) {
-      throw new FormException("form", "", e);
+      throw new FormException(e);
     }
 
     insert(record);
@@ -436,7 +436,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
       ids.putAll(videoIds);
       replaceIds(ids, fromRecord);
     } catch (AttachmentException e) {
-      throw new FormException("form", "", e);
+      throw new FormException(e);
     }
 
     update(fromRecord);

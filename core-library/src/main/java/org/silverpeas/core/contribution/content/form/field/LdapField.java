@@ -56,8 +56,6 @@ public class LdapField extends TextField {
    * The ldap field dynamic variable login.
    */
   public static final String VARIABLE_LOGIN = "$$login";
-  private static final String LDAP_FIELD_SEARCH_LDAP = "LdapField.searchLdap";
-  private static final String FORM_EX_CANT_SEARCH_LDAP = "form.EX_CANT_SEARCH_LDAP";
 
   private String value = "";
 
@@ -97,8 +95,7 @@ public class LdapField extends TextField {
       throws FormException {
     LDAPConnection ldapConnection;
     if (!StringUtil.isDefined(host) || !StringUtil.isDefined(port)) {
-      throw new FormException("LdapField.connectLdap",
-          "form.EX_CANT_CONNECT_LDAP");
+      throw new FormException("LDAP connection to " + host + ":" + port + " failed!");
     }
 
     try {
@@ -108,8 +105,7 @@ public class LdapField extends TextField {
 
       return ldapConnection;
     } catch (Exception e) {
-      throw new FormException("LdapField.connectLdap",
-          "form.EX_CANT_CONNECT_LDAP", e);
+      throw new FormException(e);
     }
   }
 
@@ -119,8 +115,7 @@ public class LdapField extends TextField {
         connection.disconnect();
       }
     } catch (Exception e) {
-      throw new FormException("LdapField.disconnectLdap",
-          "form.EX_CANT_DISCONNECT_LDAP", e);
+      throw new FormException(e);
     }
   }
 
@@ -128,7 +123,7 @@ public class LdapField extends TextField {
       String distinguishedName, byte[] password) throws FormException {
     if (!StringUtil.isDefined(version)
         || !StringUtil.isDefined(distinguishedName)) {
-      throw new FormException("LdapField.bindLdap", "form.EX_CANT_BIND_LDAP");
+      throw new FormException("Cannot bind " + distinguishedName + " in LDAP" );
     }
 
     try {
@@ -136,7 +131,7 @@ public class LdapField extends TextField {
       ldapConnection.bind(versionInt, distinguishedName, password);
 
     } catch (Exception e) {
-      throw new FormException("LdapField.bindLdap", "form.EX_CANT_BIND_LDAP", e);
+      throw new FormException(e);
     }
   }
 
@@ -149,8 +144,7 @@ public class LdapField extends TextField {
       ldapConstraint.setMaxResults(maxResultDisplayedInt);
       ldapConnection.setConstraints(ldapConstraint);
     } catch (Exception e) {
-      throw new FormException("LdapField.setConstraintLdap",
-          "form.EX_CANT_SET_CONSTRAINT_LDAP", e);
+      throw new FormException(e);
     }
   }
 
@@ -174,8 +168,7 @@ public class LdapField extends TextField {
       searchResult = ldapConnection.search(baseDn, scopeInt, filter,
           tabSearchAttribute, typesOnly);
     } catch (Exception e) {
-      throw new FormException(LDAP_FIELD_SEARCH_LDAP,
-          FORM_EX_CANT_SEARCH_LDAP, e);
+      throw new FormException(e);
     }
 
     if (searchResult == null) {
@@ -189,12 +182,12 @@ public class LdapField extends TextField {
       throws FormException {
     List<String> listRes = new ArrayList<>();
     LDAPEntry entry;
-    int nbReaded = 0;
+    int nbRead = 0;
     LDAPAttribute ldapAttribute;
     String theValue = null;
     try {
       while (searchResult.hasMore()
-          && ldapConnection.getSearchConstraints().getMaxResults() > nbReaded) {
+          && ldapConnection.getSearchConstraints().getMaxResults() > nbRead) {
         entry = searchResult.next();
 
         if (tabSearchAttribute != null) {
@@ -206,14 +199,13 @@ public class LdapField extends TextField {
           theValue = entry.getDN();
         }
 
-        nbReaded++;
+        nbRead++;
         if (StringUtil.isDefined(theValue)) {
           listRes.add(theValue);
         }
       }
     } catch (LDAPException e) {
-      throw new FormException(LDAP_FIELD_SEARCH_LDAP,
-          FORM_EX_CANT_SEARCH_LDAP, e);
+      throw new FormException(e);
     }
     return listRes;
   }
@@ -224,8 +216,7 @@ public class LdapField extends TextField {
         String valueLogin = User.getById(currentUserId).getLogin();
         filter = filter.replace(VARIABLE_LOGIN, valueLogin);
       } catch (Exception e) {
-        throw new FormException(LDAP_FIELD_SEARCH_LDAP,
-            FORM_EX_CANT_SEARCH_LDAP, "Can't get login of the currentUser", e);
+        throw new FormException(e);
       }
     }
     return filter;

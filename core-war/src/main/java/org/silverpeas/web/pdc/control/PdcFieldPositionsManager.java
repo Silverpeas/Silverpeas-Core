@@ -23,13 +23,12 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.core.pdc.form.displayers.PdcFieldDisplayer;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+
+import java.util.List;
 
 /**
  * Manages the positions of a PDC field.
@@ -40,9 +39,9 @@ public class PdcFieldPositionsManager {
   // If true, indicates that the controller which refers to this manager is in PDC field mode.
   private boolean enabled;
   // Positions of the field.
-  private ArrayList<ClassifyPosition> positions;
+  private List<ClassifyPosition> positions;
   // Available axis to order the object (publication) containing the field.
-  private ArrayList<UsedAxis> usedAxisList;
+  private List<UsedAxis> usedAxisList;
   // Field name.
   private String fieldName;
   // PDC field displayer.
@@ -63,21 +62,21 @@ public class PdcFieldPositionsManager {
     return fieldName;
   }
 
-  public ArrayList<ClassifyPosition> getPositions() {
+  public List<ClassifyPosition> getPositions() {
     return positions;
   }
 
-  public ArrayList<UsedAxis> getUsedAxisList() {
+  public List<UsedAxis> getUsedAxisList() {
     return usedAxisList;
   }
 
   /**
    * Initializes and enables the manager.
    * @param fieldName The field name.
-   * @param pattern The description of positions, following the pattern :
+   * @param pattern The description of positions, following the pattern:
    * axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1... where axisIdi_j and
    * valueIdi_j correspond to the value #j of the position #i.
-   * @param axis
+   * @param axis the identifier of the axis
    */
   public void init(String fieldName, String pattern, String axis) {
     enabled = true;
@@ -168,34 +167,36 @@ public class PdcFieldPositionsManager {
    * valueIdi_j correspond to the value #j of the position #i.
    */
   public String getPositionsToString() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     if (positions != null) {
-      ClassifyPosition position;
-      ClassifyValue classifyValue;
-      String[] values;
-      String valuesPath;
       for (int i = 0; i < positions.size(); i++) {
         if (i > 0) {
           result.append(".");
         }
-        position = positions.get(i);
-        List<ClassifyValue> classifyValues = position.getValues();
-        for (int j = 0; j < classifyValues.size(); j++) {
-          if (j > 0) {
-            result.append(";");
-          }
-          classifyValue = classifyValues.get(j);
-          result.append(classifyValue.getAxisId()).append(",");
-
-          valuesPath = classifyValue.getValue();
-          if (valuesPath != null && valuesPath.length() > 0) {
-            values = valuesPath.split("/");
-            result.append(values[values.length - 1]);
-          }
-        }
+        buildPositionValuesToString(result, positions.get(i));
       }
     }
     return result.toString();
+  }
+
+  private void buildPositionValuesToString(StringBuilder result, ClassifyPosition position) {
+    ClassifyValue classifyValue;
+    String[] values;
+    String valuesPath;
+    List<ClassifyValue> classifyValues = position.getValues();
+    for (int j = 0; j < classifyValues.size(); j++) {
+      if (j > 0) {
+        result.append(";");
+      }
+      classifyValue = classifyValues.get(j);
+      result.append(classifyValue.getAxisId()).append(",");
+
+      valuesPath = classifyValue.getValue();
+      if (valuesPath != null && !valuesPath.isEmpty()) {
+        values = valuesPath.split("/");
+        result.append(values[values.length - 1]);
+      }
+    }
   }
 
 }

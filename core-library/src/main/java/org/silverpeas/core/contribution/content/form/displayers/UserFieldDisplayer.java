@@ -46,7 +46,7 @@ import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
- * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP
+ * A UserFieldDisplayer is an object which can display a UserField in HTML and can retrieve via HTTP
  * any updated value.
  * @see Field
  * @see FieldTemplate
@@ -64,31 +64,12 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     return new String[] { UserField.TYPE };
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.</li>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     produceMandatoryCheck(out, template, pagesContext);
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws FormException if exists an error
-   */
   @Override
   public void display(PrintWriter out, UserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
@@ -137,8 +118,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
         field.setUserId(newId);
       }
     } else {
-      throw new FormException("UserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          UserField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", UserField.TYPE);
     }
     return Collections.emptyList();
   }

@@ -23,42 +23,18 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
-import org.silverpeas.core.exception.SilverpeasException;
-
 /**
- * Thrown when a fatal error occured in a form component.
+ * Thrown when a fatal error occurred in a form component.
  */
 public class FormFatalException extends FormException {
 
-  private static final long serialVersionUID = 1351471356522040519L;
+  private static final long serialVersionUID = 1351471356522040530L;
 
-  /**
-   * Set the caller and the error message
-   */
-  public FormFatalException(String caller, String message) {
-    super(caller, SilverpeasException.ERROR, message);
+  public FormFatalException(String message, String... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Set the caller, the error message and the nested exception.
-   */
-  public FormFatalException(String caller, String message,
-      Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, nestedException);
-  }
-
-  /**
-   * Set the caller, infos and the error message
-   */
-  public FormFatalException(String caller, String message, String infos) {
-    super(caller, SilverpeasException.ERROR, message, infos);
-  }
-
-  /**
-   * Set the caller, the error message, infos and the nested exception.
-   */
-  public FormFatalException(String caller, String message, String infos,
-      Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, infos, nestedException);
+  public FormFatalException(Throwable cause) {
+    super(cause);
   }
 }

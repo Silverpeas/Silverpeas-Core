@@ -59,7 +59,7 @@ public class PublicationsPickerField extends AbstractField {
   /**
    * The referenced resources.
    */
-  private String rawResouceReferences = null;
+  private String rawResourceReferences = null;
 
   /**
    * Returns the type name.
@@ -71,19 +71,19 @@ public class PublicationsPickerField extends AbstractField {
   /**
    * Returns the publications referenced by this field (as defined by ContributionIdentifier.ABSOLUTE_ID_FORMAT)
    */
-  public String getRawResouceReferences() {
-    return rawResouceReferences;
+  public String getRawResourceReferences() {
+    return rawResourceReferences;
   }
 
   /**
    * Set the node id referenced by this field.
    */
-  public void setRawResouceReferences(String rawResouceReferences) {
+  public void setRawResourceReferences(String rawResourceReferences) {
     StringBuilder verifiedResources = new StringBuilder();
 
     // check references to detect deleted publications
-    if (StringUtil.isDefined(rawResouceReferences)) {
-      String[] array = rawResouceReferences.split(",");
+    if (StringUtil.isDefined(rawResourceReferences)) {
+      String[] array = rawResourceReferences.split(",");
       for (String rawResourceReference : array) {
         ContributionIdentifier id = ContributionIdentifier.decode(rawResourceReference);
         PublicationDetail publi = PublicationService.get()
@@ -97,7 +97,7 @@ public class PublicationsPickerField extends AbstractField {
       }
     }
 
-    this.rawResouceReferences = verifiedResources.toString();
+    this.rawResourceReferences = verifiedResources.toString();
   }
 
   /**
@@ -127,7 +127,7 @@ public class PublicationsPickerField extends AbstractField {
   }
 
   public void setValue(String value) throws FormException {
-    setRawResouceReferences(value);
+    setRawResourceReferences(value);
   }
 
   public void setValue(String value, String language) throws FormException {
@@ -161,20 +161,20 @@ public class PublicationsPickerField extends AbstractField {
   @SuppressWarnings("unchecked")
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof List) {
-      StringBuilder rawResourceReferences = new StringBuilder();
+      StringBuilder resRef = new StringBuilder();
       List<ContributionIdentifier> list = (List<ContributionIdentifier>) value;
       for (ContributionIdentifier identifier : list) {
-        if (rawResourceReferences.length() > 0) {
-          rawResourceReferences.append(",");
+        if (resRef.length() > 0) {
+          resRef.append(",");
         }
-        rawResourceReferences.append(identifier.asString());
+        resRef.append(identifier.asString());
       }
-      setRawResouceReferences(rawResourceReferences.toString());
+      setRawResourceReferences(resRef.toString());
     } else if (value == null) {
-      setRawResouceReferences(null);
+      setRawResourceReferences(null);
     } else {
-      throw new FormException("PublicationsPickerField.setObjectValue",
-          "form.EXP_NOT_A_PUPLICATION_LIST");
+      throw new FormException("Incorrect field value type. Expected a list of contribution " +
+          "identifiers");
     }
   }
 
@@ -189,14 +189,14 @@ public class PublicationsPickerField extends AbstractField {
    * Returns this field value as a normalized String
    */
   public String getStringValue() {
-    return getRawResouceReferences();
+    return getRawResourceReferences();
   }
 
   /**
    * Set this field value from a normalized String
    */
   public void setStringValue(String value) {
-    setRawResouceReferences(value);
+    setRawResourceReferences(value);
   }
 
   /**
@@ -219,7 +219,7 @@ public class PublicationsPickerField extends AbstractField {
    * @throws FormException when the field is mandatory or when the field is read only.
    */
   public void setNull() throws FormException {
-    setRawResouceReferences(null);
+    setRawResourceReferences(null);
   }
 
   public int getNbPublications() {
@@ -230,10 +230,10 @@ public class PublicationsPickerField extends AbstractField {
    * Tests equality between this field and the specified field.
    */
   public boolean equals(Object o) {
-    String s = getRawResouceReferences();
+    String s = getRawResourceReferences();
 
     if (o instanceof PublicationsPickerField) {
-      String t = ((PublicationsPickerField) o).getRawResouceReferences();
+      String t = ((PublicationsPickerField) o).getRawResourceReferences();
       return (s == null || s.equals(t));
     } else {
       return false;
@@ -256,11 +256,11 @@ public class PublicationsPickerField extends AbstractField {
       }
 
       if (s.equals(t)) {
-        s = getRawResouceReferences();
+        s = getRawResourceReferences();
         if (s == null) {
           s = "";
         }
-        t = ((PublicationsPickerField) o).getRawResouceReferences();
+        t = ((PublicationsPickerField) o).getRawResourceReferences();
         if (t == null) {
           t = "";
         }
@@ -272,14 +272,14 @@ public class PublicationsPickerField extends AbstractField {
   }
 
   public int hashCode() {
-    String s = getRawResouceReferences();
-    return ("" + s).hashCode();
+    String s = getRawResourceReferences();
+    return s.hashCode();
   }
 
   private List<ContributionIdentifier> getResourceReferences() {
     List<ContributionIdentifier> resourceReferences = new ArrayList<>();
-    if (StringUtil.isDefined(getRawResouceReferences())) {
-      String[] array = getRawResouceReferences().split(",");
+    if (StringUtil.isDefined(getRawResourceReferences())) {
+      String[] array = getRawResourceReferences().split(",");
       for (String rawResourceReference : array) {
         resourceReferences.add(ContributionIdentifier.decode(rawResourceReference));
       }

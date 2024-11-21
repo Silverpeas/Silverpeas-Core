@@ -51,7 +51,6 @@ import java.util.StringTokenizer;
 public class GenericFieldTemplate implements FieldTemplate {
 
   private static final long serialVersionUID = 1L;
-  private static final String TYPE_MANAGER = "TypeManager";
   private static final String TOKEN_DELIMITER = "##";
   @XmlElement(required = true)
   private String fieldName;
@@ -229,7 +228,7 @@ public class GenericFieldTemplate implements FieldTemplate {
    * Adds a local label.
    */
   public void addLabel(String label, String language) {
-    if (language == null || language.trim().equals("")) {
+    if (language == null || language.trim().isEmpty()) {
       setLabel(label);
     } else {
       if (labels == null) {
@@ -383,15 +382,8 @@ public class GenericFieldTemplate implements FieldTemplate {
       field.setName(fieldName);
       field.setOccurrence(occurrence);
       return field;
-    } catch (NoSuchMethodException e) {
-      throw new FormFatalException(TYPE_MANAGER,
-          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldImpl.getName(), e);
-    } catch (ClassCastException e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_NOT_A_FIELD",
-          fieldImpl.getName(), e);
     } catch (Exception e) {
-      throw new FormFatalException(TYPE_MANAGER,
-          "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldImpl.getName(), e);
+      throw new FormFatalException(e);
     }
   }
 
@@ -510,8 +502,8 @@ public class GenericFieldTemplate implements FieldTemplate {
   }
 
   public void setMaximumNumberOfOccurrences(int nb) {
-    // If the occurrence number is stricly lower than 1, the value is forced to 1.
-    // This avoids potential technical errors in different uses of the formular.
+    // If the occurrence number is strictly lower than 1, the value is forced to 1.
+    // This avoids potential technical errors in different uses of the formula.
     maximumNumberOfOccurrences = Math.max(nb, 1);
   }
 

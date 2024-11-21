@@ -42,8 +42,6 @@ import java.util.Set;
 public class TypeManager {
 
   private static final TypeManager instance = new TypeManager();
-  private static final String TYPE_MANAGER = "TypeManager";
-  private static final String FORM_EXP_UNKNOWN_TYPE = "form.EXP_UNKNOWN_TYPE";
 
   private TypeManager() {
     try {
@@ -62,7 +60,7 @@ public class TypeManager {
    */
   public String[] getTypeNames() {
     Set<String> keys = implementations.keySet();
-    return keys.toArray(new String[keys.size()]);
+    return keys.toArray(new String[0]);
   }
 
   /**
@@ -73,7 +71,7 @@ public class TypeManager {
   public Class<? extends Field> getFieldImplementation(String typeName)
       throws FormException {
     if (!implementations.containsKey(typeName)) {
-      throw new FormException(TYPE_MANAGER, FORM_EXP_UNKNOWN_TYPE, typeName);
+      throw new FormException("No such field of type {0}", typeName);
     }
     return implementations.get(typeName);
   }
@@ -86,23 +84,9 @@ public class TypeManager {
   public String getDisplayerName(String typeName) throws FormException {
     List<String> displayerNames = typeName2displayerNames.get(typeName);
     if (displayerNames == null || displayerNames.isEmpty()) {
-      throw new FormException(TYPE_MANAGER, FORM_EXP_UNKNOWN_TYPE, typeName);
+      throw new FormException("No such displayer for fields of type {0}", typeName);
     }
     return displayerNames.get(0);
-  }
-
-  /**
-   * Returns the names of all the FieldDisplayers which can be used with the named type.
-   *
-   * @throws FormException if the type name is unknown.
-   */
-  public String[] getDisplayerNames(String typeName)
-      throws FormException {
-    List<String> displayerNames = typeName2displayerNames.get(typeName);
-    if (displayerNames == null || displayerNames.isEmpty()) {
-      throw new FormException(TYPE_MANAGER, FORM_EXP_UNKNOWN_TYPE, typeName);
-    }
-    return displayerNames.toArray(new String[displayerNames.size()]);
   }
 
   /**
@@ -121,9 +105,9 @@ public class TypeManager {
     if (displayerClass == null) {
       List<String> displayerNames = typeName2displayerNames.get(typeName);
       if (displayerNames == null || displayerNames.isEmpty()) {
-        throw new FormException(TYPE_MANAGER, FORM_EXP_UNKNOWN_TYPE, typeName);
+        throw new FormException("No displayer found for field of type {0}", typeName);
       } else {
-        throw new FormException(TYPE_MANAGER, "form.EXP_UNKNOWN_DISPLAYER", displayerName);
+        throw new FormException("No field displayer named {0} is found", displayerName);
       }
     }
     return (FieldDisplayer<T>) constructDisplayer(displayerClass);
@@ -220,42 +204,23 @@ public class TypeManager {
     return afterFirstDot.substring(dot + 1).trim();
   }
 
-  /**
-   * Builds a field.
-   */
+  @SuppressWarnings("UnusedReturnValue")
   private Field constructField(Class<?> fieldClass) throws FormException {
     try {
       Constructor<?> constructor = fieldClass.getConstructor();
       return (Field) constructor.newInstance();
-    } catch (NoSuchMethodException e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_MISSING_EMPTY_CONSTRUCTOR",
-          fieldClass.getName(), e);
-    } catch (ClassCastException e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_NOT_A_FIELD", fieldClass.getName(), e);
     } catch (Exception e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_FIELD_CONSTRUCTION_FAILED",
-          fieldClass.getName(), e);
+      throw new FormFatalException(e);
     }
   }
 
-  /**
-   * Builds a displayer.
-   * @param displayerClass
-   */
   private FieldDisplayer<? extends Field> constructDisplayer(
       Class<FieldDisplayer<? extends Field>> displayerClass) throws FormException {
     try {
       Constructor<FieldDisplayer<? extends Field>> constructor = displayerClass.getConstructor();
       return constructor.newInstance();
-    } catch (NoSuchMethodException e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_MISSING_EMPTY_CONSTRUCTOR",
-          displayerClass.getName(), e);
-    } catch (ClassCastException e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_NOT_A_DISPLAYER",
-          displayerClass.getName(), e);
     } catch (Exception e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_DISPLAYER_CONSTRUCTION_FAILED",
-          displayerClass.getName(), e);
+      throw new FormFatalException(e);
     }
   }
 
@@ -272,7 +237,7 @@ public class TypeManager {
       constructField(fieldClass);
       return fieldClass;
     } catch (ClassNotFoundException e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_UNKNOWN_CLASS", fieldClassName, e);
+      throw new FormFatalException(e);
     }
   }
 
@@ -290,7 +255,7 @@ public class TypeManager {
       constructDisplayer(displayerClass);
       return displayerClass;
     } catch (ClassNotFoundException e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_UNKNOWN_CLASS", displayerClassName, e);
+      throw new FormFatalException(e);
     }
   }
 
@@ -316,8 +281,7 @@ public class TypeManager {
         }
       }
     } catch (Exception e) {
-      throw new FormFatalException(TYPE_MANAGER, "form.EXP_MISSING_DISPLAYER_PROPERTIES",
-          "org.silverpeas.form.settings.types", e);
+      throw new FormFatalException(e);
     }
   }
   /**

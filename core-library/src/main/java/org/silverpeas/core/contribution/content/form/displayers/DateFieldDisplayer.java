@@ -210,8 +210,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {
-      throw new FormException("DateFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          DateField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", DateField.TYPE);
     }
     return new ArrayList<>();
   }

@@ -23,20 +23,21 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class FormRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = 5946228356840096118L;
+  private static final long serialVersionUID = 5946228356840096120L;
 
-  public FormRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public FormRuntimeException(String message) {
+    super(message);
   }
 
-  @Override
-  public String getModule() {
-    return "form";
+  public FormRuntimeException(String message, Throwable cause) {
+    super(message, cause);
   }
 
+  public FormRuntimeException(Throwable cause) {
+    super(cause);
+  }
 }

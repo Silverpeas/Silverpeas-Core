@@ -88,7 +88,7 @@ public class PdcField extends AbstractField {
   }
 
   public boolean isNull() {
-    return (getStringValue() == null || getStringValue().trim().equals(""));
+    return (getStringValue() == null || getStringValue().trim().isEmpty());
   }
 
   public void setNull() {
@@ -100,7 +100,7 @@ public class PdcField extends AbstractField {
       setStringValue((String) value);
     } else {
       if (value != null) {
-        throw new FormException("PdcField.setObjectValue", "form.EXP_NOT_A_STRING");
+        throw new FormException("Incorrect field value type. Expected a string");
       } else {
         setNull();
       }

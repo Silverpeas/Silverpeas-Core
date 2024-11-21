@@ -127,7 +127,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
     if (fieldIndex >= 0 && fieldIndex < fields.length) {
       return fields[fieldIndex];
     } else {
-      throw new FormException("DataRecord", "form.EXP_INDEX_OUT_OF_BOUNDS");
+      throw new FormException("Index " + fieldIndex + " out of bounds");
     }
   }
 
