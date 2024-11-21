@@ -76,7 +76,7 @@ import static java.text.MessageFormat.format;
 public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   public static final String DB_KEY = "xmlWysiwygField_";
-  private static final String DIRECTORYNAME = "xmlWysiwyg";
+  private static final String DIRECTORY_NAME = "xmlWysiwyg";
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.wysiwyg.settings.wysiwygSettings");
 
@@ -91,7 +91,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           "indexIt : {2}" +
         "'}');" +
       "'}');\n";
-  private static final String WYSIWYG_FCKFIELD_DISPLAYER_UPDATE = "WysiwygFCKFieldDisplayer.update";
 
   /**
    * Returns the name of the managed types.
@@ -101,19 +100,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     return new String[] { TextField.TYPE };
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a message and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   * @param out
-   * @param template
-   * @param pageContext
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
     String fieldName = template.getFieldName();
@@ -135,23 +121,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a message and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
-   * @param out
-   * @param field
-   * @param template
-   * @param pageContext
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String code = "";
+    String code;
     String fieldValue = field.getValue();
     if (StringUtil.isDefined(fieldValue) && fieldValue.startsWith(DB_KEY)) {
       String fileName = fieldValue.substring(DB_KEY.length());
@@ -253,7 +226,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
     stringBuilder.append(format(DD_UPLOAD_TEMPLATE_SCRIPT, pageContext.getComponentId(), pageContext.getObjectId(), false));
 
-    out.println(stringBuilder.toString());
+    out.println(stringBuilder);
 
     out.println("</script>");
 
@@ -266,20 +239,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     out.println("</table>");
   }
 
-  /**
-   * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
-   * the request.
-   * @param newValue
-   * @param pageContext
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
-   */
   @Override
   public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      throw new FormException(WYSIWYG_FCKFIELD_DISPLAYER_UPDATE, "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+      throw new FormException("Incorrect field type '{0}', expected; {0}", TextField.TYPE);
     }
 
     if (field.acceptValue(newValue, pageContext.getLanguage())) {
@@ -296,11 +260,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           field.setValue(DB_KEY + fileName, contentLanguage);
         }
       } catch (FormException e) {
-        throw new FormException(WYSIWYG_FCKFIELD_DISPLAYER_UPDATE, "form.EX_NOT_CORRECT_VALUE", e);
+        throw new FormException(e);
       }
     } else {
-      throw new FormException(WYSIWYG_FCKFIELD_DISPLAYER_UPDATE, "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", TextField.TYPE);
     }
     return new ArrayList<>();
   }
@@ -378,7 +341,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   private void setContentIntoFile(String componentId, String fileName, String code) {
-    FileRepositoryManager.createAbsolutePath(componentId, DIRECTORYNAME);
+    FileRepositoryManager.createAbsolutePath(componentId, DIRECTORY_NAME);
     String path = getPath(componentId);
     FileFolderManager.createFile(path, fileName, code);
   }
@@ -515,7 +478,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     File from = new File(fromPath);
     if (from.exists()) {
       // Verifie si le repertoire de destination existe
-      FileRepositoryManager.createAbsolutePath(componentIdTo, DIRECTORYNAME);
+      FileRepositoryManager.createAbsolutePath(componentIdTo, DIRECTORY_NAME);
 
       // Copier/coller de tous les fichiers wysiwyg de objectIdFrom vers objectIdTo
       List<File> files = (List<File>) FileFolderManager.getAllFile(fromPath);
@@ -570,7 +533,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   private static String getPath(String componentId) {
-    String[] dirs = {DIRECTORYNAME};
+    String[] dirs = {DIRECTORY_NAME};
     return FileRepositoryManager.getAbsolutePath(componentId, dirs);
   }
 

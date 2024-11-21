@@ -55,17 +55,24 @@ import java.util.StringTokenizer;
 
 /**
  * Displayer class of a PDC field.
+ *
  * @author ahedin
  * @see PdcField
  */
 public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
 
   // Multilang resource path
-  private static String MULTILANG_RESOURCE_PATH =
+  private static final String MULTILANG_RESOURCE_PATH =
       "org.silverpeas.pdcPeas.multilang.pdcBundle";
   // Icons resource path
-  private static String ICONS_RESOURCE_PATH =
+  private static final String ICONS_RESOURCE_PATH =
       "org.silverpeas.pdcPeas.settings.pdcPeasIcons";
+  private static final String GML_REQUIRED_FIELD = "GML.requiredField";
+  private static final String PDC_PEAS_VARIANT = "pdcPeas.variant";
+  private static final String ARRAY_CELL = "ArrayCell";
+  private static final String NBSP = "&nbsp;";
+  private static final String PDC_PEAS_EDIT_POSITION = "pdcPeas.editPosition";
+  private static final String PDC_PEAS_DELETE_POSITION = "pdcPeas.deletePosition";
 
   // Bean to access PDC axis data
   private PdcManager pdcManager = null;
@@ -76,10 +83,6 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
-
-    if (!PdcField.TYPE.equals(field.getTypeName())) {
-
-    }
 
     String axis = parameters.get("pdcAxis");
     String value = field.getValue(language);
@@ -94,10 +97,6 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
-    if (!template.getTypeName().equals(PdcField.TYPE)) {
-
-    }
-
     if (template.isMandatory() && pagesContext.useMandatory()) {
       String language = pagesContext.getLanguage();
       out.println(" if (document.getElementById(\"" + template.getFieldName() +
@@ -125,14 +124,12 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   public List<String> update(String value, PdcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (!PdcField.TYPE.equals(field.getTypeName())) {
-      throw new FormException(
-          "PdcFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", PdcField.TYPE);
+      throw new FormException("Incorrect field type '{0}', expected; {0}", PdcField.TYPE);
     }
     if (field.acceptValue(value, pagesContext.getLanguage())) {
       field.setValue(value, pagesContext.getLanguage());
     } else {
-      throw new FormException(
-          "PdcFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", PdcField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", PdcField.TYPE);
     }
     return new ArrayList<>();
   }
@@ -142,7 +139,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    * axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
    * @return The list of used axis corresponding to the description given as parameter.
    */
-  public ArrayList<UsedAxis> getUsedAxisList(String value) {
+  public List<UsedAxis> getUsedAxisList(String value) {
     ArrayList<UsedAxis> usedAxisList = new ArrayList<>();
     StringTokenizer st = new StringTokenizer(value, ".");
     String[] axisData;
@@ -213,138 +210,22 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     table.setCellPadding(2);
     table.setCellSpacing(2);
 
-    // Header
-    TR headerLine = new TR();
     MultiSilverpeasBundle pdcResource = new MultiSilverpeasBundle(
         ResourceLocator.getLocalizationBundle(MULTILANG_RESOURCE_PATH, language),
         ResourceLocator.getSettingBundle(ICONS_RESOURCE_PATH), language);
-    String[] headerLabelsData = {
-        "GML.type", "GML.name", "pdcPeas.baseValue", "GML.requiredField", "pdcPeas.variant" };
-    for (String headerLabelKey : headerLabelsData) {
-      TD headerCell = new TD();
-      headerCell.setClass("ArrayColumn");
-      headerCell.addElement(pdcResource.getString(headerLabelKey));
-      headerLine.addElement(headerCell);
-    }
-
-    // Operation column.
-    TD headerOperationCell = new TD();
-    headerOperationCell.setClass("ArrayColumn");
-    headerOperationCell.addElement(pdcResource.getString("pdcPeas.axisOperation"));
-    headerLine.addElement(headerOperationCell);
-    table.addElement(headerLine);
+    // Header
+    String[] headerLabelsData = makeTableHeaders(table, pdcResource);
 
     // Axis data.
     int usedAxisCount = 0;
-    if (value != null && value.length() > 0) {
-      ArrayList<UsedAxis> usedAxisList = getUsedAxisList(value);
-      usedAxisCount = usedAxisList.size();
-      if (!usedAxisList.isEmpty()) {
-        // Axis list.
-        UsedAxis usedAxis;
-        String usedAxisId;
-        String usedAxisName;
-        String usedAxisType;
-        String usedAxisBaseValue;
-        int usedAxisMandatory;
-        int usedAxisVariant;
-        for (int i = 0; i < usedAxisCount; i++) {
-          usedAxis = usedAxisList.get(i);
-          usedAxisId = usedAxis.getPK().getId();
-          usedAxisName = usedAxis._getAxisName();
-          usedAxisType = usedAxis._getAxisType();
-          usedAxisBaseValue = usedAxis._getBaseValueName();
-          usedAxisMandatory = usedAxis.getMandatory();
-          usedAxisVariant = usedAxis.getVariant();
-
-          TR axisLine = new TR();
-
-          // Axis type.
-          TD axisTypeCell = new TD();
-          axisTypeCell.setClass("ArrayCell");
-          axisTypeCell.setAlign(AlignType.center);
-          IMG axisTypeImg = new IMG();
-          if (usedAxisType.equals("P")) {
-            axisTypeImg.setSrc(pdcResource.getIcon("pdcPeas.icoPrimaryAxis"));
-            axisTypeImg.setAlt(pdcResource.getString("pdcPeas.primaryAxis"));
-            axisTypeImg.setTitle(pdcResource.getString("pdcPeas.primaryAxis"));
-          } else {
-            axisTypeImg.setSrc(pdcResource.getIcon("pdcPeas.icoSecondaryAxis"));
-            axisTypeImg.setAlt(pdcResource.getString("pdcPeas.secondaryAxis"));
-            axisTypeImg.setTitle(pdcResource.getString("pdcPeas.secondaryAxis"));
-          }
-
-          axisTypeCell.addElement(axisTypeImg);
-          axisLine.addElement(axisTypeCell);
-
-          // Axis name.
-          TD axisNameCell = new TD();
-          axisNameCell.setClass("ArrayCell");
-          axisNameCell.setAlign(AlignType.center);
-          A axisEditLink = new A();
-          axisEditLink.setHref("javascript:editAxis('" + usedAxisId + "')");
-          axisEditLink.setTitle(pdcResource.getString("pdcPeas.axisUtilizationParameter"));
-          axisEditLink.addElement(usedAxisName);
-          axisNameCell.addElement(axisEditLink);
-          axisLine.addElement(axisNameCell);
-
-          // Base value.
-          TD baseValueCell = new TD();
-          baseValueCell.setClass("ArrayCell");
-          baseValueCell.setAlign(AlignType.center);
-          baseValueCell.addElement(usedAxisBaseValue);
-          axisLine.addElement(baseValueCell);
-
-          // Mandatory.
-          TD mandatoryCell = new TD();
-          mandatoryCell.setClass("ArrayCell");
-          mandatoryCell.setAlign(AlignType.center);
-          if (usedAxisMandatory == 1) {
-            IMG mandatoryImg = new IMG();
-            mandatoryImg.setSrc(pdcResource.getIcon("pdcPeas.bulet"));
-            mandatoryImg.setAlt(pdcResource.getString("GML.requiredField"));
-            mandatoryImg.setTitle(pdcResource.getString("GML.requiredField"));
-            mandatoryCell.addElement(mandatoryImg);
-          } else {
-            mandatoryCell.addElement("&nbsp;");
-          }
-          axisLine.addElement(mandatoryCell);
-
-          // Variant.
-          TD variantCell = new TD();
-          variantCell.setClass("ArrayCell");
-          variantCell.setAlign(AlignType.center);
-          if (usedAxisVariant == 1) {
-            IMG variantImg = new IMG();
-            variantImg.setSrc(pdcResource.getIcon("pdcPeas.bulet"));
-            variantImg.setAlt(pdcResource.getString("pdcPeas.variant"));
-            variantImg.setTitle(pdcResource.getString("pdcPeas.variant"));
-            variantCell.addElement(variantImg);
-          } else {
-            variantCell.addElement("&nbsp;");
-          }
-          axisLine.addElement(variantCell);
-
-          // Operation column.
-          TD operationCell = new TD();
-          operationCell.setClass("ArrayCell");
-          operationCell.setAlign(AlignType.center);
-          Input operationInput = new Input();
-          operationInput.setType(Input.checkbox);
-          operationInput.setName("deleteAxis");
-          operationInput.setValue(usedAxisId);
-          operationCell.addElement(operationInput);
-          axisLine.addElement(operationCell);
-
-          table.addElement(axisLine);
-        }
-      }
+    if (value != null && !value.isEmpty()) {
+      usedAxisCount = makeTableContent(value, table, pdcResource);
     }
     if (usedAxisCount == 0) {
       TR emptyLine = new TR();
       TD emptyCell = new TD();
       emptyCell.setColSpan(headerLabelsData.length + 1);
-      emptyCell.addElement("&nbsp;");
+      emptyCell.addElement(NBSP);
       emptyLine.addElement(emptyCell);
       table.addElement(emptyLine);
     }
@@ -384,6 +265,129 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     result.addElement(axisCountInput);
 
     return result.toString();
+  }
+
+  private int makeTableContent(String value, Table table, MultiSilverpeasBundle pdcResource) {
+    int usedAxisCount;
+    List<UsedAxis> usedAxisList = getUsedAxisList(value);
+    usedAxisCount = usedAxisList.size();
+    if (!usedAxisList.isEmpty()) {
+      // Axis list.
+      UsedAxis usedAxis;
+      String usedAxisId;
+      String usedAxisName;
+      String usedAxisType;
+      String usedAxisBaseValue;
+      int usedAxisMandatory;
+      int usedAxisVariant;
+      for (int i = 0; i < usedAxisCount; i++) {
+        usedAxis = usedAxisList.get(i);
+        usedAxisId = usedAxis.getPK().getId();
+        usedAxisName = usedAxis._getAxisName();
+        usedAxisType = usedAxis._getAxisType();
+        usedAxisBaseValue = usedAxis._getBaseValueName();
+        usedAxisMandatory = usedAxis.getMandatory();
+        usedAxisVariant = usedAxis.getVariant();
+
+        TR axisLine = new TR();
+
+        // Axis type.
+        TD axisTypeCell = new TD();
+        axisTypeCell.setClass(ARRAY_CELL);
+        axisTypeCell.setAlign(AlignType.center);
+        IMG axisTypeImg = new IMG();
+        if (usedAxisType.equals("P")) {
+          axisTypeImg.setSrc(pdcResource.getIcon("pdcPeas.icoPrimaryAxis"));
+          axisTypeImg.setAlt(pdcResource.getString("pdcPeas.primaryAxis"));
+          axisTypeImg.setTitle(pdcResource.getString("pdcPeas.primaryAxis"));
+        } else {
+          axisTypeImg.setSrc(pdcResource.getIcon("pdcPeas.icoSecondaryAxis"));
+          axisTypeImg.setAlt(pdcResource.getString("pdcPeas.secondaryAxis"));
+          axisTypeImg.setTitle(pdcResource.getString("pdcPeas.secondaryAxis"));
+        }
+
+        axisTypeCell.addElement(axisTypeImg);
+        axisLine.addElement(axisTypeCell);
+
+        // Axis name.
+        TD axisNameCell = new TD();
+        axisNameCell.setClass(ARRAY_CELL);
+        axisNameCell.setAlign(AlignType.center);
+        A axisEditLink = new A();
+        axisEditLink.setHref("javascript:editAxis('" + usedAxisId + "')");
+        axisEditLink.setTitle(pdcResource.getString("pdcPeas.axisUtilizationParameter"));
+        axisEditLink.addElement(usedAxisName);
+        axisNameCell.addElement(axisEditLink);
+        axisLine.addElement(axisNameCell);
+
+        // Base value.
+        TD baseValueCell = new TD();
+        baseValueCell.setClass(ARRAY_CELL);
+        baseValueCell.setAlign(AlignType.center);
+        baseValueCell.addElement(usedAxisBaseValue);
+        axisLine.addElement(baseValueCell);
+
+        // Mandatory cell.
+        TD mandatoryCell = makeNextCell();
+        setRequiredIcon(pdcResource, usedAxisMandatory, axisLine, mandatoryCell);
+
+        // Variant cell
+        TD variantCell = makeNextCell();
+        setRequiredIcon(pdcResource, usedAxisVariant, axisLine, variantCell);
+
+        // Operation cell
+        TD operationCell = makeNextCell();
+        Input operationInput = new Input();
+        operationInput.setType(Input.checkbox);
+        operationInput.setName("deleteAxis");
+        operationInput.setValue(usedAxisId);
+        operationCell.addElement(operationInput);
+        axisLine.addElement(operationCell);
+
+        table.addElement(axisLine);
+      }
+    }
+    return usedAxisCount;
+  }
+
+  private static void setRequiredIcon(MultiSilverpeasBundle pdcResource, int usedAxis, TR axisLine, TD cell) {
+    if (usedAxis == 1) {
+      IMG mandatoryIcon = new IMG();
+      mandatoryIcon.setSrc(pdcResource.getIcon("pdcPeas.bulet"));
+      mandatoryIcon.setAlt(pdcResource.getString(GML_REQUIRED_FIELD));
+      mandatoryIcon.setTitle(pdcResource.getString(GML_REQUIRED_FIELD));
+      cell.addElement(mandatoryIcon);
+    } else {
+      cell.addElement(NBSP);
+    }
+    axisLine.addElement(cell);
+  }
+
+  private static TD makeNextCell() {
+    TD nextCell = new TD();
+    nextCell.setClass(ARRAY_CELL);
+    nextCell.setAlign(AlignType.center);
+    return nextCell;
+  }
+
+  private static String[] makeTableHeaders(Table table, MultiSilverpeasBundle pdcResource) {
+    String[] headerLabelsData = {
+        "GML.type", "GML.name", "pdcPeas.baseValue", GML_REQUIRED_FIELD, PDC_PEAS_VARIANT};
+    TR headerLine = new TR();
+    for (String headerLabelKey : headerLabelsData) {
+      TD headerCell = new TD();
+      headerCell.setClass("ArrayColumn");
+      headerCell.addElement(pdcResource.getString(headerLabelKey));
+      headerLine.addElement(headerCell);
+    }
+
+    // Operation column.
+    TD headerOperationCell = new TD();
+    headerOperationCell.setClass("ArrayColumn");
+    headerOperationCell.addElement(pdcResource.getString("pdcPeas.axisOperation"));
+    headerLine.addElement(headerOperationCell);
+    table.addElement(headerLine);
+    return headerLabelsData;
   }
 
   /**
@@ -449,38 +453,38 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     script.setType("text/javascript");
     script.addElement(
         "function addPositions_" + fieldName + "() {"
-        + "openPositionsWindow_" + fieldName + "(\"NewPosition\", null);"
-        + "}"
-        + "function editPositions_" + fieldName + "(id) {"
-        + "openPositionsWindow_" + fieldName + "(\"EditPosition\", \"Id=\" + id);"
-        + "}"
-        + "function deletePositions_" + fieldName + "(id) {"
-        + "if (confirm(\"" + pdcResource.getString("pdcPeas.confirmDeletePosition") + "\")) {"
-        + "openPositionsWindow_" + fieldName + "(\"DeletePosition\", \"Ids=\" + id);"
-        + "}"
-        + "}"
-        + "function openPositionsWindow_" + fieldName + "(action, params) {"
-        + "var context = window.location.pathname;"
-        + "context = context.substring(0, context.indexOf(\"/\", 1));"
-        + "var url = context + \"/RpdcClassify/jsp/PdcFieldMode"
-        + "?pdcFieldName=" + fieldName
-        + "&pdcFieldPositions=\" + document.getElementById(\"" + fieldName + "\").value + \""
-        + "&pdcAxis=" + axis
-        + "&action=\" + action;"
-        + "if (params != null && params != \"\") {"
-        + "url += \"&\" + params;"
-        + "}"
-        + "SP_openWindow(url, action, 600, 400, \"\");"
-        + "}"
-        + "function updatePositions_" + fieldName + "(positions) {"
-        + "var context = window.location.pathname;"
-        + "context = context.substring(0, context.indexOf(\"/\", 1));"
-        + "var url = context + \"/PdcAjaxServlet"
-        + "?fieldName=" + fieldName
-        + "&positions=\" + positions + \""
-        + "&language=" + language + "\";"
-        + "$('#pdcPositions_" + fieldName + "').load(url);"
-        + "}");
+            + "openPositionsWindow_" + fieldName + "(\"NewPosition\", null);"
+            + "}"
+            + "function editPositions_" + fieldName + "(id) {"
+            + "openPositionsWindow_" + fieldName + "(\"EditPosition\", \"Id=\" + id);"
+            + "}"
+            + "function deletePositions_" + fieldName + "(id) {"
+            + "if (confirm(\"" + pdcResource.getString("pdcPeas.confirmDeletePosition") + "\")) {"
+            + "openPositionsWindow_" + fieldName + "(\"DeletePosition\", \"Ids=\" + id);"
+            + "}"
+            + "}"
+            + "function openPositionsWindow_" + fieldName + "(action, params) {"
+            + "var context = window.location.pathname;"
+            + "context = context.substring(0, context.indexOf(\"/\", 1));"
+            + "var url = context + \"/RpdcClassify/jsp/PdcFieldMode"
+            + "?pdcFieldName=" + fieldName
+            + "&pdcFieldPositions=\" + document.getElementById(\"" + fieldName + "\").value + \""
+            + "&pdcAxis=" + axis
+            + "&action=\" + action;"
+            + "if (params != null && params != \"\") {"
+            + "url += \"&\" + params;"
+            + "}"
+            + "SP_openWindow(url, action, 600, 400, \"\");"
+            + "}"
+            + "function updatePositions_" + fieldName + "(positions) {"
+            + "var context = window.location.pathname;"
+            + "context = context.substring(0, context.indexOf(\"/\", 1));"
+            + "var url = context + \"/PdcAjaxServlet"
+            + "?fieldName=" + fieldName
+            + "&positions=\" + positions + \""
+            + "&language=" + language + "\";"
+            + "$('#pdcPositions_" + fieldName + "').load(url);"
+            + "}");
     return script;
   }
 
@@ -512,7 +516,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   private ElementContainer getPositionsDivContent(String fieldName, String pattern,
       boolean readOnly, MultiSilverpeasBundle pdcResource) {
     ElementContainer positionsDiv = new ElementContainer();
-    ArrayList<ClassifyPosition> positions = getPositions(pattern);
+    List<ClassifyPosition> positions = getPositions(pattern);
     if (positions.isEmpty()) {
       I noPositionsLabel = new I();
       noPositionsLabel.addElement(pdcResource.getString("pdcPeas.noPosition"));
@@ -530,26 +534,26 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
         Span positionSpan = new Span();
         positionLi.addElement(positionSpan);
         positionSpan.setClass("pdc_position");
-        positionSpan.addElement(pdcResource.getString("pdcPeas.position") + "&nbsp;" + (i + 1));
+        positionSpan.addElement(pdcResource.getString("pdcPeas.position") + NBSP + (i + 1));
 
         if (!readOnly) {
           A editPositionLink = new A();
           editPositionLink.setHref("javascript:editPositions_" + fieldName + "(" + i + ")");
-          editPositionLink.setTitle(pdcResource.getString("pdcPeas.editPosition"));
+          editPositionLink.setTitle(pdcResource.getString(PDC_PEAS_EDIT_POSITION));
           editPositionLink.setClass("edit");
           IMG editPositionImg = new IMG();
-          editPositionImg.setSrc(pdcResource.getIcon("pdcPeas.editPosition"));
-          editPositionImg.setAlt(pdcResource.getString("pdcPeas.editPosition"));
+          editPositionImg.setSrc(pdcResource.getIcon(PDC_PEAS_EDIT_POSITION));
+          editPositionImg.setAlt(pdcResource.getString(PDC_PEAS_EDIT_POSITION));
           editPositionLink.addElement(editPositionImg);
           positionSpan.addElement(editPositionLink);
 
           A deletePositionLink = new A();
           deletePositionLink.setHref("javascript:deletePositions_" + fieldName + "(" + i + ")");
-          deletePositionLink.setTitle(pdcResource.getString("pdcPeas.deletePosition"));
+          deletePositionLink.setTitle(pdcResource.getString(PDC_PEAS_DELETE_POSITION));
           deletePositionLink.setClass("delete");
           IMG deletePositionImg = new IMG();
-          deletePositionImg.setSrc(pdcResource.getIcon("pdcPeas.deletePosition"));
-          deletePositionImg.setAlt(pdcResource.getString("pdcPeas.deletePosition"));
+          deletePositionImg.setSrc(pdcResource.getIcon(PDC_PEAS_DELETE_POSITION));
+          deletePositionImg.setAlt(pdcResource.getString(PDC_PEAS_DELETE_POSITION));
           deletePositionLink.addElement(deletePositionImg);
           positionSpan.addElement(deletePositionLink);
         }
@@ -607,55 +611,60 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    * valueIdi_j correspond to the value #j of the position #i.
    * @return The list of positions corresponding to the description given as parameter.
    */
-  public ArrayList<ClassifyPosition> getPositions(String pattern) {
+  public List<ClassifyPosition> getPositions(String pattern) {
     ArrayList<ClassifyPosition> positions = new ArrayList<>();
     StringTokenizer classifyPositionSt = new StringTokenizer(pattern, ".");
     StringTokenizer classifyValueSt;
-    String classifyValueData;
-    String axisId;
-    String valueId;
-    int separatorIndex;
-    TreeNode node;
-    String nodeId;
-    StringBuffer valuesPath;
     int positionId = 0;
     while (classifyPositionSt.hasMoreTokens()) {
-      ArrayList<ClassifyValue> classifyValues = new ArrayList<>();
       classifyValueSt = new StringTokenizer(classifyPositionSt.nextToken(), ";");
-      while (classifyValueSt.hasMoreTokens()) {
-        classifyValueData = classifyValueSt.nextToken();
-        separatorIndex = classifyValueData.indexOf(",");
-        if (separatorIndex != -1) {
-          axisId = classifyValueData.substring(0, separatorIndex);
-          valueId = classifyValueData.substring(separatorIndex + 1);
-          List<Value> nodes = getFullPath(valueId, axisId);
-          if (nodes != null) {
-            Iterator<Value> nodesIter = nodes.iterator();
-            ArrayList<Value> values = new ArrayList<>();
-            valuesPath = new StringBuffer();
-            while (nodesIter.hasNext()) {
-              node = nodesIter.next();
-              nodeId = node.getPK().getId();
-              Value value = getAxisValue(nodeId, axisId);
-              values.add(value);
-              valuesPath.append("/").append(nodeId);
-            }
-            if (valuesPath.length() > 0) {
-              valuesPath.append("/");
-            }
-            ClassifyValue classifyValue = new ClassifyValue();
-            classifyValue.setFullPath(values);
-            classifyValue.setAxisId(Integer.parseInt(axisId));
-            classifyValue.setValue(valuesPath.toString());
-            classifyValues.add(classifyValue);
-          }
-        }
-      }
+      List<ClassifyValue> classifyValues = buildClassifyPositionValues(classifyValueSt);
       ClassifyPosition position = new ClassifyPosition(positionId, classifyValues);
       positionId++;
       positions.add(position);
     }
     return positions;
+  }
+
+  private List<ClassifyValue> buildClassifyPositionValues(StringTokenizer classifyValueSt) {
+    String classifyValueData;
+    StringBuilder valuesPath;
+    int separatorIndex;
+    String axisId;
+    String valueId;
+    String nodeId;
+    TreeNode node;
+    List<ClassifyValue> classifyValues = new ArrayList<>();
+    while (classifyValueSt.hasMoreTokens()) {
+      classifyValueData = classifyValueSt.nextToken();
+      separatorIndex = classifyValueData.indexOf(",");
+      if (separatorIndex != -1) {
+        axisId = classifyValueData.substring(0, separatorIndex);
+        valueId = classifyValueData.substring(separatorIndex + 1);
+        List<Value> nodes = getFullPath(valueId, axisId);
+        if (nodes != null) {
+          Iterator<Value> nodesIter = nodes.iterator();
+          ArrayList<Value> values = new ArrayList<>();
+          valuesPath = new StringBuilder();
+          while (nodesIter.hasNext()) {
+            node = nodesIter.next();
+            nodeId = node.getPK().getId();
+            Value value = getAxisValue(nodeId, axisId);
+            values.add(value);
+            valuesPath.append("/").append(nodeId);
+          }
+          if (valuesPath.length() > 0) {
+            valuesPath.append("/");
+          }
+          ClassifyValue classifyValue = new ClassifyValue();
+          classifyValue.setFullPath(values);
+          classifyValue.setAxisId(Integer.parseInt(axisId));
+          classifyValue.setValue(valuesPath.toString());
+          classifyValues.add(classifyValue);
+        }
+      }
+    }
+    return classifyValues;
   }
 
   /**
@@ -676,7 +685,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     try {
       return getPdcManager().getAxisDetail(axisId);
     } catch (PdcException e) {
-
+      // nothing to do
     }
     return null;
   }
@@ -691,7 +700,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     try {
       value = getPdcManager().getAxisValue(valueId, axisId);
     } catch (PdcException e) {
-
+      // nothing to do
     }
     return value;
   }
@@ -705,7 +714,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     try {
       values = getPdcManager().getAxisValues(axisId);
     } catch (PdcException e) {
-
+      // nothing to do
     }
     return values;
   }
@@ -719,9 +728,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   private List<Value> getFullPath(String valueId, String axisId) {
     List<Value> nodes = null;
     try {
-      return getPdcManager().getFullPath(valueId, axisId);
+      nodes = getPdcManager().getFullPath(valueId, axisId);
     } catch (PdcException e) {
-
+      // nothing to do
     }
     return nodes;
   }

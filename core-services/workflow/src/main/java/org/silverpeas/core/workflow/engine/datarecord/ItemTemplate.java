@@ -44,24 +44,23 @@ public class ItemTemplate extends ProcessInstanceFieldTemplate {
     try {
       String shortFieldName = getFieldName();
 
-      if (shortFieldName.indexOf("instance.") != -1
-          && shortFieldName.substring(0, 9).equals("instance."))
-        shortFieldName = shortFieldName.substring(9, shortFieldName.length());
+      if (shortFieldName.contains("instance.")
+          && shortFieldName.startsWith("instance."))
+        shortFieldName = shortFieldName.substring(9);
 
-      else if (shortFieldName.indexOf("folder.") != -1
-          && shortFieldName.substring(0, 7).equals("folder."))
-        shortFieldName = shortFieldName.substring(7, shortFieldName.length());
+      else if (shortFieldName.contains("folder.")
+          && shortFieldName.startsWith("folder."))
+        shortFieldName = shortFieldName.substring(7);
 
       Field returnedField = instance.getField(shortFieldName);
 
-      if (returnedField != null)
+      if (returnedField != null) {
         return returnedField;
-      else
-        throw new FormException("ItemTemplate", "form.EXP_UNKNOWN_FIELD",
-            getFieldName());
+      } else {
+        throw new FormException("Unexpected field " + getFieldName());
+      }
     } catch (WorkflowException e) {
-      throw new FormException("ItemTemplate", "form.EXP_UNKNOWN_FIELD",
-          getFieldName());
+      throw new FormException(e);
     }
   }
 }

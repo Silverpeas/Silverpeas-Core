@@ -173,16 +173,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("TimeFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-    if (field.acceptValue(newValue, pagesContext.getLanguage())) {
-      field.setValue(newValue, pagesContext.getLanguage());
-    } else {
-      throw new FormException("TimeFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
-    }
+    CheckBoxDisplayer.setFieldValue(newValue, field, pagesContext);
     return Collections.emptyList();
   }
 

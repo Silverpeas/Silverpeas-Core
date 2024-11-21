@@ -107,7 +107,7 @@ public class JdbcField extends TextField {
       DataSource dataSource = InitialContext.doLookup(dataSourceName);
       connection = dataSource.getConnection(login, password);
     } catch (Exception ex) {
-      throw new FormException("JdbcField.connect", "form.EX_CANT_CONNECT_JDBC", ex);
+      throw new FormException(ex);
     }
 
     return connection;
@@ -129,8 +129,7 @@ public class JdbcField extends TextField {
           result.add(rs.getString(1));
         }
       } catch (SQLException e) {
-        throw new FormException("JdbcField.selectSql",
-            "form.EX_CANT_EXECUTE_QUERY_JDBC", e);
+        throw new FormException(e);
       }
     }
     return result;

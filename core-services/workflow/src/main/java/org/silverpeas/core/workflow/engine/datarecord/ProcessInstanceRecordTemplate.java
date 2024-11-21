@@ -41,8 +41,6 @@ import org.silverpeas.core.workflow.api.model.ProcessModel;
  */
 public class ProcessInstanceRecordTemplate extends ProcessInstanceTemplate {
 
-  private static final String PROCESS_INSTANCE_RECORD_TEMPLATE = "ProcessInstanceRecordTemplate";
-  private static final String FORM_EXP_UNKNOWN_FIELD = "form.EXP_UNKNOWN_FIELD";
   private static final String ACTION = "action.";
 
   /**
@@ -70,7 +68,7 @@ public class ProcessInstanceRecordTemplate extends ProcessInstanceTemplate {
     IndexedFieldTemplate indexed = fields.get(fieldName);
 
     if (indexed == null) {
-      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE, FORM_EXP_UNKNOWN_FIELD, fieldName);
+      throw new FormException("Unknown field " + fieldName);
     }
 
     return indexed.fieldTemplate;
@@ -81,8 +79,7 @@ public class ProcessInstanceRecordTemplate extends ProcessInstanceTemplate {
     if (0 <= fieldIndex && fieldIndex < fields.size()) {
       return getFieldTemplates()[fieldIndex];
     } else {
-      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE,
-          FORM_EXP_UNKNOWN_FIELD, "" + fieldIndex);
+      throw new FormException("Unknown field at index " + fieldIndex);
     }
   }
 
@@ -91,7 +88,7 @@ public class ProcessInstanceRecordTemplate extends ProcessInstanceTemplate {
     IndexedFieldTemplate indexed = fields.get(fieldName);
 
     if (indexed == null) {
-      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE, FORM_EXP_UNKNOWN_FIELD, fieldName);
+      throw new FormException("Unknown field " +  fieldName);
     }
 
     return indexed.index;
@@ -99,7 +96,7 @@ public class ProcessInstanceRecordTemplate extends ProcessInstanceTemplate {
 
   @Override
   public DataRecord getEmptyRecord() throws FormException {
-    throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");
+    throw new FormException("Unsupported operation");
   }
 
   /**
@@ -126,7 +123,7 @@ public class ProcessInstanceRecordTemplate extends ProcessInstanceTemplate {
   /**
    * The process model.
    */
-  private final ProcessModel processModel;
+  private final transient ProcessModel processModel;
 
   /**
    * The role giving this view of the process.

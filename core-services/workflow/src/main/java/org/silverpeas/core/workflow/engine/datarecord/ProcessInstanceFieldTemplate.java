@@ -133,12 +133,12 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
    * Throws an illegal call exception, since an empty field can't be built from this template.
    */
   public Field getEmptyField() throws FormException {
-    throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");
+    throw new FormException("Unsupported operation");
   }
 
   @Override
   public Field getEmptyField(int occurrence) throws FormException {
-    throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");
+    throw new FormException("Unsupported operation");
   }
 
   public boolean isSearchable() {

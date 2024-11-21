@@ -51,7 +51,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   private final Map<String, IndexedFieldTemplate> fields = new LinkedHashMap<>();
 
   @XmlElement(name = "fieldTemplate", type = GenericFieldTemplate.class)
-  private List<FieldTemplate> fieldList = new ArrayList<>();
+  private final List<FieldTemplate> fieldList = new ArrayList<>();
   private String templateName;
 
   /**
@@ -107,8 +107,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     IndexedFieldTemplate indexed = getFields().get(fieldName);
     if (indexed == null) {
-      throw new FormException("GenericRecordTemplate",
-          "form.EXP_UNKNOWN_FIELD", fieldName);
+      throw new FormException("Unknown field {0}", fieldName);
     }
 
     return indexed.fieldTemplate;
@@ -118,8 +117,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   public int getFieldIndex(String fieldName) throws FormException {
     IndexedFieldTemplate indexed = getFields().get(fieldName);
     if (indexed == null) {
-      throw new FormException("GenericRecordTemplate",
-          "form.EXP_UNKNOWN_FIELD", fieldName);
+      throw new FormException("Unknown field {0}", fieldName);
     }
 
     return indexed.index;

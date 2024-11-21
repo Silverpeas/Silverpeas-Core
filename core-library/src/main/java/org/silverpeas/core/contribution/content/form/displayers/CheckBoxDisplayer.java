@@ -46,6 +46,7 @@ import java.util.StringTokenizer;
  * A CheckBoxDisplayer is an object which can display a checkbox in HTML the content of a checkbox
  * to a end user and can retrieve via HTTP any updated value.
  * <p>
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -53,11 +54,7 @@ import java.util.StringTokenizer;
  */
 public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
-  /**
-   * Constructeur
-   */
-  public CheckBoxDisplayer() {
-  }
+  private static final String VALUES = "values";
 
   /**
    * Returns the name of the managed types.
@@ -66,19 +63,6 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     return new String[]{TextField.TYPE};
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.
-   * <li>the field type is not a managed type.
-   * </ul>
-   * @param out
-   * @param template
-   * @param pagesContext
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
@@ -100,19 +84,6 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @param out
-   * @param field
-   * @param template
-   * @param PagesContext
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
@@ -130,6 +101,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     if (!field.isNull()) {
       selectedValues = field.getValue(language);
     }
+    //noinspection StringTokenizerDelimiter
     StringTokenizer st = new StringTokenizer(selectedValues, "##");
     while (st.hasMoreTokens()) {
       valuesFromDB.add(st.nextToken());
@@ -137,8 +109,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     if (parameters.containsKey("keys")) {
       keys = parameters.get("keys");
     }
-    if (parameters.containsKey("values")) {
-      values = parameters.get("values");
+    if (parameters.containsKey(VALUES)) {
+      values = parameters.get(VALUES);
     }
     String cssClass = null;
     if (parameters.containsKey("class")) {
@@ -150,11 +122,10 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
     try {
       if (parameters.containsKey("cols")) {
-        cols = Integer.valueOf(parameters.get("cols"));
+        cols = Integer.parseInt(parameters.get("cols"));
       }
     } catch (NumberFormatException nfe) {
       SilverLogger.getLogger(this).error("Illegal Parameter cols: {0}", parameters.get("cols"));
-      cols = 1;
     }
 
     String defaultValue = getDefaultValue(template, pageContext);
@@ -171,10 +142,24 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       values = keys;
     }
 
-    StringTokenizer stKeys = new StringTokenizer(keys, "##");
-    StringTokenizer stValues = new StringTokenizer(values, "##");
+    GenerationParameters params = new GenerationParameters();
+    params.keys = keys;
+    params.values = values;
+    params.fieldName = fieldName;
+    params.cssClass = cssClass;
+    params.valuesFromDB = valuesFromDB;
+    params.defaultValue = defaultValue;
+    params.cols = cols;
+    generateHTML(html, template, pageContext, params);
+    out.println(html);
+  }
 
-    int nbTokens = getNbHtmlObjectsDisplayed(template, pageContext);
+  private void generateHTML(StringBuilder html, FieldTemplate template, PagesContext pageContext,
+      GenerationParameters params) {
+    //noinspection StringTokenizerDelimiter
+    StringTokenizer stKeys = new StringTokenizer(params.keys, "##");
+    //noinspection StringTokenizerDelimiter
+    StringTokenizer stValues = new StringTokenizer(params.values, "##");
 
     if (stKeys.countTokens() != stValues.countTokens()) {
       SilverLogger.getLogger(this)
@@ -182,61 +167,67 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
               stValues.countTokens());
     } else {
       html.append("<table border=\"0\">");
+      params.stKeys = stKeys;
+      params.stValues = stValues;
+      params.nbOfTokenToDisplay = getNbHtmlObjectsDisplayed(template, pageContext);
       int col = 0;
-      for (int i = 0; i < nbTokens; i++) {
-        if (col == 0) {
-          html.append("<tr>");
-        }
-
-        col++;
-        html.append("<td>");
-        String optKey = stKeys.nextToken();
-        String optValue = stValues.nextToken();
-        html.append("<input type=\"checkbox\" id=\"").append(fieldName).append("_").append(i);
-        html.append("\" name=\"").append(fieldName).append("\" value=\"").append(optKey)
-            .append("\" ");
-        if (StringUtil.isDefined(cssClass)) {
-          html.append(cssClass);
-        }
-        if (template.isDisabled() || template.isReadOnly()) {
-          html.append(" disabled=\"disabled\" ");
-        }
-        boolean mustBeChecked = false;
-        if (valuesFromDB.isEmpty() && !pageContext.isIgnoreDefaultValues() && (
-            optKey.equals(defaultValue) || optValue.equals(defaultValue))) {
-          mustBeChecked = true;
-        }
-
-        if (valuesFromDB.contains(optKey)) {
-          mustBeChecked = true;
-        }
-
-        if (mustBeChecked) {
-          html.append(" checked=\"checked\" ");
-        }
-
-        html.append("/>&nbsp;").append(optValue);
-
-        // last checkBox
-        if (i == nbTokens - 1) {
-          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-              !template.isHidden() && pageContext.useMandatory()) {
-            html.append(Util.getMandatorySnippet());
-          }
-        }
-        html.append("</td>");
-        html.append("\n");
-        if (col == cols) {
-          html.append("</tr>");
-          col = 0;
-        }
+      for (int i = 0; i < params.nbOfTokenToDisplay; i++) {
+        col = generateHTMLValue(html, template, pageContext, i, col, params);
       }
       if (col != 0) {
         html.append("</tr>");
       }
       html.append("</table>");
     }
-    out.println(html);
+  }
+
+  private static int generateHTMLValue(StringBuilder html, FieldTemplate template,
+      PagesContext pageContext, int rowIndex, int colIndex, GenerationParameters parameters) {
+    if (colIndex == 0) {
+      html.append("<tr>");
+    }
+
+    colIndex++;
+    html.append("<td>");
+    String optKey = parameters.stKeys.nextToken();
+    String optValue = parameters.stValues.nextToken();
+    html.append("<input type=\"checkbox\" id=\"").append(parameters.fieldName).append("_")
+        .append(rowIndex);
+    html.append("\" name=\"").append(parameters.fieldName).append("\" value=\"").append(optKey)
+        .append("\" ");
+    if (StringUtil.isDefined(parameters.cssClass)) {
+      html.append(parameters.cssClass);
+    }
+    if (template.isDisabled() || template.isReadOnly()) {
+      html.append(" disabled=\"disabled\" ");
+    }
+    boolean mustBeChecked =
+        parameters.valuesFromDB.isEmpty() && !pageContext.isIgnoreDefaultValues() && (
+        optKey.equals(parameters.defaultValue) || optValue.equals(parameters.defaultValue));
+
+    if (parameters.valuesFromDB.contains(optKey)) {
+      mustBeChecked = true;
+    }
+
+    if (mustBeChecked) {
+      html.append(" checked=\"checked\" ");
+    }
+
+    html.append("/>&nbsp;").append(optValue);
+
+    // last checkBox
+    if (rowIndex == parameters.nbOfTokenToDisplay - 1 && template.isMandatory() && !template.isDisabled() &&
+        !template.isReadOnly() && !template.isHidden() && pageContext.useMandatory()) {
+      html.append(Util.getMandatorySnippet());
+    }
+
+    html.append("</td>");
+    html.append("\n");
+    if (colIndex == parameters.cols) {
+      html.append("</tr>");
+      colIndex = 0;
+    }
+    return colIndex;
   }
 
   @Override
@@ -263,19 +254,21 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
   @Override
   public List<String> update(String valuesToInsert, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
+    setFieldValue(valuesToInsert, field, pagesContext);
+    return new ArrayList<>();
+  }
+
+  static void setFieldValue(String valuesToInsert, TextField field, PagesContext pagesContext) throws FormException {
     if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+      throw new FormException("Incorrect field type '{0}', expected; {0}", TextField.TYPE);
     }
 
-    if (field.acceptValue(valuesToInsert, PagesContext.getLanguage())) {
-      field.setValue(valuesToInsert, PagesContext.getLanguage());
+    if (field.acceptValue(valuesToInsert, pagesContext.getLanguage())) {
+      field.setValue(valuesToInsert, pagesContext.getLanguage());
     } else {
-      throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", TextField.TYPE);
     }
-    return new ArrayList<>();
   }
 
   @Override
@@ -291,19 +284,33 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     if (parameters.containsKey("keys")) {
       keys = parameters.get("keys");
     }
-    if (parameters.containsKey("values")) {
-      values = parameters.get("values");
+    if (parameters.containsKey(VALUES)) {
+      values = parameters.get(VALUES);
     }
 
     // if either keys or values is not filled
     // take the same for keys and values
-    if (keys.equals("") && !values.equals("")) {
+    if (keys.isEmpty() && !values.isEmpty()) {
       keys = values;
     }
 
     // Calculate numbers of html elements
+    //noinspection StringTokenizerDelimiter
     StringTokenizer stKeys = new StringTokenizer(keys, "##");
     return stKeys.countTokens();
 
+  }
+
+  private static class GenerationParameters {
+    String keys;
+    String values;
+    String fieldName;
+    String cssClass;
+    List<String> valuesFromDB;
+    String defaultValue;
+    int cols;
+    StringTokenizer stKeys;
+    StringTokenizer stValues;
+    int nbOfTokenToDisplay;
   }
 }

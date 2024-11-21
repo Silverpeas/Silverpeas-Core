@@ -30,14 +30,13 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.ExplorerField;
 import org.silverpeas.core.contribution.content.form.field.PublicationsPickerField;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +45,7 @@ import java.util.Map;
  * An PublicationsPickerFieldDisplayer is an object which allow to browse Silverpeas treeview (nodes) and to
  * select publications
  */
+@SuppressWarnings("unused")
 public class PublicationsPickerFieldDisplayer
     extends AbstractFieldDisplayer<PublicationsPickerField> {
 
@@ -56,16 +56,6 @@ public class PublicationsPickerFieldDisplayer
     return new String[]{PublicationsPickerField.TYPE};
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.</li>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
     if (!PublicationsPickerField.TYPE.equals(template.getTypeName())) {
@@ -76,18 +66,10 @@ public class PublicationsPickerFieldDisplayer
     Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, PublicationsPickerField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
+    //noinspection DuplicatedCode
     String language = pageContext.getLanguage();
     String selectImg = Util.getIcon("explorer");
     String selectLabel = Util.getString("field.explorer.browse", language);
@@ -101,11 +83,9 @@ public class PublicationsPickerFieldDisplayer
     String fieldName = template.getFieldName();
 
     if (field.getTypeName().equals(PublicationsPickerField.TYPE)) {
-      rawRefs = field.getRawResouceReferences();
+      rawRefs = field.getRawResourceReferences();
     }
-    if (!field.isNull()) {
-      displayedValue = field.getValue(language);
-    }
+
     html.append("<input type=\"hidden\" id=\"").append(fieldName).append("\"");
     html.append(" name=\"").append(fieldName).append("\"");
     html.append(" value=\"").append(WebEncodeHelper.javaStringToHtmlString(rawRefs)).append("\"");
@@ -176,11 +156,10 @@ public class PublicationsPickerFieldDisplayer
       if (!StringUtil.isDefined(newIds)) {
         field.setNull();
       } else {
-        field.setRawResouceReferences(newIds);
+        field.setRawResourceReferences(newIds);
       }
     } else {
-      throw new FormException("PublicationsPickerFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          ExplorerField.TYPE);
+      throw new FormException("Incorrect field value type. Expected {0}", ExplorerField.TYPE);
     }
     return Collections.emptyList();
   }
@@ -203,11 +182,7 @@ public class PublicationsPickerFieldDisplayer
       FieldTemplate template, PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
-        !StringUtil.isDefined(value)) {
-      return new ArrayList<>();
-    }
-    return update(value, field, template, pageContext);
+    return applyUpdate(field,value, template, pageContext);
   }
 
 }

@@ -156,8 +156,7 @@ public class UserField extends AbstractField {
     } else if (value == null) {
       setUserId("");
     } else {
-      throw new FormException("UserField.setObjectValue",
-          "form.EXP_NOT_AN_USER");
+      throw new FormException("Incorrect field value type. Expected a user");
     }
   }
 
@@ -266,7 +265,7 @@ public class UserField extends AbstractField {
   @Override
   public int hashCode() {
     String s = getUserId();
-    return ("" + s).hashCode();
+    return s.hashCode();
   }
   /**
    * The referenced userId.

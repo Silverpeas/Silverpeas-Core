@@ -98,10 +98,8 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
     try {
       getGenericRecordSetManager().updateFieldRows(getConnection(), rowsToUpdate);
     } catch (Exception e) {
-
       rollbackConnection();
-      throw new FormRuntimeException("FormEncryptionContentIterator.update",
-          SilverpeasException.ERROR, "form.EXP_UPDATE_FAILED", e);
+      throw new FormRuntimeException("Form update failure", e);
     }
 
 
@@ -111,8 +109,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
   public void onError(Map<String, String> content, CryptoException ex) {
     SilverLogger.getLogger(this).error(ex);
     rollbackConnection();
-    throw new FormRuntimeException("FormEncryptionContentIterator", SilverpeasException.ERROR,
-        "form.ERROR_DURING_ENCRYPTION", ex);
+    throw new FormRuntimeException("Form encryption error", ex);
   }
 
   @Override
@@ -128,8 +125,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
       try {
         forms = PublicationTemplateManager.getInstance().getEncryptedPublicationTemplates();
       } catch (PublicationTemplateException e) {
-        throw new FormRuntimeException("FormEncryptionContentIterator", SilverpeasException.ERROR,
-            "form.EXP_SELECT_FAILED", e);
+        throw new FormRuntimeException("Encrypted forms getting failure", e);
       }
       contents.addAll(
           forms.stream().map(form -> getFormData(form.getFileName())).collect(Collectors.toList()));
@@ -144,8 +140,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
     try {
       rows = getGenericRecordSetManager().getAllRecordsOfTemplate(formName);
     } catch (FormException e) {
-      throw new FormRuntimeException("FormEncryptionContentIterator.getFormData",
-          SilverpeasException.ERROR, "form.EXP_SELECT_FAILED", e);
+      throw new FormRuntimeException("Form data getting failure", e);
     }
 
     // start to generate a compliant structure to encryption service
@@ -171,8 +166,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
       con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
-      throw new FormRuntimeException("FormEncryptionContentIterator.openConnection",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new FormRuntimeException("Database connection failure", e);
     }
   }
 
@@ -189,8 +183,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
     try {
       con.commit();
     } catch (SQLException e) {
-      throw new FormRuntimeException("FormEncryptionContentIterator.commitConnection",
-          SilverpeasException.ERROR, "root.EX_ERR_COMMIT", e);
+      throw new FormRuntimeException("Transaction commit failure", e);
     } finally {
       DBUtil.close(con);
     }
