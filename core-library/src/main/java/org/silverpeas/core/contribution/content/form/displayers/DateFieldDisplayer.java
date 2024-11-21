@@ -23,20 +23,14 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
-import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
 import org.apache.ecs.xhtml.span;
+import org.owasp.encoder.Encode;
+import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nullable;
@@ -77,7 +71,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
-    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
+    String label = Encode.forHtml(template.getLabel(language));
     produceMandatoryCheck(out, template, pagesContext);
     out.println("\t\tif (! isWhitespace(stripInitialWhitespace(field.value))) {");
     out.println("\t\t\tif (! isCorrectDate(extractYear(field.value, '" + language
@@ -114,12 +108,12 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
     Map<String, String> parameters = template.getParameters(language);
     String fieldName = template.getFieldName();
     String cssClass = getCssClass(parameters);
-    String value = getValue(field, pagesContext, language, parameters);
+    String value = Encode.forHtml(getValue(field, pagesContext, language, parameters));
 
     input inputField = new input();
     inputField.setID(fieldName);
     inputField.setName(fieldName);
-    inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
+    inputField.setValue(Encode.forHtml(value));
     inputField.setType(template.isHidden() ? input.hidden : input.text);
     inputField.setMaxlength(parameters.getOrDefault("maxLength", "10"));
     inputField.setSize(parameters.getOrDefault("size", "13"));

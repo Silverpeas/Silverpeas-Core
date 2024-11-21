@@ -24,6 +24,7 @@
 package org.silverpeas.web.pdc.control;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
@@ -60,11 +61,7 @@ public class PdcFieldTemplateManager {
     return actionForm;
   }
 
-  public GenericFieldTemplate getFieldTemplate() {
-    return fieldTemplate;
-  }
-
-  public ArrayList<UsedAxis> getUsedAxisList() {
+  public List<UsedAxis> getUsedAxisList() {
     return usedAxisList;
   }
 
@@ -94,7 +91,7 @@ public class PdcFieldTemplateManager {
    * @return A field template updated with the used axis data.
    */
   public GenericFieldTemplate getUpdatedFieldTemplate() {
-    Parameter parameter = new Parameter("pdcAxis", "dummy");
+    Parameter parameter = new Parameter("pdcAxis");
     parameter.getParameterValuesObj().add(new ParameterValue("fr", getUsedAxisListToString()));
     fieldTemplate.getParametersObj().add(parameter);
     return fieldTemplate;
@@ -106,8 +103,8 @@ public class PdcFieldTemplateManager {
    */
   public UsedAxis getUsedAxis(String usedAxisId) {
     UsedAxis usedAxis;
-    for (int i = 0; i < usedAxisList.size(); i++) {
-      usedAxis = usedAxisList.get(i);
+    for (UsedAxis axis : usedAxisList) {
+      usedAxis = axis;
       if (usedAxis.getPK().getId().equals(usedAxisId)) {
         return usedAxis;
       }
@@ -144,7 +141,7 @@ public class PdcFieldTemplateManager {
   }
 
   /**
-   * Delete the axis correponding to the id given as parameter from the used axis list.
+   * Delete the axis corresponding to the id given as parameter from the used axis list.
    * @param usedAxisId The is of the axis to delete.
    */
   public void deleteUsedAxis(String usedAxisId) {
@@ -186,7 +183,7 @@ public class PdcFieldTemplateManager {
    * @return The list of used axis corresponding to the description given as parameter.
    */
   private static ArrayList<UsedAxis> buildUsedAxisList(String pdcAxis) {
-    ArrayList<UsedAxis> axisList = new ArrayList<UsedAxis>();
+    ArrayList<UsedAxis> axisList = new ArrayList<>();
     if (StringUtil.isDefined(pdcAxis)) {
       StringTokenizer st = new StringTokenizer(pdcAxis, ".");
       String[] axisData;
@@ -217,7 +214,7 @@ public class PdcFieldTemplateManager {
    * axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
    */
   private String getUsedAxisListToString() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     if (usedAxisList != null) {
       UsedAxis usedAxis;
       for (int i = 0; i < usedAxisList.size(); i++) {

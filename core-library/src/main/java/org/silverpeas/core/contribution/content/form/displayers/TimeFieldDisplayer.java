@@ -23,19 +23,11 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
+import org.owasp.encoder.Encode;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.Collections;
@@ -60,20 +52,10 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     return new String[]{TextField.TYPE};
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
-    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
+    String label = Encode.forHtml(template.getLabel(language));
 
     out.println("var " + template.getFieldName()
         + "Empty = isWhitespace(stripInitialWhitespace(field.value));");
@@ -92,15 +74,6 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
@@ -118,36 +91,12 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       input inputField = new input();
       inputField.setName(template.getFieldName());
       inputField.setID(template.getFieldName());
-      inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
+      inputField.setValue(Encode.forHtml(value));
       inputField.setType(template.isHidden() ? input.hidden : input.text);
       inputField.setMaxlength("5");
       inputField.setSize("10");
-      if (template.isDisabled()) {
-        inputField.setDisabled(true);
-      } else if (template.isReadOnly()) {
-        inputField.setReadOnly(true);
-      }
+      initInputField(template, inputField, pageContext);
 
-      img image = null;
-      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-          && !template.isHidden() && pageContext.useMandatory()) {
-        image = new img();
-        image.setSrc(Util.getIcon("mandatoryField"));
-        image.setWidth(5);
-        image.setHeight(5);
-        image.setBorder(0);
-      }
-
-      // print field
-      if (image != null) {
-        ElementContainer container = new ElementContainer();
-        container.addElement(inputField);
-        container.addElement("&nbsp;");
-        container.addElement(image);
-        out.println(container.toString());
-      } else {
-        out.println(inputField.toString());
-      }
     }
     out.println(html);
   }

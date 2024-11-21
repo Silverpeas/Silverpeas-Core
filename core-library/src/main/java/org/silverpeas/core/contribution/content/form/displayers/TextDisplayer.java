@@ -23,23 +23,18 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -58,11 +53,9 @@ import java.util.StringTokenizer;
  */
 public class TextDisplayer extends AbstractFieldDisplayer<Field> {
 
-  /**
-   * Constructeur
-   */
-  public TextDisplayer() {
-  }
+  private static final String FONT_SIZE = "fontSize";
+  private static final String FONT_COLOR = "fontColor";
+  private static final String FONT_FACE = "fontFace";
 
   /**
    * Returns the name of the managed types.
@@ -71,112 +64,45 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
     return new String[]{TextField.TYPE, DateField.TYPE};
   }
 
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.</li>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws java.io.IOException
-   */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws java.io.IOException {
+    // no script to print out
   }
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     StringBuilder html = new StringBuilder(10000);
-    String language = pagesContext.getLanguage();
-    Map<String, String> parameters = template.getParameters(language);
-    String value = "";
-    if (!field.isNull()) {
-      if (field.getTypeName().equals(DateField.TYPE)) {
-        try {
-          value = DateUtil.getOutputDate(field.getValue(), pagesContext.getLanguage());
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error("Incorrect type for value " + field.getValue(), e);
-        }
-      } else if (field.getTypeName().equals(FileField.TYPE)) {
-        SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
-            new SimpleDocumentPK(field.getValue(), pagesContext.getComponentId()), null);
-        if (doc != null) {
-          value = doc.getFilename();
-        }
-      } else {
-        value = WebEncodeHelper.convertBlanksForHtml(field.getValue(language));
-      }
+    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
+
+    String value = getFieldValue(template, parameters, field, pagesContext);
+    String cssClass = getCssClass(parameters);
+
+    if (StringUtil.isDefined(cssClass)) {
+      html.append("<span ").append(cssClass).append(">");
     }
 
-    String classe = null;
-    if (parameters.containsKey("class")) {
-      classe = parameters.get("class");
-      if (classe != null) {
-        classe = "class=\"" + classe + "\"";
-      }
-    }
-
-    if (parameters.containsKey("values") || parameters.containsKey("keys")) {
-      Map<String, String> keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(
-          language);
-      StringBuilder newValue = new StringBuilder();
-      if (StringUtil.isDefined(value)) {
-        if (value.contains("##")) {
-          // Try to display a checkbox list
-          StringTokenizer tokenizer = new StringTokenizer(value, "##");
-          String t;
-          while (tokenizer.hasMoreTokens()) {
-            t = tokenizer.nextToken();
-            t = keyValuePairs.get(t);
-            newValue.append(t);
-
-            if (tokenizer.hasMoreTokens()) {
-              newValue.append(", ");
-            }
-          }
-        } else {
-          newValue.append(keyValuePairs.get(value));
-        }
-      }
-      value = newValue.toString();
-    }
-    if (StringUtil.isDefined(classe)) {
-      html.append("<span ").append(classe).append(">");
-    }
-
-    if (parameters.containsKey("fontSize") || parameters.containsKey("fontColor")
-        || parameters.containsKey("fontFace")) {
+    if (parameters.containsKey(FONT_SIZE) || parameters.containsKey(FONT_COLOR)
+        || parameters.containsKey(FONT_FACE)) {
       html.append("<font");
     }
 
     String size = "";
-    if (parameters.containsKey("fontSize")) {
-      size = parameters.get("fontSize");
+    if (parameters.containsKey(FONT_SIZE)) {
+      size = parameters.get(FONT_SIZE);
       html.append(" size=\"").append(size).append("\"");
     }
 
     String color = "";
-    if (parameters.containsKey("fontColor")) {
-      color = parameters.get("fontColor");
+    if (parameters.containsKey(FONT_COLOR)) {
+      color = parameters.get(FONT_COLOR);
       html.append(" color=\"").append(color).append("\"");
     }
 
     String face = "";
-    if (parameters.containsKey("fontFace")) {
-      face = parameters.get("fontFace");
+    if (parameters.containsKey(FONT_FACE)) {
+      face = parameters.get(FONT_FACE);
       html.append(" face=\"").append(face).append("\"");
     }
 
@@ -198,10 +124,85 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
     if (StringUtil.isDefined(size) || StringUtil.isDefined(color) || StringUtil.isDefined(face)) {
       html.append("</font>");
     }
-    if (StringUtil.isDefined(classe)) {
+    if (StringUtil.isDefined(cssClass)) {
       html.append("</span>");
     }
-    out.print(html.toString());
+    out.print(html);
+  }
+
+  private static String getCssClass(Map<String, String> parameters) {
+    String cssClass = null;
+    if (parameters.containsKey("class")) {
+      cssClass = parameters.get("class");
+      if (cssClass != null) {
+        cssClass = "class=\"" + cssClass + "\"";
+      }
+    }
+    return cssClass;
+  }
+
+  private String getFieldValue(FieldTemplate template, Map<String, String> parameters, Field field,
+      PagesContext pagesContext) {
+    String language = pagesContext.getLanguage();
+    String value = "";
+    if (!field.isNull()) {
+      if (field.getTypeName().equals(DateField.TYPE)) {
+        value = getDateValue(field, pagesContext);
+      } else if (field.getTypeName().equals(FileField.TYPE)) {
+        value = getFilenameValue(field, pagesContext);
+      } else {
+        value = Encode.forHtml(field.getValue(language));
+      }
+    }
+
+    if (parameters.containsKey("values") || parameters.containsKey("keys")) {
+      Map<String, String> keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(
+          language);
+      StringBuilder newValue = new StringBuilder();
+      if (StringUtil.isDefined(value)) {
+        if (value.contains("##")) {
+          // Try to display a checkbox list
+          buildValuesList(value, keyValuePairs, newValue);
+        } else {
+          newValue.append(keyValuePairs.get(value));
+        }
+      }
+      value = newValue.toString();
+    }
+    return value;
+  }
+
+  private static void buildValuesList(String value, Map<String, String> keyValuePairs,
+      StringBuilder valuesList) {
+    //noinspection StringTokenizerDelimiter
+    StringTokenizer tokenizer = new StringTokenizer(value, "##");
+    while (tokenizer.hasMoreTokens()) {
+      String t = tokenizer.nextToken();
+      String v = keyValuePairs.get(t);
+      valuesList.append(v);
+
+      if (tokenizer.hasMoreTokens()) {
+        valuesList.append(", ");
+      }
+    }
+  }
+
+  private static String getFilenameValue(Field field, PagesContext pagesContext) {
+    SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
+        new SimpleDocumentPK(field.getValue(), pagesContext.getComponentId()), null);
+    if (doc != null) {
+      return doc.getFilename();
+    }
+    return "";
+  }
+
+  private String getDateValue(Field field, PagesContext pagesContext) {
+    try {
+      return DateUtil.getOutputDate(field.getValue(), pagesContext.getLanguage());
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error("Incorrect type for value " + field.getValue(), e);
+    }
+    return "";
   }
 
   /**
@@ -213,7 +214,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
    */
   @Override
   public List<String> update(String newValue, Field field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
     return new ArrayList<>();
   }
 

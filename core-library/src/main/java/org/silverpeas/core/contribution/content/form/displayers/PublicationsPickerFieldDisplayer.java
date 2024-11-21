@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.content.form.displayers;
 
 import org.apache.commons.fileupload.FileItem;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
@@ -31,7 +32,6 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.ExplorerField;
 import org.silverpeas.core.contribution.content.form.field.PublicationsPickerField;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
@@ -88,7 +88,7 @@ public class PublicationsPickerFieldDisplayer
 
     html.append("<input type=\"hidden\" id=\"").append(fieldName).append("\"");
     html.append(" name=\"").append(fieldName).append("\"");
-    html.append(" value=\"").append(WebEncodeHelper.javaStringToHtmlString(rawRefs)).append("\"");
+    html.append(" value=\"").append(Encode.forHtml(rawRefs)).append("\"");
     html.append("/>");
 
     if (!template.isHidden()) {
@@ -99,7 +99,7 @@ public class PublicationsPickerFieldDisplayer
         html.append(" rows=\"").append(field.getNbPublications()+1).append("\"");
       }
       html.append(" cols=\"").append("120").append("\">");
-      html.append(WebEncodeHelper.javaStringToHtmlString(field.getValueAsText(language)));
+      html.append(Encode.forHtml(field.getValueAsText(language)));
       html.append("</textarea>");
     }
 

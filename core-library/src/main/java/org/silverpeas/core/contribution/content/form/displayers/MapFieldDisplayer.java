@@ -23,28 +23,17 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
-import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.a;
-import org.apache.ecs.xhtml.frame;
-import org.apache.ecs.xhtml.iframe;
-import org.apache.ecs.xhtml.img;
-import org.apache.ecs.xhtml.input;
+import org.apache.ecs.xhtml.*;
+import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.util.Map;
 
 /**
- * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP
- * any updated value.
+ * An HTML displayer of map within a form field.
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -52,27 +41,19 @@ import java.util.Map;
  */
 public class MapFieldDisplayer extends AbstractTextFieldDisplayer {
 
-  public final static String PARAM_MAP = "map";
-  public final static String PARAM_HEIGHT = "height";
-  public final static String PARAM_WIDTH = "width";
-  public final static String PARAM_KIND = "kind";
-  public final static String PARAM_ZOOM = "zoom";
-  public final static String PARAM_ENLARGE = "enlarge";
+  public static final String PARAM_MAP = "map";
+  public static final String PARAM_HEIGHT = "height";
+  public static final String PARAM_WIDTH = "width";
+  public static final String PARAM_KIND = "kind";
+  public static final String PARAM_ZOOM = "zoom";
+  public static final String PARAM_ENLARGE = "enlarge";
 
-  public final static String KIND_NORMAL = "m";
-  public final static String KIND_SATELLITE = "k";
-  public final static String KIND_HYBRID = "h";
-  public final static String KIND_RELIEF = "t";
+  public static final String KIND_NORMAL = "m";
+  public static final String KIND_SATELLITE = "k";
+  public static final String KIND_HYBRID = "h";
+  public static final String KIND_RELIEF = "t";
+  private static final String AMP = "&amp;";
 
-  /**
-   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
-   * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
-   * @throws FormException
-   */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
@@ -81,105 +62,94 @@ public class MapFieldDisplayer extends AbstractTextFieldDisplayer {
       return;
     }
 
-    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
-    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-
-    String defaultValue = getDefaultValue(template, pageContext);
-    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
-
-    if (pageContext.isBlankFieldsUse()) {
-      value = "";
-    }
-
+    FieldProperties fieldProps = getFieldProperties(template, field, pageContext);
     if (!template.isHidden()) {
       if (template.isReadOnly()) {
-        StringBuilder src = new StringBuilder(50);
-        src.append("https://maps.google.fr/maps?");
-        src.append("hl=").append(pageContext.getLanguage()).append("&amp;");
-        src.append("source=embed&amp;");
-        src.append("layer=c&amp;");
-        src.append("t=").append(getParameterValue(parameters, PARAM_KIND, KIND_NORMAL))
-            .append("&amp;");
-        src.append("q=").append(value).append("&amp;");
-        String zoom = getParameterValue(parameters, PARAM_ZOOM, null);
-        if (StringUtil.isDefined(zoom)) {
-          src.append("z=").append(zoom).append("&amp;");
-        }
-        src.append("iwloc=dummy");
-        String link = src.toString();
-
-        a href = new a();
-        href.setHref(link);
-        href.setTarget("_blank");
-        href.addElement(value);
-
-        boolean map = StringUtil.getBooleanValue(getParameterValue(parameters, PARAM_MAP, "false"));
-        boolean enlarge =
-            StringUtil.getBooleanValue(getParameterValue(parameters, PARAM_ENLARGE, "false"));
-
-        ElementContainer container = new ElementContainer();
-
-        if (map) {
-          iframe anIFrame = new iframe();
-          anIFrame.addAttribute("width", getParameterValue(parameters, PARAM_WIDTH, "425"));
-          anIFrame.addAttribute("height", getParameterValue(parameters, PARAM_HEIGHT, "350"));
-          anIFrame.setFrameBorder(false);
-          anIFrame.setScrolling(frame.no);
-          anIFrame.setMarginHeight(0);
-          anIFrame.setMarginWidth(0);
-          anIFrame.setSrc(link.replace("source", "output"));
-          container.addElement(anIFrame);
-
-          if (enlarge) {
-            container.addElement("<br>");
-            container.addElement("<small class=\"map-enlarge\">");
-            container.addElement(href);
-            container.addElement("</small>");
-          }
-        } else {
-          container.addElement(href);
-        }
-
-        out.print(container.toString());
+        printOutReadOnlyField(fieldProps, out, pageContext);
       } else if (!template.isDisabled()) {
-
-        input textInput = new input();
-        textInput.setName(fieldName);
-        textInput.setID(fieldName);
-        textInput.setValue(value);
-        textInput.setSize("50");
-        textInput.setType(template.isHidden() ? input.hidden : input.text);
-        if (template.isDisabled()) {
-          textInput.setDisabled(true);
-        } else if (template.isReadOnly()) {
-          textInput.setReadOnly(true);
-        }
-
-        img image = null;
-        if (template.isMandatory() && pageContext.useMandatory()) {
-          image = new img();
-          image.setSrc(Util.getIcon("mandatoryField"));
-          image.setWidth(5);
-          image.setHeight(5);
-          image.setBorder(0);
-        }
-
-        if (image != null) {
-          ElementContainer container = new ElementContainer();
-          container.addElement(textInput);
-          container.addElement("&nbsp;");
-          container.addElement(image);
-          out.println(container.toString());
-        } else {
-          out.println(textInput.toString());
-        }
-
+        printOutEditableField(fieldProps, out, pageContext);
       }
     }
   }
 
+  private void printOutEditableField(FieldProperties fieldProps, PrintWriter out,
+      PagesContext pageContext) {
+    var template = fieldProps.getTemplate();
+
+    input textInput = new input();
+    textInput.setName(fieldProps.getFieldName());
+    textInput.setID(fieldProps.getFieldName());
+    textInput.setValue(fieldProps.getValue());
+    textInput.setSize("50");
+    textInput.setType(template.isHidden() ? input.hidden : input.text);
+    if (template.isDisabled()) {
+      textInput.setDisabled(true);
+    } else if (template.isReadOnly()) {
+      textInput.setReadOnly(true);
+    }
+
+    img image = getMandatoryIcon(template, pageContext);
+    var elt = setImage(textInput, image);
+    out.println(elt);
+  }
+
+  private void printOutReadOnlyField(FieldProperties fieldProps, PrintWriter out,
+      PagesContext pageContext) {
+    var parameters = fieldProps.getParameters();
+    var value = fieldProps.getValue();
+
+    StringBuilder src = new StringBuilder(50);
+    src.append("https://maps.google.fr/maps?");
+    src.append("hl=").append(pageContext.getLanguage()).append(AMP);
+    src.append("source=embed&amp;");
+    src.append("layer=c&amp;");
+    src.append("t=").append(getParameterValue(parameters, PARAM_KIND, KIND_NORMAL))
+        .append(AMP);
+    src.append("q=").append(value).append(AMP);
+    String zoom = getParameterValue(parameters, PARAM_ZOOM, null);
+    if (StringUtil.isDefined(zoom)) {
+      src.append("z=").append(zoom).append(AMP);
+    }
+    src.append("iwloc=dummy");
+    String link = src.toString();
+
+    a href = new a();
+    href.setHref(link);
+    href.setTarget("_blank");
+    href.addElement(value);
+
+    boolean map = StringUtil.getBooleanValue(getParameterValue(parameters, PARAM_MAP, "false"));
+    boolean enlarge =
+        StringUtil.getBooleanValue(getParameterValue(parameters, PARAM_ENLARGE, "false"));
+
+    ElementContainer container = new ElementContainer();
+
+    if (map) {
+      iframe anIFrame = new iframe();
+      anIFrame.addAttribute(PARAM_WIDTH, getParameterValue(parameters, PARAM_WIDTH, "425"));
+      anIFrame.addAttribute(PARAM_HEIGHT, getParameterValue(parameters, PARAM_HEIGHT, "350"));
+      anIFrame.setFrameBorder(false);
+      anIFrame.setScrolling(frame.no);
+      anIFrame.setMarginHeight(0);
+      anIFrame.setMarginWidth(0);
+      anIFrame.setSrc(link.replace("source", "output"));
+      container.addElement(anIFrame);
+
+      if (enlarge) {
+        container.addElement("<br>");
+        container.addElement("<small class=\"map-enlarge\">");
+        container.addElement(href);
+        container.addElement("</small>");
+      }
+    } else {
+      container.addElement(href);
+    }
+
+    out.print(container);
+  }
+
   private String getParameterValue(Map<String, String> parameters, String name, String defaultValue) {
-    return parameters.containsKey(name) ? parameters.get(name) : defaultValue;
+    return parameters.getOrDefault(name, defaultValue);
   }
 
 }

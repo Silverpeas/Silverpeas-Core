@@ -68,13 +68,6 @@ public class TemplateDesignerRequestRouter extends
     return "TemplateDesigner";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public TemplateDesignerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -82,16 +75,6 @@ public class TemplateDesignerRequestRouter extends
         componentContext);
   }
 
-  /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   *
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param templateDesignerSC The component Session Control, build and initialized.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
-   */
   @Override
   public String getAdminDestination(String function,
       TemplateDesignerSessionController templateDesignerSC,
@@ -105,7 +88,7 @@ public class TemplateDesignerRequestRouter extends
         destination = root + "welcome.jsp";
       } else if (function.equals("ViewTemplate")) {
         String fileName = request.getParameter("Template");
-        PublicationTemplate template = null;
+        PublicationTemplate template;
         if (!StringUtil.isDefined(fileName)) {
           template = templateDesignerSC.reloadCurrentTemplate();
         } else {
@@ -230,74 +213,51 @@ public class TemplateDesignerRequestRouter extends
   }
 
   private String getDestinationFromDisplayer(String displayer) {
-    if (displayer.equals("wysiwyg")) {
-      return "fieldWysiwyg.jsp";
-    }
-    if (displayer.equals("textarea")) {
-      return "fieldTextarea.jsp";
-    }
-    if (displayer.equals("listbox")) {
-      return "fieldMultivalues.jsp";
-    }
-    if (displayer.equals("checkbox")) {
-      return "fieldMultivalues.jsp";
-    }
-    if (displayer.equals("radio")) {
-      return "fieldMultivalues.jsp";
-    }
-    if (displayer.equals("url")) {
-      return "fieldURL.jsp";
-    }
-    if (displayer.equals("date")) {
-      return "fieldDate.jsp";
-    }
-    if (displayer.equals("file")) {
-      return "fieldFile.jsp";
-    }
-    if (displayer.equals("image")) {
-      return "fieldImage.jsp";
-    }
-    if (displayer.equals("video")) {
-      return "fieldVideo.jsp";
-    }
-    if (displayer.equals("user")) {
-      return "fieldUser.jsp";
-    }
-    if (displayer.equals("multipleUser")) {
-      return "fieldMultipleUser.jsp";
-    }
-    if (displayer.equals("ldap")) {
-      return "fieldLdap.jsp";
-    }
-    if (displayer.equals("accessPath")) {
-      return "fieldAccessPath.jsp";
-    }
-    if (displayer.equals("jdbc")) {
-      return "fieldJdbc.jsp";
-    }
-    if (displayer.equals("pdc")) {
-      return "fieldPdc.jsp";
-    }
-    if (displayer.equals("group")) {
-      return "fieldGroup.jsp";
-    }
-    if (displayer.equals("sequence")) {
-      return "fieldSequence.jsp";
-    }
-    if (displayer.equals("time")) {
-      return "fieldTime.jsp";
-    }
-    if (displayer.equals("explorer")) {
-      return "fieldExplorer.jsp";
-    }
-    if (displayer.equals("map")) {
-      return "fieldMap.jsp";
-    }
-    if (displayer.equals("email")) {
-      return "fieldEmail.jsp";
-    }
-    if (displayer.equals(PublicationsPickerField.TYPE)) {
-      return "fieldPublicationsPicker.jsp";
+    switch (displayer) {
+      case "wysiwyg":
+        return "fieldWysiwyg.jsp";
+      case "textarea":
+        return "fieldTextarea.jsp";
+      case "listbox":
+      case "checkbox":
+      case "radio":
+        return "fieldMultivalues.jsp";
+      case "url":
+        return "fieldURL.jsp";
+      case "date":
+        return "fieldDate.jsp";
+      case "file":
+        return "fieldFile.jsp";
+      case "image":
+        return "fieldImage.jsp";
+      case "video":
+        return "fieldVideo.jsp";
+      case "user":
+        return "fieldUser.jsp";
+      case "multipleUser":
+        return "fieldMultipleUser.jsp";
+      case "ldap":
+        return "fieldLdap.jsp";
+      case "accessPath":
+        return "fieldAccessPath.jsp";
+      case "jdbc":
+        return "fieldJdbc.jsp";
+      case "pdc":
+        return "fieldPdc.jsp";
+      case "group":
+        return "fieldGroup.jsp";
+      case "sequence":
+        return "fieldSequence.jsp";
+      case "time":
+        return "fieldTime.jsp";
+      case "explorer":
+        return "fieldExplorer.jsp";
+      case "map":
+        return "fieldMap.jsp";
+      case "email":
+        return "fieldEmail.jsp";
+      case PublicationsPickerField.TYPE:
+        return "fieldPublicationsPicker.jsp";
     }
     return "fieldText.jsp";
   }
@@ -388,30 +348,45 @@ public class TemplateDesignerRequestRouter extends
     boolean usedAsFacet = StringUtil.getBooleanValue(request.getParameter("UsedAsFacet"));
 
     String fieldType = "text";
-    if (displayer.equals("user")) {
-      fieldType = "user";
-    } else if (displayer.equals("multipleUser")) {
-      fieldType = "multipleUser";
-    } else if (displayer.equals("date")) {
-      fieldType = "date";
-    } else if (displayer.equals("image") || displayer.equals("file") || displayer.equals("video")) {
-      fieldType = "file";
-    } else if (displayer.equals("ldap")) {
-      fieldType = "ldap";
-    } else if (displayer.equals("accessPath")) {
-      fieldType = "accessPath";
-    } else if (displayer.equals("jdbc")) {
-      fieldType = "jdbc";
-    } else if (displayer.equals("pdc")) {
-      fieldType = PdcField.TYPE;
-    } else if (displayer.equals("group")) {
-      fieldType = "group";
-    } else if (displayer.equals("sequence")) {
-      fieldType = "sequence";
-    } else if (displayer.equals("explorer")) {
-      fieldType = "explorer";
-    } else if (displayer.equals("publicationsPicker")) {
-      fieldType = PublicationsPickerField.TYPE;
+    switch (displayer) {
+      case "user":
+        fieldType = "user";
+        break;
+      case "multipleUser":
+        fieldType = "multipleUser";
+        break;
+      case "date":
+        fieldType = "date";
+        break;
+      case "image":
+      case "file":
+      case "video":
+        fieldType = "file";
+        break;
+      case "ldap":
+        fieldType = "ldap";
+        break;
+      case "accessPath":
+        fieldType = "accessPath";
+        break;
+      case "jdbc":
+        fieldType = "jdbc";
+        break;
+      case "pdc":
+        fieldType = PdcField.TYPE;
+        break;
+      case "group":
+        fieldType = "group";
+        break;
+      case "sequence":
+        fieldType = "sequence";
+        break;
+      case "explorer":
+        fieldType = "explorer";
+        break;
+      case "publicationsPicker":
+        fieldType = PublicationsPickerField.TYPE;
+        break;
     }
 
     GenericFieldTemplate field = new GenericFieldTemplate();
@@ -437,7 +412,7 @@ public class TemplateDesignerRequestRouter extends
         String xmlParameterName = paramName.substring(6);
         String xmlParameterValue = request.getParameter(paramName);
         if (StringUtil.isDefined(xmlParameterValue)) {
-          Parameter parameter = new Parameter(xmlParameterName, "dummy");
+          Parameter parameter = new Parameter(xmlParameterName);
           parameter.getParameterValuesObj().add(new ParameterValue("fr", xmlParameterValue));
           field.getParametersObj().add(parameter);
         }
