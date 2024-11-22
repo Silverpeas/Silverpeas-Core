@@ -83,7 +83,7 @@
       <label class="txtlibform" for="sp_cal_event_form_main_title">{{$ctrl.labels.title}}</label>
       <div class="champs">
         <input id="sp_cal_event_form_main_title" name="title" size="50" maxlength="255"
-               ng-model="$ctrl.data.title">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5">
+               ng-model="$ctrl.data.title">&nbsp;<img src="${mandatoryIcons}" width="5" height="5">
       </div>
     </div>
     <div class="field">

@@ -25,9 +25,11 @@ package org.silverpeas.core.notification.message;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.owasp.encoder.Encode;
 
 /**
- * User: Yohann Chastagnier
+ * Message to notify the user
+ * @author Yohann Chastagnier
  * Date: 07/11/13
  */
 public abstract class AbstractMessage implements Message {
@@ -41,7 +43,7 @@ public abstract class AbstractMessage implements Message {
 
   @Override
   public String getContent() {
-    return content;
+    return Encode.forHtml(content);
   }
 
   @Override

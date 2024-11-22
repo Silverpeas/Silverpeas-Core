@@ -38,7 +38,7 @@
     /* process any message identified by an HTTP header.
        returns true if a such message is defined and is processed, false otherwise. */
     function performMessage(headers) {
-      var registredKeyOfMessages = headers('X-Silverpeas-MessageKey');
+      let registredKeyOfMessages = headers('X-Silverpeas-MessageKey');
       if (registredKeyOfMessages) {
         notyRegistredMessages(registredKeyOfMessages);
         return true;
@@ -47,9 +47,9 @@
     }
 
     function _fetchData(data, convert, headers) {
-      var result = (convert ? convert(data) : data);
+      let result = (convert ? convert(data) : data);
       if (result instanceof Array) {
-        var maxlength = headers('X-Silverpeas-Size');
+        let maxlength = headers('X-Silverpeas-Size');
         if (maxlength) {
           result.maxlength = maxlength;
         }
@@ -97,15 +97,15 @@
             extendsObject({'Content-Type' : 'application/json; charset=UTF-8'}, config.headers);
         config.data = "" + data;
       }
-      var deferred = $q.defer();
+      let deferred = $q.defer();
       $http(config).
       then(function(response) {
-        var result = _fetchData(response.data, convert, response.headers);
+        let result = _fetchData(response.data, convert, response.headers);
         this.sessionKey = response.headers('X-Silverpeas-Session');
         deferred.resolve(result);
       }.bind(this), function(response) {
         if (response.headers) {
-          var responseData = response.data;
+          let responseData = response.data;
           _error(responseData, response.status, response.headers);
         }
         deferred.reject(responseData);
@@ -114,12 +114,12 @@
     }
 
     function _get(url, convert) {
-      var _realGet = function(url, convert) {
+      let _realGet = function(url, convert) {
         return _http.call(this, {method: 'GET', url: url}, undefined, convert);
       }.bind(this);
-      var urls = new UrlParamSplitter(url).getUrls();
+      let urls = new UrlParamSplitter(url).getUrls();
       if (urls.length > 1) {
-        var promises = [];
+        let promises = [];
         urls.forEach(function(url) {
           promises.push(_realGet(url, convert));
         });
@@ -152,7 +152,7 @@
      * @param {function} converter - a function to convert a JSON representation of a resource to
      * a well-typed object.
      */
-    var RESTAdapter = function(url, converter) {
+    let RESTAdapter = function(url, converter) {
       this.sessionKey = undefined;
       this.url = url;
       this.converter = converter;
@@ -167,8 +167,8 @@
      * @returns {promise|a.fn.promise} - the new created resource.
      */
     RESTAdapter.prototype.post = function() {
-      var requestedUrl = this.url;
-      var data = arguments[0];
+      let requestedUrl = this.url;
+      let data = arguments[0];
       if (arguments.length > 1) {
         requestedUrl = arguments[0];
         data = arguments[1];
@@ -185,8 +185,8 @@
      * @returns {promise|a.fn.promise} - the new created resource.
      */
     RESTAdapter.prototype.put = function() {
-      var requestedUrl = this.url;
-      var data = arguments[0];
+      let requestedUrl = this.url;
+      let data = arguments[0];
       if (arguments.length > 1) {
         requestedUrl = arguments[0];
         data = arguments[1];
@@ -203,8 +203,8 @@
      * @returns {promise|a.fn.promise} - the new created resource.
      */
     RESTAdapter.prototype["delete"] = function() {
-      var requestedUrl = this.url;
-      var value = arguments[0];
+      let requestedUrl = this.url;
+      let value = arguments[0];
       if (arguments.length > 1) {
         requestedUrl = arguments[0];
         value = arguments[1];
@@ -218,7 +218,7 @@
      * @returns {hashtable} - a hash of key-values criterion
      */
     RESTAdapter.prototype.criteria = function() {
-      var criteria = null;
+      let criteria = null;
       if (arguments && arguments.length > 0) {
         criteria = {};
         for (var i = 0; i < arguments.length; i++) {
@@ -244,8 +244,8 @@
      * @returns {promise|a.fn.promise} - the response of the remove operation.
      */
     RESTAdapter.prototype.remove = function(id) {
-      var deferred = $q.defer();
-      var uri = id.trim();
+      let deferred = $q.defer();
+      let uri = id.trim();
       if (uri.indexOf('/') !== 0 && uri.indexOf('http') !== 0)
         uri = this.url + '/' + uri;
       // IE8 does force to use of $http['delete'] instead of $http.delete...
@@ -268,7 +268,7 @@
      * @returns {promise|a.fn.promise} - the new state of the resource.
      */
     RESTAdapter.prototype.update = function(id, data) {
-      var uri = id.trim();
+      let uri = id.trim();
       if (uri.indexOf('/') !== 0 && uri.indexOf('http') !== 0)
         uri = this.url + '/' + uri;
       return _put.call(this, uri, data, this.converter);
@@ -322,11 +322,11 @@
         console.error('[RESTAdapter#findByCriteria] URL undefined!');
         return null;
       }
-      var requestedUrl = url;
-      for (var param in criteria) {
+      let requestedUrl = url;
+      for (let param in criteria) {
         if (criteria[param]) {
           if (criteria[param] instanceof Array) {
-            for (var i = 0; i < criteria[param].length; i++) {
+            for (let i = 0; i < criteria[param].length; i++) {
               requestedUrl +=
                   (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param][i];
             }
@@ -348,8 +348,8 @@
        * @returns {RESTAdapter}
        */
       get: function(url, type) {
-        var newObjectFrom = function(properties) {
-          var object = new type.prototype.constructor();
+        let newObjectFrom = function(properties) {
+          let object = new type.prototype.constructor();
           for (var prop in properties) {
             object[prop] = properties[prop];
           }
@@ -358,11 +358,11 @@
           }
           return object;
         };
-        var converter = function(data) {
+        let converter = function(data) {
           var object;
           if (data instanceof Array) {
             object = [];
-            for (var i = 0; i < data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 object.push(newObjectFrom(data[i]));
             }
           } else {
@@ -384,26 +384,26 @@
    * @returns {*}
    */
   function synchronizePromises(promises, thenHandler, resolvedResultData) {
-    var $q = this;
-    var undefined;
+    let $q = this;
+    let undefined;
     if (!thenHandler) {
       thenHandler = undefined;
     }
     if (!resolvedResultData) {
       resolvedResultData = undefined;
     }
-    var deferred = $q.defer();
-    if (promises.length == 0) {
+    let deferred = $q.defer();
+    if (promises.length === 0) {
       // The case of no data exists is not forgotten
       deferred.resolve(resolvedResultData);
     } else {
-      var index = 0;
-      var promiseProcessor = function(promiseData) {
+      let index = 0;
+      let promiseProcessor = function(promiseData) {
         if (thenHandler) {
           thenHandler.call(this, promiseData, resolvedResultData);
         }
         index++;
-        if (promises.length == index) {
+        if (promises.length === index) {
           // The last promise has been performed
           deferred.resolve(resolvedResultData);
         } else {
@@ -415,20 +415,20 @@
     return deferred.promise;
   }
 
-  var UrlParamSplitter = function(url) {
-    var urls = [];
+  let UrlParamSplitter = function(url) {
+    let urls = [];
     if (url.length > 2000) {
-      var decodedParams = {};
-      var hugestParam = {key : '', values : []};
-      var pivotIndex = url.indexOf("?");
-      var baseUrl = url.substring(0, pivotIndex);
-      var splitParams = url.substring(pivotIndex + 1).split("&");
+      let decodedParams = {};
+      let hugestParam = {key : '', values : []};
+      let pivotIndex = url.indexOf("?");
+      let baseUrl = url.substring(0, pivotIndex);
+      let splitParams = url.substring(pivotIndex + 1).split("&");
       splitParams.forEach(function(param) {
-        var splitParam = param.split("=");
+        let splitParam = param.split("=");
         if (splitParam.length === 2) {
-          var key = splitParam[0];
-          var value = splitParam[1];
-          var params = decodedParams[key];
+          let key = splitParam[0];
+          let value = splitParam[1];
+          let params = decodedParams[key];
           if (!params) {
             params = [];
             decodedParams[key] = params;
@@ -441,15 +441,15 @@
         }
       });
       delete decodedParams[hugestParam.key];
-      var commonParams = '?';
-      for (var key in decodedParams) {
+      let commonParams = '?';
+      for (let key in decodedParams) {
         if (commonParams.length > 1) {
           commonParams += '&';
         }
-        var params = decodedParams[key];
+        let params = decodedParams[key];
         commonParams += key + "=" + params.join("&" + key + "=");
       }
-      var batchParams = commonParams.length > 1 ? '&' : '';
+      let batchParams = commonParams.length > 1 ? '&' : '';
       hugestParam.values.forEach(function(value){
         if (batchParams.length > 1) {
           batchParams += "&";
