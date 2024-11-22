@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
-import org.silverpeas.core.security.html.HtmlSanitizer;
+import org.owasp.encoder.Encode;
 
 public class BrowseBarElement {
 
-  private String label;
-  private String link;
-  private String id;
+  private final String label;
+  private final String link;
+  private final String id;
 
   public BrowseBarElement(String label, String link) {
     this(label, link, null);
@@ -42,7 +42,7 @@ public class BrowseBarElement {
   }
 
   public String getLabel() {
-    return HtmlSanitizer.get().sanitize(label);
+    return Encode.forHtml(label);
   }
 
   public String getLink() {

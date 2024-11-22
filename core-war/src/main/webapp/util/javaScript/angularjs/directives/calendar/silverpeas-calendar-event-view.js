@@ -63,8 +63,8 @@
           controller : [function() {
 
             this.onSameDay = function() {
-              var startDate = this.startDate().split('T')[0];
-              var endDate = this.endDate().split('T')[0];
+              let startDate = this.startDate().split('T')[0];
+              let endDate = this.endDate().split('T')[0];
               return startDate === endDate;
             };
 
@@ -111,14 +111,14 @@
               return this.recurrenceType  === 'MONTH';
             }.bind(this);
             this.getDefaultMonthDayNumber = function() {
-              var startDate = sp.moment.make(this.ceo.startDate, 'YYYY-MM-DD');
+              let startDate = sp.moment.make(this.ceo.startDate, 'YYYY-MM-DD');
               return  startDate.date();
             }.bind(this);
 
             this.$onInit = function() {
               this.recurrence = SilverpeasCalendarConst.recurrences[0];
               this.endType = 'NEVER';
-              var recurrenceData = this.ceo.recurrence;
+              let recurrenceData = this.ceo.recurrence;
               if (recurrenceData) {
                 this.recurrence =
                     SilverpeasCalendarConst.recurrences.getElement(recurrenceData.frequency,
@@ -244,7 +244,7 @@
       bindToController : true,
       controller : [function() {
         this.$postLink = function() {
-          var o = this.ceo;
+          let o = this.ceo;
           this.cId = sp.contribution.id.from(o.componentInstanceId(), o.eventType, o.eventId);
         }.bind(this);
       }]

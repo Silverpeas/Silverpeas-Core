@@ -277,7 +277,7 @@
                 const $mainContainer = jQuery('<div>', {'class' : 'fields'});
                 const $title = jQuery('<h2>', {'class' : 'occurrence-name'});
                 const $titleLink = jQuery('<a>', {'href' : '#'});
-                $titleLink.append(occurrence.title);
+                $titleLink.append(occurrence.title.escapeHTML());
                 $title.append($titleLink);
                 $mainContainer.append($title);
                 if (occurrence.location || occurrence.externalUrl()) {
@@ -375,7 +375,7 @@
                   const qTipOptions = {
                     content : {
                       title : {
-                        text : occurrence.title, button : this.labels.close
+                        text : occurrence.title.escapeHTML(), button : this.labels.close
                       }
                     },
                     style : {
