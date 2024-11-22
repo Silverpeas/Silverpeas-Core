@@ -45,13 +45,13 @@
               if (!occurrences || !occurrences.length) {
                 return occurrences;
               }
-              var previousMonthId;
-              var groupedByMonth = [];
-              var monthOccurrences;
+              let previousMonthId;
+              let groupedByMonth = [];
+              let monthOccurrences;
               occurrences.forEach(function(occurrence) {
                 // Rupture
-                var __occStartMoment = sp.moment.make(occurrence.startDate);
-                var monthId = __occStartMoment.format('MMMMYYYY');
+                let __occStartMoment = sp.moment.make(occurrence.startDate);
+                let monthId = __occStartMoment.format('MMMMYYYY');
                 if (!previousMonthId || previousMonthId !== monthId) {
                   monthOccurrences = [];
                   monthOccurrences.monthId = monthId;
@@ -70,9 +70,9 @@
               if (!occurrences || !occurrences.length) {
                 return occurrences;
               }
-              var previous;
-              var groupedByDay = [];
-              var dayOccurrences;
+              let previous;
+              let groupedByDay = [];
+              let dayOccurrences;
               occurrences.forEach(function(occurrence) {
                 // Rupture
                 var dayDate = occurrence.startDate.split('T')[0];
@@ -91,8 +91,8 @@
               return groupedByDay;
             }
 
-            var __today;
-            var __tomorrow;
+            let __today;
+            let __tomorrow;
 
             this.getDayInWeek = function(date) {
               return sp.moment.make(date).format('dddd');
@@ -110,7 +110,7 @@
               return sp.moment.make(date).format('YYYY');
             };
             this.getDayDate = function(date) {
-              var dayDateLabel = sp.moment.displayAsDayDate(date);
+              let dayDateLabel = sp.moment.displayAsDayDate(date);
               if (dayDateLabel === __today) {
                 dayDateLabel = this.labels.today;
               } else if (dayDateLabel === __tomorrow) {
@@ -127,7 +127,7 @@
 
             this.$onInit = function() {
               // Today and tomorrow
-              var $today = sp.moment.atZoneIdSameInstant(moment(), context.zoneId);
+              let $today = sp.moment.atZoneIdSameInstant(moment(), context.zoneId);
               __today = sp.moment.displayAsDayDate($today);
               __tomorrow = sp.moment.displayAsDayDate($today.add(1, 'days'));
             }

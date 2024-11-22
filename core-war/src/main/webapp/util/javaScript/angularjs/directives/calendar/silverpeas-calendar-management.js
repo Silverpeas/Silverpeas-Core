@@ -66,7 +66,7 @@
                 this.calendar = calendarToView;
                 this.creating = false;
                 $timeout(function() {
-                  var $view = jQuery(this.dom.viewPopin);
+                  let $view = jQuery(this.dom.viewPopin);
                   $view.popup('information');
                 }.bind(this), 0);
               }.bind(this),
@@ -82,10 +82,10 @@
                 }, calendarToModify);
                 this.creating = this.calendar.title.isNotDefined();
                 $timeout(function() {
-                  var $confirm = jQuery(this.dom.savePopin);
+                  let $confirm = jQuery(this.dom.savePopin);
                   $confirm.popup('validation', {
                     callback : function() {
-                      var isValidated = validate();
+                      let isValidated = validate();
                       if (isValidated) {
                         spProgressMessage.show();
                         CalendarService.save(this.calendar).then(function(savedCalendar) {
@@ -113,7 +113,7 @@
                  * This method must be called only after that there is no more confirmation to ask
                  * to the user.
                  */
-                var _deleteProcess = function() {
+                let _deleteProcess = function() {
                   spProgressMessage.show();
                   CalendarService['delete'](this.calendar).then(function() {
                     spProgressMessage.hide();
@@ -137,7 +137,7 @@
                  * This method must be called only after that there is no more confirmation to ask
                  * to the user.
                  */
-                var _synchronizeProcess = function() {
+                let _synchronizeProcess = function() {
                   spProgressMessage.show();
                   CalendarService.synchronize(this.calendar).then(function(synchronizedCalendar) {
                     spProgressMessage.hide();
@@ -187,14 +187,14 @@
               }.bind(this)
             };
 
-            var validate = function() {
-              var title = this.calendar.title;
+            let validate = function() {
+              let title = this.calendar.title;
               if (title.isNotDefined()) {
                 SilverpeasError.add(this.messages.mandatory.replace('@name@', this.labels.title));
               } else if (title.nbChars() > 2000) {
                 SilverpeasError.add(this.messages.nbMax.replace('@name@', this.labels.title).replace('@length@', '2000'));
               }
-              var externalUrl = this.calendar.externalUrl;
+              let externalUrl = this.calendar.externalUrl;
               if (this.calendar.isSynchronized) {
                 if (StringUtil.isNotDefined(externalUrl)) {
                   SilverpeasError.add(this.messages.mandatory.replace('@name@', this.labels.externalUrl));
