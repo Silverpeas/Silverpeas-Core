@@ -30,14 +30,7 @@ import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -49,10 +42,11 @@ import static org.silverpeas.core.webapi.socialnetwork.invitation.InvitationEnti
 /**
  * It represents a resource published in the WEB that represents an invitation emitted by a user to
  * another one in the Silverpeas platform.
- *
+ * <p>
  * The WEB resource belongs always to the current user in the session underlying at the HTTP
  * request. Then, it represents an invitation either sent or received by him. With a such policy,
  * the invitations belonging to another user cannot be fetched by him.
+ * </p>
  */
 @RequestScoped
 @Path(InvitationResource.PATH)
@@ -68,7 +62,7 @@ public class InvitationResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<InvitationEntity> getReceivedInvitations() {
-    List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(Integer.valueOf(
+    List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(Integer.parseInt(
             getUser().getId()));
     return asWebEntities(invitations, locatedAt(getUri().getAbsolutePathBuilder()));
   }
@@ -77,7 +71,7 @@ public class InvitationResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<InvitationEntity> getSentInvitations() {
-    List<Invitation> invitations = invitationService.getAllMyInvitationsSent(Integer.valueOf(
+    List<Invitation> invitations = invitationService.getAllMyInvitationsSent(Integer.parseInt(
             getUser().getId()));
     return asWebEntities(invitations, locatedAt(getUri().getAbsolutePathBuilder()));
   }
@@ -86,6 +80,7 @@ public class InvitationResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public InvitationEntity getInvitation(@PathParam("id") final Integer id) {
+    checkInvitation(id);
     Invitation invitation = invitationService.getInvitation(id);
     return asWebEntity(invitation, locatedAt(getUri().getAbsolutePathBuilder()));
   }
@@ -94,6 +89,7 @@ public class InvitationResource extends RESTWebService {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response cancelInvitation(@PathParam("id") final Integer id) {
+    checkInvitation(id);
     invitationService.ignoreInvitation(id);
     return Response.ok().build();
   }
@@ -102,7 +98,13 @@ public class InvitationResource extends RESTWebService {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response acceptInvitation(@PathParam("id") final Integer id) {
-    invitationService.acceptInvitation(id);
+    checkInvitation(id);
+    int code = invitationService.acceptInvitation(id);
+    if (code == InvitationService.INVITATION_NOT_EXISTING) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    } else if (code == InvitationService.RELATIONSHIP_ALREADY_EXISTING) {
+      throw new WebApplicationException(Response.Status.CONFLICT);
+    }
     return Response.ok().build();
   }
 
@@ -110,6 +112,8 @@ public class InvitationResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response createInvitation(final InvitationEntity invitationEntity) {
+    checkInvitationEntity(invitationEntity);
+
     Invitation invitation = new Invitation();
     invitation.setReceiverId(invitationEntity.getReceiverId());
     invitation.setMessage(invitationEntity.getMessage());
@@ -127,6 +131,29 @@ public class InvitationResource extends RESTWebService {
   @Override
   public String getComponentId() {
     return null;
+  }
+
+  private void checkInvitationEntity(InvitationEntity invitationEntity) {
+    int senderId = invitationEntity.getSenderId();
+    int receiverId = invitationEntity.getReceiverId();
+    if (senderId == receiverId) {
+      throw new WebApplicationException(Response.Status.BAD_REQUEST);
+    }
+    if (senderId != Integer.parseInt(getUser().getId())
+        || receiverId != Integer.parseInt(getUser().getId())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  private void checkInvitation(int invitationId) {
+    Invitation invitation = invitationService.getInvitation(invitationId);
+    if (invitation == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+    if (invitation.getSenderId() != Integer.parseInt(getUser().getId()) ||
+        invitation.getReceiverId() != Integer.parseInt(getUser().getId())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
   }
 
   private static UriBuilder locatedAt(final UriBuilder uri) {

@@ -170,7 +170,7 @@ public class InvitationService {
   private Pair<Pair<Integer, Invitation>, Pair<RelationShip, RelationShip>> saveAcceptInvitation(
       int idInvitation) {
     Invitation invitation = null;
-    int resultAcceptInvitation = 0;
+    int resultAcceptInvitation;
     RelationShip ship1 = null;
     RelationShip ship2 = null;
     try (Connection connection = getConnection()) {
@@ -254,7 +254,7 @@ public class InvitationService {
   @Transactional
   public void deleteAllMyInvitations(String userId) {
     try (Connection connection = getConnection()) {
-      invitationDao.deleteAllInvitations(connection, Integer.valueOf(userId));
+      invitationDao.deleteAllInvitations(connection, Integer.parseInt(userId));
     } catch (SQLException e) {
       SilverLogger.getLogger(this).error(e);
     }
