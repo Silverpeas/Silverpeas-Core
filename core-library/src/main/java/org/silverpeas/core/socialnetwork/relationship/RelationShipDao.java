@@ -82,23 +82,19 @@ public class RelationShipDao {
    * @param connection a connection to the data source.
    * @param user1Id the unique identifier of a user in Silverpeas.
    * @param user2Id the unique identifier of another user in Silverpeas
-   * @return true if the deletion succeeds, false otherwise.
    * @throws SQLException if an error occurs while deleting the relationship between the two users.
    */
-  public boolean deleteRelationShip(Connection connection, int user1Id, int user2Id) throws
+  public void deleteRelationShip(Connection connection, int user1Id, int user2Id) throws
       SQLException {
     PreparedStatement pstmt = null;
-    boolean endAction = false;
     try {
       pstmt = connection.prepareStatement(DELETE_RELATIONSHIP);
       pstmt.setInt(1, user1Id);
       pstmt.setInt(2, user2Id);
       pstmt.executeUpdate();
-      endAction = true;
     } finally {
       DBUtil.close(pstmt);
     }
-    return endAction;
   }
 
   /**

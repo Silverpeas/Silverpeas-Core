@@ -24,6 +24,7 @@
 package org.silverpeas.core.socialnetwork.invitation;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Invitation {
 
@@ -115,30 +116,15 @@ public class Invitation {
       return false;
     }
     final Invitation other = (Invitation) obj;
-    if (this.id != other.id) {
-      return false;
-    }
-    if (this.senderId != other.senderId) {
-      return false;
-    }
-    if (this.receiverId != other.receiverId) {
-      return false;
-    }
-    if ((this.message == null) ? (other.message != null) : !this.message.equals(other.message)) {
-      return false;
-    }
-    return this.invitationDate == other.invitationDate ||
-        (this.invitationDate != null && this.invitationDate.equals(other.invitationDate));
+    return Objects.equals(this.id, other.id)
+        && Objects.equals(this.senderId, other.senderId)
+        && Objects.equals(this.receiverId, other.receiverId)
+        && Objects.equals(this.message, other.message)
+        && Objects.equals(this.invitationDate, other.invitationDate);
   }
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    hash = 67 * hash + this.id;
-    hash = 67 * hash + this.senderId;
-    hash = 67 * hash + this.receiverId;
-    hash = 67 * hash + (this.message != null ? this.message.hashCode() : 0);
-    hash = 67 * hash + (this.invitationDate != null ? this.invitationDate.hashCode() : 0);
-    return hash;
+    return Objects.hash(id, senderId, receiverId, message, invitationDate);
   }
 }
