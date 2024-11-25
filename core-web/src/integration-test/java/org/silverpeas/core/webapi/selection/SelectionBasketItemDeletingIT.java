@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.selection.SelectionBasket;
+import org.silverpeas.core.test.util.TestRuntime;
 import org.silverpeas.web.test.AuthId;
 import org.silverpeas.web.test.ResourceDeletionTest;
 
@@ -43,11 +44,14 @@ import javax.ws.rs.core.Response;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertTrue;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 import static org.silverpeas.core.webapi.selection.SelectionBasketItemITContext.uriOf;
 import static org.silverpeas.core.webapi.selection.SelectionBasketItemITContext.uriPathOf;
 
@@ -147,6 +151,7 @@ public class SelectionBasketItemDeletingIT extends ResourceDeletionTest {
 
     PublicationDetail publication = getPublication(1);
     SelectionBasket.get().put(publication);
+    awaitUntil(1, SECONDS);
 
     Response response = deleteAt(uriPathOf(publication), withAsAuthId(authId));
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
@@ -166,6 +171,7 @@ public class SelectionBasketItemDeletingIT extends ResourceDeletionTest {
     PublicationDetail publication2 = getPublication(1);
     basket.put(publication1);
     basket.put(publication2);
+    awaitUntil(1, SECONDS);
 
     Response response = deleteAt(uriPathOf(publication1), withAsAuthId(authId));
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
