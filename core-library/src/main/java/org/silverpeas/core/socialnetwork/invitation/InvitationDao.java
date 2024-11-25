@@ -77,8 +77,8 @@ public class InvitationDao {
     return id;
   }
 
-  public boolean deleteInvitation(Connection connection, int invitationId) throws SQLException {
-    return JdbcSqlQuery.create(DELETE_INVITATION, invitationId).executeWith(connection) > 0;
+  public void deleteInvitation(Connection connection, int invitationId) throws SQLException {
+    JdbcSqlQuery.create(DELETE_INVITATION, invitationId).executeWith(connection);
   }
 
   /**
@@ -90,16 +90,14 @@ public class InvitationDao {
    * </ul>
    * @param connection connection to the database
    * @param invitationId the invitation identifier
-   * @return true true when invitations from same sender identifier and receiver identifier are
-   * deleted, false else if
    * @throws SQLException on SQL error
    */
-  public boolean deleteSameInvitations(Connection connection, int invitationId) throws SQLException {
-    return JdbcSqlQuery.create(DELETE_SAME_INVITATIONS, invitationId).executeWith(connection) > 0;
+  public void deleteSameInvitations(Connection connection, int invitationId) throws SQLException {
+    JdbcSqlQuery.create(DELETE_SAME_INVITATIONS, invitationId).executeWith(connection);
   }
 
-  public boolean deleteAllInvitations(Connection connection, int userId) throws SQLException {
-    return JdbcSqlQuery.create(DELETE_ALL_INVITATIONS, userId, userId).executeWith(connection) > 0;
+  public void deleteAllInvitations(Connection connection, int userId) throws SQLException {
+    JdbcSqlQuery.create(DELETE_ALL_INVITATIONS, userId, userId).executeWith(connection);
   }
 
   public Invitation getInvitation(Connection connection, int senderId, int receiverId) throws
