@@ -26,34 +26,31 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%@ include file="check.jsp" %>
+
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<fmt:message var="browseBarExport" key="importExportPeas.InProgress"/>
 <view:sp-page>
   <view:sp-head-part>
     <script type="text/javascript">
-    function ping() {
-      $.progressMessage();
-      window.setTimeout("doIdle();", 5000);
-    }
+      function ping() {
+        $.progressMessage();
+        window.setTimeout("doIdle();", 5000);
+      }
 
-    function doIdle() {
+      function doIdle() {
         self.location.href = "/silverpeas/RimportExportPeas/jsp/ExportItemsPing";
-    }
+      }
     </script>
   </view:sp-head-part>
   <view:sp-body-part onLoad="ping()">
     <view:browseBar>
-      <view:browseBarElt link="" label="<fmt:message key='importExportPeas.Export'/>"/>
+      <view:browseBarElt link="" label="${browseBarExport}"/>
     </view:browseBar>
-
     <view:window>
-      <view:frame>
-        <view:board>
-        <table>
-          <tr><td class="txtlibform"><fmt:message key="importExportPeas.InProgress"/></td></tr>
-        </table>
-        </view:board>
-      </view:frame>
+      <view:frame/>
     </view:window>
     <view:progressMessage/>
   </view:sp-body-part>

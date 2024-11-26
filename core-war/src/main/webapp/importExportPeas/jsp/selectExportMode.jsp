@@ -34,7 +34,7 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<fmt:message var="browseBarExport" key="importExportPeas.Export"/>
+<fmt:message var="browseBarExport" key="importExportPeas.MainTitle"/>
 <fmt:message var="closeButton" key="GML.cancel"/>
 <fmt:message var="exportButton" key="GML.validate"/>
 
