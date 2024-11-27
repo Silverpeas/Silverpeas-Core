@@ -902,8 +902,8 @@ public class NodeDAO extends AbstractDAO {
       prepStmt.setInt(8, nodeDetail.getOrder());
       prepStmt.setString(9, nodeDetail.getLanguage());
       prepStmt.setInt(10, Integer.parseInt(nodeDetail.getRightsDependsOn()));
-      prepStmt.setString(11, nodeDetail.getNodePK().getComponentName());
-      prepStmt.setInt(12, Integer.parseInt(nodeDetail.getNodePK().getId()));
+      prepStmt.setInt(11, Integer.parseInt(nodeDetail.getNodePK().getId()));
+      prepStmt.setString(12, nodeDetail.getNodePK().getComponentName());
       rowCount = prepStmt.executeUpdate();
       unvalidateTree(con, nodeDetail.getNodePK());
     }
