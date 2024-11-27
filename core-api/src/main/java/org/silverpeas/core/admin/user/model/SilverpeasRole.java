@@ -31,6 +31,7 @@ import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The core predefined user roles in Silverpeas. Each role has a name and is attached to a
@@ -72,7 +73,12 @@ public enum SilverpeasRole {
   /**
    * READER has same meaning than {@link #USER}.
    */
-  READER("reader");
+  READER("reader"),
+  /**
+   * No specific role is defined. (To avoid the use of null when there is no role specified for
+   * a user.)
+   */
+  NONE("");
 
   private final String name;
 
@@ -95,7 +101,7 @@ public enum SilverpeasRole {
   @JsonCreator
   public static SilverpeasRole fromString(String name) {
     if (StringUtil.isNotDefined(name)) {
-      return null;
+      return SilverpeasRole.NONE;
     }
     String trimmedName = name.trim();
     return Arrays.stream(values())
@@ -141,7 +147,7 @@ public enum SilverpeasRole {
     if (roles != null) {
       for (String role : roles) {
         SilverpeasRole silverpeasRole = fromString(role);
-        if (silverpeasRole != null) {
+        if (silverpeasRole != NONE) {
           result.add(silverpeasRole);
         }
       }
@@ -162,14 +168,10 @@ public enum SilverpeasRole {
     if (roles == null) {
       return null;
     }
-    StringBuilder sb = new StringBuilder();
-    for (SilverpeasRole role : roles) {
-      if (sb.length() > 0) {
-        sb.append(",");
-      }
-      sb.append(role.getName());
-    }
-    return sb.toString();
+    return roles.stream()
+        .filter(r -> r != NONE)
+        .map(SilverpeasRole::getName)
+        .collect(Collectors.joining(","));
   }
 
   /**
