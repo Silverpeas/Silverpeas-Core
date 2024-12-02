@@ -32,6 +32,7 @@ import org.silverpeas.kernel.util.StringUtil;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The core predefined user roles in Silverpeas. Each role has a name and is attached to a
@@ -90,7 +91,9 @@ public enum SilverpeasRole {
   }
 
   /**
-   * Gets the {@link SilverpeasRole} instance that matches the specified role name.
+   * Gets the {@link SilverpeasRole} instance that matches the specified role name. Take care to
+   * use this method instead of {@link SilverpeasRole#valueOf(String)} because this method takes
+   * into account of undefined roles.
    * <p>About the {@link SilverpeasRole} decoding from WEB services, @{@link JsonCreator} is used
    * by jackson APIs, whereas RestEasy is looking at a static method called like this method.<br/>
    * So, this method is compatible with both mechanisms</p>
@@ -109,7 +112,7 @@ public enum SilverpeasRole {
         .findFirst()
         .orElseGet(() -> {
           SilverLogger.getLogger(SilverpeasRole.class).warn("Unknown user role name: {0}", name);
-          return null;
+          return SilverpeasRole.NONE;
         });
   }
 
@@ -120,7 +123,7 @@ public enum SilverpeasRole {
    * @return true if the role name matches a {@link SilverpeasRole} instance. False otherwise.
    */
   public static boolean exists(String name) {
-    return fromString(name) != null;
+    return fromString(name) != SilverpeasRole.NONE;
   }
 
   /**
@@ -183,6 +186,18 @@ public enum SilverpeasRole {
    */
   public static SilverpeasRole getHighestFrom(SilverpeasRole... roles) {
     return getHighestFrom(Arrays.asList(roles));
+  }
+
+  /**
+   * Gets all the well-defined roles in Silverpeas. Take care to use this method instead of
+   * {@link SilverpeasRole#values()} because latter returns all the SilverpeasRole values
+   * including the instance for undefined role.
+   * @return an array of well-defined user roles in Silverpeas.
+   */
+  public static SilverpeasRole[] allRoles() {
+    return Stream.of(SilverpeasRole.values())
+        .filter(r -> r != SilverpeasRole.NONE)
+        .toArray(SilverpeasRole[]::new);
   }
 
   /**
@@ -266,4 +281,5 @@ public enum SilverpeasRole {
   public String toString() {
     return getName();
   }
+
 }
