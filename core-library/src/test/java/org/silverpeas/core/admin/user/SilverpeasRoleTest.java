@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 17/12/13
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
@@ -42,9 +42,9 @@ class SilverpeasRoleTest {
 
   @Test
   void fromOneRoleAsString() {
-    assertThat(SilverpeasRole.fromString((String) null), nullValue());
-    assertThat(SilverpeasRole.fromString(""), nullValue());
-    assertThat(SilverpeasRole.fromString(" "), nullValue());
+    assertThat(SilverpeasRole.fromString(null), is(SilverpeasRole.NONE));
+    assertThat(SilverpeasRole.fromString(""), is(SilverpeasRole.NONE));
+    assertThat(SilverpeasRole.fromString(" "), is(SilverpeasRole.NONE));
     assertThat(SilverpeasRole.fromString(" admin "), is(SilverpeasRole.ADMIN));
     assertThat(SilverpeasRole.fromString("admin"), is(SilverpeasRole.ADMIN));
     assertThat(SilverpeasRole.fromString("AdmiN"), is(SilverpeasRole.ADMIN));
@@ -65,7 +65,7 @@ class SilverpeasRoleTest {
     assertThat(SilverpeasRole.exists("AdmiN"), is(true));
     assertThat(SilverpeasRole.exists("Manager"), is(true));
     assertThat(SilverpeasRole.exists("manager"), is(true));
-    for (final SilverpeasRole role : SilverpeasRole.values()) {
+    for (final SilverpeasRole role : SilverpeasRole.allRoles()) {
       assertThat(SilverpeasRole.exists(role.getName()), is(true));
     }
   }
@@ -117,7 +117,7 @@ class SilverpeasRoleTest {
 
   @Test
   void fromSeveralRolesAsStringArray() {
-    assertThat(SilverpeasRole.fromStrings((String[]) null), empty());
+    assertThat(SilverpeasRole.fromStrings(null), empty());
     assertThat(SilverpeasRole.fromStrings(new String[]{}), empty());
     assertThat(SilverpeasRole.fromStrings(new String[]{" "}), empty());
     assertThat(SilverpeasRole.fromStrings(new String[]{"admin"}), contains(SilverpeasRole.ADMIN));
@@ -131,6 +131,7 @@ class SilverpeasRoleTest {
     assertThat(SilverpeasRole.asString(null), nullValue());
     assertThat(SilverpeasRole.asString(EnumSet.noneOf(SilverpeasRole.class)), is(""));
     assertThat(SilverpeasRole.asString(EnumSet.of(SilverpeasRole.ADMIN)), is("admin"));
+    //noinspection OverwrittenKey
     assertThat(SilverpeasRole.asString(EnumSet.of(SilverpeasRole.ADMIN, SilverpeasRole.ADMIN)),
         is("admin"));
     assertThat(SilverpeasRole.asString(EnumSet.of(SilverpeasRole.ADMIN, SilverpeasRole.MANAGER)),
@@ -140,7 +141,7 @@ class SilverpeasRoleTest {
   @Test
   void isGreaterThan() {
     StringBuilder sb = new StringBuilder();
-    SilverpeasRole[] roles = SilverpeasRole.values();
+    SilverpeasRole[] roles = SilverpeasRole.allRoles();
     for (int i = 1; i < roles.length; i++) {
       sb.append(roles[i - 1].getName()).append(", ");
       assertThat(roles[i - 1].getName() + " > " + roles[i - 1].getName(),
