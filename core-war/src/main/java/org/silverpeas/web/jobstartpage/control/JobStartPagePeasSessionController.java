@@ -679,7 +679,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   public void updateSpaceRole(String role, List<String> userIds, List<String> groupIds) {
     // Update the profile
     SpaceInst spaceint1 = getSpaceInstById();
-    SpaceProfileInst spaceProfileInst = spaceint1.getSpaceProfileInst(role);
+    SpaceProfileInst spaceProfileInst = spaceint1.getDirectSpaceProfileInst(role);
     if (spaceProfileInst == null) {
       spaceProfileInst = new SpaceProfileInst();
       spaceProfileInst.setName(role);

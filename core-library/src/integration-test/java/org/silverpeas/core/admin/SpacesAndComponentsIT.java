@@ -873,8 +873,8 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(3));
     assertThat(fullSpace.getProfiles(), hasSize(2));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(1));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(), is(1));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.READER.getName()).getNumUser(), is(1));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(), is(1));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.READER.getName()).getNumUser(), is(1));
     assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
         is(1));
 
@@ -935,8 +935,8 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(1));
     assertThat(fullSpace.getProfiles(), hasSize(0));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(1));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.READER.getName()), is(nullValue()));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.READER.getName()), is(nullValue()));
     assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
         is(1));
     // check GED rights
@@ -963,8 +963,8 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(0));
     assertThat(fullSpace.getProfiles(), hasSize(0));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(0));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.READER.getName()), is(nullValue()));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.READER.getName()), is(nullValue()));
     assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()),
         is(nullValue()));
 

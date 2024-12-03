@@ -25,12 +25,7 @@ package org.silverpeas.core.admin.space;
 
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.Identifiable;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.PersonalComponent;
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
@@ -52,6 +47,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.kernel.util.StringUtil;
@@ -417,17 +413,33 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   /**
-   * Get a space profile from space profiles list, given its name (WARNING : if more than one space
-   * profile match the given name, the first one will be returned)
-   *
-   * @param sSpaceProfileName name of requested space profile
+   * Gets both the inherited and the direct space profile instances with the specified role name.
+   * @param spaceProfileName the name of the space profile to get.
+   * @return a list of either no profile instances (the profile is inherited and not yet cached)
+   * or of one or two profile instances whose one is the space-specific profile and the other is the
+   * inherited one from the parent spaces.
    */
-  public SpaceProfileInst getSpaceProfileInst(String sSpaceProfileName) {
-    return getSpaceProfileInst(sSpaceProfileName, false);
+  public List<SpaceProfileInst> getSpaceProfileInst(String spaceProfileName) {
+    return data.safeRead(d ->
+        d.streamProfiles()
+            .filter(i -> i.getName().equals(spaceProfileName))
+            .collect(Collectors.toList()));
   }
 
-  public SpaceProfileInst getInheritedSpaceProfileInst(String sSpaceProfileName) {
-    return getSpaceProfileInst(sSpaceProfileName, true);
+  /**
+   * Get a non inherited space profile from space profiles list, given its name (WARNING: if more
+   * than one space profile match the given name, the first one will be returned).
+   * @param spaceProfileName name of requested space profile
+   * @return a space profile instance or null if no such profile exists.
+   */
+  @Nullable
+  public SpaceProfileInst getDirectSpaceProfileInst(String spaceProfileName) {
+    return getSpaceProfileInst(spaceProfileName, false);
+  }
+
+  @Nullable
+  public SpaceProfileInst getInheritedSpaceProfileInst(String spaceProfileName) {
+    return getSpaceProfileInst(spaceProfileName, true);
   }
 
   private SpaceProfileInst getSpaceProfileInst(String spaceProfileName, boolean inherited) {

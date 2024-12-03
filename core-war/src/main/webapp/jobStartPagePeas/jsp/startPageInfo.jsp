@@ -132,19 +132,18 @@
       }
     </style>
     <script type="text/javascript">
-      //<!--
-      var currentLanguage = "${space.language}";
+      const currentLanguage = "${space.language}";
 
       function openPopup(action, larg, haut) {
-        windowName = "actionWindow";
-        windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-        actionWindow = SP_openWindow(action, windowName, larg, haut, windowParams, false);
+        const windowName = "actionWindow";
+        const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
+        SP_openWindow(action, windowName, larg, haut, windowParams, false);
       }
       <c:if test="${m_SpaceExtraInfos.admin}">
         <c:if test="${isUserAdmin && !empty m_SpaceName}">
           function deleteSpace() {
             jQuery.popup.confirm(
-                '${FullMessageSuppressionSpaceLabel}',
+                "${FullMessageSuppressionSpaceLabel}",
                 function() {
                   $('#spaceForm').attr('action', 'DeleteSpace');
                   $('#Id').val('${space.id}');
@@ -180,34 +179,35 @@
       function showPasteOptions() {
         // Display copy options only if there is at least one copied compliant app (ignore cut/paste)
         new Promise(function(resolve, reject) {
-          <c:if test="${empty copiedComponentNames}">
-            resolve();
-          </c:if>
-
-          <c:if test="${not empty copiedComponentNames}">
-            <c:forEach items="${copiedComponentNames}" var="componentName">
-              $.ajax({
-                url: webContext+'/${componentName}/jsp/copyApplicationDialog.jsp',
-                type: "GET",
-                dataType: "html",
-                success: function(data) {
-                  $('#pasteOptions').html(data);
-                  resolve();
-                },
-                error: function() {
-                  resolve();
-                }
-              });
-            </c:forEach>
-          </c:if>
-        }).then(function() {
+          <c:choose>
+          <c:when test="${empty copiedComponentNames}">
+          resolve();
+          </c:when>
+          <c:otherwise>
+          <c:forEach items="${copiedComponentNames}" var="componentName">
+          $.ajax({
+            url: webContext + '/${componentName}/jsp/copyApplicationDialog.jsp',
+            type: "GET",
+            dataType: "html",
+            success: function (data) {
+              $('#pasteOptions').html(data);
+              resolve();
+            },
+            error: function () {
+              resolve();
+            }
+          });
+          </c:forEach>
+          </c:otherwise>
+          </c:choose>
+        }).then(function () {
           if ($('#pasteOptions').is(':empty')) {
             $.progressMessage();
-            location.href="Paste";
+            location.href = "Paste";
           } else {
             $('#pasteOptionsDialog').popup('validation', {
-              title : "${CopyDialogOptionsLabel}",
-              callback : function() {
+              title: "${CopyDialogOptionsLabel}",
+              callback: function () {
                 $.progressMessage();
                 document.pasteForm.submit();
                 return true;
@@ -216,7 +216,6 @@
           }
         });
       }
-      //-->
     </script>
   </view:sp-head-part>
   <view:sp-body-part cssClass="startPageInfo page_content_admin">
@@ -273,10 +272,10 @@
           <fmt:message key="JSPP.publisher" var="publisher" />
           <fmt:message key="JSPP.writer" var="writer" />
           <fmt:message key="JSPP.reader" var="reader" />
-          <c:set var="adminAction" value="SpaceManager?Role=admin"></c:set>
-          <c:set var="publisherAction" value="SpaceManager?Role=publisher"></c:set>
-          <c:set var="writerAction" value="SpaceManager?Role=writer"></c:set>
-          <c:set var="readerAction" value="SpaceManager?Role=reader"></c:set>
+          <c:set var="adminAction" value="SpaceManager?Role=admin"/>
+          <c:set var="publisherAction" value="SpaceManager?Role=publisher"/>
+          <c:set var="writerAction" value="SpaceManager?Role=writer"/>
+          <c:set var="readerAction" value="SpaceManager?Role=reader"/>
           <view:tab label="${admin}" action="${adminAction}" selected="false" />
           <view:tab label="${publisher}" action="${publisherAction}" selected="false" />
           <view:tab label="${writer}" action="${writerAction}" selected="false" />

@@ -28,17 +28,17 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultSpaceHomePage {
 
   private SpaceInstLight space;
-  private List<SpaceInstLight> subSpaces = Collections.EMPTY_LIST;
-  private List<UserDetail> admins = Collections.EMPTY_LIST;
-  private List<ComponentInstLight> apps = Collections.EMPTY_LIST;
-  private List<PublicationDetail> publications = Collections.EMPTY_LIST;
-  private List<PublicationDetail> news = Collections.EMPTY_LIST;
+  private List<SpaceInstLight> subSpaces = new ArrayList<>();
+  private List<UserDetail> admins = new ArrayList<>();
+  private List<ComponentInstLight> apps = new ArrayList<>();
+  private List<PublicationDetail> publications = new ArrayList<>();
+  private List<PublicationDetail> news = new ArrayList<>();
   private String nextEventsURL;
 
   public SpaceInstLight getSpace() {
