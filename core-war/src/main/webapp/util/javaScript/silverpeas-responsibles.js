@@ -22,38 +22,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-(function($) {
+(function ($) {
 
   // Web Context
   if (!webContext) {
-    var webContext = '/silverpeas';
+    window.webContext = '/silverpeas';
   }
 
   // Web Service Context
-  var webServiceContext = webContext + '/services';
-
-  var cache = [];
+  const webServiceContext = webContext + '/services';
 
   $.responsibles = {
     labels: {
       platformResponsible: '',
       sendMessage: ''
     },
-    renderSpaceResponsibles: function(target, userId, spaceId, onlySpaceManagers) {
-      __loadMissingPlugins(false).then(function() {
+    renderSpaceResponsibles: function (target, userId, spaceId, onlySpaceManagers) {
+      __loadMissingPlugins(false).then(function () {
         $(target).empty();
-        __getResponsibles(true, spaceId).then(function(data) {
+        __getResponsibles(true, spaceId).then(function (data) {
           __prepareContent($(target), userId, true, data.usersAndGroupsRoles, onlySpaceManagers);
         });
       });
     },
-    displaySpaceResponsibles: function(userId, spaceId) {
-      __loadMissingPlugins(true).then(function() {
+    displaySpaceResponsibles: function (userId, spaceId) {
+      __loadMissingPlugins(true).then(function () {
         __display(userId, true, spaceId);
       });
     },
-    displayComponentResponsibles: function(userId, componentId) {
-      __loadMissingPlugins(true).then(function() {
+    displayComponentResponsibles: function (userId, componentId) {
+      __loadMissingPlugins(true).then(function () {
         __display(userId, false, componentId);
       });
     }
@@ -67,13 +65,13 @@
    * @private
    */
   function __display(userId, isSpace, id) {
-    var $display = $('#responsible-popup-content');
-    __getResponsibles(isSpace, id).then(function(data) {
+    const $display = $('#responsible-popup-content');
+    __getResponsibles(isSpace, id).then(function (data) {
       if (!isSpace && !__userAndGroupRolesAreDefined(data)) {
         // No responsible founded, so searching on space on which component is attached ...
-        __getJSonData(data.parentURI).then(function(spaceOfComponent) {
+        __getJSonData(data.parentURI).then(function (spaceOfComponent) {
           if (spaceOfComponent && spaceOfComponent.id) {
-            __getResponsibles(true, spaceOfComponent.id).then(function(data) {
+            __getResponsibles(true, spaceOfComponent.id).then(function (data) {
               __render($display, data, true, userId);
             });
           } else {
@@ -87,8 +85,9 @@
   }
 
   function __render($display, data, isSpace, userId) {
-    var title = $('<div>').append($('.space-or-component-responsibles-operation').text() +
-        " ").append($('<b>').append(data.label)).html();
+    const title = $('<div>')
+        .append($('.space-or-component-responsibles-operation').text() + " ")
+        .append($('<b>').append(data.label)).html();
     if ($display.length !== 0) {
       $display.dialog('destroy');
       $display.remove();
@@ -112,22 +111,18 @@
    * @private
    */
   function __getResponsibles(isSpace, id) {
-    var result = cache[(isSpace ? 'space-' : 'component-') + id];
-    if (!result) {
-      return __getJSonData(
-          webServiceContext + '/' + (isSpace ? 'spaces' : 'components') + '/' + id).then(
-          function(spaceOrComponent) {
-            return __getJSonData(spaceOrComponent.usersAndGroupsRolesURI + '?roles=' +
-                (isSpace ? 'Manager' : 'admin')).then(function(usersAndGroupsRoles) {
-              result = {
-                usersAndGroupsRoles : usersAndGroupsRoles
-              };
-              $.extend(result, spaceOrComponent);
-              return result;
-            });
+    return __getJSonData(
+        webServiceContext + '/' + (isSpace ? 'spaces' : 'components') + '/' + id).then(
+        function (spaceOrComponent) {
+          return __getJSonData(spaceOrComponent.usersAndGroupsRolesURI + '?roles=' +
+              (isSpace ? 'Manager' : 'admin')).then(function (usersAndGroupsRoles) {
+            result = {
+              usersAndGroupsRoles: usersAndGroupsRoles
+            };
+            $.extend(result, spaceOrComponent);
+            return result;
           });
-    }
-    return sp.promise.resolveDirectlyWith(result);
+        });
   }
 
   /**
@@ -140,16 +135,16 @@
    * @private
    */
   function __prepareContent($target, userId, isSpace, usersAndGroupsRoles, onlySpaceManagers) {
-    var aimedRoles = ['Manager', 'admin'];
-    var promises = [];
-    var $newLine = null;
-    $.each(aimedRoles, function(index, role) {
-      var usersAndGroups = usersAndGroupsRoles[role];
-      var userPromise = __getAllDataOfUsers(usersAndGroups).then(function(dataOfUsers) {
+    const aimedRoles = ['Manager', 'admin'];
+    const promises = [];
+    let $newLine = null;
+    $.each(aimedRoles, function (index, role) {
+      const usersAndGroups = usersAndGroupsRoles[role];
+      const userPromise = __getAllDataOfUsers(usersAndGroups).then(function (dataOfUsers) {
         if (dataOfUsers.length > 0) {
           $target.append($newLine);
           if (isSpace) {
-            var $div = $('<div>', {'id':'space-admins'});
+            const $div = $('<div>', {'id': 'space-admins'});
             $target.append($div);
             $div.append($('<h5>', {
               'class': 'textePetitBold title-list-responsible-user'
@@ -164,26 +159,26 @@
       promises.push(userPromise);
     });
     if (!onlySpaceManagers && isSpace) {
-      var adminPromise = User.get({
-        accessLevel : ['ADMINISTRATOR']
-      }).then(function(users) {
-        var administrators = [];
-        $(users).each(function(index, administrator) {
+      const adminPromise = User.get({
+        accessLevel: ['ADMINISTRATOR']
+      }).then(function (users) {
+        const administrators = [];
+        $(users).each(function (index, administrator) {
           administrators.push(administrator);
         });
         if (administrators.length > 0) {
-          var $div = $('<div>', {'id' : 'global-admins'});
+          const $div = $('<div>', {'id': 'global-admins'});
           $target.append($div);
           $div.append($newLine);
           $div.append($('<h5>',
-              {'class' : 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
+              {'class': 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
           __prepareRoleResponsibles($div, userId, administrators);
           $newLine = $('<br/>');
         }
       });
       promises.push(adminPromise);
     }
-    return sp.promise.whenAllResolved(promises).then(function() {
+    return sp.promise.whenAllResolved(promises).then(function () {
       __loadUserZoomPlugins();
     });
   }
@@ -197,28 +192,31 @@
    */
   function __prepareRoleResponsibles($target, userId, dataOfUsers) {
     if ($.isArray(dataOfUsers) && dataOfUsers.length > 0) {
-      var $users = $('<ul>', {'class': 'list-responsible-user'});
-      $.each(dataOfUsers, function(index, user) {
-        var $user = $('<span>').append(' ' + user.fullName);
+      const $users = $('<ul>', {'class': 'list-responsible-user'});
+      $.each(dataOfUsers, function (index, user) {
+        const $user = $('<span>').append(' ' + user.fullName);
         if (userId !== user.id && !user.anonymous) {
           $user.addClass('userToZoom');
           $user.attr('rel', user.id);
         }
-        var $photoProfil = $('<div>', {'class': 'profilPhoto'}).append($('<a>').append($('<img>',
-                {'class': 'avatar', src: user.avatar})));
-        var $userName = $('<div>', {'class': 'userName'});
-        var $action = null;
+        const $photoProfil = $('<div>', {'class': 'profilPhoto'}).append($('<a>').append($('<img>',
+            {'alt': user.fullName + ' avatar', 'class': 'avatar', src: user.avatar})));
+        const $userName = $('<div>', {'class': 'userName'});
+        let $action = null;
         if (userId !== user.id && !user.anonymous) {
           $userName.append($('<a>', {'class': 'userToZoom', rel: user.id}).append(user.fullName));
           $action = $('<div>', {'class': 'action'}).append($('<a>',
-                  {href: '#', 'class': 'link notification'}).append($.responsibles.labels.sendMessage)).click(function() {
+              {
+                href: '#',
+                'class': 'link notification'
+              }).append($.responsibles.labels.sendMessage)).click(function () {
             sp.messager.open(null, {recipientUsers: user.id, recipientEdition: false});
           });
         } else {
           $userName.append($('<a>').append(user.fullName));
         }
         $users.append($('<li>', {'class': 'intfdcolor'}).append($('<div>',
-                {'class': 'content'}).append($photoProfil).append($userName).append($action)));
+            {'class': 'content'}).append($photoProfil).append($userName).append($action)));
       });
       $target.append($users);
     }
@@ -231,26 +229,26 @@
    */
   function __getAllDataOfUsers(usersAndGroups) {
     if (usersAndGroups) {
-      var promises = [];
-      var dataOfUsers = [];
-      var uriOfUsers = [];
+      const promises = [];
+      const dataOfUsers = [];
+      const uriOfUsers = [];
 
       // Users
       if (usersAndGroups.users && usersAndGroups.users.length > 0) {
-        var userPromises = [];
-        promises.push(new Promise(function(resolve, reject) {
-          $.each(usersAndGroups.users, function(index, userUri) {
+        const userPromises = [];
+        promises.push(new Promise(function (resolve, reject) {
+          $.each(usersAndGroups.users, function (index, userUri) {
             if ($.inArray(userUri, uriOfUsers) < 0) {
               uriOfUsers.push(userUri);
-              userPromises.push(new Promise(function(resolve, reject) {
-                __getJSonData(userUri).then(function(user) {
+              userPromises.push(new Promise(function (resolve, reject) {
+                __getJSonData(userUri).then(function (user) {
                   dataOfUsers.push(user);
                   resolve();
                 });
               }));
             }
           });
-          sp.promise.whenAllResolved(userPromises).then(function() {
+          sp.promise.whenAllResolved(userPromises).then(function () {
             resolve();
           });
         }));
@@ -258,14 +256,14 @@
 
       // Groups
       if (usersAndGroups.groups && usersAndGroups.groups.length > 0) {
-        var groupPromises = [];
-        promises.push(new Promise(function(resolve, reject) {
-          $.each(usersAndGroups.groups, function(index, groupUri) {
-            groupPromises.push(new Promise(function(resolve, reject) {
-              __getJSonData(groupUri).then(function(group) {
+        const groupPromises = [];
+        promises.push(new Promise(function (resolve, reject) {
+          $.each(usersAndGroups.groups, function (index, groupUri) {
+            groupPromises.push(new Promise(function (resolve, reject) {
+              __getJSonData(groupUri).then(function (group) {
                 if (group) {
-                  __getJSonData(group.usersUri).then(function(users) {
-                    $.each(users, function(index, user) {
+                  __getJSonData(group.usersUri).then(function (users) {
+                    $.each(users, function (index, user) {
                       if ($.inArray(user.uri, uriOfUsers) < 0) {
                         uriOfUsers.push(user.uri);
                         dataOfUsers.push(user);
@@ -279,14 +277,14 @@
               })
             }));
           });
-          sp.promise.whenAllResolved(groupPromises).then(function() {
+          sp.promise.whenAllResolved(groupPromises).then(function () {
             resolve();
           });
         }));
       }
 
       // Sorting users by their names
-      return sp.promise.whenAllResolved(promises).then(function() {
+      return sp.promise.whenAllResolved(promises).then(function () {
         dataOfUsers.sort(__sortByName);
         return dataOfUsers;
       });
@@ -297,7 +295,7 @@
   function __userAndGroupRolesAreDefined(data) {
     let roles = data.usersAndGroupsRoles;
     if (typeof roles === 'object') {
-      for(let roleName in roles) {
+      for (let roleName in roles) {
         let role = roles[roleName];
         if ((Array.isArray(role.users) && role.users.length > 0) ||
             (Array.isArray(role.groups) && role.groups.length > 0)) {
@@ -316,8 +314,8 @@
    * @private
    */
   function __sortByName(a, b) {
-    var aName = a.fullName.toLowerCase();
-    var bName = b.fullName.toLowerCase();
+    const aName = a.fullName.toLowerCase();
+    const bName = b.fullName.toLowerCase();
     return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
   }
 
@@ -326,18 +324,18 @@
    * @private
    */
   function __loadMissingPlugins(isPopup) {
-    var promises = [];
+    const promises = [];
     if (isPopup && !$.popup) {
-      promises.push(new Promise(function(resolve, reject) {
-        $.getScript(webContext + "/util/javaScript/silverpeas-popup.js", function() {
+      promises.push(new Promise(function (resolve, reject) {
+        $.getScript(webContext + "/util/javaScript/silverpeas-popup.js", function () {
           resolve();
         });
       }));
     }
     if (typeof User === 'undefined') {
-      promises.push(new Promise(function(resolve, reject) {
+      promises.push(new Promise(function (resolve, reject) {
         $.getScript(webContext + "/util/javaScript/angularjs/services/silverpeas-profile.js",
-            function() {
+            function () {
               resolve();
             });
       }));
@@ -369,15 +367,15 @@
    * request.
    */
   function __performAjaxRequest(settings) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       // Default options.
       // url, type, dataType are missing.
-      var options = {
-        cache : false,
-        success : function(data) {
+      let options = {
+        cache: false,
+        success: function (data) {
           resolve(data);
         },
-        error : function(jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
           reject();
           window.console &&
           window.console.log('Silverpeas Responsible JQuery Plugin - ERROR - ' + errorThrown);

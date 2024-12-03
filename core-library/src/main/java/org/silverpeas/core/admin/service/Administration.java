@@ -968,8 +968,8 @@ public interface Administration {
       throws AdminException;
 
   /**
-   * Gets the space profile instance which provides all user and group identifiers through simple
-   * methods.
+   * Gets the space profile instance which provides all user and group identifiers playing the
+   * given role, either directly or by space profile inheritance.
    * @param spaceId the identifier of aimed space.
    * @param role the aimed technical role name.
    * @return the {@link SpaceProfile} instance.

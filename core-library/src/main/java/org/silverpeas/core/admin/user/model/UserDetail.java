@@ -44,7 +44,8 @@ import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.status.StatusService;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
@@ -62,7 +63,6 @@ import java.util.*;
 
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getUserManualNotificationRecipientLimit;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isUserManualNotificationRecipientLimitEnabled;
-import static org.silverpeas.kernel.util.StringUtil.areStringEquals;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class UserDetail implements User {
@@ -648,30 +648,21 @@ public class UserDetail implements User {
   public boolean equals(Object other) {
     if (other instanceof UserDetail) {
       UserDetail cmpUser = (UserDetail) other;
-      return areStringEquals(id, cmpUser.getId()) &&
-          areStringEquals(specificId, cmpUser.getSpecificId()) &&
-          areStringEquals(domainId, cmpUser.getDomainId()) &&
-          areStringEquals(login, cmpUser.getLogin()) &&
-          areStringEquals(firstName, cmpUser.getFirstName()) &&
-          areStringEquals(lastName, cmpUser.getLastName()) &&
-          areStringEquals(eMail, cmpUser.getEmailAddress()) &&
-          accessLevel.equals(cmpUser.getAccessLevel());
+      return Objects.equals(id, cmpUser.getId()) &&
+          Objects.equals(specificId, cmpUser.getSpecificId()) &&
+          Objects.equals(domainId, cmpUser.getDomainId()) &&
+          Objects.equals(login, cmpUser.getLogin()) &&
+          Objects.equals(firstName, cmpUser.getFirstName()) &&
+          Objects.equals(lastName, cmpUser.getLastName()) &&
+          Objects.equals(eMail, cmpUser.getEmailAddress()) &&
+          Objects.equals(accessLevel, cmpUser.getAccessLevel());
     }
     return false;
   }
 
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 41 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 41 * hash + (this.specificId != null ? this.specificId.hashCode() : 0);
-    hash = 41 * hash + (this.domainId != null ? this.domainId.hashCode() : 0);
-    hash = 41 * hash + (this.login != null ? this.login.hashCode() : 0);
-    hash = 41 * hash + (this.firstName != null ? this.firstName.hashCode() : 0);
-    hash = 41 * hash + (this.lastName != null ? this.lastName.hashCode() : 0);
-    hash = 41 * hash + (this.eMail != null ? this.eMail.hashCode() : 0);
-    hash = 41 * hash + (this.accessLevel != null ? this.accessLevel.hashCode() : 0);
-    return hash;
+    return Objects.hash(id, specificId, domainId, login, firstName, lastName, eMail, accessLevel);
   }
 
   /**

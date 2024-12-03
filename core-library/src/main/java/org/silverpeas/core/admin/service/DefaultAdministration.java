@@ -1225,15 +1225,16 @@ class DefaultAdministration implements Administration {
   @Override
   public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space,
       boolean persist) throws AdminException {
-    SpaceInst currentSpace = space;
-    if (currentSpace == null) {
-      currentSpace = getSpaceInstById(subSpace.getDomainFatherId());
+    SpaceInst parent = space;
+    if (parent == null) {
+      parent = getSpaceInstById(subSpace.getDomainFatherId());
     }
 
-    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.ADMIN);
-    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.PUBLISHER);
-    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.WRITER);
-    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.READER);
+    setSpaceProfileToSubSpace(subSpace, parent, SilverpeasRole.MANAGER);
+    setSpaceProfileToSubSpace(subSpace, parent, SilverpeasRole.ADMIN);
+    setSpaceProfileToSubSpace(subSpace, parent, SilverpeasRole.PUBLISHER);
+    setSpaceProfileToSubSpace(subSpace, parent, SilverpeasRole.WRITER);
+    setSpaceProfileToSubSpace(subSpace, parent, SilverpeasRole.READER);
 
     if (persist) {
       for (SpaceProfileInst profile : subSpace.getInheritedProfiles()) {
@@ -1271,7 +1272,7 @@ class DefaultAdministration implements Administration {
     }
 
     // Retrieve superSpace local profile
-    SpaceProfileInst profile = space.getSpaceProfileInst(profileName);
+    SpaceProfileInst profile = space.getDirectSpaceProfileInst(profileName);
     if (profile != null) {
       subSpaceProfile.addGroups(profile.getAllGroups());
       subSpaceProfile.addUsers(profile.getAllUsers());
@@ -1326,7 +1327,7 @@ class DefaultAdministration implements Administration {
   private void removeInheritedSpaceRole(final SpaceInst space, final List<String> spaceRoles,
       final ProfileInst inheritedProfile) {
     for (final String spaceRole : spaceRoles) {
-      SpaceProfileInst spaceProfile = space.getSpaceProfileInst(spaceRole);
+      SpaceProfileInst spaceProfile = space.getDirectSpaceProfileInst(spaceRole);
       if (spaceProfile != null) {
         inheritedProfile.addGroups(spaceProfile.getAllGroups());
         inheritedProfile.addUsers(spaceProfile.getAllUsers());
@@ -3455,27 +3456,29 @@ class DefaultAdministration implements Administration {
   public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException {
     SpaceProfile spaceProfile = new SpaceProfile();
     SpaceInst space = getSpaceInstById(spaceId);
-
-    // get profile explicitly defined
-    SpaceProfileInst profile = space.getSpaceProfileInst(role.getName());
-    if (profile != null) {
-      spaceProfile.setProfile(profile);
+    if (space == null) {
+      return null;
     }
 
-    if (role == SilverpeasRole.MANAGER) {
-      // get groups and users implicitly inherited from space parents
-      boolean root = space.isRoot();
-      String parentId = space.getDomainFatherId();
-      while (!root) {
-        SpaceInst parent = getSpaceInstById(parentId);
-        SpaceProfileInst parentProfile = parent.getSpaceProfileInst(role.getName());
+    List<SpaceProfileInst> profiles = space.getSpaceProfileInst(role.getName());
+    if (profiles.isEmpty() && !space.isInheritanceBlocked()) {
+      // case of spaces created before the space manager role has been taken into account at
+      // space creation: we have to gathers the inherited space profiles along the parent spaces
+      // chain up to the root one.
+      SpaceInst parent = space;
+      while (!parent.isRoot()) {
+        parent = getSpaceInstById(parent.getDomainFatherId());
+        SpaceProfileInst parentProfile = parent.getDirectSpaceProfileInst(role.getName());
         spaceProfile.addInheritedProfile(parentProfile);
-        root = parent.isRoot();
-        parentId = parent.getDomainFatherId();
       }
     } else {
-      // get groups and users from inherited profile
-      spaceProfile.addInheritedProfile(space.getInheritedSpaceProfileInst(role.getName()));
+      profiles.forEach(p -> {
+        if (p.isInherited()) {
+          spaceProfile.addInheritedProfile(p);
+        } else {
+          spaceProfile.setProfile(p);
+        }
+      });
     }
 
     return spaceProfile;

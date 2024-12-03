@@ -34,15 +34,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Getting user identifiers and group identifiers of behind a Silverpeas profiles linked to a
- * space.
+ * The user and user group profiles in a given space including inherited roles from the parent
+ * space. It decorates a specified space profile instance by taking into account the inherited
+ * roles from the same profile but of the parent space.
  * @author Nicolas Eysseric
  */
 public class SpaceProfile {
 
   private SpaceProfileInst profile;
-  private Set<String> inheritedUserIds = new HashSet<>();
-  private Set<String> inheritedGroupIds = new HashSet<>();
+  private final Set<String> inheritedUserIds = new HashSet<>();
+  private final Set<String> inheritedGroupIds = new HashSet<>();
 
   public void setProfile(SpaceProfileInst profile) {
     this.profile = profile;
@@ -96,11 +97,10 @@ public class SpaceProfile {
     return ids;
   }
 
-  @SuppressWarnings("unchecked")
   private List<String> getAllUserIdsOfGroup(String groupId) {
     List<String> userIds = new ArrayList<>();
     Group group = Group.getById(groupId);
-    List<User> users = (List<User>) group.getAllUsers();
+    List<User> users = group.getAllUsers();
     for (User user : users) {
       userIds.add(user.getId());
     }

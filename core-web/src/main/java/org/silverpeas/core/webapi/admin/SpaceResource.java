@@ -29,12 +29,10 @@ import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.SpaceProfile;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
@@ -42,23 +40,14 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
+import static java.util.function.Predicate.isEqual;
+import static java.util.function.Predicate.not;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
 
@@ -144,75 +133,65 @@ public class SpaceResource extends AbstractAdminResource {
       @PathParam("spaceId") final String spaceId, @QueryParam(ROLES_PARAM) final String roles) {
     try {
       verifyUserAuthorizedToAccessSpace(spaceId);
-
-      // Initializing the result
-      Map<SilverpeasRole, UsersAndGroupsRoleEntity> result = new LinkedHashMap<>();
-
-      // Aimed roles or all roles ?
-      Collection<String> aimedRoles = new ArrayList<>(0);
-      if (StringUtil.isDefined(roles)) {
-        aimedRoles = CollectionUtil.asList(StringUtils.split(roles, ","));
-      }
-
-      // Getting space profiles
-      SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
-      List<SpaceProfileInst> profiles = new ArrayList<>(spaceInst.getAllSpaceProfilesInst());
-
-      // Building entities
-      LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
-              getUserPreferences().getLanguage());
-      UsersAndGroupsRoleEntity roleEntity;
-      for (SpaceProfileInst profile : profiles) {
-        SilverpeasRole role = SilverpeasRole.fromString(profile.getName());
-        if (role != null && (aimedRoles.isEmpty() || aimedRoles.contains(role.getName()))) {
-          roleEntity = result.get(role);
-          if (roleEntity == null) {
-            roleEntity = UsersAndGroupsRoleEntity
-                .createFrom(role, resource.getString("JSPP." + role.getName()));
-            roleEntity.withURI(getUri().getWebResourcePathBuilder()
-                .path(spaceId)
-                .path(USERS_AND_GROUPS_ROLES_URI_PART)
-                .queryParam("roles", role.getName())
-                .build()).withParentURI(getUri().getWebResourcePathBuilder().path(spaceId).build());
-            result.put(role, roleEntity);
-          }
-
-          final List<String> userIds;
-          final List<String> groupIds;
-          if (role == SilverpeasRole.MANAGER) {
-            SpaceProfile admins = getOrganisationController().getSpaceProfile(spaceId, role);
-            userIds = new ArrayList<>(admins.getAllUserIds());
-            groupIds = new ArrayList<>(admins.getAllGroupIds());
-          } else {
-            userIds = profile.getAllUsers();
-            groupIds = profile.getAllGroups();
-          }
-
-          // Users
-          for (String userId : userIds) {
-            roleEntity.addUser(getUri().getBaseUriBuilder()
-                .path(ProfileResourceBaseURIs.USERS_BASE_URI)
-                .path(userId)
-                .build());
-          }
-
-          // Groups
-          for (String groupId : groupIds) {
-            roleEntity.addGroup(getUri().getBaseUriBuilder()
-                .path(ProfileResourceBaseURIs.GROUPS_BASE_URI)
-                .path(groupId)
-                .build());
-          }
-        }
-      }
-
-      return result;
+      return StringUtil.isDefined(roles) ?
+          getUsersInSpacePerPlayedRoles(spaceId,
+              Stream.of(StringUtils.split(roles, ","))
+                  .map(SilverpeasRole::fromString)
+                  .filter(not(isEqual(SilverpeasRole.NONE)))) :
+          getAllUsersInSpacePerRoles(spaceId);
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
+  }
+
+  private Map<SilverpeasRole, UsersAndGroupsRoleEntity> getAllUsersInSpacePerRoles(String spaceId) {
+    var spaceInst = getOrganisationController().getSpaceInstById(spaceId);
+    if (spaceInst == null) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    Stream<SilverpeasRole> roles = spaceInst.getAllSpaceProfilesInst().stream()
+        .map(SpaceProfileInst::getName)
+        .map(SilverpeasRole::fromString)
+        .filter(not(isEqual(SilverpeasRole.NONE)));
+
+    return getUsersInSpacePerPlayedRoles(spaceId, roles);
+  }
+
+  private Map<SilverpeasRole, UsersAndGroupsRoleEntity> getUsersInSpacePerPlayedRoles(String spaceId,
+      Stream<SilverpeasRole> roles) {
+    LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
+        getUserPreferences().getLanguage());
+    Map<SilverpeasRole, UsersAndGroupsRoleEntity> result = new LinkedHashMap<>();
+    roles.forEach(role -> {
+      UsersAndGroupsRoleEntity roleEntity = result.computeIfAbsent(role, r ->
+        UsersAndGroupsRoleEntity
+            .createFrom(role, resource.getString("JSPP." + role.getName()))
+            .withURI(getUri().getWebResourcePathBuilder()
+              .path(spaceId)
+              .path(USERS_AND_GROUPS_ROLES_URI_PART)
+              .queryParam("roles", role.getName())
+              .build())
+            .withParentURI(getUri().getWebResourcePathBuilder().path(spaceId).build()));
+      SpaceProfile profile = getOrganisationController().getSpaceProfile(spaceId, role);
+      if (profile == null) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+      profile.getAllUserIds().forEach(uid ->
+        roleEntity.addUser(getUri().getBaseUriBuilder()
+            .path(ProfileResourceBaseURIs.USERS_BASE_URI)
+            .path(uid)
+            .build())
+      );
+      profile.getAllGroupIds().forEach(gid ->
+          roleEntity.addGroup(getUri().getBaseUriBuilder()
+              .path(ProfileResourceBaseURIs.GROUPS_BASE_URI)
+              .path(gid)
+              .build()));
+    });
+    return result;
   }
 
   /**
