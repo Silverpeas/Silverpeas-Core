@@ -24,6 +24,7 @@
 
 --%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.Tab" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -36,108 +37,109 @@
     public final static String troncateSeparator = "...";
     public final static int nbShowedEltAuthorized = 2;
 
-    String troncatePath(String completPath, List list, boolean isLinked, int withLastValue, String language){
-		Value value = null;
-		// prend les nbShowedEltAuthorized 1er elements
-		for (int nb=0; nb < nbShowedEltAuthorized; nb++){
-			value = (Value) list.get(nb);
-			completPath +=  linkedNode(value, isLinked, language)+separatorPath;
-		}
+    void troncatePath(StringBuilder completPath, List<Value> list, boolean isLinked, int
+            withLastValue,
+            String language) {
+        Value value;
+        // prend les nbShowedEltAuthorized 1er elements
+        for (int nb = 0; nb < nbShowedEltAuthorized; nb++) {
+            value = list.get(nb);
+            completPath.append(linkedNode(value, isLinked, language))
+                    .append(separatorPath);
+        }
 
-		// colle ici les points de suspension
-		completPath += troncateSeparator+separatorPath;
+        // colle ici les points de suspension
+        completPath.append(troncateSeparator).append(separatorPath);
 
-		// prend les nbShowedEltAuthorized derniers elements
-		for (int nb=nbShowedEltAuthorized+withLastValue ; nb>withLastValue ; nb--){
-			value = (Value) list.get(list.size() - nb);
-			completPath +=  linkedNode(value, isLinked, language)+separatorPath;
-		}
-
-		return completPath;
+        // prend les nbShowedEltAuthorized derniers elements
+        for (int nb = nbShowedEltAuthorized + withLastValue; nb > withLastValue; nb--) {
+            value = list.get(list.size() - nb);
+            completPath.append(linkedNode(value, isLinked, language))
+                    .append(separatorPath);
+        }
     }
 
-    String linkedNode(Value unit, boolean isLinked, String language){
-            String node = "";
+    String linkedNode(Value unit, boolean isLinked, String language) {
+        String node;
 
-            // Attention la partie hyperlink est a faire !!!!
-            if (isLinked){
-                    node = "<a href="+(String)unit.getPath()+">"+(String)unit.getName(language)+"</a>";
-            } else {
-                    node = (String)unit.getName(language);
-            }
+        // Attention la partie hyperlink est a faire !!!!
+        if (isLinked) {
+            node = "<a href=" + unit.getPath() + ">" + Encode.forHtml(unit.getName(language)) +
+                    "</a>";
+        } else {
+            node = Encode.forHtml(unit.getName(language));
+        }
 
-            return node;
+        return node;
     }
 
-    String buildCompletPath(List list, String language){
-            boolean  isLinked = false;
-            int withLastValue = 0;
-            String completPath = "";
+    String buildCompletPath(List<Value> list, String language) {
+        boolean isLinked = false;
+        int withLastValue = 0;
+        StringBuilder completPath = new StringBuilder();
 
-            // on regarde d'en un 1er temps le nombre d'element de la liste que l'on recoit.
-            // si ce nombre est strictement superieur a maxEltAuthorized alors on doit tronquer le chemin complet
-            // et l'afficher comme suit : noeud1 / noeud2 / ... / noeudn-1 / noeudn
-			Value value = null;
-            if (list.size() > maxEltAuthorized){
-                    completPath = troncatePath(completPath, list, isLinked, withLastValue, language);
-            } else {
-                    for (int nb=0; nb<list.size()-withLastValue;nb++ ){
-						value = (Value) list.get(nb);
-                        completPath += linkedNode(value, isLinked, language)+separatorPath;
-                    }
+        // on regarde d'en un 1er temps le nombre d'element de la liste que l'on recoit.
+        // si ce nombre est strictement superieur a maxEltAuthorized alors on doit tronquer le chemin complet
+        // et l'afficher comme suit : noeud1 / noeud2 / ... / noeudn-1 / noeudn
+        if (list.size() > maxEltAuthorized) {
+            troncatePath(completPath, list, isLinked, withLastValue, language);
+        } else {
+            for (int nb = 0; nb < list.size() - withLastValue; nb++) {
+                Value value = list.get(nb);
+                completPath.append(linkedNode(value, isLinked, language))
+                        .append(separatorPath);
             }
+        }
 
-            if ( (completPath == "") || (completPath.equals(">")) ){
-                    completPath = null;
-            } else {
-                    completPath = completPath.substring(0,completPath.length()-separatorPath.length()); // retire le dernier separateur
-            }
+        String path = completPath.toString().trim();
+        if (path.isEmpty() || path.equals(">")) {
+            path = null;
+        } else {
+            path = path.substring(0, completPath.length() - separatorPath.length());
+            // retire le dernier separateur
+        }
 
-            return completPath;
+        return path;
     }
 
 
-   public String formatPDCContext(List pathCriteria, String language) {
-       StringBuffer result = new StringBuffer();
-       List list = null;
-       String completPath = "";
+    public String formatPDCContext(List<List<Value>> pathCriteria, String language) {
+        if (pathCriteria == null) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        int size = pathCriteria.size();
+        for (int k = 0; k < size; k++) {
+            List<Value> list = pathCriteria.get(k);
+            String fullPath = buildCompletPath(list, language);
+            result.append(fullPath);
+            if (k < size - 1) {
+                result.append(" X ");
+            }
+        }
 
-       if (pathCriteria == null) {
-           return "";
-       }
-       int size = pathCriteria.size();
-       for (int k=0; k < size; k++ ){
-           list = (List)pathCriteria.get(k);
-           completPath = buildCompletPath(list, language);
-           result.append(completPath);
-           if (k < size - 1) {
-               result.append(" X ");
-           }
-       }
-
-       return result.toString();
-   }
+        return result.toString();
+    }
 
     %>
 
 <%
-    List		pathContext			= (List) request.getAttribute("PathContext");
-    ArrayList	subscriptionList	= (ArrayList) request.getAttribute("subscriptionList");
-	String		action				= (String) request.getAttribute("action");
-	String		userId				= (String) request.getAttribute("userId");
+    //noinspection unchecked
+    List<List<List<Value>>>	pathContext	= (List<List<List<Value>>>) request.getAttribute("PathContext");
+    //noinspection unchecked
+    List<PdcSubscription>	subscriptionList = (List<PdcSubscription>) request.getAttribute("subscriptionList");
+	String action = (String) request.getAttribute("action");
+	String userId = (String) request.getAttribute("userId");
 
-    boolean isReadOnly = false;
-	if ( action != null && action.equals("showUserSubscriptions")) {
-        isReadOnly = true;
-    }
+    boolean isReadOnly = action != null && action.equals("showUserSubscriptions");
 
-	final String iconEdit		= m_context+"/util/icons/update.gif";
+    final String iconEdit		= m_context+"/util/icons/update.gif";
     final String iconAdd		= resource.getIcon("icoAddNew");
     final String iconDelete		= resource.getIcon("icoDelete");
     final String path			= resource.getString("Path");
 
     if ( subscriptionList == null ){
-       subscriptionList = new ArrayList();
+       subscriptionList = new ArrayList<>();
     }
 
 %>
@@ -160,16 +162,16 @@ function editSubscription(scid) {
 }
 
 function deleteSubscription() {
-  var boxItems = document.subscriptionList.pdcCheck;
-  var selectItems = "";
+  const boxItems = document.subscriptionList.pdcCheck;
+  let selectItems = "";
   if (boxItems != null) {
     // au moins une checkbox exist
-    var nbBox = boxItems.length;
-    if ((nbBox == null) && (boxItems.checked == true)) {
+    const nbBox = boxItems.length;
+    if ((nbBox == null) && (boxItems.checked === true)) {
       selectItems += boxItems.value;
     } else {
       for (i = 0; i < boxItems.length; i++) {
-        if (boxItems[i].checked == true) {
+        if (boxItems[i].checked === true) {
           selectItems += boxItems[i].value + ",";
         }
       }
@@ -190,26 +192,27 @@ function deleteSubscription() {
 <input type="hidden" name="mode"/>
 
  <%
-    browseBar.setComponentName(path);
+     browseBar.setComponentName(path);
 
-	TabbedPane tabbedPane = gef.getTabbedPane();
-   sessionController.getSubscriptionCategories().forEach(c -> {
-     final String subscriptionResourceCategoryUrl = "ViewSubscriptionOfCategory?userId=" + userId + "&action=" + action + "&subResCategory=" + c.getId();
-     Tab tab = tabbedPane.addTab(c.getLabel(), subscriptionResourceCategoryUrl, false);
-     tab.setName(c.getId());
-   });
-   Tab tabPDC = tabbedPane.addTab(resource.getString("pdc"), "#", true);
-   tabPDC.setName("PDC");
+     TabbedPane tabbedPane = gef.getTabbedPane();
+     sessionController.getSubscriptionCategories().forEach(c -> {
+         final String subscriptionResourceCategoryUrl = "ViewSubscriptionOfCategory?userId=" + userId + "&action=" + action + "&subResCategory=" + c.getId();
+         Tab tab = tabbedPane.addTab(Encode.forHtml(c.getLabel()),
+                 subscriptionResourceCategoryUrl, false);
+         tab.setName(c.getId());
+     });
+     Tab tabPDC = tabbedPane.addTab(resource.getString("pdc"), "#", true);
+     tabPDC.setName("PDC");
 
-      if (!isReadOnly) {
-          operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),m_context + "/RpdcSubscriptionPeas/jsp/PdcSubscription");
-          if (subscriptionList != null && subscriptionList.size() > 0) {
-              operationPane.addOperation(iconDelete , resource.getString("DeleteSC"),"javascript:deleteSubscription()");
-          }
-      }
+     if (!isReadOnly) {
+         operationPane.addOperationOfCreation(iconAdd, resource.getString("AddSC"), m_context + "/RpdcSubscriptionPeas/jsp/PdcSubscription");
+         if (!subscriptionList.isEmpty()) {
+             operationPane.addOperation(iconDelete, resource.getString("DeleteSC"), "javascript:deleteSubscription()");
+         }
+     }
 
-      out.println(window.printBefore());
-      out.println(tabbedPane.print());
+     out.println(window.printBefore());
+     out.println(tabbedPane.print());
 %>
 <view:frame>
 <view:areaOfOperationOfCreation/>
@@ -224,23 +227,18 @@ function deleteSubscription() {
 		  column0.setSortable(false);
       }
 
-      ArrayLine ligne;
-	  IconPane iconPane;
-      Icon updateIcon;
-
-	  PdcSubscription ps = null;
 	  for (int i =0 ; i < subscriptionList.size(); i++ ) {
-		  ps	= (PdcSubscription) subscriptionList.get(i);
-		  ligne = arrayPane.addArrayLine();
-		  ligne.addArrayCellText(ps.getName());
-		  ligne.addArrayCellText(formatPDCContext((List)pathContext.get(i), resource.getLanguage()));
+          PdcSubscription ps = subscriptionList.get(i);
+          ArrayLine line = arrayPane.addArrayLine();
+		  line.addArrayCellText(Encode.forHtml(ps.getName()));
+		  line.addArrayCellText(formatPDCContext(pathContext.get(i), resource.getLanguage()));
 
-		  iconPane	= gef.getIconPane();
-          updateIcon = iconPane.addIcon();
+          IconPane iconPane	= gef.getIconPane();
+          Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(iconEdit, resource.getString("EditSC"), m_context + "/RpdcSubscriptionPeas/jsp/PdcSubscription?pdcSId="+ps.getId());
 
 		  if (!isReadOnly) {
-			  ligne.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"pdcCheck\" value=\""+ps.getId()+"\"/>");
+			  line.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"pdcCheck\" value=\""+ps.getId()+"\"/>");
 		  }
 	  }
 
