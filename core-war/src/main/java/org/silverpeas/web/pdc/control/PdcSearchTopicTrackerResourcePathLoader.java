@@ -54,7 +54,7 @@ class PdcSearchTopicTrackerResourcePathLoader {
   private static final String CACHE_KEY = PdcSearchTopicTrackerResourcePathLoader.class.getSimpleName();
 
   private final Map<String, Boolean> isTopicTrackerSupportedCache = new HashMap<>();
-  private final Map<Location, Optional<String>> locationPaths = new HashMap<>();
+  private final Map<String, Optional<String>> locationPaths = new HashMap<>();
 
   static PdcSearchTopicTrackerResourcePathLoader get() {
     return CacheAccessorProvider.getThreadCacheAccessor()
@@ -77,8 +77,8 @@ class PdcSearchTopicTrackerResourcePathLoader {
     return Optional.of(isTopicTrackerSupported(pubPK.getInstanceId()))
         .filter(Boolean.TRUE::equals)
         .flatMap(b -> PublicationService.get().getMainLocation(pubPK))
-        .flatMap(l -> locationPaths.computeIfAbsent(l, s ->
-            ofNullable(NodeService.get().getPath(s))
+        .flatMap(l -> locationPaths.computeIfAbsent(pubPK.asString(), s ->
+            ofNullable(NodeService.get().getPath(l))
                 .map(p -> p.format(language, true))));
   }
 
@@ -96,8 +96,9 @@ class PdcSearchTopicTrackerResourcePathLoader {
     return Optional.of(isTopicTrackerSupported(nodePK.getInstanceId()))
         .filter(Boolean.TRUE::equals)
         .flatMap(b -> locationPaths.computeIfAbsent(
-            new Location(nodePK.getLocalId(), nodePK.getInstanceId()),
-            s -> ofNullable(NodeService.get().getPath(s))
+            nodePK.asString(),
+            s -> ofNullable(NodeService.get().getPath(
+                new Location(nodePK.getLocalId(), nodePK.getInstanceId())))
                 .map(p -> {
                   p.remove(0);
                   return p;
