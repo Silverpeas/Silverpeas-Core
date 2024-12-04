@@ -32,6 +32,7 @@
 %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -39,7 +40,7 @@
 <view:setBundle basename="org.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle" />
 <c:set var="isNewSubscription" value="${requestScope.IsNewPDCSubscription}"/>
 <c:set var="subscription" value="${requestScope.PdcSubscription}"/>
-<c:set var="subscriptionName" value="${requestScope.PDCSubscriptionName}"/>
+<c:set var="subscriptionName" value="${silfn:escapeHtml(requestScope.PDCSubscriptionName)}"/>
 
 <fmt:message key="Path" var="path"/>
 <fmt:message key="GML.ok" var="okLabel"/>
@@ -52,12 +53,12 @@
 <c:choose>
 <c:when test="${!isNewSubscription}">
 	<view:browseBar extraInformations="${updateSubscription}">
-	<view:browseBarElt label="${path}" link="ViewSubscriptionTaxonomy"></view:browseBarElt>
+	    <view:browseBarElt label="${path}" link="ViewSubscriptionTaxonomy"/>
 	</view:browseBar>
 </c:when>
 <c:otherwise>
 	<view:browseBar extraInformations="${newSubscription}">
-		<view:browseBarElt label="${path}" link="ViewSubscriptionTaxonomy"></view:browseBarElt>
+		<view:browseBarElt label="${path}" link="ViewSubscriptionTaxonomy"/>
 	</view:browseBar>
 </c:otherwise>
 </c:choose>
@@ -86,7 +87,7 @@
     </view:frame>
     </view:window>
     <script type="text/javascript">
-      var values = [];
+      const values = [];
       <c:if test="${subscription != null}">
         <c:forEach var="criterion" items="${subscription.pdcContext}">
           values.push({ axisId: ${criterion.axisId}, id: "${criterion.value}" });
@@ -97,8 +98,8 @@
       });
 
       function sendSubscription() {
-        var name = $('input[name="SubscriptionName"]').val();
-        var values = $('#used_pdc').pdc('selectedValues');
+        const name = $('input[name="SubscriptionName"]').val();
+        const values = $('#used_pdc').pdc('selectedValues');
         if (!name) {
           jQuery.popup.error('<view:encodeJs string="${invalidName}"/>');
           return;

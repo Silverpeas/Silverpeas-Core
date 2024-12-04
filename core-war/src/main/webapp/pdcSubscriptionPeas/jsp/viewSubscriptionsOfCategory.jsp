@@ -64,11 +64,11 @@
         if (boxItems != null) {
           const nbBox = boxItems.length;
           let sendIt = false;
-          if ((nbBox == null) && (boxItems.checked == true)) {
+          if ((nbBox == null) && (boxItems.checked === true)) {
             sendIt = true;
           } else {
             for (let i = 0; i < boxItems.length; i++) {
-              if (boxItems[i].checked == true) {
+              if (boxItems[i].checked === true) {
                 sendIt = true;
               }
             }
@@ -122,7 +122,7 @@
           <c:if test="${isSeveralResourceTypes}">
             <view:arrayColumn title="${subResCategory.resourceTypeLabel}" sortable="true"/>
           </c:if>
-          <view:arrayColumn title="${subResCategory.label}"/>
+          <view:arrayColumn title="${silfn:escapeHtml(subResCategory.label)}"/>
           <c:if test="${not isReadOnly}">
             <view:arrayColumn title="${operationsLabel}" sortable="false"/>
           </c:if>
@@ -146,7 +146,8 @@
                   </view:arrayCellText>
                 </c:when>
                 <c:otherwise>
-                  <view:arrayCellText text="${subscription.path}" classes="${validityCssClasses(isSubscriptionValid)}"/>
+                  <view:arrayCellText text="${silfn:escapeHtml(subscription.path)}"
+                                      classes="${validityCssClasses(isSubscriptionValid)}"/>
                 </c:otherwise>
               </c:choose>
               <c:if test="${not isReadOnly and not subscription.readOnly}">
