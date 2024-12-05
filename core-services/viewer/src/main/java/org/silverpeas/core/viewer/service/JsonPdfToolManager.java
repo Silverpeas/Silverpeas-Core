@@ -69,7 +69,7 @@ public class JsonPdfToolManager implements Initialization {
           isActivated = true;
         } catch (final Exception e) {
           // pdf2json is not installed
-          SilverLogger.getLogger(this).error("pdf2json is not installed");
+          SilverLogger.getLogger(this).warn("pdf2json is not installed (flexpaper/flowpaper only)");
         }
       }
     }
