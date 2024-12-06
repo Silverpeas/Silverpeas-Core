@@ -77,7 +77,7 @@ public class DelayedNotificationDelegateIT {
         .addAdministrationFeatures()
         .addNotificationFeatures()
         .addPublicationTemplateFeatures()
-        .testFocusedOn((warBuilder) -> {
+        .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.core.notification.user");
           warBuilder.addAsResource("org/silverpeas/core/notification/user/delayed");
         }).build();
@@ -218,9 +218,7 @@ public class DelayedNotificationDelegateIT {
     dndTest.setLanguage("fr");
 
     // Resource data
-    dndTest.setResource(
-        buildNotificationResourceData(
-        ));
+    dndTest.setResource(buildNotificationResourceData());
     return dndTest;
   }
 

@@ -36,15 +36,16 @@ import static org.silverpeas.core.util.JSONCodec.encode;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * Data on the notification about an action operated on a resource in Silverpeas. A resource can
- * be a contribution, a business object, or any entities handled or managed in Silverpeas.
+ * Data on the notification about an action operated on a resource in Silverpeas. A resource can be
+ * a contribution, a business object, or any entities handled or managed in Silverpeas.
+ *
  * @author Yohann Chastagnier
  */
 @Entity
 @Table(name = "st_notificationresource")
 @NamedQuery(name = "NotificationResourceData.deleteResources",
-    query = "delete from NotificationResourceData r where not exists (select d from " +
-        "DelayedNotificationData d where d.resource.id.id = r.id.id)")
+    query = "delete from NotificationResourceData r where not exists " +
+        "(select d from DelayedNotificationData d where d.resource.id.id = r.id.id)")
 public class NotificationResourceData
     extends BasicJpaEntity<NotificationResourceData, UniqueLongIdentifier> {
   public static final String LOCATION_SEPARATOR = "@#@#@";
@@ -95,6 +96,7 @@ public class NotificationResourceData
 
   /**
    * Constructs a new instance as a copy of the specified notification resource data.
+   *
    * @param notificationResourceData the {@link NotificationResourceData} instance to copy.
    */
   public NotificationResourceData(final NotificationResourceData notificationResourceData) {
@@ -103,6 +105,7 @@ public class NotificationResourceData
 
   /**
    * Copying all data from the given resource excepted the id
+   *
    * @param notificationResourceData the data from which all is copied.
    */
   public final void fillFrom(final NotificationResourceData notificationResourceData) {
@@ -181,7 +184,8 @@ public class NotificationResourceData
   }
 
   public void setResourceName(final String resourceName) {
-    this.resourceName = defaultStringIfNotDefined(setLocalizedDetail(TITLE_KEY, resourceName, this.resourceName));
+    this.resourceName = defaultStringIfNotDefined(setLocalizedDetail(TITLE_KEY, resourceName,
+        this.resourceName));
   }
 
   public String getResourceDescription() {
@@ -189,7 +193,8 @@ public class NotificationResourceData
   }
 
   public void setResourceDescription(final String resourceDescription) {
-    this.resourceDescription = setLocalizedDetail(DESCRIPTION_KEY, resourceDescription, this.resourceDescription);
+    this.resourceDescription = setLocalizedDetail(DESCRIPTION_KEY, resourceDescription,
+        this.resourceDescription);
   }
 
   public String getResourceLocation() {
@@ -242,6 +247,7 @@ public class NotificationResourceData
 
   /**
    * Gets the current language into which the data are registered and provided by this entity.
+   *
    * @return a string.
    */
   public String getCurrentLanguage() {

@@ -71,7 +71,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  */
 public class DelayedNotificationDelegate implements NotificationURLProvider {
 
-  private static final String LOCATION_SEPARATOR = " &gt; ";
+  private static final String LOCATION_SEPARATOR = " > ";
 
   /**
    * User details cache
@@ -242,16 +242,6 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
-   * saved for all users
-   * @throws NotificationServerException if an error occurs
-   */
-  public static void executeForceDelayedNotificationsSending()
-      throws NotificationServerException {
-    new DelayedNotificationDelegate().forceDelayedNotificationsSending();
-  }
-
-  /**
-   * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
    * saved for a given
    * user
    * @param userId the unique identifier of a user targeted by the notification.
@@ -410,9 +400,6 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
     // Filling the synthesis resource data
     syntheseResource.setName(resource.getResourceName());
     syntheseResource.setDescription(resource.getResourceDescription());
-    if (syntheseResource.getDescription() != null) {
-      syntheseResource.setDescription(forHtml(syntheseResource.getDescription()));
-    }
     syntheseResource.setLocation(resource.getResourceLocation()
         .replace(NotificationResourceData.LOCATION_SEPARATOR, LOCATION_SEPARATOR));
     syntheseResource.setUrl(resource.getResourceUrl());

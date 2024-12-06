@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.invitation;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -45,7 +46,7 @@ public class NewInvitationUserNotification extends AbstractInvitationUserNotific
     UserFull sender = UserFull.getById(String.valueOf(resource.getSenderId()));
     template.setAttribute("senderUser", sender);
     template.setAttribute("userName", sender.getDisplayedName());
-    template.setAttribute("senderMessage", resource.getMessage());
+    template.setAttribute("senderMessage", Encode.forHtml(resource.getMessage()));
   }
 
   @Override

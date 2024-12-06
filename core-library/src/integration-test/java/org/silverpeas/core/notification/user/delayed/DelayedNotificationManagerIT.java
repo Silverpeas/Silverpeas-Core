@@ -86,7 +86,7 @@ public class DelayedNotificationManagerIT {
         .addAdministrationFeatures()
         .addNotificationFeatures()
         .addPublicationTemplateFeatures()
-        .testFocusedOn((warBuilder) -> {
+        .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.core.notification.user");
           warBuilder.addAsResource("org/silverpeas/core/notification/user/delayed");
         }).build();
@@ -96,7 +96,7 @@ public class DelayedNotificationManagerIT {
    * Common
    */
   @Test
-  public void testGetPossibleFrequencies() throws Exception {
+  public void testGetPossibleFrequencies() {
     final Set<DelayedNotificationFrequency> possibleFrequencies = manager.getPossibleFrequencies();
     assertThat(possibleFrequencies, containsInAnyOrder(DelayedNotificationFrequency.values()));
   }
@@ -105,7 +105,7 @@ public class DelayedNotificationManagerIT {
    * Resource Data
    */
   @Test
-  public void testGetExistingResource() throws Exception {
+  public void testGetExistingResource() {
 
     // Exists already several resources (extraordinary case)
     NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
@@ -182,13 +182,13 @@ public class DelayedNotificationManagerIT {
     NotificationResourceData data = new NotificationResourceData();
     if (testCase == TEST_CASE_1) {
       data =
-          buildNotificationResourceData(RESOURCE_DATA_ID_1, RESOURCE_DATA_TYPE,
-          RESOURCE_DATA_NAME_1, RESOURCE_DATA_DESCRIPTION_1, RESOURCE_DATA_LOCATION_1,
+          buildNotificationResourceData(RESOURCE_DATA_ID_1,
+              RESOURCE_DATA_NAME_1, RESOURCE_DATA_DESCRIPTION_1, RESOURCE_DATA_LOCATION_1,
           RESOURCE_DATA_URL_1);
     } else if (testCase == TEST_CASE_2 || testCase == TEST_CASE_3) {
       data =
-          buildNotificationResourceData(RESOURCE_DATA_ID_100, RESOURCE_DATA_TYPE,
-          RESOURCE_DATA_NAME_100, null, RESOURCE_DATA_LOCATION_100,
+          buildNotificationResourceData(RESOURCE_DATA_ID_100,
+              RESOURCE_DATA_NAME_100, null, RESOURCE_DATA_LOCATION_100,
           RESOURCE_DATA_URL_100);
       if (testCase == TEST_CASE_3) {
         data.setResourceDescription(RESOURCE_DATA_DESCRIPTION_1);
@@ -199,11 +199,11 @@ public class DelayedNotificationManagerIT {
   }
 
   private static NotificationResourceData buildNotificationResourceData(final String resourceId,
-      final String resourceType, final String resourceName, final String resourceDescription,
+      final String resourceName, final String resourceDescription,
       final String resourceLocation, final String resourceUrl) {
     final NotificationResourceData data = new NotificationResourceData();
     data.setResourceId(resourceId);
-    data.setResourceType(resourceType);
+    data.setResourceType(DelayedNotificationManagerIT.RESOURCE_DATA_TYPE);
     data.setResourceName(resourceName);
     data.setResourceDescription(resourceDescription);
     data.setResourceLocation(resourceLocation);
@@ -215,7 +215,7 @@ public class DelayedNotificationManagerIT {
    * Delayed Notification Data
    */
   @Test
-  public void testFindAllUsersToBeNotified() throws Exception {
+  public void testFindAllUsersToBeNotified() {
     Set<NotifChannel> ac = getAimedChannelsBase();
     assertThat(manager.findAllUsersToBeNotified(ac).size(), is(9));
     ac = getAimedChannelsAll();
@@ -226,7 +226,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testFindUsersToBeNotified_Daily() throws Exception {
+  public void testFindUsersToBeNotified_Daily() {
     for (final Date date : new Date[]{java.sql.Timestamp.valueOf("2012-05-08 12:45:23.125"),
           java.sql.Timestamp.valueOf("2012-05-09 12:45:23.125"),
           java.sql.Timestamp.valueOf("2012-05-10 12:45:23.125"),
@@ -237,13 +237,7 @@ public class DelayedNotificationManagerIT {
     }
   }
 
-  /**
-   * Centralizing assertions
-   *
-   * @param date
-   * @throws Exception
-   */
-  private void assertFindUsersToBeNotified_Daily(final Date date) throws Exception {
+  private void assertFindUsersToBeNotified_Daily(final Date date) {
     Set<NotifChannel> ac;
 
     // DelayedNotificationFrequency.DAILY
@@ -282,7 +276,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testFindUsersToBeNotified_Weekly() throws Exception {
+  public void testFindUsersToBeNotified_Weekly() {
     // Monday (not first of month)
     final Date date = java.sql.Timestamp.valueOf("2012-05-14 12:45:23.125");
 
@@ -328,7 +322,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testFindUsersToBeNotified_Monthly() throws Exception {
+  public void testFindUsersToBeNotified_Monthly() {
     // First of month (not a monday)
     final Date date = java.sql.Timestamp.valueOf("2012-05-01 12:45:23.125");
 
@@ -374,7 +368,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testFindUsersToBeNotified_All() throws Exception {
+  public void testFindUsersToBeNotified_All() {
     // Monday anf first of month
     final Date date = java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125");
 
@@ -417,14 +411,6 @@ public class DelayedNotificationManagerIT {
     assertFindUsersToBeNotified(date, ac, DelayedNotificationFrequency.NONE, 51, 53, 54);
   }
 
-  /**
-   * Centralizing assertions
-   *
-   * @param date
-   * @param aimedChannels
-   * @param defaultDelayedNotificationFrequency
-   * @param expectedUsers
-   */
   private void assertFindUsersToBeNotified(final Date date, final Set<NotifChannel> aimedChannels,
       final DelayedNotificationFrequency defaultDelayedNotificationFrequency,
       final Integer... expectedUsers) {
@@ -455,7 +441,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testFindDelayedNotificationByUserIdGroupByChannel() throws Exception {
+  public void testFindDelayedNotificationByUserIdGroupByChannel() {
     Map<NotifChannel, List<DelayedNotificationData>> delayedNotificationDataMap =
         manager.findDelayedNotificationByUserIdGroupByChannel(0, getAimedChannelsAll());
     assertThat(delayedNotificationDataMap, notNullValue());
@@ -473,7 +459,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testSaveDelayedNotification() throws Exception {
+  public void testSaveDelayedNotification() {
     final NotifChannel[] channels = NotifChannel.values();
     final NotifAction[] actions = NotifAction.values();
     int userIdTest = 1000;
@@ -512,9 +498,9 @@ public class DelayedNotificationManagerIT {
         if ((count % 4) == 0) {
           final String idTest = newDelayedNotificationData.getId();
           if (count == 0) {
-            newDelayedNotificationData.setId((Long)null);
+            newDelayedNotificationData.setId(null);
           }
-          newDelayedNotificationData.getResource().setId((Long)null);
+          newDelayedNotificationData.getResource().setId(null);
           manager.saveDelayedNotification(newDelayedNotificationData);
           assertThat(idTest, is(newDelayedNotificationData.getId()));
         }
@@ -531,7 +517,7 @@ public class DelayedNotificationManagerIT {
         assertThat(mapEntry.getValue().size(), is(actions.length));
         for (int j = 0; j < actions.length; j++) {
           delayedNotificationData = mapEntry.getValue().get(j);
-          assertThat(delayedNotificationData.getId(), is(String.valueOf(1001l + count2)));
+          assertThat(delayedNotificationData.getId(), is(String.valueOf(1001L + count2)));
           assertThat(delayedNotificationData.getUserId(), is(userIdTest));
           assertThat(delayedNotificationData.getFromUserId(), is(2 * userIdTest));
           assertThat(delayedNotificationData.getChannel(), is(channels[i]));
@@ -552,29 +538,25 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testDeleteDelayedNotifications() throws Exception {
-    int nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Long[]{}));
+  public void testDeleteDelayedNotifications() {
+    int nbDeletes = manager.deleteDelayedNotifications(List.of());
     assertThat(nbDeletes, is(0));
 
     nbDeletes =
-        manager.deleteDelayedNotifications(Arrays
-        .asList(new Long[]{100l, 200l, 300l, 400l, 500l}));
+        manager.deleteDelayedNotifications(Arrays.asList(100L, 200L, 300L, 400L, 500L));
     assertThat(nbDeletes, is(5));
     nbDeletes =
-        manager.deleteDelayedNotifications(Arrays
-        .asList(new Long[]{100l, 200l, 300l, 400l, 500l}));
+        manager.deleteDelayedNotifications(Arrays.asList(100L, 200L, 300L, 400L, 500L));
     assertThat(nbDeletes, is(0));
   }
 
   @Test
-  public void testDeleteDelayedNotifications2() throws Exception {
+  public void testDeleteDelayedNotifications2() {
     int nbDeletes =
-        manager.deleteDelayedNotifications(Arrays.asList(new Long[]{100l, 200l, 300l, 400l, 500l,
-          600l}));
+        manager.deleteDelayedNotifications(Arrays.asList(100L, 200L, 300L, 400L, 500L, 600L));
     assertThat(nbDeletes, is(6));
     nbDeletes =
-        manager.deleteDelayedNotifications(Arrays.asList(new Long[]{100l, 200l, 300l, 400l, 500l,
-          600l}));
+        manager.deleteDelayedNotifications(Arrays.asList(100L, 200L, 300L, 400L, 500L, 600L));
     assertThat(nbDeletes, is(0));
 
   }
@@ -583,7 +565,7 @@ public class DelayedNotificationManagerIT {
    * User settings
    */
   @Test
-  public void testFindDelayedNotificationUserSettingByUserId() throws Exception {
+  public void testFindDelayedNotificationUserSettingByUserId() {
     List<DelayedNotificationUserSetting> delayedNotificationUserSettings =
         manager.findDelayedNotificationUserSettingByUserId(0);
     assertThat(delayedNotificationUserSettings, notNullValue());
@@ -599,7 +581,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testGetDelayedNotificationUserSettingByUserIdAndChannelId() throws Exception {
+  public void testGetDelayedNotificationUserSettingByUserIdAndChannelId() {
     DelayedNotificationUserSetting delayedNotificationUserSetting =
         manager.getDelayedNotificationUserSettingByUserIdAndChannel(0, NotifChannel.SMTP);
     assertThat(delayedNotificationUserSetting, nullValue());
@@ -621,7 +603,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testGetDelayedNotificationUserSetting() throws Exception {
+  public void testGetDelayedNotificationUserSetting() {
     DelayedNotificationUserSetting delayedNotificationUserSetting =
         manager.getDelayedNotificationUserSetting(1);
     assertThat(delayedNotificationUserSetting, nullValue());
@@ -634,7 +616,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testSaveDelayedNotificationUserSetting() throws Exception {
+  public void testSaveDelayedNotificationUserSetting() {
 
     final DelayedNotificationFrequency[] codes = DelayedNotificationFrequency.values();
     final NotifChannel[] channels = NotifChannel.values();
@@ -665,7 +647,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testUpdateDelayedNotificationUserSetting() throws Exception {
+  public void testUpdateDelayedNotificationUserSetting() {
     final DelayedNotificationUserSetting delayedNotificationUserSettingTest =
         manager.getDelayedNotificationUserSetting(30);
     assertThat(delayedNotificationUserSettingTest.getId(), is("30"));
@@ -691,7 +673,7 @@ public class DelayedNotificationManagerIT {
   }
 
   @Test
-  public void testDeleteDelayedNotificationUserSetting() throws Exception {
+  public void testDeleteDelayedNotificationUserSetting() {
     List<DelayedNotificationUserSetting> myDelayedNotificationUserSettings =
         manager.findDelayedNotificationUserSettingByUserId(10);
     assertThat(myDelayedNotificationUserSettings, notNullValue());

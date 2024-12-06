@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.datereminder;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
@@ -75,9 +76,9 @@ public class PublicationDateReminderUserNotification
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getBundle(language).getString(
         getBundleSubjectKey()), "");
-    template.setAttribute("resourceTitle", this.pubDetail.getName(language));
+    template.setAttribute("resourceTitle", Encode.forHtml(this.pubDetail.getName(language)));
     template.setAttribute("resourceDesc", this.pubDetail.getDescription(language));
-    template.setAttribute("resourceNote", resource.getDateReminder().getMessage());
+    template.setAttribute("resourceNote", Encode.forHtml(resource.getDateReminder().getMessage()));
     String updatedId = this.pubDetail.getUpdaterId();
     template.setAttribute("senderName", UserDetail.getById(updatedId).getDisplayedName());
   }

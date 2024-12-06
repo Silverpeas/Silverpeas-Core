@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.container.service;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -461,7 +462,7 @@ public class DefaultQuestionContainerService
       if (cluePenalty.startsWith(PENALTY_CLUE)) {
         // It's a clue penalty field
         penaltyValue =
-            Integer.parseInt(cluePenalty.substring(PENALTY_CLUE.length(), cluePenalty.length()));
+            Integer.parseInt(cluePenalty.substring(PENALTY_CLUE.length()));
         vectorBegin = 1;
       }
 
@@ -472,7 +473,7 @@ public class DefaultQuestionContainerService
         // It's an open answer, Fetch the matching answerId
         final int answerIdIndex = vectorSize - 2;
         answerId = answers.get(answerIdIndex);
-        openedAnswer = openedAnswer.substring(OPENED_ANSWER.length(), openedAnswer.length());
+        openedAnswer = openedAnswer.substring(OPENED_ANSWER.length());
 
         // User Score for this question
         answer = question.getAnswer(answerId);
@@ -1030,7 +1031,7 @@ public class DefaultQuestionContainerService
       QuestionContainerHeader questionHeader = questionDetail.getHeader();
       QuestionContainerPK pk = questionHeader.getPK();
       htmlPath = getSpacesPath(pk.getInstanceId()) + getComponentLabel(pk.getInstanceId()) + " > " +
-          questionHeader.getName();
+          Encode.forHtml(questionHeader.getName());
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
     }

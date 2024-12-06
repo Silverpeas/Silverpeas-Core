@@ -41,6 +41,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * Data on a delayed notification to users. A notification is delayed when it is sent not
  * immediately but later according to some specific user settings.
+ *
  * @author Yohann Chastagnier
  */
 @Entity

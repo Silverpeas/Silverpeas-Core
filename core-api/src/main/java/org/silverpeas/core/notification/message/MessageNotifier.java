@@ -23,19 +23,25 @@
  */
 package org.silverpeas.core.notification.message;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 
 import java.text.MessageFormat;
 import java.time.temporal.Temporal;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * This utility class provides tools to display easily some dynamic notifications using the
  * notifier
  * plugin.
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 23/07/13
  */
 public class MessageNotifier {
+
+  private MessageNotifier() {
+  }
 
   /**
    * Gets the localization bundle with the specified base name and for the root locale.
@@ -93,7 +99,12 @@ public class MessageNotifier {
    */
   private static String format(String message, Object... parameters) {
     if (parameters.length != 0) {
-      return MessageFormat.format(message, parameters);
+      return MessageFormat.format(message, Arrays.stream(parameters)
+          .map(p -> Optional.of(p)
+              .filter(String.class::isInstance)
+              .map(o -> (Object) Encode.forHtml((String) o))
+              .orElse(p)
+          ).toArray());
     }
     return message;
   }

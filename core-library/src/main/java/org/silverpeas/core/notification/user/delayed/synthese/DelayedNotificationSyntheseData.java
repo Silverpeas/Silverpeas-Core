@@ -23,12 +23,10 @@
  */
 package org.silverpeas.core.notification.user.delayed.synthese;
 
+import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
+
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.apache.commons.lang3.StringUtils;
-
-import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 
 /**
  * @author Yohann Chastagnier
@@ -104,11 +102,6 @@ public class DelayedNotificationSyntheseData {
       message = "";
     }
     return message;
-  }
-
-  public boolean isHtmlMessage() {
-    return StringUtils.isNotBlank(getMessage()) &&
-        (getMessage().indexOf("<html") >= 0 || getMessage().indexOf("<body") >= 0);
   }
 
   public void setMessage(final String message) {

@@ -30,18 +30,13 @@ import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
-import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
-import java.text.MessageFormat;
 
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.util.JSONCodec.encodeArray;
@@ -78,7 +73,7 @@ public class SubscribeResource extends AbstractSubscriptionResource {
       final String userLanguage = getUserPreferences().getLanguage();
       SubscriptionBeanProvider.getBySubscription(subscription, userLanguage).ifPresent(
           b -> WebMessager.getInstance().addSuccess(
-              MessageFormat.format(getBundle().getString("GML.subscribe.success"), b.getPath())));
+              getBundle().getString("GML.subscribe.success"), b.getPath()));
       return encodeArray(j -> j.add("OK"));
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
