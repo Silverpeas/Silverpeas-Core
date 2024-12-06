@@ -29,12 +29,7 @@ import org.silverpeas.core.annotation.constraint.DateRange;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
@@ -381,6 +376,17 @@ public class Period implements Serializable {
    */
   public boolean isInDays() {
     return inDays;
+  }
+
+  /**
+   * Does this period span over several days?
+   * @return true if the end date of this period is after at least one day its start date. False
+   * otherwise.
+   */
+  public boolean spanOverSeveralDays() {
+    return LocalDate.ofInstant(endDateTime, ZoneOffset.UTC).minusDays(1)
+        .isAfter(LocalDate.ofInstant(startDateTime,
+        ZoneOffset.UTC));
   }
 
   /**
