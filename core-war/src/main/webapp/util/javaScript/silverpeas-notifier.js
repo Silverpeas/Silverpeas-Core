@@ -26,10 +26,11 @@
 
 /**
  * Helper to display a Silverpeas information notification.
- * @param text
+ * @param text text to display
+ * @param customOptions additional rendering options
  */
 function notyInfo(text, customOptions) {
-  var options = {
+  let options = {
     text: text,
     type: 'information'
   };
@@ -41,10 +42,11 @@ function notyInfo(text, customOptions) {
 
 /**
  * Helper to display a Silverpeas success notification.
- * @param text
+ * @param text text to display
+ * @param customOptions additional rendering options
  */
 function notySuccess(text, customOptions) {
-  var options = {
+  let options = {
     text: text,
     type: 'success'
   };
@@ -56,10 +58,11 @@ function notySuccess(text, customOptions) {
 
 /**
  * Helper to display a Silverpeas warning notification.
- * @param text
+ * @param text text to display
+ * @param customOptions additional rendering options
  */
 function notyWarning(text, customOptions) {
-  var options = {
+  let options = {
     text: text,
     timeout: false,
     closeWith: ['button'], // ['click', 'button', 'hover']
@@ -73,10 +76,11 @@ function notyWarning(text, customOptions) {
 
 /**
  * Helper to display a Silverpeas error notification.
- * @param text
+ * @param text text to display
+ * @param customOptions additional rendering options
  */
 function notyError(text, customOptions) {
-  var options = {
+  let options = {
     text: text,
     timeout: false,
     closeWith: ['button'], // ['click', 'button', 'hover']
@@ -90,10 +94,11 @@ function notyError(text, customOptions) {
 
 /**
  * Helper to display a Silverpeas error notification.
- * @param text
+ * @param text text to display
+ * @param customOptions additional rendering options
  */
 function notySevere(text, customOptions) {
-  var options = {
+  let options = {
     text: text,
     timeout: false,
     closeWith: ['button'], // ['click', 'button', 'hover']
@@ -109,10 +114,11 @@ function notySevere(text, customOptions) {
 
 /**
  * Helper to display a Silverpeas debug notification.
- * @param text
+ * @param text text to display
+ * @param customOptions additional rendering options
  */
 function notyDebug(text, customOptions) {
-  var options = {
+  let options = {
     layout: 'centerLeft',
     text: text,
     //timeout: false,
@@ -141,24 +147,25 @@ function notyReset() {
 }
 
 /**
- * Helper.
- * @param text
+ * Notifies the user by rendering to him a message embedded within the specified notification
+ * data.
+ * @param data the notification data
  */
-function __noty(customOptions) {
+function __noty(data) {
   if (top !== window && typeof top.window.__noty === 'function' && spFscreen.fullscreenElement() === null) {
-    return top.window.__noty(customOptions);
+    return top.window.__noty(data);
   }
-  var options = extendsObject({
+  const options = extendsObject({
     layout: 'topCenter',
     theme: 'silverpeas',
     timeout: 5000,
     dismissQueue: true
-  }, customOptions);
+  }, data);
   if (options.text) {
 
-    if (typeof customOptions.text === 'string' && customOptions.text.indexOf('<body>')) {
-      var $message = document.createElement("div");
-      $message.innerHTML = customOptions.text;
+    if (typeof data.text === 'string' && data.text.indexOf('<body>')) {
+      let $message = document.createElement("div");
+      $message.innerHTML = data.text;
       options.text = $message.innerHTML;
     }
 
@@ -178,7 +185,7 @@ function __noty(customOptions) {
  */
 function notyRegistredMessages(registredKey) {
   jQuery(document).ready(function() {
-    var url = webContext + '/services/messages/' + registredKey;
+    const url = webContext + '/services/messages/' + registredKey;
 
     // Ajax request
     jQuery.ajax({
@@ -191,7 +198,7 @@ function notyRegistredMessages(registredKey) {
           jQuery.each(result.messages, function(index, message) {
 
             // Default options
-            var messageOptions = {
+            const messageOptions = {
               text: message.content,
               type: message.type,
               timeout: false,
@@ -250,8 +257,8 @@ function notySetupRequestComplete(request) {
  * Setup all JQuery Ajax call to handle returns of messages (or technical errors).
  */
 function notySetupAjaxMessages() {
-  var error = function(jqXHR, errorThrown) {
-    var errorMsg = jqXHR.responseText;
+  const error = function (jqXHR, errorThrown) {
+    let errorMsg = jqXHR.responseText;
     if (!jQuery.trim(errorMsg)) {
       errorMsg = errorThrown;
     }

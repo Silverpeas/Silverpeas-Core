@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.delayed.synthese;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.notification.user.AttachmentLink;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class SyntheseResource {
   }
 
   public void setName(final String name) {
-    this.name = name;
+    this.name = name == null ? null : Encode.forHtml(name);
   }
 
   public String getDescription() {
@@ -55,7 +56,7 @@ public class SyntheseResource {
   }
 
   public void setDescription(final String description) {
-    this.description = description;
+    this.description = description == null ? null : Encode.forHtml(description);
   }
 
   public String getLocation() {
@@ -63,7 +64,7 @@ public class SyntheseResource {
   }
 
   public void setLocation(final String location) {
-    this.location = location;
+    this.location = location == null ? null : Encode.forHtml(location);
   }
 
   public String getUrl() {

@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Yohann Chastagnier
  */
+@SuppressWarnings("unused")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MessageEntity {
@@ -52,7 +53,7 @@ public class MessageEntity {
 
   /**
    * Creates a new content entity
-   * @param message
+   * @param message the message for which this entity is created
    * @return the entity representing the specified content.
    */
   public static MessageEntity createFrom(Message message) {
@@ -61,7 +62,7 @@ public class MessageEntity {
 
   /**
    * Default hidden constructor.
-   * @param message
+   * @param message the message for which this entity is created
    */
   private MessageEntity(Message message) {
     this.type = message.getType();

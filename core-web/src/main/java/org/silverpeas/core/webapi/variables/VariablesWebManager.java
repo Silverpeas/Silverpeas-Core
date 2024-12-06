@@ -180,7 +180,7 @@ public class VariablesWebManager {
   }
 
   private void addSuccess(String key, Object... params) {
-    getMessager().addSuccess(getLocalizationBundle().getStringWithParams(key, params));
+    getMessager().addSuccess(getLocalizationBundle().getString(key), params);
   }
 
   private void addFailure(String key) {

@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.calendar.Attendee;
@@ -150,7 +151,7 @@ public class CalendarResource extends AbstractCalendarResource {
     Calendar createdCalendar =
         process(() -> getCalendarWebManager().saveCalendar(calendar)).execute();
     if (createdCalendar.isSynchronized()) {
-      synchronizeCalendar(createdCalendar.getId());
+      synchronizeCalendar(createdCalendar);
     }
     return asWebEntity(createdCalendar);
   }
@@ -180,7 +181,7 @@ public class CalendarResource extends AbstractCalendarResource {
     Calendar updatedCalendar =
         process(() -> getCalendarWebManager().saveCalendar(calendar)).execute();
     if (synchronizedRequired) {
-      synchronizeCalendar(updatedCalendar.getId());
+      synchronizeCalendar(updatedCalendar);
     }
     return asWebEntity(updatedCalendar);
   }
@@ -288,16 +289,7 @@ public class CalendarResource extends AbstractCalendarResource {
   public Response synchronizeCalendar(@PathParam("calendarId") String calendarId) {
     final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
     assertDataConsistency(getComponentId(), calendar);
-    try {
-      getCalendarWebManager().synchronizeCalendar(calendar);
-    } catch (ImportException e) {
-      if (e.getCause() != null) {
-        SilverLogger.getLogger(this).error(e);
-      } else {
-        SilverLogger.getLogger(this).error(e.getMessage());
-      }
-      getMessager().addError(getBundle()
-          .getStringWithParams("calendar.message.calendar.synchronize.error", calendar.getTitle()));
+    if (!synchronizeCalendar(calendar)) {
       return Response.serverError().entity(asWebEntity(calendar)).build();
     }
     return Response.ok(asWebEntity(calendar)).build();
@@ -460,7 +452,7 @@ public class CalendarResource extends AbstractCalendarResource {
           reminderEntity.mergeInto(reminder).schedule();
         } catch (Exception e) {
           getMessager().addInfo(getBundle()
-              .getStringWithParams("calendar.message.event.reminder.add.error", event.getTitle()));
+              .getString("calendar.message.event.reminder.add.error"), event.getTitle());
         }
       }
       return event;
@@ -537,8 +529,8 @@ public class CalendarResource extends AbstractCalendarResource {
             }
           });
       reminderError.ifPresent(e -> getMessager().addInfo(
-          getBundle().getStringWithParams("calendar.message.event.reminder.update.error",
-              occToUpdate.getCalendarEvent().getTitle())));
+          getBundle().getString("calendar.message.event.reminder.update.error"),
+              occToUpdate.getCalendarEvent().getTitle()));
     }
 
     return asEventWebEntities(updatedEvents);
@@ -620,6 +612,22 @@ public class CalendarResource extends AbstractCalendarResource {
         .lowestAccessRole(null)
         .execute();
     return updatedEvent != null ? asEventWebEntity(updatedEvent) : null;
+  }
+
+  private boolean synchronizeCalendar(@NonNull final Calendar calendar) {
+    try {
+      getCalendarWebManager().synchronizeCalendar(calendar);
+      return true;
+    } catch (ImportException e) {
+      if (e.getCause() != null) {
+        SilverLogger.getLogger(this).error(e);
+      } else {
+        SilverLogger.getLogger(this).error(e.getMessage());
+      }
+      getMessager().addError(getBundle()
+          .getString("calendar.message.calendar.synchronize.error"), calendar.getTitle());
+      return false;
+    }
   }
 
   /**

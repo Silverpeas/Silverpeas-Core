@@ -10,7 +10,7 @@
 			Ressource : Delegate test resource<br/>
 				<div id="resource_body" style="margin-left:15px;">
 					- description : Test resource description<br/>
-					- emplacement : Test > Delegate > Resource > Location<br/>
+					- emplacement : Test &gt; Delegate &gt; Resource &gt; Location<br/>
 					- accès : <a href="https://www.silverpeas.org/silverpeas//autoRedirect.jsp?domainId=0&goto=Delegate+test+resource" target=_blank>Cliquer ici ...</a><br/>
 					- notification :
 					<div id="resource_item" style="margin-left:25px;">

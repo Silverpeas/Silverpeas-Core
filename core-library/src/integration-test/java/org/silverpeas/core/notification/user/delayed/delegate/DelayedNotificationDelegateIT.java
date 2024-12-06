@@ -34,9 +34,7 @@ import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.server.NotificationData;
-import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -46,16 +44,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -84,7 +76,7 @@ public class DelayedNotificationDelegateIT {
         .addAdministrationFeatures()
         .addNotificationFeatures()
         .addPublicationTemplateFeatures()
-        .testFocusedOn((warBuilder) -> {
+        .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.core.notification.user");
           warBuilder.addAsResource("org/silverpeas/core/notification/user/delayed");
         }).build();
@@ -194,13 +186,12 @@ public class DelayedNotificationDelegateIT {
     }
   }
 
-  private DelayedNotificationDelegateStub assertNewNotification(
+  private void assertNewNotification(
       final DelayedNotificationData delayedNotificationDataTest, final int nbExpectedResults)
       throws Exception {
     final DelayedNotificationDelegateStub stub = new DelayedNotificationDelegateStub();
     stub.performNewNotificationSending(delayedNotificationDataTest);
     assertThat(stub.sendedList.size(), is(nbExpectedResults));
-    return stub;
   }
 
   private DelayedNotificationData buildValidDelayedNotificationData() {
@@ -224,36 +215,32 @@ public class DelayedNotificationDelegateIT {
     dndTest.setLanguage("fr");
 
     // Resource data
-    dndTest.setResource(
-        buildNotificationResourceData(RESOURCE_DATA_ID_1, RESOURCE_DATA_TYPE, RESOURCE_DATA_NAME_1,
-            RESOURCE_DATA_DESCRIPTION_1, RESOURCE_DATA_LOCATION_1, RESOURCE_DATA_URL_1));
+    dndTest.setResource(buildNotificationResourceData());
     return dndTest;
   }
 
-  private static NotificationResourceData buildNotificationResourceData(final String resourceId,
-      final String resourceType, final String resourceName, final String resourceDescription,
-      final String resourceLocation, final String resourceUrl) {
+  private static NotificationResourceData buildNotificationResourceData() {
     final NotificationResourceData data = new NotificationResourceData();
-    data.setResourceId(resourceId);
-    data.setResourceType(resourceType);
-    data.setResourceName(resourceName);
-    data.setResourceDescription(resourceDescription);
-    data.setResourceLocation(resourceLocation);
-    data.setResourceUrl(resourceUrl);
+    data.setResourceId(DelayedNotificationDelegateIT.RESOURCE_DATA_ID_1);
+    data.setResourceType(DelayedNotificationDelegateIT.RESOURCE_DATA_TYPE);
+    data.setResourceName(DelayedNotificationDelegateIT.RESOURCE_DATA_NAME_1);
+    data.setResourceDescription(DelayedNotificationDelegateIT.RESOURCE_DATA_DESCRIPTION_1);
+    data.setResourceLocation(DelayedNotificationDelegateIT.RESOURCE_DATA_LOCATION_1);
+    data.setResourceUrl(DelayedNotificationDelegateIT.RESOURCE_DATA_URL_1);
     data.setComponentInstanceId("aComponentInstanceId");
     return data;
   }
 
   @Test
   public void testDelayedNotifications_1() throws Exception {
-    // Forcings
+    // Forcing
     assertDelayedNotifications(1, 53);
     assertDelayedNotifications(1, 55);
   }
 
   @Test
   public void testDelayedNotifications_2() throws Exception {
-    // Forcings
+    // Forcing
     assertDelayedNotifications(9, null);
     assertDelayedNotifications(0, 53);
     assertDelayedNotifications(0, 55);
@@ -281,7 +268,7 @@ public class DelayedNotificationDelegateIT {
         new int[]{51, 53, 54}, "de");
   }
 
-  private DelayedNotificationDelegateStub assertDelayedNotifications(final int nbExpectedSendings,
+  private void assertDelayedNotifications(final int nbExpectedSending,
       final Integer userId) throws Exception {
     final DelayedNotificationDelegateStub stub = new DelayedNotificationDelegateStub();
     if (userId != null) {
@@ -290,11 +277,10 @@ public class DelayedNotificationDelegateIT {
     } else {
       stub.forceDelayedNotificationsSending();
     }
-    assertThat(stub.sendedList.size(), is(nbExpectedSendings));
-    return stub;
+    assertThat(stub.sendedList.size(), is(nbExpectedSending));
   }
 
-  private DelayedNotificationDelegateStub assertDelayedNotifications(final Date date,
+  private void assertDelayedNotifications(final Date date,
       final int[] userIds, final String language) throws Exception {
 
     for (final Integer userId : userIds) {
@@ -318,26 +304,25 @@ public class DelayedNotificationDelegateIT {
           .getResourceAsStream(
               "org/silverpeas/core/notification/user/delayed/result-synthese-" + userIds[i] +
                   "-" + language + ".txt")) {
+        Objects.requireNonNull(expected);
         String expectedNotif = IOUtils.toString(expected, Charsets.UTF_8).replaceAll("[\r\n\t]", "");
         String actualNotif = stub.sendedList.get(i).getMessage().replaceAll("[\r\n\t]", "");
         assertThat(actualNotif, is(expectedNotif));
       }
     }
-    return stub;
   }
 
   private Set<NotifChannel> getAimedChannelsBase() {
-    return new HashSet<>(Arrays.asList(new NotifChannel[]{NotifChannel.SMTP}));
+    return new HashSet<>(List.of(NotifChannel.SMTP));
   }
 
   /**
    * Stub
    * @author Yohann Chastagnier
    */
-  private class DelayedNotificationDelegateStub extends DelayedNotificationDelegate {
+  private static class DelayedNotificationDelegateStub extends DelayedNotificationDelegate {
 
-    // Récupération des envoyés
-    final protected List<NotificationData> sendedList = new ArrayList<>();
+    protected final List<NotificationData> sendedList = new ArrayList<>();
 
     /**
      * Default constructor
@@ -359,8 +344,7 @@ public class DelayedNotificationDelegateIT {
     }
 
     @Override
-    protected void sendNotification(final NotificationData notificationData)
-        throws NotificationServerException {
+    protected void sendNotification(final NotificationData notificationData) {
       sendedList.add(notificationData);
     }
   }

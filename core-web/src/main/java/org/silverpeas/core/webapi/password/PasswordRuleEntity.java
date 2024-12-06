@@ -45,8 +45,8 @@ public class PasswordRuleEntity {
 
   /**
    * Creates a new rule entity from the specified rule.
-   * @param rule
-   * @param language
+   * @param rule the rule on password settings.
+   * @param language the language in which is written the rule.
    * @return the entity representing the specified rule.
    */
   public static PasswordRuleEntity createFrom(final PasswordRule rule, final String language) {
@@ -61,8 +61,9 @@ public class PasswordRuleEntity {
     description = rule.getDescription(language);
   }
 
+  @SuppressWarnings("unused")
   protected PasswordRuleEntity() {
-
+    // for serialization
   }
 
   public String getType() {
