@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.sharing.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
@@ -56,7 +57,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
 
   private static final String COMMA_CHARACTER = ",";
 
-  private SharingNotificationVO fileSharingParam;
+  private final SharingNotificationVO fileSharingParam;
 
   /**
    * @param resource the sharing ticket entity
@@ -87,10 +88,11 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
     String userId = getUserId();
     getNotificationMetaData()
         .addLanguage(language, getTitle(language), "");
-    template.setAttribute("senderUser", OrganizationControllerProvider.getOrganisationController().
-        getUserDetail(userId));
+    template.setAttribute("senderUser",
+        OrganizationControllerProvider.getOrganisationController().getUserDetail(userId));
     if (StringUtil.isDefined(fileSharingParam.getAdditionalMessage())) {
-      template.setAttribute("additionalMessage", fileSharingParam.getAdditionalMessage());
+      template.setAttribute("additionalMessage",
+          Encode.forHtml(fileSharingParam.getAdditionalMessage()));
     }
     template.setAttribute("ticket", resource);
     if (ticket.getNbAccessMax() != 0) {

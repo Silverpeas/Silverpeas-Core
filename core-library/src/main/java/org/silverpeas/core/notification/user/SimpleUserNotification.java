@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
@@ -61,7 +62,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 public class SimpleUserNotification implements UserNotification {
 
   private User sender = null;
-  private NotifAction notifAction = NotifAction.REPORT;
+  private static final NotifAction NOTIF_ACTION = NotifAction.REPORT;
   private String componentInstanceId = null;
   private UnaryOperator<String> title = l -> "";
   private UnaryOperator<String> message = l -> "";
@@ -70,9 +71,9 @@ public class SimpleUserNotification implements UserNotification {
   private BiConsumer<SilverpeasTemplate, String> templateConsumer = null;
   private Function<String, Link> link = null;
   private String emailLanguage = null;
-  private Set<String> userIds = new HashSet<>();
-  private Set<String> groupIds = new HashSet<>();
-  private Set<String> externalMails = new HashSet<>();
+  private final Set<String> userIds = new HashSet<>();
+  private final Set<String> groupIds = new HashSet<>();
+  private final Set<String> externalMails = new HashSet<>();
 
   /**
    * Hidden constructor.
@@ -236,7 +237,7 @@ public class SimpleUserNotification implements UserNotification {
    */
   public SimpleUserNotification toEMails(Stream<String> eMails, String language) {
     this.emailLanguage = verifyLanguage(language);
-    eMails.forEach(e -> externalMails.add(e));
+    eMails.forEach(externalMails::add);
     return this;
   }
 
@@ -286,7 +287,7 @@ public class SimpleUserNotification implements UserNotification {
       final String message = source.message.apply(language);
       final String senderName = source.sender != null ? source.sender.getDisplayedName() : "";
       super.getNotificationMetaData().addLanguage(language, title, "");
-      template.setAttribute("message", message);
+      template.setAttribute("message", Encode.forHtml(message));
       template.setAttribute("sender", senderName);
       if (source.link != null) {
         super.getNotificationMetaData().setLink(source.link.apply(language), language);
@@ -327,7 +328,7 @@ public class SimpleUserNotification implements UserNotification {
 
     @Override
     protected NotifAction getAction() {
-      return source.notifAction;
+      return SimpleUserNotification.NOTIF_ACTION;
     }
 
     @Override

@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.notification.user.builder;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
@@ -55,7 +56,7 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("contribution", localizedContribution);
     template.setAttribute("contributionType_" + contributionType, contributionType);
-    template.setAttribute("contributionName", localizedContribution.getTitle());
+    template.setAttribute("contributionName", Encode.forHtml(localizedContribution.getTitle()));
     template.setAttribute("senderName", getSenderName());
     performTemplateData((C) localizedContribution, template);
   }

@@ -10,7 +10,7 @@
 			Resource : Delegate test resource<br/>
 				<div id="resource_body" style="margin-left:15px;">
 					- description : Test resource description<br/>
-					- location : Test > Delegate > Resource > Location<br/>
+					- location : Test &gt; Delegate &gt; Resource &gt; Location<br/>
 					- link : <a href="https://www.silverpeas.org/silverpeas//autoRedirect.jsp?domainId=0&goto=Delegate+test+resource" target=_blank>Click here ...</a><br/>
 					- notifications :
 					<div id="resource_item" style="margin-left:25px;">
@@ -25,7 +25,7 @@
 			<br/><div id="resource">
 			Resource : Test resource name no desc<br/>
 				<div id="resource_body" style="margin-left:15px;">
-					- location : Test > Resource > Location no desc<br/>
+					- location : Test &gt; Resource &gt; Location no desc<br/>
 					- link : <a href="https://www.silverpeas.org/silverpeas//autoRedirect.jsp?domainId=0&goto=Test+resource+URL+no+desc" target=_blank>Click here ...</a><br/>
 					- notifications :
 					<div id="resource_item" style="margin-left:25px;">

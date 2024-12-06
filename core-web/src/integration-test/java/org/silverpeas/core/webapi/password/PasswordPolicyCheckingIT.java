@@ -69,21 +69,23 @@ public class PasswordPolicyCheckingIT extends ResourceCreationTest {
 
   @Test
   public void checking() {
-    final Response response = post(PasswordEntity.createFrom("aA0$1234"), aResourceURI());
-    final PasswordCheckEntity passwordCheck = response.readEntity(PasswordCheckEntity.class);
-    assertNotNull(passwordCheck);
-    assertThat(passwordCheck.isCorrect(), is(true));
+    try(final Response response = post(PasswordEntity.createFrom("aA0$1234"), aResourceURI())) {
+      final PasswordCheckEntity passwordCheck = response.readEntity(PasswordCheckEntity.class);
+      assertNotNull(passwordCheck);
+      assertThat(passwordCheck.isCorrect(), is(true));
+    }
   }
 
   @Test
   public void checkingWithErrors() {
-    final Response response = post(PasswordEntity.createFrom("AA0ç123"), aResourceURI());
-    final PasswordCheckEntity passwordCheck = response.readEntity(PasswordCheckEntity.class);
-    assertNotNull(passwordCheck);
-    assertThat(passwordCheck.getRequiredRuleIdsInError(),
-        contains(PasswordRuleType.MIN_LENGTH.name(), PasswordRuleType.SEQUENTIAL_FORBIDDEN.name(),
-            PasswordRuleType.AT_LEAST_X_LOWERCASE.name(),
-            PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR.name()));
+    try (final Response response = post(PasswordEntity.createFrom("AA0ç123"), aResourceURI())) {
+      final PasswordCheckEntity passwordCheck = response.readEntity(PasswordCheckEntity.class);
+      assertNotNull(passwordCheck);
+      assertThat(passwordCheck.getRequiredRuleIdsInError(),
+          contains(PasswordRuleType.MIN_LENGTH.name(), PasswordRuleType.SEQUENTIAL_FORBIDDEN.name(),
+              PasswordRuleType.AT_LEAST_X_LOWERCASE.name(),
+              PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR.name()));
+    }
   }
 
   @Ignore
@@ -111,6 +113,7 @@ public class PasswordPolicyCheckingIT extends ResourceCreationTest {
     return "password/policies";
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public PasswordEntity aResource() {
     return PasswordEntity.createFrom("");

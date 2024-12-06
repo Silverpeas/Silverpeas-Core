@@ -324,7 +324,7 @@ public class ReminderResource extends RESTWebService {
    */
   private void successMessage(String messageKey, Object... params) {
     getMessager().addSuccess(
-        getMessagesIn(getUserPreferences().getLanguage()).getStringWithParams(messageKey, params));
+        getMessagesIn(getUserPreferences().getLanguage()).getString(messageKey), params);
   }
 
   /**
@@ -334,7 +334,7 @@ public class ReminderResource extends RESTWebService {
    */
   private void errorMessage(String messageKey, Object... params) {
     getMessager().addError(
-        getMessagesIn(getUserPreferences().getLanguage()).getStringWithParams(messageKey, params));
+        getMessagesIn(getUserPreferences().getLanguage()).getString(messageKey), params);
   }
 
   private WebMessager getMessager() {

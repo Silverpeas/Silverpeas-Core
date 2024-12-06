@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.NotificationException;
@@ -32,9 +33,9 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.*;
 
@@ -577,9 +578,14 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public void addExtraMessage(String message, String language) {
-    setOriginalExtraMessage(message);
+    addExtraMessage(message, language, true);
+  }
+
+  public void addExtraMessage(String message, String language, boolean encode) {
+    String msg = encode ? Encode.forHtml(message) : message;
+    setOriginalExtraMessage(msg);
     if (templates != null && !templates.isEmpty()) {
-      templates.get(language).setAttribute(SENDER_MESSAGE_ATTRIBUTE, message);
+      templates.get(language).setAttribute(SENDER_MESSAGE_ATTRIBUTE, msg);
     }
   }
 

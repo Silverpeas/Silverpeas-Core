@@ -27,13 +27,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIde
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -42,16 +36,16 @@ import static org.silverpeas.core.util.JSONCodec.encode;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * Data on the notification about an action operated on a resource in Silverpeas. A resource can
- * be a contribution, a business object, or any entities handled or managed in Silverpeas.
+ * Data on the notification about an action operated on a resource in Silverpeas. A resource can be
+ * a contribution, a business object, or any entities handled or managed in Silverpeas.
+ *
  * @author Yohann Chastagnier
  */
 @Entity
 @Table(name = "st_notificationresource")
-@NamedQueries({
-    @NamedQuery(name = "NotificationResourceData.deleteResources",
-        query = "delete from NotificationResourceData r where not exists (from DelayedNotificationData d where d.resource.id = r.id)")
-})
+@NamedQuery(name = "NotificationResourceData.deleteResources",
+    query = "delete from NotificationResourceData r where not exists " +
+        "(select d from DelayedNotificationData d where d.resource.id = r.id)")
 public class NotificationResourceData
     extends BasicJpaEntity<NotificationResourceData, UniqueLongIdentifier> {
   public static final String LOCATION_SEPARATOR = "@#@#@";
@@ -102,6 +96,7 @@ public class NotificationResourceData
 
   /**
    * Constructs a new instance as a copy of the specified notification resource data.
+   *
    * @param notificationResourceData the {@link NotificationResourceData} instance to copy.
    */
   public NotificationResourceData(final NotificationResourceData notificationResourceData) {
@@ -110,6 +105,7 @@ public class NotificationResourceData
 
   /**
    * Copying all data from the given resource excepted the id
+   *
    * @param notificationResourceData the data from which all is copied.
    */
   public final void fillFrom(final NotificationResourceData notificationResourceData) {
@@ -130,8 +126,8 @@ public class NotificationResourceData
     forcesNullValues();
   }
 
-  @PreUpdate
-  public void beforeUpdate() {
+  @Override
+  public void performBeforeUpdate() {
     forcesNullValues();
   }
 
@@ -188,7 +184,8 @@ public class NotificationResourceData
   }
 
   public void setResourceName(final String resourceName) {
-    this.resourceName = defaultStringIfNotDefined(setLocalizedDetail(TITLE_KEY, resourceName, this.resourceName));
+    this.resourceName = defaultStringIfNotDefined(setLocalizedDetail(TITLE_KEY, resourceName,
+        this.resourceName));
   }
 
   public String getResourceDescription() {
@@ -196,7 +193,8 @@ public class NotificationResourceData
   }
 
   public void setResourceDescription(final String resourceDescription) {
-    this.resourceDescription = setLocalizedDetail(DESCRIPTION_KEY, resourceDescription, this.resourceDescription);
+    this.resourceDescription = setLocalizedDetail(DESCRIPTION_KEY, resourceDescription,
+        this.resourceDescription);
   }
 
   public String getResourceLocation() {
@@ -249,6 +247,7 @@ public class NotificationResourceData
 
   /**
    * Gets the current language into which the data are registered and provided by this entity.
+   *
    * @return a string.
    */
   public String getCurrentLanguage() {
