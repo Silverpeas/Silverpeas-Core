@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.security.authentication.password.service;
 
+import org.silverpeas.core.security.authentication.password.PasswordBundle;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.MissingResourceException;
 
 /**
  * User: Yohann Chastagnier
@@ -139,17 +138,7 @@ public class PasswordCheck {
   }
 
   protected String getString(final String key, final String language, final String... params) {
-    LocalizationBundle messages =
-        ResourceLocator.getLocalizationBundle("org.silverpeas.password.multilang.passwordBundle",
-            language);
-    String translation;
-    try {
-      translation =
-          (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
-              messages.getString(key);
-    } catch (MissingResourceException ex) {
-      translation = "";
-    }
-    return translation;
+    PasswordBundle bundle = new PasswordBundle(language);
+    return bundle.getString(key, params);
   }
 }

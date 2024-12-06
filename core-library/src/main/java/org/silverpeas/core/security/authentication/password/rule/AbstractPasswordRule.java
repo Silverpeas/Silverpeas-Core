@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.security.authentication.password.rule;
 
+import org.silverpeas.core.security.authentication.password.PasswordBundle;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import java.util.MissingResourceException;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,8 +57,8 @@ public abstract class AbstractPasswordRule implements PasswordRule {
   @Override
   public String getDescription(final String language) {
     final Object value = getValue();
-    return getString(getType().getBundleKey(), language,
-        (value instanceof Boolean) ? null : String.valueOf(value));
+    final String param = value instanceof Boolean ? null : String.valueOf(value);
+    return getString(getType().getBundleKey(), language, param);
   }
 
   @Override
@@ -96,18 +95,8 @@ public abstract class AbstractPasswordRule implements PasswordRule {
    * @return the message generated from a template and the parameters.
    */
   protected String getString(final String key, final String language, final String... params) {
-    LocalizationBundle messages =
-        ResourceLocator.getLocalizationBundle("org.silverpeas.password.multilang.passwordBundle",
-            language);
-    String translation;
-    try {
-      translation =
-          (params != null && params.length > 0) ? messages.getStringWithParams(key, (Object[]) params) :
-              messages.getString(key);
-    } catch (MissingResourceException ex) {
-      translation = "";
-    }
-    return translation;
+    PasswordBundle bundle = new PasswordBundle(language);
+    return bundle.getString(key, params);
   }
 
   /**

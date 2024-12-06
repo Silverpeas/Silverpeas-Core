@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.tools.agenda.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -53,38 +54,16 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   private final UserDetail sender;
   private final String attend;
 
-  /**
-   * Notification from delegator
-   *
-   * @param action
-   * @param sender
-   * @param resource
-   */
   public AgendaUserNotification(final NotifAction action, final UserDetail sender,
       final JournalHeader resource) {
     this(action, sender, resource, null);
   }
 
-  /**
-   * Notification from attendee
-   *
-   * @param sender
-   * @param resource
-   * @param attend
-   */
   public AgendaUserNotification(final UserDetail sender, final JournalHeader resource,
       final String attend) {
     this(NotifAction.RESPONSE, sender, resource, attend);
   }
 
-  /**
-   * Default hidden constructor
-   *
-   * @param action
-   * @param sender
-   * @param resource
-   * @param attend
-   */
   private AgendaUserNotification(final NotifAction action, final UserDetail sender,
       final JournalHeader resource, final String attend) {
     super(resource);
@@ -192,7 +171,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
     if (isDefined(attend)) {
       template.setAttribute(attend, attend);
     }
-    template.setAttribute("name", getResource().getName());
+    template.setAttribute("name", Encode.forHtml(getResource().getName()));
     template.setAttribute("startDate",
         DateUtil.getOutputDate(getResource().getStartDate(), language));
     if (isDefined(getResource().getStartHour())) {

@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.comment.service;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -127,8 +127,16 @@ public class CommentUserNotification
       final SilverpeasTemplate template) {
     componentMessages.changeLocale(language);
     getNotificationMetaData().addLanguage(language, getTitle(), "");
+    Comment toUseInTempalte = new Comment(comment.getIdentifier(),
+        comment.getCreatorId(),
+        comment.getResourceType(),
+        comment.getResourceReference(),
+        comment.getCreationDate());
+    toUseInTempalte.setLastUpdateDate(comment.getLastUpdateDate());
+    toUseInTempalte.setMessage(Encode.forHtml(comment.getMessage()));
+    template.setAttribute("contentTitle", Encode.forHtml(resource.getTitle()));
     template.setAttribute(NOTIFICATION_CONTENT_ATTRIBUTE, getResource());
-    template.setAttribute(NOTIFICATION_COMMENT_ATTRIBUTE, comment);
+    template.setAttribute(NOTIFICATION_COMMENT_ATTRIBUTE, toUseInTempalte);
   }
 
   @Override
@@ -161,11 +169,6 @@ public class CommentUserNotification
   @Override
   protected String getSender() {
     return comment.getCreator().getId();
-  }
-
-  @Override
-  protected boolean isSendImmediately() {
-    return (getResource() instanceof SilverpeasToolContent);
   }
 
   @Override

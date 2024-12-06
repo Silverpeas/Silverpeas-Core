@@ -93,17 +93,15 @@ public class DocumentTemplateWebManager {
    * Creates a category into Silverpeas's context.
    * @param newDocumentTemplate data of a new document template.
    * @param content the document template content (mandatory).
-   * @return the new document template instance.
    */
-  public DocumentTemplate createDocumentTemplate(DocumentTemplate newDocumentTemplate,
+  public void createDocumentTemplate(DocumentTemplate newDocumentTemplate,
       UploadedFile content) {
     try (final InputStream is = openInputStream(content.getFile())) {
       final DocumentTemplate created = service.put(newDocumentTemplate, is);
       clearCachedList();
       final LocalizationBundle bundle = getBundle();
-      getMessager().addSuccess(bundle.getStringWithParams("documentTemplate.create.success",
-          created.getName(bundle.getLocale().getLanguage())));
-      return created;
+      getMessager().addSuccess(bundle.getString("documentTemplate.create.success"),
+          created.getName(bundle.getLocale().getLanguage()));
     } catch (DocumentTemplateRuntimeException | IOException e) {
       throw new WebApplicationException(e.getMessage(), BAD_REQUEST);
     }
@@ -113,9 +111,8 @@ public class DocumentTemplateWebManager {
    * Updates a document template into Silverpeas's context.
    * @param updatedDocumentTemplate data of an updated document template.
    * @param content the document template content (mandatory).
-   * @return the saved data.
    */
-  public DocumentTemplate updateDocumentTemplate(DocumentTemplate updatedDocumentTemplate,
+  public void updateDocumentTemplate(DocumentTemplate updatedDocumentTemplate,
       UploadedFile content) {
     try (final InputStream is = content != null ? openInputStream(content.getFile()) : null) {
       final DocumentTemplate previous = service.getById(updatedDocumentTemplate.getId())
@@ -130,9 +127,8 @@ public class DocumentTemplateWebManager {
       });
       clearCachedList();
       final LocalizationBundle bundle = getBundle();
-      getMessager().addSuccess(bundle.getStringWithParams("documentTemplate.update.success",
-          updated.getName(bundle.getLocale().getLanguage())));
-      return updated;
+      getMessager().addSuccess(bundle.getString("documentTemplate.update.success"),
+          updated.getName(bundle.getLocale().getLanguage()));
     } catch (DocumentTemplateRuntimeException | IOException e) {
       throw new WebApplicationException(e.getMessage(), BAD_REQUEST);
     }
@@ -151,11 +147,11 @@ public class DocumentTemplateWebManager {
       clearCachedList();
       final LocalizationBundle bundle = getBundle();
       if (documentTemplateIds.size() == 1) {
-        getMessager().addSuccess(bundle.getStringWithParams("documentTemplate.delete.success",
+        getMessager().addSuccess(bundle.getString("documentTemplate.delete.success"),
             documentTemplates.stream()
                 .map(t -> t.getName(bundle.getLocale().getLanguage()))
                 .findFirst()
-                .orElse(EMPTY)));
+                .orElse(EMPTY));
       } else {
         getMessager().addSuccess(bundle.getString("documentTemplates.delete.success"));
       }

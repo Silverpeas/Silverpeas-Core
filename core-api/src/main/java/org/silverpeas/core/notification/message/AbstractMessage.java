@@ -23,14 +23,12 @@
  */
 package org.silverpeas.core.notification.message;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.owasp.encoder.Encode;
+import java.util.Objects;
 
 /**
  * Message to notify the user
- * @author Yohann Chastagnier
- * Date: 07/11/13
+ *
+ * @author Yohann Chastagnier Date: 07/11/13
  */
 public abstract class AbstractMessage implements Message {
 
@@ -43,7 +41,7 @@ public abstract class AbstractMessage implements Message {
 
   @Override
   public String getContent() {
-    return Encode.forHtml(content);
+    return content;
   }
 
   @Override
@@ -70,19 +68,13 @@ public abstract class AbstractMessage implements Message {
       return false;
     }
     final Message other = (Message) obj;
-    EqualsBuilder matcher = new EqualsBuilder();
-    matcher.append(getType(), other.getType());
-    matcher.append(getContent(), other.getContent());
-    matcher.append(getDisplayLiveTime(), other.getDisplayLiveTime());
-    return matcher.isEquals();
+    return Objects.equals(getType(), other.getType())
+        && Objects.equals(getContent(), other.getContent())
+        && Objects.equals(getDisplayLiveTime(), other.getDisplayLiveTime());
   }
 
   @Override
   public int hashCode() {
-    HashCodeBuilder hash = new HashCodeBuilder();
-    hash.append(getType());
-    hash.append(getContent());
-    hash.append(getDisplayLiveTime());
-    return hash.toHashCode();
+    return Objects.hash(getType(), getContent(), getDisplayLiveTime());
   }
 }
