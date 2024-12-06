@@ -1,5 +1,5 @@
 $if(several)$
-You don't participate anymore in the events <b>$contributionName$</b> since <i>$contributionDate$</i>
+$senderName$ has removed your participation in all the events <b>$contributionName$</b><i>$contributionDate$</i>$if(contributionStartDate)$ from <i>$contributionStartDate$</i>$endif$
 $else$
-You don't participate anymore in the event <b>$contributionName$</b> at <i>$contributionDate$</i>
+$senderName$ has removed your participation in the event <b>$contributionName$</b>$if(contributionStartDate)$$if(contributionEndDate)$ from <i>$contributionStartDate$</i> to <i>$contributionEndDate$</i>$else$ for <i>$contributionStartDate$</i>$endif$$endif$
 $endif$

@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -56,7 +57,7 @@ import static org.silverpeas.core.util.DateUtil.getHourOutputFormat;
 abstract class AbstractCalendarEventUserNotificationBuilder
     extends AbstractCalendarUserNotificationBuilder<Contribution> {
 
-  private NotifAction notifCause;
+  private final NotifAction notificationCause;
   private CalendarOperation operation = CalendarOperation.NONE;
   private User sender;
   private boolean immediately = false;
@@ -68,7 +69,7 @@ abstract class AbstractCalendarEventUserNotificationBuilder
    */
   AbstractCalendarEventUserNotificationBuilder(final Contribution calendarComponent, final NotifAction action) {
     super(calendarComponent, null);
-    this.notifCause = action;
+    this.notificationCause = action;
   }
 
   /**
@@ -110,7 +111,13 @@ abstract class AbstractCalendarEventUserNotificationBuilder
   protected void performTemplateData(final Contribution contribution,
       final SilverpeasTemplate template) {
     final String language = ((LocalizedContribution) contribution).getLanguage();
-    template.setAttribute("contributionDate", dateOf(getResource(), language));
+    CalendarComponent component = getCalendarComponent(getResource());
+    if (component != null) {
+      template.setAttribute("contributionStartDate", startDateOf(component, language));
+      if (component.getPeriod().spanOverSeveralDays()) {
+        template.setAttribute("contributionEndDate", endDateOf(component, language));
+      }
+    }
     template.setAttribute("several", this.operation.isSeveralImplied());
   }
 
@@ -126,21 +133,11 @@ abstract class AbstractCalendarEventUserNotificationBuilder
 
   @Override
   protected NotifAction getAction() {
-    return this.notifCause;
+    return this.notificationCause;
   }
 
-  private String dateOf(final Object contribution, final String language) {
-    final CalendarComponent calendarComponent;
-    if (contribution instanceof CalendarEvent) {
-      calendarComponent = ((CalendarEvent) contribution).asCalendarComponent();
-    } else if (contribution instanceof CalendarEventOccurrence) {
-      calendarComponent = ((CalendarEventOccurrence) contribution).asCalendarComponent();
-    } else if (contribution instanceof CalendarComponent) {
-      calendarComponent = (CalendarComponent) contribution;
-    } else {
-      return null;
-    }
-
+  private String startDateOf(@NonNull final CalendarComponent calendarComponent,
+      @NonNull String language) {
     final Temporal startDate =
         getDateWithOffset(calendarComponent, calendarComponent.getPeriod().getStartDate());
     if (startDate instanceof LocalDate) {
@@ -152,6 +149,33 @@ abstract class AbstractCalendarEventUserNotificationBuilder
               getHourOutputFormat(language).getPattern())) + " (" +
           calendarComponent.getCalendar().getZoneId() + ")";
     }
+  }
+
+  private String endDateOf(@NonNull CalendarComponent calendarComponent,
+      @NonNull String language) {
+    final Temporal endDate =
+        getDateWithOffset(calendarComponent, calendarComponent.getPeriod().getEndDate());
+    if (endDate instanceof LocalDate) {
+      return ((LocalDate) endDate)
+          .format(DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern()));
+    } else {
+      return ((OffsetDateTime) endDate).format(DateTimeFormatter.ofPattern(
+          getDateOutputFormat(language).getPattern() + " " +
+              getHourOutputFormat(language).getPattern())) + " (" +
+          calendarComponent.getCalendar().getZoneId() + ")";
+    }
+  }
+
+  private static CalendarComponent getCalendarComponent(Contribution contribution) {
+    final CalendarComponent calendarComponent;
+    if (contribution instanceof CalendarEvent) {
+      calendarComponent = ((CalendarEvent) contribution).asCalendarComponent();
+    } else if (contribution instanceof CalendarEventOccurrence) {
+      calendarComponent = ((CalendarEventOccurrence) contribution).asCalendarComponent();
+    } else {
+      return null;
+    }
+    return calendarComponent;
   }
 
   protected CalendarOperation getOperation() {
