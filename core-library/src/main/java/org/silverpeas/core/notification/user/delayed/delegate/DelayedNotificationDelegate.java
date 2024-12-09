@@ -410,9 +410,6 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
     // Filling the synthesis resource data
     syntheseResource.setName(resource.getResourceName());
     syntheseResource.setDescription(resource.getResourceDescription());
-    if (syntheseResource.getDescription() != null) {
-      syntheseResource.setDescription(forHtml(syntheseResource.getDescription()));
-    }
     syntheseResource.setLocation(resource.getResourceLocation()
         .replace(NotificationResourceData.LOCATION_SEPARATOR, LOCATION_SEPARATOR));
     syntheseResource.setUrl(resource.getResourceUrl());
@@ -457,7 +454,6 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
       syntheseNotification.setPreviousHasMessage(isPreviousHasMessage);
       if (syntheseNotification.getMessage() != null) {
         isPreviousHasMessage = true;
-        syntheseNotification.setMessage(forHtml(syntheseNotification.getMessage()));
       } else {
         isPreviousHasMessage = false;
       }

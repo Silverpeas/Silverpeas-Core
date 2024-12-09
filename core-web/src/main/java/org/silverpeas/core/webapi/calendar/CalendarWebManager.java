@@ -303,8 +303,7 @@ public class CalendarWebManager {
     calendar.save();
     String userLanguage = owner.getUserPreferences().getLanguage();
     getMessager().addSuccess(
-        getLocalizationBundle(userLanguage).getStringWithParams(successfulMessageKey,
-            calendar.getTitle()));
+        getLocalizationBundle(userLanguage).getString(successfulMessageKey), calendar.getTitle());
     return calendar;
   }
 
@@ -322,7 +321,7 @@ public class CalendarWebManager {
     calendar.delete();
     String userLanguage = owner.getUserPreferences().getLanguage();
     getMessager().addSuccess(getLocalizationBundle(userLanguage)
-        .getStringWithParams("calendar.message.calendar.deleted", calendar.getTitle()));
+        .getString("calendar.message.calendar.deleted"), calendar.getTitle());
   }
 
   /**
@@ -783,7 +782,7 @@ public class CalendarWebManager {
     User owner = User.getCurrentRequester();
     String userLanguage = owner.getUserPreferences().getLanguage();
     getMessager().addSuccess(
-        getLocalizationBundle(userLanguage).getStringWithParams(messageKey, params));
+        getLocalizationBundle(userLanguage).getString(messageKey), params);
   }
 
   private WebMessager getMessager() {

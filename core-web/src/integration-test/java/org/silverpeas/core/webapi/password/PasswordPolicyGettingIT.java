@@ -83,10 +83,6 @@ public class PasswordPolicyGettingIT extends ResourceGettingTest {
         get(PasswordPolicyEntity.class));
   }
 
-  /**
-   * Centralization of asserts.
-   * @param entity
-   */
   private void assertEntity(PasswordPolicyEntity entity) {
     assertNotNull(entity);
     assertThat(entity.getRules().size(), is(8));
@@ -96,7 +92,7 @@ public class PasswordPolicyGettingIT extends ResourceGettingTest {
         is("au moins 1 majuscule(s)"));
     assertThat(
         entity.getRules().get(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR.name()).getDescription(),
-        is("au moins 1 caractère(s) spécial(aux) (%*!?$-+#&=.,;)"));
+        is("au moins 1 caractère(s) spécial(aux) (%*!?$-+#&amp;=.,;)"));
     assertThat(entity.getExtraRuleMessage(), is("règles supplémentaires non vérifiables ..."));
   }
 
@@ -120,8 +116,9 @@ public class PasswordPolicyGettingIT extends ResourceGettingTest {
     return "password/policies";
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Object aResource() {
+  public PasswordPolicyEntity aResource() {
     return null;
   }
 

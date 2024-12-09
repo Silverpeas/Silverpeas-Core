@@ -24,8 +24,8 @@
 
 (function($) {
 
-  var $isFromPopup = window.opener && !top.__spWindow_main_frame;
-  var $window = top.spLayout && !$isFromPopup ? top.window : window;
+  const $isFromPopup = window.opener && !top.__spWindow_main_frame;
+  const $window = top.spLayout && !$isFromPopup ? top.window : window;
 
   /**
    * The instance of the plugin must be attached to the top window.
@@ -77,8 +77,8 @@
      */
     open : function(instanceId, parameters) {
       if (!sp.messager.opened) {
-        var messager = $window.webContext + '/RuserNotification/jsp/Main';
-        var notification = {};
+        const messager = $window.webContext + '/RuserNotification/jsp/Main';
+        let notification = {};
         if (instanceId !== undefined) {
           if (typeof parameters === 'object') {
             notification = parameters;
@@ -99,7 +99,7 @@
             return sendNotification(notification);
           },
           callbackOnClose : function() {
-            var url = $window.webContext + '/RuserNotification/jsp/ClearNotif';
+            const url = $window.webContext + '/RuserNotification/jsp/ClearNotif';
             sp.ajaxRequest(url).byPostMethod().send();
             sp.messager.opened = false;
           }
@@ -131,13 +131,14 @@
      * @param notification the an object describing the properties of the message to send.
      */
     send : function(notification) {
+      let msg;
       if (!notification || (!notification.recipientUsers && !notification.recipientGroups)) {
-        var msg = sp.i18n.get('thefield') + ' <b>' +
+        msg = sp.i18n.get('thefield') + ' <b>' +
             sp.i18n.get('addressees') + '</b> ' +
             sp.i18n.get('isRequired');
         SilverpeasError.add(msg);
       } else if (notification.manual === true && !notification.title) {
-        var msg = sp.i18n.get('thefield') + ' <b>' +
+        msg = sp.i18n.get('thefield') + ' <b>' +
             sp.i18n.get('title') + '</b> ' +
             sp.i18n.get('isRequired');
         SilverpeasError.add(msg);
@@ -148,7 +149,7 @@
       if (notification.content === null || notification.content === undefined) {
         notification.content = '';
       }
-      var url = $window.webContext + '/RuserNotification/jsp/SendNotif';
+      const url = $window.webContext + '/RuserNotification/jsp/SendNotif';
       return sp.ajaxRequest(url).byPostMethod().withParams(notification).send();
     }
   }

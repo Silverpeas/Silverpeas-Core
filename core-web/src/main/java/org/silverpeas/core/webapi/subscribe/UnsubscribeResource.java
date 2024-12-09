@@ -31,18 +31,13 @@ import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
-import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.text.MessageFormat;
 import java.util.Collections;
 
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
@@ -121,7 +116,7 @@ public class UnsubscribeResource extends AbstractSubscriptionResource {
       final String userLanguage = getUserPreferences().getLanguage();
       SubscriptionBeanProvider.getBySubscription(subscription, userLanguage).ifPresent(
           b -> WebMessager.getInstance().addSuccess(
-              MessageFormat.format(getBundle().getString("GML.unsubscribe.success"), b.getPath())));
+              getBundle().getString("GML.unsubscribe.success"), b.getPath()));
       return Response.ok(Collections.singletonList("OK")).build();
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);

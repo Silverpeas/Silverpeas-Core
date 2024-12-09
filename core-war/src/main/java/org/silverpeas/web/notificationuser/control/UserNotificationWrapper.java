@@ -80,7 +80,7 @@ public class UserNotificationWrapper implements UserNotification {
       final Map<String, String> simpleContents = metaData.getSimpleContents();
       for (String lang : DisplayI18NHelper.getLanguages()) {
         if (!isSimpleContents || isDefined(simpleContents.get(lang))) {
-          metaData.addExtraMessage(content, lang);
+          metaData.addExtraMessage(content, lang, false);
         } else {
           metaData.setContent(content, lang);
         }
