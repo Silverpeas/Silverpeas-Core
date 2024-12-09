@@ -26,7 +26,7 @@
 customTemplate =
     '<div class="user-card">' + '<div class="avatar"><img src="" alt="avatar"/></div>' +
     '<span class="field userToZoom">firstName lastName</span>' +
-    '<span class="field eMail">eMail</span>' + '<span class="field title">title</span>' +
+    '<span class="field emailAddress">email</span>' + '<span class="field title">title</span>' +
     '<span class="field phone">phone</span>' +
     '<span class="field cellularPhone">cellularPhone</span>' + '</div>';
 
@@ -58,7 +58,7 @@ CKEDITOR.plugins.add('identitycard', {
     editor.widgets.add('identitycard', {
 
       upcast : function(element) {
-        return element.name == 'div' && element.hasClass('user-card');
+        return element.name === 'div' && element.hasClass('user-card');
       },
 
       // Minimum HTML which is required by this widget to work.
@@ -72,7 +72,7 @@ CKEDITOR.plugins.add('identitycard', {
       draggable : true,
 
       init : function() {
-        var userId = this.element.getAttribute('rel');
+        const userId = this.element.getAttribute('rel');
         this.setData('userId', userId);
         updateContent(this);
       },
@@ -100,28 +100,28 @@ function updateContent(widget) {
     dataType : "json",
     cache : false,
     success : function(user, status, jqXHR) {
-      for (var i = 0; i < widgetUI.getChildCount(); i++) {
-        var item = widgetUI.getChildren().getItem(i);
-        if (item.type == 1) {
-          if (item.getAttribute('class') == 'field userToZoom') {
+      for (let i = 0; i < widgetUI.getChildCount(); i++) {
+        const item = widgetUI.getChildren().getItem(i);
+        if (item.type === 1) {
+          if (item.getAttribute('class') === 'field userToZoom') {
             item.setAttribute('rel', widgetData.userId);
             item.setHtml(user.firstName + ' ' + user.lastName);
-          } else if (item.getAttribute('class') == 'avatar') {
-            var avatar = item.getChildren().getItem(0);
+          } else if (item.getAttribute('class') === 'avatar') {
+            const avatar = item.getChildren().getItem(0);
             avatar.setAttribute('src', user.avatar);
           }
         }
       }
       jQuery.each(user, function(key, val) {
-        for (var i = 0; i < widgetUI.getChildCount(); i++) {
-          var item = widgetUI.getChildren().getItem(i);
-          if (item.type == 1) {
-            if (key == 'moreData') {
+        for (let i = 0; i < widgetUI.getChildCount(); i++) {
+          const item = widgetUI.getChildren().getItem(i);
+          if (item.type === 1) {
+            if (key === 'moreData') {
               jQuery.each(val, function(keyMore, valMore) {
-                for (var j = 0; j < widgetUI.getChildCount(); j++) {
-                  var itemMore = widgetUI.getChildren().getItem(j);
-                  if (itemMore.type == 1) {
-                    if (itemMore.getAttribute('class') == 'field ' + keyMore) {
+                for (let j = 0; j < widgetUI.getChildCount(); j++) {
+                  const itemMore = widgetUI.getChildren().getItem(j);
+                  if (itemMore.type === 1) {
+                    if (itemMore.getAttribute('class') === 'field ' + keyMore) {
                       itemMore.setHtml(valMore);
                       break;
                     }
@@ -129,7 +129,7 @@ function updateContent(widget) {
                 }
               });
             } else {
-              if (item.getAttribute('class') == 'field ' + key) {
+              if (item.getAttribute('class') === 'field ' + key) {
                 item.setHtml(val);
                 break;
               }

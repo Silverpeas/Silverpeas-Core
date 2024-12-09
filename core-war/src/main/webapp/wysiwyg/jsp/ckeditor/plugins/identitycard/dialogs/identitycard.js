@@ -45,11 +45,11 @@ CKEDITOR.dialog.add( 'identitycard', function( editor ) {
 					        },
 					        {
 					          type : 'html',
-					          html : '<form name="identityCardPluginForm"><label title="user" class="txtlibform cke_dialog_ui_labeled_label cke_required" for="user">'+editor.lang.identitycard.user+'</label><div class="fieldInput"><input type="hidden" value="" name="user" id="user"/><input type="text" value="" name="user$$name" id="user_name" disabled="disabled"/>&nbsp;<a onclick="javascript:SP_openWindow(\'/silverpeas/RselectionPeasWrapper/jsp/open?formName=identityCardPluginForm&amp;elementId=user&amp;elementName=user_name&amp;selectedUser=\',\'selectUser\',800,600,\'\');" class="cke_dialog_ui_button" href="#"> <span class="cke_dialog_ui_button" > <img width="15" border="0" style="vertical-align:middle;" height="15" title="'+editor.lang.identitycard.select+'" alt="'+editor.lang.identitycard.select+'" src="/silverpeas/util/icons/user.gif"/> '+editor.lang.identitycard.select+'</span></a></div></form>',
+					          html : '<form name="identityCardPluginForm"><label title="user" class="txtlibform cke_dialog_ui_labeled_label cke_required" for="user">'+editor.lang.identitycard.user+'</label><div class="fieldInput"><input type="hidden" value="" name="user" id="user"/><input type="text" value="" name="user$$name" id="user_name" disabled="disabled"/>&nbsp;<a onclick="javascript:SP_openWindow(\'/silverpeas/RselectionPeasWrapper/jsp/open?formName=identityCardPluginForm&amp;elementId=user&amp;elementName=user_name&amp;selectedUser=\',\'selectUser\',800,600,\'\');" class="cke_dialog_ui_button" href="#"> <span class="cke_dialog_ui_button" > <img width="15" style="vertical-align:middle;" height="15" title="'+editor.lang.identitycard.select+'" alt="'+editor.lang.identitycard.select+'" src="/silverpeas/util/icons/user.gif"/> '+editor.lang.identitycard.select+'</span></a></div></form>',
 					          setup: function( widget ) {
 					            const document = this.getElement().getDocument();
-					            var element = document.getById('user');
-					            element.setValue(widget.data.userId);
+											const element = document.getById('user');
+											element.setValue(widget.data.userId);
 					            if (widget.data.userId) {
 					              $.ajax({
 					                type: "GET",
@@ -67,9 +67,9 @@ CKEDITOR.dialog.add( 'identitycard', function( editor ) {
 					            }
 					          },
 					          commit: function( widget ) {
-					            var document = this.getElement().getDocument();
-					            var element = document.getById('user');
-					            widget.setData( 'userId', element.getValue());
+											const document = this.getElement().getDocument();
+											const element = document.getById('user');
+											widget.setData( 'userId', element.getValue());
 					          }
 					        }
 					     ]			}

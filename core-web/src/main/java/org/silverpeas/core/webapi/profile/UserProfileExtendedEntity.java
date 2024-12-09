@@ -54,7 +54,7 @@ public class UserProfileExtendedEntity extends UserProfileEntity {
   public static UserProfileExtendedEntity fromUser(final UserFull user) {
     return new UserProfileExtendedEntity(user);
   }
-  private UserFull user = null;
+  private final UserFull user;
 
   private UserProfileExtendedEntity(final UserFull user) {
     super(user);
