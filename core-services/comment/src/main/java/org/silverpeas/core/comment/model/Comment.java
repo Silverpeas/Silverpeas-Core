@@ -127,15 +127,6 @@ public class Comment implements SilverpeasContent {
     return User.getById(String.valueOf(authorId));
   }
 
-  @Override
-  public String getTitle() {
-    return "";
-  }
-
-  @Override
-  public String getDescription() {
-    return "";
-  }
 
   @Override
   public String getId() {
