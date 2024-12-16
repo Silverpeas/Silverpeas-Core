@@ -95,8 +95,8 @@ public interface Group extends Serializable, Comparable<Group> {
   String getDescription();
 
   /**
-   * Get the list of users in the group
-   * @return the identifiers of the users in this group.
+   * Get the list of the direct users in the group
+   * @return the identifiers of the direct users in this group.
    */
   String[] getUserIds();
 
@@ -113,23 +113,23 @@ public interface Group extends Serializable, Comparable<Group> {
   boolean isSynchronized();
 
   /**
-   * Gets the number of direct users in this group; the users from its subgroups aren't counted. To
+   * Gets the count of direct users in this group; the users from its subgroups aren't counted. To
    * count also the users in its subgroups, please use the
-   * {@code org.silverpeas.core.admin.user.model.Group#getTotalNbUsers} method instead.
+   * {@link Group#getTotalUsersCount()} method instead.
    * @return the number of direct users.
    */
-  int getNbUsers();
+  int getDirectUsersCount();
 
   /**
-   * Gets the total number of users in this group and in its subgroups. Users that are in several
+   * Gets the total count of users in this group and in its subgroups. Users that are in several
    * groups are counted only once.
    * <p>
-   * Depending on the requester, the total number of users can omit some users by their state
+   * Depending on the requester, the total count of users can omit some users by their state
    * (usually the users whose their account is deactivated). By default, all the users whose
    * the account is deleted aren't taken into account.
    * @return the total number of distinct users in its group and subgroups.
    */
-  int getTotalNbUsers();
+  int getTotalUsersCount();
 
   /**
    * Is this group is a root one?
@@ -142,15 +142,27 @@ public interface Group extends Serializable, Comparable<Group> {
    * Gets the direct subgroups of this user group.
    * @return a list with its direct subgroups. If this group hasn't children group, then the
    * returned list is empty.
+   * @param <T> the concrete type of the {@link Group}
    */
-  List<Group> getSubGroups();
+  <T extends Group> List<T> getSubGroups();
+
+  /**
+   * Gets the detail about all the direct users in this group. The users in the subgroups of this
+   * group aren't taken into account; to get all the users, whatever they are in this group or in
+   * one of its subgroup, please consider the {@link Group#getAllUsers()} method.
+   * @return a list of all of the direct users in this group. An empty list if the group has no
+   * direct users.
+   * @param <T> the concrete type of the {@link User}
+   */
+  <T extends User> List<T> getUsers();
 
   /**
    * Gets the detail about all the users that are in this group (and in the subgroups of this
    * group).
    * @return a list of all the user details in this group.
+   * @param <T> the concrete type of the {@link User}
    */
-  List<User> getAllUsers();
+  <T extends User> List<T> getAllUsers();
 
   /**
    * Gets the date of the group creation.

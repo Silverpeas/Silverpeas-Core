@@ -329,7 +329,7 @@ public abstract class AbstractLDAPGroup {
     }
     groupInfos.setUserIds(allUserIds.toArray(new String[0]));
     SynchroDomainReport.debug(LDAPGROUP_TRANSLATE_GROUPS,
-        "Users in merged GroupDetail: " + groupInfos.getNbUsers());
+        "Users in merged GroupDetail: " + groupInfos.getDirectUsersCount());
     return groupInfos;
   }
 

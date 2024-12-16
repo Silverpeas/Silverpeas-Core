@@ -57,6 +57,16 @@ INSERT INTO domainsp_group (id, name)
 VALUES (2, 'Groupe 2');
 
 INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
+VALUES (3, 0, '3', 'Groupe 3', 'VALID', '2012-01-01 00:00:00.000');
+INSERT INTO domainsp_group (id, name)
+VALUES (3, 'Groupe 3');
+
+INSERT INTO st_group (id, domainId, specificId, superGroupId, name, state, stateSaveDate)
+VALUES (4, 0, '4', 3, 'Groupe 4', 'VALID', '2012-01-01 00:00:00.000');
+INSERT INTO domainsp_group (id, name, superGroupId)
+VALUES (4, 'Groupe 4', 3);
+
+INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
 VALUES (10, 1, '10', 'Groupe 10', 'VALID', '2012-01-01 00:00:00.000');
 INSERT INTO domainsp_group (id, name)
 VALUES (10, 'Groupe 10');

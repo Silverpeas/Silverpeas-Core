@@ -66,7 +66,7 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
    *
    * @param groups a list of user groups to decorate.
    * @param groupsURI the URI at which the specified groups are defined.
-   * @return a list of web entities representing the specified group profiles.
+   * @return an array of web entities representing the specified group profiles.
    */
   public static UserGroupProfileEntity[] fromGroups(final List<? extends Group> groups, URI groupsURI) {
     UserGroupProfileEntity[] selectableGroups = new UserGroupProfileEntity[groups.size()];
@@ -95,10 +95,12 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   private UserGroupProfileEntity(Group group) {
     this.group = (GroupDetail) group;
     this.domainName = GroupDetail.getOrganisationController().getDomain(group.getDomainId()).getName();
-    this.userCount = group.getTotalNbUsers();
+    this.userCount = group.getTotalUsersCount();
   }
 
+  @SuppressWarnings("unused")
   protected UserGroupProfileEntity() {
+    // for serialization
     this.group = new GroupDetail();
   }
 
@@ -153,14 +155,14 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   }
 
   @Override
-  public int getNbUsers() {
-    return this.group.getNbUsers();
+  public int getDirectUsersCount() {
+    return this.group.getDirectUsersCount();
   }
 
   @Override
-  public int getTotalNbUsers() {
+  public int getTotalUsersCount() {
     if (userCount == -1) {
-      userCount = this.group.getTotalNbUsers();
+      userCount = this.group.getTotalUsersCount();
     }
     return userCount;
   }
@@ -219,7 +221,7 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   }
 
   @Override
-  public List<Group> getSubGroups() {
+  public List<GroupDetail> getSubGroups() {
     return this.group.getSubGroups();
   }
 

@@ -455,8 +455,8 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   }
 
   @Override
-  public void PasteDone() throws ClipboardException {
-    getClipboard().PasteDone();
+  public void pasteDone() throws ClipboardException {
+    getClipboard().pasteDone();
   }
 
   @Override
