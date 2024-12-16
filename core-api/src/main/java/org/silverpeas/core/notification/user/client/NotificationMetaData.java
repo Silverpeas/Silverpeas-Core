@@ -732,7 +732,7 @@ public class NotificationMetaData implements java.io.Serializable {
   protected boolean displayGroup(String groupId) {
     int threshold = NotificationManagerSettings.getReceiverThresholdAfterThatReplaceUserNameListByGroupName();
     Group group = Group.getById(groupId);
-    int nbUsers = group.getNbUsers();
+    int nbUsers = group.getDirectUsersCount();
     boolean res1 = NotificationManagerSettings.isDisplayingUserNameListInsteadOfGroupEnabled();
     boolean res2 = threshold > 0 && nbUsers > threshold;
     return res1 || res2;

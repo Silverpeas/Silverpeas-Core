@@ -44,9 +44,12 @@ import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.*;
 import org.silverpeas.core.admin.service.AdminController.Result;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.GroupSelection;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
@@ -92,12 +95,14 @@ import org.silverpeas.web.jobdomain.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -260,11 +265,11 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
           groupStream = groupStream.filter(g -> false);
         } else {
           final List<String> aimedGroupPath = Stream.concat(
-              Stream.of(aimedGroup.getId()),
-              Optional.of(aimedGroup)
-                  .filter(g -> isDefined(g.getSuperGroupId()))
-                  .stream()
-                  .flatMap(g -> getOrganisationController().getPathToGroup(g.getId()).stream()))
+                  Stream.of(aimedGroup.getId()),
+                  Optional.of(aimedGroup)
+                      .filter(g -> isDefined(g.getSuperGroupId()))
+                      .stream()
+                      .flatMap(g -> getOrganisationController().getPathToGroup(g.getId()).stream()))
               .collect(toList());
           groupStream = groupStream.filter(p -> aimedGroupPath.contains(p.getFirst().getId()));
         }
@@ -493,6 +498,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
   /**
    * Regroups the targeted user into the specified group (only for SQL domain).
+   *
    * @param properties properties of the regrouping
    * @param lastGroupId the identifier of the group
    * @throws JobDomainPeasException if an error occurs
@@ -1192,7 +1198,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     if (isDefined(groupId)) {
       if (getTargetGroup() == null
           || (getTargetGroup() != null && !getTargetGroup().getId().equals(
-              groupId))) {
+          groupId))) {
         Group targetGroup = adminCtrl.getGroupById(groupId);
         // Add user access control for security purpose
         if (isOnlySpaceManager() || isUserAuthorizedToManageGroup(targetGroup)) {
@@ -1904,7 +1910,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     String hostUrl = compoURL + "groupAddRemoveUsers";
     String cancelUrl = compoURL + "groupContent";
 
-    Selection selection = setupSelection(hostSpaceName, hostComponentName, hostPath, hostUrl, cancelUrl);
+    Selection selection = setupSelection(hostSpaceName, hostComponentName, hostPath, hostUrl,
+        cancelUrl);
 
     setDomainIdOnSelection(selection);
 
@@ -2023,8 +2030,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       listGroupToInsertUpdate = JobDomainPeasDAO.selectGroupSynchroInsertUpdateTableDomain_Group(
           theDomain);
       // 2- Traitement Domaine, appel aux webServices
-       Constructor<SynchroUserWebServiceItf> constructor = (Constructor<SynchroUserWebServiceItf>)
-           Class.forName(nomClasseWebService).getConstructor();
+      Constructor<SynchroUserWebServiceItf> constructor = (Constructor<SynchroUserWebServiceItf>)
+          Class.forName(nomClasseWebService).getConstructor();
       synchroUserWebService = constructor.newInstance();
 
       synchroUserWebService.startConnection();
@@ -2315,26 +2322,26 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     profileIds
         .map(adminCtrl::getProfileInst)
         .forEach(p -> {
-      Objects.requireNonNull(p);
-      LocalizedComponentInstProfiles componentProfiles =
-          allProfiles.getByLocalComponentInstanceId(p.getComponentFatherId());
-      if (componentProfiles == null) {
-        ComponentInstLight currentComponent =
-            adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
-        if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
-          LocalizedWAComponent localizedWAComponent =
-              getLocalizedComponent(currentComponent.getName());
-          componentProfiles = new LocalizedComponentInstProfiles(currentComponent,
-              localizedWAComponent, getLanguage());
-          SpaceInstLight space = adminCtrl.getSpaceInstLight(currentComponent.getSpaceId());
-          componentProfiles.setSpace(space);
-          allProfiles.add(componentProfiles);
-        }
-      }
-      if (componentProfiles != null) {
-        componentProfiles.addProfile(p);
-      }
-    });
+          Objects.requireNonNull(p);
+          LocalizedComponentInstProfiles componentProfiles =
+              allProfiles.getByLocalComponentInstanceId(p.getComponentFatherId());
+          if (componentProfiles == null) {
+            ComponentInstLight currentComponent =
+                adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
+            if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
+              LocalizedWAComponent localizedWAComponent =
+                  getLocalizedComponent(currentComponent.getName());
+              componentProfiles = new LocalizedComponentInstProfiles(currentComponent,
+                  localizedWAComponent, getLanguage());
+              SpaceInstLight space = adminCtrl.getSpaceInstLight(currentComponent.getSpaceId());
+              componentProfiles.setSpace(space);
+              allProfiles.add(componentProfiles);
+            }
+          }
+          if (componentProfiles != null) {
+            componentProfiles.addProfile(p);
+          }
+        });
     allProfiles.sort(new AbstractComplexComparator<>() {
       private static final long serialVersionUID = 6776408278128213038L;
 
@@ -2511,10 +2518,129 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   /**
+   * Adds the specified group into the clipboard for further copy as a root group or as a subgroup
+   * of another group in the same domain.
+   *
+   * @param groupId the unique identifier of an existing group to copy.
+   * @throws AdminException if an error occurs while copying the given group of users.
+   */
+  public void copyGroup(String groupId) throws AdminException {
+    copyOrCutGroup(groupId, false);
+  }
+
+  /**
+   * Adds the specified group into the clipboard for further move as a root group or as subgroup of
+   * another group in the same domain.
+   *
+   * @param groupId the unique identifier of an existing group to cut.
+   * @throws AdminException if an error occurs while copying the given group of users.
+   */
+  public void cutGroup(String groupId) throws AdminException {
+    copyOrCutGroup(groupId, true);
+  }
+
+  private void copyOrCutGroup(String groupId, boolean cut) throws AdminException {
+    try {
+      Group group = adminCtrl.getGroupById(groupId);
+      GroupSelection groupSelection = new GroupSelection(group);
+      groupSelection.setCutted(cut);
+      addClipboardSelection(groupSelection);
+    } catch (ClipboardException e) {
+      String op = cut ? " cut " : " copy ";
+      throw new AdminException("Fail to" + op + "group " + groupId, e);
+    }
+  }
+
+  /**
+   * Pastes the selected groups of users in the clipboard into the current group of as a root group
+   * of the current domain if there is no current group. The group to paste has to belong to the
+   * same current domain and there shouldn't be any group having the same name in the current group
+   * or among the root groups of the domain (in the case there is no current group). Any selected
+   * group which don't belong to the same domain will be ignored whereas an exception will be
+   * thrown if there is already a group with the same name.
+   *
+   * @throws AdminException if an error occurs while pasting the given group of users.
+   */
+  public void pasteGroup() throws AdminException {
+    String parentGroupId = getTargetGroup() == null ? null : getTargetGroup().getId();
+    String domainId = getTargetDomain() == null || "-1".equals(getTargetDomain().getId()) ?
+        null : getTargetDomain().getId();
+    if (parentGroupId != null) {
+      checkGroupAccessGranted(parentGroupId, false);
+    } else {
+      checkCurrentDomainAccessGranted(false);
+    }
+    try {
+      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      for (ClipboardSelection clipObject : clipObjects) {
+        if (clipObject != null && clipObject.isDataFlavorSupported(GroupSelection.GROUP_FLAVOR)) {
+          GroupDetail group =
+              (GroupDetail) clipObject.getTransferData(GroupSelection.GROUP_FLAVOR);
+          if (Objects.equals(group.getDomainId(), domainId)) {
+            if (clipObject.isCutted()) {
+              adminCtrl.moveGroup(group, parentGroupId);
+              refresh();
+            } else {
+              adminCtrl.copyGroup(group, parentGroupId);
+              refresh();
+            }
+          } else {
+            SilverLogger.getLogger(this).warn("The group in clipboard " + group.getId() +
+                " doesn't belong to the domain " + domainId + ": it isn't then pasted");
+          }
+        }
+      }
+
+      clipboardPasteDone();
+    } catch (Exception e) {
+      throw new AdminException(e);
+    }
+  }
+
+  /**
+   * Is there at least one selected group in the clipboard belonging to the same domain as the
+   * current one and for which there is no actual groups with the same name in the domain (for root
+   * groups) or in the current group of the domain.
+   *
+   * @return true if there is at least one selected group matching the expected constrains of group
+   * pasting.
+   * @throws ClipboardException if an error occurs while accessing the clipboard.
+   * @throws JobDomainPeasException if an error occurs while accessing the root groups of the domain
+   * or the subgroups of the current group.
+   */
+  public boolean isThereAMatchingGroupInClipboard() throws ClipboardException,
+      JobDomainPeasException {
+    final Function<ClipboardSelection, Group> toGroup = s -> {
+      try {
+        return (Group) s.getTransferData(GroupSelection.GROUP_FLAVOR);
+      } catch (UnsupportedFlavorException e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    };
+
+    if (getTargetDomain() == null) {
+      return false;
+    }
+    String domainId = "-1".equals(getTargetDomain().getId()) ? null : getTargetDomain().getId();
+    Set<String> subgroups = Stream.of(getSubGroups(getTargetGroup() != null))
+        .map(Group::getName)
+        .collect(Collectors.toSet());
+    Set<String> selectedGroups = getClipboardSelectedObjects().stream()
+        .filter(Objects::nonNull)
+        .filter(o -> o.isDataFlavorSupported(GroupSelection.GROUP_FLAVOR))
+        .map(toGroup)
+        .filter(g -> Objects.equals(g.getDomainId(), domainId))
+        .map(Group::getName)
+        .collect(Collectors.toSet());
+    return !selectedGroups.isEmpty() && selectedGroups.stream().noneMatch(subgroups::contains);
+  }
+
+  /**
    * In order to check the user granted access to domain services, the context of use MUST be set.
    * <p>
-   *   This context is an implementation of this abstraction.
+   * This context is an implementation of this abstraction.
    * </p>
+   *
    * @param <T>
    */
   private static abstract class AccessContext<T> {

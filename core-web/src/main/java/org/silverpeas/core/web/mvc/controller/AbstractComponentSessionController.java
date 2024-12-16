@@ -408,7 +408,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
 
   @Override
   public void clipboardPasteDone() throws ClipboardException {
-    controller.PasteDone();
+    controller.pasteDone();
   }
 
   @Override
