@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
@@ -52,22 +54,22 @@ public class GroupDetail implements Group {
   private GroupState state = GroupState.from(null);
   private Date stateSaveDate = null;
 
-  private int nbUsers = -1;
   private int nbTotalUsers = -1;
 
   /**
    * Constructs an empty group detail.
    */
   public GroupDetail() {
-   // an empty group detail
+    // an empty group detail
   }
 
   /**
-   * Constructs a group detail from the specified one. The given group detail is cloned to the
-   * new group detail.
+   * Constructs a group detail from the specified one. The given group detail is cloned to the new
+   * group detail.
    * <p>
-   *   BE CAREFULL: {@link #nbUsers} and {@link #nbTotalUsers} fields are not copied.
+   * BE CAREFULL: {@link #nbTotalUsers} fields are not copied.
    * </p>
+   *
    * @param toClone a group to clone.
    */
   public GroupDetail(GroupDetail toClone) {
@@ -159,15 +161,11 @@ public class GroupDetail implements Group {
    * Set the group description
    */
   public void setDescription(String newDescription) {
-    if (newDescription != null) {
-      this.description = newDescription;
-    } else {
-      this.description = "";
-    }
+    this.description = Objects.requireNonNullElse(newDescription, "");
   }
 
   /**
-   * Set the list of users in the group
+   * Set the list of the direct users in the group
    */
   public void setUserIds(String[] sUserIds) {
     userIds = ArrayUtil.nullToEmpty(sUserIds);
@@ -195,19 +193,16 @@ public class GroupDetail implements Group {
 
   @Override
   public boolean isSynchronized() {
-    return (rule != null && rule.trim().length() > 0);
+    return (rule != null && !rule.trim().isEmpty());
   }
 
   @Override
-  public int getNbUsers() {
-    if (nbUsers == -1) {
-      return getUserIds().length;
-    }
-    return nbUsers;
+  public int getDirectUsersCount() {
+    return getUserIds().length;
   }
 
   @Override
-  public int getTotalNbUsers() {
+  public int getTotalUsersCount() {
     if (nbTotalUsers < 0) {
       nbTotalUsers = getOrganisationController().getAllSubUsersNumber(getId());
     }
@@ -236,53 +231,47 @@ public class GroupDetail implements Group {
       return false;
     }
     final GroupDetail other = (GroupDetail) obj;
-    if (!Objects.equals(this.id, other.id)) {
-      return false;
-    }
-    if (!Objects.equals(this.specificId, other.specificId)) {
-      return false;
-    }
-    if (!Objects.equals(this.domainId, other.domainId)) {
-      return false;
-    }
-    if (!Objects.equals(this.superGroupId, other.superGroupId)) {
-      return false;
-    }
-    if (!Objects.equals(this.name, other.name)) {
-      return false;
-    }
-    if (!Objects.equals(this.description, other.description)) {
-      return false;
-    }
-    if (!Objects.equals(this.rule, other.rule)) {
-      return false;
-    }
-
-    return this.getNbUsers() == other.getNbUsers();
+    return Objects.equals(this.id, other.id)
+        && Objects.equals(this.specificId, other.specificId)
+        && Objects.equals(this.domainId, other.domainId)
+        && Objects.equals(this.superGroupId, other.superGroupId)
+        && Objects.equals(this.name, other.name)
+        && Objects.equals(this.description, other.description)
+        && Objects.equals(this.rule, other.rule)
+        && Objects.equals(this.getDirectUsersCount(), other.getDirectUsersCount());
   }
 
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 97 * hash + (this.specificId != null ? this.specificId.hashCode() : 0);
-    hash = 97 * hash + (this.domainId != null ? this.domainId.hashCode() : 0);
-    hash = 97 * hash + (this.superGroupId != null ? this.superGroupId.hashCode() : 0);
-    hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
-    hash = 97 * hash + (this.description != null ? this.description.hashCode() : 0);
-    hash = 97 * hash + (this.rule != null ? this.rule.hashCode() : 0);
-    hash = 97 * hash + this.nbUsers;
-    return hash;
+    return Objects.hash(this.id,
+        this.specificId,
+        this.domainId,
+        this.superGroupId,
+        this.name,
+        this.description,
+        this.rule,
+        this.getDirectUsersCount());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public List<Group> getSubGroups() {
+  public List<GroupDetail> getSubGroups() {
     return Arrays.asList(getOrganisationController().getAllSubGroups(getId()));
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public List<User> getAllUsers() {
+  public List<UserDetail> getAllUsers() {
     return Arrays.asList(getOrganisationController().getAllUsersOfGroup(getId()));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<UserDetail> getUsers() {
+    return Stream.of(getUserIds())
+        .map(getOrganisationController()::getUserDetail)
+        .map(UserDetail.class::cast)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -326,6 +315,7 @@ public class GroupDetail implements Group {
 
   /**
    * The state of the group is updated and the according save date too.
+   *
    * @param state the state of the group.
    */
   public void setState(final GroupState state) {

@@ -63,8 +63,10 @@
   boolean isGroupManager		= (Boolean)request.getAttribute("isOnlyGroupManager");
   boolean onlySpaceManager		= (Boolean)request.getAttribute("isOnlySpaceManager");
   boolean isUserAddingAllowed = (Boolean)request.getAttribute("isUserAddingAllowedForGroupManager");
+  boolean groupInClipboard = (Boolean) request.getAttribute("groupInClipboard");
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
-  List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
+    //noinspection unchecked
+    List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
   boolean isDomainLdap = "org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver".equals(domObject.getDriverClassName());
   boolean isDomainSql = "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
@@ -116,7 +118,10 @@
 	operationPane.addLine();
 
 	operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate");
-
+    if (groupInClipboard) {
+      operationPane.addOperation(resource.getIcon("JDP.groupPaste"),
+              resource.getString("JDP.groupPaste"), "javascript:onclick=clipboardPaste()");
+    }
 	if (isUserRW && !isUserDomainQuotaFull) {
           // User operations
           operationPane.addOperationOfCreation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
@@ -211,6 +216,10 @@ function jumpToUser(selectionUserAPI) {
   } else if (groupIds.length) {
     sp.navRequest("groupContent").withParam("Idgroup", groupIds[0]).go();
   }
+}
+
+function clipboardPaste() {
+  document.location.href = 'groupPaste';
 }
 
 let arrayBeforeAjaxRequest = function () {
@@ -318,7 +327,7 @@ out.println(window.printBefore());
               </c:choose>
             </view:arrayCellText>
             <view:arrayCellText><view:a href="${groupCommonLinkPart}${group.id}">${silfn:escapeHtml(group.name)}</view:a></view:arrayCellText>
-            <view:arrayCellText>${group.totalNbUsers}</view:arrayCellText>
+            <view:arrayCellText>${group.totalUsersCount}</view:arrayCellText>
             <view:arrayCellText text="${silfn:escapeHtml(group.description)}"/>
           </view:arrayLine>
         </view:arrayLines>

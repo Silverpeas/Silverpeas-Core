@@ -120,15 +120,21 @@ public class SQLGroupTable {
   public void updateGroup(Connection c, GroupDetail g) throws AdminException {
     PreparedStatement statement = null;
     String theQuery = "update " + drvSettings.getGroupTableName() + " set "
-        + drvSettings.getGroupNameColumnName() + " = ?,"
-        + drvSettings.getGroupDescriptionColumnName() + " = ?" + WHERE
-        + drvSettings.getGroupSpecificIdColumnName() + " = ?";
+        + drvSettings.getGroupNameColumnName() + " = ?, "
+        + drvSettings.getGroupDescriptionColumnName() + " = ?, "
+        + drvSettings.getGroupParentIdColumnName() + " = ? " +
+        WHERE + drvSettings.getGroupSpecificIdColumnName() + " = ?";
 
     try {
       statement = c.prepareStatement(theQuery);
       statement.setString(1, drvSettings.trunc(g.getName(), 100));
       statement.setString(2, drvSettings.trunc(g.getDescription(), 400));
-      statement.setInt(3, Integer.parseInt(g.getSpecificId()));
+      if (g.getSuperGroupId() == null) {
+        statement.setNull(3, Types.INTEGER);
+      } else {
+        statement.setInt(3, Integer.parseInt(g.getSuperGroupId()));
+      }
+      statement.setInt(4, Integer.parseInt(g.getSpecificId()));
       statement.executeUpdate();
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);

@@ -160,7 +160,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
     assertSortedGroupIds(groups, GROUP_MIX_312_ID);
     final GroupDetail group = groups.iterator().next();
     assertGroupData(group);
-    assertThat(group.getTotalNbUsers(), is(dbGroupRelations.size() - 1));
+    assertThat(group.getTotalUsersCount(), is(dbGroupRelations.size() - 1));
 
     // without children
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
@@ -775,19 +775,19 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
       final int index = ArrayUtils.indexOf(ALL_GROUP_IDS_SORTED_BY_NAME, group.getId());
       expectedNbUsers.add(ALL_GROUP_NB_USERS_SORTED_BY_NAME[index]);
     }
-    final List<Integer> actualNbUsers = extractData(groups, Group::getNbUsers);
+    final List<Integer> actualNbUsers = extractData(groups, Group::getDirectUsersCount);
     assertThat("Nb Users (not filled) " + actualNbUsers,
         actualNbUsers, contains(expectedNbUsers.toArray()));
-    final List<Integer> actualTotalNbUsers = extractData(groups, Group::getTotalNbUsers);
+    final List<Integer> actualTotalNbUsers = extractData(groups, Group::getTotalUsersCount);
     assertThat("Total nb Users (filled) " + actualTotalNbUsers,
         actualTotalNbUsers, contains(expectedTotalNbUsers.toArray()));
   }
 
   private void assertGroupData(final Group group) {
     final int index = ArrayUtils.indexOf(ALL_GROUP_IDS_SORTED_BY_NAME, group.getId());
-    assertThat("Nb Users (not filled)", group.getNbUsers(),
+    assertThat("Nb Users (not filled)", group.getDirectUsersCount(),
         is(ALL_GROUP_NB_USERS_SORTED_BY_NAME[index]));
-    assertThat("Total nb Users (filled)",group.getTotalNbUsers(),
+    assertThat("Total nb Users (filled)",group.getTotalUsersCount(),
         is(ALL_GROUP_TOTAL_NB_USERS_SORTED_BY_NAME[index]));
   }
 }

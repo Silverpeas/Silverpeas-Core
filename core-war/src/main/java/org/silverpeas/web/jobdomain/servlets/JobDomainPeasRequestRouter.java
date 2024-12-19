@@ -121,7 +121,7 @@ public class JobDomainPeasRequestRouter extends
   private static final String DOMAIN_USER_FILTER_MANAGEMENT_DEST = "domainUserFilterManagement.jsp";
   private static final String IS_ONLY_SPACE_MANAGER_ATTR = "isOnlySpaceManager";
   private static final String WRITE_OPERATION_PARTS =
-      "(?i)^.*(create|update|modify|delete|remove|block|activate|import|synchro).*$";
+      "(?i)^.*(create|update|modify|delete|remove|block|activate|import|synchro|copy|cut|paste).*$";
 
   @Override
   public JobDomainPeasSessionController createComponentSessionController(
@@ -448,6 +448,21 @@ public class JobDomainPeasRequestRouter extends
         if (function.startsWith(GROUP_CONTENT_FCT)) {
           if (isDefined(groupId)) {
             jobDomainSC.goIntoGroup(groupId);
+          }
+        } else if (function.startsWith("groupCopy")) {
+          jobDomainSC.copyGroup(groupId);
+          destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null)
+              + "Idle.jsp?message=REFRESHCLIPBOARD";
+        } else if (function.startsWith("groupCut")) {
+          jobDomainSC.cutGroup(groupId);
+          destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null)
+              + "Idle.jsp?message=REFRESHCLIPBOARD";
+        } else if (function.equals("groupPaste")) {
+          jobDomainSC.pasteGroup();
+          if (jobDomainSC.getTargetGroup() != null) {
+            destination = GROUP_CONTENT_DEST;
+          } else {
+            destination = DOMAIN_CONTENT_DEST;
           }
         } else if (function.startsWith("groupExport.txt")) {
           if (isDefined(groupId)) {
@@ -887,6 +902,7 @@ public class JobDomainPeasRequestRouter extends
 
       // 2) Prepare the pages
       // --------------------
+      request.setAttribute("groupInClipboard", jobDomainSC.isThereAMatchingGroupInClipboard());
       if (jobDomainSC.getTargetDomain() != null) {
         request.setAttribute(DOMAIN_OBJECT_ATTR, jobDomainSC.getTargetDomain());
       }
