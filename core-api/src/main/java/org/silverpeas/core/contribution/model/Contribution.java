@@ -118,7 +118,7 @@ public interface Contribution extends SilverpeasResource, Serializable, Securabl
    */
   @Override
   default boolean canBeAccessedBy(final User user) {
-    return AuthorizationRequestCache.canBeAccessedBy(user, getIdentifier().getLocalId(),
+    return AuthorizationRequestCache.canBeAccessedBy(user, getIdentifier().asString(),
         u -> ComponentAccessControl.get()
             .isUserAuthorized(user.getId(), getIdentifier().getComponentInstanceId()));
   }
