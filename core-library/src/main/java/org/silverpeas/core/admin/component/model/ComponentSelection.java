@@ -24,9 +24,12 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
@@ -36,8 +39,8 @@ import java.io.Serializable;
 public class ComponentSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = 4750709802063183409L;
-  public static final DataFlavor ComponentDetailFlavor = new DataFlavor(ComponentInst.class,
-      "Component");
+  private static final String TYPE = "Component";
+  public static final DataFlavor ComponentDetailFlavor = new DataFlavor(ComponentInst.class, TYPE);
   private final ComponentInst componentInst;
 
   /**
@@ -79,8 +82,7 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
   @Override
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry =
-        new IndexEntry(new IndexEntryKey(componentInst.getId(), "Component",
-            componentInst.getId()));
+        new IndexEntry(new IndexEntryKey(componentInst.getId(), TYPE, componentInst.getId()));
     indexEntry.setTitle(componentInst.getLabel());
     return indexEntry;
   }
@@ -90,11 +92,18 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
    */
   @Override
   public SilverpeasKeyData getKeyData() {
-    SilverpeasKeyData keyData = new SilverpeasKeyData();
-    keyData.setTitle(componentInst.getName());
+    SilverpeasKeyData keyData = new SilverpeasKeyData(componentInst.getId());
+    keyData.setTitle(componentInst.getLabel());
     keyData.setAuthor(componentInst.getCreatorUserId());
     keyData.setCreationDate(componentInst.getCreationDate());
     keyData.setDesc(componentInst.getDescription());
+    keyData.setType(TYPE);
+    keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentInst.getId()));
+    try {
+      keyData.setProperty("COMPONENT_NAME", ComponentInst.getComponentName(componentInst.getId()));
+    } catch (SKDException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
     return keyData;
   }
 }

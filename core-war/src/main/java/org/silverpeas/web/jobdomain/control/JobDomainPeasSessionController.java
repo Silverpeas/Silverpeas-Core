@@ -2543,7 +2543,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     try {
       Group group = adminCtrl.getGroupById(groupId);
       GroupSelection groupSelection = new GroupSelection(group);
-      groupSelection.setCutted(cut);
+      groupSelection.setCut(cut);
       addClipboardSelection(groupSelection);
     } catch (ClipboardException e) {
       String op = cut ? " cut " : " copy ";
@@ -2577,7 +2577,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
           GroupDetail group =
               (GroupDetail) clipObject.getTransferData(GroupSelection.GROUP_FLAVOR);
           if (Objects.equals(group.getDomainId(), domainId)) {
-            if (clipObject.isCutted()) {
+            if (clipObject.isCut()) {
               adminCtrl.moveGroup(group, parentGroupId);
               refresh();
             } else {

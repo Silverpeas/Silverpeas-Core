@@ -42,7 +42,8 @@ import java.io.Serializable;
  */
 public class GroupSelection extends ClipboardSelection implements Serializable {
 
-  public static final DataFlavor GROUP_FLAVOR = new DataFlavor(Group.class, "Group");
+  private static final String TYPE = "Group";
+  public static final DataFlavor GROUP_FLAVOR = new DataFlavor(Group.class, TYPE);
 
   private final Group group;
 
@@ -82,7 +83,7 @@ public class GroupSelection extends ClipboardSelection implements Serializable {
   @Override
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry =
-        new IndexEntry(new IndexEntryKey("Groups", "GroupRow", group.getId()));
+        new IndexEntry(new IndexEntryKey("Groups", TYPE, group.getId()));
     indexEntry.setTitle(group.getName());
     indexEntry.setPreview(group.getDescription());
     return indexEntry;
@@ -93,10 +94,11 @@ public class GroupSelection extends ClipboardSelection implements Serializable {
    */
   @Override
   public SilverpeasKeyData getKeyData() {
-    SilverpeasKeyData keyData = new SilverpeasKeyData();
+    SilverpeasKeyData keyData = new SilverpeasKeyData(group.getId());
     keyData.setTitle(group.getName());
     keyData.setCreationDate(group.getCreationDate());
     keyData.setDesc(group.getDescription());
+    keyData.setType(TYPE);
     return keyData;
   }
 }

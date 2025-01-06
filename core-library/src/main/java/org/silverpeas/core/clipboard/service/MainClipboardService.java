@@ -159,7 +159,7 @@ public class MainClipboardService implements Clipboard, Serializable {
     // we know that the next copy should not keep the old selection
     addingToSelection = false;
     // Deselect cutted objects still in clipboard
-    objectsInClipboard.stream().filter(ClipboardSelection::isCutted).forEach(c -> c.setSelected(false));
+    objectsInClipboard.stream().filter(ClipboardSelection::isCut).forEach(c -> c.setSelected(false));
   }
 
   @Override

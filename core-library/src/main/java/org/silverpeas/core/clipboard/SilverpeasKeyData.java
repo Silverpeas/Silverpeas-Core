@@ -26,77 +26,81 @@
 
 package org.silverpeas.core.clipboard;
 
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Properties;
 
 /**
- * Class declaration
- * @author
+ * Data about the contribution or the resource put in a clipboard.
  */
 public class SilverpeasKeyData implements Serializable {
 
   private static final long serialVersionUID = 6975015837634530711L;
+  private static final String ID_KEY = "ID";
+  private static final String INSTANCE_ID_KEY = "COMPONENT";
   private static final String TITLE_KEY = "TITLE";
   private static final String AUTHOR_KEY = "AUTHOR";
   private static final String DESC_KEY = "DESC";
   private static final String TEXT_KEY = "TEXT"; // rendu HTML de l'object
+  private static final String TYPE_KEY = "TYPE";
+  private static final String LINK_KEY = "LINK";
 
   private Date creationDate = null;
-  private Properties keyData;
+  private final Properties keyData;
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * Constructs a new {@link SilverpeasKeyData} instance for the specified Silverpeas resource.
+   * The resource isn't a contribution and it doesn't belong to a component instance.
+   * @param id the unique identifier of the resource.
    */
-  public SilverpeasKeyData() {
+  public SilverpeasKeyData(String id) {
     keyData = new Properties();
+    keyData.setProperty(ID_KEY, id);
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * Constructs a new {@link SilverpeasKeyData} instance for the specified contribution.
+   * @param id the unique identifier of the contribution.
+   * @param componentInstanceId the unique identifier of the component instance to which the
+   * contribution belongs.
    */
+  public SilverpeasKeyData(String id, String componentInstanceId) {
+    keyData = new Properties();
+    keyData.setProperty(ID_KEY, id);
+    keyData.setProperty(INSTANCE_ID_KEY, componentInstanceId);
+  }
+
   public void setTitle(String title) {
     keyData.setProperty(TITLE_KEY, title);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public void setAuthor(String author) {
     keyData.setProperty(AUTHOR_KEY, author);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public void setCreationDate(Date date) {
     creationDate = date;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public void setDesc(String desc) {
     keyData.setProperty(DESC_KEY, desc);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public void setText(String text) {
     keyData.setProperty(TEXT_KEY, text);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
+  public void setType(String type) {
+    keyData.setProperty(TYPE_KEY, type);
+  }
+
+  public void setLink(String link) {
+    keyData.setProperty(LINK_KEY, link);
+  }
+
   public void setProperty(String key, String value) throws SKDException {
     if (keyData.containsKey(key)) {
       throw new SKDException("The property already contains the key " + key);
@@ -105,50 +109,48 @@ public class SilverpeasKeyData implements Serializable {
     }
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
+  @NonNull
+  public String getId() {
+    return keyData.getProperty(ID_KEY);
+  }
+
+  @Nullable
+  public String getComponentInstanceId() {
+    return keyData.getProperty(INSTANCE_ID_KEY);
+  }
+
+  @NonNull
   public String getTitle() {
     return keyData.getProperty(TITLE_KEY);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public String getAuthor() {
     return keyData.getProperty(AUTHOR_KEY);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public Date getCreationDate() {
     return creationDate;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public String getDesc() {
     return keyData.getProperty(DESC_KEY);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public String getText() {
     return keyData.getProperty(TEXT_KEY);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
+  @NonNull
+  public String getType() {
+    return keyData.getProperty(TYPE_KEY);
+  }
+
+  @NonNull
+  public String getLink() {
+    return keyData.getProperty(LINK_KEY);
+  }
+
+  @Nullable
   public String getProperty(String key) {
     return keyData.getProperty(key);
   }
