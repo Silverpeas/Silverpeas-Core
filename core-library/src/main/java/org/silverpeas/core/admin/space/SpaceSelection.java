@@ -27,6 +27,7 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
@@ -36,8 +37,9 @@ import java.io.Serializable;
 public class SpaceSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = -1717229458481172945L;
+  private static final String TYPE = "Space";
   public static final DataFlavor SpaceFlavor = new DataFlavor(SpaceInst.class,
-      "Space");
+      TYPE);
   private final SpaceInst spaceInst;
 
   /**
@@ -79,7 +81,7 @@ public class SpaceSelection extends ClipboardSelection implements Serializable {
   @Override
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry =
-        new IndexEntry(new IndexEntryKey(spaceInst.getId(), "Space", spaceInst.getId()));
+        new IndexEntry(new IndexEntryKey(spaceInst.getId(), TYPE, spaceInst.getId()));
     indexEntry.setTitle(spaceInst.getName());
     return indexEntry;
   }
@@ -89,11 +91,13 @@ public class SpaceSelection extends ClipboardSelection implements Serializable {
    */
   @Override
   public SilverpeasKeyData getKeyData() {
-    SilverpeasKeyData keyData = new SilverpeasKeyData();
+    SilverpeasKeyData keyData = new SilverpeasKeyData(spaceInst.getId());
     keyData.setTitle(spaceInst.getName());
     keyData.setAuthor(spaceInst.getCreatorUserId());
     keyData.setCreationDate(spaceInst.getCreationDate());
     keyData.setDesc(spaceInst.getDescription());
+    keyData.setType(TYPE);
+    keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceInst.getId()));
     return keyData;
   }
 }
