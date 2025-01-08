@@ -66,6 +66,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnDeleting;
 import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
@@ -498,6 +499,137 @@ public class UsersAndGroupsIT {
   }
 
   @Test
+  public void shouldMoveGroupInSameDomain() throws AdminException {
+    GroupDetail group = admin.getGroup("1");
+    GroupDetail expectedParentGroup = admin.getGroup("3");
+    List<UserDetail> expectedUsers = group.getUsers();
+    List<GroupDetail> expectedSubGroups = group.getSubGroups();
+    assertThat(group.getSuperGroupId(), not(expectedParentGroup.getId()));
+
+    admin.moveGroup(group, expectedParentGroup.getId());
+
+    GroupDetail actualGroup = admin.getGroup(group.getId());
+    assertThat(actualGroup.getSuperGroupId(), is(expectedParentGroup.getId()));
+    assertThat(actualGroup.getUsers(), containsInAnyOrder(expectedUsers.toArray()));
+    assertThat(actualGroup.getSubGroups(), containsInAnyOrder(expectedSubGroups.toArray()));
+  }
+
+  @Test
+  public void shouldMoveGroupAsRootOne() throws AdminException {
+    GroupDetail group = admin.getGroup("4");
+    List<UserDetail> expectedUsers = group.getUsers();
+    List<GroupDetail> expectedSubGroups = group.getSubGroups();
+    assertThat(group.getSuperGroupId(), notNullValue());
+
+    admin.moveGroup(group, null);
+
+    GroupDetail actualGroup = admin.getGroup(group.getId());
+    assertThat(actualGroup.getSuperGroupId(), nullValue());
+    assertThat(actualGroup.getUsers(), containsInAnyOrder(expectedUsers.toArray()));
+    assertThat(actualGroup.getSubGroups(), containsInAnyOrder(expectedSubGroups.toArray()));
+  }
+
+  @Test
+  public void shouldNotMoveGroupInInvalidGroup() throws AdminException {
+    GroupDetail group = admin.getGroup("1");
+    GroupDetail expectedParentGroup = admin.getGroup("2");
+
+    assertThrows(AdminException.class, () -> admin.moveGroup(group, expectedParentGroup.getId()));
+  }
+
+  @Test
+  public void shouldNotMoveGroupInDifferentDomain() throws AdminException {
+    GroupDetail group = admin.getGroup("1");
+    GroupDetail expectedParentGroup = admin.getGroup("10");
+
+    assertThrows(AdminException.class, () -> admin.moveGroup(group, expectedParentGroup.getId()));
+  }
+
+  @Test
+  public void shouldNotMoveGroupInANonExistingGroup() throws AdminException {
+    GroupDetail group = admin.getGroup("1");
+
+    assertThrows(AdminException.class, () -> admin.moveGroup(group, "666"));
+  }
+
+  @Test
+  public void shouldMoveGroupInSameGroup() throws AdminException {
+    GroupDetail group = admin.getGroup("4");
+    GroupDetail parentGroup = admin.getGroup(group.getSuperGroupId());
+    assertThat(parentGroup, notNullValue());
+
+    admin.moveGroup(group, parentGroup.getId());
+
+    GroupDetail expectedGroup = admin.getGroup(group.getId());
+    assertThat(expectedGroup.getSuperGroupId(), is(parentGroup.getId()));
+  }
+
+  @Test
+  public void shouldCopyGroupInSameDomain() throws AdminException {
+    GroupDetail group = admin.getGroup("1");
+    GroupDetail expectedParentGroup = admin.getGroup("3");
+    List<UserDetail> expectedUsers = group.getUsers();
+    List<GroupDetail> expectedSubGroups = group.getSubGroups();
+    assertThat(group.getSuperGroupId(), not(expectedParentGroup.getId()));
+
+    String copiedGroupId = admin.copyGroup(group, expectedParentGroup.getId());
+    assertThat(copiedGroupId, is(not(group.getId())));
+
+    GroupDetail actualGroup = admin.getGroup(copiedGroupId);
+    assertThat(actualGroup.getSuperGroupId(), is(expectedParentGroup.getId()));
+    assertThat(actualGroup.getUsers(), containsInAnyOrder(expectedUsers.toArray()));
+    assertThat(actualGroup.getSubGroups(), containsInAnyOrder(expectedSubGroups.toArray()));
+  }
+
+  @Test
+  public void shouldCopyGroupAsRootOne() throws AdminException {
+    GroupDetail group = admin.getGroup("4");
+    List<UserDetail> expectedUsers = group.getUsers();
+    List<GroupDetail> expectedSubGroups = group.getSubGroups();
+    assertThat(group.getSuperGroupId(), notNullValue());
+
+    String copiedGroupId = admin.copyGroup(group, null);
+    assertThat(copiedGroupId, is(not(group.getId())));
+
+    GroupDetail actualGroup = admin.getGroup(copiedGroupId);
+    assertThat(actualGroup.getSuperGroupId(), nullValue());
+    assertThat(actualGroup.getUsers(), containsInAnyOrder(expectedUsers.toArray()));
+    assertThat(actualGroup.getSubGroups(), containsInAnyOrder(expectedSubGroups.toArray()));
+  }
+
+  @Test
+  public void shouldNotCopyGroupInInvalidGroup() throws AdminException {
+    GroupDetail group = admin.getGroup("1");
+    GroupDetail expectedParentGroup = admin.getGroup("2");
+
+    assertThrows(AdminException.class, () -> admin.copyGroup(group, expectedParentGroup.getId()));
+  }
+
+  @Test
+  public void shouldNotCopyGroupInDifferentDomain() throws AdminException {
+    GroupDetail group = admin.getGroup("1");
+    GroupDetail expectedParentGroup = admin.getGroup("10");
+
+    assertThrows(AdminException.class, () -> admin.copyGroup(group, expectedParentGroup.getId()));
+  }
+
+  @Test
+  public void shouldNotCopyGroupInANonExistingGroup() throws AdminException {
+    GroupDetail group = admin.getGroup("1");
+
+    assertThrows(AdminException.class, () -> admin.copyGroup(group, "666"));
+  }
+
+  @Test
+  public void shouldNotCopyGroupInSameGroup() throws AdminException {
+    GroupDetail group = admin.getGroup("4");
+    GroupDetail parentGroup = admin.getGroup(group.getSuperGroupId());
+
+    // a group cannot have two subgroups with the same name
+    assertThrows(AdminException.class, () -> admin.copyGroup(group, parentGroup.getId()));
+  }
+
+  @Test
   public void shouldFindUsersInGroup() throws Exception {
     GroupDetail subGroup = new GroupDetail();
     subGroup.setDomainId("0");
@@ -526,53 +658,61 @@ public class UsersAndGroupsIT {
 
   @Test
   public void getGroups() throws Exception {
-    List<String> groupIds = admin.getAllGroups()
+    List<Integer> groupIds = admin.getAllGroups()
         .stream()
         .map(GroupDetail::getId)
+        .map(Integer::parseInt)
         .sorted()
         .collect(toList());
-    assertThat(groupIds, contains("1", "10"));
+    assertThat(groupIds, contains(1, 3, 4, 10));
 
     groupIds = Stream.of(admin.getRootGroupsOfDomain("0"))
         .map(GroupDetail::getId)
+        .map(Integer::parseInt)
         .sorted()
         .collect(toList());
-    assertThat(groupIds, contains("1"));
+    assertThat(groupIds, contains(1, 3));
 
     groupIds = Stream.of(admin.getRootGroupsOfDomain("1"))
         .map(GroupDetail::getId)
+        .map(Integer::parseInt)
         .sorted()
         .collect(toList());
-    assertThat(groupIds, contains("10"));
+    assertThat(groupIds, contains(10));
   }
 
   @Test
   public void getGroupsWithChildren() throws Exception {
     createSubGroupsAndGetSortedPath();
-    List<String> groupIds = admin.getAllRootGroups()
+    List<Integer> groupIds = admin.getAllRootGroups()
         .stream()
         .map(GroupDetail::getId)
+        .map(Integer::parseInt)
         .sorted()
         .collect(toList());
+    assertThat(groupIds, contains(1, 3, 10));
 
-    assertThat(groupIds, contains("1", "10"));groupIds = admin.getAllGroups()
+    groupIds = admin.getAllGroups()
         .stream()
         .map(GroupDetail::getId)
+        .map(Integer::parseInt)
         .sorted()
         .collect(toList());
-    assertThat(groupIds, contains("1", "10", "21", "22"));
+    assertThat(groupIds, contains(1, 3, 4, 10, 21, 22));
 
     groupIds = Stream.of(admin.getRootGroupsOfDomain("0"))
         .map(GroupDetail::getId)
+        .map(Integer::parseInt)
         .sorted()
         .collect(toList());
-    assertThat(groupIds, contains("1"));
+    assertThat(groupIds, contains(1, 3));
 
     groupIds = Stream.of(admin.getRootGroupsOfDomain("1"))
         .map(GroupDetail::getId)
+        .map(Integer::parseInt)
         .sorted()
         .collect(toList());
-    assertThat(groupIds, contains("10"));
+    assertThat(groupIds, contains(10));
   }
 
   @Test

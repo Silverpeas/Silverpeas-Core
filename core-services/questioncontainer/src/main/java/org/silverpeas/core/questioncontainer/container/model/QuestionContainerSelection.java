@@ -28,6 +28,7 @@ import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
@@ -38,8 +39,9 @@ import java.io.Serializable;
 public class QuestionContainerSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = 1311812797166397833L;
+  private static final String TYPE = "QuestionContainer";
   public static final DataFlavor QuestionContainerDetailFlavor =
-      new DataFlavor(QuestionContainerDetail.class, "QuestionContainer");
+      new DataFlavor(QuestionContainerDetail.class, TYPE);
 
   private final QuestionContainerDetail questionContainer;
 
@@ -74,23 +76,35 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     QuestionContainerPK questionContainerPK = questionContainer.getHeader().getPK();
     IndexEntry indexEntry =
         new IndexEntry(new IndexEntryKey(questionContainerPK.getComponentName(),
-            "QuestionContainer", questionContainerPK.getId()));
+            TYPE, questionContainerPK.getId()));
     indexEntry.setTitle(questionContainer.getHeader().getName());
     return indexEntry;
   }
 
   @Override
   public SilverpeasKeyData getKeyData() {
-    SilverpeasKeyData keyData = new SilverpeasKeyData();
+    SilverpeasKeyData keyData = new SilverpeasKeyData(questionContainer.getId(),
+        questionContainer.getComponentInstanceId());
 
     keyData.setTitle(questionContainer.getHeader().getName());
     keyData.setAuthor(questionContainer.getHeader().getCreatorId());
     keyData.setCreationDate(questionContainer.getHeader().getCreationDate());
-
     keyData.setDesc(questionContainer.getHeader().getDescription());
+    keyData.setType(TYPE);
+    if (questionContainer.getComponentInstanceId().startsWith("survey")) {
+      keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_SURVEY, questionContainer.getId(),
+          questionContainer.getComponentInstanceId()));
+    } else {
+      keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_COMPONENT,
+          questionContainer.getComponentInstanceId()));
+    }
     try {
-      keyData.setProperty("BEGINDATE", questionContainer.getHeader().getBeginDate());
-      keyData.setProperty("ENDDATE", questionContainer.getHeader().getEndDate());
+      if (questionContainer.getHeader().getBeginDate() != null) {
+        keyData.setProperty("BEGINDATE", questionContainer.getHeader().getBeginDate());
+      }
+      if (questionContainer.getHeader().getEndDate() != null) {
+        keyData.setProperty("ENDDATE", questionContainer.getHeader().getEndDate());
+      }
     } catch (SKDException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

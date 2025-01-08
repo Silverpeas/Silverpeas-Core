@@ -27,6 +27,7 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
@@ -36,7 +37,8 @@ import java.io.Serializable;
 public class NodeSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = -6462797069972573255L;
-  public static final DataFlavor NodeDetailFlavor = new DataFlavor(NodeDetail.class, "Node");
+  public static final DataFlavor NodeDetailFlavor = new DataFlavor(NodeDetail.class,
+      NodeDetail.TYPE);
   private final NodeDetail nodeDetail;
 
   public NodeSelection(NodeDetail node) {
@@ -66,7 +68,7 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
   @Override
   public IndexEntry getIndexEntry() {
     NodePK pk = nodeDetail.getNodePK();
-    IndexEntry indexEntry = new IndexEntry(new IndexEntryKey(pk.getInstanceId(), "Node",
+    IndexEntry indexEntry = new IndexEntry(new IndexEntryKey(pk.getInstanceId(), NodeDetail.TYPE,
         pk.getId()));
     indexEntry.setTitle(nodeDetail.getName());
     return indexEntry;
@@ -74,11 +76,15 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
 
   @Override
   public SilverpeasKeyData getKeyData() {
-    SilverpeasKeyData keyData = new SilverpeasKeyData();
+    SilverpeasKeyData keyData = new SilverpeasKeyData(nodeDetail.getId(),
+        nodeDetail.getNodePK().getComponentInstanceId());
     keyData.setTitle(nodeDetail.getName());
     keyData.setAuthor(nodeDetail.getCreatorId());
     keyData.setCreationDate(nodeDetail.getCreationDate());
     keyData.setDesc(nodeDetail.getDescription());
+    keyData.setType(NodeDetail.TYPE);
+    keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_TOPIC, nodeDetail.getId(),
+        nodeDetail.getNodePK().getInstanceId()));
     return keyData;
   }
 }

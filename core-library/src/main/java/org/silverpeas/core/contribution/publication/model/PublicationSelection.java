@@ -29,6 +29,7 @@ import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
@@ -50,7 +51,7 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
 
   private static final long serialVersionUID = -1169335280661356348L;
   public static final DataFlavor PublicationDetailFlavor =
-      new DataFlavor(PublicationDetail.class, "Publication");
+      new DataFlavor(PublicationDetail.class, PublicationDetail.getResourceType());
   private final NodePK fatherPK;
   private final PublicationDetail pub;
 
@@ -68,10 +69,6 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
     super.addFlavor(PublicationDetailFlavor);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   @Override
   @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
@@ -89,34 +86,32 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
     return transferedData;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry;
     PublicationPK pubPK = pub.getPK();
-    indexEntry = new IndexEntry(new IndexEntryKey(pubPK.getComponentName(), "Publication",
-        pub.getPK().getId()));
+    indexEntry = new IndexEntry(new IndexEntryKey(pubPK.getComponentName(),
+        pub.getContributionType(), pub.getPK().getId()));
     indexEntry.setTitle(pub.getName());
     return indexEntry;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Tranformation obligatoire en SilverpeasKeyData
-   */
   public SilverpeasKeyData getKeyData() {
-    SilverpeasKeyData keyData = new SilverpeasKeyData();
+    SilverpeasKeyData keyData = new SilverpeasKeyData(pub.getId(), pub.getInstanceId());
 
     keyData.setTitle(pub.getName());
     keyData.setAuthor(pub.getCreatorId());
     keyData.setCreationDate(pub.getCreationDate());
     keyData.setDesc(pub.getDescription());
     keyData.setText(pub.getContentPagePath());
+    keyData.setType(pub.getContributionType());
+    keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getId(), pub.getInstanceId()));
     try {
-      keyData.setProperty("BEGINDATE", pub.getBeginDate().toString());
-      keyData.setProperty("ENDDATE", pub.getEndDate().toString());
+      if (pub.getBeginDate() != null) {
+        keyData.setProperty("BEGINDATE", pub.getBeginDate().toString());
+      }
+      if (pub.getEndDate() != null) {
+        keyData.setProperty("ENDDATE", pub.getEndDate().toString());
+      }
       keyData.setProperty("INSTANCEID", fatherPK.getInstanceId());
       if (fatherPK.getId() != null) {
         keyData.setProperty("FATHERID", fatherPK.getId());

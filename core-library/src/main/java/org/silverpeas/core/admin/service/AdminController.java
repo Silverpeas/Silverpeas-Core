@@ -1184,6 +1184,23 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
+  public String copyGroup(GroupDetail group, String parentGroupId) {
+    try {
+      return admin.copyGroup(group, parentGroupId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+      return "";
+    }
+  }
+
+  public void moveGroup(GroupDetail group, String parentGroupId) {
+    try {
+      admin.moveGroup(group, parentGroupId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+    }
+  }
+
   public void indexAllGroups() {
     try {
       admin.indexAllGroups();

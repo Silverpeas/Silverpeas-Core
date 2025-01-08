@@ -25,27 +25,23 @@ package org.silverpeas.web.clipboard.control;
 
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService;
 import org.silverpeas.core.notification.user.server.channel.popup.PopupMsg;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMsg;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -152,7 +148,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return the list of object in clipboard.
    * @throws ClipboardException if an error occurs
    */
-  public synchronized Collection<ClipboardSelection> getObjects() throws ClipboardException {
+  public synchronized List<ClipboardSelection> getObjects() throws ClipboardException {
     return new ArrayList<>(getClipboardObjects());
   }
 
@@ -268,7 +264,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
     return "if(top.ClipboardWindow!=null){" +
         "if (!top.ClipboardWindow.closed) {" +
         "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboardRefresh.jsp'," +
-        "'Clipboard','width=350,height=300,alwaysRaised');" +
+        "'Clipboard','width=800,height=350,alwaysRaised');" +
         "}" +
         "}";
   }
@@ -276,6 +272,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   private String getJSForShowClipboard() {
     // portage netscape
     return "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp'," +
-        "'Clipboard','width=500,height=350,alwaysRaised');top.ClipboardWindow.focus();";
+        "'Clipboard','width=800,height=350,alwaysRaised');top.ClipboardWindow.focus();";
   }
 }

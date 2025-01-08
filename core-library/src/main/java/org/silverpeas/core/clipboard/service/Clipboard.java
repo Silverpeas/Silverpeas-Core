@@ -38,7 +38,7 @@ public interface Clipboard {
 
   ClipboardSelection getObject();
 
-  void PasteDone() throws ClipboardException;
+  void pasteDone() throws ClipboardException;
 
   Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException;
 

@@ -1074,7 +1074,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     checkAccessGranted(null, id, false);
     ComponentInst componentInst = getComponentInst(id);
     ComponentSelection compoSelect = new ComponentSelection(componentInst);
-    compoSelect.setCutted(cut);
+    compoSelect.setCut(cut);
     addClipboardSelection(compoSelect);
   }
 
@@ -1090,7 +1090,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     checkAccessGranted(id, null, false);
     SpaceInst space = getSpaceInstById(id);
     SpaceSelection spaceSelect = new SpaceSelection(space);
-    spaceSelect.setCutted(cut);
+    spaceSelect.setCut(cut);
     addClipboardSelection(spaceSelect);
   }
 
@@ -1110,7 +1110,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
           if (clipObject.isDataFlavorSupported(ComponentSelection.ComponentDetailFlavor)) {
             ComponentInst compo = (ComponentInst) clipObject.getTransferData(
                 ComponentSelection.ComponentDetailFlavor);
-            if (clipObject.isCutted()) {
+            if (clipObject.isCut()) {
               moveComponent(compo.getId());
             } else {
               PasteDetail pasteDetail = new PasteDetail(compo.getId(), getUserId());
@@ -1120,7 +1120,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
             refreshCache = true;
           } else if (clipObject.isDataFlavorSupported(SpaceSelection.SpaceFlavor)) {
             SpaceInst space = (SpaceInst) clipObject.getTransferData(SpaceSelection.SpaceFlavor);
-            if (clipObject.isCutted()) {
+            if (clipObject.isCut()) {
               moveSpace(space.getId());
             } else {
               PasteDetail pasteDetail = new PasteDetail(getUserId());
@@ -1156,12 +1156,12 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
           if (clipObject.isDataFlavorSupported(ComponentSelection.ComponentDetailFlavor)) {
             ComponentInst compo = (ComponentInst) clipObject.getTransferData(
                 ComponentSelection.ComponentDetailFlavor);
-            if (!clipObject.isCutted()) {
+            if (!clipObject.isCut()) {
               copiedComponents.add(compo.getName());
             }
           } else if (clipObject.isDataFlavorSupported(SpaceSelection.SpaceFlavor)) {
             SpaceInst space = (SpaceInst) clipObject.getTransferData(SpaceSelection.SpaceFlavor);
-            if (!clipObject.isCutted()) {
+            if (!clipObject.isCut()) {
               String[] componentIds = getOrganisationController().getAllComponentIdsRecur(space.getId());
               for (String componentId : componentIds) {
                 String componentName = ComponentInst.getComponentName(componentId);

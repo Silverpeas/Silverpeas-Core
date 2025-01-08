@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,36 +19,38 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin.space;
 
+package org.silverpeas.core.admin.user;
+
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.util.URLUtil;
 
 import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 
-public class SpaceSelection extends ClipboardSelection implements Serializable {
+/**
+ * Selection by an administrator of a given group of users.
+ *
+ * @author mmoquillon
+ */
+public class GroupSelection extends ClipboardSelection implements Serializable {
 
-  private static final long serialVersionUID = -1717229458481172945L;
-  private static final String TYPE = "Space";
-  public static final DataFlavor SpaceFlavor = new DataFlavor(SpaceInst.class,
-      TYPE);
-  private final SpaceInst spaceInst;
+  private static final String TYPE = "Group";
+  public static final DataFlavor GROUP_FLAVOR = new DataFlavor(Group.class, TYPE);
 
-  /**
-   * @param space the selected space
-   */
-  public SpaceSelection(SpaceInst space) {
+  private final Group group;
+
+  public GroupSelection(Group group) {
     super();
-    spaceInst = space;
-    super.addFlavor(SpaceFlavor);
+    this.group = group;
+    super.addFlavor(GROUP_FLAVOR);
   }
 
   /**
@@ -65,8 +67,8 @@ public class SpaceSelection extends ClipboardSelection implements Serializable {
     try {
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
-      if (SpaceFlavor.equals(parFlavor)) {
-        transferedData = spaceInst;
+      if (GROUP_FLAVOR.equals(parFlavor)) {
+        transferedData = group;
       } else {
         throw e;
       }
@@ -75,29 +77,29 @@ public class SpaceSelection extends ClipboardSelection implements Serializable {
   }
 
   /**
-   * Returns the IndexEntry for the space being copied
-   * @return an IndexEntry for this space
+   * Returns the IndexEntry for the group being copied/cut
+   * @return an IndexEntry for the selected group
    */
   @Override
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry =
-        new IndexEntry(new IndexEntryKey(spaceInst.getId(), TYPE, spaceInst.getId()));
-    indexEntry.setTitle(spaceInst.getName());
+        new IndexEntry(new IndexEntryKey("Groups", TYPE, group.getId()));
+    indexEntry.setTitle(group.getName());
+    indexEntry.setPreview(group.getDescription());
     return indexEntry;
   }
 
   /**
-   * Tranforms the dat into a SilverpeasKeyData.
+   * Transforms the data into a SilverpeasKeyData.
    */
   @Override
   public SilverpeasKeyData getKeyData() {
-    SilverpeasKeyData keyData = new SilverpeasKeyData(spaceInst.getId());
-    keyData.setTitle(spaceInst.getName());
-    keyData.setAuthor(spaceInst.getCreatorUserId());
-    keyData.setCreationDate(spaceInst.getCreationDate());
-    keyData.setDesc(spaceInst.getDescription());
+    SilverpeasKeyData keyData = new SilverpeasKeyData(group.getId());
+    keyData.setTitle(group.getName());
+    keyData.setCreationDate(group.getCreationDate());
+    keyData.setDesc(group.getDescription());
     keyData.setType(TYPE);
-    keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceInst.getId()));
     return keyData;
   }
 }
+  

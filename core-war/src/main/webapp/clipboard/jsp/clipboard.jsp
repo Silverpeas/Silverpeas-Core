@@ -26,7 +26,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${requestScope.resources.language}"/>
@@ -38,187 +39,131 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.core.admin.component.model.SilverpeasComponentInstance"%>
 <%@ page import="org.silverpeas.core.clipboard.ClipboardSelection"%>
-<%@ page import="org.silverpeas.core.index.indexing.model.IndexEntry"%>
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 
-<%@ include file="checkClipboard.jsp" %>
-
-<%@page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
-<%@ page import="java.util.Collection" %>
-<%@ page import="java.util.Iterator" %>
-<HTML>
-<HEAD>
+<c:set var="clipboardScc" value="${requestScope.clipboardScc}"/>
+<jsp:useBean id="clipboardScc"
+             type="org.silverpeas.web.clipboard.control.ClipboardSessionController"/>
+<!DOCTYPE>
+<html lang="${requestScope.resources.language}">
+<head>
+    <title>Clipboard</title>
   <view:looknfeel/>
-<script language="javascript" src="../../util/javaScript/formUtil.js"></script>
-<SCRIPT language="JavaScript">
+<script src="../../util/javaScript/formUtil.js"></script>
+<script>
+  function selectClipboardObject(index, field) {
+    opener.top.IdleFrame.location.href = '../../Rclipboard/jsp/selectObject.jsp?Id=' + index +
+        '&Status=' + field.checked;
+  }
 
-//--------------------------------------------------------------------------------------SelectClipboardObject
-function SelectClipboardObject ( index , field ) {
-  //document.pasteform.txtOutput.value = index + ", " + field.value + ", " + field.checked;
-  opener.top.IdleFrame.location.href = '../../Rclipboard/jsp/selectObject.jsp?Id='+index+'&Status='+field.checked;
-}
+  function beforeClosing() {
+    opener.top.ClipboardWindowClosed = true;
+  }
 
-//--------------------------------------------------------------------------------------BeforeClosing
-function BeforeClosing () {
-  opener.top.ClipboardWindowClosed = true;
-}
+  function clipboardClose() {
+    beforeClosing();
+    window.close();
+  }
 
-//--------------------------------------------------------------------------------------ClipboardClose
-function ClipboardClose () {
-  BeforeClosing ();
-  window.close();
-}
+  function clipboardDoDelete() {
+    document.pasteform.action = "../../Rclipboard/jsp/delete.jsp";
+    document.pasteform.target = "_self";
+    document.pasteform.submit();
+  }
 
-//--------------------------------------------------------------------------------------ClipboardDoPaste
-function ClipboardDoPaste () {
-  // Ferme la fenetre et envoie l'info a l'appelant
-  // deprecated
-  opener.top.ClipboardWindowClosed = true;
-  document.pasteform.action = "../../Rclipboard/jsp/selectionpaste.jsp";
-  document.pasteform.message.value = "REFRESH";// message pour la idle frame, id "rafraichir le composant"
-  document.pasteform.temp.value = window.clipboardData.getData("Text");
-  document.pasteform.target = "IdleFrame";
-  document.pasteform.submit();
-  window.close();
-}
+  function init() {
+    opener.top.ClipboardWindow = window;
+    opener.top.ClipboardWindowClosed = false;
+  }
 
-//--------------------------------------------------------------------------------------ClipboardDoDelete
-function ClipboardDoDelete () {
-  //opener.top.ClipboardWindowClosed = false;
-  document.pasteform.action = "../../Rclipboard/jsp/delete.jsp";
-  document.pasteform.target = "_self";
-  document.pasteform.submit();
-}
-
-//--------------------------------------------------------------------------------------ShowHiddenFrame
-function ShowHiddenFrame () {
-	//opener.top.IdleFrame.height = 500;
-	alert (opener.top.IdleFrame.style.height);
-	return false;
-}
-
-//--------------------------------------------------------------------------------------init
-function init () {
-	opener.top.ClipboardWindow = window;
-	opener.top.ClipboardWindowClosed = false;
-}
-
-function view(url)
-{
-	opener.top.location.href = url;
-	ClipboardClose();
-}
-</SCRIPT>
+  function view(url) {
+    opener.top.location.href = url;
+    clipboardClose();
+  }
+</script>
 </head>
-<body onLoad="init();" onUnload="BeforeClosing();">
+<body onLoad="init();" onUnload="beforeClosing();">
 <fmt:message var="tmp" key="clipboard"/>
 <view:browseBar componentId="" path="${tmp}"/>
 <view:window popup="true">
   <view:frame>
-
 <form name="pasteform" action="" method="post" target="MyMain">
-  <input type="hidden" name="compR" value="<%=clipboardSC.getComponentRooterName()%>">
-  <input type="hidden" name="SpaceFrom" value="<%=clipboardSC.getSpaceId()%>">
-  <input type="hidden" name="ComponentFrom" value="<%=clipboardSC.getComponentId()%>">
-  <input type="hidden" name="JSPPage" value="<%=clipboardSC.getJSPPage()%>">
-  <input type="hidden" name="TargetFrame" value="<%=clipboardSC.getTargetFrame()%>">
+  <input type="hidden" name="compR" value="<%=clipboardScc.getComponentRooterName()%>">
+  <input type="hidden" name="SpaceFrom" value="<%=clipboardScc.getSpaceId()%>">
+  <input type="hidden" name="ComponentFrom" value="<%=clipboardScc.getComponentId()%>">
+  <input type="hidden" name="JSPPage" value="<%=clipboardScc.getJSPPage()%>">
+  <input type="hidden" name="TargetFrame" value="<%=clipboardScc.getTargetFrame()%>">
   <input type="hidden" name="message">
   <input type="hidden" name="temp">
-<table border="0" cellspacing="0" cellpadding="0" width="100%">
-  <tr>
-    <td valign="top" align="center" width="100%"> <!-- SEPARATION NAVIGATION / CONTENU DU COMPOSANT -->
-      <table cellpadding="0" cellspacing="0" border="0" width="100%">
-        <tr>
-          <td><img src="icons/1px.gif" height="7"></td>
-        </tr>
-      </table>
-      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-        <tr>
-          <td>
-          <%
-          ArrayPane arrayPane = graphicFactory.getArrayPane("quickinfoList", pageContext);
-          arrayPane.addArrayColumn(clipboardSC.getString("vide"));
-          arrayPane.addArrayColumn(clipboardSC.getString("titre"));
-          arrayPane.addArrayColumn(clipboardSC.getString("composant"));
-          arrayPane.addArrayColumn(clipboardSC.getString("vide"));
-
-		  Collection 			infos 		= clipboardSC.getObjects();
-          Iterator 				infosI		= infos.iterator();
-		  int 					index 		= 0;
-		  ClipboardSelection clipObject 	= null;
-		  IndexEntry 			indexEntry 	= null;
-		  ArrayLine 			line 		= null;
-		  String				icon		= null;
-		  String				link		= null;
-		String iconComponent = null;
-
-		while (infosI.hasNext()) {
-				clipObject 	= (ClipboardSelection) infosI.next();
-        indexEntry 	= (IndexEntry) clipObject.getTransferData (ClipboardSelection.IndexFlavor);
-        line 		= arrayPane.addArrayLine();
-
-        if ("node".equalsIgnoreCase(indexEntry.getObjectType()))
-        {
-		icon = resources.getIcon("node");
-		link = URLUtil.getSimpleURL(URLUtil.URL_TOPIC, indexEntry.getObjectId(), indexEntry.getComponent(), true);
-        } else if ("component".equalsIgnoreCase(indexEntry.getObjectType()))
-        {
-		icon = resources.getIcon("component");
-		String componentName = SilverpeasComponentInstance.getComponentName(indexEntry.getComponent());
-		iconComponent = m_context + "/util/icons/component/" + componentName +"Small.gif";
-		link = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, indexEntry.getObjectId(), indexEntry.getComponent(), true);
-        } else {
-		icon = resources.getIcon("publi");
-		link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, indexEntry.getObjectId(), indexEntry.getComponent(), true);
-        }
-        line.addArrayCellText("<img src=\""+ icon+"\" border=\"0\"/>");
-        if ("component".equalsIgnoreCase(indexEntry.getObjectType()))
-	        line.addArrayCellLink("<img src=\""+ iconComponent+"\" border=\"0\"/>&nbsp;" + Encode
-              .javaStringToHtmlString(indexEntry.getTitle()), "javaScript:view('"+link+"');");
-        else
-	        line.addArrayCellLink(Encode.javaStringToHtmlString(indexEntry.getTitle()), "javaScript:view('"+link+"');");
-
-				line.addArrayCellText(clipboardSC.getComponentLabel(indexEntry.getComponent()));
-				if (clipObject.isSelected ())
-					line.addArrayCellText("<input type=checkbox checked name='clipboardId"+String.valueOf(index)+"' value='' onclick='SelectClipboardObject("+String.valueOf(index)+", this)'>");
-				else
-					line.addArrayCellText("<input type=checkbox name='clipboardId"+String.valueOf(index)+"' value='' onclick='SelectClipboardObject("+String.valueOf(index)+", this)'>");
-
-				index++;
-       }
-          out.println(arrayPane.print());
-          %>
-          </td>
-        </tr>
-      </table>
-<br>
-        <!-- BOUTON DE FORMULAIRE-->
-      <table width="1%" border="0" cellspacing="0" cellpadding="5">
-          <tr align="center">
-            <td align="right">
-              <%
-                Button button = graphicFactory.getFormButton(clipboardSC.getString("reset"), "javascript:onClick=ClipboardDoDelete()", false);
-                out.println(button.print());
-              %>
-			</td>
-			<td align="left">
-              <%
-                button = graphicFactory.getFormButton(clipboardSC.getString("fermer"), "javascript:onClick=ClipboardClose()", false);
-                out.println(button.print());
-              %>
-            </td>
-          </tr>
-        </table>
-    </td>
-  </tr>
-</table>
+    <div id="clipboard-items">
+        <view:arrayPane var="clipboard" export="false">
+            <view:arrayColumn title="${clipboardScc.getString('vide')}"/>
+            <view:arrayColumn title="${clipboardScc.getString('titre')}"/>
+            <view:arrayColumn title="${clipboardScc.getString('composant')}"/>
+            <view:arrayColumn title="${clipboardScc.getString('vide')}"/>
+            <c:set var="index" value="${0}"/>
+            <view:arrayLines var="item" items="${clipboardScc.objects}">
+                <jsp:useBean id="item"
+                             type="org.silverpeas.core.clipboard.ClipboardSelection"/>
+                <%
+                    pageContext.setAttribute("data",
+                            item.getTransferData(ClipboardSelection.SilverpeasKeyDataFlavor));
+                %>
+                <c:set var="data" value="${pageContext.getAttribute('data')}"/>
+                <jsp:useBean id="data" type="org.silverpeas.core.clipboard.SilverpeasKeyData"/>
+                <c:set var="link" value="${data.link}"/>
+                <c:set var="type" value="${data.type}"/>
+                <c:set var="icon" value="${requestScope.resources.getIcon(type.toLowerCase())}"/>
+                <c:if test="${icon.equalsIgnoreCase(silfn:applicationURL())}">
+                    <c:set var="icon" value="${requestScope.resources.getIcon('publication')}"/>
+                </c:if>
+                <c:set var="componentLabel" value=""/>
+                <c:if test="${data.componentInstanceId != null}">
+                    <c:set var="componentLabel"
+                           value="${clipboardScc.getComponentLabel(data.componentInstanceId)}"/>
+                </c:if>
+                <c:set var="checked" value=""/>
+                <c:if test="${item.selected}">
+                    <c:set var="checked" value="checked"/>
+                </c:if>
+                <view:arrayLine>
+                    <view:arrayCellText>
+                        <img src="${icon}" alt="${type}"/>
+                    </view:arrayCellText>
+                    <view:arrayCellText>
+                        <c:choose>
+                            <c:when test="${silfn:isDefined(link)}">
+                                <button class="link" type="button" onclick="view('${link}');">
+                                        ${silfn:escapeHtml(data.title)}
+                                </button>
+                            </c:when>
+                            <c:otherwise>
+                                ${silfn:escapeHtml(data.title)}
+                            </c:otherwise>
+                        </c:choose>
+                    </view:arrayCellText>
+                    <view:arrayCellText text="${componentLabel}"/>
+                    <view:arrayCellText>
+                        <input type=checkbox ${checked}
+                               name='clipboardId${index}'
+                               value=''
+                               onchange='selectClipboardObject(${index}, this)'/>
+                    </view:arrayCellText>
+                </view:arrayLine>
+                <c:set var="index" value="${index + 1}"/>
+            </view:arrayLines>
+        </view:arrayPane>
+    </div>
+    <div id="clipboard-actions" class="center" style="padding-top: 1em;">
+        <view:buttonPane>
+            <view:button label="${clipboardScc.getString('reset')}"
+                         action="javascript:onClick=clipboardDoDelete()"/>
+            <view:button label="${clipboardScc.getString('fermer')}"
+                         action="javascript:onClick=clipboardClose()"/>
+        </view:buttonPane>
+    </div>
 </form>
-</view:frame>
+    </view:frame>
 </view:window>
-</BODY>
-</HTML>
+</body>
+</html>

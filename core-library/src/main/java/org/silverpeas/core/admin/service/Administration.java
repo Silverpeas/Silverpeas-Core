@@ -47,6 +47,7 @@ import java.util.Set;
 /**
  * This interface defines all the required services to manage administration data (domains, spaces,
  * components, users, groups,...).
+ *
  * @author Yohann Chastagnier
  */
 public interface Administration {
@@ -81,6 +82,7 @@ public interface Administration {
 
   /**
    * add a space instance in database
+   *
    * @param userId Id of user who add the space
    * @param spaceInst SpaceInst object containing information about the space to be created
    * @return the created space id
@@ -89,6 +91,7 @@ public interface Administration {
 
   /**
    * Delete the given space. It is applied recursively to the sub-spaces
+   *
    * @param userId Id of user who deletes the space
    * @param spaceId Id of the space to be deleted
    * @param definitive is the deletion is definitive?
@@ -100,6 +103,7 @@ public interface Administration {
 
   /**
    * Restores the space from the basket.
+   *
    * @param spaceId the unique identifier of the space to restore.
    * @throws AdminException if an error occurs while restoring the space.
    */
@@ -107,6 +111,7 @@ public interface Administration {
 
   /**
    * Get the space instance with the given space id.
+   *
    * @param spaceId client space id
    * @return Space information as SpaceInst object.
    * @throws AdminException if an error occurs while getting the space.
@@ -117,6 +122,7 @@ public interface Administration {
 
   /**
    * Get all the subspaces Ids available in Silverpeas given a domainFatherId (client id format)
+   *
    * @param domainFatherId Id of the father space
    * @return an array of String containing the ids of spaces that are child of given space.
    * @throws AdminException if an error occurs all the subspaces.
@@ -125,6 +131,7 @@ public interface Administration {
 
   /**
    * Updates the space (with the given name) with the given space Updates only the node
+   *
    * @param spaceInstNew SpaceInst object containing new information for space to be updated
    * @return the updated space id.
    * @throws AdminException if an error occurs while updating the space.
@@ -135,6 +142,7 @@ public interface Administration {
 
   /**
    * Return all the root spaces Ids available in Silverpeas.
+   *
    * @return all the root spaces Ids available in Silverpeas.
    * @throws AdminException if an error occurs
    */
@@ -142,6 +150,7 @@ public interface Administration {
 
   /**
    * Retrieve spaces from root to component
+   *
    * @param componentId the target component
    * @return a List of SpaceInstLight
    * @throws AdminException if an error occurs
@@ -150,6 +159,7 @@ public interface Administration {
 
   /**
    * Retrieve all the spaces that are parent to the given space up to the root space.
+   *
    * @param spaceId the target space
    * @param includeTarget is the target space should be included with the returned spaces.
    * @return an ordered list of space, from the root space down to the targeted space.
@@ -159,6 +169,7 @@ public interface Administration {
 
   /**
    * Return the all the spaces Ids available in Silverpeas.
+   *
    * @return the all the spaces Ids available in Silverpeas.
    * @throws AdminException if an error occurs
    */
@@ -166,6 +177,7 @@ public interface Administration {
 
   /**
    * Returns all spaces which has been removed but not definitely deleted.
+   *
    * @return a List of SpaceInstLight
    * @throws AdminException if an error occurs
    */
@@ -173,6 +185,7 @@ public interface Administration {
 
   /**
    * Returns all components which has been removed but not definitely deleted.
+   *
    * @return a List of ComponentInstLight
    * @throws AdminException if an error occurs
    */
@@ -180,6 +193,7 @@ public interface Administration {
 
   /**
    * Return the spaces name corresponding to the given space ids
+   *
    * @param asClientSpaceIds the global space identifiers
    * @return the name of the specified spaces
    * @throws AdminException if an error occurs
@@ -188,6 +202,7 @@ public interface Administration {
 
   /**
    * Return all the components of silverpeas read in the xmlComponent directory.
+   *
    * @return all the components of silverpeas read in the xmlComponent directory.
    */
   Map<String, WAComponent> getAllWAComponents();
@@ -201,6 +216,7 @@ public interface Administration {
    *   <li>{@link ComponentInstLight}</li>
    * </ul>
    * So, this signature is useful into contexts of transversal treatments.
+   *
    * @param componentInstanceIdentifier the identifier of the requested component instance.
    * @return an optional component instance.
    */
@@ -209,6 +225,7 @@ public interface Administration {
 
   /**
    * Return the component Inst corresponding to the given ID
+   *
    * @param sClientComponentId the global component instance identifier.
    * @return the component Inst corresponding to the given ID
    * @throws AdminException if an error occurs
@@ -217,6 +234,7 @@ public interface Administration {
 
   /**
    * Return the component Inst Light corresponding to the given ID
+   *
    * @param componentId the component instance identifier
    * @return the component Inst Light corresponding to the given ID
    * @throws AdminException if an error occurs
@@ -225,6 +243,7 @@ public interface Administration {
 
   /**
    * Return the value of the parameter for the given component and the given name of parameter
+   *
    * @param componentId the component instance identifier
    * @param parameterName the name of the parameter
    * @return the value of the parameter for the given component and the given name of parameter
@@ -233,6 +252,7 @@ public interface Administration {
 
   /**
    * Gets all parameters values by component and by parameter name.
+   *
    * @param componentIds list of component identifier.
    * @param paramNames optional list of parameter name. All parameters are retrieved if it is not
    * filled or null
@@ -247,12 +267,14 @@ public interface Administration {
 
   /**
    * Create the index for the specified component.
+   *
    * @param componentId the unique identifier of a component instance
    */
   void createComponentIndex(String componentId);
 
   /**
    * Create the index for the specified component.
+   *
    * @param componentInst a component instance
    */
   void createComponentIndex(SilverpeasComponentInstance componentInst);
@@ -264,6 +286,7 @@ public interface Administration {
 
   /**
    * Delete the specified component.
+   *
    * @param userId the unique identifier of a user
    * @param componentId the unique identifier of a component instance
    * @param definitive is the deletion definitive?
@@ -275,6 +298,7 @@ public interface Administration {
 
   /**
    * Update the given component in Silverpeas.
+   *
    * @param component the component instance.
    * @return the unique identifier of the updated component instance.
    * @throws AdminException if an error occurs
@@ -283,6 +307,7 @@ public interface Administration {
 
   /**
    * Set space profiles to a subspace. There is no persistance. The subspace object is enriched.
+   *
    * @param subSpace the object to set profiles
    * @param space the object to get profiles
    * @throws AdminException if an error occurs
@@ -299,6 +324,7 @@ public interface Administration {
 
   /**
    * Move the given component in Silverpeas.
+   *
    * @param spaceId the unique identifier of the targeted space.
    * @param componentId the unique identifier of the component.
    * @param idComponentBefore the unique identifier of the component placed before the new position
@@ -316,6 +342,7 @@ public interface Administration {
 
   /**
    * Get all the profiles name available for the given component.
+   *
    * @param sComponentName the unique identifier of the component instance.
    * @return an array of role profiles defined for the given component instance.
    */
@@ -323,6 +350,7 @@ public interface Administration {
 
   /**
    * Get the profile label from its name.
+   *
    * @param sComponentName the unique identifier of the component instance.
    * @param sProfileName the name of the role profile
    * @return the label of the profile
@@ -331,6 +359,7 @@ public interface Administration {
 
   /**
    * Get the profile instance corresponding to the given id
+   *
    * @param sProfileId the unique identifier of the profile.
    * @return the role profile
    * @throws AdminException if an error occurs
@@ -342,6 +371,7 @@ public interface Administration {
    * mapping between a role and the privileges the role provides to a user in a given space or
    * applications in Silverpeas. Both inherited and explicit profiles of the given component
    * instance are taken into account, either through a group of users or by the user himself.
+   *
    * @param userId the unique identifier of a user.
    * @param componentId the unique identifier of a component instance in Silverpeas.
    * @return a list with the profiles the user has in the given component instance.
@@ -360,6 +390,7 @@ public interface Administration {
   /**
    * Gets the profile names of given user indexed by couple of given component instances and object
    * instances.
+   *
    * @param profiledObjectIds if NOTHING is given, then all the rows associated to the type are
    * returned, otherwise all the rows associated to type and ids.
    * @param componentIds list of component instance identifier as string.
@@ -392,6 +423,7 @@ public interface Administration {
 
   /**
    * Get the space profile instance corresponding to the given ID
+   *
    * @param spaceProfileId the unique profile identifier.
    * @return the profile instance.
    * @throws AdminException if an error occurs
@@ -408,6 +440,7 @@ public interface Administration {
 
   /**
    * Get the group name corresponding to the given group id.
+   *
    * @param sGroupId the unique identifier of a group.
    * @return the name of the group.
    * @throws AdminException if an error occurs
@@ -416,6 +449,7 @@ public interface Administration {
 
   /**
    * Get the all the {@link GroupState#VALID} groups available in Silverpeas.
+   *
    * @return a list of available user groups in Silverpeas.
    * @throws AdminException if an error occurs
    */
@@ -423,6 +457,7 @@ public interface Administration {
 
   /**
    * Tests if {@link GroupState#VALID} group exists in Silverpeas.
+   *
    * @param groupName the name of a group
    * @return true if a group with the given name
    * @throws AdminException if an error occurs
@@ -431,6 +466,7 @@ public interface Administration {
 
   /**
    * Get group information with the given id
+   *
    * @param groupId the unique identifier of a group
    * @return a user group instance.
    * @throws AdminException if an error occurs
@@ -441,6 +477,7 @@ public interface Administration {
 
   /**
    * Get group information with the given group name.
+   *
    * @param groupName the name of the group.
    * @param domainFatherId the identifier of a user domain.
    * @return a user group instance.
@@ -450,6 +487,7 @@ public interface Administration {
 
   /**
    * Get groups information with the given ids.
+   *
    * @param asGroupId one or more group identifiers.
    * @return the group instances of the specified identifiers.
    * @throws AdminException if an error occurs
@@ -458,6 +496,7 @@ public interface Administration {
 
   /**
    * Add the given group in Silverpeas.
+   *
    * @param group a user group.
    * @return the identifier of the new group.
    * @throws AdminException if an error occurs
@@ -466,6 +505,7 @@ public interface Administration {
 
   /**
    * Add the given group in Silverpeas.
+   *
    * @param group a user group.
    * @param onlyInSilverpeas performs the operation only in Silverpeas
    * @return the identifier of the new group
@@ -475,6 +515,7 @@ public interface Administration {
 
   /**
    * Restores the given group from silverpeas and specific domain
+   *
    * @param groupId the group identifier
    * @return all the group instance which have been restored from the given one.
    * @throws AdminException if an error occurs
@@ -483,6 +524,7 @@ public interface Administration {
 
   /**
    * Removes the given group from silverpeas and specific domain
+   *
    * @param groupId the group identifier
    * @return all the group instance which have been removed from the given one.
    * @throws AdminException if an error occurs
@@ -491,6 +533,7 @@ public interface Administration {
 
   /**
    * Delete the group with the given Id. The deletion is applied recursively to the subgroups.
+   *
    * @param sGroupId the unique identifier of a group
    * @return the identifier of the deleted group.
    * @throws AdminException if an error occurs
@@ -499,6 +542,7 @@ public interface Administration {
 
   /**
    * Delete the group with the given id. The deletion is applied recursively to the subgroups.
+   *
    * @param sGroupId the unique identifier of a group.
    * @param onlyInSilverpeas performs the operation only in Silverpeas.
    * @return the identifier of the deleted group.
@@ -508,7 +552,38 @@ public interface Administration {
       throws AdminException;
 
   /**
+   * Copies the specified group of users as subgroup of the given parent group. If no parent group
+   * is specified then the group is copied as a root group of the domain. The parent group should be
+   * in a valid state. The parent group and the copied group have to belong to the same domain and
+   * the parent group shouldn't have any other subgroups with the same name than the copied group.
+   *
+   * @param group the group to copy.
+   * @param groupParentId the unique identifier of the group parent for which the group to copy will
+   * become a subgroup. if null, the group to copy will be a root group of the domain.
+   * @return the unique identifier of the copied group.
+   * @throws AdminException if the copy doesn't satisfy the constrain or if an error occurs while
+   * copying the group.
+   */
+  String copyGroup(GroupDetail group, String groupParentId) throws AdminException;
+
+  /**
+   * Moves the specified group of users as subgroup of the given parent group. If no parent group is
+   * specified, then the group is moved at a root group of the domain of users it belongs to. The
+   * parent group should be in a valid state. The parent group and the moved group have to belong to
+   * the same domain and the parent group shouldn't have any other subgroups with the same name than
+   * the copied group.
+   *
+   * @param group the group to move
+   * @param groupParentId the unique identifier of the group parent for which the group to move will
+   * be a subgroup. If null, the group to move will be a root group of the domain.
+   * @throws AdminException if the move doesn't satisfy the constrain or if an error occurs while
+   * moving the group.
+   */
+  void moveGroup(GroupDetail group, String groupParentId) throws AdminException;
+
+  /**
    * Update the given group in Silverpeas and specific.
+   *
    * @param group the group to update
    * @return the unique identifier of the updated group
    * @throws AdminException if an error occurs
@@ -517,6 +592,7 @@ public interface Administration {
 
   /**
    * Update the given group in Silverpeas and specific
+   *
    * @param group the group to update
    * @param onlyInSilverpeas performs the operation only in Silverpeas
    * @return the unique identifier of the updated group
@@ -531,6 +607,7 @@ public interface Administration {
   /**
    * Gets all {@link GroupState#VALID} root groups in Silverpeas. A root group is the group of users
    * without any other parent group.
+   *
    * @return a list of user groups.
    * @throws AdminException if an error occurs whil getting the root user groups.
    */
@@ -555,6 +632,7 @@ public interface Administration {
 
   /**
    * Get the user detail corresponding to the given user Id
+   *
    * @param sUserId the user id.
    * @return the user detail corresponding to the given user Id
    * @throws AdminException if an error occurs
@@ -563,6 +641,7 @@ public interface Administration {
 
   /**
    * Get the user details corresponding to the given user Ids.
+   *
    * @param userIds one or more user identifiers
    * @return the user details corresponding to the given user Ids.
    */
@@ -570,6 +649,7 @@ public interface Administration {
 
   /**
    * Get all users (except delete ones) from all domains.
+   *
    * @return the user details from all domains sort by alphabetical order
    * @throws AdminException if an error occurs
    */
@@ -577,6 +657,7 @@ public interface Administration {
 
   /**
    * Get all users (except delete ones) from all domains.
+   *
    * @return the user details from all domains sort by reverse creation order
    * @throws AdminException if an error occurs
    */
@@ -584,6 +665,7 @@ public interface Administration {
 
   /**
    * Checks if an existing user already have the given email
+   *
    * @param email email to check
    * @return true if at least one user with given email is found
    * @throws AdminException if an error occurs
@@ -592,6 +674,7 @@ public interface Administration {
 
   /**
    * Get the user id corresponding to Domain/Login (ignoring the login case)
+   *
    * @param sLogin the user login
    * @param sDomainId the domain of the user
    * @return the unique identifier of the user
@@ -609,6 +692,7 @@ public interface Administration {
   /**
    * Get full information about the user with the given unique identifier (only info in cache table)
    * from its domain.
+   *
    * @param sUserId the unique identifier of the user to get.
    * @return a {@link UserFull} instance.
    * @throws AdminException if an error occurs while getting the user.
@@ -618,6 +702,7 @@ public interface Administration {
   /**
    * Gets full information about users corresponding to given unique identifiers (only info in cache
    * table) from its domain.
+   *
    * @param userIds the unique identifiers of user to get.
    * @return list of {@link UserFull} instance.
    * @throws AdminException if an error occurs while getting the user.
@@ -628,6 +713,7 @@ public interface Administration {
 
   /**
    * Add the given user in Silverpeas and specific domain.
+   *
    * @param userDetail a user
    * @return the new user id.
    * @throws AdminException if an error occurs
@@ -636,6 +722,7 @@ public interface Administration {
 
   /**
    * Add the given user in Silverpeas and specific domain
+   *
    * @param userDetail user to add
    * @param addOnlyInSilverpeas true if user must not be added in distant datasource (used by
    * synchronization tools)
@@ -647,6 +734,7 @@ public interface Administration {
 
   /**
    * Blocks the user represented by the given identifier.
+   *
    * @param userId the unique identifier of the user
    * @throws AdminException if an error occurs
    */
@@ -654,6 +742,7 @@ public interface Administration {
 
   /**
    * Unblock the user represented by the given identifier.
+   *
    * @param userId the unique identifier of the user
    * @throws AdminException if an error occurs
    */
@@ -661,6 +750,7 @@ public interface Administration {
 
   /**
    * Deactivates the user represented by the given identifier.
+   *
    * @param userId the unique identifier of the user
    * @throws AdminException if an error occurs
    */
@@ -668,6 +758,7 @@ public interface Administration {
 
   /**
    * Activate the user represented by the given identifier.
+   *
    * @param userId the unique identifier of the user
    * @throws AdminException if an error occurs
    */
@@ -676,6 +767,7 @@ public interface Administration {
   /**
    * Sets some data of the specified user as or not sensitive information. The data to be
    * potentially sensitive are defined in the user domain to which the user belongs.
+   *
    * @param userId the unique identifier of the user.
    * @param sensitive a boolean indicating whether the data potentially sensitive are actually
    * sensitive or not.
@@ -685,6 +777,7 @@ public interface Administration {
 
   /**
    * Updates the acceptance date of a user from its id.
+   *
    * @param userId the unique identifier of the user
    * @throws AdminException if an error occurs
    */
@@ -692,6 +785,7 @@ public interface Administration {
 
   /**
    * Restores the given user from silverpeas and specific domain
+   *
    * @param sUserId the user identifier
    * @return the user identifier
    * @throws AdminException if an error occurs
@@ -700,6 +794,7 @@ public interface Administration {
 
   /**
    * Removes the given user from silverpeas and specific domain
+   *
    * @param sUserId the user identifier
    * @return the user identifier
    * @throws AdminException if an error occurs
@@ -708,6 +803,7 @@ public interface Administration {
 
   /**
    * Delete the given user from silverpeas and specific domain
+   *
    * @param sUserId the user identifier
    * @return the user identifier
    * @throws AdminException if an error occurs
@@ -716,6 +812,7 @@ public interface Administration {
 
   /**
    * Delete the given user from silverpeas and specific domain
+   *
    * @param sUserId the user identifier
    * @param onlyInSilverpeas performs the operation only in Silverpeas
    * @return the user identifier
@@ -725,6 +822,7 @@ public interface Administration {
 
   /**
    * Update the given user (ONLY IN SILVERPEAS)
+   *
    * @param user the user
    * @return the user identifier
    * @throws AdminException if an error occurs
@@ -733,6 +831,7 @@ public interface Administration {
 
   /**
    * Update the given user in Silverpeas and specific domain
+   *
    * @param user the user
    * @return the user identifier
    * @throws AdminException if an error occurs
@@ -741,6 +840,7 @@ public interface Administration {
 
   /**
    * Converts driver space id to client space id
+   *
    * @param sDriverSpaceId the local space identifier
    * @return the global space identifier
    */
@@ -748,6 +848,7 @@ public interface Administration {
 
   /**
    * Converts driver space ids to client space ids
+   *
    * @param asDriverSpaceIds one or more local space identifiers
    * @return the global identifier of the specified spaces.
    */
@@ -757,6 +858,7 @@ public interface Administration {
 
   /**
    * Create a new domain
+   *
    * @param theDomain the user domain to create.
    * @return the unique identifier of the domain
    */
@@ -764,6 +866,7 @@ public interface Administration {
 
   /**
    * Update a domain
+   *
    * @param domain the domain to update
    * @return the unique identifier of the updated domain.
    */
@@ -771,6 +874,7 @@ public interface Administration {
 
   /**
    * Remove a domain
+   *
    * @param domainId the unique identifier of a domain
    * @return the unique identifier of the deleted domain
    */
@@ -778,12 +882,14 @@ public interface Administration {
 
   /**
    * Get all domains
+   *
    * @return an array with all the user domains in Silverpeas
    */
   Domain[] getAllDomains() throws AdminException;
 
   /**
    * Get a domain with given id
+   *
    * @param domainId the unique domain identifier
    * @return the user domain
    */
@@ -793,6 +899,7 @@ public interface Administration {
 
   /**
    * Gets all {@link GroupState#VALID} groups at the root of a domain.
+   *
    * @param domainId identifier of a domain.
    * @return an array of {@link GroupDetail} instance.
    * @throws AdminException on any technical error.
@@ -803,6 +910,7 @@ public interface Administration {
 
   /**
    * Gets all users of a group, including these of {@link GroupState#VALID} subgroups.
+   *
    * @param groupId the identifier of the group from which users are retrieved.
    * @return an array of {@link UserDetail} instance.
    * @throws AdminException on any technical error.
@@ -813,6 +921,7 @@ public interface Administration {
 
   /**
    * Get all users (except delete ones) from specified domains.
+   *
    * @param domainIds a list of domain identifiers
    * @return the user details from specified domains sort by alphabetical order
    * @throws AdminException if an error occurs
@@ -821,6 +930,7 @@ public interface Administration {
 
   /**
    * Get all users (except delete ones) from specified domains.
+   *
    * @param domainIds a list of domain identifiers.
    * @return the user details from specified domains sort by reverse creation order
    * @throws AdminException if an error occurs
@@ -842,6 +952,7 @@ public interface Administration {
 
   /**
    * Get the spaces ids allowed for the given user
+   *
    * @param sUserId the unique identifier of a user
    * @return the unique identifier of the allowed spaces.
    * @throws AdminException if an error occurs
@@ -850,6 +961,7 @@ public interface Administration {
 
   /**
    * Get the root spaces ids allowed for the given user
+   *
    * @param sUserId the unique identifier of a user
    * @return the unique identifier of the allowed root spaces.
    * @throws AdminException if an error occurs
@@ -858,6 +970,7 @@ public interface Administration {
 
   /**
    * Get the subspaces ids in the specified space that are allowed for the given user
+   *
    * @param sUserId the unique identifier of a user
    * @param spaceId the unique identifier of the space parent.
    * @return the unique identifier of the allowed root spaces.
@@ -867,6 +980,7 @@ public interface Administration {
 
   /**
    * This method permit knowing if the given space is allowed to the given user.
+   *
    * @param userId the unique identifier of a user
    * @param spaceId the unique identifier of a space
    * @return true if user is allowed to access to one component (at least) in given space, false
@@ -885,6 +999,7 @@ public interface Administration {
    * IMPORTANT: the {@link UserSpaceAvailabilityChecker} MUST not be an attribute of a singleton
    * instance.
    * </p>
+   *
    * @param userId the unique identifier of a user
    * @return a {@link UserSpaceAvailabilityChecker} instance initialized for the given user
    * identifier.
@@ -896,6 +1011,7 @@ public interface Administration {
 
   /**
    * Get components of a given space (and subspaces) available to a user.
+   *
    * @param userId the unique identifier of a user
    * @param spaceId the unique identifier of a space
    * @return a list of ComponentInstLight
@@ -908,6 +1024,7 @@ public interface Administration {
   /**
    * Get all spaces available to a user. N levels compliant. Infos of each space are in
    * SpaceInstLight object.
+   *
    * @param userId the unique identifier of a user
    * @return an ordered list of SpaceInstLight. Built according a depth-first algorithm.
    * @throws AdminException if an error occurs
@@ -919,6 +1036,7 @@ public interface Administration {
 
   /**
    * Get the space instance light (only space id, father id and name) with the given space id
+   *
    * @param sClientSpaceId client space id (as WAxx)
    * @return Space information as SpaceInstLight object
    * @throws AdminException if an error occurs
@@ -927,6 +1045,7 @@ public interface Administration {
 
   /**
    * Return the higher space according to a subspace (N level compliant)
+   *
    * @param spaceId the subspace id
    * @return a SpaceInstLight object
    * @throws AdminException if an error occurs
@@ -936,9 +1055,10 @@ public interface Administration {
   /**
    * Get all the spaces ids manageable by given group id.
    * <p>
-   *   It means the direct space ids the group is indicated to and all the sub spaces ids by
-   *   inheritance.
+   * It means the direct space ids the group is indicated to and all the sub spaces ids by
+   * inheritance.
    * </p>
+   *
    * @param sGroupId the unique identifier of a group
    * @return an array of space identifiers.
    * @throws AdminException if an error occurs
@@ -948,9 +1068,10 @@ public interface Administration {
   /**
    * Get all the spaces ids manageable by given user id.
    * <p>
-   *   It means the direct space ids the user is indicated to and all the sub spaces ids by
-   *   inheritance.
+   * It means the direct space ids the user is indicated to and all the sub spaces ids by
+   * inheritance.
    * </p>
+   *
    * @param sUserId the unique identifier of a user
    * @return an array of space identifiers
    * @throws AdminException if an error occurs
@@ -959,6 +1080,7 @@ public interface Administration {
 
   /**
    * Get the subspace manageable by given user id in given space
+   *
    * @param sUserId the unique identifier of a user
    * @param sParentSpaceId the identifier of the parent space
    * @return an array of space identifiers
@@ -968,8 +1090,9 @@ public interface Administration {
       throws AdminException;
 
   /**
-   * Gets the space profile instance which provides all user and group identifiers playing the
-   * given role, either directly or by space profile inheritance.
+   * Gets the space profile instance which provides all user and group identifiers playing the given
+   * role, either directly or by space profile inheritance.
+   *
    * @param spaceId the identifier of aimed space.
    * @param role the aimed technical role name.
    * @return the {@link SpaceProfile} instance.
@@ -981,6 +1104,7 @@ public interface Administration {
 
   /**
    * Get the component ids allowed for the given user id in the given space
+   *
    * @param sClientSpaceId the global space identifier
    * @param sUserId the unique identifier of a user
    * @return an array of component instance identifiers
@@ -995,6 +1119,7 @@ public interface Administration {
    * of several tools, each of them providing an administrative feature. Each tool in the
    * administration component have the same identifier that refers in fact the administration
    * console.
+   *
    * @param toolId the unique identifier of the tool.
    * @return true if the tool belongs to the administration component.
    */
@@ -1007,6 +1132,7 @@ public interface Administration {
    * Each component in Silverpeas can be instantiated several times, each of them corresponding then
    * to a running application in Silverpeas, and it is uniquely identified from others instances by
    * a given identifier.
+   *
    * @param userId the unique identifier of a user.
    * @return a list of component instance identifier as string.
    * @throws AdminException if an error occurs
@@ -1021,6 +1147,7 @@ public interface Administration {
    * Each component in Silverpeas can be instantiated several times, each of them corresponding then
    * to a running application in Silverpeas, and it is uniquely identified from others instances by
    * a given identifier.
+   *
    * @param componentId the unique identifier of a component instance.
    * @param userId the unique identifier of a user.
    * @return true if the component instance is available, false otherwise.
@@ -1036,6 +1163,7 @@ public interface Administration {
    * Each component in Silverpeas can be instantiated several times, each of them corresponding then
    * to a running application in Silverpeas, and it is uniquely identified from others instances by
    * a given identifier.
+   *
    * @param componentId the unique identifier of a component instance.
    * @param groupId the unique identifier of a group of users.
    * @return true if the component instance is available, false otherwise.
@@ -1046,6 +1174,7 @@ public interface Administration {
   /**
    * Is the specified component instance manageable by the given user? The component instance is
    * manageable if the user has enough access right to manage it.
+   *
    * @param componentId the unique identifier of the component instance.
    * @param userId the unique identifier of a user.
    * @return true of the user can manage the specified component instance. False otherwise.
@@ -1055,6 +1184,7 @@ public interface Administration {
 
   /**
    * Get ids of components allowed to user in given space (not in subspaces)
+   *
    * @param sClientSpaceId the identifier of a space
    * @param sUserId the unique identifier of a user
    * @return an array of componentId (kmelia12, hyperlink145...)
@@ -1065,6 +1195,7 @@ public interface Administration {
   /**
    * Get the componentIds allowed for the given user Id in the given space and the
    * componentNameRoot
+   *
    * @param sClientSpaceId the unique identifier of a space
    * @param sUserId the unique identifier of a user
    * @param componentNameRoot the root name of the component
@@ -1077,6 +1208,7 @@ public interface Administration {
 
   /**
    * Get the component ids allowed for the given user id.
+   *
    * @param userId the unique identifier of a user
    * @throws AdminException if an error occurs
    */
@@ -1087,6 +1219,7 @@ public interface Administration {
 
   /**
    * Gets the available component for a given user
+   *
    * @param userId user identifier used to get component
    * @param componentName type of component to retrieve ( for example : kmelia, forums, blog)
    * @return a list of ComponentInstLight object
@@ -1098,6 +1231,7 @@ public interface Administration {
   /**
    * This method returns all root spaces which contains at least one allowed component of type
    * componentName in this space or subspaces.
+   *
    * @param userId the unique identifier of a user
    * @param componentName the component type (kmelia, gallery...)
    * @return a list of root spaces
@@ -1109,6 +1243,7 @@ public interface Administration {
   /**
    * This method returns all sub spaces which contains at least one allowed component of type
    * componentName in this space or subspaces.
+   *
    * @param userId the unique identifier of a user
    * @param componentName the component type (kmelia, gallery...)
    * @return a list of root spaces
@@ -1119,6 +1254,7 @@ public interface Administration {
 
   /**
    * Get the tuples (space id, compo id) allowed for the given user and given component name
+   *
    * @param sUserId the user identifier
    * @param sComponentName the name of a component
    * @return an array of tuples (space id, component instance id)
@@ -1128,6 +1264,7 @@ public interface Administration {
 
   /**
    * Return the compo id for the given component name
+   *
    * @param sComponentName a name of a component
    * @return an array with the identifier of the instances of the specified component
    * @throws AdminException if an error occurs
@@ -1136,6 +1273,7 @@ public interface Administration {
 
   /**
    * Get all the profile ids for the given user
+   *
    * @param sUserId the unique identifier of a user
    * @return an array with the identifier of all profiles of the user
    * @throws AdminException if an error occurs
@@ -1144,6 +1282,7 @@ public interface Administration {
 
   /**
    * Get all the profile ids for the given group
+   *
    * @param sGroupId the unique identifier of a group
    * @return an array with the identifier of all profiles of the group
    * @throws AdminException if an error occurs
@@ -1152,6 +1291,7 @@ public interface Administration {
 
   /**
    * Get the profile names of the given user for the given component instance
+   *
    * @param sUserId a unique identifier of a user
    * @param componentInst a component instance
    * @return an array of all the name of the profiles in which the given user is for the given
@@ -1161,6 +1301,7 @@ public interface Administration {
 
   /**
    * Get the profile names of the given user for the given component instance
+   *
    * @param sUserId a unique identifier of a user
    * @param componentId the unique identifier of a component instance
    * @return an array of all the name of the profiles in which the given user is for the given
@@ -1171,6 +1312,7 @@ public interface Administration {
 
   /**
    * Gets the profile names of given user indexed by the given component instances.
+   *
    * @param userId a user identifier as string.
    * @param componentIds list of component instance identifier as string.
    * @return a map filled with list of profile name as string by component instance identifier as
@@ -1182,6 +1324,7 @@ public interface Administration {
 
   /**
    * Get the profile names of the given user for the given space.
+   *
    * @param userId a unique identifier of a user.
    * @param spaceId the unique identifier of a space.
    * @return an list of all the name of the profiles in which the given user is for the given space.
@@ -1191,6 +1334,7 @@ public interface Administration {
 
   /**
    * Gets the space profile names of given user indexed by the given spaces.
+   *
    * @param userId a user identifier as string.
    * @param spaceIds list of space identifier as string.
    * @return a map filled with list of profile name as string by space identifier as string.
@@ -1201,6 +1345,7 @@ public interface Administration {
 
   /**
    * Gets all the users in the given profile for the given component instance in the given space.
+   *
    * @param bAllProfiles if bAllProfiles = true, return all the user details for the given space and
    * given component if bAllProfiles = false, return the user details only for the given profile for
    * the given space and given component
@@ -1212,6 +1357,7 @@ public interface Administration {
 
   /**
    * For use in userPanel : return the direct {@link GroupState#VALID} subgroups.
+   *
    * @param parentGroupId the unique identifier of the parent group
    * @return an array with all the groups children of the specified group
    * @throws AdminException if an error occurs
@@ -1221,6 +1367,7 @@ public interface Administration {
   /**
    * For use in userPanel: return recursively the direct {@link GroupState#VALID} subgroups of the
    * specified group.
+   *
    * @param parentGroupId the unique identifier of the parent group
    * @return an array with all the groups children of the specified group
    * @throws AdminException if an error occurs
@@ -1229,6 +1376,7 @@ public interface Administration {
 
   /**
    * For use in userPanel: return the users that are direct child of a given group
+   *
    * @param sGroupId the unique identifier of the group
    * @param sUserLastNameFilter filter on the user last name.
    * @return an array with all the users in the given group
@@ -1239,6 +1387,7 @@ public interface Administration {
 
   /**
    * For use in userPanel: return the total number of users recursively contained in a group
+   *
    * @param sGroupId the unique identifier of a group
    * @return the number of users in the given group and its subgroups.
    * @throws AdminException if an error occurs
@@ -1247,6 +1396,7 @@ public interface Administration {
 
   /**
    * Get the identifiers of the administrators accessible by the given user.
+   *
    * @param fromUserId the identifier of a user
    * @return an array with the identifier of all the administrators that can be contacted by the
    * given user
@@ -1257,12 +1407,14 @@ public interface Administration {
   /**
    * Gets the email of Silverpeas. This email is dedicated to be used when Silverpeas sends emails
    * to users.
+   *
    * @return a non-reply address email with which Silverpeas sent emails to users.
    */
   String getSilverpeasEmail();
 
   /**
    * Gets the name of Silverpeas to use when it sends notifications to users.
+   *
    * @return the name to use when the system (Silverpeas) sends notifications to users.
    */
   String getSilverpeasName();
@@ -1280,6 +1432,7 @@ public interface Administration {
    * Returns all the component identifiers of the space represented by the given identifier.
    * <p>Component instance of sub spaces are not retrieved.</p>
    * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
+   *
    * @param sSpaceId the unique identifier of a space
    * @return the identifiers of the component instances in the given space.
    * @throws AdminException if an error occurs
@@ -1290,6 +1443,7 @@ public interface Administration {
    * Returns all the component identifiers of the space, and its sub spaces, represented by the
    * given identifier.
    * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
+   *
    * @param sSpaceId the unique identifier of a space
    * @return an array with the identifier of all the component instances in the given space and its
    * subspaces.
@@ -1307,9 +1461,11 @@ public interface Administration {
   String synchronizeRemoveGroup(String groupId) throws AdminException;
 
   /**
-   * Synchronizes the specified user between the Silverpeas datasource the domain's datastore.
-   * The cache is then updated.
-   * @param userId the identifier of the Silverpeas user to synchronize with the domain's datastore.
+   * Synchronizes the specified user between the Silverpeas datasource the domain's datastore. The
+   * cache is then updated.
+   *
+   * @param userId the identifier of the Silverpeas user to synchronize with the domain's
+   * datastore.
    * @param recurs does synchronization should be recursive?
    * @param force does synchronization should be performed, even when no changes are detected? In
    * the case of no changes, the user is just indexed again.
@@ -1319,8 +1475,9 @@ public interface Administration {
   String synchronizeUser(String userId, boolean recurs, boolean force) throws AdminException;
 
   /**
-   * Synchronizes between the Silverpeas datasource the domain's datastore the user, identified
-   * by both his login and the domain he belongs to. The cache is then updated.
+   * Synchronizes between the Silverpeas datasource the domain's datastore the user, identified by
+   * both his login and the domain he belongs to. The cache is then updated.
+   *
    * @param domainId the identifier of the domain concerned by the import
    * @param userLogin the login of a user in the given domain
    * @param recurs does synchronization should be recursive?
@@ -1331,8 +1488,9 @@ public interface Administration {
       throws AdminException;
 
   /**
-   * Synchronizes the specified user between the Silverpeas datasource the domain's datastore.
-   * The cache is then updated.
+   * Synchronizes the specified user between the Silverpeas datasource the domain's datastore. The
+   * cache is then updated.
+   *
    * @param domainId the identifier of the domain concerned by the import
    * @param specificId the specific identifier of the user in the given domain
    * @param recurs does synchronization should be recursive?
@@ -1379,6 +1537,7 @@ public interface Administration {
 
   /**
    * Assign rights of a user to a user
+   *
    * @param operationMode value of {@link RightAssignationContext.MODE}
    * @param sourceUserId the user id of the source user
    * @param targetUserId the user id of the target user
@@ -1391,6 +1550,7 @@ public interface Administration {
 
   /**
    * Assign rights of a user to a group
+   *
    * @param operationMode value of {@link RightAssignationContext.MODE}
    * @param sourceUserId the user id of the source user
    * @param targetGroupId the group id of the target group
@@ -1403,6 +1563,7 @@ public interface Administration {
 
   /**
    * Assign rights of a group to a user
+   *
    * @param operationMode value of {@link RightAssignationContext.MODE}
    * @param sourceGroupId the group id of the source group
    * @param targetUserId the user id of the target user
@@ -1415,6 +1576,7 @@ public interface Administration {
 
   /**
    * Assign rights of a group to a group
+   *
    * @param operationMode value of {@link RightAssignationContext.MODE}
    * @param sourceGroupId the group id of the source group
    * @param targetGroupId the group id of the target group
@@ -1428,6 +1590,7 @@ public interface Administration {
 
   /**
    * Is the specified user a manager of the specified domain?
+   *
    * @param userId the user identifier.
    * @param domainId the domain identifier.
    * @return true if user identified by given userId is the manager of given domain identifier.
@@ -1447,6 +1610,7 @@ public interface Administration {
   /**
    * Gets all the groups that were removed in the specified domains. If no domains are specified,
    * then all the domains are taken into account.
+   *
    * @param domainIds the unique identifiers of the domains.
    * @return a list of groups or an empty list if there is no removed groups in the specified
    * domains.
@@ -1457,6 +1621,7 @@ public interface Administration {
   /**
    * Gets all the users that were removed in the specified domains. If no domains are specified,
    * then all the domains are taken into account.
+   *
    * @param domainIds the unique identifiers of the domains.
    * @return a list of users or an empty list if there is no removed users in the specified domains.
    * @throws AdminException if an error occurs
@@ -1466,6 +1631,7 @@ public interface Administration {
   /**
    * Gets all the users that were deleted in the specified domains and that weren't blanked. If no
    * domains are specified, then all the domains are taken into account.
+   *
    * @param domainIds the unique identifiers of the domains.
    * @return a list of users or an empty list if there is no deleted users in the specified domains.
    * @throws AdminException if an error occurs
@@ -1474,6 +1640,7 @@ public interface Administration {
 
   /**
    * Gets all the users in the specified domains having sensitive data.
+   *
    * @param domainIds the unique identifiers of the domains.
    * @return a list of users or an empty list if there is no users with sensitive data in the
    * specified domains.
@@ -1484,6 +1651,7 @@ public interface Administration {
   /**
    * Blanks the specified users in the specified domain. The users have to be deleted in Silverpeas,
    * otherwise an {@link AdminException} exception is thrown.
+   *
    * @param targetDomainId the unique identifier of the domain.
    * @param userIds a list of unique identifiers of deleted users in the specified domain.
    * @throws AdminException if an error occurs while blanking the deleted users.
@@ -1491,15 +1659,16 @@ public interface Administration {
   void blankDeletedUsers(String targetDomainId, List<String> userIds) throws AdminException;
 
   /**
-   * Disables the privacy of the data marked as potentially sensitive for the specified users in
-   * the given domain. The data that can be sensitive are defined in the user domain of the users.
-   * This is why users from different domains can have different sensitive data. By default,
-   * those data aren't sensitive, but their privacy can be enabled and disabled per user.
+   * Disables the privacy of the data marked as potentially sensitive for the specified users in the
+   * given domain. The data that can be sensitive are defined in the user domain of the users. This
+   * is why users from different domains can have different sensitive data. By default, those data
+   * aren't sensitive, but their privacy can be enabled and disabled per user.
+   *
    * @param domainId the unique identifier of a user domain.
    * @param userIds a list of unique identifiers of users in the given domain for which the
    * sensitivity of their data should be disabled.
-   * @throws AdminException if an error occurs while disabling the sensitivity of the data for
-   * the users in the given user domain.
+   * @throws AdminException if an error occurs while disabling the sensitivity of the data for the
+   * users in the given user domain.
    */
   void disableDataSensitivity(final String domainId,
       final List<String> userIds) throws AdminException;

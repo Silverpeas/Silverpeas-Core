@@ -101,7 +101,7 @@
   <div class="intfdcolor51 domain-group-list">
     <c:forEach var="group" items="${allRootGroups}">
       <img class="GroupIcon" src="${group.synchronized ? synchronizedGroupIconUrl : groupIconUrl}" alt="${groupLabel}" title="${groupLabel}"/>
-      &nbsp;<a href="javascript:void(0)" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalNbUsers).concat(')')}
+      &nbsp;<a href="javascript:void(0)" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalUsersCount).concat(')')}
       </a><br/>
     </c:forEach>
   </div>

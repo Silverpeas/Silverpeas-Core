@@ -71,6 +71,7 @@
   boolean isGroupManagerDirectly = (Boolean) request.getAttribute("isGroupManagerDirectlyOnThisGroup");
   boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
   boolean onlySpaceManager = (Boolean) request.getAttribute("isOnlySpaceManager");
+  boolean groupInClipboard = (Boolean) request.getAttribute("groupInClipboard");
 
   boolean showTabs = false;
 
@@ -87,6 +88,15 @@
       operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"), resource.getString("JDP.groupAdd"), "displayGroupCreate?Idgroup=" + thisGroupId);
       operationPane.addOperation(resource.getIcon("JDP.groupUpdate"), resource.getString("GML.modify"), "displayGroupUpdate?Idgroup=" + thisGroupId);
       operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString("GML.remove"), "javascript:removeGroup()");
+      operationPane.addLine();
+      operationPane.addOperation(resource.getIcon("JDP.groupCopy"),
+              resource.getString("GML.copy"), "javascript:onclick=clipboardCopy()");
+      operationPane.addOperation(resource.getIcon("JDP.groupCut"),
+              resource.getString("GML.cut"), "javascript:onclick=clipboardCut()");
+      if (groupInClipboard) {
+        operationPane.addOperation(resource.getIcon("JDP.groupPaste"),
+                resource.getString("JDP.groupPaste"), "javascript:onclick=clipboardPaste()");
+      }
       // User operations
       operationPane.addLine();
       if (grObject.isSynchronized()) {
@@ -146,7 +156,7 @@
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true" withFieldsetStyle="true">
 <view:includePlugin name="qtip"/>
-<style type="text/css">
+<style>
   #deletionFormDialog .complement {
     display: flex;
     padding-top: 5px;
@@ -161,7 +171,7 @@
 </style>
 <script type="text/javascript">
   function removeGroup() {
-    var $dialog = jQuery('#deletionFormDialog');
+    const $dialog = jQuery('#deletionFormDialog');
     $dialog.popup('confirmation', {
       callback : function() {
         var $deletionForm = jQuery('#deletionForm');
@@ -173,6 +183,18 @@
         $deletionForm.submit();
       }
     });
+  }
+
+  function clipboardCopy() {
+    top.IdleFrame.location.href = 'groupCopy?Idgroup=${groupData.id}';
+  }
+
+  function clipboardCut() {
+    top.IdleFrame.location.href = 'groupCut?Idgroup=${groupData.id}';
+  }
+
+  function clipboardPaste() {
+    document.location.href = 'groupPaste';
   }
 
   function doSynchronization() {
@@ -191,9 +213,9 @@ function assignSameRights() {
 }
 
 function ifCorrectFormExecute(callback) {
-  var errorMsg = "";
-  var errorNb = 0;
-  var sourceRightsId = document.rightsForm.sourceRightsId.value;
+  let errorMsg = "";
+  let errorNb = 0;
+  const sourceRightsId = document.rightsForm.sourceRightsId.value;
 
   if (isWhitespace(sourceRightsId)) {
     errorMsg+=" - '<fmt:message key="JDP.rights.assign.as"/>' <fmt:message key="GML.MustBeFilled"/>\n";
@@ -310,7 +332,7 @@ if (showTabs) {
   <tr>
     <td></td>
     <td class="textePetitBold"><%=resource.getString("GML.users") %> :</td>
-    <td><%=grObject.getTotalNbUsers()%></td>
+    <td><%=grObject.getTotalUsersCount()%></td>
   </tr>
   <tr>
     <td></td>
@@ -347,7 +369,7 @@ if (showTabs) {
             </c:choose>
           </view:arrayCellText>
           <view:arrayCellText><view:a href="${groupCommonLinkPart}${group.id}">${silfn:escapeHtml(group.name)}</view:a></view:arrayCellText>
-          <view:arrayCellText>${group.totalNbUsers}</view:arrayCellText>
+          <view:arrayCellText>${group.totalUsersCount}</view:arrayCellText>
           <view:arrayCellText text="${silfn:escapeHtml(group.description)}"/>
         </view:arrayLine>
       </view:arrayLines>

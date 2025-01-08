@@ -89,6 +89,7 @@ import javax.transaction.Transactional;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -2242,6 +2243,57 @@ class DefaultAdministration implements Administration {
       return deletedGroups;
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(GROUP, group.getId()), e);
+    }
+  }
+
+  @Override
+  public String copyGroup(GroupDetail group, String groupParentId) throws AdminException {
+    try {
+      assertGroupValidAndBelongsToDomain(groupParentId, group.getDomainId());
+
+      Date now = new Date();
+      GroupDetail copy = new GroupDetail(group);
+      copy.setId(null);
+      copy.setSpecificId(null);
+      copy.setSuperGroupId(groupParentId);
+      copy.setCreationDate(now);
+      copy.setStateSaveDate(now);
+      copy.setSaveDate(now);
+      return Transaction.performInOne(() -> {
+        String groupId = addGroup(copy);
+        List<GroupDetail> subgroups = group.getSubGroups();
+        for (GroupDetail subgroup : subgroups) {
+          copyGroup(subgroup, groupId);
+        }
+        return groupId;
+      });
+    } catch (Exception e) {
+      throw new AdminException("Failure while copying the group " + group.getId(), e);
+    }
+  }
+
+  @Override
+  public void moveGroup(GroupDetail group, String groupParentId) throws AdminException {
+    assertGroupValidAndBelongsToDomain(groupParentId, group.getDomainId());
+    group.setSuperGroupId(groupParentId);
+    updateGroup(group);
+  }
+
+  private void assertGroupValidAndBelongsToDomain(String groupId, String domainId)
+      throws AdminException {
+    if (groupId != null) {
+      final String errorMsgPattern = "The group {0} {1}";
+      GroupDetail group = getGroup(groupId);
+      if (group == null) {
+        throw new AdminException(MessageFormat.format(errorMsgPattern, groupId, "doesn't exist!"));
+      }
+      if (!group.isValidState()) {
+        throw new AdminException(MessageFormat.format(errorMsgPattern, groupId, "isn't valid"));
+      }
+      if (!Objects.equals(group.getDomainId(), domainId)) {
+        throw new AdminException(MessageFormat.format(errorMsgPattern, groupId,
+            "doesn't belong to the domain " + domainId));
+      }
     }
   }
 
@@ -5544,7 +5596,8 @@ class DefaultAdministration implements Administration {
           .forEach(newSpace::addSpaceProfileInst);
 
       // Getting from space to clone the components to copy
-      final List<ComponentInst> componentsToCopy = oldSpace.getAllComponentsInst().stream().map(c -> {
+      final List<ComponentInst> componentsToCopy =
+       oldSpace.getAllComponentsInst().stream().map(c -> {
         final ComponentInst componentInst = new ComponentInst(c);
         componentInst.setLocalId(c.getLocalId());
         return componentInst;
