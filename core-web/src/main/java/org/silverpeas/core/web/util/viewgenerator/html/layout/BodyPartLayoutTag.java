@@ -40,6 +40,7 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
   private String onLoad;
   private String cssClass;
   private String ngController;
+  private String onUnload;
 
   public BodyPartLayoutTag() {
     super();
@@ -47,6 +48,10 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
 
   public void setOnLoad(final String onLoad) {
     this.onLoad = onLoad;
+  }
+
+  public void setOnUnload(final String onUnload) {
+    this.onUnload = onUnload;
   }
 
   public void setCssClass(final String cssClass) {
@@ -60,6 +65,7 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
   @Override
   void init() {
     onLoad = null;
+    onUnload = null;
     cssClass = null;
     ngController = null;
   }
@@ -72,6 +78,9 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
     }
     if (isDefined(onLoad)) {
       body.setOnLoad(onLoad);
+    }
+    if (isDefined(onUnload)) {
+      body.setOnUnload(onUnload);
     }
     if (isDefined(cssClass)) {
       body.setClass(cssClass);
