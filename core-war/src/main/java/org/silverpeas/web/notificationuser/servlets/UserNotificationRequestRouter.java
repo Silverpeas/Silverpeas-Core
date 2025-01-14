@@ -87,7 +87,7 @@ public class UserNotificationRequestRouter
         final NotificationContext context = getNotificationContext(request);
         UserNotification notification = nuSC.prepareNotification(context);
         final String title = notification.getNotificationMetaData().getTitle(nuSC.getLanguage());
-        request.setAttribute(MESSAGE_TITLE, Encode.forHtml(title));
+        request.setAttribute(MESSAGE_TITLE, StringUtil.isDefined(title)?Encode.forHtml(title):"");
         String recipientUsers = request.getParameter(RECIPIENT_USERS);
         String recipientGroups = request.getParameter(RECIPIENT_GROUPS);
         if (recipientUsers != null || recipientGroups != null) {
