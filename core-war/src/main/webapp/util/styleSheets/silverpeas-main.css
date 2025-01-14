@@ -29,7 +29,170 @@ body {
   font-size: 12px;
   margin: 0px;
   color:#212121;
+
+
+  /* A vérifier ou est utilisé ce intfdcolor51 */
+ /* .tableBoard arréter avec ces 98% de taille */
+
+  /* PENSER A BIEN FAIRE sousNavBulle et aussi blockquote */
+  /* PENSER A DEFINIR LES FOCUS SUR LES BOUTONS */
+ /* J'ai mis plus toute les NEWSMODIF */
+ /*.txtlibform, .txtsublibform { enlever toutes les petites modif de font size*/
+
+  --color-flashy-principale:#7eb73b;
+  --color-text-sur-flashy-principale:#FFF;
+  
+  --color-flashy-hover:#252525;
+  --color-text-sur-flashy-hover:#FFF;
+  
+  --color-text:#212121;
+  --color-text-second-niveau:#626262;
+  --color-lien-action:#3975b5;
+  --color-text-label:#666;
+  --color-titre-avec-deux-couleurs:#1c94d4;
+  --color-action:#f1790f;
+  --color-text-date:#666666;
+  --bgColor-bloc-date:#3975b5;
+  --color-bloc-date:#FFF;
+
+  --bgColor-bloc-fond-clair: #F5F5F5;
+  --border-color-bloc-fond-clair: #D6D6D6;
+  --border-color-bloc-fond-clair-hover: #9e9e9e;
+  --radius-bloc:8px;
+  
+  --bg-bloc-degrade:linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
+  --border-bloc-degrade:1px solid #cdcdcd;
+  
+  --bgColor-dossier:#EAEAEAEA;
+  --bgColor-dossier-hover:#ffffdc;
+  --radius-dossier:10px;
+
+  --bgColor-thumb: #EEEEEE;
+  --border-color-thumb: #DDDDDD;
+  --border-color-thumb-hover: #CCCCCC;
+
+  --bgColor-header-bloc: linear-gradient(180deg, rgba(218,218,218,1) 0%, rgba(239,239,239,1) 100%);
+  --color-titre-bloc-header:#333;
+
+  --color-titre:#333;
+  --font-size-titre:1.3em;
+  --font-weight-titre:700;
+  
+  --border-color-even:#d4d4d4;
+  --border-color-odd:#d4d4d4;
+  --bgColor-even:#f9f9f9;
+  --bgColor-odd:#eeeeee;
+  
+  --color-trait-separateur: #DDD;
+
+  --color-draft:#FF6F6F;
+  --color-read:#319e3e;
+
+
+
+  --width-photo-profil:30px;
+  
+
+  --bgColor-card:#FFF;
+  --border-color-card:#CCC;
+	--shadow-border-card:0; /* ou 1px solid  #000*/
+	--width-avatar-card:100px;
+	--height-avatar-card:100px;
+	--shadow-avatar-card:0px 1px 3px 0px rgba(0, 0, 0, 0.75);
+	--radius-avatar-card:50px;
+  --border-width-avatar-card:0;
+  --border-color-avatar-card:#CECECE;
+  --bg-color-avatar-card:#FFF;
+
+  
+	--width-avatar-comment:50px;
+	--height-avatar-comment:auto;
+	--shadow-avatar-comment:0px 1px 3px 0px rgba(0, 0, 0, 0.75);
+	--radius-avatar-comment:0;
+  --border-width-avatar-comment:1px;
+  --border-color-avatar-comment:#CECECE;
+  --bg-color-avatar-comment:#FFF;
+
+  --color-link-richContent:var(--color-lien-action);
+  --decoration-link-richContent:underline;
+  /* LES TAILLES ET PROPORTIONS */
+  --right-side-width:33%;
+  
+  /* Comportement roll hover d'un lien / un titre */
+  --roll-hover-background:#FAFAFA; /*fafafa dans blog*/
+  --roll-hover-color:#000;
+
+
+  /* ETIQUETTE / TAG */
+  --radius-etiquette:3px;
+  /* vérifier lisibilité*/
+  --bgColor-etiquette:#ACACAC;
+  --color-text-etiquette:#FFFFFF;
+  --bgColor-hover-etiquette:#5c5c5c;
+  --color-text-hover-etiquette:#FFFFFF;
+
+  
+  /* FILTRE etiquette */
+  --radius-filtre:4px;
+  /* vérifier lisibilité*/
+  --bgColor-filtre:#FFF;
+  --border-color-filtre:#8f8f8f;
+  --color-text-filtre:#8f8f8f;
+
+  --bgColor-filtre-hover:#adadad;
+  --color-text-filtre-hover:#252525;
+  --border-color-filtre-hover:#ACACAC;
+  
+  --bgColor-filtre-select:#5c5c5c;
+  --color-text-filtre-select:#FFF;
+  --border-color-filtre-select:#5c5c5c;
+
+  /*ZONE FILTRE FOND*/
+  --bgColor-zone-filtre:#eaeaea;
+  --border-color-zone-filtre:#CECECE;
+  --radius-zone-filtre:10px;
+
+
+  /* Introduction des app */
+  --max-height-intro: 90px;
+
+
+  /* Description */
+  --border-left-size-description:6px;
+  --border-left-color-description:#e4e4e4;
+  --padding-left-description:1em;
+  --color-text-description:#5e5e5e;
+
+
+  /*bouton*/
+  --radius-btn:8px;
+  --radius-btn-secondaire:5px;
+  --bgColor-btn-secondaire:linear-gradient(180deg,  rgba(243,243,243,1) 0%, rgba(243,243,243,1) 33%,rgba(228,228,228,1) 100%);
+  --bgColor-btn-secondaire-hover:linear-gradient(180deg,  rgba(228,228,228,1) 0%, rgba(243,243,243,1) 33%,rgba(250,250,250,1) 100%);
+  --border-color-btn-secondaire:#cccccc;
+  --color-text-btn-secondaire:#4c4c4c;
+  
+  --bgColor-action-hover: #EAEAEA;
+
+  /* COULEURS DES MESSAGES INFORMATION */
+
+  --border-color-im-ok:#9BD94A;
+  --bgColor-color-im-ok:#D5FAC5;
+  
+  --border-color-im-nok:#CE6F6F;
+  --bgColor-color-im-nok:#FECBCB;
+
+  --border-color-im-info:#F9E98E;
+  --bgColor-color-im-info:#FBF7AA;
+
+  --bgColor-im-neutre:#ebebeb;
+  --border-color-im-neutre:#d8d7d7;
+
+
+  /* FORMULAIRE & CO */
+  --height-input:22px;
 }
+
 
 body:focus {
   outline: none;
@@ -47,11 +210,7 @@ a {
   font-family: "Verdana", "Arial", sans-serif;
   font-size: 1em;
   text-decoration: none;
-  color:#212121;
-}
-
-a:hover {
-  /* color: #666699;*/
+  color:var(--color-text);
 }
 
 input {
@@ -60,11 +219,8 @@ input {
   border:1px solid #999;
   color:#333;
   font-size:1em;
-  -webkit-transition: all 0.30s ease-in-out;
-  -moz-transition: all 0.30s ease-in-out;
-  -ms-transition: all 0.30s ease-in-out;
-  -o-transition: all 0.30s ease-in-out;
   outline: none;
+  height:calc( var(--height-input) - 2px );
 }
 
 input:focus {
@@ -124,7 +280,8 @@ td.title {
 }
 
 #topPage {
-  width:98%;
+  width: calc( 100% - 2em );
+  padding: 1em;
 }
 
 /***************************************
@@ -155,34 +312,31 @@ Definition des class de style Silverpeas
 .userzoom-tooltip-interaction-accessNotification ,
 .userzoom-tooltip-interaction-action-invitation,
 .userzoom-tooltip-interaction-accessChat.disabled:hover{
-  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
+  background:var(--bg-bloc-degrade);
 }
 
 .bgDegradeGris{
-  border:1px solid #cdcdcd;
+  border:var(--border-bloc-degrade);
   color:#333;
-  margin-bottom:10px;
-  min-height:14px;
+  margin-bottom:1em;
+  min-height:1em;
 }
 
 .bgDegradeGris.header, .bgDegradeGris .header {
-  border-bottom:1px solid #cdcdcd;
-  border-top:0;
-  border-right:0;
-  border-left:0;
+  border: 0;
+  border-bottom:var(--border-bloc-degrade);
   margin:0;
-  padding:5px;
-  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
-  min-height:14px;
+  padding:0.5em;
+  background:var(--bg-bloc-degrade);
+  min-height:1em;
 }
 
 .header h4{
   font-size:1.1em;
-  /* min-width:300px; AVERIFIERSUPPR*/
 }
 
 .bgDegradeGris p, .bgDegradeGris .paragraphe {
-  padding:11px 17px 0 17px;
+  padding:0.5em 1em;
   margin:0;
   font-size:1em;
   line-height:1.2em;
@@ -191,27 +345,30 @@ Definition des class de style Silverpeas
 }
 
 .bgDegradeGris p b, .bgDegradeGris .paragraphe b {
-  color:#333;
+  color:#000;
   font-weight:normal;
+}
+.bgDegradeGris p strong {
+  color:#000;
 }
 
 .principalContent{
-  margin-right:320px;
-  margin-top:10px;
+  margin-right:calc( var(--right-side-width) + 1em );
+  margin-top:1em;
 }
 
 .rightContent{
-  width:310px;
+  width:var(--right-side-width);
   clear:right;
   float:right;
-  margin-top:10px;
+  margin-top:1em;
 }
 
 .principal-content-title {
   color: #333;
   font-size: 1.2em;
   font-weight: bold;
-  margin:0 0 10px 0;
+  margin:0 0 1em 0;
   padding:0;
 }
 
@@ -240,8 +397,6 @@ Definition des class de style Silverpeas
 }
 
 .inputPermalink {
-  border: 1px solid #CACACA;
-  color: #333;
   width: 90%;
 }
 
@@ -252,42 +407,32 @@ Definition des class de style Silverpeas
 
 .bgDegradeGris .profilPhoto {
   position:absolute;
-  width:30px;
-  height:30px;
+  width:var(--width-photo-profil);
+  height:var(--width-photo-profil);
   top:10px;
   right:10px;
   text-align: center;
 }
 
 .bgDegradeGris .profilPhoto img{
-  height:30px;
+  height:var(--width-photo-profil);
 }
 
 /* Couleur de l'interface : TopBar et DomainsBar */
 .txtnote {
   font-size: 1em;
-  color:#000;
+  color:var(--color-text);
   text-decoration: none
 }
 
-.txttitrecol {
-  font-size: 1em;
-  color:#000;
-  font-weight: bold
-}
-
 .txtnav,
+.txttitrecol ,
 .textePetitBold,
-.textePetitBoldVert,
 .textePetitBold2,
 .txtPetitBlanc, .txtpetitblanc  {
   font-size: 1em;
   font-weight: bold;
-  color: #000
-}
-
-.textePetitBoldVert {
-  color: #661666 /*violet ??*/
+  color:var(--color-text)
 }
 
 .textePetitBold2 {
@@ -306,9 +451,9 @@ Definition des class de style Silverpeas
 
 .txtlibform,
 .txtsublibform {
-  font-size: 0.8em;
+  font-size: 0.9em;
   font-weight: bold;
-  color:#111;
+  color:var(--color-text);
 }
 
 .txtlibform {
@@ -323,7 +468,7 @@ Definition des class de style Silverpeas
 
 .texteLabelForm {
   font-size: 1em;
-  color: #666;
+  color:var(--color-text-label);
   font-weight: bold
 }
 
@@ -356,7 +501,7 @@ Definition des class de style Silverpeas
 
 .txtBaseline {
   font-size: 1em;
-  color: #666
+  color:var(--color-text-second-niveau);
 }
 
 .txtdayoff1 {
@@ -487,13 +632,13 @@ Definition des class de style Silverpeas
 }
 
 #sp-admin-layout-header-part .sp_back_front{
-  background: #f7f7f7 url(../../util/icons/back.png) 1em 1.25em no-repeat;
-  line-height: 16px;
+  background: #f7f7f7 url(../../util/icons/back.png) 1em center no-repeat;
+  line-height: 1em;
   padding: 1.25em 1em 1.25em 3.5em;
   font-weight: bold;
   display: inline-block;
   text-align: center;
-  border-bottom: 1px solid #dcdcdc;
+  border-bottom:0;
   border-right: 1px solid #ccc;
   margin-right: 2em;
   border-left: 1px solid #ccc;
@@ -553,7 +698,7 @@ Definition des class de style Silverpeas
 }
 
 .treeview_path a span {
-  color: #1c94d4;
+  color:var(--color-lien-action);
   text-decoration: underline;
 }
 
@@ -642,11 +787,6 @@ Definition des class de style Silverpeas
 /*********************************
 Style Utilise par le ViewGenerator
 *********************************/ /* OBJETS : ButtonWA - ButtonWA2 */
-/* AVERIFIERSUPPR*/
-
-.buttonColorDark {
-  background-color: #111111
-}
 
 .domainName {
   font-size: 1.2em;
@@ -713,10 +853,7 @@ Style Utilise par le ViewGenerator
   background-color: #666;
 }
 
-.hide {
-  display: none;
-}
-
+.hide,
 .sp-layout-part-force-on-background .ui-widget-overlay,
 .sp-admin-layout-part-force-on-background .ui-widget-overlay {
   display: none;
@@ -1121,8 +1258,8 @@ Style Utilise par le ViewGenerator
   text-align:center;
 }
 .sp_button , button.button , .gjs-pn-btn.sp_button {
-  background-color:#7eb73b;
-  color:#FFF;
+  background-color:var(--color-flashy-principale);
+  color:var(--color-text-sur-flashy-principale);
   display:inline-block;
   padding:0.5em 1em;
   margin-right:1em;
@@ -1135,36 +1272,30 @@ Style Utilise par le ViewGenerator
 #directory #indexAndSearch .sp_button,
 #searchLine  .sp_button,
 .container-filter #search .sp_button,
-#thumbnailInputs .sp_button {
-  padding: 1px 10px;
-  font-size: 9pt !important;
-  height: 17px;
-  line-height: 17px;
+#thumbnailInputs .sp_button ,
+.sp_button.linked-to-input{
+  padding:0 1em;
+  font-size:0.85em;
+  height:var(--height-input);
+  line-height:var(--height-input);
 }
 
 .sp_button:hover , button.button:hover {
-  background-color:#75af30;
-  color:#FFF;
-}
-
-.sp_button.linked-to-input {
-  padding: 1px 10px;
-  font-size: 0.9em !important;
-  height: 17px;
-  line-height: 17px;
+  background-color:var(--color-flashy-hover);
+  color:var(--color-text-sur-flashy-hover);
 }
 
 .sp_button.openMap {
-  background: #e9e9ed linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(229, 229, 229, 1) 100%);
+  background:var(--bgColor-btn-secondaire);
   padding: 1px 8px 0 8px;
   margin: 0;
   cursor: pointer;
-  border: 1px solid #8f8f9d;
+  border: 1px solid var(--border-color-btn-secondaire);
   height: 26px;
   line-height: 24px;
   display: inline-block;
-  border-radius: 4px;
-  color: #333;
+  border-radius:var(--radius-btn-secondaire);
+  color:var(--color-text-btn-secondaire);
 }
 
 .sp_button.openMap:before {
@@ -1184,7 +1315,7 @@ Style Utilise par le ViewGenerator
 }
 
 #spaceMenuDivId #gef-tabs {
-  border-bottom:2px solid #7eb73b
+  border-bottom:2px solid var(--color-flashy-principale);
 }
 
 #favdiv{
@@ -1206,7 +1337,7 @@ Style Utilise par le ViewGenerator
   padding: 8px 10px 6px;
 }
 .sousOnglets,.sp_tabOn a,.sp_tabOff a:hover,.sp_tabOn span {
-  background-color:#7eb73b;
+  background-color:var(--color-flashy-principale);
   color:#fff
 }
 .sousOnglets {
@@ -1236,11 +1367,10 @@ Style Utilise par le ViewGenerator
 /* Objet board */
 .tableBoard {
   border: 1px solid #CCC;
-  background: rgb(255,255,255);
   background: linear-gradient(90deg, rgba(255,255,255,1) 75%, rgba(229,229,229,1) 100%);
-  margin:0 auto 10px auto ;
-  width: 98%;
-  padding: 1%;
+  margin:0 auto 1em auto ;
+  width:calc( 100% - 2em );
+  padding:1em;
   display:table;
 }
 
@@ -2121,7 +2251,7 @@ ul#globalResultListDetails {
 
 .lineResult .locationTitle a{
   font-size:1.2em;
-  color:#F1790F;
+  color:var(--color-action);
 }
 
 .lineResult .locationTitle img{
@@ -2134,7 +2264,7 @@ ul#globalResultListDetails {
 .lineResult .location,
 .lineResult .popularity {
   display:inline;
-  color:#666;
+  color:var(--color-text-second-niveau);
 }
 
 .lineResult .pertinence{
@@ -2189,7 +2319,7 @@ ul#globalResultListDetails {
 #globalResultParamDisplayLabel{
   font-size: 0.9em;
   font-weight: bold;
-  color:#111;
+  color:var(--color-text);
   vertical-align: top;
   text-align: left;
   width: 30%;
@@ -2198,7 +2328,7 @@ ul#globalResultListDetails {
 #globalResultParamDisplayOptions {
   font-size: 0.9em;
   font-weight: bold;
-  color:#111;
+  color:var(--color-text);
   vertical-align: top;
 }
 
@@ -2212,7 +2342,7 @@ ul#globalResultListDetails {
 }
 
 #globalResult .avatar {
-  width: 30px;
+  width:var(--width-photo-profil);
   border: 1px solid #AAA;
 }
 
@@ -2230,8 +2360,8 @@ ul#globalResultListDetails {
 #searchGroupTitle span.file,
 #searchGroupTitle span.component {
   font-weight:bold;
-  height:16px;
-  line-height:16px;
+  height:1.1em;
+  line-height:1.1em;
   white-space:nowrap;
 
 }
@@ -2386,8 +2516,8 @@ caption {
 
 .help-modal-message .ui-widget-header {
   background: none;
-  background-color:#F1790F;
-  border:1px solid #F1790F;
+  background-color:var(--color-action);
+  border:1px solid var(--color-action);
 }
 
 .user-type-list {
@@ -2421,26 +2551,22 @@ caption {
 
 #directory .mail {
   text-decoration: underline;
-  color:#333366;
+  color:var(--color-lien-action);
 }
 
 #directory .link {
-  color:#333366;
+  color:var(--color-lien-action);
   border-bottom:1px solid #9E9ECF;
   display:block;
   padding:0px 0 3px 0;
   font-size:1em;
 }
 #directory .link:hover, #directory .link:focus {
-  color:#000;
-  border-bottom:1px solid #000;
+  color:var(--color-action);
+  border-bottom:1px solid var(--color-action);
   display:block;
   padding:0px 0 3px 0;
   font-size:1em;
-}
-
-#directory .action .invitation {
-  /*display: none;*/
 }
 
 #directory .NameLink {
@@ -2452,41 +2578,41 @@ caption {
 #directory #sort {
   float:none;
   margin:0 auto;
-  padding:4px;
+  padding:0 0 0.5em 0;
   text-align:left;
   width:100%;
   color:#AFAFAF;
 }
 
+
 #directory #indexAndSearch #index a,
 #directory #indexAndSearch #sort a,
 .container-filter .listing-filter a{
-  border:1px solid #CECECE;
-  padding:2px 4px;
-  margin-right:3px;
-  background-color:#FFF;
-  color:#AFAFAF;
+  border:1px solid var(--border-color-filtre);
+  padding:0.25em 0.5em;
+  margin:0 0.5em 0.5em 0;
+  background-color:var(--bgColor-filtre);
+  color:var(--color-text-filtre);
   font-size: 1em;
-  text-decoration: none;
-  line-height:2em;
+  display:inline-block;
 }
 #directory #indexAndSearch #index a.active,
 #directory #indexAndSearch #sort a.active,
 .container-filter .listing-filter a.active {
-  background-color:#B5B5B5;
-  color:#FFF;
+  background-color:var(--bgColor-filtre-select);
+  color:var(--color-text-filtre-select);
 }
 
 #directory #indexAndSearch #index a:hover, #directory #indexAndSearch #index a:focus,
 #directory #indexAndSearch #sort a:hover, #directory #indexAndSearch #sort a:focus,
 .container-filter .listing-filter a:hover {
-  background-color:#BFBFBF;
-  color:#FFF;
+  background-color:var(--bgColor-filtre-hover);
+  color:var(--color-text-filtre-hover);
 }
 
 #directory #indexAndSearch #search {
-  margin:0px 10px 0px auto;
-  padding:5px;
+  margin:0px 1e3 0px auto;
+  padding:0 0 0.5em 0;
   text-align:left;
   width:100%;
   height:auto;
@@ -2565,18 +2691,7 @@ caption {
   padding: 1em;
   background-color: #f6f6f6;
   border: 1px solid #ccc;
-  margin: 5px 0 10px;
-}
-
-#directory #indexAndSearch{
-  background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
-  padding:5px 5px 14px;
-  width: 98%;
-}
-
-#directory #users {
-  float: left;
-  width: 98%;
+  margin:0 0 0.5em 0;
 }
 
 #directory #users .profilPhoto {
@@ -2599,6 +2714,10 @@ caption {
   padding-left:10px;
 }
 
+#directory #myContacts > div.ArrayNavigation{
+  padding:1em;
+}
+
 #directory #users .list-pane-nav {
   clear:both;
   text-align:center;
@@ -2607,7 +2726,7 @@ caption {
 #directory .info ul {
   padding: 0;
   margin:10px 10px 0 104px;
-  color:#909090;
+  color:var(--color-text-second-niveau);
   font-size:1em;
 }
 
@@ -2620,19 +2739,19 @@ caption {
 }
 
 #directory .info ul a {
-  color: #909090;
+  color:var(--color-text-second-niveau);
   font-size:1em;
 }
 #directory .info ul a:hover {color:#000}
 
 #directory .info ul li.userName a {
   font-size:1.2em;
-  color:#000;
+  color:var(--color-text);
   font-weight:bold;
 }
 
 #directory .info ul li.userName a:hover {
-  color:#444444;
+  color:var(--color-lien-action);
 }
 
 #directory .info ul li.infoConnection img{
@@ -2643,7 +2762,7 @@ caption {
 }
 
 #directory .info ul li.userType {
-  color:#333;
+  color:var(--color-text);
   font-size:1em;
   font-weight:bold;
   padding-top:10px;
@@ -2667,16 +2786,16 @@ caption {
 
 #myProfile #myProfileFiche,
 #publicProfile #publicProfileFiche  {
-  width:180px;
-  padding:8px;
+  width: calc(  var(--right-side-width) - 2em );
+  padding:1em;
   float:left;
   position:relative;
 }
 
-#myProfile .mail ,
+#myProfile .mail,
 #publicProfile .mail {
   text-decoration: underline;
-  color:#333366;
+  color:var(--color-lien-action);
 }
 
 #myProfileFiche  .action,
@@ -2693,12 +2812,12 @@ button.link {
 
 #myProfileFiche  .action .link ,   #contactCommun .link,   #allContact .link,
 #publicProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
-  color:#333366;
-  border-bottom:1px solid #9E9ECF;
-  padding:0 0 3px 0;
+  color:var(--color-lien-action);
+  border-bottom:1px solid var(--color-lien-action);
+  padding:0 0 0.25em 0;
   font-size:1em;
-  width:132px;
-  margin-bottom:8px;
+  width:auto;
+  margin-bottom:0.5em;
   float: right;
   clear:right;
 }
@@ -2711,8 +2830,8 @@ button.link {
 #publicProfileFiche  #allContact .link:hover,
 #publicProfileFiche #contactCommun .link:hover,
 #publicProfileFiche  #contactCommun .link:focus  {
-  color:#000;
-  border-bottom:1px solid #000;
+  color:var(--color-action);
+  border-bottom:1px solid var(--color-action);
 }
 
 #myProfileFiche #allContact .link,
@@ -2732,27 +2851,27 @@ button.link {
 
 #myProfile #indexAndSearch #index a,
 #publicProfile #indexAndSearch #index a ,
-.sousNavBulle a {
-  border:1px solid #CECECE;
-  padding:2px 4px;
-  margin-right:3px;
-  background-color:#FFF;
-  color:#AFAFAF;
+.sousNavBulle a:not(.sp_button){  
+  border:1px solid var(--border-color-filtre);
+  padding:0.25em 0.5em;
+  margin:0 0.5em 0.5em 0;
+  background-color:var(--bgColor-filtre);
+  color:var(--color-text-filtre);
   font-size: 1em;
-  text-decoration: none;
-  line-height:2em;
+  display:inline-block;
 }
+
 #myProfile #indexAndSearch #index a.active,
 #publicProfile #indexAndSearch #index a.active,
 .sousNavBulle a.active  {
-  background-color:#B5B5B5;
-  color:#FFF;
+  background-color:var(--bgColor-filtre-select);
+  color:var(--color-text-filtre-select);
 }
 
 #myProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus ,
-.sousNavBulle a:hover, .sousNavBulle a:focus, .sousNavBulle a.selected {
-  background-color:#BFBFBF;
-  color:#FFF;
+.sousNavBulle a:not(.sp_button):hover, .sousNavBulle a:not(.sp_button):focus, .sousNavBulle a.selected {
+  background-color:var(--bgColor-filtre-hover);
+  color:var(--color-text-filtre-hover);
 }
 
 #myProfile .profilPhoto,
@@ -2771,12 +2890,6 @@ button.link {
   border:0;
 }
 
-#myProfileFiche,
-#publicProfileFiche {
-  color: #909090;
-  font-size:1em;
-}
-
 #myProfileFiche h3,
 #publicProfileFiche h3 {
   color: #26334A;
@@ -2788,7 +2901,7 @@ button.link {
 #myProfileFiche .userName,
 #publicProfileFiche .userName{
   font-size:1.2em;
-  color:#000;
+  color:var(--color-text);
   font-weight:bold;
   padding:0; margin:0;
 }
@@ -2813,7 +2926,7 @@ button.link {
 }
 #myProfileFiche .info .userType,
 #publicProfileFiche .info .userType {
-  color:#333;
+  color:var(--color-text-second-niveau);
   font-size:1em;
   font-weight:bold;
   padding-top:10px;
@@ -2821,19 +2934,15 @@ button.link {
 
 #myProfileFiche .statut,
 #publicProfileFiche .statut {
-  color:#333;
-  font-size:0.9em;
+  color:var(--color-text-second-niveau);
+  font-size:1em;
   padding:10px 0 0;
   margin:0;
 }
 
-#myProfileFiche .action .invitation {
-  /*display: none;*/
-}
-
 #myProfileContenu {
-  width:78%;
-  margin-left:15px;
+  width:calc( 100% - var(--right-side-width) - 1em );
+  margin-left:1em;
   float:left;
 }
 
@@ -2894,27 +3003,45 @@ button.link {
 /*- [ publicProfile BEGIN ] --------------------------- */
 
 #publicProfileContenu {
-  margin-left:220px;
+  margin-left:calc( var(--right-side-width) + 1em );
 }
 #publicProfileContenu .fields {
   clear: none;
 }
 
-/* IMAGE  bg_tri.png ? chercher dans corps dans fleche */
-.sousNavBulle, .container-filter {
-  background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
-  color:#26334A;
+.sousNavBulle, .container-filter,
+#directory #indexAndSearch {
+  position: relative;
+  background-color:var(--bgColor-zone-filtre);
+  color:var(--color-text);
   font-size:1em;
-  padding:5px 0 14px;
+  padding:1em;
+  margin: 0 0 1em 0;
+  border-radius:var(--radius-zone-filtre);
+  border:1px solid var(--border-color-zone-filtre);
+}
+
+.sousNavBulle:after, .container-filter:after,
+#directory #indexAndSearch:after {
+  content: '';
+  display: inline-block;
+  height: 0;
+  width: 0;
+  border-top: 11px solid var(--bgColor-zone-filtre);
+  border-right: 9px solid transparent;
+  border-left: 6px solid transparent;
+  position: absolute;
+  bottom:-11px;
+  left: 15px;
 }
 
 .sousNavBulle p, .content-container-filter {
   margin:0;
-  padding:0 5px 0;
+  padding:0 0 0.5em 0;
 }
 
 .container-filter .content-container-filter {
-  padding:5px;
+  padding:0;
 }
 
 #publicProfile #publicProfileFiche #allContact, #publicProfile #publicProfileFiche #contactCommun {
@@ -2975,7 +3102,7 @@ button.link {
   width:25px;
   height:25px;
   border:0;
-  float:inherit;
+  float:none;
   clear:none;
   margin:0;
   display:inline-block;
@@ -3176,7 +3303,7 @@ hr.sep  {
 }
 
 .txtColor {
-  color:#3A5998;
+  color:var(--color-lien-action);
 }
 
 /* class actuellement utilis?e dans l'annuaire expert ? g?n?raliser */
@@ -3374,10 +3501,10 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
 }
 
 .inline_message_ok {
-  background-color: #C8ED99;
-  border: 2px solid #9BD94A;
-  padding: 5px;
-  margin: 10px;
+  background-color:var(--bgColor-color-im-ok);
+  border: 2px solid var(--border-color-im-ok);
+  padding:0.5em;
+  margin: 0;
   text-align: center;
 }
 
@@ -3465,20 +3592,20 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
 }
 
 .commentaires .oneComment.inlineMessage-ok {
-  background-color:#b5df7d;
-  border:1px solid #9bd94a;
+  background-color:var(--bgColor-color-im-ok);
+  border:1px solid var(--border-color-im-ok);
 }
 
 .commentaires .oneComment.inlineMessage-nok {
-  background-color:#f79992;
-  border:1px solid #ce6f6f;
+  background-color:var(--bgColor-color-im-nok);
+  border:1px solid var(--border-color-im-nok);
 }
 
 .commentaires .oneComment p.author {
   color:#26334A;
 }
 .commentaires .oneComment .date {
-  color:#999;
+  color:var(--color-text-date);
   font-size:1em;
 }
 
@@ -3572,14 +3699,14 @@ select.mandatoryField option.emphasis {
 }
 
 .inlineMessage {
-  background-color: #FBF7AA;
-  border-color: #F9E98E;
+  background-color:var(--border-color-im-info);
+  border-color:var(--bgColor-color-im-info);
 }
 
 .componentInstanceIntro {
-  border-left: 6px solid #E4E4E4;
-  color: #666666;
-  padding: 8px;
+  border-left: var(--border-left-size-description) solid var(--border-left-color-description);
+  color:var(--color-text-description); 
+  padding:0.5em 0.5em 0.5em var(--padding-left-description);
   max-height: 90px;
   overflow: hidden;
   margin-bottom: 1em;
@@ -3600,8 +3727,8 @@ select.mandatoryField option.emphasis {
 #portletPages h2#undeploy-success,
 #portletPages h2#create-success,
 #portletPages h2#modify-success {
-  background-color: #B5DF7D;
-  border-color: #9BD94A;
+  background-color:var(--bgColor-color-im-ok);
+  border-color:var(--border-color-im-ok);
 }
 
 .inlineMessage-nok,
@@ -3610,17 +3737,17 @@ select.mandatoryField option.emphasis {
 #portletPages h2#undeploy-failed,
 #portletPages h2#create-failed,
 #portletPages h2#modify-failed   {
-  background-color: #F79992;
-  border-color: #CE6F6F;
+  background-color:var(--bgColor-color-im-nok);
+  border-color:var(--border-color-im-nok);
 }
 
 .inlineMessage-waiting {
-  background-color: #ffd49d;
-  border-color:#ffb85b;
+  background-color:var(--bgColor-color-im-info);
+  border-color:var(--border-color-im-info);
 }
 
 .inlineMessage-neutral {
-  background-color: #eaeaea;
+  background-color:var(--bgColor-im-neutre);
   border: 0;
   text-align: left;
 }
@@ -3630,14 +3757,14 @@ table.pdcPositionsField {
   padding: 0;
   width: 100%;
 }
-
+  
 .simple-button {
-  border-radius: 5px;
-  border: 1px solid #CCC;
-  color: #4C4C4C;
-  font-size: 100%;
-  padding: 7px 10px;
-  background: #F4F4F4 linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
+  border-radius:var(--radius-btn-secondaire);
+  border: 1px solid var(--border-color-btn-secondaire);
+  color:var( --color-text-btn-secondaire);
+  font-size:1em;
+  padding:0.5em;
+  background:var(--bgColor-btn-secondaire);
   display:inline-block;
 }
 
@@ -3756,11 +3883,6 @@ table.pdcPositionsField {
   width:28%;
 }
 
-* html .pdc-edition-box .inlineMessage {
-  top:-35px;
-  right:5px;
-}
-
 .pdc-edition-box .valid_position {
   margin:10px 10px 10px  195px;
   line-height: 20px;
@@ -3805,6 +3927,7 @@ table.pdcPositionsField {
   width:auto;
   line-height:2em;
 }
+
 #validation  input, #modification input{
   vertical-align:text-bottom;
   border:0;
@@ -4042,7 +4165,7 @@ li.application  .applicationName {
 }
 
 .admin.stats.volume #total .number {
-  color: #F1790F;
+  color: var(--color-action);
 }
 
 .admin.stats .chart,
@@ -4455,8 +4578,6 @@ input.search:focus {
 }
 
 .select-user-group-container .search-input-container {
-  /* display: inline-flex;
-   align-items: center;*/
   display:block;
   float:left;
   min-width: 250px;
@@ -4977,7 +5098,7 @@ input.search:focus {
 }
 
 .switch a:hover  {
-  background-color: #F1790F;
+  background-color: var(--color-action);
   color:#FFF;
 }
 
@@ -5037,17 +5158,17 @@ input.search:focus {
   cursor: pointer;
   text-align: center;
   margin: 5px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #666;
-  background-color: #efefef;
+  padding: 0.5em;
+  border-radius:var(--radius-btn-secondaire);
+  border: 1px solid var(--border-color-btn-secondaire);
+  background:var(--bgColor-btn-secondaire);
   opacity:0.4;
   z-index: 10;
 }
 
 .dialog-popup-button:hover {
-  border: 1px solid #9BD94A;
-  background-color: #9BD94A;
+  border: 1px solid var(--border-color-btn-secondaire);
+  background-color:var(--bgColor-btn-secondaire-hover);
   opacity: 1;
 }
 
@@ -5074,7 +5195,7 @@ input.search:focus {
 .ui-dialog .form-container .label,
 .ui-dialog .form-container .silverpeas-label {
   font-weight: bold;
-  color: #666;
+  color:var(--color-text-label);
 }
 
 .silverpeas-form-pane .silverpeas-label span,
@@ -5119,8 +5240,8 @@ input.search:focus {
 #menubar-creation-actions,
 .attachment-creation-actions {
   background-color:#fff4eb;
-  border-top:1px solid #f1790f;
-  border-bottom:1px solid #f1790f;
+  border-top:1px solid var(--color-action);
+  border-bottom:1px solid var(--color-action);
   vertical-align:middle;
   text-align:center;
   height:auto;
@@ -5152,7 +5273,7 @@ input.search:focus {
 
 #menubar-creation-actions .menubar-creation-actions-item:hover,
 .attachment-creation-actions .menubar-creation-actions-item:hover {
-  background-color:#F1790F;
+  background-color:var(--color-action);
   color:#fff;
 }
 
@@ -6531,7 +6652,7 @@ iframe.embed {
 
 .silverpeas-user-notifications .cancel-deletion-button::after {
   content: ' ';
-  display: inline-block;
+  display: block;
   float: right;
   width: 16px;
   height: 20px;
@@ -6555,7 +6676,7 @@ iframe.embed {
 
 .silverpeas-user-notifications .read-button::after {
   content: ' ';
-  display: inline-block;
+  display: block;
   float: right;
   width: 16px;
   height: 20px;
@@ -6988,7 +7109,7 @@ ul.sm-map {
 
 .admin-user .profile .avatar {
   position: absolute;
-  display: inline-block;
+  display:block;
   float: right;
   padding: 4px;
   border: 1px solid #CCC;
@@ -7317,6 +7438,7 @@ silverpeas-permalink .copy-to-clipboard .sp_button  {
   background:transparent url();
   border-radius: 5px;
   border: 0;
+  margin:0;
   padding:0;
 }
 
