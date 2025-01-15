@@ -137,7 +137,7 @@ body {
   /* vérifier lisibilité*/
   --bgColor-filtre:#FFF;
   --border-color-filtre:#8f8f8f;
-  --color-text-filtre:#8f8f8f;
+  --color-text-filtre:#5f5f5f;
 
   --bgColor-filtre-hover:#adadad;
   --color-text-filtre-hover:#252525;
@@ -2178,6 +2178,9 @@ span.csv {
 /*- [ portlet MyFeed END] --------------------------- */
 
 
+#browseBar {
+  position: relative;
+}
 #browseBar #breadCrumb {
   font-weight: bold;
 }
@@ -2186,8 +2189,10 @@ span.csv {
   font-weight: bold;
 }
 
-#browseBar #i18n {
-  float:right;
+#browseBar #i18n {  
+  position: absolute;
+  right: 0;
+  top: calc( 50% - 0.5em );
 }
 
 #browseBar #breadCrumb a:visited,
@@ -2252,6 +2257,9 @@ ul#globalResultListDetails {
 .lineResult .locationTitle a{
   font-size:1.2em;
   color:var(--color-action);
+}
+.lineResult .locationTitle a:hover{
+  color:var(--color-lien-action);
 }
 
 .lineResult .locationTitle img{
@@ -2402,6 +2410,10 @@ ul#globalResultListDetails {
 #searchGroupValues ul li {
   list-style: none outside none;
   padding:2px;
+}
+
+#searchGroupValues ul li a:hover {
+  color:var(--color-lien-action);
 }
 
 #searchGroupValues ul li.selected {
@@ -2868,17 +2880,22 @@ button.link {
   color:var(--color-text-filtre-select);
 }
 
-#myProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus ,
-.sousNavBulle a:not(.sp_button):hover, .sousNavBulle a:not(.sp_button):focus, .sousNavBulle a.selected {
+#myProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus {
   background-color:var(--bgColor-filtre-hover);
   color:var(--color-text-filtre-hover);
+}
+
+.sousNavBulle a:not(.sp_button):hover, .sousNavBulle a:not(.sp_button):focus, .sousNavBulle a.selected {
+  background-color:var(--bgColor-filtre-select);
+  color:var(--color-text-filtre-select);
 }
 
 #myProfile .profilPhoto,
 #publicProfile .profilPhoto {
   height:140px;
   margin:7px 6px;
-  width:108px;
+  width:auto;
+  display: inline-block;
 }
 
 #myProfile .profilPhoto img ,
