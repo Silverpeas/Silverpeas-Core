@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.workflow.engine.timeout;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -97,7 +99,12 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
       Date now = new Date();
 
       for (final ProcessInstance instance : instances) {
-        addTimeoutRequest(now, instance);
+        ComponentInstLight componentInstLight = Administration.get().getComponentInstLight(instance.getModelId());
+        if (componentInstLight != null) {
+          if (componentInstLight.isRemoved()) {
+            addTimeoutRequest(now, instance);
+          }
+        }
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
