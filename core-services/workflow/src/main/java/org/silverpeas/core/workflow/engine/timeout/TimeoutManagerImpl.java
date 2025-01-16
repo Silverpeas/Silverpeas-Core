@@ -100,10 +100,8 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
 
       for (final ProcessInstance instance : instances) {
         ComponentInstLight componentInstLight = Administration.get().getComponentInstLight(instance.getModelId());
-        if (componentInstLight != null) {
-          if (componentInstLight.isRemoved()) {
+        if (componentInstLight != null && !componentInstLight.isRemoved()) {
             addTimeoutRequest(now, instance);
-          }
         }
       }
     } catch (Exception e) {
@@ -137,4 +135,5 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
     SilverLogger.getLogger(this).error("The job {0} was not successful",
         anEvent.getJobExecutionContext().getJobName());
   }
+
 }
