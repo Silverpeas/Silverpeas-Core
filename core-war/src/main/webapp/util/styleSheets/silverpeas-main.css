@@ -2550,8 +2550,8 @@ caption {
 }
 
 #directory .message_list li.intfdcolor  {
-  padding: 0px;
-  margin: 3px;
+  padding: 0.5em;
+  margin: 0 1em 1em 0;
   position:relative;
   border:1px solid #CFCFCF;
 }
@@ -2570,14 +2570,14 @@ caption {
   color:var(--color-lien-action);
   border-bottom:1px solid #9E9ECF;
   display:block;
-  padding:0px 0 3px 0;
+  padding:0px 0 0.25em 0;
   font-size:1em;
 }
 #directory .link:hover, #directory .link:focus {
   color:var(--color-action);
   border-bottom:1px solid var(--color-action);
   display:block;
-  padding:0px 0 3px 0;
+  padding:0px 0 0.25em 0;
   font-size:1em;
 }
 
@@ -2707,23 +2707,26 @@ caption {
 }
 
 #directory #users .profilPhoto {
-  float:left;
-  height:113px;
-  margin:7px;
-  width:87px;
+  float: left;
+  height: 113px;
+  margin: 0 0.5em 0.5em 0.5em;
+  width: 87px;
+  text-align: center;
+  background: #333;
 }
+
 #directory #users .profilPhoto img{
   height:113px;
 }
 
 #directory #users .action {
-  width:132px;
-  height:40px;
-  position:absolute;
-  bottom:10px;
-  right:10px;
-  background-color:#FFF;
-  padding-left:10px;
+  width: auto;
+  height: auto;
+  position: absolute;
+  bottom: 0;
+  right: 0.5em;
+  background-color: #FFF;
+  padding-left: 0.5em;
 }
 
 #directory #myContacts > div.ArrayNavigation{
@@ -2737,7 +2740,7 @@ caption {
 
 #directory .info ul {
   padding: 0;
-  margin:10px 10px 0 104px;
+  margin:0 0 0 calc( 89px + 1em);
   color:var(--color-text-second-niveau);
   font-size:1em;
 }
@@ -3258,13 +3261,13 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 
 #invitationProfil .action, #contactProfil .action{
   float:right;
-  width:135px;
+  width:auto;
   margin-top:14px;
 }
+
 #contactProfil .action{
   margin-top:31px;
 }
-
 
 .action .link {
   border-bottom: 1px solid #9E9ECF;
@@ -3274,7 +3277,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
   font-size: 1em;
   margin-bottom: 8px;
   padding: 0 0 3px;
-  width: 132px;
+  width: auto;
 }
 
 .action .link:hover {
