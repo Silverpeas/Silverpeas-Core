@@ -2904,6 +2904,7 @@ button.link {
 #myProfile .profilPhoto img ,
 #publicProfile .profilPhoto img{
   height:140px;
+  max-width:100%;
 }
 
 .profilPhoto img {
