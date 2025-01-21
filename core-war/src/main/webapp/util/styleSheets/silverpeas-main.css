@@ -165,7 +165,7 @@ body {
 
 
   /*bouton*/
-  --radius-btn:8px;
+  --radius-btn:0;
   --radius-btn-secondaire:5px;
   --bgColor-btn-secondaire:linear-gradient(180deg,  rgba(243,243,243,1) 0%, rgba(243,243,243,1) 33%,rgba(228,228,228,1) 100%);
   --bgColor-btn-secondaire-hover:linear-gradient(180deg,  rgba(228,228,228,1) 0%, rgba(243,243,243,1) 33%,rgba(250,250,250,1) 100%);
@@ -1260,6 +1260,7 @@ Style Utilise par le ViewGenerator
 .sp_button , button.button , .gjs-pn-btn.sp_button {
   background-color:var(--color-flashy-principale);
   color:var(--color-text-sur-flashy-principale);
+  border-radius:var(--radius-btn);
   display:inline-block;
   padding:0.5em 1em;
   margin-right:1em;
@@ -2344,9 +2345,7 @@ ul#globalResultListDetails {
   margin:0;
   font-size:1em;
   float:right;
-  padding-top:10px;
-  padding-right: 5px;
-  width:19%
+  width:calc( 20% - 1em);
 }
 
 #globalResult .avatar {
@@ -2366,34 +2365,40 @@ ul#globalResultListDetails {
 #searchGroupTitle,
 #searchGroupTitle span.author,
 #searchGroupTitle span.file,
-#searchGroupTitle span.component {
-  font-weight:bold;
-  height:1.1em;
-  line-height:1.1em;
+#searchGroupTitle span.component,
+#searchGroupTitle span,
+.searchGroupTitle span {
+  line-height:2em;
   white-space:nowrap;
-
+  color: var(--color-text-sur-flashy-principale);
 }
 
-#searchGroupTitle {
-  padding-left: 1em;
+#searchGroupTitle,
+.searchGroupTitle {
+  background-color: var(--color-flashy-principale);
+  line-height: 2em;
+  height: 2em; 
   text-align: center;
-  background-color:#1c94d4;
 }
 
-#searchGroupTitle span.author {
+#searchGroupTitle span.author:before,
+#searchGroupTitle span.file:before, 
+#searchGroupTitle span.component:before{
+  display: inline-block;
+  content:'';
+  width: 16px;
+  height: 16px;
   background:url("../../util/icons/user.gif") no-repeat scroll left top transparent;
-  display:block;
+  margin-right: 0.5em;
+  vertical-align: text-bottom;
 }
 
-#searchGroupTitle span.file {
+#searchGroupTitle span.file:before {
   background:url("../icons/file-icon.gif") no-repeat scroll left top transparent;
-  color:#FFF;
-  display:block;
 }
 
-#searchGroupTitle span.component {
+#searchGroupTitle span.component:before {
   background:url("../../util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
-  display:block;
 }
 
 #searchGroupValues {
@@ -2472,7 +2477,6 @@ div.silverpeas-toggle {
 }
 
 .attachments {
-  min-width: 310px;
   position:relative;
   z-index:10
 }
@@ -7895,4 +7899,10 @@ input.dateToPick,
 
 #identity-extra label .sensitive_no_active {
   margin: -1em 0 0 -0.25em;
+}
+
+/** Rate le vote */
+.spRating.rateit {
+  height: 16px;
+  overflow: hidden;
 }
