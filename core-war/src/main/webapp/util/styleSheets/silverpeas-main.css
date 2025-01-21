@@ -2344,9 +2344,7 @@ ul#globalResultListDetails {
   margin:0;
   font-size:1em;
   float:right;
-  padding-top:10px;
-  padding-right: 5px;
-  width:19%
+  width:calc( 20% - 1em);
 }
 
 #globalResult .avatar {
@@ -2366,34 +2364,40 @@ ul#globalResultListDetails {
 #searchGroupTitle,
 #searchGroupTitle span.author,
 #searchGroupTitle span.file,
-#searchGroupTitle span.component {
-  font-weight:bold;
-  height:1.1em;
-  line-height:1.1em;
+#searchGroupTitle span.component,
+#searchGroupTitle span,
+.searchGroupTitle span {
+  line-height:2em;
   white-space:nowrap;
-
+  color: var(--color-text-sur-flashy-principale);
 }
 
-#searchGroupTitle {
-  padding-left: 1em;
+#searchGroupTitle,
+.searchGroupTitle {
+  background-color: var(--color-flashy-principale);
+  line-height: 2em;
+  height: 2em; 
   text-align: center;
-  background-color:#1c94d4;
 }
 
-#searchGroupTitle span.author {
+#searchGroupTitle span.author:before,
+#searchGroupTitle span.file:before, 
+#searchGroupTitle span.component:before{
+  display: inline-block;
+  content:'';
+  width: 16px;
+  height: 16px;
   background:url("../../util/icons/user.gif") no-repeat scroll left top transparent;
-  display:block;
+  margin-right: 0.5em;
+  vertical-align: text-bottom;
 }
 
-#searchGroupTitle span.file {
+#searchGroupTitle span.file:before {
   background:url("../icons/file-icon.gif") no-repeat scroll left top transparent;
-  color:#FFF;
-  display:block;
 }
 
-#searchGroupTitle span.component {
+#searchGroupTitle span.component:before {
   background:url("../../util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
-  display:block;
 }
 
 #searchGroupValues {
