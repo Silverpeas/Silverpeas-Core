@@ -35,14 +35,11 @@ import javax.servlet.http.HttpServletRequest;
 import static org.silverpeas.core.web.treemenu.model.MenuConstants.*;
 
 /**
- *
- *
+ * Handles the request asking for a given tree of resources. Such a tree is to define a menu through
+ * which a user can navigate and select wanted the item/function.
  */
 public class TreeHandler {
 
-  /**
-   *
-   */
   private TreeHandler() {
   }
 
@@ -50,13 +47,15 @@ public class TreeHandler {
 
   /**
    * get information from request and build a level menu
+   *
    * @param request httpRequest
    * @param menuType type of menu
-   * @see org.silverpeas.core.web.treemenu.model.MenuConstants
    * @param useCurrentOrder currentOrder of items
    * @return Json Array of the menu
+   * @see org.silverpeas.core.web.treemenu.model.MenuConstants
    */
-  public static String processMenu(HttpServletRequest request, String menuType, boolean useCurrentOrder) {
+  public static String processMenu(HttpServletRequest request, String menuType,
+      boolean useCurrentOrder) {
     useOrder = useCurrentOrder;
     SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
     MainSessionController mainSessionCtrl = webUtil.getMainSessionController(request);
@@ -71,21 +70,11 @@ public class TreeHandler {
   }
 
   /**
-   * get information from request and build a level menu
-   * @param request httpRequest
-   * @param menuType type of menu
-   * @see org.silverpeas.core.web.treemenu.model.MenuConstants
-   * @return Json Array of the menu
-   */
-  public static String processMenu(HttpServletRequest request, String menuType) {
-    return processMenu(request, menuType, false);
-  }
-
-  /**
-   * builds a MenuItem with information gotten from request. if no information in the request return
-   * null
+   * builds an item of the requested menu with information gotten from request. if there is no
+   * information in the request return null.
+   *
    * @param request HttpServletRequest object
-   * @return a menuItem object or null
+   * @return a {@link MenuItem} object or null
    */
   private static MenuItem getMenuItemFather(HttpServletRequest request) {
     // gets key from request

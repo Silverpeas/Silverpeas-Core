@@ -23,27 +23,32 @@
  */
 package org.silverpeas.core.web.treemenu.model;
 
+import org.silverpeas.core.annotation.Bean;
+
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author david derigent authorizes the displaying of themes and only the themes in the tree menu.
+ * Authorizes the displaying of themes and only the themes in the tree menu.
+ *
+ * @author david derigent
  */
+@Bean
+@Named(MenuConstants.THEME_MENU_TYPE + TreeFilter.NAME_POSTFIX)
 public class TreeFilterTheme implements TreeFilter {
 
-  private List<String> components = null;
+  private List<String> components;
 
-  /**
-   *
-   */
   public TreeFilterTheme() {
-    components = new ArrayList<String>();
+    components = new ArrayList<>();
   }
 
   /*
    * (non-Javadoc)
    *
-   * org.silverpeas.core.web.treemenu.model.TreeFilter#acceptNodeType(org.silverpeas.core.web.treemenu.model.NodeType)
+   * org.silverpeas.core.web.treemenu.model.TreeFilter#acceptNodeType(org.silverpeas.core.web
+   * .treemenu.model.NodeType)
    */
   @Override
   public boolean acceptNodeType(NodeType node) {

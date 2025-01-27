@@ -25,10 +25,6 @@ package org.silverpeas.core.web.treemenu.model;
 
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-/**
- *
- *
- */
 public class MenuRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = 9022228330909407307L;

@@ -33,26 +33,15 @@ import java.util.List;
  */
 public class TreeMenuJSON {
 
-  /**
-   *
-   */
   private TreeMenuJSON() {
   }
 
-  /**
-   * @param item
-   * @return
-   */
   public static String getMenuItemAsJSONObject(MenuItem item) {
     return JSONCodec.encode(item);
   }
 
-  /**
-   * @param items
-   * @return
-   */
   public static String getListAsJSONArray(List<MenuItem> items) {
-    MenuItem[] arrayOfItems = items.toArray(new MenuItem[items.size()]);
+    MenuItem[] arrayOfItems = items.toArray(new MenuItem[0]);
     return JSONCodec.encode(arrayOfItems);
   }
 
