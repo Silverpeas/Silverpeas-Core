@@ -28,15 +28,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class MenuItem implements Serializable {
-  /**
-   *
-   */
+
   private static final long serialVersionUID = 8721214991615974221L;
 
   /**
@@ -48,7 +45,7 @@ public class MenuItem implements Serializable {
    * the label to display for current element label must be in the correct language
    */
   @XmlElement
-  private String label = null;
+  private String label;
 
   /**
    * component identifier for example "kmelia1" This attribute is used only to identify the theme
@@ -131,40 +128,6 @@ public class MenuItem implements Serializable {
   }
 
   /**
-   * full constructor allows building menu item with all his attributes
-   * @param children the children of current menu element
-   * @param label the label to display for current element label must be in the correct language
-   * @param key unique key to identify the item
-   * @param level item level in the tree menu
-   * @param type type of node (component, space or theme)
-   * @param target value of The HTML Target Attribute for Anchors (&lt;a&gt;) possible values =
-   * _blank, _self, _parent, _top.
-   * @param url URL to call when click on a menu item
-   * @param nbObjects number of results contained in a node
-   * @param leaf indicates if a node is a leaf or a branch
-   * @param labelStyle style to apply on label
-   * @param father father node of current item
-   * @param componentId component identifier for example "kmelia1". This attribute is used only to
-   * identify the theme component's
-   */
-  public MenuItem(ArrayList<MenuItem> children, String label, String key, int level,
-      NodeType type, String target, String url, int nbObjects, boolean leaf, String labelStyle,
-      MenuItem father, String componentId) {
-    this.children = children;
-    this.label = label;
-    this.key = key;
-    this.level = level;
-    this.type = type;
-    this.target = target;
-    this.url = url;
-    this.nbObjects = nbObjects;
-    this.leaf = leaf;
-    this.labelStyle = labelStyle;
-    this.father = father;
-    this.componentId = componentId;
-  }
-
-  /**
    * minimal constructor allows building menu item with all essential attributes
    * @param label the label to display for current element label must be in the correct language
    * @param key unique key to identify the item
@@ -197,7 +160,7 @@ public class MenuItem implements Serializable {
   /**
    * @param children the children to set
    */
-  public void setChildren(ArrayList<MenuItem> children) {
+  public void setChildren(List<MenuItem> children) {
     this.children = children;
   }
 
@@ -288,6 +251,7 @@ public class MenuItem implements Serializable {
   /**
    * @return the nbObjects
    */
+  @SuppressWarnings("unused")
   public int getNbObjects() {
     return nbObjects;
   }
@@ -316,6 +280,7 @@ public class MenuItem implements Serializable {
   /**
    * @return the labelStyle
    */
+  @SuppressWarnings("unused")
   public String getLabelStyle() {
     return labelStyle;
   }
@@ -460,13 +425,8 @@ public class MenuItem implements Serializable {
       return false;
     }
     if (url == null) {
-      if (other.url != null) {
-        return false;
-      }
-    } else if (!url.equals(other.url)) {
-      return false;
-    }
-    return true;
+      return other.url == null;
+    } else return url.equals(other.url);
   }
 
   /*

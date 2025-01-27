@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.web.treemenu.model;
 
+import org.silverpeas.core.annotation.Bean;
+
+import javax.enterprise.inject.Default;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,31 +34,15 @@ import java.util.List;
  * default Tree filter, allows display all element menu without restriction (spaces, all components,
  * themes)
  */
+@Bean
+@Default
+@Named(MenuConstants.DEFAULT_MENU_TYPE + TreeFilter.NAME_POSTFIX)
 public class TreeFilterDefault implements TreeFilter {
 
-  private List<String> components = null;
+  private List<String> components;
 
-  /**
-   *
-   */
   public TreeFilterDefault() {
-    components = new ArrayList<String>();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.treeMenu.TreeFilter#acceptNodeType(com.silverpeas.treeMenu.NodeType)
-   */
-  @Override
-  public boolean acceptNodeType(NodeType node) {
-    if (node == NodeType.COMPONENT) {
-      return true;
-    } else if (node == NodeType.SPACE) {
-      return true;
-    } else if (node == NodeType.THEME) {
-      return true;
-    }
-    return false;
+    components = new ArrayList<>();
   }
 
   /*

@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.web.treemenu.model;
 
+import org.silverpeas.core.annotation.Bean;
+
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,32 +33,15 @@ import java.util.List;
  * Tree filter use to see also functionality, allows filtering the element to display in see also
  * menu (space, theme tracker, and theme)
  */
+@Bean
+@Named(MenuConstants.SEE_ALSO_MENU_TYPE + TreeFilter.NAME_POSTFIX)
 public class TreeFilterSeeAlso implements TreeFilter {
 
-  private List<String> components = null;
+  private List<String> components;
 
-  /**
-   *
-   */
   public TreeFilterSeeAlso() {
-    components = new ArrayList<String>();
+    components = new ArrayList<>();
     components.add("kmelia");
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.treeMenu.TreeFilter#acceptNodeType(com.silverpeas.treeMenu.NodeType)
-   */
-  @Override
-  public boolean acceptNodeType(NodeType node) {
-    if (node == NodeType.COMPONENT) {
-      return true;
-    } else if (node == NodeType.SPACE) {
-      return true;
-    } else if (node == NodeType.THEME) {
-      return true;
-    }
-    return false;
   }
 
   /*

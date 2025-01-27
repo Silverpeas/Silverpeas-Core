@@ -23,21 +23,22 @@
  */
 package org.silverpeas.core.web.treemenu.process;
 
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.web.treemenu.model.MenuConstants;
 import org.silverpeas.core.web.treemenu.model.MenuRuntimeException;
 import org.silverpeas.core.web.treemenu.model.TreeFilter;
 import org.silverpeas.core.web.treemenu.model.TreeFilterDefault;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+
+import java.util.function.Supplier;
+
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Allows getting a TreeFilter implementation
  */
 public class TreeFilterFactory {
 
-  /**
-   *
-   */
   private TreeFilterFactory() {
   }
 
@@ -45,22 +46,31 @@ public class TreeFilterFactory {
    * Gets a TreeFilter implementation relating to the filterName parameter's. If no implementation
    * is found the default implementation is returned. This default implementation allow displaying
    * all menu elements @see {@link TreeFilterDefault}
+   *
    * @param filterName key to retrieve the implementation instance
-   * @return a TreeFiler implementation
+   * @return a TreeFiler implementation or null if no filter is found
+   * @throws MenuRuntimeException if no filter is found.
    */
   public static TreeFilter getTreeFilter(String filterName) {
-    TreeFilter filter = null;
-    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.treeMenu.TreeMenu");
-    String className =
-        settings.getString(filterName, "org.silverpeas.core.web.treemenu.model.TreeFilterDefault");
-    if (StringUtil.isDefined(className)) {
-      try {
-        return (TreeFilter) Class.forName(className).newInstance();
-      } catch (Exception e) {
-        throw new MenuRuntimeException("TreeFilterFactory.getTreeFilter()", e);
-      }
-    }
-    return filter;
+    String defaultFilter = MenuConstants.DEFAULT_MENU_TYPE + TreeFilter.NAME_POSTFIX;
+    String filterType = isDefined(filterName) ? filterName + TreeFilter.NAME_POSTFIX :
+        defaultFilter;
+    return providesOrElse(filterType,
+        providesOrElse(defaultFilter, FAIL)).get();
   }
 
+  private static Supplier<TreeFilter> providesOrElse(String filter,
+      Supplier<TreeFilter> defaultSupplier) {
+    return () -> {
+      try {
+        return ServiceProvider.getService(filter);
+      } catch (SilverpeasRuntimeException e) {
+        return defaultSupplier.get();
+      }
+    };
+  }
+
+  private static final Supplier<TreeFilter> FAIL = () -> {
+    throw new MenuRuntimeException("No default tree filter found!");
+  };
 }

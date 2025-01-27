@@ -23,43 +23,37 @@
  */
 package org.silverpeas.core.web.treemenu.servlet;
 
-import static org.silverpeas.core.web.treemenu.model.MenuConstants.DEFAULT_MENU_TYPE;
-import static org.silverpeas.core.web.treemenu.model.MenuConstants.REQUEST_KEY_MENU_TYPE;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.silverpeas.core.web.treemenu.process.TreeHandler;
 import org.silverpeas.kernel.util.StringUtil;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import static org.silverpeas.core.web.treemenu.model.MenuConstants.DEFAULT_MENU_TYPE;
+import static org.silverpeas.core.web.treemenu.model.MenuConstants.REQUEST_KEY_MENU_TYPE;
+
 /**
- *
- *
+ * It builds the requested menu made up of a tree of hierachical resources. Those resources can
+ * be kinds: both Silverpeas spaces and component instances, hierachical topics in a component
+ * instance, and so one.
  */
 public class TreeMenuAjaxServlet extends HttpServlet {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 208151209879380329L;
 
   /**
-   * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+   * Processes requests to build the tree of Silverpeas resources that will be sent back in JSON.
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
    * @throws IOException if an I/O error occurs
    */
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+      throws IOException {
     response.setContentType("application/json");
-    PrintWriter out = response.getWriter();
-    try {
+    try (PrintWriter out = response.getWriter()) {
       // building of the father of menu items to display
       // get information from request
       String menuType = request.getParameter(REQUEST_KEY_MENU_TYPE);
@@ -69,9 +63,7 @@ public class TreeMenuAjaxServlet extends HttpServlet {
           menuType = DEFAULT_MENU_TYPE;
         }
       }
-      out.write(TreeHandler.processMenu(request, menuType));
-    } finally {
-      out.close();
+      out.write(TreeHandler.processMenu(request, menuType, true));
     }
   }
 
@@ -79,26 +71,18 @@ public class TreeMenuAjaxServlet extends HttpServlet {
    * Handles the HTTP <code>GET</code> method.
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    processRequest(request, response);
-  }
-
-  /**
-   * Handles the HTTP <code>POST</code> method.
-   * @param request servlet request
-   * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
-   */
-  @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    processRequest(request, response);
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      processRequest(request, response);
+    } catch (Exception e) {
+      try {
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+      } catch (IOException ex) {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
+    }
   }
 
   /**
@@ -107,7 +91,7 @@ public class TreeMenuAjaxServlet extends HttpServlet {
    */
   @Override
   public String getServletInfo() {
-    return "return a Json flow to buid a menu level ";
+    return "return a tree of resources in JSON";
   }
 
 }

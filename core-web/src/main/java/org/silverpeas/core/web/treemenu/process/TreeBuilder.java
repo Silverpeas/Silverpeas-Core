@@ -52,7 +52,8 @@ import static org.silverpeas.core.web.treemenu.model.MenuConstants.ICON_STYLE_PR
 public class TreeBuilder {
 
   private static final String KMELIA = "kmelia";
-  private static final OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
+  private static final OrganizationController controller =
+      OrganizationControllerProvider.getOrganisationController();
 
   private TreeBuilder() {
   }
@@ -97,7 +98,7 @@ public class TreeBuilder {
     // the first level of theme
     if (father.getType() == NodeType.COMPONENT && filter.acceptNodeType(NodeType.THEME)) {
       NodePK nodePK = new NodePK("0", father.getKey());
-      Collection<NodeDetail> nodeDetails = getNodeBm().getChildrenDetails(nodePK);
+      Collection<NodeDetail> nodeDetails = getNodeService().getChildrenDetails(nodePK);
       for (NodeDetail nodeDetail : nodeDetails) {
         // remove basket and declassified
         if (nodeDetail.isBin() || nodeDetail.isUnclassified()) {
@@ -105,8 +106,8 @@ public class TreeBuilder {
         }
         MenuItem menuItem =
             new MenuItem(Encode.forHtml(nodeDetail.getName(language)),
-            nodeDetail.getNodePK().getId(),
-            nodeDetail.getLevel(), NodeType.THEME, false, father, father.getKey());
+                nodeDetail.getNodePK().getId(),
+                nodeDetail.getLevel(), NodeType.THEME, false, father, father.getKey());
         menuItem.setNbObjects(nodeDetail.getNbObjects());
         children.add(menuItem);
       }
@@ -122,7 +123,7 @@ public class TreeBuilder {
     // the sub theme
     if (father.getType() == NodeType.THEME && filter.acceptNodeType(NodeType.THEME)) {
       NodePK nodePK = new NodePK(father.getKey(), father.getComponentId());
-      Collection<NodeDetail> nodeDetails = getNodeBm().getChildrenDetails(nodePK);
+      Collection<NodeDetail> nodeDetails = getNodeService().getChildrenDetails(nodePK);
       for (NodeDetail nodeDetail : nodeDetails) {
         MenuItem menuItem =
             new MenuItem(Encode.forHtml(nodeDetail.getName(language)),
@@ -164,69 +165,83 @@ public class TreeBuilder {
       List<SpaceInstLight> rootSpaces =
           controller.getRootSpacesContainingComponent(userId, KMELIA);
 
-      sortIfAsked(rootSpaces, SpaceInstLight::getOrderNum);
+      sortIfAsked(rootSpaces, s -> s.isPersonalSpace() ? -1 : s.getOrderNum());
 
-      for (SpaceInstLight space : rootSpaces) {
-        if (space != null) {
-            MenuItem subElement =
-                new MenuItem(space.getName(language), space.getId(), 0,
-                  NodeType.SPACE, false, null, null);
-            children.add(subElement);
-        }
-      }// the component
+      buildMenuItemsFromSpaces(null, children, rootSpaces, language);
+      // the component
     } else if (filter.acceptNodeType(NodeType.COMPONENT) && !filter.getComponents().isEmpty()) {
-    for (String componentName : filter.getComponents()) {
+      for (String componentName : filter.getComponents()) {
         List<ComponentInstLight> componentList = controller.getAvailComponentInstLights(userId,
             componentName);
 
         sortIfAsked(componentList, ComponentInstLight::getOrderNum);
 
         boolean isLeaf = getLeafValue(componentName);
-        for (ComponentInstLight compo : componentList) {
-          MenuItem subElement = new MenuItem(Encode.forHtml(compo.getLabel(language)), compo.getId(), 0,
-              NodeType.COMPONENT, isLeaf, null, null);
-          item.setComponentName(compo.getName());
-          item.setLabelStyle(ICON_STYLE_PREFIX + compo.getName());
-          children.add(subElement);
-        }
+        buildMenuItemsFromComponentInstances(item, children, componentList, isLeaf, language);
       }
     }
     return item;
   }
 
+  private static void buildMenuItemsFromComponentInstances(MenuItem father,
+      List<MenuItem> menuItems, List<ComponentInstLight> componentList, boolean isLeaf,
+      String language) {
+    for (ComponentInstLight compo : componentList) {
+      MenuItem subElement = new MenuItem(Encode.forHtml(compo.getLabel(language)),
+          compo.getId(), 0,
+          NodeType.COMPONENT, isLeaf, null, null);
+      father.setComponentName(compo.getName());
+      father.setLabelStyle(ICON_STYLE_PREFIX + compo.getName());
+      menuItems.add(subElement);
+    }
+  }
+
+  private static void buildMenuItemsFromSpaces(MenuItem father, List<MenuItem> menuItems,
+      List<SpaceInstLight> spaces, String language) {
+    for (SpaceInstLight space : spaces) {
+      if (space != null) {
+        MenuItem subElement =
+            new MenuItem(space.getName(language), space.getId(), 0,
+                NodeType.SPACE, false, father, null);
+        menuItems.add(subElement);
+      }
+    }
+  }
+
 
   /**
    * Get sub spaces containing component
+   *
    * @param father MenuItem parent
    * @param userId the user identifier to display only the authorized item menu
    * @param language the user language to display the label menu in the correct language
    * @return a list of spaces MenuItem
    */
-  private static List<MenuItem> getSubSpacesContainingComponent(MenuItem father, String userId, String language) {
+  private static List<MenuItem> getSubSpacesContainingComponent(MenuItem father, String userId,
+      String language) {
     List<MenuItem> subElements = new ArrayList<>();
     List<SpaceInstLight> subspaces =
         controller.getSubSpacesContainingComponent(father.getKey(), userId, KMELIA);
 
     sortIfAsked(subspaces, SpaceInstLight::getOrderNum);
 
-    for (SpaceInstLight space : subspaces) {
-      MenuItem item =
-          new MenuItem(space.getName(language), space.getId(), space.getLevel(),
-              NodeType.SPACE, false, father, null);
-      subElements.add(item);
-    }
+    buildMenuItemsFromSpaces(father, subElements, subspaces, language);
+
     return subElements;
   }
 
   /**
-   *  Get a list of component MenuItem
+   * Get a list of component MenuItem
+   *
    * @param father father MenuItem parent
    * @param userId userId the user identifier to display only the authorized item menu
    * @param filter language the user language to display the label menu in the correct language
-   * @param language filter determines what type of node and/or component must be display in the menu
+   * @param language filter determines what type of node and/or component must be display in the
+   * menu
    * @return @return a list of components MenuItem
    */
-  private static List<MenuItem> getComponents(MenuItem father, String userId, TreeFilter filter, String language) {
+  private static List<MenuItem> getComponents(MenuItem father, String userId, TreeFilter filter,
+      String language) {
     List<MenuItem> subElements = new ArrayList<>();
     String[] componentIds = controller.getAvailCompoIdsAtRoot(father.getKey(),
         userId);
@@ -261,7 +276,7 @@ public class TreeBuilder {
     return subElements;
   }
 
-  private static NodeService getNodeBm() {
+  private static NodeService getNodeService() {
     try {
       return NodeService.get();
     } catch (Exception e) {
