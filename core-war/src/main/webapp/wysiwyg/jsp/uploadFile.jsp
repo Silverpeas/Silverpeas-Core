@@ -42,40 +42,20 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
   WysiwygController scc = (WysiwygController) request.getAttribute("wysiwyg");
-%>
-<%!
-String EncodeURL(String javastring) {
-    String res="";
-        if (javastring == null)
-                return res;
-    for (int i=0;i<javastring.length();i++) {
-          switch (javastring.charAt(i)) {
-                case '&' :
-                        res += "&amp;";
-                        break;
-                case '?' :
-                        res += "%3f";
-                        break;
-                default:
-                        res += javastring.charAt(i);
-          }
-    }
-    return res;
-  }
-%>
-<%
+
 String spaceLabel = (String) session.getAttribute("WYSIWYG_SpaceLabel");
 String componentId = (String) session.getAttribute("WYSIWYG_ComponentId");
 String componentLabel = (String) session.getAttribute("WYSIWYG_ComponentLabel");
-String browseInformation = (String) session.getAttribute("WYSIWYG_BrowseInfo");
+String browseInformation = Encode.forHtml((String) session.getAttribute("WYSIWYG_BrowseInfo"));
 String objectId = (String) session.getAttribute("WYSIWYG_ObjectId");
 String language = (String) session.getAttribute("WYSIWYG_Language");
 String path = (String) session.getAttribute("WYSIWYG_Path");
-String url = EncodeURL("/wysiwyg/jsp/uploadFile.jsp");
+String url = "/wysiwyg/jsp/uploadFile.jsp";
 
 String imagesContext = DocumentType.image.toString();
 
@@ -84,7 +64,7 @@ if (StringUtil.isDefined(request.getParameter("ComponentId"))) {
   componentId = request.getParameter("ComponentId");
   objectId = request.getParameter("ObjectId");
   String context = request.getParameter("Context");
-  url += EncodeURL("?ComponentId="+componentId+"&ObjectId="+objectId+"&Context="+context);
+  url += Encode.forHtml("?ComponentId="+componentId+"&ObjectId="+objectId+"&Context="+context);
 }
 
 boolean isWebSiteCase = componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES) && StringUtil.isLong(objectId);

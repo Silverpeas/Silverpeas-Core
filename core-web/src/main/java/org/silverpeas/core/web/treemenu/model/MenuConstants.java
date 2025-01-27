@@ -25,9 +25,6 @@ package org.silverpeas.core.web.treemenu.model;
 
 public final class MenuConstants {
 
-  /**
-   *
-   */
   private MenuConstants() {
   }
 
@@ -38,9 +35,9 @@ public final class MenuConstants {
   public static final String DEFAULT_MENU_TYPE = "default";
 
   /**
-   * key used for seealso implementation (display space, only kmelia component, theme)
+   * key used for seeAlso implementation (display space, only kmelia component, theme)
    */
-  public static final String SEE_ALSO_MENU_TYPE = "seealso";
+  public static final String SEE_ALSO_MENU_TYPE = "seeAlso";
 
   /**
    * key used for theme implementation (displays theme only)

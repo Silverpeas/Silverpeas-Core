@@ -29,9 +29,8 @@ package org.silverpeas.core.web.treemenu.model;
 public enum NodeType {
   THEME("theme"), COMPONENT("component"), SPACE("space");
 
-  protected String label;
+  private final String label;
 
-  /** constructor */
   NodeType(String label) {
     this.label = label;
   }

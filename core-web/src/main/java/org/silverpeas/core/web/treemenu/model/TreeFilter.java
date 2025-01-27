@@ -31,22 +31,26 @@ import java.util.List;
  */
 public interface TreeFilter {
 
+  String NAME_POSTFIX = "Filter";
+
   /**
    * checks if indicated node type is authorized.
    * @param node node type to check
    * @return true whether the node type is authorized
    */
-  boolean acceptNodeType(NodeType node);
+  default boolean acceptNodeType(NodeType node) {
+    return node == NodeType.COMPONENT || node == NodeType.SPACE || node == NodeType.THEME;
+  }
 
   /**
    * sets the list of authorized components which can appear in the menu
-   * @param componentList
+   * @param componentList a list component instances.
    */
   void setComponents(List<String> componentList);
 
   /**
    * Gets the list of authorized components
-   * @return
+   * @return a list of authorized component instances.
    */
   List<String> getComponents();
 }
