@@ -22,9 +22,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-var editorName;
-var storageFileWindow = window;
-var galleryWindow = window;
+let editorName;
+let storageFileWindow = window;
+let galleryWindow = window;
 
 function setEditorName(theEditorName) {
 	editorName = theEditorName;
@@ -35,17 +35,18 @@ function getEditorName() {
 }
 
 function getCKEditor() {
-	var theEditorName = getEditorName();
+	const theEditorName = getEditorName();
 	return CKEDITOR.instances[theEditorName];
 }
 
 function openStorageFileManager(editorName, componentId) {
   setEditorName(editorName);
   if (componentId) {
-    var url = webContext+"/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype=COMPONENT";
-    var windowName = "StorageFileWindow";
-    var windowParams = "scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!storageFileWindow.closed && storageFileWindow.name==windowName) {
+		const url = webContext + "/kmelia/jsp/attachmentLinkManagement.jsp?key=" + componentId
+				+ "&ntype=COMPONENT";
+		const windowName = "StorageFileWindow";
+		const windowParams = "scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised";
+		if (!storageFileWindow.closed && storageFileWindow.name === windowName) {
       storageFileWindow.close();
     }
     storageFileWindow = SP_openWindow(url, windowName, "750", "580", windowParams);
@@ -53,32 +54,33 @@ function openStorageFileManager(editorName, componentId) {
 }
 
 function insertAttachmentLink(url, img, label){
-	getCKEditor().insertHtml('<a href="'+url+'" target="_blank"><img src="'+img+'" width="20" border="0" align="top" alt=""/> '+label+'</a> ');
+	getCKEditor().insertHtml('<a href="'+url+'" target="_blank"><img src="'+img+'" width="20"' +
+			' style="border: 0; vertical-align: top" alt="' + label + '"/> '+label+'</a> ');
 }
 
 function choixImage(editorName) {
 	setEditorName(editorName);
-	var index = document.getElementById("images").selectedIndex;
-	var str = document.getElementById("images").options[index].value;
+	const index = document.getElementById("images").selectedIndex;
+	const str = document.getElementById("images").options[index].value;
 
-	if (index != 0 && str != null) {
-		getCKEditor().insertHtml('<img border="0" src="'+str+'" alt=""/>');
+	if (index !== 0 && str !== null) {
+		getCKEditor().insertHtml('<img src="'+str+'" alt=""/>');
 	}
 }
 
 function openGalleryFileManager(editorName, componentId) {
 	setEditorName(editorName);
 	if (!componentId) {
-    var index = document.getElementById("galleryFile").selectedIndex;
-    componentId = document.getElementById("galleryFile").options[index].value;
+		const index = document.getElementById("galleryFile").selectedIndex;
+		componentId = document.getElementById("galleryFile").options[index].value;
   }
 	if (componentId) {
-		var url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language="+getUserLanguage();
-		var windowName = "galleryWindow";
-		var larg = "820";
-		var haut = "600";
-		var windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-		if (!galleryWindow.closed && galleryWindow.name=="galleryWindow") {
+		const url = webContext + "/gallery/jsp/wysiwygBrowser.jsp?ComponentId=" + componentId + "&Language=" + getUserLanguage();
+		const windowName = "galleryWindow";
+		const larg = "820";
+		const haut = "600";
+		const windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+		if (!galleryWindow.closed && galleryWindow.name === "galleryWindow") {
 			galleryWindow.close();
 		}
 		galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
@@ -86,5 +88,5 @@ function openGalleryFileManager(editorName, componentId) {
 }
 
 function choixImageInGallery(url) {
-	getCKEditor().insertHtml('<img border="0" src="'+url+'" alt=""/>');
+	getCKEditor().insertHtml('<img src="'+url+'" alt=""/>');
 }
