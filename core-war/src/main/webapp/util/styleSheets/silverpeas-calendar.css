@@ -72,12 +72,18 @@ silverpeas-calendar-event-view-main .calendar-timezone,
   text-align: center;
 }
 
+.silverpeas-calendar-header .time-cursor {
+  white-space: nowrap;
+}
+
 .silverpeas-calendar-header input.reference-day {
   width: 0;
   padding: 0;
   margin: 0;
 }
-
+.silverpeas-calendar-header .reference-day[style*="hidden"]{
+  display:none;
+}
 .silverpeas-calendar-header a.next-event-month-filter {
   text-transform: capitalize;
 }
