@@ -52,28 +52,41 @@ import static org.silverpeas.core.web.treemenu.model.MenuConstants.ICON_STYLE_PR
 public class TreeBuilder {
 
   private static final String KMELIA = "kmelia";
-  private static final OrganizationController controller =
+  private final OrganizationController controller =
       OrganizationControllerProvider.getOrganisationController();
+  private final String userId;
+  private final String language;
+  private final boolean ordered;
 
-  private TreeBuilder() {
+  /**
+   * Creates a builder of a tree menu for the specified user and in the given language. If the items
+   * of the menu can be ordered according to a rank, the {@code ordered} boolean enable or disable
+   * their ordering.
+   *
+   * @param userId the unique identifier of a user in Silverpeas. According to his authorization,
+   * a menu item can be or not rendered.
+   * @param language the ISO 631 code of a language in which the labels will be written.
+   * @param ordered is the items of the menu should be ordered.
+   */
+  TreeBuilder(String userId, String language, boolean ordered) {
+    this.userId = userId;
+    this.language = language;
+    this.ordered = ordered;
   }
 
   /**
-   * Build one level of menu according to the parameters
+   * Build one level of a menu according to the specified parameters.
    *
-   * @param filter determines what type of node and/or component must be display in the menu
-   * @param father the father of menu level to build
-   * @param userId the user identifier to display only the authorized item menu
-   * @param language the user language to display the label menu in the correct language
+   * @param filter determines what type of node and/or component must be display in the menu.
+   * @param father a menu item as the father of the submenu to build.
    */
-  public static MenuItem buildLevelMenu(TreeFilter filter, MenuItem father, String userId,
-      String language) {
+  public MenuItem buildLevelMenu(TreeFilter filter, MenuItem father) {
     if (father == null) {
       // build the first level of menu
-      return buildFirstLevel(filter, userId, language);
+      return buildFirstLevel(filter);
     } else {
       // build the other level
-      return buildOtherLevel(filter, father, userId, language);
+      return buildOtherLevel(filter, father);
     }
 
   }
@@ -83,12 +96,9 @@ public class TreeBuilder {
    *
    * @param filter determines what type of node and/or component must be display in the menu
    * @param father the father of menu level to build
-   * @param userId the user identifier to display only the authorized item menu
-   * @param language the user language to display the label menu in the correct language
-   * @return a level of the menu
+   * @return one level of the menu
    */
-  private static MenuItem buildOtherLevel(TreeFilter filter, MenuItem father, String userId,
-      String language) {
+  private MenuItem buildOtherLevel(TreeFilter filter, MenuItem father) {
 
     ArrayList<MenuItem> children = new ArrayList<>();
     father.setChildren(children);
@@ -105,7 +115,7 @@ public class TreeBuilder {
           continue;
         }
         MenuItem menuItem =
-            new MenuItem(Encode.forHtml(nodeDetail.getName(language)),
+            new MenuItem(Encode.forHtml(nodeDetail.getName(this.language)),
                 nodeDetail.getNodePK().getId(),
                 nodeDetail.getLevel(), NodeType.THEME, false, father, father.getKey());
         menuItem.setNbObjects(nodeDetail.getNbObjects());
@@ -115,10 +125,10 @@ public class TreeBuilder {
     // the space displaying
     if (father.getType() == NodeType.SPACE) {
       // gets the sub spaces
-      children.addAll(getSubSpacesContainingComponent(father, userId, language));
+      children.addAll(getSubSpacesContainingComponent(father));
 
       // gets the components
-      children.addAll(getComponents(father, userId, filter, language));
+      children.addAll(getComponents(filter, father));
     }
     // the sub theme
     if (father.getType() == NodeType.THEME && filter.acceptNodeType(NodeType.THEME)) {
@@ -126,7 +136,7 @@ public class TreeBuilder {
       Collection<NodeDetail> nodeDetails = getNodeService().getChildrenDetails(nodePK);
       for (NodeDetail nodeDetail : nodeDetails) {
         MenuItem menuItem =
-            new MenuItem(Encode.forHtml(nodeDetail.getName(language)),
+            new MenuItem(Encode.forHtml(nodeDetail.getName(this.language)),
                 nodeDetail.getNodePK().getId(),
                 nodeDetail.getLevel(), NodeType.THEME, false, father, father.getComponentId());
         menuItem.setNbObjects(nodeDetail.getNbObjects());
@@ -151,33 +161,30 @@ public class TreeBuilder {
    * Build the first level of the menu
    *
    * @param filter determines what type of node and/or component must be display in the menu
-   * @param userId the user identifier to display only the authorized item menu
-   * @param language the user language to display the label menu in the correct language
    * @return the first level of the menu
    */
-  private static MenuItem buildFirstLevel(TreeFilter filter, String userId, String language) {
+  private MenuItem buildFirstLevel(TreeFilter filter) {
     MenuItem item = new MenuItem("root");
     ArrayList<MenuItem> children = new ArrayList<>();
     item.setChildren(children);
     // the space
-    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
     if (filter.acceptNodeType(NodeType.SPACE)) {
       List<SpaceInstLight> rootSpaces =
-          controller.getRootSpacesContainingComponent(userId, KMELIA);
+          this.controller.getRootSpacesContainingComponent(this.userId, KMELIA);
 
       sortIfAsked(rootSpaces, s -> s.isPersonalSpace() ? -1 : s.getOrderNum());
 
-      buildMenuItemsFromSpaces(null, children, rootSpaces, language);
+      buildMenuItemsFromSpaces(null, children, rootSpaces, this.language);
       // the component
     } else if (filter.acceptNodeType(NodeType.COMPONENT) && !filter.getComponents().isEmpty()) {
       for (String componentName : filter.getComponents()) {
-        List<ComponentInstLight> componentList = controller.getAvailComponentInstLights(userId,
-            componentName);
+        List<ComponentInstLight> componentList =
+            this.controller.getAvailComponentInstLights(this.userId, componentName);
 
         sortIfAsked(componentList, ComponentInstLight::getOrderNum);
 
         boolean isLeaf = getLeafValue(componentName);
-        buildMenuItemsFromComponentInstances(item, children, componentList, isLeaf, language);
+        buildMenuItemsFromComponentInstances(item, children, componentList, isLeaf, this.language);
       }
     }
     return item;
@@ -213,19 +220,16 @@ public class TreeBuilder {
    * Get sub spaces containing component
    *
    * @param father MenuItem parent
-   * @param userId the user identifier to display only the authorized item menu
-   * @param language the user language to display the label menu in the correct language
    * @return a list of spaces MenuItem
    */
-  private static List<MenuItem> getSubSpacesContainingComponent(MenuItem father, String userId,
-      String language) {
+  private List<MenuItem> getSubSpacesContainingComponent(MenuItem father) {
     List<MenuItem> subElements = new ArrayList<>();
     List<SpaceInstLight> subspaces =
-        controller.getSubSpacesContainingComponent(father.getKey(), userId, KMELIA);
+        controller.getSubSpacesContainingComponent(father.getKey(), this.userId, KMELIA);
 
     sortIfAsked(subspaces, SpaceInstLight::getOrderNum);
 
-    buildMenuItemsFromSpaces(father, subElements, subspaces, language);
+    buildMenuItemsFromSpaces(father, subElements, subspaces, this.language);
 
     return subElements;
   }
@@ -233,30 +237,25 @@ public class TreeBuilder {
   /**
    * Get a list of component MenuItem
    *
-   * @param father father MenuItem parent
-   * @param userId userId the user identifier to display only the authorized item menu
    * @param filter language the user language to display the label menu in the correct language
-   * @param language filter determines what type of node and/or component must be display in the
-   * menu
+   * @param father father MenuItem parent
    * @return @return a list of components MenuItem
    */
-  private static List<MenuItem> getComponents(MenuItem father, String userId, TreeFilter filter,
-      String language) {
+  private List<MenuItem> getComponents(TreeFilter filter, MenuItem father) {
     List<MenuItem> subElements = new ArrayList<>();
-    String[] componentIds = controller.getAvailCompoIdsAtRoot(father.getKey(),
-        userId);
+    String[] componentIds = this.controller.getAvailCompoIdsAtRoot(father.getKey(), this.userId);
     int level = father.getLevel() + 1;
     boolean isLeaf = false;
     List<String> allowedComponents = filter.getComponents();
     for (String componentId : componentIds) {
 
-      ComponentInstLight component = controller.getComponentInstLight(componentId);
+      ComponentInstLight component = this.controller.getComponentInstLight(componentId);
       // Default case : display all the component in the menu
       if (allowedComponents.isEmpty() && filter.acceptNodeType(NodeType.COMPONENT)) {
         isLeaf = getLeafValue(componentId);
 
         MenuItem item =
-            new MenuItem(Encode.forHtml(component.getLabel(language)), componentId, level,
+            new MenuItem(Encode.forHtml(component.getLabel(this.language)), componentId, level,
                 NodeType.COMPONENT, isLeaf, father, null);
         item.setComponentName(component.getName());
         item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
@@ -265,7 +264,7 @@ public class TreeBuilder {
         // Alternative case : filter the component to display in the menu
         if (allowedComponents.contains(component.getName())) {
           MenuItem item =
-              new MenuItem(Encode.forHtml(component.getLabel(language)), componentId, level,
+              new MenuItem(Encode.forHtml(component.getLabel(this.language)), componentId, level,
                   NodeType.COMPONENT, isLeaf, father, componentId);
           item.setComponentName(component.getName());
           item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
@@ -284,8 +283,8 @@ public class TreeBuilder {
     }
   }
 
-  private static <T> void sortIfAsked(List<T> resources, Function<T, Integer> order) {
-    if (TreeHandler.useOrder) {
+  private <T> void sortIfAsked(List<T> resources, Function<T, Integer> order) {
+    if (this.ordered) {
       resources.sort(Comparator.comparing(order));
     }
   }

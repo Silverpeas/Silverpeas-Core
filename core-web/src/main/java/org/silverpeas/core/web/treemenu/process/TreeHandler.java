@@ -43,10 +43,8 @@ public class TreeHandler {
   private TreeHandler() {
   }
 
-  static boolean useOrder = false;
-
   /**
-   * get information from request and build a level menu
+   * get information from request and build a tree menu
    *
    * @param request httpRequest
    * @param menuType type of menu
@@ -56,14 +54,14 @@ public class TreeHandler {
    */
   public static String processMenu(HttpServletRequest request, String menuType,
       boolean useCurrentOrder) {
-    useOrder = useCurrentOrder;
     SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
     MainSessionController mainSessionCtrl = webUtil.getMainSessionController(request);
     String userId = mainSessionCtrl.getUserId();
     String language = mainSessionCtrl.getFavoriteLanguage();
-    MenuItem items =
-        TreeBuilder.buildLevelMenu(TreeFilterFactory.getTreeFilter(menuType),
-            getMenuItemFather(request), userId, language);
+    TreeBuilder builder = new TreeBuilder(userId, language, useCurrentOrder);
+    MenuItem items = builder.buildLevelMenu(
+        TreeFilterFactory.getTreeFilter(menuType),
+        getMenuItemFather(request));
 
     // transform the children to json
     return TreeMenuJSON.getListAsJSONArray(items.getChildren());
