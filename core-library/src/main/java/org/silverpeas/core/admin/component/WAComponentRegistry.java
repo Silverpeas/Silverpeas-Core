@@ -194,7 +194,7 @@ public class WAComponentRegistry implements Initialization {
     if (descriptor.exists()) {
       final Path descriptorCopy = Paths.get(descriptor.getParent(),
           getBaseName(descriptor.getName()).concat(".")
-              .concat(LocalDateTime.now().toString().replaceAll("[^0-9]", "")));
+              .concat(LocalDateTime.now().toString().replaceAll("\\D", "")));
       try {
         Files.move(descriptor.toPath(), descriptorCopy);
       } catch (IOException e) {
