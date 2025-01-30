@@ -25,11 +25,6 @@
 Redefinition des style de balises HTML
 *************************************/
 body {
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: 12px;
-  margin: 0px;
-  color:#212121;
-
 
   /* A vérifier ou est utilisé ce intfdcolor51 */
  /* .tableBoard arréter avec ces 98% de taille */
@@ -38,6 +33,8 @@ body {
   /* PENSER A DEFINIR LES FOCUS SUR LES BOUTONS */
  /* J'ai mis plus toute les NEWSMODIF */
  /*.txtlibform, .txtsublibform { enlever toutes les petites modif de font size*/
+
+  --font-size:12px;
 
   --color-flashy-principale:#7eb73b;
   --color-text-sur-flashy-principale:#FFF;
@@ -191,6 +188,12 @@ body {
 
   /* FORMULAIRE & CO */
   --height-input:22px;
+
+  
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: var(--font-size);
+  margin: 0px;
+  color:var(--color-text);
 }
 
 
