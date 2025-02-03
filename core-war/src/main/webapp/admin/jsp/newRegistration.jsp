@@ -45,15 +45,17 @@
   <view:includePlugin name="virtualkeyboard"/>
   <view:includePlugin name="popup"/>
 
-  <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen" />
+  <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/slidercaptcha/slidercaptcha.min.css"/>" media="screen" />
+  <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/slidercaptcha/all.min.css"/>" media="screen" />
   <style type="text/css">
-    .cadre * {
-      text-align: left;
+  
+    .card {
+    	border: none;
     }
+    
   </style>
   <!-- jQuery files -->
-  <view:script src="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>
-  <view:script src="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.js"/>
+  <view:script src="/util/javaScript/jquery/slidercaptcha/longbow.slidercaptcha.min.js"/>
   <view:script src="/util/javaScript/checkForm.js"/>
   <script type="text/javascript">
   function checkIsNotEmpty(text) {
@@ -161,24 +163,16 @@
   }
 
   $(document).ready(function(){
-      // More complex call
-    const qaptchaOptions = {
-      txtLock : '${silfn:escapeJs(qaptchaLockMsg)}',
-      txtUnlock : '${silfn:escapeJs(qaptchaUnlockMsg)}',
-      alertMsg : '${silfn:escapeJs(qaptchaErrorMsg)}',
-      autoSubmit : false,
-      autoRevert : true,
-      PHPfile : '<c:url value="/Qaptcha"/>'
-    };
-    $('#QapTcha').QapTcha(qaptchaOptions);
-    setTimeout(function() {
-      const $form = get$form();
-      $form.unbind('submit');
-      $form.submit(function() {
-        SilverpeasError.add(qaptchaOptions.alertMsg).show();
-        return false;
-      });
-    }, 0);
+  	var captcha = sliderCaptcha({
+    	id:'captcha',
+    	width: 600,
+    	height: 450,
+    	failedText:'${silfn:escapeJs(qaptchaLockMsg)}',
+    	barText:'${silfn:escapeJs(qaptchaLockMsg)}',
+    	onSuccess:function () {
+      		$('#btn-register').attr('onclick', 'saveNewUser()');
+    	}
+   	});
   });
   </script>
 
@@ -216,8 +210,18 @@
 
       <view:directoryExtraForm userId="unknown" edition="true"/>
 
-      <div id="QapTcha"></div>
-      <a href="#" class="btn-registrer submit" onclick="saveNewUser()">
+      
+      
+      <div class="slidercaptcha card">
+  	
+        <div class="card-body">
+    		<div id="captcha"></div>
+  	</div>
+      </div>
+
+      
+      
+      <a href="#" id="btn-register" class="btn-registrer submit" onclick="">
           <span><span><fmt:message key="registration.title" /></span></span>
       </a>
             </div>
