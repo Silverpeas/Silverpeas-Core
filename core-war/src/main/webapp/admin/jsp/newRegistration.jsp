@@ -24,215 +24,216 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page isELIgnored="false"%>
+<%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ include file="../../headLog.jsp" %>
 
-<fmt:setLocale value="<%=userLanguage%>" />
-<view:setBundle basename="org.silverpeas.authentication.multilang.authentication" />
+<fmt:setLocale value="<%=userLanguage%>"/>
+<view:setBundle basename="org.silverpeas.authentication.multilang.authentication"/>
 
 <fmt:message key="authentication.logon.newRegistration.qaptcha.lock" var="qaptchaLockMsg"/>
 <fmt:message key="authentication.logon.newRegistration.qaptcha.unlock" var="qaptchaUnlockMsg"/>
 <fmt:message key="authentication.logon.newRegistration.qaptcha.error" var="qaptchaErrorMsg"/>
 
 <view:sp-page>
-<view:sp-head-part minimalSilverpeasScriptEnv="true">
-  <link rel="icon" href="<%=favicon%>" />
-  <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
-  <view:includePlugin name="virtualkeyboard"/>
-  <view:includePlugin name="popup"/>
+    <view:sp-head-part minimalSilverpeasScriptEnv="true">
+        <link rel="icon" href="<%=favicon%>"/>
+        <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
+        <view:includePlugin name="virtualkeyboard"/>
+        <view:includePlugin name="popup"/>
 
-  <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/slidercaptcha/slidercaptcha.min.css"/>" media="screen" />
-  <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/slidercaptcha/all.min.css"/>" media="screen" />
-  <style type="text/css">
-  
-    .card {
-    	border: none;
-    }
-    
-  </style>
-  <!-- jQuery files -->
-  <view:script src="/util/javaScript/jquery/slidercaptcha/longbow.slidercaptcha.min.js"/>
-  <view:script src="/util/javaScript/checkForm.js"/>
-  <script type="text/javascript">
-  function checkIsNotEmpty(text) {
-    return new Promise(function(resolve, reject) {
-      resolve(!isWhitespace(text));
-    });
-  }
-  function checkEmailIsCorrectlyFormatted(src) {
-    return new Promise(function(resolve, reject) {
-      const regex = /^[a-z0-9A-Z_.\-]+@[a-z0-9A-Z_.\-]*[a-z0-9A-Z][.][a-zA-Z]{2,6}$/;
-      resolve(!isEmpty(src) && src.match(regex) != null);
-    });
-  }
-  function checkEmailDoesNotExist(email) {
-    return new Promise(function(resolve, reject) {
-      $.get("<c:url value="/MailExists"/>?email=" + escape(email),
-          function(data) {
-            console.info("Check if " + email + " exists: " + data);
-            resolve(data.indexOf('MailExists') === -1);
-        });
-    });
-  }
-  function checkAvatar() {
-    return new Promise(function(resolve, reject) {
-      const image = $("#avatar").val();
-      resolve(isWhitespace(image) || isAnImageExtension(image));
-    });
-  }
+        <link rel="stylesheet" type="text/css"
+              href="<c:url value="/util/javaScript/jquery/slidercaptcha/slidercaptcha.min.css"/>" media="screen"/>
+        <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/slidercaptcha/all.min.css"/>"
+              media="screen"/>
+        <style type="text/css">
 
-  function isAnImageExtension(filename) {
-    const indexPoint = filename.lastIndexOf(".");
-    // check the filename includes the file extension
-    if (indexPoint !== -1) {
-      // in this case, the file extension is fetched
-      const ext = filename.substring(indexPoint + 1).toLowerCase();
-      return (ext === "gif") || (ext === "jpeg") || (ext === "jpg") || (ext === "png");
-    }
-    return false;
-  }
+            .card {
+                border: none;
+            }
 
-  function get$form() {
-    return jQuery(document.getElementById("EDform"));
-  }
+        </style>
+        <!-- jQuery files -->
+        <view:script src="/util/javaScript/jquery/slidercaptcha/longbow.slidercaptcha.min.js"/>
+        <view:script src="/util/javaScript/checkForm.js"/>
+        <script type="text/javascript">
+            function checkIsNotEmpty(text) {
+                return new Promise(function (resolve, reject) {
+                    resolve(!isWhitespace(text));
+                });
+            }
 
-  function saveNewUser() {
-    if ($("#identity-template").length) {
-      checkForm(function() {
-        ifCorrectFormExecute(function() {
-          get$form().submit();
-        });
-      });
-    } else {
-      checkForm(function() {
-        get$form().submit();
-      });
-    }
-  }
+            function checkEmailIsCorrectlyFormatted(src) {
+                return new Promise(function (resolve, reject) {
+                    const regex = /^[a-z0-9A-Z_.\-]+@[a-z0-9A-Z_.\-]*[a-z0-9A-Z][.][a-zA-Z]{2,6}$/;
+                    resolve(!isEmpty(src) && src.match(regex) != null);
+                });
+            }
 
-  function checkForm(callback) {
-    const form = document.getElementById("EDform");
-    const lastName = stripInitialWhitespace(form.elements["lastName"].value);
-    const firstName = stripInitialWhitespace(form.elements["firstName"].value);
-    const email = stripInitialWhitespace(form.elements["email"].value);
+            function checkEmailDoesNotExist(email) {
+                return new Promise(function (resolve, reject) {
+                    $.get("<c:url value="/MailExists"/>?email=" + escape(email),
+                        function (data) {
+                            console.info("Check if " + email + " exists: " + data);
+                            resolve(data.indexOf('MailExists') === -1);
+                        });
+                });
+            }
 
-    function checkResult(result, errorMessage) {
-      if (!result) {
-        SilverpeasError.add(errorMessage);
-      }
-    }
-    checkIsNotEmpty(firstName)
-        .then(function(result) {
-          checkResult(result, "<fmt:message key='registration.firstNameRequired'/>\n");
-          return checkIsNotEmpty(lastName);
-        })
-        .then(function(result) {
-          checkResult(result, "<fmt:message key='registration.lastNameRequired'/>\n");
-          return checkIsNotEmpty(email);
-        })
-        .then(function(result) {
-          checkResult(result, "<fmt:message key='registration.emailRequired'/>\n");
-          return checkAvatar();
-        })
-        .then(function(result) {
-          checkResult(result, "<fmt:message key='registration.avatar.bad'/>\n");
-          return checkEmailIsCorrectlyFormatted(email);
-        })
-        .then(function(result) {
-          checkResult(result, "<fmt:message key='registration.emailBadSyntax'/>\n");
-          return checkEmailDoesNotExist(email);
-        })
-        .then(function(result) {
-          checkResult(result, "<fmt:message key='registration.alreadyRegistered'/>\n");
-          if (!SilverpeasError.show()) {
-            form.action='<c:url value="/CredentialsServlet/Register" />';
-            callback.call(this);
-          }
-        });
-  }
+            function checkAvatar() {
+                return new Promise(function (resolve, reject) {
+                    const image = $("#avatar").val();
+                    resolve(isWhitespace(image) || isAnImageExtension(image));
+                });
+            }
 
-  function checkSubmit(ev) {
-    const keyCode = ev.keyCode;
-    if (keyCode === 13) {
-      saveNewUser();
-    }
-  }
+            function isAnImageExtension(filename) {
+                const indexPoint = filename.lastIndexOf(".");
+                // check the filename includes the file extension
+                if (indexPoint !== -1) {
+                    // in this case, the file extension is fetched
+                    const ext = filename.substring(indexPoint + 1).toLowerCase();
+                    return (ext === "gif") || (ext === "jpeg") || (ext === "jpg") || (ext === "png");
+                }
+                return false;
+            }
 
-  $(document).ready(function(){
-  	var captcha = sliderCaptcha({
-    	id:'captcha',
-    	width: 600,
-    	height: 450,
-    	failedText:'${silfn:escapeJs(qaptchaLockMsg)}',
-    	barText:'${silfn:escapeJs(qaptchaLockMsg)}',
-    	onSuccess:function () {
-      		$('#btn-register').attr('onclick', 'saveNewUser()');
-    	}
-   	});
-  });
-  </script>
+            function get$form() {
+                return jQuery(document.getElementById("EDform"));
+            }
 
-</view:sp-head-part>
-<view:sp-body-part id="self-registration">
-  <form id="EDform" action="javascript:saveNewUser();" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
-    <div id="top"></div>
-    <div class="page">
-      <div class="titre"><fmt:message key="registration.title"/></div>
-        <div id="background">
-            <div class="cadre">
-                <div class="registrationText">
-        <p class="noSilverpeasAccount"><fmt:message key="registration.noSilverpeasAccount"/></p>
-        <p class="noSilverpeasAccount"><fmt:message key="registration.completeProfile"/></p>
-      </div>
+            function saveNewUser() {
+                if ($("#identity-template").length) {
+                    checkForm(function () {
+                        ifCorrectFormExecute(function () {
+                            get$form().submit();
+                        });
+                    });
+                } else {
+                    checkForm(function () {
+                        get$form().submit();
+                    });
+                }
+            }
 
-      <div class="form-registration">
-        <div class="form-registration-firstName">
-          <label for="firstName"><fmt:message key="registration.firstname" /></label>
-          <input type="text" name="firstName" id="firstName" value="${userProfile.firstName}"/>
-        </div>
-        <div class="form-registration-lastName">
-          <label for="lastName"><fmt:message key="registration.lastname" /></label>
-          <input type="text" name="lastName" id="lastName" value="${userProfile.lastName}"/>
-        </div>
-        <div class="form-registration-email">
-          <label for="email"><fmt:message key="registration.email" /></label>
-          <input type="text" name="email" id="email" value="${userProfile.email}"/>
-        </div>
-        <div class="form-registration-avatar">
-          <label for="avatar"><fmt:message key="registration.avatar" /></label>
-          <input type="file" name="avatar" id="avatar" />
-        </div>
-      </div>
+            function checkForm(callback) {
+                const form = document.getElementById("EDform");
+                const lastName = stripInitialWhitespace(form.elements["lastName"].value);
+                const firstName = stripInitialWhitespace(form.elements["firstName"].value);
+                const email = stripInitialWhitespace(form.elements["email"].value);
 
-      <view:directoryExtraForm userId="unknown" edition="true"/>
+                function checkResult(result, errorMessage) {
+                    if (!result) {
+                        SilverpeasError.add(errorMessage);
+                    }
+                }
 
-      
-      
-      <div class="slidercaptcha card">
-  	
-        <div class="card-body">
-    		<div id="captcha"></div>
-  	</div>
-      </div>
+                checkIsNotEmpty(firstName)
+                    .then(function (result) {
+                        checkResult(result, "<fmt:message key='registration.firstNameRequired'/>\n");
+                        return checkIsNotEmpty(lastName);
+                    })
+                    .then(function (result) {
+                        checkResult(result, "<fmt:message key='registration.lastNameRequired'/>\n");
+                        return checkIsNotEmpty(email);
+                    })
+                    .then(function (result) {
+                        checkResult(result, "<fmt:message key='registration.emailRequired'/>\n");
+                        return checkAvatar();
+                    })
+                    .then(function (result) {
+                        checkResult(result, "<fmt:message key='registration.avatar.bad'/>\n");
+                        return checkEmailIsCorrectlyFormatted(email);
+                    })
+                    .then(function (result) {
+                        checkResult(result, "<fmt:message key='registration.emailBadSyntax'/>\n");
+                        return checkEmailDoesNotExist(email);
+                    })
+                    .then(function (result) {
+                        checkResult(result, "<fmt:message key='registration.alreadyRegistered'/>\n");
+                        if (!SilverpeasError.show()) {
+                            form.action = '<c:url value="/CredentialsServlet/Register" />';
+                            callback.call(this);
+                        }
+                    });
+            }
 
-      
-      
-      <a href="#" id="btn-register" class="btn-registrer submit" onclick="">
-          <span><span><fmt:message key="registration.title" /></span></span>
-      </a>
+            function checkSubmit(ev) {
+                const keyCode = ev.keyCode;
+                if (keyCode === 13) {
+                    saveNewUser();
+                }
+            }
+
+            $(document).ready(function () {
+                var captcha = sliderCaptcha({
+                    id: 'captcha',
+                    width: 600,
+                    height: 450,
+                    failedText: '${silfn:escapeJs(qaptchaLockMsg)}',
+                    barText: '${silfn:escapeJs(qaptchaLockMsg)}',
+                    onSuccess: function () {
+                        $('#btn-register').attr('onclick', 'saveNewUser()');
+                    }
+                });
+            });
+        </script>
+
+    </view:sp-head-part>
+    <view:sp-body-part id="self-registration">
+        <form id="EDform" action="javascript:saveNewUser();" method="post" accept-charset="UTF-8"
+              enctype="multipart/form-data">
+            <div id="top"></div>
+            <div class="page">
+                <div class="titre"><fmt:message key="registration.title"/></div>
+                <div id="background">
+                    <div class="cadre">
+                        <div class="registrationText">
+                            <p class="noSilverpeasAccount"><fmt:message key="registration.noSilverpeasAccount"/></p>
+                            <p class="noSilverpeasAccount"><fmt:message key="registration.completeProfile"/></p>
+                        </div>
+
+                        <div class="form-registration">
+                            <div class="form-registration-firstName">
+                                <label for="firstName"><fmt:message key="registration.firstname"/></label>
+                                <input type="text" name="firstName" id="firstName" value="${userProfile.firstName}"/>
+                            </div>
+                            <div class="form-registration-lastName">
+                                <label for="lastName"><fmt:message key="registration.lastname"/></label>
+                                <input type="text" name="lastName" id="lastName" value="${userProfile.lastName}"/>
+                            </div>
+                            <div class="form-registration-email">
+                                <label for="email"><fmt:message key="registration.email"/></label>
+                                <input type="text" name="email" id="email" value="${userProfile.email}"/>
+                            </div>
+                            <div class="form-registration-avatar">
+                                <label for="avatar"><fmt:message key="registration.avatar"/></label>
+                                <input type="file" name="avatar" id="avatar"/>
+                            </div>
+                        </div>
+
+                        <view:directoryExtraForm userId="unknown" edition="true"/>
+
+                        <div class="slidercaptcha card">
+                            <div class="card-body">
+                                <div id="captcha"></div>
+                            </div>
+                        </div>
+
+                        <button id="btn-register" class="btn-registrer submit" type="button"><fmt:message
+                                key="registration.title"/></button>
+                    </div>
+                </div>
+                <div id="copyright"><fmt:message key="GML.trademark"/></div>
             </div>
-        </div>
-        <div id="copyright"><fmt:message key="GML.trademark" /></div>
-    </div>
-  </form>
+        </form>
 
-  <script type="text/javascript">
-    document.querySelector("input").focus();
-  </script>
+        <script type="text/javascript">
+            document.querySelector("input").focus();
+        </script>
 
-</view:sp-body-part>
+    </view:sp-body-part>
 </view:sp-page>
