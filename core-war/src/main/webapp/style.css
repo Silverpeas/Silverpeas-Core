@@ -21,35 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-@charset "utf-8";
 /* CSS Document */
 
 * {
   margin: 0px;
   padding: 0px;
-  /*overflow:hidden;*/
   border: none;
-  text-align: center;
 }
 
 body {
   background-color: #e6e6e6;
   font-size: 12px;
   font-family: Arial, Helvetica, sans-serif;
-  /*overflow:hidden;*/
   color: #666666;
+  text-align: center;
 }
 
 #top {
-  background-color: #7eb73b;
+  background-color:#7eb73b;;
   height: 35px;
   margin-bottom: 40px;
-  color: #FFFFFF;
+  color: #000000;
   line-height: 35px;
+  font-size: 1.25em;
 }
 
 #top a {
-  color: #FFFFFF;
+  color: #000000;
 }
 
 .clear {
@@ -62,6 +60,7 @@ body {
   width: 960px;
   position: relative;
   z-index: 1;
+  text-align: center;
 }
 
 .page {
@@ -71,11 +70,12 @@ body {
 
 #login-socialnetwork {
   text-align: left;
-  padding-left: 351px;
+  padding-left: 185px;
+  width: calc( 960px - 185px );
   z-index: 3;
-  margin-bottom: -120px;
+  margin-bottom: -156px;
   padding-bottom: 27px;
-  background: transparent url("util/icons/external/deco-login-btn.png") 350px bottom no-repeat;
+  background: transparent url("util/icons/external/deco-login-btn.png") 191px bottom no-repeat;
 }
 
 #login-socialnetwork a {
@@ -86,49 +86,48 @@ body {
 }
 
 #background {
-  background: url(images/bg.gif) no-repeat;
   min-height: 424px;
 }
 
 #background .submit {
-  color: #666666;
+  color: #2a2a2a;
   text-decoration: none;
   font-weight: bold;
 }
 
-#background div.submit {
-  position: absolute;
-  top: 310px;
-  width: 448px;
-  text-align: center;
-  padding: 5px
-}
-
 #backgroundBig {
-  background: url(images/bgBig.gif) no-repeat;
   min-height: 524px;
 }
 
 #backgroundBig .submit {
-  color: #666666;
-  text-decoration: none;
   font-weight: bold;
-  position: static;
-}
-
-#backgroundBig div.submit {
-  position: absolute;
-  top: 410px;
-  width: 448px;
-  text-align: center;
-  padding: 5px
 }
 
 .cadre {
-  /*height:285px;*/
-  margin: 0 auto;
-  padding-top: 30px;
-  width: 460px;
+  margin: 0 auto 1.25em auto;
+  padding: 30px 1.25em 1.25em;
+  width:460px;
+  border:6px solid #d2d2d2;
+  border-bottom:0;
+  background-color: #FFF;
+  border-radius:1em 1em 0 0;
+  box-shadow: 0px 5px 5px rgba(0,0,0,0.5);
+}
+
+#self-registration .cadre {
+  width:calc( 600px + 2.5em );
+}
+
+div.form-registration {
+  text-align: left;
+}
+
+.form-registration > div {
+  display: flex;
+  margin:1em ;
+}
+.form-registration > div label {
+  flex-basis: 10em;
 }
 
 input {
@@ -154,14 +153,9 @@ select option {
 }
 
 .titre {
-  color: #D2D2D2;
-  display: inline;
+  color: #3a3a3a;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 48px;
-  position: absolute;
-  right: 242px;
-  text-align: left;
-  top: 0px;
+  font-size:4em;
 }
 
 #header {
@@ -186,7 +180,6 @@ select option {
 p label {
   display: block;
   margin-bottom: 10px;
-  /*padding-bottom:5px;*/
 }
 
 p label span {
@@ -219,34 +212,17 @@ p label span {
   display: none;
 }
 
-.forgottenPwd a {
-  font-size: 10px;
-  color: #999999;
-  font-weight: normal;
-}
-
-.rememberPwd {
-  font-size: 10px;
-  color: #999999;
-  font-weight: normal;
-}
-
-.changePwd {
-  font-size: 10px;
-  color: #999999;
-  font-weight: normal;
+.forgottenPwd a ,
+.rememberPwd ,
+.changePwd,
+.passwordRules ,
+.passwordRules a {
+  color:#2143e3;
 }
 
 .passwordRules {
-  font-size: 10px;
-  color: #999999;
-  font-weight: normal;
-}
-
-.passwordRules a {
-  font-size: 10px;
-  color: #999999;
-  font-weight: normal;
+  margin:1em 0;
+  display: block;
 }
 
 #storePassword {
@@ -273,10 +249,10 @@ p label span {
 }
 
 .fnfinformation {
-  float: right;
-  margin-top: 30px;
   font-size: 14px;
   text-align: left;
+  clear: left;
+  padding: 2em 1em;
 }
 
 .fnfinformation ul li {
@@ -285,32 +261,53 @@ p label span {
   text-align: left;
 }
 
-a.submit, a.submitWithOneDomain{
-  background: transparent url(images/bt-left.png) 0 0 no-repeat;
+a.submit:not(:has(img)), a.submitWithOneDomain,
+button{
+  background: linear-gradient(0deg, rgba(221,221,221,1) 0%, rgba(255,255,255,1) 100%); 
+  border-radius: 0.5em;
+  border:1px solid #CDCDCD;
   display: inline-block;
-  padding-left: 30px;
-  line-height: 31px;
+  padding:0.5em 1em ;
   text-decoration: none;
+  color: #2a2a2a;
 }
 
-a.submit.validate, a.submitWithOneDomain.validate{
-  background: transparent url(images/bt-left-validate.png) 0 0 no-repeat;
+a.submit:not(:has(img)):before {
+  display: inline-block;
+  content:'';
+  width:1.25em;
+  height:1.25em;
+  background:transparent url("images/arrow-right.svg") center center no-repeat;
+  background-size: 100% 100%;
+  vertical-align: middle;
+  margin-right: 0.25em;
 }
 
-a.submit.refused, a.submitWithOneDomain.refused{
-  background: transparent url(images/bt-left-refused.png) 0 0 no-repeat;
+a.submit.validate:before, a.submitWithOneDomain.validate:before{
+  display: inline-block;
+  content:'';
+  width:1.25em;
+  height:1.25em;
+  background:transparent url("images/validate.svg") center center no-repeat;
+  background-size: auto 125%;
+  vertical-align: middle;
+  margin-right: 0.25em;
+ }
+
+a.submit.refused:before, a.submitWithOneDomain.refused:before{
+  display: inline-block;
+  content:'';
+  width:1.25em;
+  height:1.25em;
+  background:transparent url("images/refused.svg") center center no-repeat;
+  background-size: auto 90%;
+  vertical-align: middle;
+  margin-right: 0.25em;
 }
 
-a.submit span, a.submitWithOneDomain span {
-  background: transparent url(images/bt-right.png) right 0 no-repeat;
-  display: block;
-  padding-right: 10px;
-}
 
 a.submit span span, a.submitWithOneDomain span span {
-  background: transparent url(images/bt-bg.png) 0 0 repeat-x;
-  display: block;
-  color: #666666;
+  color: #2a2a2a;
   font-size: 12px;
   text-decoration: none !important;
 }
