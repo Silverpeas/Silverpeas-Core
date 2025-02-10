@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * A credential is a set of security-related capabilities for a given user, it contains information
  * used to authenticate him.
- *
+ * <p>
  * This credential defines, among the attributes, the password, the login and the domain to which the
  * user belongs. The domain is a repository of users having its own security policy and then its own
  * authentication server. The login is the minimum information used in an authentication; indeed, for
@@ -38,19 +38,22 @@ import java.util.Map;
  * policies, only the login and the domain are required to authenticate the user, like in NTLM
  * negotiation. By default, to open a WEB session with Silverpeas, the user has to authenticate
  * himself by using both his login, his password and the domain to which he belongs.
- *
+ * </p>
+ * <p>
  * The credential may also contain data that simply enable certain security-related capabilities like,
  * for example, the password change. These capabilities are generally set by the authentication
  * process from the response of the authentication server related to the user domain, once the user
  * is successfully authenticated.
+ * </p>
  */
 public class AuthenticationCredential {
 
   private String login;
   private String password;
   private String domainId;
+  private boolean authenticated;
 
-  private Map<String, Serializable> capabilities = new HashMap<>();
+  private final Map<String, Serializable> capabilities = new HashMap<>();
 
   private AuthenticationCredential() {
 
@@ -88,6 +91,14 @@ public class AuthenticationCredential {
   }
 
   /**
+   * Sets the principal behind this credential has been already successfully authenticated by a
+   * remote authentication mechanism.
+   */
+  public void setRemotelyAuthenticated() {
+    this.authenticated = true;
+  }
+
+  /**
    * Gets the user login to use in the authentication.
    * @return the login.
    */
@@ -122,6 +133,17 @@ public class AuthenticationCredential {
     return capabilities;
   }
 
+  /**
+   * Is this credential comes from an external authentication mechanism? In this case, the
+   * authentication has been already operated out of Silverpeas and the credential contains only
+   * information to identify the authenticated user.
+   * @return true if the authentication has been already successfully done out of Silverpeas.
+   * False otherwise.
+   */
+  public boolean hasBeenRemotelyAuthenticated() {
+    return authenticated;
+  }
+
   private void setLogin(String login) {
     this.login = login;
   }
@@ -140,15 +162,5 @@ public class AuthenticationCredential {
    */
   public void setDomainId(String domainId) {
     this.domainId = domainId;
-  }
-
-  /**
-   * Is the password set in this credential?
-   * According to some security policy, the password isn't required to participate in an authentication;
-   * for example in an NTLM negotiation.
-   * @return true if the password attribute is set in this credential, false otherwise.
-   */
-  public boolean isPasswordSet() {
-    return this.password != null;
   }
 }

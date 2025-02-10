@@ -55,7 +55,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
@@ -63,11 +62,12 @@ import static java.text.MessageFormat.format;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
- *
+ * <p>
  * This servlet delegates the authentication process and the HTTP session opening in Silverpeas to
  * the corresponding services. If the authentication and the session opening succeed, the user
  * behind the authentication ask is redirected to its user home page. Otherwise, he's redirected to
  * an authentication failure page (that can the login page enriched with an error message).
+ * </p>
  */
 public class AuthenticationServlet extends SilverpeasHttpServlet {
 
@@ -202,7 +202,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       final AuthenticationParameters authenticationParameters,
       final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier)
       throws ServletException, IOException {
-    String url = "";
+    String url;
     HttpSession session = request.getSession();
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
@@ -316,7 +316,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   }
 
   private void storeLogin(HttpServletResponse response, AuthenticationParameters params) {
-    if (!isAnonymousAuthentication(params)) {
+    if (isNotAnonymousAuthentication(params)) {
       String sLogin = params.getLogin();
       boolean secured = params.isSecuredAccess();
       if (params.isNewEncryptionMode()) {
@@ -330,7 +330,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   }
 
   private void storeDomain(HttpServletResponse response, AuthenticationParameters params) {
-    if (!isAnonymousAuthentication(params)) {
+    if (isNotAnonymousAuthentication(params)) {
       String sDomainId = params.getDomainId();
       boolean secured = params.isSecuredAccess();
       writeCookie(response, "defaultDomain", sDomainId, -1, secured);
@@ -338,9 +338,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     }
   }
 
-  private boolean isAnonymousAuthentication(AuthenticationParameters params) {
+  private boolean isNotAnonymousAuthentication(AuthenticationParameters params) {
     User anonymous = UserDetail.getAnonymousUser();
-    return anonymous != null && anonymous.getLogin().equals(params.getLogin());
+    return anonymous == null || !anonymous.getLogin().equals(params.getLogin());
   }
 
   private String authenticate(HttpServletRequest request,
@@ -351,16 +351,16 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
           authenticationParameters.getLogin());
       if (authenticationParameters.isUserByInternalAuthTokenMode() || authenticationParameters.
           isSsoMode() || authenticationParameters.isCasMode()) {
-        key = authService.authenticate(
-            credential.withAsDomainId(authenticationParameters.getDomainId()));
+        credential.withAsDomainId(authenticationParameters.getDomainId())
+            .setRemotelyAuthenticated();
       } else if (authenticationParameters.isSocialNetworkMode()) {
-        key = authService.authenticate(credential.withAsDomainId(authenticationParameters.
-            getDomainId()));
+        credential.withAsDomainId(authenticationParameters.getDomainId())
+            .setRemotelyAuthenticated();
       } else {
-        key = authService.authenticate(credential
-            .withAsPassword(authenticationParameters.getPassword())
-            .withAsDomainId(authenticationParameters.getDomainId()));
+        credential.withAsPassword(authenticationParameters.getPassword())
+            .withAsDomainId(authenticationParameters.getDomainId());
       }
+      key = authService.authenticate(credential);
       authenticationParameters.setCredential(credential);
       HttpSession session = request.getSession(false);
       for (Map.Entry<String, Serializable> capability : credential.getCapabilities().entrySet()) {
@@ -387,14 +387,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
   private void writeCookie(HttpServletResponse response, String name, String value, int duration,
       boolean secure) {
-    String cookieValue;
-    try {
-      cookieValue = URLEncoder.encode(value, Charsets.UTF_8.name());
-    } catch (UnsupportedEncodingException ex) {
-      logger.error(ex.getMessage(), ex);
-      cookieValue = value;
-    }
+    String cookieValue = URLEncoder.encode(value, Charsets.UTF_8);
     Cookie cookie = new Cookie(name, cookieValue);
+    cookie.setHttpOnly(true);
     cookie.setSecure(secure);
     cookie.setMaxAge(duration);
     cookie.setPath("/");
