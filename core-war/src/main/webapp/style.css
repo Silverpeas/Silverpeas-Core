@@ -38,7 +38,7 @@ body {
 }
 
 #top {
-  background-color:#7eb73b;;
+  background-color:#7eb73b;
   height: 35px;
   margin-bottom: 40px;
   color: #000000;
@@ -271,6 +271,12 @@ button{
   text-decoration: none;
   color: #2a2a2a;
 }
+button#btn-register:hover,
+button#btn-register:focus {
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(221,221,221,1) 0%, rgba(255,255,255,1) 100%); 
+ 
+}
 
 a.submit:not(:has(img)):before {
   display: inline-block;
@@ -331,4 +337,8 @@ a.submit span span, a.submitWithOneDomain span span {
 
 #self-registration #identity-template li {
   list-style-type: none;
+}
+
+.sliderContainer{
+  height:40px;
 }
