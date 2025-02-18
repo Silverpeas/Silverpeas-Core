@@ -102,7 +102,9 @@ public class MessageNotifier {
       return MessageFormat.format(message, Arrays.stream(parameters)
           .map(p -> Optional.of(p)
               .filter(String.class::isInstance)
-              .map(o -> (Object) Encode.forHtml((String) o))
+              .map(String.class::cast)
+              .map(Encode::forHtml)
+              .map(Object.class::cast)
               .orElse(p)
           ).toArray());
     }

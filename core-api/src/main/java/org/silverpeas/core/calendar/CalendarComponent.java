@@ -29,14 +29,7 @@ import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -243,7 +236,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * @return the attendees in this calendar component.
    */
   public AttendeeSet getAttendees() {
-    return attendees.withCalendarComponent(this);
+    return attendees;
   }
 
   /**
@@ -303,11 +296,11 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
         // In case of import, the attendees are not modified
         AttendeeSet existingAttendees = anotherComponent.attendees;
         anotherComponent.attendees = new AttendeeSet(anotherComponent);
-        existingAttendees.forEach(a -> a.copyFor(anotherComponent));
+        existingAttendees.copyTo(anotherComponent.attendees);
       }
     } else {
       anotherComponent.attendees = new AttendeeSet(anotherComponent);
-      attendees.forEach(a -> a.copyFor(anotherComponent));
+      attendees.copyTo(anotherComponent.attendees);
     }
     return anotherComponent;
   }
@@ -372,5 +365,10 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     }
 
     return !this.getAttributes().equals(previous.getAttributes());
+  }
+
+  @PostLoad
+  private void onceLoaded() {
+    this.attendees = this.attendees.withCalendarComponent(this);
   }
 }

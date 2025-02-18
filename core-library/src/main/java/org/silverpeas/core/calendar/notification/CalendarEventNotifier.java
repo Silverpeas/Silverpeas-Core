@@ -25,7 +25,6 @@ package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -91,7 +90,7 @@ public class CalendarEventNotifier
           .build()
           .send();
     }
-    if (!after.getAttendees().isSameAs(before.getAttendees())) {
+    if (after.getAttendees().isNotSameAs(before.getAttendees())) {
       // the update is about the attendees themselves
       LifeCycleEventSubType subType =
           after.isRecurrent() ? LifeCycleEventSubType.SINCE : LifeCycleEventSubType.SINGLE;

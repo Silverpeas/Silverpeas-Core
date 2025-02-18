@@ -49,15 +49,4 @@ public interface PlannableOnCalendar extends PlannedOnCalendar {
    */
   boolean isPlanned();
 
-  /**
-   * Deletes this planned object from the calendar it belongs to. If it was not planned (aka saved)
-   * in a given calendar, then nothing is done.
-   */
-  OperationResult<CalendarEvent, CalendarEventOccurrence> delete();
-
-  /**
-   * Updates this planned object in the underlying calendar it belongs to. If it was not planned
-   * (aka saved) in a given calendar, then nothing is done.
-   */
-  OperationResult<CalendarEvent, CalendarEventOccurrence> update();
 }

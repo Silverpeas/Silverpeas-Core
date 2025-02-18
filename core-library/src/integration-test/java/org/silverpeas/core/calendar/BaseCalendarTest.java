@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.integration.DataSetTest;
 import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
@@ -67,15 +66,15 @@ public abstract class BaseCalendarTest extends DataSetTest {
   private final UserDetail user = new UserDetail();
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     user.setId("26");
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
+    CacheAccessorProvider.getSessionCacheAccessor()
         .newSessionCache(user);
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
@@ -185,38 +184,31 @@ public abstract class BaseCalendarTest extends DataSetTest {
     assertThat(actual.isRecurrent(), is(false));
   }
 
-  protected void assertEventIsOnlyUpdated(OperationResult<?, ?> result) {
+  protected void assertEventIsOnlyUpdated(EventOperationResult result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.instance().isPresent(), is(false));
     assertThat(result.created().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(true));
   }
 
-  protected void assertAnEventIsOnlyCreated(OperationResult<?, ?> result) {
-    assertThat(result.isEmpty(), is(false));
-    assertThat(result.instance().isPresent(), is(false));
-    assertThat(result.updated().isPresent(), is(false));
-    assertThat(result.created().isPresent(), is(true));
-  }
-
-  protected void assertOccurrenceIsUpdated(OperationResult<?, ?> result) {
+  protected void assertOccurrenceIsUpdated(EventOperationResult result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.created().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(false));
     assertThat(result.instance().isPresent(), is(true));
   }
 
-  protected void assertEventIsUpdated(OperationResult<?, ?> result) {
+  protected void assertEventIsUpdated(EventOperationResult result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.updated().isPresent(), is(true));
   }
 
-  protected void assertAnEventIsCreated(OperationResult<?, ?> result) {
+  protected void assertAnEventIsCreated(EventOperationResult result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.created().isPresent(), is(true));
   }
 
-  protected void assertEventIsDeleted(final OperationResult<?, ?> result) {
+  protected void assertEventIsDeleted(final EventOperationResult result) {
     assertThat(result.created().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(false));
     assertThat(result.instance().isPresent(), is(false));

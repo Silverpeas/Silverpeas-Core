@@ -28,40 +28,49 @@ import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 
 /**
- * An instance of a planned temporal object occurring in the timeline of a given calendar.
+ * An instance of a planned temporal object occurring in the timeline of a given calendar. The
+ * planned object is one that is plannable to a calendar; when such a temporal object is explicitly
+ * planned on a given calendar, then one or several occurrences (for recurrent temporal objects) of
+ * such a temporal object can then be generated in the calendar, each of them occupying a given
+ * range of datetime in the calendar.
+ *
  * @author mmoquillon
  */
 public interface Occurrence extends PlannedOnCalendar {
 
   /**
    * Gets the unique identifier of this occurrence of an object planned in a calendar.
+   *
    * @return the unique identifier of this occurrence.
    */
+  @Override
   String getId();
 
   /**
-   * The start date or datetime of the occurrence. It is the inclusive lower bound of the
-   * period into which this occurrence occurs in a calendar.
+   * The start date or datetime of the occurrence. It is the inclusive lower bound of the period
+   * into which this occurrence occurs in a calendar.
    * <p>
-   * If this occurrence is on all days, then gets a date.
-   * Otherwise, gets a datetime in UTC/Greenwich.
-   * on the timeline.
+   * If this occurrence is on all days, then gets a date. Otherwise, gets a datetime in
+   * UTC/Greenwich. on the timeline.
    * </p>
+   *
    * @return a temporal instance of {@link LocalDate} if the occurrence takes all the day or a
    * temporal instance of {@link OffsetDateTime} in UTC/Greenwich otherwise.
    */
+  @Override
   Temporal getStartDate();
 
   /**
-   * The end date or datetime of the occurrence. It is the exclusive upper bound of the period
-   * into which this occurrence occurs in a calendar.
+   * The end date or datetime of the occurrence. It is the exclusive upper bound of the period into
+   * which this occurrence occurs in a calendar.
    * <p>
-   * If this occurrence is on all days, then gets a date.
-   * Otherwise, gets a datetime in UTC/Greenwich.
+   * If this occurrence is on all days, then gets a date. Otherwise, gets a datetime in
+   * UTC/Greenwich.
    * </p>
+   *
    * @return a temporal instance of {@link LocalDate} if the occurrence takes all the day or a
    * temporal instance of {@link OffsetDateTime} in UTC/Greenwich otherwise.
    */
+  @Override
   Temporal getEndDate();
-
 }
