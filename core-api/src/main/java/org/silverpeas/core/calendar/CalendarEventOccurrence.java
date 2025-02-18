@@ -25,7 +25,6 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;

@@ -37,7 +37,7 @@ import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
+import org.silverpeas.core.calendar.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.CalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ICalendarEventImportProcessor;

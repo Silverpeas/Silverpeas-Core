@@ -24,7 +24,6 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.calendar.*;
-import org.silverpeas.core.contribution.model.Planned;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 import javax.validation.constraints.NotNull;

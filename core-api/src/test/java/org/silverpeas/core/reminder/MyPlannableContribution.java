@@ -39,6 +39,7 @@ public class MyPlannableContribution implements Contribution, PlannableOnCalenda
 
   private final ContributionIdentifier id;
   private Temporal startDate;
+  private String title = "";
 
   public MyPlannableContribution(final ContributionIdentifier identifier) {
     this.id = identifier;
@@ -76,7 +77,7 @@ public class MyPlannableContribution implements Contribution, PlannableOnCalenda
 
   @Override
   public String getTitle() {
-    return "";
+    return title;
   }
 
   @Override
@@ -106,7 +107,7 @@ public class MyPlannableContribution implements Contribution, PlannableOnCalenda
 
   @Override
   public void setTitle(final String title) {
-
+    this.title = title;
   }
 
   @Override
@@ -134,14 +135,5 @@ public class MyPlannableContribution implements Contribution, PlannableOnCalenda
     return false;
   }
 
-  @Override
-  public OperationResult<CalendarEvent, CalendarEventOccurrence> delete() {
-    return null;
-  }
-
-  @Override
-  public OperationResult<CalendarEvent, CalendarEventOccurrence> update() {
-    return null;
-  }
 }
   

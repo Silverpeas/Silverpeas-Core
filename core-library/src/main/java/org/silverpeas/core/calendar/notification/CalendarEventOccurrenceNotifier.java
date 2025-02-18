@@ -115,7 +115,7 @@ public class CalendarEventOccurrenceNotifier
           .send();
     }
 
-    if (!after.getAttendees().isSameAs(before.getAttendees())) {
+    if (after.getAttendees().isNotSameAs(before.getAttendees())) {
       // the update is about the attendees themselves
       AttendeeLifeCycleEventNotifier.notifyAttendees(event.getSubtype(), after,
           before.getAttendees(), after.getAttendees());

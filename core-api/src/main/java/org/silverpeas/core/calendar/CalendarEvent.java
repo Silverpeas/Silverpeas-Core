@@ -937,7 +937,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * yet planned.
    * @return the result of the operation. It is empty as the event is deleted.
    */
-  @Override
   public EventOperationResult delete() {
     return Transaction.performInOne(() -> {
       if (isPlanned()) {
@@ -1023,7 +1022,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * {@link IllegalStateException} exception is thrown.
    * @return the result of the update. It has the updated event.
    */
-  @Override
   public EventOperationResult update() {
     if (!isPlanned()) {
       throw new IllegalStateException(THE_EVENT + this.getId() + " is not yet planned");
@@ -1039,7 +1037,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         this.updateIntoPersistence();
         result = new EventOperationResult().withUpdated(this);
       }
-      result.updated().ifPresent(e -> notify(ResourceEvent.Type.UPDATE, previousState, e));
+      result.updated()
+          .ifPresent(e -> notify(ResourceEvent.Type.UPDATE,
+              previousState, e));
       if (!OperationContext.statesOf(IMPORT)) {
         CalendarEvent updatedEvent =
             result.created().orElseGet(() -> result.updated().orElse(null));
@@ -1487,9 +1487,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private OrElse doIfSingleOccurrence(Supplier<EventOperationResult> operation) {
     return new OrElse(operation);
   }
-
-  public static class EventOperationResult
-      extends OperationResult<CalendarEvent, CalendarEventOccurrence> {}
 
   private class OrElse {
 
