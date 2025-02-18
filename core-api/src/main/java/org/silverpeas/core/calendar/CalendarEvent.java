@@ -31,13 +31,7 @@ import org.silverpeas.core.calendar.notification.CalendarEventOccurrenceLifeCycl
 import org.silverpeas.core.calendar.notification.LifeCycleEventSubType;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.model.ContributionModel;
-import org.silverpeas.core.contribution.model.LocalizedContribution;
-import org.silverpeas.core.contribution.model.WithAttachment;
-import org.silverpeas.core.contribution.model.WithPermanentLink;
-import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.contribution.model.*;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -46,12 +40,11 @@ import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.reminder.WithReminder;
-import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.AuthorizationRequestCache;
 import org.silverpeas.core.util.ResourcePath;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -276,8 +269,8 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
       "           ) " +
       "ORDER BY instanceId, calendarId, startDate")
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
-    implements PlannableOnCalendar, Recurrent, Categorized, Prioritized, Contribution, Securable,
-    WithAttachment, WithReminder, WithPermanentLink {
+    implements PlannableOnCalendar, Recurrent, Categorized, Prioritized, WithAttachment,
+    WithReminder, WithPermanentLink {
 
   public static final String TYPE = "CalendarEvent";
   public static final String NEXT_START_DATE_TIME_MODEL_PROPERTY = "NEXT_START_DATE_TIME";
@@ -1216,12 +1209,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     });
   }
 
-  /**
-   * Gets the {@link CalendarComponent} representation of this event. Any change to the returned
-   * calendar component will change also the related event.
-   * @return a {@link CalendarComponent} instance representing this event (without the specific
-   * properties related to a calendar event).
-   */
+  @Override
   public CalendarComponent asCalendarComponent() {
     return this.component;
   }

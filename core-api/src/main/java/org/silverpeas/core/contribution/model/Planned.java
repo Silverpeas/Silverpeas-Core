@@ -27,11 +27,11 @@ package org.silverpeas.core.contribution.model;
 import org.silverpeas.core.date.Period;
 
 /**
- * An interface that indicates a resource or a contribution is plannable in the time like an event
- * or a task for example.
+ * An interface that indicates a resource or a contribution is a temporal object planned in the
+ * time. Such objects can be, for example, calendar events or tasks.
  * @author mmoquillon
  */
-public interface Plannable {
+public interface Planned {
 
   /**
    * Gets the lapse of time on which this object is spanning.

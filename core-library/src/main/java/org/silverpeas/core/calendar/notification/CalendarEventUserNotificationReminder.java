@@ -24,16 +24,16 @@
 
 package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.reminder.BackgroundReminderProcess;
 import org.silverpeas.core.reminder.DefaultContributionReminderUserNotification;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -118,7 +118,7 @@ public class CalendarEventUserNotificationReminder implements BackgroundReminder
     }
 
     @Override
-    protected void performTemplateData(final Contribution localizedContribution,
+    protected void performTemplateData(final LocalizedContribution localizedContribution,
         final SilverpeasTemplate template) {
       super.performTemplateData(localizedContribution, template);
       template.setAttribute("contributionType_" + CalendarEvent.TYPE, true);

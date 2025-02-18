@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.contribution.model.Plannable;
-
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 
 /**
- * An instance of a plannable object occurring in the timeline of a calendar.
+ * An instance of a planned temporal object occurring in the timeline of a given calendar.
  * @author mmoquillon
  */
-public interface Occurrence extends Plannable {
+public interface Occurrence extends PlannedOnCalendar {
 
   /**
    * Gets the unique identifier of this occurrence of an object planned in a calendar.
@@ -44,10 +42,11 @@ public interface Occurrence extends Plannable {
   /**
    * The start date or datetime of the occurrence. It is the inclusive lower bound of the
    * period into which this occurrence occurs in a calendar.
-   *
+   * <p>
    * If this occurrence is on all days, then gets a date.
    * Otherwise, gets a datetime in UTC/Greenwich.
    * on the timeline.
+   * </p>
    * @return a temporal instance of {@link LocalDate} if the occurrence takes all the day or a
    * temporal instance of {@link OffsetDateTime} in UTC/Greenwich otherwise.
    */
@@ -56,9 +55,10 @@ public interface Occurrence extends Plannable {
   /**
    * The end date or datetime of the occurrence. It is the exclusive upper bound of the period
    * into which this occurrence occurs in a calendar.
-   *
+   * <p>
    * If this occurrence is on all days, then gets a date.
    * Otherwise, gets a datetime in UTC/Greenwich.
+   * </p>
    * @return a temporal instance of {@link LocalDate} if the occurrence takes all the day or a
    * temporal instance of {@link OffsetDateTime} in UTC/Greenwich otherwise.
    */

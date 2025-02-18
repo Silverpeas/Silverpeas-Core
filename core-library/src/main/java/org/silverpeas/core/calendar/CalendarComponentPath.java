@@ -83,10 +83,8 @@ public class CalendarComponentPath extends ContributionPath<Contribution> {
   }
 
   private CalendarComponent asCalendarComponent(Contribution contribution) {
-    if (contribution instanceof CalendarEvent) {
-      return ((CalendarEvent) contribution).asCalendarComponent();
-    } else if (contribution instanceof CalendarEventOccurrence) {
-      return ((CalendarEventOccurrence) contribution).asCalendarComponent();
+    if (contribution instanceof PlannedOnCalendar) {
+      return ((PlannedOnCalendar) contribution).asCalendarComponent();
     }
     return null;
   }

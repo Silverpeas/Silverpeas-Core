@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar.notification;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.AttendeeSet;
-import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.calendar.PlannedOnCalendar;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
@@ -42,7 +42,7 @@ import java.util.Set;
 public class AttendeeLifeCycleEventNotifier
     extends CDIResourceEventNotifier<Attendee, AttendeeLifeCycleEvent> {
 
-  private Contribution eventOrOccurrence;
+  private PlannedOnCalendar planned;
 
   public static AttendeeLifeCycleEventNotifier get() {
     return ServiceProvider.getService(AttendeeLifeCycleEventNotifier.class);
@@ -57,7 +57,7 @@ public class AttendeeLifeCycleEventNotifier
   @Override
   protected AttendeeLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
       final Attendee... attendees) {
-    return new AttendeeLifeCycleEvent(eventOrOccurrence, type, LifeCycleEventSubType.SINGLE,
+    return new AttendeeLifeCycleEvent(planned, type, LifeCycleEventSubType.SINGLE,
         attendees);
   }
 
@@ -71,16 +71,14 @@ public class AttendeeLifeCycleEventNotifier
    */
   protected final void notifyEventOn(final ResourceEvent.Type type, LifeCycleEventSubType subType,
       Attendee... attendees) {
-    notify(new AttendeeLifeCycleEvent(eventOrOccurrence, type, subType, attendees));
+    notify(new AttendeeLifeCycleEvent(planned, type, subType, attendees));
   }
 
-
-
   public static void notifyAttendees(LifeCycleEventSubType subtype,
-      final Contribution eventOrOccurrence, AttendeeSet before,
+      final PlannedOnCalendar eventOrOccurrence, AttendeeSet before,
       AttendeeSet after) {
     AttendeeLifeCycleEventNotifier notifier = AttendeeLifeCycleEventNotifier.get();
-    notifier.eventOrOccurrence = eventOrOccurrence;
+    notifier.planned = eventOrOccurrence;
     Set<String> allIds = new HashSet<>();
     if (before != null) {
       before.forEach(a -> allIds.add(a.getId()));

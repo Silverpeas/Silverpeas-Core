@@ -31,6 +31,7 @@ import java.time.ZoneId;
 import java.time.temporal.Temporal;
 
 /**
+ * Utility functions on data of a {@link CalendarEvent}.
  * @author Yohann Chastagnier
  */
 public class CalendarEventUtil {
@@ -62,11 +63,14 @@ public class CalendarEventUtil {
   }
 
   /**
-   * Gets the given temporal according to the calendar component data.<br>
-   * If the component is on all days, no offset is applied.
+   * Gets the given temporal according to the calendar component data.
+   * If the component is on all days, no offset is applied and a {@link java.time.LocalDate} is
+   * returned.
    * @param component the component data.
    * @param temporal the temporal to format.
-   * @return the date, with offset if the component is not on all days.
+   * @return either a {@link java.time.LocalDate} if the given temporal expresses only a date or
+   * an {@link OffsetDateTime} in which the offset has been applied if the given temporal
+   * expresses a datetime.
    */
   public static Temporal getDateWithOffset(final CalendarComponent component,
       final Temporal temporal) {
@@ -74,14 +78,17 @@ public class CalendarEventUtil {
   }
 
   /**
-   * Gets the given temporal according to the calendar component data.<br>
-   * If the component is on all days, no offset is applied.
+   * Gets the given temporal according to the calendar component data.
+   * If the component is on all days, no offset is applied and a {@link java.time.LocalDate} is
+   * returned.
    * If a specific zoneId is given, then the date is set to the offset of the given zoneId
    * instead of the one linked to the calendar.
    * @param component the component data.
    * @param temporal the temporal to format.
    * @param zoneId the zoneId requested (optional).
-   * @return the date, with offset if the component is not on all days.
+   * @return either a {@link java.time.LocalDate} if the given temporal expresses only a date or
+   * an {@link OffsetDateTime} in which the offset has been applied if the given temporal
+   * expresses a datetime.
    */
   public static Temporal getDateWithOffset(final CalendarComponent component,
       final Temporal temporal, final ZoneId zoneId) {
@@ -91,7 +98,7 @@ public class CalendarEventUtil {
   }
 
   /**
-   * Formats the given temporal according to the calendar component data and given zoneId.
+   * Formats the given temporal according to the calendar component data and the given zoneId.
    * @param component the component data.
    * @param temporal the temporal to format.
    * @param zoneId the zoneId requested (optional).
