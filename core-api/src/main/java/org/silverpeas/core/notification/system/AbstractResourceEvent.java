@@ -67,7 +67,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
    * resource is expected:  the first being the resource before the update, the second being the
    * resource after the update (the result of the update).
    */
-  public AbstractResourceEvent(Type type, @NotNull T... resource) {
+  protected AbstractResourceEvent(Type type, @NotNull T... resource) {
     this.type = type;
     if (type == Type.CREATION) {
       this.transition = StateTransition.transitionBetween(null, resource[0]);
@@ -127,8 +127,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
       return false;
     }
 
-    final AbstractResourceEvent that = (AbstractResourceEvent) o;
-
+    final AbstractResourceEvent<?> that = (AbstractResourceEvent<?>) o;
     if (!transition.equals(that.transition)) {
       return false;
     }

@@ -24,10 +24,12 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.calendar.PlannedOnCalendar;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
@@ -43,6 +45,7 @@ import java.util.Collections;
  * lifecycle events.
  * @author mmoquillon
  */
+@Bean
 public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycleEvent> {
 
   /**
@@ -57,7 +60,7 @@ public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycl
     CalendarOperation operation =
         event.getSubType() == LifeCycleEventSubType.SINGLE ? CalendarOperation.ATTENDEE_REMOVING :
             CalendarOperation.SINCE_ATTENDEE_REMOVING;
-    UserNotification notification = new AttendeeNotificationBuilder(event.getEventOrOccurrence(),
+    UserNotification notification = new AttendeeNotificationBuilder(event.getPlannedObject(),
         NotifAction.UPDATE).immediately()
         .from(User.getCurrentRequester())
         .to(attendee)
@@ -84,7 +87,7 @@ public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycl
       CalendarOperation operation =
           event.getSubType() == LifeCycleEventSubType.SINGLE ? CalendarOperation.ATTENDEE_PRESENCE :
               CalendarOperation.SINCE_ATTENDEE_PRESENCE;
-      UserNotification notification = new AttendeeNotificationBuilder(event.getEventOrOccurrence(),
+      UserNotification notification = new AttendeeNotificationBuilder(event.getPlannedObject(),
           NotifAction.UPDATE).immediately()
           .from(User.getCurrentRequester())
           .to(after)
@@ -94,9 +97,8 @@ public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycl
     } else if (before.getParticipationStatus() != after.getParticipationStatus()) {
       if (after.getParticipationStatus() == Attendee.ParticipationStatus.AWAITING) {
         // notify the attendees about their participation to this new event
-        Contribution modified = event.getEventOrOccurrence();
-        boolean isRecurrent =
-            modified instanceof CalendarEventOccurrence || ((CalendarEvent) modified).isRecurrent();
+        PlannedOnCalendar modified = event.getPlannedObject();
+        boolean isRecurrent = isRecurrent(modified);
         CalendarOperation operation = isRecurrent ? CalendarOperation.SINCE_ATTENDEE_ADDING :
             CalendarOperation.ATTENDEE_ADDING;
         UserNotification notification =
@@ -111,7 +113,7 @@ public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycl
         CalendarOperation operation = event.getSubType() == LifeCycleEventSubType.SINGLE ?
             CalendarOperation.ATTENDEE_PARTICIPATION : CalendarOperation.SINCE_ATTENDEE_PARTICIPATION;
         UserNotification notification =
-            new AttendeeNotificationBuilder(event.getEventOrOccurrence(), NotifAction.UPDATE)
+            new AttendeeNotificationBuilder(event.getPlannedObject(), NotifAction.UPDATE)
                 .immediately()
                 .from(User.getCurrentRequester())
                 .to(ownerOf(after.getCalendarComponent()))
@@ -134,12 +136,16 @@ public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycl
     CalendarOperation operation =
         event.getSubType() == LifeCycleEventSubType.SINGLE ? CalendarOperation.ATTENDEE_ADDING :
             CalendarOperation.SINCE_ATTENDEE_ADDING;
-    UserNotification notification = new AttendeeNotificationBuilder(event.getEventOrOccurrence(),
+    UserNotification notification = new AttendeeNotificationBuilder(event.getPlannedObject(),
         NotifAction.UPDATE).immediately()
         .from(User.getCurrentRequester())
         .to(attendee)
         .about(operation, attendee)
         .build();
     notification.send();
+  }
+
+  private boolean isRecurrent(final PlannedOnCalendar planned) {
+    return planned instanceof CalendarEventOccurrence || ((CalendarEvent) planned).isRecurrent();
   }
 }

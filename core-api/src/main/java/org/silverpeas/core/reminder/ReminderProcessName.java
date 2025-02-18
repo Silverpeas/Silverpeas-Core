@@ -36,8 +36,8 @@ public interface ReminderProcessName {
   static ReminderProcessName getByName(final String processName) {
     return ServiceProvider.getAllServices(BackgroundReminderProcess.class)
         .stream()
-        .filter(p -> p.getName().asString().equals(processName))
         .map(BackgroundReminderProcess::getName)
+        .filter(name -> name.asString().equals(processName))
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException(
             "given process name '" + processName + "'does not exist"));

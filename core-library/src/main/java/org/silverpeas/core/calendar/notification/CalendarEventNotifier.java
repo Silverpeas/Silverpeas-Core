@@ -24,6 +24,8 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -35,6 +37,7 @@ import java.util.List;
  * Notifier to the attendees of a calendar event about a change in the lifecycle of this event.
  * @author mmoquillon
  */
+@Bean
 public class CalendarEventNotifier
     extends AbstractNotifier<CalendarEventLifeCycleEvent> {
 

@@ -48,6 +48,7 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
@@ -56,6 +57,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
  * single occurrence or since this occurrence up to the end of the event recurrence.
  * @author mmoquillon
  */
+@Bean
 public class CalendarEventOccurrenceNotifier
     extends AbstractNotifier<CalendarEventOccurrenceLifeCycleEvent> {
 

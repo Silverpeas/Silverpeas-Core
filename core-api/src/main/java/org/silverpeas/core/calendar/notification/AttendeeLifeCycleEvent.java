@@ -23,10 +23,8 @@
  */
 package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.core.calendar.Attendee;
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.calendar.*;
+import org.silverpeas.core.contribution.model.Planned;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 import javax.validation.constraints.NotNull;
@@ -41,23 +39,24 @@ public class AttendeeLifeCycleEvent extends AbstractResourceEvent<Attendee> {
   private static final long serialVersionUID = -6171327955296591629L;
 
   private final LifeCycleEventSubType subType;
-  private Contribution eventOrOccurrence;
+  private final PlannedOnCalendar planned;
 
   /**
    * Constructs a new lifecycle event with the specified type and with the specified {@link
    * Attendee} instances representing each of them a state in a transition in the lifecycle of
    * an attendee.
-   * @param eventOrOccurrence the contribution in relation with the action.
+   * @param planned the planned object in relation with the action on the attendee. It is about
+   * the attendance on this planned object.
    * @param type the type of the event in the lifecycle of an attendee.
    * @param subType the subtype of the lifecycle transition.
    * @param attendees the different states of an attendee concerned by the event in its lifecycle.
    */
-  public AttendeeLifeCycleEvent(final Contribution eventOrOccurrence, final Type type,
+  public AttendeeLifeCycleEvent(final PlannedOnCalendar planned, final Type type,
       final LifeCycleEventSubType subType,
       @NotNull final Attendee... attendees) {
     super(type, attendees);
     this.subType = subType;
-    this.eventOrOccurrence = eventOrOccurrence;
+    this.planned = planned;
   }
 
   public LifeCycleEventSubType getSubType() {
@@ -65,10 +64,11 @@ public class AttendeeLifeCycleEvent extends AbstractResourceEvent<Attendee> {
   }
 
   /**
-   * Gets the event or occurrence related to the notification.
-   * @return the contribution which is a {@link CalendarEvent} or a {@link CalendarEventOccurrence}.
+   * Gets the planned object on a calendar.
+   * @return the planned object which is either a {@link CalendarEvent} or a
+   * {@link CalendarEventOccurrence}.
    */
-  public Contribution getEventOrOccurrence() {
-    return eventOrOccurrence;
+  public PlannedOnCalendar getPlannedObject() {
+    return planned;
   }
 }
