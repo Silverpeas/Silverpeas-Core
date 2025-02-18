@@ -607,6 +607,7 @@ public class NodeDAO extends AbstractDAO {
       nd.setRightsDependsOn(String.valueOf(rightsDependsOn));
       return (nd);
     } catch (ParseException e) {
+      SilverLogger.getLogger(this).error("Error in resultSet2NodeDetail: NodePK={0}",pk,e);
       throw new NodeRuntimeException("The creation date of the node isn't correctly formatted!");
     }
   }
