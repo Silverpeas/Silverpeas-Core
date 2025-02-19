@@ -35,7 +35,8 @@ import java.time.temporal.Temporal;
  * @author Yohann Chastagnier
  */
 public final class WebMessager {
-  private final static WebMessager webMessager = new WebMessager();
+
+  private static final WebMessager webMessager = new WebMessager();
 
   public static WebMessager getInstance() {
     return webMessager;

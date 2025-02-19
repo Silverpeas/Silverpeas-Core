@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -71,6 +72,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
   }
 
   @Override
+  @NonNull
   public Iterator<Attendee> iterator() {
     return attendees.iterator();
   }
@@ -138,12 +140,11 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
 
   /**
    * Removes from the attendees in this calendar component the specified one.
+   *
    * @param attendee the attendee to remove.
-   * @return the updated attendees in this calendar component.
    */
-  AttendeeSet remove(final Attendee attendee) {
+  void remove(final Attendee attendee) {
     attendees.remove(attendee);
-    return this;
   }
 
   /**
@@ -198,7 +199,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
 
   @Override
   public boolean equals(final Object obj) {
-    return obj == this || obj != null && obj instanceof AttendeeSet &&
+    return obj == this || obj instanceof AttendeeSet &&
         attendees.equals(((AttendeeSet) obj).attendees);
   }
 
@@ -224,7 +225,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
     }
     for (Attendee attendee : this.attendees) {
       Optional<Attendee> other = attendees.get(attendee.getId());
-      if (!other.isPresent()) {
+      if (other.isEmpty()) {
         return false;
       }
       Attendee otherAttendee = other.get();
@@ -239,6 +240,18 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
       }
     }
     return true;
+  }
+
+  /**
+   * Is this set of attendees isn't same as the specified one? It is the opposite of
+   * {@link #isSameAs(AttendeeSet)}
+   *
+   * @param attendees the attendees to compare with.
+   * @return true if the two set of attendees are equal and have the same state.
+   * @see #isSameAs(AttendeeSet)
+   */
+  public boolean isNotSameAs(final AttendeeSet attendees) {
+    return !isSameAs(attendees);
   }
 
   /**
@@ -264,16 +277,27 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
   }
 
   /**
+   * Copies all the attendees of this set into the specified other set of attendees. The copied
+   * attendees will be for the calendar component underlying to the given {@link AttendeeSet}.
+   * @param otherAttendees a set of attendees into which the attendees in this set will be added.
+   * The added attendees are a copy of the attendees in this set.
+   */
+  void copyTo(AttendeeSet otherAttendees) {
+    this.attendees.stream()
+        .map(Attendee::copy)
+        .forEach(otherAttendees::add);
+  }
+
+  /**
    * Add the specified attendee in the attendees in this calendar component. If the attendee
    * participates in another calendar component, then its participation changes as now he will
    * participate in the underlying calendar component.
+   *
    * @param attendee the attendee to add.
-   * @return the updated attendees in this calendar component.
    */
-  AttendeeSet add(final Attendee attendee) {
+  void add(final Attendee attendee) {
     attendee.setCalendarComponent(this.component);
     attendees.add(attendee);
-    return this;
   }
 
   AttendeeSet withCalendarComponent(final CalendarComponent component) {

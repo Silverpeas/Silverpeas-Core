@@ -24,7 +24,6 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.importexport.ImportDescriptor;
@@ -188,7 +187,8 @@ public class ICalendarEventImportProcessor {
         }
         final EventOperationResult result = importEventOnly(calendar, event);
         if (!occurrences.isEmpty()) {
-          CalendarEvent resultEvent = Objects.requireNonNull(EventImportResult.eventFrom(result));
+          CalendarEvent resultEvent =
+              Objects.requireNonNull(EventImportResult.eventFrom(result));
           EventOperationResult occurrenceImportResult =
               importOccurrencesOnly(resultEvent, occurrences);
           adjustOccurrenceImportResult(occurrenceImportResult, result);

@@ -25,7 +25,7 @@
 package org.silverpeas.core.calendar.notification.user;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.calendar.PlannedOnCalendar;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.builder.AbstractContributionTemplateUserNotificationBuilder;
@@ -35,21 +35,21 @@ import org.silverpeas.core.notification.user.builder.AbstractContributionTemplat
  * <p>
  * Be aware about {@link FallbackToCoreTemplatePathBehavior}.
  * </p>
- * @param <C> a contribution implementation type
+ * @param <P> a contribution implementation type
  */
-public abstract class AbstractCalendarUserNotificationBuilder<C extends Contribution>
-    extends AbstractContributionTemplateUserNotificationBuilder<C>
+public abstract class AbstractCalendarUserNotificationBuilder<P extends PlannedOnCalendar>
+    extends AbstractContributionTemplateUserNotificationBuilder<P>
     implements FallbackToCoreTemplatePathBehavior {
 
   private final User user;
 
-  protected AbstractCalendarUserNotificationBuilder(final C contribution, final User user) {
-    super(contribution);
+  protected AbstractCalendarUserNotificationBuilder(final P planned, final User user) {
+    super(planned);
     this.user = user;
   }
 
   @Override
-  protected void perform(final C resource) {
+  protected void perform(final P resource) {
     super.perform(resource);
     getNotificationMetaData().displayReceiversInFooter();
   }
@@ -57,11 +57,6 @@ public abstract class AbstractCalendarUserNotificationBuilder<C extends Contribu
   @Override
   protected String getTemplatePath() {
     return "calendar";
-  }
-
-  @Override
-  protected String getComponentInstanceId() {
-    return getResource().getIdentifier().getComponentInstanceId();
   }
 
   @Override

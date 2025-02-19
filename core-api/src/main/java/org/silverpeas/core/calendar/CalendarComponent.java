@@ -29,14 +29,7 @@ import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -48,12 +41,13 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
  * A calendar component is a set of properties that express a common semantic for all objects
  * planned in a calendar. Those objects can be an event, a to-do, and so one and they share a
  * common set of properties that are defined in this class.
- *
+ * <p>
  * This class is dedicated to be used into an implementation composition by the more concrete
  * representations of a calendar component (like for example {@link CalendarEvent}). We recommend
  * strongly to force the update of the {@link CalendarComponent} instance when a property is
  * modified in the outer object; this is a requirement for date properties (like the recurrence
  * rule for a recurrent outer object).
+ * </p>
  * @author mmoquillon
  */
 @Entity
@@ -242,7 +236,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * @return the attendees in this calendar component.
    */
   public AttendeeSet getAttendees() {
-    return attendees.withCalendarComponent(this);
+    return attendees;
   }
 
   /**
@@ -250,16 +244,18 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * Any changes to some properties of a calendar component increment this sequence number. This
    * number is mainly dedicated with the synchronization or syndication mechanism of calendar
    * components with external calendars. Its meaning comes from the icalendar specification.
-   *
+   * <p>
    * The sequence number will be always incremented when a date property is modified (the period at
    * which the component occurs in the calendar, the recurrence rule for a recurrent component).
    * Nevertheless, it can also be incremented with the change of some other properties.
-   *
+   * </p>
+   * <p>
    * Actually the sequence number has the same meaning than the version number
    * ({@link CalendarComponent#getVersion()}) minus the sequence number can to be not incremented
    * with the change of some properties. This means than the version number matches always the
    * number of updates of the calendar component whereas the sequence number matches only a
    * subset of update of the calendar component.
+   * </p>
    * @return the revision number of this calendar component;
    */
   public long getSequence() {
@@ -300,11 +296,11 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
         // In case of import, the attendees are not modified
         AttendeeSet existingAttendees = anotherComponent.attendees;
         anotherComponent.attendees = new AttendeeSet(anotherComponent);
-        existingAttendees.forEach(a -> a.copyFor(anotherComponent));
+        existingAttendees.copyTo(anotherComponent.attendees);
       }
     } else {
       anotherComponent.attendees = new AttendeeSet(anotherComponent);
-      attendees.forEach(a -> a.copyFor(anotherComponent));
+      attendees.copyTo(anotherComponent.attendees);
     }
     return anotherComponent;
   }
@@ -369,5 +365,10 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     }
 
     return !this.getAttributes().equals(previous.getAttributes());
+  }
+
+  @PostLoad
+  private void onceLoaded() {
+    this.attendees = this.attendees.withCalendarComponent(this);
   }
 }

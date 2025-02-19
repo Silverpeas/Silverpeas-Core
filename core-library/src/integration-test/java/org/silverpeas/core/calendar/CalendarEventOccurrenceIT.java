@@ -29,7 +29,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.datasource.OperationContext;

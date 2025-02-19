@@ -378,7 +378,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
         .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE);
     assertThat(event.isPersisted(), is(false));
 
-    OperationResult<?, ?> result = event.delete();
+    EventOperationResult result = event.delete();
 
     assertEventIsDeleted(result);
     assertThat(event.isPersisted(), is(false));
@@ -395,7 +395,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
     CalendarEvent event = occurrence.getCalendarEvent();
     String eventIdBeforeDeletion = event.getId();
 
-    OperationResult<?, ?> result = event.deleteOnly(occurrence);
+    EventOperationResult result = event.deleteOnly(occurrence);
 
     assertEventIsDeleted(result);
     assertThat(calendar.event(eventIdBeforeDeletion).isPresent(), is(false));
@@ -419,7 +419,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
     assertThat(mayBeEvent.isPresent(), is(true));
     CalendarEvent event = mayBeEvent.get();
 
-    OperationResult<?, ?> result = event.delete();
+    EventOperationResult result = event.delete();
 
     assertEventIsDeleted(result);
     allAttributes = getAttributesTableLinesByEventId("ID_C_1");
@@ -441,7 +441,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
 
     LocalDate eventEndDate = ((OffsetDateTime) event.getEndDate()).toLocalDate();
     event.setPeriod(Period.between(LocalDate.parse("2016-01-12"), eventEndDate));
-    OperationResult<?, ?> result = event.update();
+    EventOperationResult result = event.update();
 
     assertEventIsOnlyUpdated(result);
     mayBeEvent = calendar.event("ID_E_3");
@@ -472,7 +472,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
 
     Calendar targetCalendar = Calendar.getById("ID_3");
     event.setCalendar(targetCalendar);
-    OperationResult<?, ?> result = event.update();
+    EventOperationResult result = event.update();
 
     assertEventIsOnlyUpdated(result);
     event = CalendarEvent.getById(testedEventId);
@@ -518,7 +518,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
 
     Calendar targetCalendar = Calendar.getById("ID_3");
     event.setCalendar(targetCalendar);
-    OperationResult<?, ?> result = event.update();
+    EventOperationResult result = event.update();
 
     assertEventIsOnlyUpdated(result);
     event = CalendarEvent.getById(testedEventId);
@@ -560,7 +560,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
 
     final String title = "An updated title";
     event.setTitle(title);
-    OperationResult<?, ?> result = event.update();
+    EventOperationResult result = event.update();
 
     assertEventIsOnlyUpdated(result);
     mayBeEvent = calendar.event("ID_E_3");
@@ -583,7 +583,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
 
     final String category = "Personal";
     event.getCategories().add(category);
-    OperationResult<?, ?> result = event.update();
+    EventOperationResult result = event.update();
 
     assertEventIsOnlyUpdated(result);
     mayBeEvent = calendar.event("ID_E_3");
@@ -606,7 +606,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
     assertThat(event.getVisibilityLevel(), not(VisibilityLevel.CONFIDENTIAL));
 
     event.withVisibilityLevel(VisibilityLevel.CONFIDENTIAL);
-    OperationResult<?, ?> result = event.update();
+    EventOperationResult result = event.update();
 
     assertEventIsOnlyUpdated(result);
     mayBeEvent = calendar.event("ID_E_3");
@@ -648,7 +648,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
     final Period newPeriod =
         Period.between(occurrence.getStartDate(), OffsetDateTime.parse("2016-01-05T10:30:00Z"));
     occurrence.setPeriod(newPeriod);
-    OperationResult<?, ?> result = event.updateOnly(occurrence);
+    EventOperationResult result = event.updateOnly(occurrence);
 
     assertEventIsOnlyUpdated(result);
     occurrences = calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();

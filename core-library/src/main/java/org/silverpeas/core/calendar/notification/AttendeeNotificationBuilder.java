@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.ExternalAttendee;
 import org.silverpeas.core.calendar.InternalAttendee;
-import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.calendar.PlannedOnCalendar;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -63,7 +63,7 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
    * @param calendarComponent the calendar component concerned by the notification.
    * @param action the action that was performed onto the event.
    */
-  AttendeeNotificationBuilder(final Contribution calendarComponent, final NotifAction action) {
+  AttendeeNotificationBuilder(final PlannedOnCalendar calendarComponent, final NotifAction action) {
     super(calendarComponent, action);
   }
 
@@ -156,11 +156,11 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
   }
 
   @Override
-  protected void performTemplateData(final Contribution contribution,
+  protected void performTemplateData(final LocalizedContribution contribution,
       final SilverpeasTemplate template) {
     super.performTemplateData(contribution, template);
     if (this.attendees != null) {
-      final String language = ((LocalizedContribution) contribution).getLanguage();
+      final String language = contribution.getLanguage();
       template.setAttribute("attendees",
           this.attendees.stream().map(Attendee::getFullName).collect(Collectors.toList()));
       if (CalendarOperation.ATTENDEE_PARTICIPATION == getOperation() ||
@@ -178,7 +178,7 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
   @Override
   public Collection<String> getUserIdsToNotify() {
     return this.recipients.stream()
-        .filter(a -> a instanceof InternalAttendee)
+        .filter(InternalAttendee.class::isInstance)
         .map(Attendee::getId)
         .collect(Collectors.toSet());
   }
@@ -186,7 +186,7 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
   @Override
   protected Collection<String> getExternalAddressesToNotify() {
     return this.recipients.stream()
-        .filter(a -> a instanceof ExternalAttendee)
+        .filter(ExternalAttendee.class::isInstance)
         .map(Attendee::getId)
         .collect(Collectors.toSet());
   }

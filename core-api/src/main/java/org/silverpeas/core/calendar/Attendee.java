@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.persistence.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * An attendee is a user that participates in a calendar component that can be an event or anything
@@ -87,15 +85,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     this.component = component;
   }
 
-  public void ifMatches(final Predicate<Attendee> filter, final Consumer<Attendee> then,
-      final Consumer<Attendee> otherwise) {
-    if (filter.test(this)) {
-      then.accept(this);
-    } else {
-      otherwise.accept(this);
-    }
-  }
-
   /**
    * The unique identifier of this attendee. It can an email address, a unique identifier of a
    * user in Silverpeas, or whatever that can be used to notify the attendee.
@@ -127,15 +116,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public ParticipationStatus getParticipationStatus() {
     return this.participationStatus;
-  }
-
-  /**
-   * Is this attendee participates in the specified calendar component?
-   * @param component a calendar component.
-   * @return true if he participates in the given calendar component, false otherwise.
-   */
-  public boolean isAttendeeIn(final CalendarComponent component) {
-    return component.getAttendees().contains(this);
   }
 
   /**
@@ -263,13 +243,11 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
-   * Copies this attendee for the specified calendar component. The copied attendee is added in
-   * the given calendar component before returning it. This method requires the concrete class
-   * extending the {@link Attendee} one implements a default constructor.
-   * @param calendarComponent a calendar component for which this attendee is cloned.
-   * @return the clone of this attendee but for the specified calendar component.
+   * Creates and returns a copy of this attendee. The returned attendee will be the same attendee
+   * as this one and as such they will be related to the same calendar component.
+   * @return an exact copy of this one.
    */
-  Attendee copyFor(CalendarComponent calendarComponent) {
+  Attendee copy() {
     Attendee copy = newEmptyAttendee();
     copy.attendeeId = attendeeId;
     copy.delegate = delegate;
@@ -277,8 +255,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     copy.presenceStatus = presenceStatus;
     copy.participationStatusAnswered = participationStatusAnswered;
     copy.presenceStatusChanged = presenceStatusChanged;
-    copy.component = calendarComponent;
-    calendarComponent.getAttendees().add(copy);
+    copy.component = component;
     return copy;
   }
 

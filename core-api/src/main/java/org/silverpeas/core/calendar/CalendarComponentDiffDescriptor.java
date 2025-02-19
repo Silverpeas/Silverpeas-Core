@@ -124,7 +124,7 @@ class CalendarComponentDiffDescriptor {
         if (attendee.isPresent()) {
           attendee.get().setPresenceStatus(a.getPresenceStatus());
         } else {
-          component.getAttendees().add(a.copyFor(component));
+          component.getAttendees().add(a.copy());
         }
       });
       dataMerged.set(true);

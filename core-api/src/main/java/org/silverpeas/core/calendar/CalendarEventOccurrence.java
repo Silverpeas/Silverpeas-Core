@@ -25,7 +25,6 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -102,7 +101,7 @@ import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityRefl
     query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event")
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
-    implements IdentifiableEntity, Occurrence, Contribution, WithReminder, WithPermanentLink {
+    implements IdentifiableEntity, Occurrence, WithReminder, WithPermanentLink {
 
   public static final String TYPE = "CalendarEventOccurrence";
 
@@ -306,6 +305,11 @@ public class CalendarEventOccurrence
    */
   public CalendarEvent getCalendarEvent() {
     return this.event;
+  }
+
+  @Override
+  public Calendar getCalendar() {
+    return getCalendarEvent().getCalendar();
   }
 
   @Override
@@ -514,12 +518,7 @@ public class CalendarEventOccurrence
     return getStartDate().toString().compareTo(occurrence.getStartDate().toString()) < 0;
   }
 
-  /**
-   * Gets the {@link CalendarComponent} representation of this occurrence. Any change to the
-   * returned calendar component will change also the related occurrence.
-   * @return a {@link CalendarComponent} instance representing this event occurrence (without the
-   * specific properties related to an event occurrence).
-   */
+  @Override
   public CalendarComponent asCalendarComponent() {
     return this.component;
   }

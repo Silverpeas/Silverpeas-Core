@@ -372,7 +372,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
         notifAction = NotifAction.UPDATE;
       }
 
-      if (!after.getAttendees().isSameAs(before.getAttendees())) {
+      if (after.getAttendees().isNotSameAs(before.getAttendees())) {
         AttendeeLifeCycleEventNotifier.notifyAttendees(LifeCycleEventSubType.SINGLE, after,
             before.getAttendees(), after.getAttendees());
       }
@@ -420,7 +420,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
         notifAction = NotifAction.UPDATE;
       }
 
-      if (!after.getAttendees().isSameAs(before.getAttendees())) {
+      if (after.getAttendees().isNotSameAs(before.getAttendees())) {
         AttendeeLifeCycleEventNotifier.notifyAttendees(LifeCycleEventSubType.SINGLE, after,
             before.getAttendees(), after.getAttendees());
       }

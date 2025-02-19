@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.model.Plannable;
+import org.silverpeas.core.contribution.model.Planned;
 import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WithThumbnail;
@@ -114,8 +114,8 @@ public class BasketItem implements SilverpeasResource, Serializable {
     if (contribution instanceof WithPermanentLink) {
       item.permalink = ((WithPermanentLink) contribution).getPermalink();
     }
-    if (contribution instanceof Plannable) {
-      item.period = PeriodOfTime.from(((Plannable) contribution).getPeriod());
+    if (contribution instanceof Planned) {
+      item.period = PeriodOfTime.from(((Planned) contribution).getPeriod());
     }
   }
 

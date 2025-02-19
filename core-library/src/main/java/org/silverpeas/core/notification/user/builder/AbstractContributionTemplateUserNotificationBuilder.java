@@ -42,11 +42,10 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
 
   private LocalizedContribution localizedContribution;
 
-  public AbstractContributionTemplateUserNotificationBuilder(final C resource) {
+  protected AbstractContributionTemplateUserNotificationBuilder(final C resource) {
     super(resource);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected final void performTemplateData(final String language, final C contribution,
       final SilverpeasTemplate template) {
@@ -58,7 +57,7 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
     template.setAttribute("contributionType_" + contributionType, contributionType);
     template.setAttribute("contributionName", Encode.forHtml(localizedContribution.getTitle()));
     template.setAttribute("senderName", getSenderName());
-    performTemplateData((C) localizedContribution, template);
+    performTemplateData(localizedContribution, template);
   }
 
   /**
@@ -83,7 +82,7 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
    * @param localizedContribution the localized contribution.
    * @param template the current localized template.
    */
-  protected void performTemplateData(final C localizedContribution,
+  protected void performTemplateData(final LocalizedContribution localizedContribution,
       final SilverpeasTemplate template) {
   }
 

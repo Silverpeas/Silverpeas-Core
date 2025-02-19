@@ -1,5 +1,5 @@
 $if(several)$
-Votre participation à tous les événements <b>$contributionName$</b> à partir du <i>$contributionDate$</i> a été retirée par $senderName$
+$senderName$ a retiré votre participation à tous les événements <b>$contributionName$</b>$if(contributionStartDate)$ à partir du <i>$contributionStartDate$</i>$endif$
 $else$
-Votre participation à l'événement <b>$contributionName$</b> du <i>$contributionDate$</i> a été retirée par $senderName$
+$senderName$ a retiré votre participation à l'événement <b>$contributionName$</b>$if(contributionStartDate)$ du <i>$contributionStartDate$</i>$if(contributionEndDate)$ jusqu'au <i>$contributionEndDate$</i>$endif$$endif$
 $endif$

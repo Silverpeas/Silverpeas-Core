@@ -25,13 +25,12 @@ package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.CalendarComponent;
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.PlannedOnCalendar;
 import org.silverpeas.core.calendar.notification.user.AbstractCalendarUserNotificationBuilder;
-import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -43,37 +42,41 @@ import static org.silverpeas.core.util.DateUtil.getDateOutputFormat;
 import static org.silverpeas.core.util.DateUtil.getHourOutputFormat;
 
 /**
- * An abstraction of all builder of notifications in a calendar component to inform the
- * recipients about some changes in the component.
+ * An abstraction of all builder of notifications in a calendar component to inform the recipients
+ * about some changes in the component.
  * <p>
  * The message in the notification is built from a {@link SilverpeasTemplate}. The Silverpeas
  * Calendar API provides a default set of such templates but they can be overridden by the templates
  * of a service using the API. To override a template, then, in the directory whose name is the
  * service's one, just define for each template to override a template with the same name that the
  * default one.
+ *
  * @author silveryocha
  */
 abstract class AbstractCalendarEventUserNotificationBuilder
-    extends AbstractCalendarUserNotificationBuilder<Contribution> {
+    extends AbstractCalendarUserNotificationBuilder<PlannedOnCalendar> {
 
-  private NotifAction notifCause;
+  private final NotifAction notificationCause;
   private CalendarOperation operation = CalendarOperation.NONE;
   private User sender;
   private boolean immediately = false;
 
   /**
    * Constructs a new builder of user notification of a calendar component.
+   *
    * @param calendarComponent the calendar component concerned by the notification.
    * @param action the action that was performed onto the event.
    */
-  AbstractCalendarEventUserNotificationBuilder(final Contribution calendarComponent, final NotifAction action) {
+  AbstractCalendarEventUserNotificationBuilder(final PlannedOnCalendar calendarComponent,
+      final NotifAction action) {
     super(calendarComponent, null);
-    this.notifCause = action;
+    this.notificationCause = action;
   }
 
   /**
-   * Sets the operation on a calendar component.
-   * Otherwise the operation should be another value from the {@link CalendarOperation} enumeration.
+   * Sets the operation on a calendar component. Otherwise the operation should be another value
+   * from the {@link CalendarOperation} enumeration.
+   *
    * @param operation the operation that was performed on the attendance of a calendar component.
    * @return itself.
    */
@@ -84,6 +87,7 @@ abstract class AbstractCalendarEventUserNotificationBuilder
 
   /**
    * Sets the sender of the user notification to build.
+   *
    * @param sender the sender of the notification.
    * @return itself.
    */
@@ -94,6 +98,7 @@ abstract class AbstractCalendarEventUserNotificationBuilder
 
   /**
    * The notification must be sent immediately whatever the wish of the user about it.
+   *
    * @return itself.
    */
   public AbstractCalendarEventUserNotificationBuilder immediately() {
@@ -107,10 +112,16 @@ abstract class AbstractCalendarEventUserNotificationBuilder
   }
 
   @Override
-  protected void performTemplateData(final Contribution contribution,
+  protected void performTemplateData(final LocalizedContribution contribution,
       final SilverpeasTemplate template) {
-    final String language = ((LocalizedContribution) contribution).getLanguage();
-    template.setAttribute("contributionDate", dateOf(getResource(), language));
+    final String language = contribution.getLanguage();
+    CalendarComponent component = getResource().asCalendarComponent();
+    if (component != null) {
+      template.setAttribute("contributionStartDate", startDateOf(component, language));
+      if (component.getPeriod().spanOverSeveralDays()) {
+        template.setAttribute("contributionEndDate", endDateOf(component, language));
+      }
+    }
     template.setAttribute("several", this.operation.isSeveralImplied());
   }
 
@@ -126,31 +137,38 @@ abstract class AbstractCalendarEventUserNotificationBuilder
 
   @Override
   protected NotifAction getAction() {
-    return this.notifCause;
+    return this.notificationCause;
   }
 
-  private String dateOf(final Object contribution, final String language) {
-    final CalendarComponent calendarComponent;
-    if (contribution instanceof CalendarEvent) {
-      calendarComponent = ((CalendarEvent) contribution).asCalendarComponent();
-    } else if (contribution instanceof CalendarEventOccurrence) {
-      calendarComponent = ((CalendarEventOccurrence) contribution).asCalendarComponent();
-    } else if (contribution instanceof CalendarComponent) {
-      calendarComponent = (CalendarComponent) contribution;
-    } else {
-      return null;
-    }
-
+  private String startDateOf(@NonNull final CalendarComponent calendarComponent,
+      @NonNull String language) {
     final Temporal startDate =
         getDateWithOffset(calendarComponent, calendarComponent.getPeriod().getStartDate());
     if (startDate instanceof LocalDate) {
-      return ((LocalDate) startDate)
-          .format(DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern()));
+      return ((LocalDate) startDate).format(
+          DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern()));
     } else {
-      return ((OffsetDateTime) startDate).format(DateTimeFormatter.ofPattern(
-          getDateOutputFormat(language).getPattern() + " " +
-              getHourOutputFormat(language).getPattern())) + " (" +
-          calendarComponent.getCalendar().getZoneId() + ")";
+      return ((OffsetDateTime) startDate).format(
+          DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern() + " " +
+              getHourOutputFormat(language).getPattern()))
+          + " (" + calendarComponent.getCalendar().getZoneId() + ")";
+    }
+  }
+
+  private String endDateOf(@NonNull CalendarComponent calendarComponent,
+      @NonNull String language) {
+    if (calendarComponent.getPeriod().isInDays()) {
+      LocalDate endDate = ((LocalDate) getDateWithOffset(calendarComponent,
+          calendarComponent.getPeriod().getEndDate())).minusDays(1);
+      return endDate.format(
+          DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern()));
+    } else {
+      OffsetDateTime endDateTime = (OffsetDateTime) getDateWithOffset(calendarComponent,
+          calendarComponent.getPeriod().getEndDate());
+      return endDateTime.format(
+          DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern() + " " +
+              getHourOutputFormat(language).getPattern()))
+          + " (" + calendarComponent.getCalendar().getZoneId() + ")";
     }
   }
 

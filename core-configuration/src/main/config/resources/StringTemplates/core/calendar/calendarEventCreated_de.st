@@ -1,5 +1,5 @@
 $if(several)$
-$senderName$ hat alle <b>$contributionName$</b> Ereignisse aus <i>$contributionDate$</i> erstellt
+$senderName$ hat allen Veranstaltungen <b>$contributionName$</b>$if(contributionStartDate)$ ab dem <i>$contributionDate$</i> erstellt$else erstellt$endif$
 $else$
-$senderName$ hat das Ereignis <b>$contributionName$</b> aus <i>$contributionDate$</i> erstellt
+$senderName$ hat die Veranstaltung <b>$contributionName$</b>$if(contributionStartDate)$$if(contributionEndDate)$ vom <i>$contributionStartDate$</i> bis zum <i>$contributionEndDate$</i> erstellt$else$ für den <i>$contributionStartDate$</i> erstellt$endif$$else$ erstellt$endif$
 $endif$

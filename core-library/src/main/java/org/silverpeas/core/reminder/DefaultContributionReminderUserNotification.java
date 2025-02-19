@@ -156,10 +156,6 @@ public class DefaultContributionReminderUserNotification
         .orElseThrow(() -> new SilverpeasRuntimeException("not handled type"));
   }
 
-  protected User getReceiver() {
-    return receiver;
-  }
-
   /**
    * The title is built by {@link #getTitle()}
    * @return null value.
@@ -170,10 +166,10 @@ public class DefaultContributionReminderUserNotification
   }
 
   @Override
-  protected void performTemplateData(final Contribution localizedContribution,
+  protected void performTemplateData(final LocalizedContribution localizedContribution,
       final SilverpeasTemplate template) {
     super.performTemplateData(localizedContribution, template);
-    final String language = ((LocalizedContribution) localizedContribution).getLanguage();
+    final String language = localizedContribution.getLanguage();
     final NotificationTemporal start = new NotificationTemporal(reminderContributionStart,
         userZoneId, language);
     final NotificationTemporal end = new NotificationTemporal(reminderContributionEnd,

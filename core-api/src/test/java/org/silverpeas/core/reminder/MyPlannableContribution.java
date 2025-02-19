@@ -24,11 +24,7 @@
 package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.OperationResult;
-import org.silverpeas.core.calendar.PlannableOnCalendar;
+import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.Period;
@@ -43,6 +39,7 @@ public class MyPlannableContribution implements Contribution, PlannableOnCalenda
 
   private final ContributionIdentifier id;
   private Temporal startDate;
+  private String title = "";
 
   public MyPlannableContribution(final ContributionIdentifier identifier) {
     this.id = identifier;
@@ -80,7 +77,7 @@ public class MyPlannableContribution implements Contribution, PlannableOnCalenda
 
   @Override
   public String getTitle() {
-    return "";
+    return title;
   }
 
   @Override
@@ -110,7 +107,12 @@ public class MyPlannableContribution implements Contribution, PlannableOnCalenda
 
   @Override
   public void setTitle(final String title) {
+    this.title = title;
+  }
 
+  @Override
+  public CalendarComponent asCalendarComponent() {
+    return null;
   }
 
   @Override
@@ -133,14 +135,5 @@ public class MyPlannableContribution implements Contribution, PlannableOnCalenda
     return false;
   }
 
-  @Override
-  public OperationResult<CalendarEvent, CalendarEventOccurrence> delete() {
-    return null;
-  }
-
-  @Override
-  public OperationResult<CalendarEvent, CalendarEventOccurrence> update() {
-    return null;
-  }
 }
   

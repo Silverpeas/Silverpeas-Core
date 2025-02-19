@@ -29,7 +29,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -281,7 +280,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
     CalendarEventOccurrence occurrence = occurrences.get(0);
     CalendarEvent occurrenceEvent = occurrences.get(0).getCalendarEvent();
 
-    OperationResult<?, ?> result = occurrenceEvent.deleteOnly(occurrence);
+    EventOperationResult result = occurrenceEvent.deleteOnly(occurrence);
     assertEventIsOnlyUpdated(result);
 
     Optional<CalendarEvent> mayBeEvent = calendar.event(occurrence.getCalendarEvent().getId());
@@ -309,7 +308,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
     final CalendarEvent occurrenceEvent = occurrence.getCalendarEvent();
     assertThat(occurrenceEvent.getRecurrence().getExceptionDates(), hasSize(2));
 
-    OperationResult<?, ?> result = occurrenceEvent.deleteSince(occurrence);
+    EventOperationResult result = occurrenceEvent.deleteSince(occurrence);
     assertEventIsOnlyUpdated(result);
 
     Optional<CalendarEvent> mayBeEvent = calendar.event(occurrenceEvent.getId());
@@ -336,7 +335,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
 
     final CalendarEventOccurrence occurrence = occurrences.get(4);
     final CalendarEvent occurrenceEvent = occurrence.getCalendarEvent();
-    OperationResult<?, ?> result = occurrenceEvent.delete();
+    EventOperationResult result = occurrenceEvent.delete();
     assertEventIsDeleted(result);
 
     occurrences =
@@ -362,7 +361,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
     Optional<CalendarEvent> maybeEvent = calendar.event("ID_E_5");
     assertThat(maybeEvent.isPresent(), is(true));
     CalendarEvent event = maybeEvent.get();
-    OperationResult<?, ?> result = event.delete();
+    EventOperationResult result = event.delete();
     assertEventIsDeleted(result);
 
     allRecurrences = getRecurrenceTableLines();
@@ -393,7 +392,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
     Optional<CalendarEvent> maybeEvent = calendar.event("ID_E_6");
     assertThat(maybeEvent.isPresent(), is(true));
     CalendarEvent event = maybeEvent.get();
-    OperationResult<?, ?> result = event.delete();
+    EventOperationResult result = event.delete();
     assertEventIsDeleted(result);
 
     allRecurrences = getRecurrenceTableLines();
@@ -418,7 +417,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
     assertThat(event.getRecurrence().getRecurrenceCount(), is(8));
 
     event.recur(Recurrence.every(1, DAY).until(5));
-    OperationResult<?, ?> result = event.update();
+    EventOperationResult result = event.update();
     assertEventIsOnlyUpdated(result);
 
     maybeEvent = calendar.event("ID_E_5");
@@ -450,7 +449,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
         containsInAnyOrder(LocalDate.parse("2016-01-30"), LocalDate.parse("2016-01-16")));
 
     occurrence.setDay(LocalDate.of(2016, 1, 24));
-    OperationResult<?, ?> result = event.updateOnly(occurrence);
+    EventOperationResult result = event.updateOnly(occurrence);
     assertOccurrenceIsUpdated(result);
 
     occurrences = calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 28))
@@ -481,7 +480,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
 
     final String newDescription = "ANOTHER DESCRIPTION FOR THIS OCCURRENCE";
     occurrence.setDescription(newDescription);
-    OperationResult<?, ?> result = event.updateOnly(occurrence);
+    EventOperationResult result = event.updateOnly(occurrence);
     assertOccurrenceIsUpdated(result);
 
     occurrences = calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 28))
