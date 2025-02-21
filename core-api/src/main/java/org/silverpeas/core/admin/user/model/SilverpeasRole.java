@@ -98,8 +98,8 @@ public enum SilverpeasRole {
    * by jackson APIs, whereas RestEasy is looking at a static method called like this method.<br/>
    * So, this method is compatible with both mechanisms</p>
    * @param name the name of a predefined user role in Silverpeas.
-   * @return the {@link SilverpeasRole} instance having as name the specified role name or null if
-   * no such role exists.
+   * @return the {@link SilverpeasRole} instance having as name the specified role name or
+   * {@link SilverpeasRole#NONE} if no such role exists.
    */
   @JsonCreator
   public static SilverpeasRole fromString(String name) {
