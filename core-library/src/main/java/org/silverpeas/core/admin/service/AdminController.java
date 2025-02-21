@@ -65,6 +65,10 @@ public class AdminController implements java.io.Serializable {
 
   }
 
+  public void reloadCaches() {
+    admin.reloadCache();
+  }
+
   /** Return the space Instance corresponding to the given space id */
   public SpaceInst getSpaceInstById(String sSpaceId) {
 

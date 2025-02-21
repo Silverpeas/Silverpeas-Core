@@ -525,7 +525,7 @@ out.println(window.printBefore());
           <view:arrayLine>
             <c:set var="groupLink"><a href="javascript:openGroup('${userGroup.id}')" rel="/JobDomainPeasItemPathServlet?GroupId=${userGroup.id}">${userGroup.name}</a></c:set>
             <view:arrayCellText text="${groupLink}"/>
-            <view:arrayCellText text="${userGroup.nbUsers}"/>
+            <view:arrayCellText text="${userGroup.directUsersCount}"/>
             <view:arrayCellText text="${userGroup.description}"/>
           </view:arrayLine>
         </c:forEach>
@@ -545,7 +545,7 @@ out.println(window.printBefore());
           <view:arrayLine>
             <c:set var="groupLink"><a href="javascript:openGroup('${userGroup.id}')" rel="/JobDomainPeasItemPathServlet?GroupId=${userGroup.id}">${userGroup.name}</a></c:set>
             <view:arrayCellText text="${groupLink}"/>
-            <view:arrayCellText text="${userGroup.nbUsers}"/>
+            <view:arrayCellText text="${userGroup.directUsersCount}"/>
             <view:arrayCellText text="${userGroup.description}"/>
           </view:arrayLine>
         </c:forEach>
