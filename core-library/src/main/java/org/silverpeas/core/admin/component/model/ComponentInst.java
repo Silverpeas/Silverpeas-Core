@@ -433,13 +433,6 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return updater;
   }
 
-  public User getRemover() {
-    if (remover == null && isDefined(removerUserId)) {
-      remover = UserDetail.getById(removerUserId);
-    }
-    return remover;
-  }
-
   public void removeInheritedProfiles() {
     profiles.removeIf(ProfileInst::isInherited);
   }
@@ -461,10 +454,6 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   @Override
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, getId());
-  }
-
-  public String getInternalLink() {
-    return URLUtil.getURL(getName(), "", getId()) + "Main";
   }
 
   @Override

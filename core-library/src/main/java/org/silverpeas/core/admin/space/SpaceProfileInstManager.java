@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.space;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.space.notification.SpaceProfileInstEventNotifier;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.dao.SpaceRoleDAO;
@@ -46,6 +47,7 @@ import java.util.Set;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.notification.system.ResourceEvent.Type.*;
 
 @Service
 @Singleton
@@ -58,6 +60,8 @@ public class SpaceProfileInstManager {
   private OrganizationSchema organizationSchema;
   @Inject
   private SpaceRoleDAO spaceRoleDAO;
+  @Inject
+  private SpaceProfileInstEventNotifier notifier;
 
   /**
    * Constructor
@@ -67,9 +71,11 @@ public class SpaceProfileInstManager {
 
   /**
    * Get all the space profile Ids for the given user
-   * @param sUserId
-   * @return spaceProfile ids
-   * @throws AdminException
+   *
+   * @param sUserId the unique identifier of the user.
+   * @return an array with the unique identifiers of {@link SpaceProfileInst} in which is defined
+   * the user.
+   * @throws AdminException if an error occurs.
    */
   public String[] getSpaceProfileIdsOfUserType(String sUserId)
       throws AdminException {
@@ -92,9 +98,11 @@ public class SpaceProfileInstManager {
 
   /**
    * Get all the space profile Ids for the given group
-   * @param groupId
-   * @return spaceProfile ids
-   * @throws AdminException
+   *
+   * @param groupId the unique identifier of a user group.
+   * @return an array with the unique identifiers of {@link SpaceProfileInst} in which is defined
+   * the user group.
+   * @throws AdminException if an error occurs.
    */
   public String[] getSpaceProfileIdsOfGroupType(String groupId)
       throws AdminException {
@@ -117,7 +125,8 @@ public class SpaceProfileInstManager {
   public List<String> getSpaceProfileNamesOfUser(final String userId, final List<String> groupIds,
       final int spaceLocalId) throws AdminException {
     try (final Connection con = DBUtil.openConnection()) {
-      return spaceRoleDAO.getSpaceRoles(con, groupIds, Integer.parseInt(userId), singleton(spaceLocalId)).stream()
+      return spaceRoleDAO.getSpaceRoles(con, groupIds, Integer.parseInt(userId),
+              singleton(spaceLocalId)).stream()
           .map(SpaceUserRoleRow::getRoleName)
           .distinct()
           .collect(toList());
@@ -139,13 +148,12 @@ public class SpaceProfileInstManager {
   }
 
   /**
-   * Create a new space profile instance in database
+   * Create a new space profile instance in database.
    *
-   *
-   * @param spaceProfileInst
-   * @param parentSpaceLocalId
-   * @return
-   * @throws AdminException
+   * @param spaceProfileInst the {@link SpaceProfileInst} to serialize.
+   * @param parentSpaceLocalId the local identifier of the space for which the profile is created.
+   * @return the unique identifier of the serialized {@link SpaceProfileInst}.
+   * @throws AdminException if the creation fails.
    */
   public String createSpaceProfileInst(SpaceProfileInst spaceProfileInst, int parentSpaceLocalId)
       throws AdminException {
@@ -167,6 +175,8 @@ public class SpaceProfileInstManager {
         organizationSchema.spaceUserRole().addUserInSpaceUserRole(idAsInt(userId),
             idAsInt(spaceProfileNodeId));
       }
+
+      notifier.notifyEventOn(CREATION, spaceProfileInst);
       return spaceProfileNodeId;
     } catch (Exception e) {
       throw new AdminException(failureOnAdding(SPACE_PROFILE, spaceProfileInst.getName()), e);
@@ -175,8 +185,10 @@ public class SpaceProfileInstManager {
 
   /**
    * Get Space profile information with given id and creates a new SpaceProfileInst
+   *
    * @param spaceProfileId identifier for the space profile.
-   * @param includeRemovedUsersAndGroups true to take into account removed groups and removed users.
+   * @param includeRemovedUsersAndGroups true to take into account removed groups and removed
+   * users.
    * @return the corresponding {@link SpaceProfileInst} if any, null otherwise.
    * @throws AdminException if an error occurred.
    */
@@ -199,13 +211,6 @@ public class SpaceProfileInstManager {
     }
   }
 
-  /**
-   * get information for given id and store it in the given SpaceProfileInst object
-   *
-   * @param spaceLocalId
-   * @param roleName
-   * @throws AdminException
-   */
   public SpaceProfileInst getInheritedSpaceProfileInstByName(int spaceLocalId, String roleName)
       throws AdminException {
     return getSpaceProfileInst(spaceLocalId, roleName, true);
@@ -241,8 +246,9 @@ public class SpaceProfileInstManager {
 
   private void setUsersAndGroups(SpaceProfileInst spaceProfileInst,
       final boolean includeRemovedUsersAndGroups) throws AdminException {
-    List<String> groupIds = GroupManager.get().getDirectGroupIdsInSpaceRole(spaceProfileInst.getId(),
-        includeRemovedUsersAndGroups);
+    List<String> groupIds =
+        GroupManager.get().getDirectGroupIdsInSpaceRole(spaceProfileInst.getId(),
+            includeRemovedUsersAndGroups);
     spaceProfileInst.setGroups(groupIds);
 
     List<String> userIds = UserManager.get().getDirectUserIdsInSpaceRole(spaceProfileInst.getId(),
@@ -265,38 +271,29 @@ public class SpaceProfileInstManager {
   }
 
   /**
-   * Deletes space profile instance from Silverpeas
+   * Deletes the given space profile instance from Silverpeas.
    *
-   * @param spaceProfileInst
-   * @throws AdminException
+   * @param spaceProfileInst the {@link SpaceProfileInst} to delete.
+   * @throws AdminException if the deletion fails.
    */
   public void deleteSpaceProfileInst(SpaceProfileInst spaceProfileInst) throws AdminException {
     try {
       // delete the spaceProfile node
       organizationSchema.spaceUserRole().removeSpaceUserRole(idAsInt(spaceProfileInst
           .getId()));
+      notifier.notifyEventOn(DELETION, spaceProfileInst);
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(SPACE_PROFILE, spaceProfileInst.getId()), e);
     }
   }
 
-  public void removeUserFromSpaceProfileInst(String userId, String spaceProdileId)
-      throws AdminException {
-    try {
-      organizationSchema.spaceUserRole().removeUserFromSpaceUserRole(idAsInt(userId),
-          idAsInt(spaceProdileId));
-    } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("user from space profile", spaceProdileId), e);
-    }
-  }
-
   /**
-   * Updates space profile instance
+   * Updates the given space profile instance with the specified one.
    *
-   * @param spaceProfileInst
-   * @param spaceProfileInstNew
-   * @return
-   * @throws AdminException
+   * @param spaceProfileInst the existing {@link SpaceProfileInst}
+   * @param spaceProfileInstNew the new {@link SpaceProfileInst} state.
+   * @return the unique identifier of the updated {@link SpaceProfileInst}.
+   * @throws AdminException if the update fails.
    */
   public String updateSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       SpaceProfileInst spaceProfileInstNew)
@@ -354,6 +351,8 @@ public class SpaceProfileInstManager {
       SpaceUserRoleRow changedSpaceUserRole = SpaceUserRoleRow.from(spaceProfileInstNew);
       changedSpaceUserRole.setId(idAsInt(spaceProfileInstNew.getId()));
       organizationSchema.spaceUserRole().updateSpaceUserRole(changedSpaceUserRole);
+
+      notifier.notifyEventOn(UPDATE, spaceProfileInst, spaceProfileInstNew);
 
       return idAsString(changedSpaceUserRole.getId());
     } catch (Exception e) {
