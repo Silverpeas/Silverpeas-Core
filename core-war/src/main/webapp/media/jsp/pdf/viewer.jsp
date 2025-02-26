@@ -95,6 +95,7 @@
       viewerAppOptions.set("disableHistory", true);
       viewerAppOptions.set("textLayerMode", ${downloadEnabled} ? 1 : 0);
       viewerAppOptions.set("verbosity", 0);
+      viewerAppOptions.set("sidebarViewOnLoad", 0);
       const viewerConfig = e.detail.viewerConfiguration;
       <c:if test="${not downloadEnabled}">
       viewerConfig.toolbar.download.remove();
