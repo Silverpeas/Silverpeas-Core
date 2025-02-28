@@ -41,7 +41,7 @@ public class PersonalizationSpaceEventListener extends CDIResourceEventListener<
   private PersonalizationService service;
 
   @Override
-  public void onRemoving(final SpaceEvent event) throws Exception {
+  public void onRemoving(final SpaceEvent event) {
     SpaceInst space = event.getTransition().getBefore();
     service.resetDefaultSpace(space.getId());
   }

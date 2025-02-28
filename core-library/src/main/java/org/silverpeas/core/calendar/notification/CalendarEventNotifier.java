@@ -100,7 +100,7 @@ public class CalendarEventNotifier
   }
 
   @Override
-  public void onDeletion(final CalendarEventLifeCycleEvent event) throws Exception {
+  public void onDeletion(final CalendarEventLifeCycleEvent event) {
     final CalendarEvent deleted = event.getTransition().getBefore();
     final CalendarOperation operation = deleted.isRecurrent()
         ? CalendarOperation.SINCE_EVENT_DELETION

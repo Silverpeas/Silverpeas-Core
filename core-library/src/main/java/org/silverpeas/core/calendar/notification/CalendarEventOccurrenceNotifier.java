@@ -62,7 +62,7 @@ public class CalendarEventOccurrenceNotifier
     extends AbstractNotifier<CalendarEventOccurrenceLifeCycleEvent> {
 
   @Override
-  public void onDeletion(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
+  public void onDeletion(final CalendarEventOccurrenceLifeCycleEvent event) {
     final CalendarEventOccurrence deleted = event.getTransition().getBefore();
     CalendarOperation operation = CalendarOperation.EVENT_DELETION;
     if (event.getSubtype() == LifeCycleEventSubType.SINCE) {

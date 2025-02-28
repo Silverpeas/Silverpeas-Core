@@ -32,6 +32,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.client.model.NotifDefaultAddressRow;
 import org.silverpeas.core.notification.user.client.model.NotifDefaultAddressTable;
 import org.silverpeas.core.notification.user.client.model.NotificationSchema;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
@@ -53,28 +54,32 @@ public class NotificationUserEventListener extends CDIResourceEventListener<User
 
   @Override
   @Transactional
-  public void onDeletion(final UserEvent event) throws Exception {
+  public void onDeletion(final UserEvent event) {
     dereferenceUserFromUserNotification(event);
   }
 
   @Transactional
-  public void dereferenceUserFromUserNotification(UserEvent event) throws SQLException {
+  public void dereferenceUserFromUserNotification(UserEvent event) {
     UserDetail user = event.getTransition().getBefore();
     int userId = Integer.parseInt(user.getId());
-    notificationSchema.notifDefaultAddress().dereferenceUserId(userId);
-    notificationSchema.notifPreference().dereferenceUserId(userId);
-    notificationSchema.notifAddress().dereferenceUserId(userId);
+    try {
+      notificationSchema.notifDefaultAddress().dereferenceUserId(userId);
+      notificationSchema.notifPreference().dereferenceUserId(userId);
+      notificationSchema.notifAddress().dereferenceUserId(userId);
+    } catch (SQLException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 
   @Override
   @Transactional
-  public void onCreation(final UserEvent event) throws Exception {
+  public void onCreation(final UserEvent event) {
     UserDetail user = event.getTransition().getAfter();
     checkNotificationChannel(user);
   }
 
   @Transactional
-  public void checkNotificationChannel(UserDetail user) throws SQLException {
+  public void checkNotificationChannel(UserDetail user) {
     // if user have no email defined, using silvermail by default
     if (StringUtil.isNotDefined(user.getEmailAddress())) {
       int silverMailChannelId = BuiltInNotifAddress.BASIC_SILVERMAIL.getId();
@@ -87,7 +92,11 @@ public class NotificationUserEventListener extends CDIResourceEventListener<User
       if (silverMailChannelAsDefault.isEmpty()) {
         NotifDefaultAddressTable ndat = notificationSchema.notifDefaultAddress();
         var newRow = new NotifDefaultAddressRow(-1, userId, silverMailChannelId);
-        ndat.create(newRow);
+        try {
+          ndat.create(newRow);
+        } catch (SQLException e) {
+          throw new SilverpeasRuntimeException(e);
+        }
       }
     }
   }

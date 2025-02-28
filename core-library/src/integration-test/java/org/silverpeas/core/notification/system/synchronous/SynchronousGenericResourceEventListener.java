@@ -41,8 +41,7 @@ public class SynchronousGenericResourceEventListener
   private GenericTestResource resource;
 
   @Override
-  public void onDeletion(final AbstractResourceEvent<? extends GenericTestResource> event)
-      throws Exception {
+  public void onDeletion(final AbstractResourceEvent<? extends GenericTestResource> event) {
     resource = event.getTransition().getBefore();
   }
 

@@ -28,10 +28,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * It is an abstract implementation of a notification event on a resource's state change. It defines
@@ -67,6 +64,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
    * resource is expected:  the first being the resource before the update, the second being the
    * resource after the update (the result of the update).
    */
+  @SafeVarargs
   protected AbstractResourceEvent(Type type, @NotNull T... resource) {
     this.type = type;
     if (type == Type.CREATION) {
@@ -128,16 +126,11 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
     }
 
     final AbstractResourceEvent<?> that = (AbstractResourceEvent<?>) o;
-    if (!transition.equals(that.transition)) {
-      return false;
-    }
-    return type == that.type;
+    return transition.equals(that.transition) && type == that.type;
   }
 
   @Override
   public int hashCode() {
-    int result = type.hashCode();
-    result = 31 * result + transition.hashCode();
-    return result;
+    return Objects.hash(this.type, this.transition);
   }
 }
