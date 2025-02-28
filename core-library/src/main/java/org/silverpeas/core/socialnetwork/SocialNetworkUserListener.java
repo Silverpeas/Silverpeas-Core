@@ -52,13 +52,13 @@ public class SocialNetworkUserListener extends CDIResourceEventListener<UserEven
   private RelationShipService relationShipService;
 
   @Override
-  public void onDeletion(final UserEvent event) throws Exception {
+  public void onDeletion(final UserEvent event) {
     UserDetail user = event.getTransition().getBefore();
     SilverLogger.getLogger(this)
         .debug("Delete all the social network data of user {0}", user.getId());
 
     List<RelationShip> relationShips =
-        relationShipService.getAllMyRelationShips(Integer.valueOf(user.getId()));
+        relationShipService.getAllMyRelationShips(Integer.parseInt(user.getId()));
     relationShips.forEach(
         relationShip -> relationShipService.removeRelationShip(relationShip.getUser1Id(),
             relationShip.getUser2Id()));

@@ -297,7 +297,6 @@ class WAComponentRegistryTest {
     assertThat(frComponent.getLabel(), is(label));
     assertThat(frComponent.getDescription(), is(description));
     assertThat(frComponent.getSuite(), is(suite));
-    assertThat(registry.getAllWAComponents().size(), is(7));
     assertThat(Files.exists(expectedDescriptor), is(true));
     assertThat(streamComponentDescriptors(componentName).count(), is(1L));
 

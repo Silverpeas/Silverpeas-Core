@@ -44,14 +44,14 @@ public abstract class AbstractProfiledResourceSubscriptionListener<R extends Ser
   private SubscriptionService subscriptionService;
 
   @Override
-  public void onDeletion(final T event) throws Exception {
+  public void onDeletion(final T event) {
     final R object = event.getTransition().getBefore();
     final SubscriptionResource resource = getSubscriptionResource(object);
     subscriptionService.unsubscribeByResource(resource);
   }
 
   @Override
-  public void onUpdate(final T event) throws Exception {
+  public void onUpdate(final T event) {
     final R object = event.getTransition().getAfter();
     final boolean isEnabled = isSubscriptionEnabled(object);
     if (!isEnabled) {

@@ -41,7 +41,7 @@ public class MyLinksUserEventListener extends CDIResourceEventListener<UserEvent
   private MyLinksService service;
 
   @Override
-  public void onDeletion(final UserEvent event) throws Exception {
+  public void onDeletion(final UserEvent event) {
     service.deleteUserData(event.getTransition().getBefore().getId());
   }
 }

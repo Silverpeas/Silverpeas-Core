@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2024 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+  <name>myComponent</name>
+  <label>
+    <message lang="fr">Gestion de ressources</message>
+    <message lang="en">Resources manager</message>
+    <message lang="de">Ressourcen-Manager</message>
+  </label>
+  <description>
+    <message lang="fr">L’application permet de gérer des ressources</message>
+    <message lang="en">This application allow to manage resources.</message>
+  </description>
+  <suite>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
+  </suite>
+  <visible>true</visible>
+  <portlet>false</portlet>
+  <profiles>
+    <profile name="manager">
+      <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
+      </label>
+      <help>
+        <message lang="fr">Les gestionnaires créent les ressources.</message>
+        <message lang="en">Managers create resources.</message>
+      </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
+    </profile>
+    <profile name="validator">
+      <label>
+        <message lang="fr">Validateurs</message>
+        <message lang="en">Validators</message>
+      </label>
+      <help>
+        <message lang="fr">Les validateurs valident les ressources.</message>
+        <message lang="en">Validators validate the resources.</message>
+      </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
+    </profile>
+    <profile name="reader">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+        <message lang="de">Leser</message>
+      </label>
+      <help>
+        <message lang="fr">Les lecteurs voient les ressources</message>
+        <message lang="en">Readers see the resources.</message>
+      </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>comments</name>
+      <label>
+        <message lang="fr">Commentaires</message>
+        <message lang="en">Comments</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">
+          Les lecteurs peuvent laisser des commentaires sur les ressources.
+        </message>
+        <message lang="en">Readers are able to post comments on resource.</message>
+      </help>
+    </parameter>
+  </parameters>
+</WAComponent>

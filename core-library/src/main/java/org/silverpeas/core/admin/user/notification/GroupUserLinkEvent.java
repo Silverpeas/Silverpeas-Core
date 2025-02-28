@@ -35,9 +35,6 @@ import java.io.Serializable;
  */
 public class GroupUserLinkEvent extends AbstractResourceEvent<GroupUserLink> {
 
-  protected GroupUserLinkEvent() {
-  }
-
   /**
    * @see AbstractResourceEvent#AbstractResourceEvent(Type, Serializable[])
    */

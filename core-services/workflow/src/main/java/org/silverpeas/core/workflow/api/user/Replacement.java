@@ -203,7 +203,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * @param replacement the attendees to compare with.
    * @return true if the given replacement is the same has the current one.
    */
-  default boolean isSameAs(Replacement<T> replacement) {
+  default boolean isSameAs(Replacement<?> replacement) {
     return Objects.equals(getIncumbent().getUserId(), replacement.getIncumbent().getUserId()) &&
         Objects.equals(getSubstitute().getUserId(), replacement.getSubstitute().getUserId()) &&
         Objects.equals(getPeriod(), replacement.getPeriod());

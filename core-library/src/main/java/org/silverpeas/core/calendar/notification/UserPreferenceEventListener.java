@@ -40,7 +40,7 @@ import org.silverpeas.core.personalization.notification.UserPreferenceEvent;
 public class UserPreferenceEventListener extends CDIResourceEventListener<UserPreferenceEvent> {
 
   @Override
-  public void onUpdate(final UserPreferenceEvent event) throws Exception {
+  public void onUpdate(final UserPreferenceEvent event) {
     UserPreferences previous = event.getTransition().getBefore();
     UserPreferences current = event.getTransition().getAfter();
     if (!previous.getZoneId().equals(current.getZoneId())) {

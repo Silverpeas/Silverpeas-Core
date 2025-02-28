@@ -12,7 +12,7 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 public class PublicationTemplateUserEventListener extends CDIResourceEventListener<UserEvent> {
 
   @Override
-  public void onDeletion(final UserEvent event) throws Exception {
+  public void onDeletion(final UserEvent event) {
     UserDetail detail = event.getTransition().getBefore();
     PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
     templateManager.deleteDirectoryData(detail.getId());

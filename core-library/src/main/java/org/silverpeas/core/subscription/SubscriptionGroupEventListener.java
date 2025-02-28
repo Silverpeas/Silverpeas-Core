@@ -40,7 +40,7 @@ public class SubscriptionGroupEventListener extends CDIResourceEventListener<Gro
   private SubscriptionService subscriptionService;
 
   @Override
-  public void onDeletion(final GroupEvent event) throws Exception {
+  public void onDeletion(final GroupEvent event) {
     subscriptionService.unsubscribeBySubscriber(
         GroupSubscriptionSubscriber.from(event.getTransition().getBefore().getId()));
   }

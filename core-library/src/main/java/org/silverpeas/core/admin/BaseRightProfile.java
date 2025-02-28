@@ -27,6 +27,7 @@ package org.silverpeas.core.admin;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author mmoquillon
@@ -274,6 +275,18 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
    */
   public boolean isEmpty() {
     return this.groups.isEmpty() && this.users.isEmpty();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    BaseRightProfile that = (BaseRightProfile) o;
+    return Objects.equals(id, that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id);
   }
 }
   

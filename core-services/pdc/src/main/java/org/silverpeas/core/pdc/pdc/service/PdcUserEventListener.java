@@ -26,6 +26,8 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.admin.user.notification.UserEvent;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 
@@ -39,7 +41,11 @@ public class PdcUserEventListener extends CDIResourceEventListener<UserEvent> {
   private PdcManager pdcManager;
 
   @Override
-  public void onDeletion(final UserEvent event) throws Exception {
-    pdcManager.deleteManager(event.getTransition().getBefore().getId());
+  public void onDeletion(final UserEvent event) {
+    try {
+      pdcManager.deleteManager(event.getTransition().getBefore().getId());
+    } catch (PdcException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 }

@@ -42,7 +42,7 @@ public class PublicationSharingListener extends CDIResourceEventListener<Publica
   private SharingTicketService service;
 
   @Override
-  public void onDeletion(final PublicationEvent event) throws Exception {
+  public void onDeletion(final PublicationEvent event) {
     String id = event.getTransition().getBefore().getId();
     service.deleteTicketsForSharedObject(Long.parseLong(id), Ticket.PUBLICATION_TYPE);
   }
