@@ -54,7 +54,7 @@ public class SubscriptionPublicationEventListener
     extends AbstractProfiledResourceSubscriptionListener<PublicationDetail, PublicationEvent> {
 
   @Override
-  public void onDeletion(final PublicationEvent event) throws Exception {
+  public void onDeletion(final PublicationEvent event) {
     final PublicationDetail publication = event.getTransition().getBefore();
     final List<SubscriptionResource> toDelete = getSubscriptionService()
         .getByResource(PublicationAliasSubscriptionResource.from(new PublicationPK(publication.getId())))
@@ -67,7 +67,7 @@ public class SubscriptionPublicationEventListener
   }
 
   @Override
-  public void onUpdate(final PublicationEvent event) throws Exception {
+  public void onUpdate(final PublicationEvent event) {
     final PublicationDetail publication = event.getTransition().getBefore();
     OrganizationController.get().getComponentInstance(publication.getInstanceId())
         .filter(SilverpeasComponentInstance::isTopicTracker)

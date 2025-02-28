@@ -41,8 +41,8 @@ import static javax.enterprise.event.TransactionPhase.AFTER_SUCCESS;
  * some of the following methods to transparently receive the events on which they are interested:
  * </p>
  * <p>
- * If the observation is performed into a transaction, all the events are performed just after a
- * successful commit.
+ * If the observation is performed within a transaction, all the events are then just received
+ * after a successful commit.
  * </p>
  * <ul>
  *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onCreation(ResourceEvent} to
@@ -72,7 +72,7 @@ public abstract class CDIAfterSuccessfulTransactionResourceEventListener<T exten
    * @param event an event.
    * @throws Exception if the processing of the event fails.
    */
-  public void onEvent(@Observes(during = AFTER_SUCCESS) T event) throws Exception {
+  public void onEvent(@Observes(during = AFTER_SUCCESS) T event) {
     Transaction.performInNew(() -> {
       try {
         dispatchEvent(event);

@@ -64,7 +64,7 @@ public abstract class CDIResourceEventListener<T extends ResourceEvent<?>>
    * @param event an event.
    * @throws Exception if the processing of the event fails.
    */
-  public void onEvent(@Observes T event) throws Exception {
+  public void onEvent(@Observes T event) {
     dispatchEvent(event);
   }
 }

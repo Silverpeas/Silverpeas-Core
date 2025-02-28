@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,36 +22,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar.notification;
+package org.silverpeas.core.admin.user.notification.role.test;
 
-import org.silverpeas.core.admin.component.model.PersonalComponent;
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.notification.UserEvent;
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.admin.user.notification.role.UserRoleEvent;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.kernel.logging.SilverLogger;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * @author Yohann Chastagnier
+ * Listener of {@link UserRoleEvent} to update the validators in the myComponent instances. This for
+ * testing the {@link UserRoleEvent} carries all the expected information to update in the component
+ * instances their data related to roles played by users in those instances.
+ *
+ * @author mmoquillon
  */
-@Bean
-public class CalendarUserEventListener extends CDIResourceEventListener<UserEvent> {
+@Service
+public class UserRoleEventListener extends CDIResourceEventListener<UserRoleEvent> {
+
+  @Inject
+  private ResourceValidators validators;
 
   @Override
-  public void onDeletion(final UserEvent event) {
-    final User deletedUser = event.getTransition().getBefore();
-    try {
-      Transaction.performInOne(() -> {
-        Calendar.getByComponentInstanceId(PersonalComponentInstance
-            .from(deletedUser, PersonalComponent.getByName("userCalendar").orElse(null)).getId())
-            .forEach(Calendar::delete);
-        return null;
-      });
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
+  public void onDeletion(UserRoleEvent event) {
+    if (event.getRole().equals("validator")) {
+      List<User> users = event.getUserIds().stream()
+          .map(User::getById)
+          .collect(Collectors.toList());
+      event.getInstanceIds().forEach(c ->
+          validators.getAll(c).stream()
+              .map(Validator::getResource)
+              .forEach(r -> users.forEach(r::removeFromValidators)));
     }
   }
 }

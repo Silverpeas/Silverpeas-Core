@@ -24,7 +24,7 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
@@ -44,17 +44,16 @@ import java.util.Collections;
  * lifecycle events.
  * @author mmoquillon
  */
-@Bean
+@Service
 public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycleEvent> {
 
   /**
    * An attendee has been removed. The attendee is informed about it (he shouldn't be the user
    * behind this attendance deletion).
    * @param event the lifecycle event on the deletion of an attendance.
-   * @throws Exception if an error occurs while notifying the attendee.
    */
   @Override
-  public void onDeletion(final AttendeeLifeCycleEvent event) throws Exception {
+  public void onDeletion(final AttendeeLifeCycleEvent event) {
     Attendee attendee = event.getTransition().getBefore();
     CalendarOperation operation =
         event.getSubType() == LifeCycleEventSubType.SINGLE ? CalendarOperation.ATTENDEE_REMOVING :
@@ -127,10 +126,9 @@ public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycl
    * An attendee has been added among the attendees. The added attendee is
    * informed about it (he shouldn't be the user behind this attendance adding).
    * @param event the lifecycle event on the adding of the attendee.
-   * @throws Exception if an error occurs while notifying the attendee.
    */
   @Override
-  public void onCreation(final AttendeeLifeCycleEvent event) throws Exception {
+  public void onCreation(final AttendeeLifeCycleEvent event) {
     Attendee attendee = event.getTransition().getAfter();
     CalendarOperation operation =
         event.getSubType() == LifeCycleEventSubType.SINGLE ? CalendarOperation.ATTENDEE_ADDING :

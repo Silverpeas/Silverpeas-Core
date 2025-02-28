@@ -42,7 +42,7 @@ public class PdcNodeEventListener extends CDIResourceEventListener<NodeEvent> {
   private PdcClassificationService service;
 
   @Override
-  public void onDeletion(final NodeEvent event) throws Exception {
+  public void onDeletion(final NodeEvent event) {
     NodePK nodePK = event.getTransition().getBefore().getNodePK();
     service.deletePreDefinedClassification(nodePK.getId(), nodePK.getInstanceId());
   }

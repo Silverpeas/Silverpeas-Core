@@ -36,7 +36,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 public class UserReminderListener extends CDIResourceEventListener<UserEvent> {
 
   @Override
-  public void onDeletion(final UserEvent event) throws Exception {
+  public void onDeletion(final UserEvent event) {
     try {
       Reminder.getByUser(event.getTransition().getBefore()).forEach(Reminder::unschedule);
     } catch (Exception e) {
