@@ -25,6 +25,7 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,13 @@ import javax.servlet.http.HttpSession;
  * Navigation case : force user to change his password.
  * @author ehugonnet
  */
-public class ForcePasswordChangeHandler extends FunctionHandler {
+@Service
+public class ForcePasswordChangeHandler extends CredentialsFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "ForcePasswordChange";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {

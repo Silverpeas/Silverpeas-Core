@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
@@ -36,7 +37,13 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Navigation case : user asks to change his expired password.
  */
+@Service
 public class ChangeExpiredPasswordHandler extends ChangePasswordFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "ChangeExpiredPassword";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -52,8 +59,7 @@ public class ChangeExpiredPasswordHandler extends ChangePasswordFunctionHandler 
       credential = AuthenticationCredential.newWithAsLogin(login)
           .withAsPassword(oldPassword)
           .withAsDomainId(domainId);
-      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-      authenticator.changePassword(credential, newPassword);
+      getAuthenticator().changePassword(credential, newPassword);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId="
           + domainId;
     } catch (AuthenticationException e) {

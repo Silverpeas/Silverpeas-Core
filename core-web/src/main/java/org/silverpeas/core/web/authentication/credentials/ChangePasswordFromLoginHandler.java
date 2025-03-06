@@ -23,13 +23,21 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user asks to change his password from login page.
  * @author ndupont
  */
-public class ChangePasswordFromLoginHandler extends FunctionHandler {
+@Service
+public class ChangePasswordFromLoginHandler extends CredentialsFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "ChangePasswordFromLogin";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {

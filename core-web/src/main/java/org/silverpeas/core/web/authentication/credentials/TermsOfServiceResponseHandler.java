@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
@@ -37,7 +38,13 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Navigation case : user accepts terms of service.
  */
-public class TermsOfServiceResponseHandler extends FunctionHandler {
+@Service
+public class TermsOfServiceResponseHandler extends CredentialsFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "TermsOfServiceResponse";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {

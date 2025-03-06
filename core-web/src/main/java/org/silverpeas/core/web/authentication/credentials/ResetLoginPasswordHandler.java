@@ -23,13 +23,20 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author ehugonnet
  */
-public class ResetLoginPasswordHandler extends FunctionHandler {
+@Service
+public class ResetLoginPasswordHandler extends CredentialsFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "ResetLoginPassword";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {

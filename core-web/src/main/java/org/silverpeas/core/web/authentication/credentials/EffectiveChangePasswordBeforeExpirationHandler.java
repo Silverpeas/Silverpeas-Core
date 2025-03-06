@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
@@ -40,7 +41,13 @@ import javax.servlet.http.HttpSession;
 /**
  * Navigation case : user has committed change password form.
  */
+@Service
 public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswordFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "EffectiveChangePasswordBeforeExpiration";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -53,16 +60,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswo
     }
     final UserDetail ud = controller.getCurrentUserDetail();
     try {
-      String login = ud.getLogin();
-      String domainId = ud.getDomainId();
-      String oldPassword = request.getParameter("oldPassword");
-      String newPassword = request.getParameter("newPassword");
-      String checkId = request.getParameter("checkId");
-      assertPasswordHasBeenCorrectlyChecked(checkId, newPassword);
-      AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
-          .withAsPassword(oldPassword).withAsDomainId(domainId);
-      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-      authenticator.changePassword(credential, newPassword);
+      changePassword(request, ud);
 
       GraphicElementFactory gef =
           (GraphicElementFactory) session

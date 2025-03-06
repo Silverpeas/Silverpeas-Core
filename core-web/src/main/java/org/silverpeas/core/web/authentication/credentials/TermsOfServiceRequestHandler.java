@@ -23,12 +23,20 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user must accept terms of service.
  */
-public class TermsOfServiceRequestHandler extends FunctionHandler {
+@Service
+public class TermsOfServiceRequestHandler extends CredentialsFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "TermsOfServiceRequest";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
