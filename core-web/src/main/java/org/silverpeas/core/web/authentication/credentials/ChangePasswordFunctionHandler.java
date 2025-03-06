@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
@@ -33,6 +34,7 @@ import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVe
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * User: Yohann Chastagnier Date: 06/02/13
@@ -41,6 +43,19 @@ public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunc
 
   @Inject
   private AuthenticationService authenticator;
+
+  /**
+   * Gets the current user behind the incoming HTTP request.
+   * @param request the HTTP request
+   * @return the requester.
+   * @throws AdminException if the user behind the HTTP request cannot be identified.
+   */
+  protected UserDetail getRequester(HttpServletRequest request) throws AdminException {
+    HttpSession session = request.getSession(true);
+    String key = (String) session.getAttribute("svplogin_Key");
+    String userId = getAdminService().identify(key, session.getId(), false, false);
+    return getAdminService().getUserDetail(userId);
+  }
 
   /**
    * Handle bad credential error.
@@ -91,6 +106,7 @@ public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunc
 
   /**
    * Changes the password of the specified user with the new one passed in the given request.
+   *
    * @param request the incoming HTTP request with the new password.
    * @param user the user requesting the password modification.
    * @return the new password of the user.

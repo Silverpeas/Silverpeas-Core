@@ -29,14 +29,13 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * Navigation case : force user to change his password.
  * @author ehugonnet
  */
 @Service
-public class ForcePasswordChangeHandler extends CredentialsFunctionHandler {
+public class ForcePasswordChangeHandler extends ChangePasswordFunctionHandler {
 
   @Override
   public String getFunction() {
@@ -45,16 +44,12 @@ public class ForcePasswordChangeHandler extends CredentialsFunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
-    HttpSession session = request.getSession(true);
-    String key = (String) session.getAttribute("svplogin_Key");
     try {
-      String userId = getAdminService().identify(key, session.getId(), false, false);
-      UserDetail ud = getAdminService().getUserDetail(userId);
+      UserDetail ud = getRequester(request);
       request.setAttribute("userDetail", ud);
       return getGeneral().getString("userLoginForcePasswordChangePage");
     } catch (AdminException e) {
-      SilverLogger.getLogger(this)
-          .error("force change password error with key {0}", new String[]{key}, e);
+      SilverLogger.getLogger(this).error("force change password error", e);
       return "/Login?ErrorCode=2";
     }
   }
