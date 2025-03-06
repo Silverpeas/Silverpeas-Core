@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
  * User: Yohann Chastagnier
  * Date: 06/02/13
  */
-public abstract class ChangeCredentialFunctionHandler extends FunctionHandler {
+public abstract class ChangeCredentialFunctionHandler extends CredentialsFunctionHandler {
 
   /**
    * Handle bad credential error.

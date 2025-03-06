@@ -23,33 +23,29 @@
  */
 package org.silverpeas.core.util;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 import org.silverpeas.core.i18n.I18NHelper;
-
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+
 /**
  * @author ehugonnet
  */
-public class MailUtil {
+public class MailSettings {
 
-  public static final String SMTP_SERVER = "SMTPServer";
-  public static final String SMTP_AUTH = "SMTPAuthentication";
-  public static final String SMTP_PORT = "SMTPPort";
-  public static final String SMTP_LOGIN = "SMTPUser";
-  public static final String SMTP_PASSWORD = "SMTPPwd";
-  public static final String SMTP_DEBUG = "SMTPDebug";
-  public static final String SMTP_SECURE = "SMTPSecure";
+  private static final String SMTP_SERVER = "SMTPServer";
+  private static final String SMTP_AUTH = "SMTPAuthentication";
+  private static final String SMTP_PORT = "SMTPPort";
+  private static final String SMTP_LOGIN = "SMTPUser";
+  private static final String SMTP_PASSWORD = "SMTPPwd";
+  private static final String SMTP_DEBUG = "SMTPDebug";
+  private static final String SMTP_SECURE = "SMTPSecure";
+
   private static final String mailhost;
   private static final boolean authenticated;
   private static final boolean secure;
@@ -60,7 +56,7 @@ public class MailUtil {
   private static final String notificationAddress;
   private static final String notificationPersonalName;
   private static final boolean forceReplyToSenderField;
-  private static Iterable<String> domains;
+  private static Set<String> domains;
   public static final SettingBundle configuration = ResourceLocator.getSettingBundle(
       "org.silverpeas.notificationserver.channel.smtp.smtpSettings");
 
@@ -90,26 +86,24 @@ public class MailUtil {
   static void reloadConfiguration(String domainsList) {
     if (StringUtil.isDefined(domainsList)) {
       String[] authorizedDomains = StringUtil.split(domainsList, ',');
-      domains = new ArrayList<String>(authorizedDomains.length);
+      domains = new HashSet<>(authorizedDomains.length);
       for (String domain : authorizedDomains) {
         if (StringUtil.isDefined(domain)) {
-          ((List<String>) domains).add(domain.trim());
+          domains.add(domain.trim());
         }
 
       }
     } else {
-      domains = Collections.singletonList("");
+      domains = Set.of();
     }
   }
 
-  public synchronized static boolean isDomainAuthorized(String email) {
+  public static synchronized boolean isDomainAuthorized(String email) {
     if (StringUtil.isDefined(email)) {
       String emailAddress = email.toLowerCase(I18NHelper.defaultLocale);
-      for (String domain : domains) {
-        if (emailAddress.endsWith(domain.toLowerCase(I18NHelper.defaultLocale))) {
-          return true;
-        }
-      }
+      return domains.isEmpty() || domains.stream()
+          .map(d -> d.toLowerCase(I18NHelper.defaultLocale))
+          .anyMatch(emailAddress::endsWith);
     }
     return false;
   }
@@ -123,12 +117,12 @@ public class MailUtil {
     //   personal name too (notificationPersonalName)
     String personal = senderAddress.equals(pFrom) ? personalName : notificationPersonalName;
     if (StringUtil.isDefined(personal)) {
-      address.setPersonal(personal, CharEncoding.UTF_8);
+      address.setPersonal(personal, Charsets.UTF_8.name());
     }
     return address;
   }
 
-  public synchronized static String getAuthorizedEmail(String email) {
+  public static synchronized String getAuthorizedEmail(String email) {
     if (isDomainAuthorized(email)) {
       return email;
     }
@@ -163,6 +157,6 @@ public class MailUtil {
     return secure;
   }
 
-  private MailUtil() {
+  private MailSettings() {
   }
 }

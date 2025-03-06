@@ -25,12 +25,11 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -39,42 +38,36 @@ import javax.servlet.http.HttpSession;
  *
  * @author ehugonnet
  */
+@Service
 public class EffectiveChangePasswordHandler extends ChangePasswordFunctionHandler {
 
-  private final AuthenticationService authenticator =
-      AuthenticationServiceProvider.getService();
-  private final ForcePasswordChangeHandler forcePasswordChangeHandler =
-      new ForcePasswordChangeHandler();
+  @Inject
+  private ForcePasswordChangeHandler forcePasswordChangeHandler;
+
+  @Override
+  public String getFunction() {
+    return "EffectiveChangePassword";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
     HttpSession session = request.getSession(true);
     String key = (String) session.getAttribute("svplogin_Key");
-
     try {
       String userId = getAdminService().identify(key, session.getId(), false, false);
       UserDetail ud = getAdminService().getUserDetail(userId);
-      return changePassword(request, ud);
+      return doPasswordChange(request, ud);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
       return forcePasswordChangeHandler.doAction(request);
     }
   }
 
-  private String changePassword(HttpServletRequest request, UserDetail ud) {
+  private String doPasswordChange(HttpServletRequest request, UserDetail ud) {
     try {
-      String login = ud.getLogin();
-      String domainId = ud.getDomainId();
-      String oldPassword = request.getParameter("oldPassword");
-      String newPassword = request.getParameter("newPassword");
-      String checkId = request.getParameter("checkId");
-      assertPasswordHasBeenCorrectlyChecked(checkId, newPassword);
-      AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
-          .withAsPassword(oldPassword).withAsDomainId(domainId);
-      authenticator.changePassword(credential, newPassword);
-
-      return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId="
-          + domainId;
+      String newPassword = changePassword(request, ud);
+      return "/AuthenticationServlet?Login=" + ud.getLogin() + "&Password=" + newPassword +
+          "&DomainId=" + ud.getDomainId();
     } catch (AuthenticationException e) {
       SilverLogger.getLogger(this).error(e);
       return performUrlChangePasswordError(request, forcePasswordChangeHandler.doAction(request),

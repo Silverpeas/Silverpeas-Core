@@ -28,7 +28,7 @@ import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.mail.ReceiverMailAddressSet;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.MailUtil;
+import org.silverpeas.core.util.MailSettings;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -49,7 +49,7 @@ import java.util.Properties;
 
 /**
  * This is the SMTP implementation of the {@link MailSender} interface.
- * This implementation uses the parameters provided by {@link MailUtil}.
+ * This implementation uses the parameters provided by {@link MailSettings}.
  * @author Yohann Chastagnier
  */
 @Service
