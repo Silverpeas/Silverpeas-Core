@@ -23,13 +23,21 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user arrives on the page which allows him to select his login question.
  * @author ehugonnet
  */
-public class ChangeQuestionHandler extends FunctionHandler {
+@Service
+public class ChangeQuestionHandler extends CredentialsFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "ChangeQuestion";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {

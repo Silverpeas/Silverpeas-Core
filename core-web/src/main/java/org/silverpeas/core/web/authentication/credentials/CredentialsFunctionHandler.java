@@ -25,34 +25,43 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.web.token.SynchronizerTokenService;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * Handler of an incoming request within an authentication process related to the credentials of the
+ * requester.
+ *
  * @author ehugonnet
  */
-public abstract class FunctionHandler {
+public abstract class CredentialsFunctionHandler {
 
-  private SettingBundle resources;
+  private final SettingBundle resources =
+      ResourceLocator.getSettingBundle("org.silverpeas.peasCore.SessionManager");
   private LocalizationBundle multilang;
-  private ForgottenPasswordMailManager forgottenPasswordMailManager;
-  private SettingBundle general
+  private final SettingBundle general
       = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
   private final SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
 
-  public FunctionHandler() {
-    resources = ResourceLocator.getSettingBundle("org.silverpeas.peasCore.SessionManager");
+  @Inject
+  private Administration admin;
+  @Inject
+  private ForgottenPasswordMailManager forgottenPasswordMailManager;
+
+  @PostConstruct
+  protected void loadSettings() {
     String language = resources.getString("language", "");
     if (!StringUtil.isDefined(language)) {
       language = "fr";
@@ -60,8 +69,9 @@ public abstract class FunctionHandler {
     multilang =
         ResourceLocator.getLocalizationBundle("org.silverpeas.peasCore.multilang.peasCoreBundle",
             language);
-    forgottenPasswordMailManager = new ForgottenPasswordMailManager();
   }
+
+  public abstract String getFunction();
 
   public abstract String doAction(HttpServletRequest request);
 
@@ -83,7 +93,8 @@ public abstract class FunctionHandler {
         0, requestUrl.indexOf(servletPath) + servletPath.length());
   }
 
-  protected String forgottenPasswordError(HttpServletRequest request, ForgottenPasswordException fpe) {
+  protected String forgottenPasswordError(HttpServletRequest request,
+      ForgottenPasswordException fpe) {
     String error = fpe.getMessage() + " - " + fpe.getExtraInfos();
     ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
     parameters.setError(error);
@@ -100,24 +111,10 @@ public abstract class FunctionHandler {
   }
 
   /**
-   * @param resources the resources to set
-   */
-  protected void setResources(SettingBundle resources) {
-    this.resources = resources;
-  }
-
-  /**
    * @return the multilang
    */
   protected LocalizationBundle getMultilang() {
     return multilang;
-  }
-
-  /**
-   * @param multilang the multilang to set
-   */
-  protected void setMultilang(LocalizationBundle multilang) {
-    this.multilang = multilang;
   }
 
   /**
@@ -128,18 +125,10 @@ public abstract class FunctionHandler {
   }
 
   /**
-   * @param forgottenPasswordMailManager the forgottenPasswordMailManager to set
-   */
-  protected void setForgottenPasswordMailManager(
-      ForgottenPasswordMailManager forgottenPasswordMailManager) {
-    this.forgottenPasswordMailManager = forgottenPasswordMailManager;
-  }
-
-  /**
    * @return the admin
    */
   protected Administration getAdminService() {
-    return AdministrationServiceProvider.getAdminService();
+    return admin;
   }
 
   /**
@@ -147,13 +136,6 @@ public abstract class FunctionHandler {
    */
   protected SettingBundle getGeneral() {
     return general;
-  }
-
-  /**
-   * @param general the general to set
-   */
-  protected void setGeneral(SettingBundle general) {
-    this.general = general;
   }
 
   public SettingBundle getAuthenticationSettings() {

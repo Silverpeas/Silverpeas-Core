@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail.engine;
 
-import org.silverpeas.core.util.MailUtil;
+import org.silverpeas.core.util.MailSettings;
 
 /**
  * SMTP configuration
@@ -43,18 +43,18 @@ public class SmtpConfiguration {
 
   /**
    * Gets an instance of {@link SmtpConfiguration} initializes with the data provided by {@link
-   * MailUtil}.
+   * MailSettings}.
    * @return a new instance of {@link SmtpConfiguration}
    */
   public static SmtpConfiguration fromDefaultSettings() {
     SmtpConfiguration smtpConfiguration = new SmtpConfiguration();
-    smtpConfiguration.setUsername(MailUtil.getLogin());
-    smtpConfiguration.setPassword(MailUtil.getPassword());
-    smtpConfiguration.setServer(MailUtil.getMailServer());
-    smtpConfiguration.setSecure(MailUtil.isSecure());
-    smtpConfiguration.setPort(MailUtil.getPort());
-    smtpConfiguration.setAuthenticate(MailUtil.isAuthenticated());
-    smtpConfiguration.setDebug(MailUtil.isDebug());
+    smtpConfiguration.setUsername(MailSettings.getLogin());
+    smtpConfiguration.setPassword(MailSettings.getPassword());
+    smtpConfiguration.setServer(MailSettings.getMailServer());
+    smtpConfiguration.setSecure(MailSettings.isSecure());
+    smtpConfiguration.setPort(MailSettings.getPort());
+    smtpConfiguration.setAuthenticate(MailSettings.isAuthenticated());
+    smtpConfiguration.setDebug(MailSettings.isDebug());
     return smtpConfiguration;
   }
 

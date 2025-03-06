@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -33,14 +34,20 @@ import javax.servlet.http.HttpServletRequest;
  * Navigation case : user validates his answer to his login question.
  * @author ehugonnet
  */
+@Service
 public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "ValidateAnswer";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
     String login = request.getParameter("Login");
     String domainId = request.getParameter("DomainId");
     String answer = request.getParameter("answer");
-    boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerEncrypted", false);
+    boolean encryptedAnswer = getAuthenticationSettings().getBoolean("loginAnswerEncrypted", false);
 
     try {
       String userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);
@@ -49,7 +56,7 @@ public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler
       request.setAttribute("userLanguage", userDetail.getUserPreferences().getLanguage());
 
       // encrypt answer if needed
-      if (answerCrypted) {
+      if (encryptedAnswer) {
         answer = CryptMD5.encrypt(answer);
       }
 

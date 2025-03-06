@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail;
 
-import org.silverpeas.core.util.MailUtil;
+import org.silverpeas.core.util.MailSettings;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.mail.internet.AddressException;
@@ -87,14 +87,14 @@ public class MailAddress {
 
   /**
    * Gets from this defined mail address the corresponding authorized {@link InternetAddress}
-   * according to the ruled defined by {@link MailUtil#getAuthorizedEmailAddress(String, String)}.
-   * @return the authorized {@link MailUtil#getAuthorizedEmailAddress(String, String)}.
+   * according to the ruled defined by {@link MailSettings#getAuthorizedEmailAddress(String, String)}.
+   * @return the authorized {@link MailSettings#getAuthorizedEmailAddress(String, String)}.
    * @throws UnsupportedEncodingException if the text encoding is not supported
    * @throws AddressException if the address isn't well formatted
    */
   public InternetAddress getAuthorizedInternetAddress()
       throws UnsupportedEncodingException, AddressException {
-    return MailUtil.getAuthorizedEmailAddress(getEmail(), getName());
+    return MailSettings.getAuthorizedEmailAddress(getEmail(), getName());
   }
 
   @SuppressWarnings("NonFinalFieldReferenceInEquals")

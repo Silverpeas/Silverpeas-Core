@@ -26,7 +26,6 @@ package org.silverpeas.core.admin.user;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -39,14 +38,15 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,8 +59,10 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 @Singleton
 public class UserRegistrationServiceLegacy implements UserRegistrationService {
 
+  @Inject
+  private Administration admin;
   private LocalizationBundle multilang = null;
-  private Random random = new Random();
+  private final Random random = new Random();
 
   @PostConstruct
   void init() {
@@ -79,8 +81,6 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
   @Override
   public String registerUser(String firstName, String lastName,
       String email, String domainId, UserAccessLevel accessLevel) throws AdminException {
-
-    Administration admin = AdministrationServiceProvider.getAdminService();
 
     // Generate user login
     String login = generateLogin(admin, domainId, email);
@@ -106,7 +106,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
       throw new AdminException(failureOnAdding("user", firstName + " " + lastName));
     }
 
-    // Update UserFull informations
+    // Update UserFull information
     UserFull uf = admin.getUserFull(userId);
     if (uf != null) {
       uf.setPasswordValid(true);
@@ -124,7 +124,6 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
 
   @Override
   public UserDetail findUser(String userId) throws AdminException {
-    Administration admin = AdministrationServiceProvider.getAdminService();
     return admin.getUserDetail(userId);
   }
 
@@ -177,7 +176,6 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
       }
       url.append(loginPage).append("?DomainId=").append(user.getDomainId());
 
-      Administration admin = AdministrationServiceProvider.getAdminService();
       Domain svpDomain = admin.getDomain(user.getDomainId());
 
       SilverpeasTemplate template = getNewTemplate();
@@ -194,7 +192,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
       notifMetaData.setSender("0");
       notifMetaData.addUserRecipients(new UserRecipient(user.getId()));
 
-      notifyUser(notifMetaData, null);
+      notifyUser(notifMetaData);
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error("cannot send notification for userId={0}", new String[]{user.getId()}, e);
@@ -205,10 +203,10 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
     return SilverpeasTemplates.createSilverpeasTemplateOnCore("socialNetwork");
   }
 
-  private void notifyUser(NotificationMetaData notifMetaData, String componentId)
+  private void notifyUser(NotificationMetaData notifMetaData)
       throws AdminException {
     try {
-      NotificationSender notifSender = new NotificationSender(componentId);
+      NotificationSender notifSender = new NotificationSender(null);
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationException e) {
       throw new AdminException("Fail to notify users", e);
@@ -218,13 +216,11 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
   @Override
   public void migrateUserToDomain(UserDetail userDetail, String targetDomainId)
       throws AdminException {
-    Administration admin = AdministrationServiceProvider.getAdminService();
     admin.migrateUser(userDetail, targetDomainId);
   }
 
   @Override
   public void updateUser(UserDetail userDetail) throws AdminException {
-    Administration admin = AdministrationServiceProvider.getAdminService();
     admin.updateUser(userDetail);
   }
 
