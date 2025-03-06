@@ -25,8 +25,6 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;

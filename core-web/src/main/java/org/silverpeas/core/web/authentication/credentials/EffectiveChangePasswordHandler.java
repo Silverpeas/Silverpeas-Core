@@ -31,7 +31,6 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * Navigation case : user has committed change password form.
@@ -51,11 +50,8 @@ public class EffectiveChangePasswordHandler extends ChangePasswordFunctionHandle
 
   @Override
   public String doAction(HttpServletRequest request) {
-    HttpSession session = request.getSession(true);
-    String key = (String) session.getAttribute("svplogin_Key");
     try {
-      String userId = getAdminService().identify(key, session.getId(), false, false);
-      UserDetail ud = getAdminService().getUserDetail(userId);
+      UserDetail ud = getRequester(request);
       return doPasswordChange(request, ud);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);

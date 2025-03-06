@@ -189,7 +189,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
       template.setAttribute("url", url.toString());
       templates.put(DisplayI18NHelper.getDefaultLanguage(), template);
       notifMetaData.addLanguage(DisplayI18NHelper.getDefaultLanguage(), subject, "");
-      notifMetaData.setSender("0");
+      notifMetaData.setSender(UserDetail.SYSTEM_USER_ID);
       notifMetaData.addUserRecipients(new UserRecipient(user.getId()));
 
       notifyUser(notifMetaData);

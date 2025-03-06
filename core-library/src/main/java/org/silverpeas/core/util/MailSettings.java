@@ -31,7 +31,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author ehugonnet
@@ -46,36 +47,16 @@ public class MailSettings {
   private static final String SMTP_DEBUG = "SMTPDebug";
   private static final String SMTP_SECURE = "SMTPSecure";
 
-  private static final String mailhost;
-  private static final boolean authenticated;
-  private static final boolean secure;
-  private static final boolean debug;
-  private static final int port;
-  private static final String login;
-  private static final String password;
-  private static final String notificationAddress;
-  private static final String notificationPersonalName;
-  private static final boolean forceReplyToSenderField;
   private static Set<String> domains;
   public static final SettingBundle configuration = ResourceLocator.getSettingBundle(
       "org.silverpeas.notificationserver.channel.smtp.smtpSettings");
 
   static {
-    mailhost = configuration.getString(SMTP_SERVER);
-    authenticated = configuration.getBoolean(SMTP_AUTH, false);
-    port = configuration.getInteger(SMTP_PORT, 25);
-    login = configuration.getString(SMTP_LOGIN);
-    password = configuration.getString(SMTP_PASSWORD);
-    debug = configuration.getBoolean(SMTP_DEBUG, false);
-    secure = configuration.getBoolean(SMTP_SECURE, false);
-    notificationAddress = configuration.getString("NotificationAddress");
-    notificationPersonalName = configuration.getString("NotificationPersonalName");
-    forceReplyToSenderField = configuration.getBoolean("ForceReplyToSenderField", false);
     reloadConfiguration(configuration.getString("AuthorizedDomains", ""));
   }
 
   public static boolean isForceReplyToSenderField() {
-    return forceReplyToSenderField;
+    return configuration.getBoolean("ForceReplyToSenderField", false);
   }
 
   /**
@@ -115,7 +96,8 @@ public class MailSettings {
     // - If email is authorized (senderAddress.equals(pFrom)), use it as it (personalName)
     // - If email is not authorized (!senderAddress.equals(pFrom)), use default one and default
     //   personal name too (notificationPersonalName)
-    String personal = senderAddress.equals(pFrom) ? personalName : notificationPersonalName;
+    String personal = senderAddress.equals(pFrom) ? personalName :
+        configuration.getString("NotificationPersonalName");
     if (StringUtil.isDefined(personal)) {
       address.setPersonal(personal, Charsets.UTF_8.name());
     }
@@ -126,35 +108,35 @@ public class MailSettings {
     if (isDomainAuthorized(email)) {
       return email;
     }
-    return notificationAddress;
+    return configuration.getString("NotificationAddress");
   }
 
   public static String getMailServer() {
-    return mailhost;
+    return configuration.getString(SMTP_SERVER);
   }
 
   public static boolean isAuthenticated() {
-    return authenticated;
+    return configuration.getBoolean(SMTP_AUTH, false);
   }
 
   public static boolean isDebug() {
-    return debug;
+    return configuration.getBoolean(SMTP_DEBUG, false);
   }
 
   public static String getLogin() {
-    return login;
+    return configuration.getString(SMTP_LOGIN);
   }
 
   public static String getPassword() {
-    return password;
+    return configuration.getString(SMTP_PASSWORD);
   }
 
   public static int getPort() {
-    return port;
+    return configuration.getInteger(SMTP_PORT, 25);
   }
 
   public static boolean isSecure() {
-    return secure;
+    return configuration.getBoolean(SMTP_SECURE, false);
   }
 
   private MailSettings() {
