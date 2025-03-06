@@ -23,23 +23,23 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.kernel.test.UnitTest;
 
 import javax.mail.internet.InternetAddress;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author ehugonnet
  */
 @UnitTest
-public class MailSettingsTest {
+class MailSettingsTest {
 
   @AfterEach
-  public void tearDown() {
+  void tearDown() {
     MailSettings.reloadConfiguration(null);
   }
 
@@ -47,7 +47,7 @@ public class MailSettingsTest {
    * Test of isDomainAuthorized method, of class MailSettings.
    */
   @Test
-  public void testIsDomainAuthorized() {
+  void testIsDomainAuthorized() {
     String email = "toto@silverpeas.com";
     boolean result = MailSettings.isDomainAuthorized(email);
     assertThat(result, is(true));
@@ -63,7 +63,7 @@ public class MailSettingsTest {
    * Test of getAuthorizedEmail method, of class MailSettings.
    */
   @Test
-  public void testGetAuthorizedEmail() {
+  void testGetAuthorizedEmail() {
     MailSettings.reloadConfiguration("Silverpeas.COM,silverpeas.org");
     String authorizedEmail = "toto@silverpeas.com";
     String result = MailSettings.getAuthorizedEmail(authorizedEmail);
@@ -77,7 +77,7 @@ public class MailSettingsTest {
    * Test of getAuthorizedEmail method, of class MailSettings.
    */
   @Test
-  public void testGetAuthorizedEmailWithNoDomain() {
+  void testGetAuthorizedEmailWithNoDomain() {
     MailSettings.reloadConfiguration(null);
     String authorizedEmail = "toto@silverpeas.com";
     String result = MailSettings.getAuthorizedEmail(authorizedEmail);
@@ -89,7 +89,7 @@ public class MailSettingsTest {
   }
 
   @Test
-  public void testGetAuthorizedEmailAddress() throws Exception {
+  void testGetAuthorizedEmailAddress() throws Exception {
     MailSettings.reloadConfiguration("Silverpeas.COM,silverpeas.org");
     String authorizedEmail = "toto@silverpeas.com";
     InternetAddress result = MailSettings.getAuthorizedEmailAddress(authorizedEmail, "Toto");
