@@ -24,7 +24,7 @@
 package org.silverpeas.core.mail;
 
 import org.silverpeas.core.mail.engine.MailSenderTask;
-import org.silverpeas.core.util.MailUtil;
+import org.silverpeas.core.util.MailSettings;
 
 import javax.mail.Multipart;
 import java.util.stream.Stream;
@@ -44,7 +44,7 @@ public class MailSending {
    * Gets a new instance of {@link MailSending} by specifying the email of the sender.
    * @param senderEmail the email of the sender. This email can be changed just before the send
    * in case it is a not authorized one
-   * (see {@link MailUtil#getAuthorizedEmailAddress(String, String)}).
+   * (see {@link MailSettings#getAuthorizedEmailAddress(String, String)}).
    * @return the new instance of {@link MailSending}.
    */
   public static MailSending from(MailAddress senderEmail) {

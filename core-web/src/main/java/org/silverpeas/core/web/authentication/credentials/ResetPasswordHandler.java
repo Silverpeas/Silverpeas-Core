@@ -25,20 +25,30 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-public class ResetPasswordHandler extends FunctionHandler {
+@Service
+public class ResetPasswordHandler extends CredentialsFunctionHandler {
 
   private static final String USER_ID_LOG_DATA = "userId=";
   private static final String LOG_CONTEXT = "CredentialsServlet.resetPasswordHandler.doAction()";
+
+  @Inject
+  private AuthenticationService authenticator;
+
+  @Override
+  public String getFunction() {
+    return "ResetPassword";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -100,7 +110,6 @@ public class ResetPasswordHandler extends FunctionHandler {
       AuthenticationCredential credential = AuthenticationCredential
           .newWithAsLogin(user.getLogin())
           .withAsDomainId(user.getDomainId());
-      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
       authenticator.resetPassword(credential, password);
     } catch (AuthenticationException e) {
       throw new ForgottenPasswordException(LOG_CONTEXT,

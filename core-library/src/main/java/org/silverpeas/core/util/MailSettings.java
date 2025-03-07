@@ -23,63 +23,40 @@
  */
 package org.silverpeas.core.util;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 import org.silverpeas.core.i18n.I18NHelper;
-
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author ehugonnet
  */
-public class MailUtil {
+public class MailSettings {
 
-  public static final String SMTP_SERVER = "SMTPServer";
-  public static final String SMTP_AUTH = "SMTPAuthentication";
-  public static final String SMTP_PORT = "SMTPPort";
-  public static final String SMTP_LOGIN = "SMTPUser";
-  public static final String SMTP_PASSWORD = "SMTPPwd";
-  public static final String SMTP_DEBUG = "SMTPDebug";
-  public static final String SMTP_SECURE = "SMTPSecure";
-  private static final String mailhost;
-  private static final boolean authenticated;
-  private static final boolean secure;
-  private static final boolean debug;
-  private static final int port;
-  private static final String login;
-  private static final String password;
-  private static final String notificationAddress;
-  private static final String notificationPersonalName;
-  private static final boolean forceReplyToSenderField;
-  private static Iterable<String> domains;
+  private static final String SMTP_SERVER = "SMTPServer";
+  private static final String SMTP_AUTH = "SMTPAuthentication";
+  private static final String SMTP_PORT = "SMTPPort";
+  private static final String SMTP_LOGIN = "SMTPUser";
+  private static final String SMTP_PASSWORD = "SMTPPwd";
+  private static final String SMTP_DEBUG = "SMTPDebug";
+  private static final String SMTP_SECURE = "SMTPSecure";
+
+  private static Set<String> domains;
   public static final SettingBundle configuration = ResourceLocator.getSettingBundle(
       "org.silverpeas.notificationserver.channel.smtp.smtpSettings");
 
   static {
-    mailhost = configuration.getString(SMTP_SERVER);
-    authenticated = configuration.getBoolean(SMTP_AUTH, false);
-    port = configuration.getInteger(SMTP_PORT, 25);
-    login = configuration.getString(SMTP_LOGIN);
-    password = configuration.getString(SMTP_PASSWORD);
-    debug = configuration.getBoolean(SMTP_DEBUG, false);
-    secure = configuration.getBoolean(SMTP_SECURE, false);
-    notificationAddress = configuration.getString("NotificationAddress");
-    notificationPersonalName = configuration.getString("NotificationPersonalName");
-    forceReplyToSenderField = configuration.getBoolean("ForceReplyToSenderField", false);
     reloadConfiguration(configuration.getString("AuthorizedDomains", ""));
   }
 
   public static boolean isForceReplyToSenderField() {
-    return forceReplyToSenderField;
+    return configuration.getBoolean("ForceReplyToSenderField", false);
   }
 
   /**
@@ -90,26 +67,24 @@ public class MailUtil {
   static void reloadConfiguration(String domainsList) {
     if (StringUtil.isDefined(domainsList)) {
       String[] authorizedDomains = StringUtil.split(domainsList, ',');
-      domains = new ArrayList<String>(authorizedDomains.length);
+      domains = new HashSet<>(authorizedDomains.length);
       for (String domain : authorizedDomains) {
         if (StringUtil.isDefined(domain)) {
-          ((List<String>) domains).add(domain.trim());
+          domains.add(domain.trim());
         }
 
       }
     } else {
-      domains = Collections.singletonList("");
+      domains = Set.of();
     }
   }
 
-  public synchronized static boolean isDomainAuthorized(String email) {
+  public static synchronized boolean isDomainAuthorized(String email) {
     if (StringUtil.isDefined(email)) {
       String emailAddress = email.toLowerCase(I18NHelper.defaultLocale);
-      for (String domain : domains) {
-        if (emailAddress.endsWith(domain.toLowerCase(I18NHelper.defaultLocale))) {
-          return true;
-        }
-      }
+      return domains.isEmpty() || domains.stream()
+          .map(d -> d.toLowerCase(I18NHelper.defaultLocale))
+          .anyMatch(emailAddress::endsWith);
     }
     return false;
   }
@@ -121,48 +96,49 @@ public class MailUtil {
     // - If email is authorized (senderAddress.equals(pFrom)), use it as it (personalName)
     // - If email is not authorized (!senderAddress.equals(pFrom)), use default one and default
     //   personal name too (notificationPersonalName)
-    String personal = senderAddress.equals(pFrom) ? personalName : notificationPersonalName;
+    String personal = senderAddress.equals(pFrom) ? personalName :
+        configuration.getString("NotificationPersonalName");
     if (StringUtil.isDefined(personal)) {
-      address.setPersonal(personal, CharEncoding.UTF_8);
+      address.setPersonal(personal, Charsets.UTF_8.name());
     }
     return address;
   }
 
-  public synchronized static String getAuthorizedEmail(String email) {
+  public static synchronized String getAuthorizedEmail(String email) {
     if (isDomainAuthorized(email)) {
       return email;
     }
-    return notificationAddress;
+    return configuration.getString("NotificationAddress");
   }
 
   public static String getMailServer() {
-    return mailhost;
+    return configuration.getString(SMTP_SERVER);
   }
 
   public static boolean isAuthenticated() {
-    return authenticated;
+    return configuration.getBoolean(SMTP_AUTH, false);
   }
 
   public static boolean isDebug() {
-    return debug;
+    return configuration.getBoolean(SMTP_DEBUG, false);
   }
 
   public static String getLogin() {
-    return login;
+    return configuration.getString(SMTP_LOGIN);
   }
 
   public static String getPassword() {
-    return password;
+    return configuration.getString(SMTP_PASSWORD);
   }
 
   public static int getPort() {
-    return port;
+    return configuration.getInteger(SMTP_PORT, 25);
   }
 
   public static boolean isSecure() {
-    return secure;
+    return configuration.getBoolean(SMTP_SECURE, false);
   }
 
-  private MailUtil() {
+  private MailSettings() {
   }
 }

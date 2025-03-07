@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,13 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author ehugonnet
  */
-public class SendMessageHandler extends FunctionHandler {
+@Service
+public class SendMessageHandler extends CredentialsFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "SendMessage";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {

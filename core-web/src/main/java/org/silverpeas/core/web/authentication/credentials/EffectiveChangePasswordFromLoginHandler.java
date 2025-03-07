@@ -23,21 +23,26 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user asks to change his password from login page.
  */
+@Service
 public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "EffectiveChangePasswordFromLogin";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -54,8 +59,7 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
       credential = AuthenticationCredential.newWithAsLogin(login)
           .withAsPassword(oldPassword)
           .withAsDomainId(domainId);
-      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-      authenticator.changePasswordAndEmail(credential, newPassword, email);
+      getAuthenticator().changePasswordAndEmail(credential, newPassword, email);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId=" +
           domainId;
     } catch (AuthenticationException e) {

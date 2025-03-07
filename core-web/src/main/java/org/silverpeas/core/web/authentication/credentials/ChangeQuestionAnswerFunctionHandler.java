@@ -34,13 +34,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public abstract class ChangeQuestionAnswerFunctionHandler extends ChangeCredentialFunctionHandler {
 
-  /**
-   * Handle bad credential error.
-   * @param request
-   * @param originalUrl
-   * @param user
-   * @return destination url
-   */
   protected String performQuestionAnswerError(HttpServletRequest request, String originalUrl,
       UserDetail user) {
     return performUrlOnBadCredentialError(request, originalUrl,

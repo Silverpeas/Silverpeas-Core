@@ -23,17 +23,20 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.web.authentication.credentials.*;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Defined;
 import org.silverpeas.kernel.logging.SilverLogger;
-import org.silverpeas.core.web.authentication.credentials.*;
+import org.silverpeas.kernel.util.StringUtil;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -51,83 +54,37 @@ import java.util.Map;
 public class CredentialsServlet extends HttpServlet {
 
   private static final long serialVersionUID = -7586840606648226466L;
-  private static final Map<String, FunctionHandler> handlers = new HashMap<>(20);
+  private static final Map<String, CredentialsFunctionHandler> handlers = new HashMap<>(20);
 
   private static final String NEW_REGISTRATION = "NewRegistration";
 
-  static {
-    initHandlers();
+  @Inject
+  private Instance<CredentialsFunctionHandler> handlerInstances;
+
+  @PostConstruct
+  void loadHandlers() {
+    handlerInstances.forEach(h ->
+        handlers.put(h.getFunction(), h)
+    );
   }
 
-  /**
-   * Load mapping between functions and associated handlers
-   */
-  private static void initHandlers() {
-    // Password change management
-    handlers.put("ForcePasswordChange", new ForcePasswordChangeHandler());
-    handlers.put("EffectiveChangePassword", new EffectiveChangePasswordHandler());
-    handlers.put("EffectiveChangePasswordBeforeExpiration",
-        new EffectiveChangePasswordBeforeExpirationHandler());
-    handlers.put("ChangeQuestion", new ChangeQuestionHandler());
-    handlers.put("ValidateQuestion", new ValidationQuestionHandler());
-    handlers.put("LoginQuestion", new LoginQuestionHandler());
-    handlers.put("ValidateAnswer", new ValidationAnswerHandler());
-    handlers.put("ChangePassword", new ChangePasswordHandler());
-    handlers.put("ChangePasswordFromLogin", new ChangePasswordFromLoginHandler());
-    handlers.put("EffectiveChangePasswordFromLogin", new EffectiveChangePasswordFromLoginHandler());
-    handlers.put("ChangeExpiredPassword", new ChangeExpiredPasswordHandler());
-    // Password reset management
-    handlers.put("ForgotPassword", new ForgotPasswordHandler());
-    handlers.put("ResetPassword", new ResetPasswordHandler());
-    handlers.put("ResetLoginPassword", new ResetLoginPasswordHandler());
-    handlers.put("SendMessage", new SendMessageHandler());
-    // User Registration
-    handlers.put(NEW_REGISTRATION, new NewRegistrationHandler());
-    handlers.put("Register", new RegisterHandler());
-    // Terms of service
-    handlers.put("TermsOfServiceRequest", new TermsOfServiceRequestHandler());
-    handlers.put("TermsOfServiceResponse", new TermsOfServiceResponseHandler());
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-   * javax.servlet.http.HttpServletResponse)
-   */
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     try {
-      String function = getFunction(request);
-      FunctionHandler handler = handlers.get(function);
+      CredentialsProcessContext context = new CredentialsProcessContext(request);
+      CredentialsFunctionHandler handler = handlers.get(context.getFunction());
       if (handler != null) {
-        User user = null;
-        String login = request.getParameter("Login");
-        String domainId = request.getParameter("DomainId");
-        String destinationPage = "";
-        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier((User) null)
-            .clearSession(request);
-        if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId) &&
-            !NEW_REGISTRATION.equals(function)) {
-          // Verify that the user can login
-          UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
-                  .getUserCanLoginVerifier(getAuthenticationCredential(login, domainId));
-          user = userStateVerifier.getUser();
-          destinationPage = checkUserState(destinationPage, userStateVerifier);
+        preHandlerProcessing(request, context);
+
+        if (!context.isProcessed()) {
+          String nextPage = handler.doAction(request);
+          context.setDestination(nextPage);
         }
 
-        if (!StringUtil.isDefined(destinationPage)) {
-          destinationPage = handler.doAction(request);
-        }
-
-        if (destinationPage.startsWith("http")) {
-          AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearCache();
-          response.sendRedirect(response.encodeRedirectURL(destinationPage));
-          return;
-        }
-        RequestDispatcher dispatcher = request.getRequestDispatcher(destinationPage);
-        dispatcher.forward(request, response);
+        postHandlerProcessing(request, response, context);
       } else {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND, "command not found : " + function);
+        response.sendError(HttpServletResponse.SC_NOT_FOUND,
+            "command not found : " + context.getFunction());
       }
     } catch (ServletException | IOException e) {
       SilverLogger.getLogger(this).error(e);
@@ -135,38 +92,45 @@ public class CredentialsServlet extends HttpServlet {
     }
   }
 
-  private String checkUserState(String destinationPage, final UserCanLoginVerifier userStateVerifier) {
+  private void preHandlerProcessing(HttpServletRequest request, CredentialsProcessContext context) {
+    String login = request.getParameter("Login");
+    String domainId = request.getParameter("DomainId");
+    AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier((User) null)
+        .clearSession(request);
+    if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId) &&
+        !NEW_REGISTRATION.equals(context.getFunction())) {
+      // Verify that the user can login
+      UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
+          .getUserCanLoginVerifier(getAuthenticationCredential(login, domainId));
+      context.setUser(userStateVerifier.getUser());
+      context.setDestination(checkUserState(userStateVerifier));
+    }
+  }
+
+  private void postHandlerProcessing(HttpServletRequest request, HttpServletResponse response,
+      CredentialsProcessContext context) throws IOException, ServletException {
+    String destinationPage = context.getDestination();
+    if (destinationPage.startsWith("http")) {
+      AuthenticationUserVerifierFactory
+          .getUserCanTryAgainToLoginVerifier(context.getUser())
+          .clearCache();
+      response.sendRedirect(response.encodeRedirectURL(destinationPage));
+    } else {
+      RequestDispatcher dispatcher = request.getRequestDispatcher(destinationPage);
+      dispatcher.forward(request, response);
+    }
+  }
+
+  private String checkUserState(final UserCanLoginVerifier userStateVerifier) {
     try {
       userStateVerifier.verify();
     } catch (AuthenticationException e) {
       SilverLogger.getLogger(this).debug(e.getMessage(), e);
-      destinationPage = userStateVerifier.getErrorDestination();
+      return userStateVerifier.getErrorDestination();
     }
-    return destinationPage;
+    return "";
   }
 
-  /**
-   * Retrieves function from path info.
-   *
-   * @param request HTTP request
-   * @return the function as a String
-   */
-  private String getFunction(HttpServletRequest request) {
-    String function = "Error";
-    String pathInfo = request.getPathInfo();
-    if (pathInfo != null) {
-      // remove first '/'
-      pathInfo = pathInfo.substring(1);
-      function = pathInfo.substring(pathInfo.indexOf('/') + 1);
-    }
-    return function;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
-   * javax.servlet.http.HttpServletResponse)
-   */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
@@ -180,6 +144,57 @@ public class CredentialsServlet extends HttpServlet {
     } catch (AuthenticationException e) {
       // shouldn't be thrown
       throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  private static class CredentialsProcessContext {
+    private String destination;
+    private User user;
+    private final String function;
+
+    private CredentialsProcessContext(HttpServletRequest request) {
+      this.function = getFunction(request);
+    }
+
+    public String getFunction() {
+      return function;
+    }
+
+    public boolean isProcessed() {
+      return StringUtil.isDefined(destination);
+    }
+
+    public String getDestination() {
+      return destination;
+    }
+
+    public void setDestination(String destination) {
+      this.destination = destination;
+    }
+
+    public User getUser() {
+      return user;
+    }
+
+    public void setUser(User user) {
+      this.user = user;
+    }
+
+    /**
+     * Retrieves function from path info.
+     *
+     * @param request HTTP request
+     * @return the function as a String
+     */
+    private static String getFunction(HttpServletRequest request) {
+      String function = "Error";
+      String pathInfo = request.getPathInfo();
+      if (pathInfo != null) {
+        // remove first '/'
+        pathInfo = pathInfo.substring(1);
+        function = pathInfo.substring(pathInfo.indexOf('/') + 1);
+      }
+      return function;
     }
   }
 }

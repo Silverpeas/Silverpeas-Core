@@ -23,80 +23,80 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.kernel.test.UnitTest;
 
 import javax.mail.internet.InternetAddress;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author ehugonnet
  */
 @UnitTest
-public class MailUtilTest {
+class MailSettingsTest {
 
   @AfterEach
-  public void tearDown() {
-    MailUtil.reloadConfiguration(null);
+  void tearDown() {
+    MailSettings.reloadConfiguration(null);
   }
 
   /**
-   * Test of isDomainAuthorized method, of class MailUtil.
+   * Test of isDomainAuthorized method, of class MailSettings.
    */
   @Test
-  public void testIsDomainAuthorized() {
+  void testIsDomainAuthorized() {
     String email = "toto@silverpeas.com";
-    boolean result = MailUtil.isDomainAuthorized(email);
+    boolean result = MailSettings.isDomainAuthorized(email);
     assertThat(result, is(true));
-    MailUtil.reloadConfiguration("silverpeas.org");
-    result = MailUtil.isDomainAuthorized(email);
+    MailSettings.reloadConfiguration("silverpeas.org");
+    result = MailSettings.isDomainAuthorized(email);
     assertThat(result, is(false));
-    MailUtil.reloadConfiguration("Silverpeas.COM,silverpeas.org");
-    result = MailUtil.isDomainAuthorized(email);
+    MailSettings.reloadConfiguration("Silverpeas.COM,silverpeas.org");
+    result = MailSettings.isDomainAuthorized(email);
     assertThat(result, is(true));
   }
 
   /**
-   * Test of getAuthorizedEmail method, of class MailUtil.
+   * Test of getAuthorizedEmail method, of class MailSettings.
    */
   @Test
-  public void testGetAuthorizedEmail() {
-    MailUtil.reloadConfiguration("Silverpeas.COM,silverpeas.org");
+  void testGetAuthorizedEmail() {
+    MailSettings.reloadConfiguration("Silverpeas.COM,silverpeas.org");
     String authorizedEmail = "toto@silverpeas.com";
-    String result = MailUtil.getAuthorizedEmail(authorizedEmail);
+    String result = MailSettings.getAuthorizedEmail(authorizedEmail);
     assertThat(result, is(authorizedEmail));
     String unauthorizedEmail = "toto@slashdot.com";
-    result = MailUtil.getAuthorizedEmail(unauthorizedEmail);
+    result = MailSettings.getAuthorizedEmail(unauthorizedEmail);
     assertThat(result, is("silverpeas@silverpeas.com"));
   }
 
   /**
-   * Test of getAuthorizedEmail method, of class MailUtil.
+   * Test of getAuthorizedEmail method, of class MailSettings.
    */
   @Test
-  public void testGetAuthorizedEmailWithNoDomain() {
-    MailUtil.reloadConfiguration(null);
+  void testGetAuthorizedEmailWithNoDomain() {
+    MailSettings.reloadConfiguration(null);
     String authorizedEmail = "toto@silverpeas.com";
-    String result = MailUtil.getAuthorizedEmail(authorizedEmail);
+    String result = MailSettings.getAuthorizedEmail(authorizedEmail);
     assertThat(result, is(authorizedEmail));
-    MailUtil.reloadConfiguration("");
+    MailSettings.reloadConfiguration("");
     authorizedEmail = "toto@slashdot.com";
-    result = MailUtil.getAuthorizedEmail(authorizedEmail);
+    result = MailSettings.getAuthorizedEmail(authorizedEmail);
     assertThat(result, is(authorizedEmail));
   }
 
   @Test
-  public void testGetAuthorizedEmailAddress() throws Exception {
-    MailUtil.reloadConfiguration("Silverpeas.COM,silverpeas.org");
+  void testGetAuthorizedEmailAddress() throws Exception {
+    MailSettings.reloadConfiguration("Silverpeas.COM,silverpeas.org");
     String authorizedEmail = "toto@silverpeas.com";
-    InternetAddress result = MailUtil.getAuthorizedEmailAddress(authorizedEmail, "Toto");
+    InternetAddress result = MailSettings.getAuthorizedEmailAddress(authorizedEmail, "Toto");
     assertThat(result.getAddress(), is(authorizedEmail));
     assertThat(result.getPersonal(), is("Toto"));
     String unauthorizedEmail = "toto@slashdot.com";
-    result = MailUtil.getAuthorizedEmailAddress(unauthorizedEmail, "toto");
+    result = MailSettings.getAuthorizedEmailAddress(unauthorizedEmail, "toto");
     assertThat(result.getAddress(), is("silverpeas@silverpeas.com"));
     assertThat(result.getPersonal(), is("Silverpeas"));
   }

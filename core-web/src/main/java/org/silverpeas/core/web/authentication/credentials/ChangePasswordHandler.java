@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +33,13 @@ import javax.servlet.http.HttpServletRequest;
  * Navigation case : user has changed his password.
  * @author ehugonnet
  */
+@Service
 public class ChangePasswordHandler extends ChangePasswordFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "ChangePassword";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -48,8 +53,7 @@ public class ChangePasswordHandler extends ChangePasswordFunctionHandler {
       AuthenticationCredential credential = AuthenticationCredential
           .newWithAsLogin(login)
           .withAsDomainId(domainId);
-      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-      authenticator.resetPassword(credential, password);
+      getAuthenticator().resetPassword(credential, password);
 
       return "/AuthenticationServlet?Login=" + login + "&Password=" + password
           + "&DomainId=" + domainId;

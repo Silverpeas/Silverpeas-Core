@@ -25,6 +25,7 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -34,7 +35,13 @@ import javax.servlet.http.HttpServletRequest;
  * Navigation case : user forgot his password and will be asked for his login question.
  * @author ehugonnet
  */
-public class LoginQuestionHandler extends FunctionHandler {
+@Service
+public class LoginQuestionHandler extends CredentialsFunctionHandler {
+
+  @Override
+  public String getFunction() {
+    return "LoginQuestion";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {

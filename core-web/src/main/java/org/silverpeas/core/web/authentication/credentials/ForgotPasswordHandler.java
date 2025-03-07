@@ -25,22 +25,28 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthDomain;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
-import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;
 
-public class ForgotPasswordHandler extends FunctionHandler {
+@Service
+public class ForgotPasswordHandler extends CredentialsFunctionHandler {
 
-  private final Authentication authenticator = Authentication.get();
-  private final ForgottenPasswordMailManager forgottenPasswordMailManager =
-      new ForgottenPasswordMailManager();
+  @Inject
+  private Authentication authenticator;
+
+  @Override
+  public String getFunction() {
+    return "ForgotPassword";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -84,7 +90,7 @@ public class ForgotPasswordHandler extends FunctionHandler {
       ForgottenPasswordMailParameters parameters = getMailParameters(userId);
       parameters.setLink(
           getContextPath(request) + "/ResetPassword?key=" + getAuthenticationKey(login, domainId));
-      forgottenPasswordMailManager.sendResetPasswordRequestMail(parameters);
+      getForgottenPasswordMailManager().sendResetPasswordRequestMail(parameters);
       return getGeneral().getString("forgottenPasswordChangeAllowed");
     } catch (AdminException | AuthenticationException e) {
       throw new ForgottenPasswordException(
@@ -93,7 +99,8 @@ public class ForgotPasswordHandler extends FunctionHandler {
     }
   }
 
-  private String getAuthenticationKey(final String login, final String domainId) throws AuthenticationException {
+  private String getAuthenticationKey(final String login, final String domainId)
+      throws AuthenticationException {
       return authenticator.getAuthToken(
           AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
   }

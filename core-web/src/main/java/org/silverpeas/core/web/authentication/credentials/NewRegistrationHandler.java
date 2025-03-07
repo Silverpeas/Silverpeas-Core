@@ -23,18 +23,29 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user has not an account yet and registers itself to silverpeas.
  */
-public class NewRegistrationHandler extends FunctionHandler {
+@Service
+public class NewRegistrationHandler extends CredentialsFunctionHandler {
 
   private final RegistrationSettings settings = RegistrationSettings.getSettings();
+
+  @Inject
+  private PublicationTemplateManager publicationTemplateManager;
+
+  @Override
+  public String getFunction() {
+    return "NewRegistration";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -43,8 +54,7 @@ public class NewRegistrationHandler extends FunctionHandler {
     if (settings.isUserSelfRegistrationEnabled()) {
       PagesContext context = new PagesContext();
       context.setDomainId(settings.userSelfRegistrationDomainId());
-      PublicationTemplate template = PublicationTemplateManager.getInstance()
-          .getDirectoryTemplate(context);
+      PublicationTemplate template = publicationTemplateManager.getDirectoryTemplate(context);
       request.setAttribute("ExtraTemplate", template);
 
       destination = "/admin/jsp/newRegistration.jsp";

@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserRegistrationService;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -39,6 +40,7 @@ import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -48,13 +50,20 @@ import java.util.List;
 /**
  * Navigation case : user has not an account yet and submits registration form.
  */
-public class RegisterHandler extends FunctionHandler {
+@Service
+public class RegisterHandler extends CredentialsFunctionHandler {
 
-  /**
-   * The request attribute key for the registration token.
-   */
-  public static final String REGISTRATION_TOKEN = "registrationToken";
-  private RegistrationSettings settings = RegistrationSettings.getSettings();
+  private final RegistrationSettings settings = RegistrationSettings.getSettings();
+
+  @Inject
+  private UserRegistrationService userRegistrationService;
+  @Inject
+  private PublicationTemplateManager publicationTemplateManager;
+
+  @Override
+  public String getFunction() {
+    return "Register";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -66,8 +75,7 @@ public class RegisterHandler extends FunctionHandler {
 
     if (settings.isUserSelfRegistrationEnabled()) {
       try {
-        UserRegistrationService service = UserRegistrationService.get();
-        String userId = service.registerUser(firstName, lastName, email, domainId);
+        String userId = userRegistrationService.registerUser(firstName, lastName, email, domainId);
 
         processDataOfExtraTemplate(userId, req);
 
@@ -78,7 +86,8 @@ public class RegisterHandler extends FunctionHandler {
       return "/admin/jsp/registrationSuccess.jsp";
     } else {
       SilverLogger.getLogger(this).warn(
-          "A user is trying to register himself although this capability is deactived! Registration information: [firstname: {0}, lastname: {1}, email: {2}]",
+          "A user is trying to register himself although this capability is deactived! " +
+              "Registration information: [firstname: {0}, lastname: {1}, email: {2}]",
           firstName, lastName, email);
       return "";
     }
@@ -87,11 +96,11 @@ public class RegisterHandler extends FunctionHandler {
   private void processDataOfExtraTemplate(String userId, HttpRequest request) {
     PagesContext context = getTemplateContext(userId);
     context.setDomainId(settings.userSelfRegistrationDomainId());
-    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
-    PublicationTemplate template = templateManager.getDirectoryTemplate();
+    PublicationTemplate template = publicationTemplateManager.getDirectoryTemplate();
     if (template != null) {
       try {
-        templateManager.saveData(template.getFileName(), context, request.getFileItems());
+        publicationTemplateManager.saveData(template.getFileName(), context,
+            request.getFileItems());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
@@ -102,7 +111,7 @@ public class RegisterHandler extends FunctionHandler {
     return PagesContext.getDirectoryContext(userId, userId, I18NHelper.DEFAULT_LANGUAGE);
   }
 
-  private String saveAvatar(HttpRequest request, String nameAvatar) {
+  private void saveAvatar(HttpRequest request, String nameAvatar) {
     List<FileItem> parameters = request.getFileItems();
     FileItem file = FileUploadUtil.getFile(parameters, "avatar");
     if (file != null && StringUtil.isDefined(file.getName())) {
@@ -121,7 +130,6 @@ public class RegisterHandler extends FunctionHandler {
         }
       }
     }
-    return nameAvatar;
   }
 
   private String getImagePath(String fileName) {

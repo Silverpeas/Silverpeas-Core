@@ -24,11 +24,13 @@
 package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import org.silverpeas.core.web.http.HttpRequest;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -37,9 +39,16 @@ import javax.servlet.http.HttpSession;
  *
  * @author ehugonnet
  */
-public class ValidationQuestionHandler extends FunctionHandler {
+@Service
+public class ValidationQuestionHandler extends CredentialsFunctionHandler {
 
-  private SilverpeasSessionOpener sessionOpenener = SilverpeasSessionOpener.getInstance();
+  @Inject
+  private SilverpeasSessionOpener sessionOpenener;
+
+  @Override
+  public String getFunction() {
+    return "ValidateQuestion";
+  }
 
   @Override
   public String doAction(HttpServletRequest request) {

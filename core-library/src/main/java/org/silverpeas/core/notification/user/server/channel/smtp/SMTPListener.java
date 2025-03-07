@@ -47,6 +47,7 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.jms.MessageListener;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -58,7 +59,7 @@ import java.util.Map;
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.mail.MailAddress.eMail;
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.*;
-import static org.silverpeas.core.util.MailUtil.isForceReplyToSenderField;
+import static org.silverpeas.core.util.MailSettings.isForceReplyToSenderField;
 
 
 @MessageDriven(activationConfig = {
@@ -70,6 +71,9 @@ import static org.silverpeas.core.util.MailUtil.isForceReplyToSenderField;
     description = "Message driven bean to send notifications by email")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SMTPListener extends AbstractListener implements MessageListener {
+
+  @Inject
+  private Administration admin;
 
   /**
    * listener of NotificationServer JMS message
@@ -223,7 +227,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     final boolean isSilverpeasEmail = Administration.get().getSilverpeasEmail().equals(from);
     final MailAddress fromMailAddress = eMail(from).withName(ofNullable(fromName)
         .filter(StringUtil::isDefined)
-        .orElseGet(() -> isSilverpeasEmail ? Administration.get().getSilverpeasName() : StringUtil.EMPTY));
+        .orElseGet(() -> isSilverpeasEmail ? admin.getSilverpeasName() : StringUtil.EMPTY));
     final MailSending mail = MailSending.from(fromMailAddress).to(eMail(to)).withSubject(subject);
     try {
       final InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
