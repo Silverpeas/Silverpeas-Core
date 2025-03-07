@@ -43,7 +43,7 @@ public class SynchronousTestResourceEventListener
   private TestResourceEventBucket bucket;
 
   @Override
-  public void onDeletion(final TestResourceEvent event) throws Exception {
+  public void onDeletion(final TestResourceEvent event) {
     pourEvent(event);
   }
 
@@ -53,12 +53,12 @@ public class SynchronousTestResourceEventListener
   }
 
   @Override
-  public void onUpdate(final TestResourceEvent event) throws Exception {
+  public void onUpdate(final TestResourceEvent event) {
     pourEvent(event);
   }
 
   @Override
-  public void onCreation(final TestResourceEvent event) throws Exception {
+  public void onCreation(final TestResourceEvent event) {
     pourEvent(event);
   }
 

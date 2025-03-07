@@ -40,7 +40,7 @@ public class SubscriptionUserEventListener extends CDIResourceEventListener<User
   private SubscriptionService subscriptionService;
 
   @Override
-  public void onDeletion(final UserEvent event) throws Exception {
+  public void onDeletion(final UserEvent event) {
     subscriptionService.unsubscribeBySubscriber(
         UserSubscriptionSubscriber.from(event.getTransition().getBefore().getId()));
   }

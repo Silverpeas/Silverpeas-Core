@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.notification.AbstractNotifier;
 import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEvent;
 import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier;
@@ -295,6 +296,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   /**
    * Listens for change in the attendance in an event (or in a given event's occurrence).
    */
+  @Bean
   @Singleton
   public static class AttendanceNotificationListener extends
       AbstractNotifier<AttendeeLifeCycleEvent> {
@@ -338,6 +340,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
    * we send a notification about a change in the attendance in the event. This behaviour is
    * implemented by the attendee notification mechanism. We just simulate here this behaviour.
    */
+  @Bean
   @Singleton
   public static class CalendarEventNotificationListener extends
       AbstractNotifier<CalendarEventLifeCycleEvent> {
@@ -390,6 +393,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
    * this case, we send a notification about a change in the attendance in the event. This behaviour
    * is implemented by the attendee notification mechanism. We just simulate here this behaviour.
    */
+  @Bean
   @Singleton
   public static class CalendarEventOccurrenceNotificationListener
       extends AbstractNotifier<CalendarEventOccurrenceLifeCycleEvent> {

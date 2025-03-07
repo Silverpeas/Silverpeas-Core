@@ -52,25 +52,25 @@ public class JMSTopicTestResourceEventListener extends JMSResourceEventListener<
   }
 
   @Override
-  public void onDeletion(final TestResourceEvent event) throws Exception {
+  public void onDeletion(final TestResourceEvent event) {
     SilverLogger.getLogger(this).info("Deletion event reception...");
     this.bucket.pour(event);
   }
 
   @Override
-  public void onRemoving(final TestResourceEvent event) throws Exception {
+  public void onRemoving(final TestResourceEvent event) {
     SilverLogger.getLogger(this).info("Removing event reception...");
     this.bucket.pour(event);
   }
 
   @Override
-  public void onUpdate(final TestResourceEvent event) throws Exception {
+  public void onUpdate(final TestResourceEvent event) {
     SilverLogger.getLogger(this).info("Update event reception...");
     this.bucket.pour(event);
   }
 
   @Override
-  public void onCreation(final TestResourceEvent event) throws Exception {
+  public void onCreation(final TestResourceEvent event) {
     SilverLogger.getLogger(this).info("Creation event reception...");
     this.bucket.pour(event);
   }

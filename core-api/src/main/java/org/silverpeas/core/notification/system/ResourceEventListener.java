@@ -53,9 +53,8 @@ public interface ResourceEventListener<T extends ResourceEvent<?>> {
    * nonrecoverable. By default, this method does nothing.
    *
    * @param event the event on the deletion of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  default void onDeletion(final T event) throws Exception {
+  default void onDeletion(final T event) {
   }
 
   /**
@@ -63,9 +62,8 @@ public interface ResourceEventListener<T extends ResourceEvent<?>> {
    * and it is recoverable; it is usually put in a trash. By default, this method does nothing.
    *
    * @param event the event on the removing of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  default void onRemoving(final T event) throws Exception {
+  default void onRemoving(final T event) {
   }
 
   /**
@@ -73,45 +71,40 @@ public interface ResourceEventListener<T extends ResourceEvent<?>> {
    * nothing.
    *
    * @param event the event on the removing of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  default void onRecovery(final T event) throws Exception {
+  default void onRecovery(final T event) {
   }
 
   /**
    * An event on the update of a resource has be listened. By default, this method does nothing.
    *
    * @param event the event on the update of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  default void onUpdate(final T event) throws Exception {
+  default void onUpdate(final T event) {
   }
 
   /**
    * An event on the move of a resource has be listened. By default, this method does nothing.
    *
    * @param event the event on the move of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  default void onMove(final T event) throws Exception {
+  default void onMove(final T event) {
   }
 
   /**
    * An event on the creation of a resource has be listened. By default, this method does nothing.
    *
    * @param event the event on the creation of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  default void onCreation(final T event) throws Exception {
+  default void onCreation(final T event) {
   }
 
   /**
    * An event on the unlock of a resource has be listened. By default, this method does nothing.
    *
    * @param event the event on the unlock of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  default void onUnlock(final T event) throws Exception {
+  default void onUnlock(final T event) {
   }
 
   /**
@@ -135,9 +128,8 @@ public interface ResourceEventListener<T extends ResourceEvent<?>> {
    * </p>
    *
    * @param event the event to dispatch.
-   * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  default void dispatchEvent(final T event) throws Exception {
+  default void dispatchEvent(final T event) {
     if (isEnabled()) {
       switch (event.getType()) {
         case CREATION:
