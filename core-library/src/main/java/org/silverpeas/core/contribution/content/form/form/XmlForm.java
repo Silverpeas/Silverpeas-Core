@@ -143,6 +143,14 @@ public class XmlForm extends AbstractForm {
         Map<String, String> parameters = fieldTemplate.getParameters(language);
         String fieldName = fieldTemplate.getFieldName();
         String fieldLabel = fieldTemplate.getLabel(language);
+
+        //Special useCase Workflow: display role
+        if ("assignForm".equals(pageContext.getFormName())) {
+          String actor = parameters.get("roles");
+          if (StringUtil.isDefined(actor)) {
+            fieldLabel += "<br>(" + actor + ")";
+          }
+        }
         String fieldDisplayerName = fieldTemplate.getDisplayerName();
         isMandatory = fieldTemplate.isMandatory();
         boolean isDisabled = fieldTemplate.isDisabled();
