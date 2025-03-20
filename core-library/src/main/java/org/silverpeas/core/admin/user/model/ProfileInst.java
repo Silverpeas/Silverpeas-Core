@@ -135,4 +135,14 @@ public class ProfileInst extends BaseRightProfile {
   public boolean isOnComponentInstance() {
     return this.objectId == ProfiledObjectId.NOTHING;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof ProfileInst && super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

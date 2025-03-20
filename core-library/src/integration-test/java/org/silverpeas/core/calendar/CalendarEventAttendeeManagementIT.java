@@ -198,7 +198,7 @@ public class CalendarEventAttendeeManagementIT extends BaseCalendarTest {
 
     Attendee attendeeToDelegate =
         in(eventWithAttendees.getAttendees()).find(expectedUser().getId());
-    attendeeToDelegate.delegateTo(getUser());
+    attendeeToDelegate.delegateTo(AttendeeSuppliers.fromUser(getUser()));
     eventWithAttendees.update();
 
     mayBeEvent = calendar.event(EVENT_WITH_ATTENDEE);
@@ -358,7 +358,7 @@ public class CalendarEventAttendeeManagementIT extends BaseCalendarTest {
         .collect(Collectors.toList());
   }
 
-  public static AttendeeFinder in(final AttendeeSet attendees) {
+  static AttendeeFinder in(final AttendeeSet attendees) {
     return new AttendeeFinder(attendees);
   }
 

@@ -33,10 +33,10 @@ import static org.hamcrest.Matchers.is;
  * Unit tests on the management of attendees to events.
  * @author mmoquillon
  */
-public class EventAttendeeManagementTest {
+class EventAttendeeManagementTest {
 
   @Test
-  public void addAnAttendeeToAnEvent() {
+  void addAnAttendeeToAnEvent() {
     CalendarEvent event =
         anEvent().withAttendee("joe@dalton.com").withAttendee("averel@dalton.com");
     assertThat(
@@ -50,14 +50,14 @@ public class EventAttendeeManagementTest {
   }
 
   @Test
-  public void delegateAnAttendeeToAnotherUserAddThisUserAmongTheAttendeesToTheEvent() {
+  void delegateAnAttendeeToAnotherUserAddThisUserAmongTheAttendeesToTheEvent() {
     CalendarEvent event = anEvent();
     Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com")
         .to(event.asCalendarComponent());
     event.getAttendees().add(attendee);
     assertThat(event.getAttendees().size(), is(1));
 
-    attendee.delegateTo("averel@dalton.com");
+    attendee.delegateTo(AttendeeSuppliers.fromEmail("averel@dalton.com"));
 
     assertThat(event.getAttendees().size(), is(2));
     assertThat(
@@ -67,32 +67,34 @@ public class EventAttendeeManagementTest {
   }
 
   @Test
-  public void delegateAnAttendeeToAnotherUserChangeTheParticipationStatus() {
+  void delegateAnAttendeeToAnotherUserChangeTheParticipationStatus() {
     CalendarEvent event = anEvent();
     Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com")
         .to(event.asCalendarComponent());
     event.getAttendees().add(attendee);
     assertThat(event.getAttendees().size(), is(1));
 
-    attendee.delegateTo("averel@dalton.com");
+    attendee.delegateTo(AttendeeSuppliers.fromEmail("averel@dalton.com"));
 
     assertThat(attendee.getParticipationStatus(), is(Attendee.ParticipationStatus.DELEGATED));
   }
 
   @Test
-  public void delegateAnAttendeeToAnotherUserSetsTheDelegationBetweenTwoThem() {
+  void delegateAnAttendeeToAnotherUserSetsTheDelegationBetweenTwoThem() {
     CalendarEvent event = anEvent();
     Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com")
         .to(event.asCalendarComponent());
     event.getAttendees().add(attendee);
     assertThat(event.getAttendees().size(), is(1));
 
-    attendee.delegateTo("averel@dalton.com");
+    attendee.delegateTo(AttendeeSuppliers.fromEmail("averel@dalton.com"));
 
     assertThat(attendee.getDelegate().isPresent(), is(true));
     assertThat(attendee.getDelegate().get(),
         is(ExternalAttendee.withEmail("averel@dalton.com")
             .to(event.asCalendarComponent())));
+    assertThat(attendee.getDelegate().isPresent(), is(true));
+    assertThat(attendee.getDelegate().get().getDelegate().isPresent(), is(true));
     assertThat(attendee.getDelegate().get().getDelegate().get(), is(attendee));
   }
 

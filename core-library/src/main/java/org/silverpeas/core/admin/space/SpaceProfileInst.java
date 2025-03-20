@@ -75,4 +75,13 @@ public class SpaceProfileInst extends BaseRightProfile {
     return SPACE_MANAGER.equalsIgnoreCase(getName());
   }
 
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof SpaceProfileInst && super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

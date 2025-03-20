@@ -42,7 +42,7 @@ public class ExternalAttendee extends Attendee {
     // empty constructor for JPA
   }
 
-  private ExternalAttendee(final String email, final CalendarComponent calendarComponent) {
+  ExternalAttendee(final String email, final CalendarComponent calendarComponent) {
     super(email, calendarComponent);
   }
 

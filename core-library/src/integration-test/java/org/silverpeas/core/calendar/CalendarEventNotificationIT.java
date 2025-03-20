@@ -256,7 +256,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     Optional<Attendee> mayBeAttendee = event.getAttendees().stream().findFirst();
     assertThat(mayBeAttendee.isPresent(), is(true));
     Attendee attendee = mayBeAttendee.get();
-    attendee.delegateTo(User.getById("2"));
+    attendee.delegateTo(AttendeeSuppliers.fromUser(User.getById("2")));
     event.update();
 
     assertThat(eventListener.hasBeenNotified(), is(false));

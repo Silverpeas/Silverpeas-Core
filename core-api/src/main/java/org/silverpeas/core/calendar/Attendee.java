@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -134,28 +133,12 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   /**
    * Delegates the participation of this attendee to another participant. The delegated is added
    * among the calendar event's attendees.
-   * @param user a user in Silverpeas.
+   * @param anotherAttendee a supplier of another attendee to the same calendar component.
    */
-  public void delegateTo(final User user) {
+  public void delegateTo(final AttendeeSupplier anotherAttendee) {
     participationStatusAnswered = this.participationStatus != ParticipationStatus.DELEGATED;
     this.participationStatus = ParticipationStatus.DELEGATED;
-    this.delegate = InternalAttendee.fromUser(user).to(this.component)
-        .withPresenceStatus(this.presenceStatus);
-    this.delegate.delegate = this;
-    this.component.getAttendees().add(this.delegate);
-  }
-
-  /**
-   * Delegates the participation of this attendee to another participant. The delegated is added
-   * among the calendar event's attendees.
-   * @param email the email of another attendee. This attendee is expected to be a person external
-   * to Silverpeas.
-   */
-  public void delegateTo(final String email) {
-    participationStatusAnswered = this.participationStatus != ParticipationStatus.DELEGATED;
-    this.participationStatus = ParticipationStatus.DELEGATED;
-    this.delegate = ExternalAttendee.withEmail(email).to(this.component)
-        .withPresenceStatus(this.presenceStatus);
+    this.delegate = anotherAttendee.to(this.component).withPresenceStatus(this.presenceStatus);
     this.delegate.delegate = this;
     this.component.getAttendees().add(this.delegate);
   }
@@ -365,7 +348,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * A supplier of an instance of a concrete implementation of {@link Attendee}
    */
   @FunctionalInterface
-  interface AttendeeSupplier {
+  public interface AttendeeSupplier {
 
     /**
      * Supplies an instance of an {@link Attendee} to the specified calendar component.

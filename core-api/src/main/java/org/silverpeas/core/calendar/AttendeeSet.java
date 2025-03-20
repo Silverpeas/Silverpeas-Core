@@ -27,18 +27,9 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -83,6 +74,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
    * relayed to the caller.
    * @param action the action to be performed for each attendee.
    */
+  @Override
   public void forEach(final Consumer<? super Attendee> action) {
     attendees.forEach(action);
   }
@@ -121,7 +113,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
    * @return the added attendee.
    */
   public Attendee add(final String email) {
-    Attendee attendee = ExternalAttendee.withEmail(email).to(component);
+    Attendee attendee = AttendeeSuppliers.fromEmail(email).to(component);
     attendees.add(attendee);
     return attendee;
   }
@@ -133,7 +125,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
    * @return the added attendee.
    */
   public Attendee add(final User user) {
-    Attendee attendee = InternalAttendee.fromUser(user).to(component);
+    Attendee attendee = AttendeeSuppliers.fromUser(user).to(component);
     attendees.add(attendee);
     return attendee;
   }
