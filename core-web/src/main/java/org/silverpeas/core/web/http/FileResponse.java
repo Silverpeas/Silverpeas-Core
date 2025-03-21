@@ -45,7 +45,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,7 +58,6 @@ import static org.silverpeas.kernel.util.StringUtil.*;
  */
 public abstract class FileResponse {
 
-  public static final String DOWNLOAD_CONTEXT_PARAM = "downloadContext";
   private static final int MAX_PATH_LENGTH_IN_LOGS = 100;
   private static final int BUFFER_LENGTH = 1024 * 16;
   private static final Pattern RANGE_PATTERN = Pattern.compile("bytes=(?<start>\\d*)-(?<end>\\d*)");
@@ -82,6 +80,8 @@ public abstract class FileResponse {
   FileResponse(final HttpServletRequest request, final HttpServletResponse response) {
     this.request = request;
     this.response = response;
+    response.setHeader("Content-Security-Policy",
+        "default-src 'none'; img-src 'self'; style-src 'none'; script-src 'none'");
   }
 
   /**
@@ -126,20 +126,6 @@ public abstract class FileResponse {
   public static ServletFileResponse fromServlet(final HttpServletRequest request,
       final HttpServletResponse response) {
     return new ServletFileResponse(request, response);
-  }
-
-  /**
-   * Indicates a download context if any set into request.
-   * @return true if download context, false otherwise.
-   */
-  boolean isDownloadContext() {
-    final String parameter = Optional.ofNullable(request.getParameter(DOWNLOAD_CONTEXT_PARAM))
-        .filter(StringUtil::isDefined)
-        .orElseGet(() -> {
-          final Object attribute = request.getAttribute(DOWNLOAD_CONTEXT_PARAM);
-          return attribute == null ? "false" : attribute.toString();
-        });
-    return StringUtil.getBooleanValue(parameter);
   }
 
   /**
@@ -251,7 +237,7 @@ public abstract class FileResponse {
       ByteBuffer buffer = ByteBuffer.allocate(BUFFER_LENGTH);
       while ((bytesRead = input.read(buffer)) != -1 && bytesLeft > 0) {
         buffer.clear();
-        output.write(buffer.array(), 0, bytesLeft < bytesRead ? bytesLeft : bytesRead);
+        output.write(buffer.array(), 0, Math.min(bytesLeft, bytesRead));
         bytesLeft -= bytesRead;
       }
       SilverLogger.getLogger(this).debug("{0} - all part content bytes sent", StringUtil
@@ -298,7 +284,7 @@ public abstract class FileResponse {
     }
     final File file = path.toFile();
     final String sb =
-            String.valueOf(FileUtils.checksumCRC32(file)) +
+        FileUtils.checksumCRC32(file) +
             "|" + file.getName() +
             "|" + file.length() +
             "|" + file.lastModified();
@@ -343,12 +329,12 @@ public abstract class FileResponse {
     response.setBufferSize(BUFFER_LENGTH);
 
     String startGroup = partialHeaders.group("start");
-    int start = startGroup.isEmpty() ? 0 : Integer.valueOf(startGroup);
-    start = start < 0 ? 0 : start;
+    int start = startGroup.isEmpty() ? 0 : Integer.parseInt(startGroup);
+    start = Math.max(start, 0);
 
     String endGroup = partialHeaders.group("end");
-    int end = endGroup.isEmpty() ? endOfFullContent : Integer.valueOf(endGroup);
-    end = end > endOfFullContent ? endOfFullContent : end;
+    int end = endGroup.isEmpty() ? endOfFullContent : Integer.parseInt(endGroup);
+    end = Math.min(end, endOfFullContent);
 
     int partContentLength = end - start + 1;
     return new ContentRangeData(start, end, partContentLength,
