@@ -93,15 +93,14 @@ public class RestFileResponse extends FileResponse {
    */
   private Response.ResponseBuilder path(final Path path, final boolean downloadContext) {
     try {
-      final Path absoluteFilePath = path.toAbsolutePath();
-      final String fileName = getFileName(absoluteFilePath);
-      final String fileMimeType = getMimeType(absoluteFilePath);
+      var absoluteFilePath = path.toAbsolutePath();
+      var fileName = getFileName(absoluteFilePath);
+      var fileMimeType = getMimeType(absoluteFilePath);
+      var fullContentLength = (int) Files.size(absoluteFilePath);
+      var partialMatcher = getPartialMatcher();
+      var isPartialRequest = partialMatcher.matches();
 
-      final int fullContentLength = (int) Files.size(absoluteFilePath);
-      final Matcher partialMatcher = getPartialMatcher();
-      final boolean isPartialRequest = partialMatcher.matches();
-
-      final Response.ResponseBuilder responseBuilder;
+      Response.ResponseBuilder responseBuilder;
       if (isPartialRequest) {
         // Handling here a partial response (pseudo streaming)
         responseBuilder =
@@ -111,7 +110,7 @@ public class RestFileResponse extends FileResponse {
         responseBuilder = getFullResponseBuilder(absoluteFilePath, fullContentLength);
       }
 
-      final String filename = downloadContext
+      var filename = downloadContext
           ? encodeAttachmentFilenameAsUtf8(fileName)
           : encodeInlineFilenameAsUtf8(fileName);
       return responseBuilder.type(fileMimeType).header("Content-Disposition", filename);
