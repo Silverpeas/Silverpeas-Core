@@ -102,7 +102,7 @@ public class PreparedDownload implements Serializable {
    * Gets from the given request the {@link PreparedDownload} instance registered into the
    * session if any.
    * @param request the request.
-   * @throw IllegalArgumentException if parameter id is not defined into request or if it does
+   * @throws IllegalArgumentException if parameter id is not defined into request or if it does
    * not exists {@link PreparedDownload} instance referenced by the identifier.
    * @return a {@link PreparedDownload} instance.
    */
@@ -170,7 +170,7 @@ public class PreparedDownload implements Serializable {
                   .forceCharacterEncoding(characterEncoding)
                   .forceFileName(fileName)
                   .noCache()
-                  .sendPath(Paths.get(file.toURI()), true);
+                  .sendPath(Paths.get(file.toURI()));
     } finally {
       deleteQuietly(file);
     }

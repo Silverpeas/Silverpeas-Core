@@ -55,53 +55,35 @@ public class RestFileResponse extends FileResponse {
   }
 
   /**
-   * Centralization of getting of silverpeas file content.
-   * <p>
-   * A download context flag is verified from parameters and attributes of the request.
-   * </p>
+   * Centralization of getting the silverpeas file content. By default, the file will be for
+   * download and not for viewing its content directly in the client (as the file content can
+   * contain corrupting code).
    * @param file the silverpeas file to send.
    * @return the response builder.
    */
   public Response.ResponseBuilder silverpeasFile(final SilverpeasFile file) {
-    return silverpeasFile(file, isDownloadContext());
-  }
-
-  /**
-   * Centralization of getting of silverpeas file content.
-   * <p>
-   * Using directly this method means that the request downloadContext flag is ignored.
-   * </p>
-   * @param file the silverpeas file to send.
-   * @param downloadContext indicating a download context in order to specify rightly response
-   * headers.
-   * @return the response builder.
-   */
-  public Response.ResponseBuilder silverpeasFile(final SilverpeasFile file,
-      final boolean downloadContext) {
     if (isNotDefined(forcedMimeType)) {
       forceMimeType(file.getMimeType());
     }
-    return path(Paths.get(file.toURI()), downloadContext);
+    return path(Paths.get(file.toURI()));
   }
 
   /**
    * Centralization of getting of a file content.
    * @param path the file to send.
-   * @param downloadContext indicating a download context in order to specify rightly response
    * headers.
    * @return the response.
    */
-  private Response.ResponseBuilder path(final Path path, final boolean downloadContext) {
+  private Response.ResponseBuilder path(final Path path) {
     try {
-      final Path absoluteFilePath = path.toAbsolutePath();
-      final String fileName = getFileName(absoluteFilePath);
-      final String fileMimeType = getMimeType(absoluteFilePath);
+      var absoluteFilePath = path.toAbsolutePath();
+      var fileName = getFileName(absoluteFilePath);
+      var fileMimeType = getMimeType(absoluteFilePath);
+      var fullContentLength = (int) Files.size(absoluteFilePath);
+      var partialMatcher = getPartialMatcher();
+      var isPartialRequest = partialMatcher.matches();
 
-      final int fullContentLength = (int) Files.size(absoluteFilePath);
-      final Matcher partialMatcher = getPartialMatcher();
-      final boolean isPartialRequest = partialMatcher.matches();
-
-      final Response.ResponseBuilder responseBuilder;
+      Response.ResponseBuilder responseBuilder;
       if (isPartialRequest) {
         // Handling here a partial response (pseudo streaming)
         responseBuilder =
@@ -111,9 +93,7 @@ public class RestFileResponse extends FileResponse {
         responseBuilder = getFullResponseBuilder(absoluteFilePath, fullContentLength);
       }
 
-      final String filename = downloadContext
-          ? encodeAttachmentFilenameAsUtf8(fileName)
-          : encodeInlineFilenameAsUtf8(fileName);
+      var filename = encodeAttachmentFilenameAsUtf8(fileName);
       return responseBuilder.type(fileMimeType).header("Content-Disposition", filename);
     } catch (final WebApplicationException ex) {
       throw ex;

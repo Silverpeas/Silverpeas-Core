@@ -55,53 +55,34 @@ public class ServletFileResponse extends FileResponse {
   }
 
   /**
-   * Centralization of getting of silverpeas file content.
-   * <p>
-   * A download context flag is verified from parameters and attributes of the request.
-   * </p>
+   * Centralization of getting of silverpeas file content. By default, the file will be for
+   * download and not for viewing its content directly in the client (as the file content can
+   * contain corrupting code).
    * @param file the silverpeas file to send.
    */
   public void sendSilverpeasFile(final SilverpeasFile file) {
-    sendSilverpeasFile(file, isDownloadContext());
-  }
-
-  /**
-   * Centralization of getting of silverpeas file content.
-   * <p>
-   * Using directly this method means that the request downloadContext flag is ignored.
-   * </p>
-   * @param file the silverpeas file to send.
-   * @param downloadContext indicating a download context in order to specify rightly response
-   * headers.
-   */
-  public void sendSilverpeasFile(final SilverpeasFile file,
-      final boolean downloadContext) {
     if (isNotDefined(forcedMimeType)) {
       forceMimeType(file.getMimeType());
     }
-    sendPath(Paths.get(file.toURI()), downloadContext);
+    sendPath(Paths.get(file.toURI()));
   }
 
   /**
    * Centralization of getting of a file content.
    * @param path the file to send.
-   * @param downloadContext indicating a download context in order to specify rightly response
    * headers.
    */
-  void sendPath(final Path path, final boolean downloadContext) {
+  void sendPath(final Path path) {
     try {
-      final Path absoluteFilePath = path.toAbsolutePath();
-      final String fileName = getFileName(absoluteFilePath);
-      final String fileMimeType = getMimeType(absoluteFilePath);
-
-      final int fullContentLength = (int) Files.size(absoluteFilePath);
-      final Matcher partialMatcher = getPartialMatcher();
-      final boolean isPartialRequest = partialMatcher.matches();
+      Path absoluteFilePath = path.toAbsolutePath();
+      String fileName = getFileName(absoluteFilePath);
+      String fileMimeType = getMimeType(absoluteFilePath);
+      int fullContentLength = (int) Files.size(absoluteFilePath);
+      Matcher partialMatcher = getPartialMatcher();
+      boolean isPartialRequest = partialMatcher.matches();
 
       response.setContentType(fileMimeType);
-      final String filename = downloadContext
-          ? encodeAttachmentFilenameAsUtf8(fileName)
-          : encodeInlineFilenameAsUtf8(fileName);
+      final String filename = encodeAttachmentFilenameAsUtf8(fileName);
       response.setHeader("Content-Disposition", filename);
       if (isPartialRequest) {
         // Handling here a partial response (pseudo streaming)
