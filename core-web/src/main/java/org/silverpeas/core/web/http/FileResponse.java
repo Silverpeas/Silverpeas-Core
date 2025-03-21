@@ -82,6 +82,8 @@ public abstract class FileResponse {
   FileResponse(final HttpServletRequest request, final HttpServletResponse response) {
     this.request = request;
     this.response = response;
+    response.setHeader("Content-Security-Policy",
+        "default-src 'none'; img-src 'self'; style-src 'none'; script-src 'none'");
   }
 
   /**
@@ -251,7 +253,7 @@ public abstract class FileResponse {
       ByteBuffer buffer = ByteBuffer.allocate(BUFFER_LENGTH);
       while ((bytesRead = input.read(buffer)) != -1 && bytesLeft > 0) {
         buffer.clear();
-        output.write(buffer.array(), 0, bytesLeft < bytesRead ? bytesLeft : bytesRead);
+        output.write(buffer.array(), 0, Math.min(bytesLeft, bytesRead));
         bytesLeft -= bytesRead;
       }
       SilverLogger.getLogger(this).debug("{0} - all part content bytes sent", StringUtil
@@ -298,7 +300,7 @@ public abstract class FileResponse {
     }
     final File file = path.toFile();
     final String sb =
-            String.valueOf(FileUtils.checksumCRC32(file)) +
+        FileUtils.checksumCRC32(file) +
             "|" + file.getName() +
             "|" + file.length() +
             "|" + file.lastModified();
@@ -343,12 +345,12 @@ public abstract class FileResponse {
     response.setBufferSize(BUFFER_LENGTH);
 
     String startGroup = partialHeaders.group("start");
-    int start = startGroup.isEmpty() ? 0 : Integer.valueOf(startGroup);
-    start = start < 0 ? 0 : start;
+    int start = startGroup.isEmpty() ? 0 : Integer.parseInt(startGroup);
+    start = Math.max(start, 0);
 
     String endGroup = partialHeaders.group("end");
-    int end = endGroup.isEmpty() ? endOfFullContent : Integer.valueOf(endGroup);
-    end = end > endOfFullContent ? endOfFullContent : end;
+    int end = endGroup.isEmpty() ? endOfFullContent : Integer.parseInt(endGroup);
+    end = Math.min(end, endOfFullContent);
 
     int partContentLength = end - start + 1;
     return new ContentRangeData(start, end, partContentLength,

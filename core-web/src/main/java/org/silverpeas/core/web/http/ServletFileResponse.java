@@ -90,13 +90,12 @@ public class ServletFileResponse extends FileResponse {
    */
   void sendPath(final Path path, final boolean downloadContext) {
     try {
-      final Path absoluteFilePath = path.toAbsolutePath();
-      final String fileName = getFileName(absoluteFilePath);
-      final String fileMimeType = getMimeType(absoluteFilePath);
-
-      final int fullContentLength = (int) Files.size(absoluteFilePath);
-      final Matcher partialMatcher = getPartialMatcher();
-      final boolean isPartialRequest = partialMatcher.matches();
+      Path absoluteFilePath = path.toAbsolutePath();
+      String fileName = getFileName(absoluteFilePath);
+      String fileMimeType = getMimeType(absoluteFilePath);
+      int fullContentLength = (int) Files.size(absoluteFilePath);
+      Matcher partialMatcher = getPartialMatcher();
+      boolean isPartialRequest = partialMatcher.matches();
 
       response.setContentType(fileMimeType);
       final String filename = downloadContext
