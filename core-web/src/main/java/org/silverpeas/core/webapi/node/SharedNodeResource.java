@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.node;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.sharing.security.ShareableNode;
+import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 
 import javax.ws.rs.GET;
@@ -52,12 +52,14 @@ public class SharedNodeResource extends AbstractNodeResource {
     return PATH;
   }
 
+  @Override
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getRoot() {
     return super.getRoot();
   }
 
+  @Override
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -70,6 +72,7 @@ public class SharedNodeResource extends AbstractNodeResource {
    *
    * @return an array of NodeEntity representing children
    */
+  @Override
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*/children}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -79,9 +82,9 @@ public class SharedNodeResource extends AbstractNodeResource {
 
   @Override
   protected boolean isNodeReadable(NodeDetail node) {
-    ShareableNode nodeResource = new ShareableNode(token, node);
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
-    return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
+    var ctx = AccessControlContext.about(node);
+    return ticket != null && ticket.getAccessControl().isReadable(ctx);
   }
 
 }

@@ -29,21 +29,14 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareableResource;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import static org.silverpeas.core.persistence.OrderBy.asc;
 import static org.silverpeas.core.persistence.OrderBy.desc;
@@ -54,9 +47,9 @@ import static org.silverpeas.core.persistence.OrderBy.desc;
 @DiscriminatorColumn(name = "shared_object_type")
 @AttributeOverride(name = "id",
     column = @Column(name = "keyfile", columnDefinition = "varchar(40)", length = 40))
-@NamedQueries({@NamedQuery(name = "Ticket.findAllTicketForSharedObjectId",
+@NamedQuery(name = "Ticket.findAllTicketForSharedObjectId",
     query = "SELECT t FROM Ticket t WHERE t.sharedObjectId = :sharedObjectId AND t" +
-        ".sharedObjectType = :ticketType")})
+        ".sharedObjectType = :ticketType")
 public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     implements Serializable {
 
@@ -79,9 +72,9 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   protected Long creationDate;
   @Column(name = "updateid")
   protected String updaterId;
-  @Column(name = "updatedate", nullable = true)
+  @Column(name = "updatedate")
   protected Long updateDate = null;
-  @Column(name = "enddate", nullable = true)
+  @Column(name = "enddate")
   protected Long endDate = null;
   @Column(name = "nbaccessmax")
   protected int nbAccessMax;
@@ -261,8 +254,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
       return false;
     }
     final Ticket other = (Ticket) obj;
-    return this.getId() == other.getId() ||
-        (this.getId() != null && this.getId().equals(other.getId()));
+    return Objects.equals(this.getId(), other.getId());
   }
 
   @Override
@@ -280,7 +272,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
 
   public abstract ShareableAccessControl getAccessControl();
 
-  public abstract ShareableResource getResource();
+  public abstract <R> ShareableResource<R> getResource();
 
   public enum QUERY_ORDER_BY {
 

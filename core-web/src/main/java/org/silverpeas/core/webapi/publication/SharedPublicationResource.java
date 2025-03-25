@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.sharing.security.ShareableNode;
+import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 
@@ -72,7 +72,7 @@ public class SharedPublicationResource extends AbstractPublicationResource {
   @Produces(MediaType.APPLICATION_JSON)
   public PublicationEntity getPublication() {
 
-    this.ticket = checkTicket(token);
+    this.ticket = getTicketByToken(token);
 
     PublicationPK pk =
         new PublicationPK(String.valueOf(this.ticket.getSharedObjectId()), getComponentId());
@@ -81,19 +81,20 @@ public class SharedPublicationResource extends AbstractPublicationResource {
 
     String baseUri = getUri().getBaseUri().toString();
     SharingContext context = new SharingContext(baseUri, token);
-    PublicationEntity entity = super.getPublicationEntity(publication, true).withSharedContent(
-        context);
+    PublicationEntity entity = super.getPublicationEntity(publication, true)
+        .withSharedContent(context);
     setSharedURIToAttachments(entity);
     return entity;
   }
 
+  @Override
   @GET
   @Path("node/{node}")
   @Produces(MediaType.APPLICATION_JSON)
   public List<PublicationEntity> getPublications(@PathParam("node") String nodeId,
       @QueryParam("withAttachments") boolean withAttachments) {
 
-    this.ticket = checkTicket(token);
+    this.ticket = getTicketByToken(token);
 
     List<PublicationEntity> publications = super.getPublications(nodeId, withAttachments);
     setSharedURIToAttachments(publications);
@@ -120,17 +121,16 @@ public class SharedPublicationResource extends AbstractPublicationResource {
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
     nodePK.setComponentName(getComponentId());
-    NodeDetail node = super.getNodeService().getDetail(nodePK);
-    ShareableNode nodeResource = new ShareableNode(token, node);
-    return this.ticket.getAccessControl().isReadable(nodeResource);
+    NodeDetail node = getNodeService().getDetail(nodePK);
+    return this.ticket.getAccessControl().isReadable(AccessControlContext.about(node));
   }
 
-  private Ticket checkTicket(String token) {
-    Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
-    if (ticket == null || !ticket.isValid()) {
+  private Ticket getTicketByToken(String token) {
+    Ticket theTicket = SharingServiceProvider.getSharingTicketService().getTicket(token);
+    if (theTicket == null || !theTicket.isValid()) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
-    return ticket;
+    return theTicket;
   }
 
 }

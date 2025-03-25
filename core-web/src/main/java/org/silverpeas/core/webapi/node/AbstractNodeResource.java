@@ -123,7 +123,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
   }
 
   private NodeEntity[] removeSpecialNodes(NodeEntity[] nodes) {
-    List<NodeEntity> result = new ArrayList<NodeEntity>();
+    List<NodeEntity> result = new ArrayList<>();
     for (NodeEntity node : nodes) {
       if (!node.getAttr().getId().equals(NodePK.BIN_NODE_ID) && !node.getAttr().getId().equals(
           NodePK.UNCLASSED_NODE_ID)) {
