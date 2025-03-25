@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -33,6 +32,7 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.util.Date;
 
 /**
@@ -45,17 +45,9 @@ public class PublicationTicket extends Ticket {
 
   private static final long serialVersionUID = 6661700474412230957L;
 
-  private static final PublicationAccessControl accessControl = new PublicationAccessControl();
-
   public PublicationTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
       Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
-    this.sharedObjectType = PUBLICATION_TYPE;
-  }
-
-  public PublicationTicket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = PUBLICATION_TYPE;
   }
 
@@ -64,11 +56,14 @@ public class PublicationTicket extends Ticket {
   }
 
   @Override
-  public ShareableAccessControl<PublicationTicket, PublicationDetail> getAccessControl() {
-    return accessControl;
+  @Transient
+  public ShareableAccessControl getAccessControl() {
+    return new PublicationAccessControl(this);
   }
 
   @Override
+  @Transient
+  @SuppressWarnings("unchecked")
   public ShareableResource<PublicationDetail> getResource() {
     PublicationService publicationService = PublicationService.get();
     PublicationDetail publication = publicationService.getDetail(new PublicationPK(String.valueOf(getSharedObjectId()),

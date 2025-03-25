@@ -24,20 +24,20 @@
 package org.silverpeas.core.sharing.model;
 
 import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.sharing.security.AccessControlContext;
 
 /**
- * Access control to shared attachments
+ * Access control of shared documents.
  */
-public class SimpleFileAccessControl
-    extends AbstractShareableAccessControl<SimpleFileTicket, SimpleDocument> {
+public class SimpleFileAccessControl extends AbstractShareableAccessControl {
 
-  SimpleFileAccessControl() {
-    super();
+  SimpleFileAccessControl(SimpleFileTicket ticket) {
+    super(ticket);
   }
 
   @Override
-  protected boolean isReadable(SimpleFileTicket ticket, SimpleDocument document) throws Exception {
-    return ticket.getResource().getAccessedObject().equals(document);
+  public boolean isReadable(AccessControlContext context) {
+    return context.isAboutDocument()
+      && getSharingTicket().getResource().getAccessedObject().equals(context.getPublication());
   }
 }

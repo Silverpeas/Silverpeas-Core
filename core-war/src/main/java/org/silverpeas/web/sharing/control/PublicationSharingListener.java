@@ -31,10 +31,6 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 
 import javax.inject.Inject;
 
-/**
- *
- * @author neysseric
- */
 @Bean
 public class PublicationSharingListener extends CDIResourceEventListener<PublicationEvent> {
 
@@ -42,7 +38,7 @@ public class PublicationSharingListener extends CDIResourceEventListener<Publica
   private SharingTicketService service;
 
   @Override
-  public void onDeletion(final PublicationEvent event) throws Exception {
+  public void onDeletion(final PublicationEvent event) {
     String id = event.getTransition().getBefore().getId();
     service.deleteTicketsForSharedObject(Long.parseLong(id), Ticket.PUBLICATION_TYPE);
   }
