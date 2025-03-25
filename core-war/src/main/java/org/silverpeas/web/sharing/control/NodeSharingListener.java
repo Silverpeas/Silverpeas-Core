@@ -32,10 +32,6 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 
 import javax.inject.Inject;
 
-/**
- *
- * @author ehugonnet
- */
 @Bean
 public class NodeSharingListener extends CDIResourceEventListener<NodeEvent> {
 

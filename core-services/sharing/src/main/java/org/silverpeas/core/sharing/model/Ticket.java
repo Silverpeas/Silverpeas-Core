@@ -273,7 +273,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
 
   public abstract ShareableAccessControl getAccessControl();
 
-  public abstract ShareableResource getResource();
+  public abstract <R> ShareableResource<R> getResource();
 
   public enum QUERY_ORDER_BY {
 

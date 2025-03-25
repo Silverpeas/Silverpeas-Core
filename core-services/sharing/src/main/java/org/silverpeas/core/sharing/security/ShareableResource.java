@@ -34,7 +34,7 @@ public abstract class ShareableResource<T> {
   protected final String token;
   protected final T accessedObject;
 
-  public ShareableResource(String token, T accessedObject) {
+  ShareableResource(String token, T accessedObject) {
     this.token = token;
     this.accessedObject = accessedObject;
   }

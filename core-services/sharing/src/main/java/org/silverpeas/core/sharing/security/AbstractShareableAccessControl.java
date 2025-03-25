@@ -24,36 +24,23 @@
 package org.silverpeas.core.sharing.security;
 
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.sharing.services.SharingServiceProvider;
 
 /**
  * User: Yohann Chastagnier
  * Date: 05/11/13
  */
-public abstract class AbstractShareableAccessControl<T extends Ticket, R>
-    implements ShareableAccessControl<T, R> {
+public abstract class AbstractShareableAccessControl implements ShareableAccessControl {
 
-  protected AbstractShareableAccessControl() {
-    super();
+  private final Ticket ticket;
+
+  protected AbstractShareableAccessControl(Ticket ticket) {
+    this.ticket = ticket;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  final public boolean isReadable(final ShareableResource<R> resource) {
-    try {
-      Ticket ticket =
-          SharingServiceProvider.getSharingTicketService().getTicket(resource.getToken());
-      return !(ticket == null || !ticket.isValid()) &&
-          isReadable((T) ticket, resource.getAccessedObject());
-    } catch (Exception e) {
-      return false;
-    }
-  }
+  public abstract boolean isReadable(final AccessControlContext resource);
 
-  /**
-   * @param ticket ticket passed here exists and is valid.
-   * @param accessedObject
-   * @return
-   */
-  abstract protected boolean isReadable(T ticket, R accessedObject) throws Exception;
+  protected Ticket getSharingTicket() {
+    return ticket;
+  }
 }

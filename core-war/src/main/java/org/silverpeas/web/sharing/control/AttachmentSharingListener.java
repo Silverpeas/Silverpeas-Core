@@ -32,9 +32,6 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 
 import javax.inject.Inject;
 
-/**
- * @author neysseri
- */
 @Bean
 public class AttachmentSharingListener extends CDIResourceEventListener<AttachmentEvent> {
 
