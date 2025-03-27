@@ -56,6 +56,12 @@
     $else$
       <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link invitation">Schicken Sie eine Einladung</a>
     $endif$
-	  <a href="#" onclick="sp.messager.open(null, {recipientUsers: $user.id$, recipientEdition: false});" class="link notification">Senden Sie eine Nachricht</a>
+    $if(chatEnabled)$
+        <a href="#" class="link notification" title="Diskutieren mit $user.firstName$" onclick="javascript:SilverChat.gui.openChatWindow('$user.chatId$', '$user.displayedName$')">
+          Diskutieren mit $user.firstName$
+        </a>
+    $else$
+  	  <a href="#" onclick="sp.messager.open(null, {recipientUsers: $user.id$, recipientEdition: false});" class="link notification">Senden Sie eine Nachricht</a>
+    $endif$
   $endif$
 </div>
