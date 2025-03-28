@@ -24,21 +24,20 @@
 package org.silverpeas.core.sharing.model;
 
 import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
+import org.silverpeas.core.sharing.security.AccessControlContext;
 
 /**
- * Access control to shared version documents.
+ * Access control of shared versioned documents.
  */
-public class VersionFileAccessControl
-    extends AbstractShareableAccessControl<VersionFileTicket, HistorisedDocument> {
+public class VersionFileAccessControl extends AbstractShareableAccessControl {
 
-  VersionFileAccessControl() {
-    super();
+  VersionFileAccessControl(VersionFileTicket ticket) {
+    super(ticket);
   }
 
   @Override
-  protected boolean isReadable(VersionFileTicket ticket, HistorisedDocument document)
-      throws Exception {
-    return ticket.getDocument().equals(document);
+  public boolean isReadable(AccessControlContext context) {
+    VersionFileTicket theTicket = (VersionFileTicket) getSharingTicket();
+    return context.isAboutDocument() && theTicket.getDocument().equals(context.getDocument());
   }
 }

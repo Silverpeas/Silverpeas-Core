@@ -58,10 +58,6 @@ public class GetLinkFileServlet extends HttpServlet {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(keyFile);
     if (ticket != null && ticket.isValid()) {
       // recherche des infos sur le fichier...
-      String filePath = null;
-      String fileType = null;
-      String fileName = null;
-      long fileSize = 0;
       SimpleDocument document = null;
       if (ticket instanceof SimpleFileTicket) {
         document = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
@@ -69,32 +65,34 @@ public class GetLinkFileServlet extends HttpServlet {
         document = ((VersionFileTicket) ticket).getResource().getAccessedObject();
       }
       if (document != null) {
-        filePath = document.getAttachmentPath();
-        fileType = document.getContentType();
-        fileName = document.getFilename();
-        fileSize = document.getSize();
-      }
-      BufferedInputStream input = null;
-      OutputStream out = response.getOutputStream();
-      try {
+        String filePath = document.getAttachmentPath();
+        String fileType = document.getContentType();
+        String fileName = document.getFilename();
+        long fileSize = document.getSize();
+        OutputStream out = response.getOutputStream();
         File realFile = new File(filePath);
-        response.setContentType(fileType);
-        response.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
-        response.setHeader("Content-Length", String.valueOf(fileSize));
-        input = new BufferedInputStream(FileUtils.openInputStream(realFile));
-        IOUtils.copy(input, out);
-        DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());
-        SharingServiceProvider.getSharingTicketService().addDownload(download);
-        return;
-      } catch (Exception ignored) {
-      } finally {
-        if (input != null) {
-          IOUtils.closeQuietly(input);
+        try(BufferedInputStream input =
+                new BufferedInputStream(FileUtils.openInputStream(realFile))) {
+          response.setContentType(fileType);
+          response.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
+          response.setHeader("Content-Length", String.valueOf(fileSize));
+          IOUtils.copy(input, out);
+          DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());
+          SharingServiceProvider.getSharingTicketService().addDownload(download);
+        } catch (Exception ignored) {
+          sendBackInvalidTicket(request, response);
         }
-        IOUtils.closeQuietly(out);
+      } else {
+        sendBackInvalidTicket(request, response);
       }
+    } else {
+      sendBackInvalidTicket(request, response);
     }
-    getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp").forward(request,
-        response);
+  }
+
+  private void sendBackInvalidTicket(final HttpServletRequest req, final HttpServletResponse resp)
+      throws IOException, ServletException {
+    getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp")
+        .forward(req, resp);
   }
 }

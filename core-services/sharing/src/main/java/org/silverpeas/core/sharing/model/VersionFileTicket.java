@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.core.sharing.security.ShareableAccessControl;
-import org.silverpeas.core.sharing.security.ShareableResource;
-import org.silverpeas.core.sharing.security.ShareableVersionDocument;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.sharing.security.ShareableAccessControl;
+import org.silverpeas.core.sharing.security.ShareableResource;
+import org.silverpeas.core.sharing.security.ShareableVersionDocument;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.util.Date;
 
 /**
@@ -45,17 +45,9 @@ import java.util.Date;
 public class VersionFileTicket extends Ticket {
   private static final long serialVersionUID = 7046398587440076818L;
 
-  private static final VersionFileAccessControl accessControl = new VersionFileAccessControl();
-
   public VersionFileTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
-    this.sharedObjectType = VERSION_TYPE;
-  }
-
-  public VersionFileTicket(int sharedObjectId, String componentId, UserDetail creator,
-      Date creationDate, Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = VERSION_TYPE;
   }
 
@@ -76,6 +68,8 @@ public class VersionFileTicket extends Ticket {
   }
 
   @Override
+  @Transient
+  @SuppressWarnings("unchecked")
   public ShareableResource<HistorisedDocument> getResource() {
     try {
       SimpleDocumentPK pk = new SimpleDocumentPK("" + getSharedObjectId(), getComponentId());
@@ -94,7 +88,8 @@ public class VersionFileTicket extends Ticket {
   }
 
   @Override
-  public ShareableAccessControl<VersionFileTicket, HistorisedDocument> getAccessControl() {
-    return accessControl;
+  @Transient
+  public ShareableAccessControl getAccessControl() {
+    return new VersionFileAccessControl(this);
   }
 }

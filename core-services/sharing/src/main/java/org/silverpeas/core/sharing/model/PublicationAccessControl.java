@@ -24,29 +24,29 @@
 package org.silverpeas.core.sharing.model;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-
-import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
+import org.silverpeas.core.sharing.security.AccessControlContext;
 
 /**
- * Access control to shared publications and their content
+ * Access control of shared publications and their attachments.
  */
-public class PublicationAccessControl<R>
-    extends AbstractShareableAccessControl<PublicationTicket, R> {
+public class PublicationAccessControl extends AbstractShareableAccessControl {
 
-  PublicationAccessControl() {
-    super();
+  PublicationAccessControl(PublicationTicket ticket) {
+    super(ticket);
   }
 
   @Override
-  protected boolean isReadable(PublicationTicket ticket, R accessedObject) throws Exception {
-    if (accessedObject instanceof SimpleDocument) {
-      SimpleDocument attachment = (SimpleDocument) accessedObject;
-      return attachment.getForeignId().equals(String.valueOf(ticket.getSharedObjectId()));
+  public boolean isReadable(AccessControlContext context) {
+    if (context.isAboutDocument()) {
+      SimpleDocument document = context.getDocument();
+      return document.getForeignId()
+          .equals(String.valueOf(getSharingTicket().getSharedObjectId()));
     }
-    if (accessedObject instanceof PublicationDetail) {
-      PublicationDetail publication = (PublicationDetail) accessedObject;
-      return ticket.getResource().getAccessedObject().equals(publication);
+    if (context.isAboutPublication()) {
+      PublicationDetail publication = context.getPublication();
+      return getSharingTicket().getResource().getAccessedObject().equals(publication);
     }
     return false;
   }

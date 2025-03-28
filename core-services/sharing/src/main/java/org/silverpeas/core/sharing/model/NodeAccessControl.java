@@ -32,41 +32,41 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
+import org.silverpeas.core.sharing.security.AccessControlContext;
 
 import java.util.Collection;
 
 /**
- * Access control to shared nodes and their content.
+ * Access control of shared nodes and their content (publications and their attachments).
  */
-public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTicket, R> {
+public class NodeAccessControl extends AbstractShareableAccessControl {
 
-  NodeAccessControl() {
-    super();
+  NodeAccessControl(NodeTicket ticket) {
+    super(ticket);
   }
 
   @Override
-  protected boolean isReadable(NodeTicket ticket, R accessedObject) {
-    NodePK nodePk = new NodePK(String.valueOf(ticket.getSharedObjectId()), ticket.getComponentId());
+  public boolean isReadable(AccessControlContext context) {
+    NodePK nodePk = new NodePK(String.valueOf(getSharingTicket().getSharedObjectId()),
+        getSharingTicket().getComponentId());
     Collection<NodePK> authorizedNodes = getNodeDescendants(nodePk);
     authorizedNodes.add(nodePk);
-    if (accessedObject instanceof SimpleDocument) {
-      SimpleDocument attachment = (SimpleDocument) accessedObject;
+    if (context.isAboutDocument()) {
+      SimpleDocument attachment = context.getDocument();
       return isPublicationReadable(new ResourceReference(attachment.
           getForeignId(), attachment.getInstanceId()), nodePk.getInstanceId(), authorizedNodes);
     }
-    if (accessedObject instanceof NodeDetail) {
-      NodeDetail node = (NodeDetail) accessedObject;
-      return authorizedNodes.contains(node.getNodePK());
-    }
-    return false;
+    NodeDetail node = context.getNode();
+    return authorizedNodes.contains(node.getNodePK());
   }
 
   protected Collection<NodePK> getPublicationFathers(ResourceReference pk) {
     return getPublicationService().getAllFatherPKInSamePublicationComponentInstance(new PublicationPK(pk.getId(), pk.getInstanceId()));
   }
 
-  protected Collection<Location> getPublicationAliases(ResourceReference pk) {
-    return getPublicationService().getAllLocations(new PublicationPK(pk.getId(), pk.getInstanceId()));
+  protected Collection<Location> getPublicationLocations(ResourceReference pk) {
+    return getPublicationService().getAllLocations(new PublicationPK(pk.getId(),
+        pk.getInstanceId()));
   }
 
   protected Collection<NodePK> getNodeDescendants(NodePK pk) {
@@ -81,10 +81,10 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
     } else {
       // special case of an alias between two ECM applications
       // check if publication which contains attachment is an alias into this node
-      Collection<Location> locations = getPublicationAliases(pk);
+      Collection<Location> locations = getPublicationLocations(pk);
       for (Location location : locations) {
-        NodePK aliasPK = new NodePK(location.getId(), location.getInstanceId());
-        if (authorizedNodes.contains(aliasPK)) {
+        NodePK father = new NodePK(location.getId(), location.getInstanceId());
+        if (!location.isAlias() && authorizedNodes.contains(father)) {
           return true;
         }
       }

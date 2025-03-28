@@ -32,10 +32,6 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 
 import javax.inject.Inject;
 
-/**
- *
- * @author ehugonnet
- */
 @Bean
 public class NodeSharingListener extends CDIResourceEventListener<NodeEvent> {
 
@@ -43,7 +39,7 @@ public class NodeSharingListener extends CDIResourceEventListener<NodeEvent> {
   private SharingTicketService service;
 
   @Override
-  public void onDeletion(final NodeEvent event) throws Exception {
+  public void onDeletion(final NodeEvent event) {
     NodePK nodePK = event.getTransition().getBefore().getNodePK();
     service.deleteTicketsForSharedObject(Long.parseLong(nodePK.getId()), Ticket.NODE_TYPE);
   }

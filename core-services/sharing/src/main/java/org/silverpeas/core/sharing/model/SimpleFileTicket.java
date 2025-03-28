@@ -23,16 +23,17 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.core.sharing.security.ShareableAccessControl;
-import org.silverpeas.core.sharing.security.ShareableAttachment;
-import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.sharing.security.ShareableAccessControl;
+import org.silverpeas.core.sharing.security.ShareableAttachment;
+import org.silverpeas.core.sharing.security.ShareableResource;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.util.Date;
 
 /**
@@ -42,8 +43,6 @@ import java.util.Date;
 @DiscriminatorValue("Attachment")
 public class SimpleFileTicket extends Ticket {
   private static final long serialVersionUID = -475026338727454787L;
-
-  private static final SimpleFileAccessControl accessControl = new SimpleFileAccessControl();
 
   protected SimpleFileTicket() {
     this.sharedObjectType = FILE_TYPE;
@@ -62,8 +61,9 @@ public class SimpleFileTicket extends Ticket {
   }
 
   @Override
+  @Transient
   public ShareableAccessControl getAccessControl() {
-    return accessControl;
+    return new SimpleFileAccessControl(this);
   }
 
   public SimpleFileTicket(String key, int sharedObjectId, String componentId, UserDetail creator,
@@ -73,6 +73,8 @@ public class SimpleFileTicket extends Ticket {
   }
 
   @Override
+  @Transient
+  @SuppressWarnings("unchecked")
   public ShareableResource<SimpleDocument> getResource() {
     SimpleDocumentPK pk = new SimpleDocumentPK(null, getComponentId());
     pk.setOldSilverpeasId(getSharedObjectId());

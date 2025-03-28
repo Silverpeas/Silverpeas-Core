@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import java.util.Date;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareableNode;
 import org.silverpeas.core.sharing.security.ShareableResource;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+import java.util.Date;
 
 /**
  *
@@ -46,17 +45,9 @@ import org.silverpeas.core.node.model.NodePK;
 public class NodeTicket extends Ticket {
   private static final long serialVersionUID = 8560572170859334369L;
 
-  private static final NodeAccessControl<Object> accessControl = new NodeAccessControl<>();
-
   public NodeTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
       Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
-    this.sharedObjectType = NODE_TYPE;
-  }
-
-  public NodeTicket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = NODE_TYPE;
   }
 
@@ -65,11 +56,14 @@ public class NodeTicket extends Ticket {
   }
 
   @Override
-  public ShareableAccessControl<NodeTicket, Object> getAccessControl() {
-    return accessControl;
+  @Transient
+  public ShareableAccessControl getAccessControl() {
+    return new NodeAccessControl(this);
   }
 
   @Override
+  @Transient
+  @SuppressWarnings("unchecked")
   public ShareableResource<NodeDetail> getResource() {
     NodeService nodeService = NodeService.get();
     NodeDetail node = nodeService.getDetail(new NodePK(String.valueOf(getSharedObjectId()),

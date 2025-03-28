@@ -26,6 +26,7 @@ package org.silverpeas.web.sharing.control;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.sharing.model.DownloadDetail;
 import org.silverpeas.core.sharing.model.DownloadDetail.QUERY_ORDER_BY;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
@@ -133,7 +134,7 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
     return getFileSharingService().getTicket(key);
   }
 
-  public SilverpeasList getTicketDownloads(Ticket ticket) {
+  public SilverpeasList<DownloadDetail> getTicketDownloads(Ticket ticket) {
     return getFileSharingService().getTicketDownloads(ticket, downloadPagination, downloadOrderBy);
   }
 

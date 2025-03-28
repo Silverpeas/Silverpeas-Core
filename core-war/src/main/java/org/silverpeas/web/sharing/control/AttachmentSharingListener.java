@@ -32,9 +32,6 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 
 import javax.inject.Inject;
 
-/**
- * @author neysseri
- */
 @Bean
 public class AttachmentSharingListener extends CDIResourceEventListener<AttachmentEvent> {
 
@@ -42,7 +39,7 @@ public class AttachmentSharingListener extends CDIResourceEventListener<Attachme
   private SharingTicketService service;
 
   @Override
-  public void onDeletion(final AttachmentEvent event) throws Exception {
+  public void onDeletion(final AttachmentEvent event) {
     AttachmentRef attachment = event.getTransition().getBefore();
     if (attachment != null) {
       service.deleteTicketsForSharedObject(attachment.getOldSilverpeasId(), Ticket.FILE_TYPE);

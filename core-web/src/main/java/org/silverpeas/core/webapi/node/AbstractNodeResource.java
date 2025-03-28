@@ -55,7 +55,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return the application root and its children
    */
-  protected NodeEntity getRoot() {
+  protected NodeEntity getRootNode() {
     NodeDetail node = getNodeDetail(NodePK.ROOT_NODE_ID);
     if (!isNodeReadable(node)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
@@ -76,10 +76,10 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return NodeEntity representing asking node
    */
-  protected NodeEntity getNode(String path) {
+  protected NodeEntity getNodeByPath(String path) {
     String nodeId = getNodeIdFromURI(path);
     if (nodeId.equals(NodePK.ROOT_NODE_ID)) {
-      return getRoot();
+      return getRootNode();
     } else {
       NodeDetail node = getNodeDetail(nodeId);
       if (!isNodeReadable(node)) {
@@ -95,7 +95,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return an array of NodeEntity representing children
    */
-  protected NodeEntity[] getChildren(String path) {
+  protected NodeEntity[] getChildrenOfNodeByPath(String path) {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
     NodeDetail node = getNodeDetail(nodeId);
@@ -123,7 +123,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
   }
 
   private NodeEntity[] removeSpecialNodes(NodeEntity[] nodes) {
-    List<NodeEntity> result = new ArrayList<NodeEntity>();
+    List<NodeEntity> result = new ArrayList<>();
     for (NodeEntity node : nodes) {
       if (!node.getAttr().getId().equals(NodePK.BIN_NODE_ID) && !node.getAttr().getId().equals(
           NodePK.UNCLASSED_NODE_ID)) {

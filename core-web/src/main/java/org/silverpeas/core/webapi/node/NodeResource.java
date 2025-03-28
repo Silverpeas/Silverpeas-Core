@@ -52,14 +52,14 @@ public class NodeResource extends AbstractNodeResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getRoot() {
-    return super.getRoot();
+    return getRootNode();
   }
 
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getNode(@PathParam("path") String path) {
-    return super.getNode(path);
+    return getNodeByPath(path);
   }
 
   /**
@@ -71,7 +71,7 @@ public class NodeResource extends AbstractNodeResource {
   @Path("{path: [0-9]+(/[0-9]+)*/children}")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity[] getChildren(@PathParam("path") String path) {
-    return super.getChildren(path);
+    return getChildrenOfNodeByPath(path);
   }
 
   @Override
