@@ -67,7 +67,7 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   @Path("{id}/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getFileContent(final @PathParam("id") String attachmentId) {
-    return super.getFileContent(attachmentId);
+    return getAttachmentContent(attachmentId);
   }
 
   @GET

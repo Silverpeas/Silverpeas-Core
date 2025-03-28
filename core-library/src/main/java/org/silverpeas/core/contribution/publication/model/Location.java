@@ -118,7 +118,7 @@ public class Location extends NodePK {
     return super.hashCode();
   }
 
-  public class Alias implements Serializable {
+  public static class Alias implements Serializable {
     private String userId;
     private transient String userName;
     private Date date;

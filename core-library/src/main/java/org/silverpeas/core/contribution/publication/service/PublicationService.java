@@ -278,7 +278,8 @@ public interface PublicationService {
   void removeAliases(PublicationPK pubPK, Collection<Location> aliases);
 
   /**
-   * Gets all the publications attached to the specified father.
+   * Gets all the publications attached to the specified father. The aliasing property of the
+   * publications isn't set.
    * @param fatherPK the identifying key of the father.
    * @return a collection of {@link PublicationDetail} instances.
    */
@@ -286,7 +287,7 @@ public interface PublicationService {
 
   /**
    * Gets all the publications attached to the specified father ordered as indicated by the sorting
-   * directive.
+   * directive. The aliasing property of the publications isn't set.
    * @param fatherPK the identifying key of the father.
    * @param sorting a sorting directive. Must be in the form of
    * "P.[publication detail attribute] (DESC|ASC)"
@@ -296,7 +297,7 @@ public interface PublicationService {
 
   /**
    * Gets all the publications attached to the specified father, ordered as indicated by the sorting
-   * directive, according to the visibility.
+   * directive, according to the visibility. The aliasing property of the publications isn't set.
    * @param fatherPK the identifying key of the father.
    * @param sorting a sorting directive. Must be in the form of
    * "P.[publication detail attribute] (DESC|ASC)"
@@ -304,6 +305,14 @@ public interface PublicationService {
    * @return a collection of {@link PublicationDetail} instances.
    */
   Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting, boolean filterOnVisibilityPeriod);
+
+  /**
+   * Gets all the publications that are currently visible and located into the specified node.
+   * For each returned publications, their aliasing property is valued.
+   * @param fatherPK the unique identifier of the node father of the publications.
+   * @return a list of {@link PublicationDetail} instances.
+   */
+  Collection<PublicationDetail> getVisiblePublicationsIn(NodePK fatherPK);
 
   /**
    * Gets all the publications attached to the specified father, ordered as indicated by the sorting

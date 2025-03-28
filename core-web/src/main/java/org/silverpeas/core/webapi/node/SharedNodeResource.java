@@ -52,19 +52,17 @@ public class SharedNodeResource extends AbstractNodeResource {
     return PATH;
   }
 
-  @Override
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getRoot() {
-    return super.getRoot();
+    return getRootNode();
   }
 
-  @Override
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getNode(@PathParam("path") String path) {
-    return super.getNode(path);
+    return getNodeByPath(path);
   }
 
   /**
@@ -72,12 +70,11 @@ public class SharedNodeResource extends AbstractNodeResource {
    *
    * @return an array of NodeEntity representing children
    */
-  @Override
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*/children}")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity[] getChildren(@PathParam("path") String path) {
-    return super.getChildren(path);
+    return getChildrenOfNodeByPath(path);
   }
 
   @Override

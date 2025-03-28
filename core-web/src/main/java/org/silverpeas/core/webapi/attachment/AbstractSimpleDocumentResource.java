@@ -59,10 +59,6 @@ public abstract class AbstractSimpleDocumentResource extends RESTWebService {
     return "org.silverpeas.util.attachment.multilang.attachment";
   }
 
-  /**
-   * Check the file.
-   * @param fileToCheck
-   */
   protected void checkUploadedFile(File fileToCheck) {
     try {
 
@@ -85,10 +81,6 @@ public abstract class AbstractSimpleDocumentResource extends RESTWebService {
     }
   }
 
-  /**
-   * Manages the runtime errors.
-   * @param re
-   */
   protected void performRuntimeException(RuntimeException re) {
     String transverseExceptionMessage = SilverpeasTransverseErrorUtil
         .performExceptionMessage(re, getUserPreferences().getLanguage());
