@@ -29,8 +29,8 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
@@ -49,15 +49,40 @@ public abstract class AbstractNodeResource extends RESTWebService {
     return componentId;
   }
 
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public NodeEntity getRoot() {
+    return getRootNode();
+  }
+
+  @GET
+  @Path("{path: [0-9]+(/[0-9]+)*}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public NodeEntity getNode(@PathParam("path") String path) {
+    return getNodeByPath(path);
+  }
+
+  /**
+   * Get all children of any node of the application.
+   *
+   * @return an array of NodeEntity representing children
+   */
+  @GET
+  @Path("{path: [0-9]+(/[0-9]+)*/children}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public NodeEntity[] getChildren(@PathParam("path") String path) {
+    return getChildrenOfNodeByPath(path);
+  }
+
   /**
    * Get the root of the application and its children. As this service works only in non
    * authenticated mode for the moment, children do not contain special nodes.
    *
    * @return the application root and its children
    */
-  protected NodeEntity getRoot() {
+  protected NodeEntity getRootNode() {
     NodeDetail node = getNodeDetail(NodePK.ROOT_NODE_ID);
-    if (!isNodeReadable(node)) {
+    if (isNodeNotReadable(node)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
     URI uri = getUri().getRequestUriBuilder().path(node.getNodePK().getId()).build();
@@ -76,13 +101,13 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return NodeEntity representing asking node
    */
-  protected NodeEntity getNode(String path) {
+  protected NodeEntity getNodeByPath(String path) {
     String nodeId = getNodeIdFromURI(path);
     if (nodeId.equals(NodePK.ROOT_NODE_ID)) {
-      return getRoot();
+      return getRootNode();
     } else {
       NodeDetail node = getNodeDetail(nodeId);
-      if (!isNodeReadable(node)) {
+      if (isNodeNotReadable(node)) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
       URI uri = getUri().getRequestUri();
@@ -95,11 +120,11 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return an array of NodeEntity representing children
    */
-  protected NodeEntity[] getChildren(String path) {
+  protected NodeEntity[] getChildrenOfNodeByPath(String path) {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
     NodeDetail node = getNodeDetail(nodeId);
-    if (!isNodeReadable(node)) {
+    if (isNodeNotReadable(node)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
     String requestUri = getUri().getRequestUri().toString();
@@ -112,6 +137,10 @@ public abstract class AbstractNodeResource extends RESTWebService {
   }
 
   protected abstract boolean isNodeReadable(NodeDetail node);
+
+  private boolean isNodeNotReadable(NodeDetail node) {
+    return !isNodeReadable(node);
+  }
 
   private String getNodeIdFromURI(String uri) {
     String[] nodeIds = uri.split("/");

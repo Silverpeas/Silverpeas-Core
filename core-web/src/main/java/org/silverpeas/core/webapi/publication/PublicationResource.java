@@ -90,10 +90,9 @@ public class PublicationResource extends AbstractPublicationResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Override
-  public List<PublicationEntity> getPublications(@QueryParam("node") String nodeId,
+  public List<PublicationEntity> listPublications(@QueryParam("node") String nodeId,
       @QueryParam("withAttachments") boolean withAttachments) {
-    List<PublicationEntity> publications = super.getPublications(nodeId, withAttachments);
+    List<PublicationEntity> publications = getPublications(nodeId, true, withAttachments);
     setURIToAttachments(publications);
     return publications;
   }

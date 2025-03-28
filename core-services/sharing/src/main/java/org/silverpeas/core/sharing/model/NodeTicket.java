@@ -26,7 +26,6 @@ package org.silverpeas.core.sharing.model;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareableNode;
 import org.silverpeas.core.sharing.security.ShareableResource;
