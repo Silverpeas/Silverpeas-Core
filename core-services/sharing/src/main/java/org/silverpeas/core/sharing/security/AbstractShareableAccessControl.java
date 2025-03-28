@@ -37,9 +37,6 @@ public abstract class AbstractShareableAccessControl implements ShareableAccessC
     this.ticket = ticket;
   }
 
-  @Override
-  public abstract boolean isReadable(final AccessControlContext resource);
-
   protected Ticket getSharingTicket() {
     return ticket;
   }

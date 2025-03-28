@@ -49,10 +49,6 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
 
   private static final long serialVersionUID = -8855028133035807994L;
 
-  /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   */
   @Override
   public String getSessionControlBeanName() {
     return "FileSharing";

@@ -268,23 +268,23 @@ class FileUtilTest {
   }
 
   @Test
-  void testVerifyTaintedData() {
-    assertThat(FileUtil.verifyTaintedData("a.b"), is("a.b"));
-    assertThat(FileUtil.verifyTaintedData(""), is(""));
-    assertThat(FileUtil.verifyTaintedData("null"), is("null"));
-    assertThat(FileUtil.verifyTaintedData("."), is("."));
-    assertThat(FileUtil.verifyTaintedData(File.separator + "."), is(File.separator + "."));
-    assertThat(FileUtil.verifyTaintedData("." + File.separator), is("." + File.separator));
+  void testCheckTaintedData() {
+    assertThat(FileUtil.checkTaintedData("a.b"), is("a.b"));
+    assertThat(FileUtil.checkTaintedData(""), is(""));
+    assertThat(FileUtil.checkTaintedData("null"), is("null"));
+    assertThat(FileUtil.checkTaintedData("."), is("."));
+    assertThat(FileUtil.checkTaintedData(File.separator + "."), is(File.separator + "."));
+    assertThat(FileUtil.checkTaintedData("." + File.separator), is("." + File.separator));
     assertThrows(IllegalArgumentException.class,
-        () -> FileUtil.verifyTaintedData(File.separator + ".." + File.separator));
+        () -> FileUtil.checkTaintedData(File.separator + ".." + File.separator));
     assertThrows(IllegalArgumentException.class,
-        () -> FileUtil.verifyTaintedData(".." + File.separator));
+        () -> FileUtil.checkTaintedData(".." + File.separator));
     assertThrows(IllegalArgumentException.class,
-        () -> FileUtil.verifyTaintedData(File.separator + ".."));
+        () -> FileUtil.checkTaintedData(File.separator + ".."));
     assertThrows(IllegalArgumentException.class,
-        () -> FileUtil.verifyTaintedData(".."));
+        () -> FileUtil.checkTaintedData(".."));
     assertThrows(IllegalArgumentException.class,
-        () -> FileUtil.verifyTaintedData("a..b"));
+        () -> FileUtil.checkTaintedData("a..b"));
   }
 
 }

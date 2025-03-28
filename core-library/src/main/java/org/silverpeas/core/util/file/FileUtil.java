@@ -46,7 +46,9 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -104,7 +106,7 @@ public class FileUtil {
   private static String computeMimeType(final String fileName) {
     String mimeType = null;
     File file = new File(fileName);
-    if (file.exists()) {
+    if (Files.exists(file.toPath())) {
       mimeType = getMimeTypeByMetadata(file);
     }
     final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
@@ -448,10 +450,33 @@ public class FileUtil {
    * @param value a string data representing a path.
    * @return the given data.
    */
-  public static String verifyTaintedData(String value) {
+  public static String checkTaintedData(String value) {
     if (isDefined(value) && value.contains("..")) {
       throw new IllegalArgumentException(String.format("Value '%s' is forbidden", value));
     }
     return value;
+  }
+
+  /**
+   * Checks the specified file name doesn't contain invalid characters for the underlying OS,
+   * otherwise it throws an {@link java.nio.file.InvalidPathException} exception. If an attempt
+   * to go back in the filesystem is detected, then an {@link IllegalArgumentException} is thrown.
+   * @param fileName the name of the file
+   * @throws IllegalArgumentException if the filename is empty, exceeds the number of characters
+   * limitation or is a path.
+   * @throws InvalidPathException if the filename contains invalid characters for the underlying OS.
+   */
+  public static void checkFileName(String fileName) {
+    if (fileName == null || fileName.isEmpty() || fileName.length() > 255) {
+      throw new InvalidPathException(fileName == null ? "": fileName,
+          "The file name is invalid: either it is empty or exceeds the size limit");
+    }
+    boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    if ((isWindows && fileName.contains("\\")) || fileName.contains("/")) {
+      throw new IllegalArgumentException(String.format(
+          "File name '%s' isn't a filename but a path", fileName));
+    }
+    checkTaintedData(fileName);
+    Paths.get(fileName);
   }
 }

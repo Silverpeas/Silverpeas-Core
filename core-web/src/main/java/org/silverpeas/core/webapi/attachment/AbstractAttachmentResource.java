@@ -51,7 +51,7 @@ public abstract class AbstractAttachmentResource extends RESTWebService {
     return componentId;
   }
 
-  protected Response getFileContent(String attachmentId) {
+  protected Response getAttachmentContent(String attachmentId) {
     final SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(new SimpleDocumentPK(attachmentId), null);
     if (attachment == null) {

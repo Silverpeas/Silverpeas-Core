@@ -35,6 +35,7 @@ import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -43,6 +44,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilderException;
 import java.io.*;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
@@ -67,7 +69,7 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   @Path("{id}/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getFileContent(final @PathParam("id") String attachmentId) {
-    return super.getFileContent(attachmentId);
+    return getAttachmentContent(attachmentId);
   }
 
   @GET
@@ -112,9 +114,10 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   @Path("zipcontent/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getZipContent(@PathParam("name") String zipFileName) {
+    checkFileName(zipFileName);
     String zipFilePath = FileRepositoryManager.getTemporaryPath() + zipFileName;
     File realFile = new File(zipFilePath);
-    if (!realFile.exists() && !realFile.isFile()) {
+    if (!Files.exists(realFile.toPath()) && !Files.isRegularFile(realFile.toPath())) {
       return Response.ok().build();
     } else {
       try(ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -138,6 +141,14 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
 
   protected String getToken() {
     return token;
+  }
+
+  private void checkFileName(String fileName) {
+    try {
+      FileUtil.checkFileName(fileName);
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestException(e.getMessage());
+    }
   }
 
 }

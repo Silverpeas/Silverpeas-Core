@@ -28,11 +28,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 /**
  * A REST Web resource providing access to a node through private mode.
@@ -47,31 +43,6 @@ public class NodeResource extends AbstractNodeResource {
   @Override
   protected String getResourceBasePath() {
     return PATH;
-  }
-
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity getRoot() {
-    return super.getRoot();
-  }
-
-  @GET
-  @Path("{path: [0-9]+(/[0-9]+)*}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity getNode(@PathParam("path") String path) {
-    return super.getNode(path);
-  }
-
-  /**
-   * Get all children of any node of the application.
-   *
-   * @return an array of NodeEntity representing children
-   */
-  @GET
-  @Path("{path: [0-9]+(/[0-9]+)*/children}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity[] getChildren(@PathParam("path") String path) {
-    return super.getChildren(path);
   }
 
   @Override

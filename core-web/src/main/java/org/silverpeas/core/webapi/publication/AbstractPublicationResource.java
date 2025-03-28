@@ -51,33 +51,39 @@ import java.util.stream.Collectors;
 public abstract class AbstractPublicationResource extends RESTWebService {
 
   /**
-   * Gets the nodes that are children of a parent node.
+   * Gets all the publications in the specified topic (a folder or a category) with or not their
+   * attachments.
    *
-   * @param nodeId The ID of the parent node.
-   * @param withAttachments Indicated whether attachments related to publications are required.
-   * @return An array of the nodes whose parent is the node matching the specified ID.
+   * @param nodeId The unique identifier of the node representing the topic.
+   * @param includingAliases  are the publication aliases in the topic have to be also taken into
+   * account.
+   * @param withAttachments are the attachments of the publications have to be also got with them.
+   * @return a list of the publications in the given topic. If no publications are located in the
+   * specified topic, then an empty list is returned.
    */
-  protected List<PublicationEntity> getPublications(String nodeId, boolean withAttachments) {
+  protected List<PublicationEntity> getPublications(String nodeId,
+      boolean includingAliases, boolean withAttachments) {
 
     NodePK nodePK = new NodePK(nodeId, getComponentId());
     if (!isNodeReadable(nodePK)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
 
-    Collection<PublicationDetail> publications = getPublicationService().getDetailsByFatherPK(
-        nodePK, null, true);
-
+    var publications = getPublicationService().getVisiblePublicationsIn(nodePK);
     List<PublicationEntity> entities = new ArrayList<>();
     for (PublicationDetail publication : publications) {
-      PublicationEntity entity = getPublicationEntity(publication, withAttachments);
-      if (entity != null) {
-        entities.add(entity);
+      if (includingAliases || !publication.isAlias()) {
+        PublicationEntity entity = getPublicationEntity(publication, withAttachments);
+        if (entity != null) {
+          entities.add(entity);
+        }
       }
     }
     return entities;
   }
 
-  protected PublicationEntity getPublicationEntity(PublicationDetail publication, boolean withAttachments) {
+  protected PublicationEntity getPublicationEntity(PublicationDetail publication,
+      boolean withAttachments) {
     if (publication.isValid()) {
       URI uri = getPublicationUri(publication);
       PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);

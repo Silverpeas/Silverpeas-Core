@@ -753,6 +753,17 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
+  public Collection<PublicationDetail> getVisiblePublicationsIn(NodePK fatherPK) {
+    Collection<PublicationDetail> publications = getDetailsByFatherPK(fatherPK, null, true);
+    for (PublicationDetail publication : publications) {
+      var aliases = getAllAliases(publication.getPK());
+      //noinspection SuspiciousMethodCalls
+      publication.setAlias(aliases.contains(fatherPK));
+    }
+    return publications;
+  }
+
+  @Override
   public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
       boolean filterOnVisibilityPeriod, String userId) {
 

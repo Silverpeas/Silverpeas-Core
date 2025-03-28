@@ -31,8 +31,8 @@ public enum OsEnum {
   WINDOWS_XP("Windows XP", true), WINDOWS_9X("win9x", true), WINDOWS_VISTA("Windows Vista", true),
   WINDOWS_SEVEN("Windows 7", true), LINUX("Linux", false), MAC_OSX("Mac OS X", false),
   OS_400("os/400", false), Z_OS("z/os", false), OPENVMS("openvms", false), NETWARE("netware", false);
-  protected final boolean windows;
-  protected final String name;
+  private final boolean windows;
+  private final String name;
 
   OsEnum(String name, boolean windows) {
     this.windows = windows;
