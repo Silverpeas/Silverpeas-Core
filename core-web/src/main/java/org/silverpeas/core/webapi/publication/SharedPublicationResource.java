@@ -87,16 +87,15 @@ public class SharedPublicationResource extends AbstractPublicationResource {
     return entity;
   }
 
-  @Override
   @GET
   @Path("node/{node}")
   @Produces(MediaType.APPLICATION_JSON)
-  public List<PublicationEntity> getPublications(@PathParam("node") String nodeId,
+  public List<PublicationEntity> listPublications(@PathParam("node") String nodeId,
       @QueryParam("withAttachments") boolean withAttachments) {
 
     this.ticket = getTicketByToken(token);
 
-    List<PublicationEntity> publications = super.getPublications(nodeId, withAttachments);
+    List<PublicationEntity> publications = getPublications(nodeId, false, withAttachments);
     setSharedURIToAttachments(publications);
     return publications;
   }

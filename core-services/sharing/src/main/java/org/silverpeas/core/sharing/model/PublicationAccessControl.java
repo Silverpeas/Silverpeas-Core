@@ -33,7 +33,7 @@ import org.silverpeas.core.sharing.security.AccessControlContext;
  */
 public class PublicationAccessControl extends AbstractShareableAccessControl {
 
-  PublicationAccessControl(PublicationTicket ticket) {
+  PublicationAccessControl(Ticket ticket) {
     super(ticket);
   }
 

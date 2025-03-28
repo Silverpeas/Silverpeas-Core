@@ -41,7 +41,7 @@ import java.util.Collection;
  */
 public class NodeAccessControl extends AbstractShareableAccessControl {
 
-  NodeAccessControl(NodeTicket ticket) {
+  NodeAccessControl(Ticket ticket) {
     super(ticket);
   }
 
@@ -64,7 +64,7 @@ public class NodeAccessControl extends AbstractShareableAccessControl {
     return getPublicationService().getAllFatherPKInSamePublicationComponentInstance(new PublicationPK(pk.getId(), pk.getInstanceId()));
   }
 
-  protected Collection<Location> getPublicationAliases(ResourceReference pk) {
+  protected Collection<Location> getPublicationLocations(ResourceReference pk) {
     return getPublicationService().getAllLocations(new PublicationPK(pk.getId(),
         pk.getInstanceId()));
   }
@@ -81,10 +81,10 @@ public class NodeAccessControl extends AbstractShareableAccessControl {
     } else {
       // special case of an alias between two ECM applications
       // check if publication which contains attachment is an alias into this node
-      Collection<Location> locations = getPublicationAliases(pk);
+      Collection<Location> locations = getPublicationLocations(pk);
       for (Location location : locations) {
-        NodePK aliasPK = new NodePK(location.getId(), location.getInstanceId());
-        if (authorizedNodes.contains(aliasPK)) {
+        NodePK father = new NodePK(location.getId(), location.getInstanceId());
+        if (!location.isAlias() && authorizedNodes.contains(father)) {
           return true;
         }
       }

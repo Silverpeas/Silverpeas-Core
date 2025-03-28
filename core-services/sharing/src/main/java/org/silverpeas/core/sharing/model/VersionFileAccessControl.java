@@ -31,7 +31,7 @@ import org.silverpeas.core.sharing.security.AccessControlContext;
  */
 public class VersionFileAccessControl extends AbstractShareableAccessControl {
 
-  VersionFileAccessControl(VersionFileTicket ticket) {
+  VersionFileAccessControl(Ticket ticket) {
     super(ticket);
   }
 

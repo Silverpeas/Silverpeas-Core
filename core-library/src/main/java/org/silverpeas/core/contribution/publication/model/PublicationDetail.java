@@ -1067,8 +1067,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
-    if (!isValid()) {
-      // a not valid publication can not be shared
+    if (!isValid() || isAlias()) {
+      // neither a non validated publication nor an alias can not be shared
       return false;
     }
 

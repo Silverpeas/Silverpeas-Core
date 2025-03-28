@@ -31,7 +31,7 @@ import org.silverpeas.core.sharing.security.AccessControlContext;
  */
 public class SimpleFileAccessControl extends AbstractShareableAccessControl {
 
-  SimpleFileAccessControl(SimpleFileTicket ticket) {
+  SimpleFileAccessControl(Ticket ticket) {
     super(ticket);
   }
 
