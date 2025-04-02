@@ -23,12 +23,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight" %>
-<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
@@ -39,23 +37,28 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<fmt:message key="JSPP.BinDeleteConfirm" var="BinDeleteConfirm"/>
-<fmt:message key="JSPP.BinDeleteConfirmSelected" var="BinDeleteConfirmSelected"/>
-<fmt:message key="JSPP.BinRestoreSelected" var="BinRestoreSelected"/>
-<fmt:message key="JSPP.BinAfterRestoreAskNavSpace" var="BinAfterRestoreAskNavSpace"/>
-<fmt:message key="JSPP.BinAfterRestoreAskNavComponent" var="BinAfterRestoreAskNavComponent"/>
+<fmt:message key="JSPP.Bin" var="binTitle"/>
+<fmt:message key="JSPP.BinRestore" var="binRestoreOp"/>
+<fmt:message key="JSPP.BinDelete" var="binDeleteOp"/>
+<fmt:message key="JSPP.BinDeleteConfirm" var="binDeleteConfirm"/>
+<fmt:message key="JSPP.BinDeleteConfirmSelected" var="binDeleteConfirmSelected"/>
+<fmt:message key="JSPP.BinRestoreSelected" var="binRestoreSelected"/>
+<fmt:message key="JSPP.BinAfterRestoreAskNavSpace" var="binAfterRestoreAskNavSpace"/>
+<fmt:message key="JSPP.BinAfterRestoreAskNavComponent" var="binAfterRestoreAskNavComponent"/>
 
-<%
-List removedSpaces 		= (List) request.getAttribute("Spaces");
-List removedComponents 	= (List) request.getAttribute("Components");
+<fmt:message key="JSPP.restoreAll" var="binRestoreAllIcon" bundle="${icons}"/>
+<c:url var="binRestoreAllIcon" value="${binRestoreAllIcon}"/>
+<fmt:message key="JSPP.deleteAll" var="binDeleteAllIcon" bundle="${icons}"/>
+<c:url var="binDeleteAllIcon" value="${binDeleteAllIcon}"/>
+<fmt:message key="JSPP.restore" var="binRestoreIcom" bundle="${icons}"/>
+<c:url var="binRestoreIcom" value="${binRestoreIcom}"/>
+<fmt:message key="JSPP.delete" var="binDeleteIcon" bundle="${icons}"/>
+<c:url var="binDeleteIcon" value="${binDeleteIcon}"/>
 
-operationPane.addOperation(resource.getIcon("JSPP.restoreAll"),resource.getString("JSPP.BinRestore"),"javascript:onClick=restore()");
-operationPane.addOperation(resource.getIcon("JSPP.deleteAll"),resource.getString("JSPP.BinDelete"),"javascript:onClick=remove()");
-
-browseBar.setComponentName(resource.getString("JSPP.Bin"));
-
-boolean emptyBin = true;
-%>
+<c:set var="removedSpaces" value="${requestScope.Spaces}"/>
+<c:set var="removedComponents" value="${requestScope.Components}"/>
+<c:set var="emptyBin"
+	   value="${fn:length(removedSpaces) == 0 && fn:length(removedComponents) == 0}"/>
 
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true">
@@ -63,13 +66,13 @@ boolean emptyBin = true;
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
 function removeItem(id) {
-  jQuery.popup.confirm("${silfn:escapeJs(BinDeleteConfirm)}", function() {
+	sp.popup.confirm("${silfn:escapeJs(binDeleteConfirm)}", function() {
     performRemove({'ItemId' : id});
   });
 }
 
 function remove() {
-  jQuery.popup.confirm("${silfn:escapeJs(BinDeleteConfirmSelected)}", function() {
+  sp.popup.confirm("${silfn:escapeJs(binDeleteConfirmSelected)}", function() {
     performRemove(sp.form.serializeJson(document.forms.binForm));
   });
 }
@@ -88,7 +91,7 @@ function restoreItem(id) {
 }
 
 function restore() {
-  jQuery.popup.confirm("${silfn:escapeJs(BinRestoreSelected)}", function() {
+  sp.popup.confirm("${silfn:escapeJs(binRestoreSelected)}", function() {
     performRestore(sp.form.serializeJson(document.forms.binForm));
   });
 }
@@ -102,19 +105,19 @@ function performRestore(params) {
       .then(function (restoreContext) {
         const action = {};
         if (restoreContext.spaceIds.length === 1 && restoreContext.componentIds.length === 0) {
-          action.confirmMsg = "${silfn:escapeJs(BinAfterRestoreAskNavSpace)}";
+          action.confirmMsg = "${silfn:escapeJs(binAfterRestoreAskNavSpace)}";
           action.execute = function() {
             spAdminWindow.loadSpace(restoreContext.spaceIds[0]);
           }
         } else if (restoreContext.spaceIds.length === 0 && restoreContext.componentIds.length === 1) {
-          action.confirmMsg = "${silfn:escapeJs(BinAfterRestoreAskNavComponent)}";
+          action.confirmMsg = "${silfn:escapeJs(binAfterRestoreAskNavComponent)}";
           action.execute = function() {
             spAdminWindow.loadComponent(restoreContext.componentIds[0]);
           }
         }
         if (action.confirmMsg) {
           spProgressMessage.hide();
-          jQuery.popup.confirm(action.confirmMsg, {
+          sp.popup.confirm(action.confirmMsg, {
             forceTitle : '',
             callback : action.execute,
             alternativeCallback : smoothReload,
@@ -134,18 +137,17 @@ function smoothReload() {
   }, spProgressMessage.hide)
 }
 
-function jqCheckAll2(id, name)
-{
+function jqCheckAll2(id, name) {
    $("input[name='" + name + "'][type='checkbox']").attr('checked', $('#' + id).is(':checked'));
 }
 
 $(document).ready(function() {
-  // By suppling no content attribute, the library uses each elements title attribute by default
+  // By supplying no content attribute, the library uses each elements title attribute by default
   $('.item-path').qtip({
     content : {
       text : false,
       title : {
-        text : "<%=resource.getString("GML.path")%>"
+        text : '<fmt:message key="GML.path"/>'
       }
     },
     style : {
@@ -165,94 +167,116 @@ $(document).ready(function() {
 </script>
 </view:sp-head-part>
 <view:sp-body-part cssClass="page_content_admin">
-<%
-out.println(window.printBefore());
-out.println(frame.printBefore());
-%>
+<view:browseBar componentId="${binTitle}"/>
+<view:operationPane>
+	<view:operation action="javascript:restore()" altText="${binRestoreOp}"
+					icon="${binRestoreAllIcon}"/>
+	<view:operation action="javascript:remove()" altText="${binDeleteOp}" icon="${binDeleteAllIcon}"/>
+</view:operationPane>
+<view:window>
+<view:frame>
+
 <div id="binContainer">
 <form name="binForm" action="" method="post">
-<%
-	ArrayPane arrayPane = gef.getArrayPane("binContentSpaces", "ViewBin", request, session);
-	arrayPane.addArrayColumn(resource.getString("GML.space"));
-	arrayPane.addArrayColumn(resource.getString("JSPP.BinRemoveDate"));
-	ArrayColumn columnOp = arrayPane.addArrayColumn("<span style=\"float:left\">"+resource.getString("GML.operation")+"</span> <input type=\"checkbox\" id=\"checkAllSpaces\" onclick=\"jqCheckAll2(this.id, 'SpaceIds')\" style=\"float:left;margin:0px;margin-left:5px;padding:0px;vertical-align:middle;background-color:none;\"/>");
-	columnOp.setSortable(false);
 
-	//Array of deleted spaces
-	if (removedSpaces != null && removedSpaces.size() != 0)
-	{
-		emptyBin = false;
-		Iterator it = (Iterator) removedSpaces.iterator();
-		while (it.hasNext())
-		{
-			ArrayLine line = arrayPane.addArrayLine();
-			SpaceInstLight space = (SpaceInstLight) it.next();
-			ArrayCellText cellLabel = null;
-			if (space.isRoot())
-				cellLabel = line.addArrayCellText(space.getName());
-			else
-				cellLabel = line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+
-            WebEncodeHelper.javaStringToJsString(space.getPath(" > "))+"\"/>"+WebEncodeHelper.javaStringToHtmlString(space.getName())+"</a>");
-			cellLabel.setCompareOn(space.getName());
-			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(space.getRemovalDate())+"&nbsp;("+space.getRemoverName()+")");
-			cell.setCompareOn(space.getRemovalDate());
+<c:choose>
 
-			IconPane iconPane = gef.getIconPane();
-			Icon restoreIcon = iconPane.addIcon();
-			restoreIcon.setProperties(resource.getIcon("JSPP.restore"), resource.getString("JSPP.BinRestore"), "javaScript:onclick=restoreItem('"+space.getId()+"')");
-			Icon deleteIcon = iconPane.addIcon();
-			deleteIcon.setProperties(resource.getIcon("JSPP.delete"), resource.getString("JSPP.BinDelete"), "javaScript:onClick=removeItem('"+space.getId()+"')");
-			line.addArrayCellText(restoreIcon.print()+"&nbsp;&nbsp;&nbsp;"+deleteIcon.print()+"&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"SpaceIds\" value=\""+space.getId()+"\">");
-		}
-		out.println(arrayPane.print());
-	}
+<c:when test="${emptyBin}">
+	<view:board>
+		<div class="inlineMessage"><fmt:message key="JSPP.BinEmpty"/></div>
+	</view:board>
+</c:when>
 
-	//Array of deleted components
-	arrayPane = gef.getArrayPane("binContentComponents", "ViewBin", request, session);
-	arrayPane.addArrayColumn(resource.getString("GML.component"));
-	arrayPane.addArrayColumn(resource.getString("JSPP.BinRemoveDate"));
-	columnOp = arrayPane.addArrayColumn("<span style=\"float:left\">"+resource.getString("GML.operation")+"</span> <input type=\"checkbox\" id=\"checkAllComponents\" onclick=\"jqCheckAll2(this.id, 'ComponentIds')\" style=\"float:left;margin:0px;margin-left:5px;padding:0px;vertical-align:middle;background-color:none;\"/>");
-	columnOp.setSortable(false);
+<c:otherwise>
+<fmt:message key="JSPP.BinRemoveDate" var="deletionDateLabel"/>
+<fmt:message key="GML.operation" var="operationsLabel"/>
+<c:if test="${fn:length(removedSpaces) > 0}">
+<div id="removedSpaces" style="margin-bottom: 1em;">
+<fmt:message key="GML.spaces" var="spaceLabel"/>
+<c:set var="checkOp">
+	<span style="float:left">${operationsLabel}</span>
+	<input type="checkbox" id="checkAllSpaces"
+		   onkeydown="jqCheckAll2(this.id, 'SpaceIds')"
+		   onclick="jqCheckAll2(this.id, 'SpaceIds')"
+		   style="float:left;margin-left:5px;padding:0;background-color:unset;"/>
+</c:set>
+<view:arrayPane var="binContentSpaces"	routingAddress="ViewBin">
+<view:arrayColumn title="${spaceLabel}" sortable="true"/>
+<view:arrayColumn title="${deletionDateLabel}" sortable="true"/>
+<view:arrayColumn title="${checkOp}" sortable="false"/>
+<view:arrayLines var="space" items="${removedSpaces}">
+<jsp:useBean id="space" type="org.silverpeas.core.admin.space.SpaceInstLight"/>
+	<view:arrayLine>
+	<c:choose>
+		<c:when test="${space.root}">
+			<view:arrayCellText text="${silfn:escapeHtml(space.getName(language))}"
+								compareOn="${space.getName(language)}"/>
+		</c:when>
+		<c:otherwise>
+			<view:arrayCellText compareOn="${space.getName(language)}">
+				<a href="#" class="item-path" title="${silfn:escapeHtml(space.getPath(' > '))}">
+					${space.getName(language)}
+				</a>
+			</view:arrayCellText>
+		</c:otherwise>
+	</c:choose>
+		<view:arrayCellText compareOn="${space.removalDate}"
+				text="${silfn:formatDateAndHour(space.removalDate, language)}&nbsp;(${space.removerName})"/>
+		<view:arrayCellText>
+				<view:icon iconName="${binRestoreIcom}" altText="${binRestoreOp}"
+						   action="javascript:onclick=restoreItem('${space.id}')"/>
+				<view:icon iconName="${binDeleteIcon}" altText="${binDeleteOp}"
+						   action="javascript:onclick=removeItem('${space.id}')"/>
+				<input style="vertical-align: middle" type="checkbox" name="SpaceIds" value="${space.id}"/>
+		</view:arrayCellText>
+	</view:arrayLine>
+</view:arrayLines>
+</view:arrayPane>
+</div>
+</c:if>
+<c:if test="${fn:length(removedComponents) > 0}">
+<div id="removedSpaces" style="margin-top: 1em;">
+<fmt:message key="GML.components" var="componentLabel"/>
+<c:set var="checkOp">
+	<span style="float:left">${operationsLabel}</span>
+	<input type="checkbox" id="checkAllComponents"
+		   onkeydown="jqCheckAll2(this.id, 'ComponentIds')"
+		   onclick="jqCheckAll2(this.id, 'ComponentIds')"
+			style="float:left;margin-left:5px;padding:0;vertical-align:middle;background-color:unset;"/>
+</c:set>
+<view:arrayPane var="binContentComponents"	routingAddress="ViewBin">
+	<view:arrayColumn title="${componentLabel}" sortable="true"/>
+	<view:arrayColumn title="${deletionDateLabel}" sortable="true"/>
+	<view:arrayColumn title="${checkOp}" sortable="false"/>
+	<view:arrayLines var="component" items="${removedComponents}">
+			<jsp:useBean id="component" type="org.silverpeas.core.admin.component.model.ComponentInstLight"/>
+			<view:arrayLine>
+				<view:arrayCellText compareOn="${component.getLabel(language)}">
+					<a href="#" class="item-path" title="${silfn:escapeHtml(component.getPath(' > '))}">
+						${component.getLabel(language)}
+					</a>
+				</view:arrayCellText>
+				<view:arrayCellText compareOn="${component.removalDate}"
+						text="${silfn:formatDateAndHour(component.removalDate, language)}&nbsp;(${component.removerName})"/>
+				<view:arrayCellText>
+					<view:icon iconName="${binRestoreIcom}" altText="${binRestoreOp}"
+							   action="javascript:onclick=restoreItem('${component.id}')"/>
+					<view:icon iconName="${binDeleteIcon}" altText="${binDeleteOp}"
+							   action="javascript:onclick=removeItem('${component.id}')"/>
+					<input style="vertical-align: middle" type="checkbox" name="ComponentIds" value="${component.id}"/>
+				</view:arrayCellText>
+			</view:arrayLine>
+		</view:arrayLines>
+</view:arrayPane>
+</div>
+</c:if>
+</c:otherwise>
+</c:choose>
 
-	if (removedComponents != null && removedComponents.size() != 0)
-	{
-		if (!emptyBin)
-			out.println("<br/>");
-
-		emptyBin = false;
-		Iterator it = (Iterator) removedComponents.iterator();
-		while (it.hasNext())
-		{
-			ArrayLine line = arrayPane.addArrayLine();
-			ComponentInstLight component = (ComponentInstLight) it.next();
-			line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+component.getPath(" > ")+"\"/>"+
-					WebEncodeHelper.javaStringToHtmlString(component.getLabel())+"</a>");
-			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(component.getRemovalDate())+"&nbsp;("+component.getRemoverName()+")");
-			cell.setCompareOn(component.getRemovalDate());
-
-			IconPane iconPane = gef.getIconPane();
-			Icon restoreIcon = iconPane.addIcon();
-			restoreIcon.setProperties(resource.getIcon("JSPP.restore"), resource.getString("JSPP.BinRestore"), "javaScript:onclick=restoreItem('"+component.getId()+"')");
-			Icon deleteIcon = iconPane.addIcon();
-			deleteIcon.setProperties(resource.getIcon("JSPP.delete"), resource.getString("JSPP.BinDelete"), "javaScript:onClick=removeItem('"+component.getId()+"')");
-			line.addArrayCellText(restoreIcon.print()+"&nbsp;&nbsp;&nbsp;"+deleteIcon.print()+"&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"ComponentIds\" value=\""+component.getId()+"\">");
-		}
-		out.println(arrayPane.print());
-	}
-
-	if (emptyBin)
-	{
-		out.println(board.printBefore());
-		out.println("<center>"+resource.getString("JSPP.BinEmpty")+"</center>");
-		out.println(board.printAfter());
-	}
-%>
 </form>
 </div>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
+</view:frame>
+</view:window>
 <view:progressMessage/>
 </view:sp-body-part>
 </view:sp-page>
