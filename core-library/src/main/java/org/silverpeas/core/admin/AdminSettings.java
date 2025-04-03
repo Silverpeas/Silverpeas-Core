@@ -87,4 +87,53 @@ public class AdminSettings {
   public static int getDeletionOfRemovedGroupsDayDelay() {
     return settings.getInteger("DeleteRemovedGroupsDelay", 30);
   }
+
+  /**
+   * Gets the cron of the JOB execution in charge of deleting the removed spaces.
+   * @return cron as string, empty to deactivate the JOB.
+   */
+  public static String getDeletionOfRemovedSpacesCron() {
+    return settings.getString("DeleteRemovedSpacesCron", "");
+  }
+
+  /**
+   * Gets the delay in days after which a removed space can be deleted.
+   * @return day delay as int, 0 to deactivate the automatic deletion of removed spaces.
+   */
+  public static int getDeletionOfRemovedSpacesDayDelay() {
+    return settings.getInteger("DeleteRemovedSpacesDelay", 30);
+  }
+
+  /**
+   * Indicates if the automatic deletion of removed spaces is enabled.
+   * @return true if enabled, false otherwise.
+   */
+  public static boolean isAutomaticDeletionOfRemovedSpacesEnabled() {
+    return isDefined(getDeletionOfRemovedSpacesCron()) && getDeletionOfRemovedGroupsDayDelay() > 0;
+  }
+
+  /**
+   * Gets the cron of the JOB execution in charge of deleting the removed spaces.
+   * @return cron as string, empty to deactivate the JOB.
+   */
+  public static String getDeletionOfRemovedApplicationsCron() {
+    return settings.getString("DeleteRemovedApplicationsCron", "");
+  }
+
+  /**
+   * Gets the delay in days after which a removed space can be deleted.
+   * @return day delay as int, 0 to deactivate the automatic deletion of removed spaces.
+   */
+  public static int getDeletionOfRemovedApplicationsDayDelay() {
+    return settings.getInteger("DeleteRemovedApplicationsDelay", 30);
+  }
+
+  /**
+   * Indicates if the automatic deletion of removed spaces is enabled.
+   * @return true if enabled, false otherwise.
+   */
+  public static boolean isAutomaticDeletionOfRemovedApplicationsEnabled() {
+    return isDefined(getDeletionOfRemovedApplicationsCron())
+        && getDeletionOfRemovedApplicationsDayDelay() > 0;
+  }
 }
