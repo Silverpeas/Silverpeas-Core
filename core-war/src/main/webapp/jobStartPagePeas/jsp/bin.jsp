@@ -29,6 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="fmtl" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ include file="check.jsp" %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -36,6 +37,8 @@
 <fmt:setLocale value="${language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<fmt:message key="GML.validate" var="validate"/>
 
 <fmt:message key="JSPP.Bin" var="binTitle"/>
 <fmt:message key="JSPP.BinRestore" var="binRestoreOp"/>
@@ -46,6 +49,8 @@
 <fmt:message key="JSPP.BinAfterRestoreAskNavSpace" var="binAfterRestoreAskNavSpace"/>
 <fmt:message key="JSPP.BinAfterRestoreAskNavComponent" var="binAfterRestoreAskNavComponent"/>
 
+<fmt:message key="JSPP.instanceHelpInfo" var="infoIcon" bundle="${icons}"/>
+<c:url var="infoIcon" value="${infoIcon}"/>
 <fmt:message key="JSPP.restoreAll" var="binRestoreAllIcon" bundle="${icons}"/>
 <c:url var="binRestoreAllIcon" value="${binRestoreAllIcon}"/>
 <fmt:message key="JSPP.deleteAll" var="binDeleteAllIcon" bundle="${icons}"/>
@@ -163,6 +168,24 @@ $(document).ready(function() {
       viewport : $(window)
     }
   });
+
+$('img.help').each(function() {
+	$(this).qtip({
+		style : {
+			classes : "qtip-shadow qtip-green"
+		}, content : {
+			text : "<span>" + $(this).attr("title") + "</span>"
+		}, position : {
+			my : "bottom left",
+			at : "top right",
+			adjust : {
+				method : "flipinvert"
+			},
+			viewport : $(window)
+		}
+	});
+});
+
 });
 </script>
 </view:sp-head-part>
@@ -178,7 +201,6 @@ $(document).ready(function() {
 
 <div id="binContainer">
 <form name="binForm" action="" method="post">
-
 <c:choose>
 
 <c:when test="${emptyBin}">
