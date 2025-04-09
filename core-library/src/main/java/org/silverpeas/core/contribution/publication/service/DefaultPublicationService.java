@@ -286,7 +286,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   @Transactional
-  public void removePublication(PublicationPK pk) {
+  public void deletePublication(PublicationPK pk) {
     try (Connection con = getConnection()) {
       PublicationDetail publi = PublicationDAO.loadRow(con, pk);
       // delete links from another publication to removed publication
@@ -304,6 +304,28 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       // delete publication from database
       PublicationDAO.deleteRow(con, pk);
     } catch (java.sql.SQLException e) {
+      throw new PublicationRuntimeException(e);
+    }
+  }
+
+  @Override
+  public void removePublication(PublicationPK pubPk) {
+    try(Connection con = getConnection()) {
+      PublicationDAO.removePubByPk(con, pubPk, User.getCurrentUser().getId());
+      PublicationDetail publication = PublicationDAO.loadRow(con, pubPk);
+      notifier.notifyEventOn(ResourceEvent.Type.REMOVING, publication);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(e);
+    }
+  }
+
+  @Override
+  public void restorePublication(PublicationPK pubPk) {
+    try(Connection con = getConnection()) {
+      PublicationDAO.restorePubByPk(con, pubPk);
+      PublicationDetail publication = PublicationDAO.loadRow(con, pubPk);
+      notifier.notifyEventOn(ResourceEvent.Type.RECOVERY, publication);
+    } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
   }

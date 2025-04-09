@@ -24,6 +24,9 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.component.WAComponentRegistry;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.ComponentInstManager;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -384,5 +387,19 @@ public class WAComponent extends AbstractSilverpeasComponent {
   public boolean isTopicTracker() {
     return getBehaviors() != null &&
         getBehaviors().getBehavior().contains(ComponentBehavior.TOPIC_TRACKER);
+  }
+
+  /**
+   * Gets all the identifiers of the instances of this WA component.
+   * @return a list of component instance identifiers. An empty list if there is no yet instances
+   * of this WA component.
+   * @throws SilverpeasRuntimeException if an error occurs while getting the existing instances.
+   */
+  public List<String> getAllInstanceIds() {
+    try {
+      return List.of(ComponentInstManager.get().getAllCompoIdsByComponentName(name));
+    } catch (AdminException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 }

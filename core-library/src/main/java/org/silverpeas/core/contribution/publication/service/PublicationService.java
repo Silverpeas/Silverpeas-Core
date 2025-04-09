@@ -52,6 +52,7 @@ public interface PublicationService {
 
   /**
    * Gets an instance of the {@link PublicationService} interface.
+   *
    * @return a {@link PublicationService} object.
    */
   static PublicationService get() {
@@ -60,19 +61,21 @@ public interface PublicationService {
 
   /**
    * Gets the publication with the specified identifying key.
+   *
    * @param pubPK the identifying key of the publication to get.
-   * @return the publication corresponding to the given key. If no such publication exists with
-   * the specified key, then null is returned.
+   * @return the publication corresponding to the given key. If no such publication exists with the
+   * specified key, then null is returned.
    */
   PublicationDetail getDetail(PublicationPK pubPK);
 
   /**
-   * Creates in Silverpeas the specified publication. It persists it into the Silverpeas data
-   * source and a new identifier is set for this publication. A {@link ResourceEvent.Type#CREATION}
-   * event is sent once the publication is created.
+   * Creates in Silverpeas the specified publication. It persists it into the Silverpeas data source
+   * and a new identifier is set for this publication. A {@link ResourceEvent.Type#CREATION} event
+   * is sent once the publication is created.
+   *
    * @param detail the detail on the publication to persist.
-   * @return the identifying key of the publication so that it can be retrieved later in the
-   * data source by this key.
+   * @return the identifying key of the publication so that it can be retrieved later in the data
+   * source by this key.
    */
   PublicationPK createPublication(PublicationDetail detail);
 
@@ -80,8 +83,9 @@ public interface PublicationService {
    * Moves the specified publication to the specified father and indexes or not it. The father can
    * be either a node in the same component instance or a node in another component instance. No
    * {@link ResourceEvent.Type#MOVE} event is sent; for doing please use one the move done the
-   * {@link PublicationService#setDetail(PublicationDetail, boolean, ResourceEvent.Type)} method
-   * by specifying the {@link ResourceEvent.Type#MOVE} event as last parameter.
+   * {@link PublicationService#setDetail(PublicationDetail, boolean, ResourceEvent.Type)} method by
+   * specifying the {@link ResourceEvent.Type#MOVE} event as last parameter.
+   *
    * @param pubPK the identifying key of the publication to move.
    * @param toFatherPK the new father of the publication.
    * @param indexIt a boolean indicating if the publication must be indexed.
@@ -100,24 +104,45 @@ public interface PublicationService {
   void changePublicationOrder(PublicationPK pubPK, NodePK fatherPK, int direction);
 
   /**
-   * Removes the specified publication. The {@link ResourceEvent.Type#DELETION} event is sent once
-   * the publication is removed.
-   * @param pubPK the identifying key of the publication to remove.
+   * Deletes the specified publication. The {@link ResourceEvent.Type#DELETION} event is sent once
+   * the publication is deleted.
+   *
+   * @param pubPK the identifying key of the publication to delete.
    */
-  void removePublication(PublicationPK pubPK);
+  void deletePublication(PublicationPK pubPK);
+
+  /**
+   * Removes the specified publication. The {@link ResourceEvent.Type#REMOVING} event is sent once
+   * the publication is removed. A removed publication isn't deleted, nor its indexes, and its
+   * status (validated, draft, ...) isn't modified. Only its removal state is set. This is useful
+   * for application implementing the publications removal.
+   *
+   * @param pubPk the identifying keu of the publication to remove.
+   */
+  void removePublication(PublicationPK pubPk);
+
+  /**
+   * Restores a removed publication. The {@link ResourceEvent.Type#RECOVERY} event is sent once the
+   * publication is restored. If the publication wasn't removed, then nothing happens. This method
+   * does unset the removal state of the publication.
+   *
+   * @param pubPk the unique identifying key of the publication to restore.
+   */
+  void restorePublication(PublicationPK pubPk);
 
   /**
    * Updates the specified publication. The update date isn't updated in given the publication
-   * detail.
-   * The {@link ResourceEvent.Type#UPDATE} event is sent once the publication is updated.
+   * detail. The {@link ResourceEvent.Type#UPDATE} event is sent once the publication is updated.
+   *
    * @param detail the detail of the publication from which it has to be updated.
    */
   void setDetail(PublicationDetail detail);
 
   /**
    * Updates the specified publication and specify if the update date property of the publication
-   * detail has to be used as update date.
-   * The {@link ResourceEvent.Type#UPDATE} event is sent once the publication is updated.
+   * detail has to be used as update date. The {@link ResourceEvent.Type#UPDATE} event is sent once
+   * the publication is updated.
+   *
    * @param detail the detail of the publication from which it has to be updated.
    * @param forceUpdateDate a boolean indicating if the update date has to be set with date of this
    * update.
@@ -127,9 +152,10 @@ public interface PublicationService {
   /**
    * Updates the specified publication and specify if the update date property of the publication
    * detail has to be used as update date. The kind of update is specified by the given event type:
-   * it is either a simple publication update or an update issuing from a publication move
-   * (some publication properties can require to be updated after a move but they aren't related to
-   * a publication modification).
+   * it is either a simple publication update or an update issuing from a publication move (some
+   * publication properties can require to be updated after a move but they aren't related to a
+   * publication modification).
+   *
    * @param detail the detail of the publication from which it has to be updated.
    * @param forceUpdateDate a boolean indicating if the update date has to be set with date of this
    * update.
@@ -140,7 +166,8 @@ public interface PublicationService {
 
   /**
    * Adds the specified father to the given publication. The publication will be then visible from
-   * this new father.
+   * this new father. If the father is
+   *
    * @param pubPK the identifying key of the publication.
    * @param fatherPK the the identifying key of the new father.
    */
@@ -149,6 +176,7 @@ public interface PublicationService {
   /**
    * Removes the specified publication from the specified father. The publication won't be any more
    * attached to the given father and hence it won't be visible any more from this father.
+   *
    * @param pubPK the identifying key of the publication
    * @param fatherPK the identifying key of the father to detach.
    */
@@ -157,14 +185,16 @@ public interface PublicationService {
   /**
    * Removes the specified publication from all the specified father. The publication won't be any
    * more attached to the given fathers and hence it won't be visible any more from these fathers.
+   *
    * @param pubPK the identifying key of the publication
    * @param fatherIds a collection of identifying key of the fathers to detach.
    */
   void removeFathers(PublicationPK pubPK, Collection<String> fatherIds);
 
   /**
-   * Removes the specified publication from all fathers. This means the publication will become
-   * an orphan and it won't be visible from any fathers.
+   * Removes the specified publication from all fathers. This means the publication will become an
+   * orphan and it won't be visible from any fathers.
+   *
    * @param pubPK the identifying key of the publication
    */
   void removeAllFathers(PublicationPK pubPK);
@@ -172,6 +202,7 @@ public interface PublicationService {
   /**
    * Gets all the publications that aren't attached to any father in the specified component
    * instance.
+   *
    * @param componentId the unique identifier of a component instance/
    * @return a collection of orphan publications.
    */
@@ -180,6 +211,7 @@ public interface PublicationService {
   /**
    * Gets the unique identifying key of all of the fathers of the specified publication and in the
    * same component instance.
+   *
    * @param pubPK the identifying key of the publication.
    * @return a collection of {@link NodePK} instances, each of them identifying a node.
    * @deprecated use instead the renamed
@@ -192,6 +224,7 @@ public interface PublicationService {
   /**
    * Gets the unique identifying key of all of the fathers of the specified publication and in the
    * same component instance.
+   *
    * @param pubPK the identifying key of the publication.
    * @return a collection of {@link NodePK} instances, each of them identifying a node.
    */
@@ -200,8 +233,9 @@ public interface PublicationService {
   /**
    * Selects massively simple data about all locations (main or aliases).
    * <p>
-   *   This method is designed for process performance needs.
+   * This method is designed for process performance needs.
    * </p>
+   *
    * @param ids the instance ids aimed.
    * @return a map of {@link Location} instances for each of the specified publications.
    */
@@ -211,6 +245,7 @@ public interface PublicationService {
    * Gets all the locations of the specified publication whatever the component instance in which
    * they are. By default, the original location of the publication is returned along with all of
    * its aliases.
+   *
    * @param pubPK the identifying key of the publication.
    * @return a collection of the locations of the publication.
    * @see org.silverpeas.core.contribution.publication.model.Location
@@ -219,10 +254,11 @@ public interface PublicationService {
 
   /**
    * Gets the locations of the specified publication in the given component instance.
+   *
    * @param pubPK the identifying key of the publication.
    * @param instanceId the unique identifier of a component instance.
-   * @return a collection of {@link Location} objects or none if the publication has no locations
-   * in the given component instance.
+   * @return a collection of {@link Location} objects or none if the publication has no locations in
+   * the given component instance.
    * @see org.silverpeas.core.contribution.publication.model.Location
    */
   List<Location> getLocationsInComponentInstance(PublicationPK pubPK, String instanceId);
@@ -230,6 +266,7 @@ public interface PublicationService {
   /**
    * Gets the main location of the specified publication. A publication has always one original
    * location and any other locations should be an alias.
+   *
    * @param pubPK the identifying key of the publication.
    * @return the main location of the specified publication or nothing is the publication is
    * orphaned (not attached to a father).
@@ -241,6 +278,7 @@ public interface PublicationService {
    * Gets all the aliases of the specified publication. The original location isn't returned among
    * the aliases; to get also the original location, please look at the
    * {@link PublicationService#getAllLocations(PublicationPK)} method.
+   *
    * @param pubPK the identifying key of the publication.
    * @see org.silverpeas.core.contribution.publication.model.Location
    */
@@ -250,6 +288,7 @@ public interface PublicationService {
    * Sets the aliases of the specified publication. They replace the existing aliases of the
    * publication. The {@link IllegalArgumentException} is throw if one of the location isn't an
    * alias.
+   *
    * @param pubPK the identifying key of the publication.
    * @param aliases the new aliases.
    * @return a pair made up of firstly the added aliases and of secondly the removed aliases.
@@ -261,6 +300,7 @@ public interface PublicationService {
   /**
    * Adds the specified aliases of the specified publication. The {@link IllegalArgumentException}
    * is throw if one of the location isn't an  alias.
+   *
    * @param pubPK the identifying key of the publication.
    * @param aliases the aliases to add to the existing ones.
    * @see org.silverpeas.core.contribution.publication.model.Location
@@ -269,8 +309,9 @@ public interface PublicationService {
 
   /**
    * Removes the specified aliases of the specified publication. The
-   * {@link IllegalArgumentException} is throw if one of the location isn't an  alias.
-   * Prefer in this case the {@link PublicationService#removeFather(PublicationPK, NodePK)} method.
+   * {@link IllegalArgumentException} is throw if one of the location isn't an  alias. Prefer in
+   * this case the {@link PublicationService#removeFather(PublicationPK, NodePK)} method.
+   *
    * @param pubPK the identifying key of the publication.
    * @param aliases the aliases to remove.
    * @see org.silverpeas.core.contribution.publication.model.Location
@@ -280,6 +321,7 @@ public interface PublicationService {
   /**
    * Gets all the publications attached to the specified father. The aliasing property of the
    * publications isn't set.
+   *
    * @param fatherPK the identifying key of the father.
    * @return a collection of {@link PublicationDetail} instances.
    */
@@ -288,9 +330,10 @@ public interface PublicationService {
   /**
    * Gets all the publications attached to the specified father ordered as indicated by the sorting
    * directive. The aliasing property of the publications isn't set.
+   *
    * @param fatherPK the identifying key of the father.
-   * @param sorting a sorting directive. Must be in the form of
-   * "P.[publication detail attribute] (DESC|ASC)"
+   * @param sorting a sorting directive. Must be in the form of "P.[publication detail attribute]
+   * (DESC|ASC)"
    * @return a collection of {@link PublicationDetail} instances.
    */
   Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting);
@@ -298,17 +341,20 @@ public interface PublicationService {
   /**
    * Gets all the publications attached to the specified father, ordered as indicated by the sorting
    * directive, according to the visibility. The aliasing property of the publications isn't set.
+   *
    * @param fatherPK the identifying key of the father.
-   * @param sorting a sorting directive. Must be in the form of
-   * "P.[publication detail attribute] (DESC|ASC)"
+   * @param sorting a sorting directive. Must be in the form of "P.[publication detail attribute]
+   * (DESC|ASC)"
    * @param filterOnVisibilityPeriod is the publications to get must be today visible.
    * @return a collection of {@link PublicationDetail} instances.
    */
-  Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting, boolean filterOnVisibilityPeriod);
+  Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
+      boolean filterOnVisibilityPeriod);
 
   /**
-   * Gets all the publications that are currently visible and located into the specified node.
-   * For each returned publications, their aliasing property is valued.
+   * Gets all the publications that are currently visible and located into the specified node. For
+   * each returned publications, their aliasing property is valued.
+   *
    * @param fatherPK the unique identifier of the node father of the publications.
    * @return a list of {@link PublicationDetail} instances.
    */
@@ -318,17 +364,20 @@ public interface PublicationService {
    * Gets all the publications attached to the specified father, ordered as indicated by the sorting
    * directive, according to the visibility, and that was authored or updated by the specified
    * user.
+   *
    * @param fatherPK the identifying key of the father.
-   * @param sorting a sorting directive. Must be in the form of
-   * "P.[publication detail attribute] (DESC|ASC)"
+   * @param sorting a sorting directive. Must be in the form of "P.[publication detail attribute]
+   * (DESC|ASC)"
    * @param filterOnVisibilityPeriod is the publications to get must be today visible.
    * @param userId the unique identifier of the author or of an updater.
    * @return a collection of {@link PublicationDetail} instances.
    */
-  Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting, boolean filterOnVisibilityPeriod, String userId);
+  Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
+      boolean filterOnVisibilityPeriod, String userId);
 
   /**
    * Gets all the publications that aren't attached to the specified father.
+   *
    * @param fatherPK the identifying key of the father.
    * @return a collection of {@link PublicationDetail} instances.
    */
@@ -337,21 +386,24 @@ public interface PublicationService {
   /**
    * Gets all the publications that aren't attached to the specified father and ordered by the
    * specified sorting directive.
+   *
    * @param fatherPK the identifying key of the father.
-   * @param sorting a sorting directive. Must be in the form of
-   * "P.[publication detail attribute] (DESC|ASC)"
+   * @param sorting a sorting directive. Must be in the form of "P.[publication detail attribute]
+   * (DESC|ASC)"
    * @return a collection of {@link PublicationDetail} instances.
    */
   Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK, String sorting);
 
   /**
    * Deletes the specified link between two publications.
+   *
    * @param id the unique identifier of a link between two publications.
    */
   void deleteLink(String id);
 
   /**
    * Gets the complete detail about the specified publication.
+   *
    * @param pubPK the identifying key of the publication.
    * @return a {@link CompletePublication} instance.
    */
@@ -359,6 +411,7 @@ public interface PublicationService {
 
   /**
    * Gets all the asked publications.
+   *
    * @param publicationPKs a collection of identifying key of the publications to get.
    * @return a list of {@link PublicationDetail} instances.
    */
@@ -366,6 +419,7 @@ public interface PublicationService {
 
   /**
    * Gets publications from given identifiers.
+   *
    * @param publicationIds list of identifiers of publications
    * @return a list of {@link PublicationDetail}.
    */
@@ -373,6 +427,7 @@ public interface PublicationService {
 
   /**
    * Gets all the publications according to given criteria.
+   *
    * @param criteria the criteria to process.
    * @return a list of {@link PublicationDetail} instances
    */
@@ -380,6 +435,7 @@ public interface PublicationService {
 
   /**
    * Gets a list of authorized publications by applying given criteria.
+   *
    * @param userId the identifier of the user for which access control MUST be verified.
    * @param criteria the criteria.
    * @return a list of publications
@@ -391,6 +447,7 @@ public interface PublicationService {
 
   /**
    * Gets the tree of nodes with the number of publication per node.
+   *
    * @param criteria criteria for delimiting the scope of the request.
    * @return the tree of nodes with the number of publication per node
    * @
@@ -414,6 +471,7 @@ public interface PublicationService {
   /**
    * Indexes with its content the specified publication and its possible aliases. The index is
    * created only if the publication is indexable.
+   *
    * @param pubPK the unique identifier of a publication.
    */
   void createIndex(PublicationPK pubPK);
@@ -421,12 +479,14 @@ public interface PublicationService {
   /**
    * Indexes with its content the specified publication. If it has aliases, those won't be taken
    * into account in the indexation.
+   *
    * @param pubDetail the publication to index.
    */
   void createIndex(PublicationDetail pubDetail);
 
   /**
    * Deletes index of the specified publication.
+   *
    * @param pubPK the unique identifier of a publication.
    */
   void deleteIndex(PublicationPK pubPK);
@@ -452,6 +512,7 @@ public interface PublicationService {
    *   This method is designed for process performance needs.<br/>
    *   The result is not necessarily into same ordering as the one of given parameter.
    * </p>
+   *
    * @param ids the instance ids aimed.
    * @return a list of {@link PublicationDetail} instances.
    */
@@ -506,6 +567,7 @@ public interface PublicationService {
   /**
    * Get list of socialInformation of my contacts according to options and number of Item and the
    * first Index
+   *
    * @param myContactsIds a list of contacts
    * @param options a list of options
    * @param begin the start of the date interval in which information are fetched.
@@ -519,6 +581,7 @@ public interface PublicationService {
   /**
    * get all publications of given user in state 'Draft'. It returns simple publications in state
    * 'Draft' and cloned publications with a clone in state 'Draft'.
+   *
    * @param userId the unique identifier of a user.
    * @return all PublicationDetail in state 'Draft' according to given userId
    */
@@ -526,6 +589,7 @@ public interface PublicationService {
 
   /**
    * Remove given userId from publication validators where it appears.
+   *
    * @param userId id of the user to remove
    * @return a List of PublicationPK on which userId have been removed to.
    */

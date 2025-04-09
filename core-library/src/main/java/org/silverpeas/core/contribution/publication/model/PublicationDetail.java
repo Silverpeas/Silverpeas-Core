@@ -33,12 +33,7 @@ import org.silverpeas.core.contribution.ContributionWithVisibility;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.TypeManager;
-import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -46,15 +41,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManageme
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.model.ContributionModel;
-import org.silverpeas.core.contribution.model.I18nContribution;
-import org.silverpeas.core.contribution.model.LocalizedContribution;
-import org.silverpeas.core.contribution.model.Thumbnail;
-import org.silverpeas.core.contribution.model.WithAttachment;
-import org.silverpeas.core.contribution.model.WithPermanentLink;
-import org.silverpeas.core.contribution.model.WithThumbnail;
-import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.contribution.model.*;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rateable;
@@ -76,10 +63,10 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.xml.DateAdapter;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -91,13 +78,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.contribution.indicator.NewContributionIndicator.isNewContribution;
@@ -159,6 +140,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private String status;
   private Date updateDate;
   private String updaterId;
+  private Date removalDate;
+  private String removerId;
   private Date validateDate;
   private String validatorId;
   private String beginHour;
@@ -254,6 +237,22 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
+  }
+
+  public Date getRemovalDate() {
+    return removalDate;
+  }
+
+  private void setRemovalDate(Date removalDate) {
+    this.removalDate = removalDate;
+  }
+
+  public String getRemoverId() {
+    return removerId;
+  }
+
+  private void setRemoverId(String removerId) {
+    this.removerId = removerId;
   }
 
   public void setVisibilityPeriod(Period period) {
@@ -812,6 +811,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return DRAFT_STATUS.equalsIgnoreCase(getStatus());
   }
 
+  public boolean isRemoved() {
+    return removalDate != null;
+  }
+
   public PublicationPK getClonePK() {
     return new PublicationPK(getCloneId(), getPK());
   }
@@ -1263,6 +1266,19 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     public Builder setNameAndDescription(final String name, final String description) {
       publication.setName(name);
       publication.setDescription(description);
+      return this;
+    }
+
+    /**
+     * Sets the removal properties of the {@link PublicationDetail} instance to build.
+     *
+     * @param removalDate the date at which the publication was removed. Null if no removal.
+     * @param removerId the identifier of the user that removed the publication. Null if no removal.
+     * @return itself.
+     */
+    public Builder removed(Date removalDate, String removerId) {
+      publication.setRemovalDate(removalDate);
+      publication.setRemoverId(removerId);
       return this;
     }
   }

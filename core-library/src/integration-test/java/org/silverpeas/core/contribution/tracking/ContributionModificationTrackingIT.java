@@ -228,7 +228,7 @@ public class ContributionModificationTrackingIT {
 
     PublicationDetail publication = context.getPublication("100");
 
-    withinTransaction(() -> publicationService.removePublication(publication.getPK()));
+    withinTransaction(() -> publicationService.deletePublication(publication.getPK()));
 
     TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
     context.assertThatRecordMatches(record, TrackedActionType.DELETION, publication);
@@ -240,7 +240,7 @@ public class ContributionModificationTrackingIT {
 
     PublicationDetail publication = context.getPublication("100");
 
-    withinTransaction(() -> publicationService.removePublication(publication.getPK()));
+    withinTransaction(() -> publicationService.deletePublication(publication.getPK()));
 
     TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
     context.assertThatRecordMatches(record, TrackedActionType.DELETION, publication);

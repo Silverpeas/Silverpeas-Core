@@ -107,6 +107,7 @@ public class PublicationDAO extends AbstractDAO {
           + "WHERE pubId = ? ";
   private static final String WHERE_CONJUNCTION = "WHERE ";
   private static final String AND_CONJUNCTION = "AND ";
+  private static final String INSTANCE_ID = "instanceId = ?";
 
   private PublicationDAO() {
   }
@@ -119,8 +120,41 @@ public class PublicationDAO extends AbstractDAO {
    * @throws SQLException on SQL error
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.deleteFrom(PUBLICATION_TABLE_NAME).where("instanceId = ?", componentInstanceId)
+    JdbcSqlQuery.deleteFrom(PUBLICATION_TABLE_NAME).where(INSTANCE_ID, componentInstanceId)
         .execute();
+  }
+
+  /**
+   * Removes the specified publication. The publication isn't deleted, only its removal status is
+   * set by setting both the removal date (at now) and the user behind the removal.
+   *
+   * @param pk the unique database identifier of the publication
+   * @param userId the unique identifier of the user asking the publication removal.
+   */
+  public static void removePubByPk(Connection con, PublicationPK pk, String userId)
+      throws SQLException {
+    JdbcSqlQuery.update(PUBLICATION_TABLE_NAME)
+        .withUpdateParam("pubRemovalDate", DateUtil.today2SQLDate())
+        .withUpdateParam("pubRemoverId", userId)
+        .where("pubId = ?", Integer.parseInt(pk.getId()))
+        .and(INSTANCE_ID, pk.getInstanceId())
+        .executeWith(con);
+  }
+
+  /**
+   * Restores the specified removed publication by unsetting its removal status. The removal date
+   * and the user behind the removal are set at null. If the publication isn't actually removed,
+   * then this operation will have no impact on the publication removal status.
+   *
+   * @param pk the unique database identifier of the publication
+   */
+  public static void restorePubByPk(Connection con, PublicationPK pk) throws SQLException {
+    JdbcSqlQuery.update(PUBLICATION_TABLE_NAME)
+        .withUpdateParam("pubRemovalDate", null)
+        .withUpdateParam("pubRemoverId", null)
+        .where("pubId = ?", Integer.parseInt(pk.getId()))
+        .and(INSTANCE_ID, pk.getInstanceId())
+        .executeWith(con);
   }
 
   public static int getNbPubByFatherPath(Connection con, NodePK fatherPK,
@@ -378,6 +412,15 @@ public class PublicationDAO extends AbstractDAO {
       }
       String updaterId = defaultStringIfNotDefined(rs.getString("pubUpdaterId"), creatorId);
 
+      Date removalDate;
+      String r = rs.getString("pubRemovalDate");
+      if (r != null) {
+        removalDate = DateUtil.parseDate(r);
+      } else {
+        removalDate = null;
+      }
+      String removerId = defaultStringIfNotDefined(rs.getString("pubRemoverId"), null);
+
       Date validateDate;
       String strValDate = rs.getString("pubValidateDate");
       validateDate = DateUtil.parseDate(strValDate);
@@ -400,6 +443,7 @@ public class PublicationDAO extends AbstractDAO {
           .setNameAndDescription(name, description)
           .created(creationDate, creatorId)
           .updated(updateDate, updaterId)
+          .removed(removalDate, removerId)
           .validated(validateDate, validatorId)
           .setBeginDateTime(beginDate, beginHour)
           .setEndDateTime(endDate, endHour)

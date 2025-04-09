@@ -15,6 +15,8 @@ CREATE TABLE SB_Node_Node
     orderNumber      int DEFAULT (0)  NULL,
     lang             char(2),
     rightsDependsOn  int default (-1) NOT NULL,
+    nodeRemovalDate  VARCHAR (10)     NULL,
+    nodeRemoverId    VARCHAR (100)    NULL,
     constraint PK_Node_Node primary key (nodeId, instanceId)
 );
 
@@ -46,6 +48,8 @@ CREATE TABLE SB_Publication_Publi
     pubCloneStatus       varchar(50)   NULL,
     lang                 char(2)       NULL,
     pubdraftoutdate      varchar(10)   NULL,
+    pubRemovalDate       VARCHAR(10)	NULL,
+    pubRemoverId         VARCHAR(100)	NULL,
     constraint PK_Publication_Publi primary key (pubId)
 );
 

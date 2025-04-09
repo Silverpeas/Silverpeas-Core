@@ -223,11 +223,24 @@ public interface NodeService {
   NodePK createNode(NodeDetail nodeDetail);
 
   /**
-   * Removes a node and its descendants
-   * @param pk the unique identifier of the node to remove.
+   * Deletes definitively a node and its descendants
+   * @param pk the unique identifier of the node to delete.
    * @see NodePK
    */
-  void removeNode(NodePK pk);
+  void deleteNode(NodePK pk);
+
+  /**
+   * Removes the specified node. A removed node isn't deleted. Only its state is set as removed.
+   * @param node the node to remove
+   */
+  void removeNode(NodeDetail node);
+
+  /**
+   * Restores the specified removed node. Restoring a non-removed node does nothing. The removal
+   * status of the node is unset.
+   * @param node the node to restore
+   */
+  void restoreNode(NodeDetail node);
 
   /**
    * Moves the specified node to the given another one that then will become its new father.
