@@ -14,7 +14,9 @@ CREATE TABLE sb_node_node
 	type			varchar (50)	NULL ,
 	orderNumber		int		DEFAULT (0) NULL ,
 	lang			char(2),
-	rightsDependsOn		int		default(-1) NOT NULL
+	rightsDependsOn		int		default(-1) NOT NULL,
+    nodeRemovalDate varchar (10)    NULL,
+    nodeRemoverId   varchar (100)   NULL
 );
 
 CREATE TABLE sb_node_nodei18N

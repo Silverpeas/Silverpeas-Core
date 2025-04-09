@@ -85,6 +85,8 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   // No persistence - useful to store user role
   private String userRole = null;
   private boolean useId = false;
+  private Date removalDate;
+  private String removerId;
 
   /**
    * Copy constructor of persisted entity, all data are deeply copied and id is set to "unknown"
@@ -110,6 +112,8 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
     this.nbObjects = other.nbObjects;
     this.userRole = other.userRole;
     this.useId = other.useId;
+    this.removalDate = other.removalDate;
+    this.removerId = other.removerId;
   }
 
   /**
@@ -213,6 +217,15 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   }
 
   /**
+   * Is this node has been removed. A removed node is a node not yet deleted but in instance of
+   * being deleted. A removed node can be restored.
+   * @return true if this node has been removed. False otherwise.
+   */
+  public boolean isRemoved() {
+    return removalDate != null;
+  }
+
+  /**
    * Is this node a child of another node? A node is a child of another node if the following
    * conditions are satisfied:
    * <ul>
@@ -263,6 +276,36 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   @Override
   public Date getLastUpdateDate() {
     return getCreationDate();
+  }
+
+  /**
+   * Gets the date at which this node has been removed.
+   * @return a date or null if the node isn't removed.
+   */
+  public Date getRemovalDate() {
+    return removalDate;
+  }
+
+  /**
+   * Sets this node as being removed.
+   * @param removalDate the date at which the node has been removed.
+   * @param removerId the unique identifier of the user who removed this node.
+   */
+  public void setRemovalStatus(Date removalDate, String removerId) {
+    this.removalDate = removalDate;
+    this.removerId = removerId;
+  }
+
+  /**
+   * Gets the user who removed this node.
+   * @return the remover.
+   */
+  public User getRemover() {
+    return User.getById(removerId);
+  }
+
+  public String getRemoverId() {
+    return removerId;
   }
 
   /**

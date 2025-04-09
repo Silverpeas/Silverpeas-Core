@@ -95,7 +95,7 @@ public class QueryStringFactory {
     // common select
     query.append("SELECT P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, ");
     query.append("P.pubBeginDate, P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, ");
-    query.append("P.pubKeywords, P.pubContent, P.pubStatus, ");
+    query.append("P.pubKeywords, P.pubContent, P.pubStatus, P.pubRemovalDate, P.pubRemoverId, ");
     query.append("P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, ");
     query.append("P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, ");
     query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
@@ -128,8 +128,8 @@ public class QueryStringFactory {
       selectNotInFatherPK = "SELECT DISTINCT P.pubId, P.infoId, P.pubName, P.pubDescription, " +
           "P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, " +
           "P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, P.pubStatus, " +
-          "P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, " +
-          "P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, " +
+          "P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubRemovalDate, " +
+          "P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubRemoverId, " +
           "P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang " + "FROM " + tableName +
           " P, " + tableName + "Father F WHERE F.instanceId = ? AND F.nodeId <> ? " +
           "AND F.pubId = P.pubId AND (" + "( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR " +
@@ -152,7 +152,7 @@ public class QueryStringFactory {
     if (loadRowFields == null) {
       loadRowFields = " pubid, infoid, pubname, pubdescription, pubcreationdate, " +
           "pubbegindate, pubenddate, pubcreatorid, pubimportance, pubversion, pubkeywords," +
-          "pubcontent, pubstatus, pubupdatedate," +
+          "pubcontent, pubstatus, pubupdatedate, pubRemovalDate, pubRemoverId, " +
           "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour," +
           "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus," +
           "lang ";

@@ -46,11 +46,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -68,8 +64,8 @@ public class NodeDAO extends AbstractDAO {
   private static final String NODE_TABLE = "SB_Node_Node";
   private static final String SELECT_NODE_BY_ID = "SELECT nodeid, nodename, nodedescription, " +
       "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, " +
-      "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM sb_node_node WHERE " +
-      "nodeId = ? AND instanceId = ?";
+      "nodestatus, instanceid, type, ordernumber, lang, rightsdependson, nodeRemovalDate, " +
+      "nodeRemoverId FROM sb_node_node WHERE nodeId = ? AND instanceId = ?";
   private static final String COUNT_NODES_PER_LEVEL =
       "SELECT COUNT(nodeid) as nb FROM sb_node_node " +
           "WHERE nodelevelnumber = ? AND nodeName = ? AND instanceid = ? ";
@@ -90,7 +86,8 @@ public class NodeDAO extends AbstractDAO {
       " where nodeId = ? and instanceId = ?";
   private static final String SELECT_FROM = "SELECT nodeid, nodename, nodedescription, " +
       "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, " +
-      "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM ";
+      "nodestatus, instanceid, type, ordernumber, lang, rightsdependson, nodeRemovalDate, " +
+      "nodeRemoverId FROM ";
   private static final String NODE_STATEMENT = "nodeStatement = ";
   private static final String NODE_ID = "NodeId = ";
   private static final String UPDATE = "update ";
@@ -573,7 +570,7 @@ public class NodeDAO extends AbstractDAO {
    * @see NodeDetail
    * @since 1.0
    */
-  public NodeDetail resultSet2NodeDetail(ResultSet rs, NodePK nodePK) throws SQLException {
+  private NodeDetail resultSet2NodeDetail(ResultSet rs, NodePK nodePK) throws SQLException {
     /* Récupération des données depuis la BD */
     NodePK pk = new NodePK(String.valueOf(rs.getInt(1)), nodePK);
     String name = rs.getString(2);
@@ -589,6 +586,8 @@ public class NodeDAO extends AbstractDAO {
     int order = rs.getInt(13);
     String language = rs.getString(14);
     int rightsDependsOn = rs.getInt(15);
+    String removalDate = rs.getString(16);
+    String removerId = rs.getString(17);
 
     if (description == null) {
       description = "";
@@ -605,6 +604,7 @@ public class NodeDAO extends AbstractDAO {
       nd.setLanguage(language);
       nd.setOrder(order);
       nd.setRightsDependsOn(String.valueOf(rightsDependsOn));
+      nd.setRemovalStatus(DateUtil.parseDate(removalDate), removerId);
       return (nd);
     } catch (ParseException e) {
       SilverLogger.getLogger(this).error("Error in resultSet2NodeDetail: NodePK={0}",pk,e);
@@ -854,6 +854,22 @@ public class NodeDAO extends AbstractDAO {
       SilverLogger.getLogger(this).error(SELECT_QUERY + SELECT_NODE_BY_ID, e);
       throw e;
     }
+  }
+
+  public void removeNode(Connection con, NodeDetail nodeDetail, String userId) throws SQLException {
+    nodeDetail.setRemovalStatus(new Date(), userId);
+    JdbcSqlQuery.update(nodeDetail.getNodePK().getTableName())
+        .withUpdateParam("nodeRemovalDate", DateUtil.date2SQLDate(nodeDetail.getRemovalDate()))
+        .withUpdateParam("nodeRemoverId", userId)
+        .executeWith(con);
+  }
+
+  public void restoreNode(Connection con, NodeDetail nodeDetail) throws SQLException {
+    nodeDetail.setRemovalStatus(null, null);
+    JdbcSqlQuery.update(nodeDetail.getNodePK().getTableName())
+        .withUpdateParam("nodeRemovalDate", null)
+        .withUpdateParam("nodeRemoverId", null)
+        .executeWith(con);
   }
 
   public NodeDetail loadRow(Connection con, NodePK nodePK, String name, int nodeFatherId)

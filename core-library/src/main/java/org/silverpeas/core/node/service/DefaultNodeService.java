@@ -25,6 +25,7 @@ package org.silverpeas.core.node.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -429,7 +430,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    */
   @Override
   @Transactional
-  public void removeNode(NodePK pk) {
+  public void deleteNode(NodePK pk) {
     Connection connection = getConnection();
     try {
       nodeDeletion.deleteNodes(pk, connection, pk1 ->
@@ -439,6 +440,25 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(connection);
+    }
+  }
+
+  @Override
+  public void removeNode(NodeDetail nodeDetail) {
+    try (Connection connection = getConnection()) {
+      User remover = User.getCurrentRequester();
+      nodeDAO.removeNode(connection, nodeDetail, remover.getId());
+    } catch (Exception re) {
+      throw new NodeRuntimeException(re);
+    }
+  }
+
+  @Override
+  public void restoreNode(NodeDetail node) {
+    try(Connection connection = getConnection()) {
+      nodeDAO.restoreNode(connection, node);
+    } catch (Exception re) {
+      throw new NodeRuntimeException(re);
     }
   }
 

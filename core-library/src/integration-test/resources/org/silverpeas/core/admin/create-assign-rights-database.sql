@@ -317,5 +317,7 @@ CREATE TABLE IF NOT EXISTS SB_Node_Node
   type             VARCHAR(50)      NULL,
   orderNumber      INT DEFAULT (0)  NULL,
   lang             CHAR(2),
-  rightsDependsOn  INT DEFAULT (-1) NOT NULL
+  rightsDependsOn  INT DEFAULT (-1) NOT NULL,
+  nodeRemovalDate  VARCHAR (10)     NULL,
+  nodeRemoverId    VARCHAR (100)    NULL
 );

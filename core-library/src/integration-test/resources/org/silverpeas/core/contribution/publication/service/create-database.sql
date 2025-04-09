@@ -25,7 +25,9 @@ CREATE TABLE SB_Publication_Publi
   pubCloneId           INT DEFAULT (-1),
   pubCloneStatus       VARCHAR(50)   NULL,
   lang                 CHAR(2)       NULL,
-  pubdraftoutdate      VARCHAR(10)   NULL
+  pubdraftoutdate      VARCHAR(10)   NULL,
+  pubRemovalDate       VARCHAR(10)	NULL,
+  pubRemoverId         VARCHAR(100)	NULL
 );
 
 CREATE TABLE SB_Publication_PubliFather
