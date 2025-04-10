@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,35 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.annotation.Service;
-
-import javax.servlet.http.HttpServletRequest;
-
 /**
- * Navigation case : user asks to change his password from login page.
- * @author ndupont
+ * Registering of {@link HttpFunctionHandler} objects so that those objects can then handle the control
+ * flow for some functions against the credentials of a user (for example the password reset).
+ *
+ * @author mmoquillon
  */
-@Service
-public class ChangePasswordFromLoginHandler extends CredentialsFunctionFromLoginHandler {
+public interface HttpFunctionHandlerRegistering {
 
-  @Override
-  public String getFunction() {
-    return "ChangePasswordFromLogin";
-  }
-
-  @Override
-  public String doAction(HttpServletRequest request) {
-    LoginData loginData = fetchLoginData(request);
-    if (loginData.isInvalid()) {
-      // Login incorrect.
-      request.setAttribute("login", loginData.getLoginId());
-      request.setAttribute("domain", loginData.getDomainName());
-      request.setAttribute("title", "screen.title.changeRequested");
-      return getGeneral().getString("forgottenPasswordChangeNotAllowed");
-    }
-
-    return getGeneral().getString("changePasswordFromLoginPage", "/defaultChangePassword.jsp");
-  }
+  /**
+   * Register the specified function handler to handle some specific tasks on user credentials. The
+   * handler will register itself by specifying the function it will take in charge.
+   *
+   * @param handler the handler to register.
+   * @param bypassPreHandleProcessing is function pre-processing must be bypassed for the function
+   * taken in charge by the handler? True if the handler pre-processing has to be bypassed for
+   * the given handler. False otherwise.
+   */
+  void register(HttpFunctionHandler handler, boolean bypassPreHandleProcessing);
 }

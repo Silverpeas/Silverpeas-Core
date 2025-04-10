@@ -61,4 +61,9 @@ public class NewRegistrationHandler extends CredentialsFunctionHandler {
     }
     return destination;
   }
+
+  @Override
+  public void registerWith(HttpFunctionHandlerRegistering registering) {
+    registering.register(this, true);
+  }
 }
