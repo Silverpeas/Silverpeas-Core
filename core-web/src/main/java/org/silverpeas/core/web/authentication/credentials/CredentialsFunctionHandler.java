@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author ehugonnet
  */
-public abstract class CredentialsFunctionHandler {
+public abstract class CredentialsFunctionHandler implements HttpFunctionHandler {
 
   private final SettingBundle resources =
       ResourceLocator.getSettingBundle("org.silverpeas.peasCore.SessionManager");
@@ -70,10 +70,6 @@ public abstract class CredentialsFunctionHandler {
         ResourceLocator.getLocalizationBundle("org.silverpeas.peasCore.multilang.peasCoreBundle",
             language);
   }
-
-  public abstract String getFunction();
-
-  public abstract String doAction(HttpServletRequest request);
 
   protected ForgottenPasswordMailParameters getMailParameters(String userId) throws AdminException {
     ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
@@ -147,4 +143,14 @@ public abstract class CredentialsFunctionHandler {
     tokenService.setUpNavigationTokens(request);
   }
 
+  /**
+   * Register this handler by not bypassing the handler pre-processing tasks. Override this method
+   * if the pre-processing tasks have to be bypassed for the handler.
+   *
+   * @param registering the registering service among which this handler has to be register itself.
+   */
+  @Override
+  public void registerWith(HttpFunctionHandlerRegistering registering) {
+    registering.register(this, false);
+  }
 }

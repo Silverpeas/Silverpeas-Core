@@ -37,7 +37,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
- * User: Yohann Chastagnier Date: 06/02/13
+ * Handler on functions implying a password change for a user.
+ *
+ * @author Yohann Chastagnier
+ * @since 2013-02-06
  */
 public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunctionHandler {
 
@@ -46,6 +49,7 @@ public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunc
 
   /**
    * Gets the current user behind the incoming HTTP request.
+   *
    * @param request the HTTP request
    * @return the requester.
    * @throws AdminException if the user behind the HTTP request cannot be identified.
