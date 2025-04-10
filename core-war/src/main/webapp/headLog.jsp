@@ -69,8 +69,6 @@
 // Is "forgotten password" feature active ?
   String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
   boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
-  boolean changePwdFromLoginPageActive =
-      authenticationSettings.getBoolean("changePwdFromLoginPageActive", false);
   boolean newRegistrationActive = registrationSettings.isUserSelfRegistrationEnabled();
   boolean virtualKeyboardActive = ResourceLocator.getGeneralSettingBundle().getBoolean("web.tool.virtualKeyboard", false);
 

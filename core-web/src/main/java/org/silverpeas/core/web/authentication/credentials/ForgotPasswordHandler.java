@@ -44,13 +44,12 @@ public class ForgotPasswordHandler extends CredentialsFunctionFromLoginHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
-    request.setAttribute("title", "screen.title.reinitRequested");
     LoginData loginData = fetchLoginData(request);
     if (loginData.isInvalid()) {
       // Login incorrect.
       request.setAttribute("login", loginData.getLoginId());
       request.setAttribute("domain", loginData.getDomainName());
-      return getGeneral().getString("forgottenPasswordChangeNotAllowed");
+      return getGeneral().getString("forgottenPasswordChangeAllowed");
     }
 
     ValidLoginData validLogin = (ValidLoginData) loginData;

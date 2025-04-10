@@ -37,11 +37,9 @@
 
   String action = request.getParameter("Action");
   String actionLabel = "";
-  String actionTitle = reinitPasswordBundle.getString((String) request.getAttribute("title"));
+  String actionTitle = reinitPasswordBundle.getString("screen.title.reinitRequested");
 
-  if ("InvalidLogin".equalsIgnoreCase(action)) {
-    actionLabel = reinitPasswordBundle.getString("screen.invalidLogin");
-  } else if ("FirstMailSended".equalsIgnoreCase(action)) {
+  if ("FirstMailSended".equalsIgnoreCase(action)) {
     actionLabel = reinitPasswordBundle.getString("screen.reinitRequested");
   } else if ("ChangeNotAllowed".equalsIgnoreCase(action)) {
     actionLabel = reinitPasswordBundle.getString("screen.reinitNotAllowed");
