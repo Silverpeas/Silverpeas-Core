@@ -112,16 +112,6 @@
       }
     }
 
-    function changePassword() {
-      let form = document.getElementById("formLogin");
-      if (form.elements["Login"].value.length === 0) {
-        alert('<fmt:message key="authentication.logon.loginMissing" />');
-      } else {
-        form.action = '<c:url value="/CredentialsServlet/ChangePasswordFromLogin" />';
-        form.submit();
-      }
-    }
-
     function newRegistration() {
       let form = document.getElementById("formLogin");
       form.action = '<c:url value="/CredentialsServlet/NewRegistration" />';
@@ -246,7 +236,6 @@
           <a href="#" class="<%=submitClass%>" onclick="checkForm()"><span><span><fmt:message key="authentication.logon.login.button"/></span></span></a>
         </p>
 
-        <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
         <% if (forgottenPwdActive) { %>
         <p>
           <span class="forgottenPwd">
@@ -256,24 +245,6 @@
             <a href="javascript:resetPassword()"><fmt:message key="authentication.logon.passwordReinit"/></a>
           <%} %>
           </span>
-            <% } %>
-
-            <% if (changePwdFromLoginPageActive) { %>
-            <% if (forgottenPwdActive) { %>
-          <span class="separator">|</span>
-          <span class="changePwd">
-            <% } else {%>
-
-        <p>
-          <span class="changePwd">
-          <% } %>
-          <a class="changePwd" href="javascript:changePassword()"><fmt:message key="authentication.logon.changePassword"/></a>
-          </span>
-          <% } %>
-
-          <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
-        </p>
-        <% } %>
         <% } %>
       </div>
     </div>
