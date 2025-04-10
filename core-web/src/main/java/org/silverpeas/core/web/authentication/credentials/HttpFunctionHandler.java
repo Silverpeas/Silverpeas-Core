@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,35 +21,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.annotation.Service;
+package org.silverpeas.core.web.authentication.credentials;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Navigation case : user asks to change his password from login page.
- * @author ndupont
+ * An handler of a function to perform against the credentials of a user.
+ *
+ * @author mmoquillon
  */
-@Service
-public class ChangePasswordFromLoginHandler extends CredentialsFunctionFromLoginHandler {
+public interface HttpFunctionHandler {
 
-  @Override
-  public String getFunction() {
-    return "ChangePasswordFromLogin";
-  }
+  /**
+   * The name of the function this handler will take in charge.
+   * @return the name of a function against the user credentials.
+   */
+  String getFunction();
 
-  @Override
-  public String doAction(HttpServletRequest request) {
-    LoginData loginData = fetchLoginData(request);
-    if (loginData.isInvalid()) {
-      // Login incorrect.
-      request.setAttribute("login", loginData.getLoginId());
-      request.setAttribute("domain", loginData.getDomainName());
-      request.setAttribute("title", "screen.title.changeRequested");
-      return getGeneral().getString("forgottenPasswordChangeNotAllowed");
-    }
+  /**
+   * Performs the action.
+   *
+   * @param request the incoming HTTP request.
+   * @return the URL at which the control flow has to be passed next the action.
+   */
+  String doAction(HttpServletRequest request);
 
-    return getGeneral().getString("changePasswordFromLoginPage", "/defaultChangePassword.jsp");
-  }
+  /**
+   * Registers itself by using the specified registering service.
+   *
+   * @param registering the registering service among which this handler has to be register itself.
+   */
+  void registerWith(HttpFunctionHandlerRegistering registering);
 }
+  

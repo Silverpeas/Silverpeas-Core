@@ -37,7 +37,7 @@
 
   String action = request.getParameter("Action");
   String actionLabel = "";
-  String actionTitle = reinitPasswordBundle.getString("screen.title.reinitRequested");
+  String actionTitle = reinitPasswordBundle.getString((String) request.getAttribute("title"));
 
   if ("InvalidLogin".equalsIgnoreCase(action)) {
     actionLabel = reinitPasswordBundle.getString("screen.invalidLogin");

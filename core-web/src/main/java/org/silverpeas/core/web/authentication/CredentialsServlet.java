@@ -43,7 +43,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,28 +53,25 @@ import java.util.Map;
  *
  * @author Ludovic Bertin
  */
-public class CredentialsServlet extends HttpServlet {
+public class CredentialsServlet extends HttpServlet implements HttpFunctionHandlerRegistering {
 
   private static final long serialVersionUID = -7586840606648226466L;
-  private static final Map<String, CredentialsFunctionHandler> handlers = new HashMap<>(20);
-
-  private static final String NEW_REGISTRATION = "NewRegistration";
+  private final Map<String, HttpFunctionHandler> handlers = new HashMap<>(20);
+  private final List<String> preProcessingByPassers = new ArrayList<>();
 
   @Inject
   private Instance<CredentialsFunctionHandler> handlerInstances;
 
   @PostConstruct
   void loadHandlers() {
-    handlerInstances.forEach(h ->
-        handlers.put(h.getFunction(), h)
-    );
+    handlerInstances.forEach(h -> h.registerWith(this));
   }
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     try {
       CredentialsProcessContext context = new CredentialsProcessContext(request);
-      CredentialsFunctionHandler handler = handlers.get(context.getFunction());
+      HttpFunctionHandler handler = handlers.get(context.getFunction());
       if (handler != null) {
         preHandlerProcessing(request, context);
 
@@ -98,7 +97,7 @@ public class CredentialsServlet extends HttpServlet {
     AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier((User) null)
         .clearSession(request);
     if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId) &&
-        !NEW_REGISTRATION.equals(context.getFunction())) {
+        !preProcessingByPassers.contains(context.getFunction())) {
       // Verify that the user can login
       UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
           .getUserCanLoginVerifier(getAuthenticationCredential(login, domainId));
@@ -144,6 +143,14 @@ public class CredentialsServlet extends HttpServlet {
     } catch (AuthenticationException e) {
       // shouldn't be thrown
       throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  @Override
+  public void register(HttpFunctionHandler handler, boolean bypassPreHandleProcessing) {
+    handlers.put(handler.getFunction(), handler);
+    if (bypassPreHandleProcessing) {
+      preProcessingByPassers.add(handler.getFunction());
     }
   }
 
