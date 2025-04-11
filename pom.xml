@@ -37,7 +37,7 @@
 
   <groupId>org.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>6.4.3-SNAPSHOT</version>
+  <version>6.4.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
   <url>https://www.silverpeas.org/docs/core</url>
@@ -79,7 +79,7 @@
 
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
-    <next.release>6.4.3</next.release>
+    <next.release>6.4.4</next.release>
   </properties>
 
   <dependencies>
