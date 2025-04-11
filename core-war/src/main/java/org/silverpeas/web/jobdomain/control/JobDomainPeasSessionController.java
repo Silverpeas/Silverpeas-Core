@@ -25,6 +25,7 @@ package org.silverpeas.web.jobdomain.control;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.xhtml.br;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
@@ -659,7 +660,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         for (int j = 0; j < csvReader.getSpecificNbCols(); j++) {
           String paramName = csvReader.getSpecificParameterName(j);
           if (Variant.TYPE_STRING.equals(csvReader.getSpecificColType(j))) {
-            String informationSpecifiqueString = csvValue[j + 6].getValueString();
+            String informationSpecifiqueString = Encode.forHtml(csvValue[j + 6].getValueString());
             properties.put(paramName, informationSpecifiqueString);
           } else if (Variant.TYPE_BOOLEAN.equals(csvReader.getSpecificColType(j))) {
             boolean informationSpecifiqueBoolean = csvValue[j + 6].getValueBoolean();
@@ -673,7 +674,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       }
 
       userRequestData.setSendEmail(data.isSendEmail());
-      userRequestData.setExtraMessage(data.getExtraMessage());
+      userRequestData.setExtraMessage(Encode.forHtml(data.getExtraMessage()));
       userRequestData.setUserManualNotifReceiverLimitEnabled(true);
       try {
         createUser(userRequestData, properties, req);
