@@ -75,8 +75,8 @@ function gotoToDo()
 }
 
 function ifCorrectFormExecute(callback) {
-  var errorMsg = "";
-  var errorNb = 0;
+  let errorMsg = "";
+  let errorNb = 0;
 
   if (isWhitespace(document.todoEditForm.Name.value)) {
     errorMsg += "  - '<%=todo.getString("nomToDo")%>' <%=todo.getString("MustContainsText")%>\n";
@@ -89,7 +89,7 @@ function ifCorrectFormExecute(callback) {
     errorNb++;
   }
 
-  var dateErrors = isPeriodValid('StartDate', 'EndDate');
+  const dateErrors = isPeriodValid('StartDate', 'EndDate');
   $(dateErrors).each(function(index, error) {
     errorMsg += "  - " + error.message + "\n";
     errorNb++;
@@ -112,17 +112,17 @@ function ifCorrectFormExecute(callback) {
 }
 
 
-function reallyAdd()
+function save()
 {
   ifCorrectFormExecute(function() {
-    document.todoEditForm.Action.value = "ReallyAdd";
+    document.todoEditForm.Action.value = "Save";
     document.todoEditForm.submit();
   });
 }
 
-function reallyUpdate()
+function update()
 {
-	document.todoEditForm.Name.disabled = false;
+  document.todoEditForm.Name.disabled = false;
   document.todoEditForm.PercentCompleted.disabled = false;
   document.todoEditForm.Description.disabled = false;
   document.todoEditForm.StartDate.disabled = false;
@@ -130,7 +130,7 @@ function reallyUpdate()
   document.todoEditForm.Classification.disabled = false;
   document.todoEditForm.Priority.disabled = false;
   ifCorrectFormExecute(function() {
-   document.todoEditForm.Action.value = "ReallyUpdate";
+   document.todoEditForm.Action.value = "Update";
    document.todoEditForm.submit();
   });
 }
@@ -164,7 +164,7 @@ function test(){
   String toPrint = null;
 
 
-  if (action.equals("Add") || action.equals("Update")) {
+  if (action.equals("Add") || action.equals("Edit")) {
     todo.setCurrentToDoHeader(null);
     todo.setCurrentAttendees(null);
   }
@@ -177,12 +177,12 @@ function test(){
     String toDoId = request.getParameter("ToDoId");
 
     if (toDoId != null) {
-      if (toDoId.length() == 0) {
+      if (toDoId.isEmpty()) {
         toDoId = null;
       }
     }
 
-    /* Update et premier acces a la page */
+    /* Edit et premier acces a la page */
     if (toDoId != null) {
       todoHeader = todo.getToDoHeader(toDoId);
       attendees = todo.getToDoAttendees(toDoId);
@@ -264,8 +264,8 @@ function test(){
   </head>
 
   <%
-  /* ReallyAdd || ReallyUpdate */
-  if (action.equals("ReallyAdd") || action.equals("ReallyUpdate")) {
+  /* Save || Update */
+  if (action.equals("Save") || action.equals("Update")) {
     String name = request.getParameter("Name");
     String description = request.getParameter("Description");
     String priority = request.getParameter("Priority");
@@ -290,11 +290,11 @@ function test(){
                 Date date1 = null;
                 if (name == null)
                         throw new Exception("nameErreur");
-                else if (name.length() == 0)
+                else if (name.isEmpty())
                         throw new Exception("nameErreur");
 
                 try {
-                        if (startDate.trim().length() > 0)
+                        if (!startDate.trim().isEmpty())
                                 date1 = DateUtil.stringToDate(startDate, todo.getLanguage());
                 }
                 catch (java.text.ParseException e) {
@@ -304,7 +304,7 @@ function test(){
                 Date date2 = null;
 
                 try {
-                  if (endDate.trim().length() == 0)
+                  if (endDate.trim().isEmpty())
                         date2 = date1;
                   else
                                 date2 = DateUtil.stringToDate(endDate, todo.getLanguage());
@@ -325,7 +325,7 @@ function test(){
                         j++;
                 }
 
-                /* ReallyAdd */
+                /* Save */
                 // now diffusion list can be empty
                 if (todoHeader.getId() == null) {
                         String id = todo.addToDo(name, description, priority, classification, date1, startHour, date2, endHour, percent);
@@ -336,7 +336,7 @@ function test(){
                         return;
                 }
 
-                /* ReallyUpdate */
+                /* Update */
                 else {
                         if (todo.getUserId().equals(todoHeader.getDelegatorId())) {
                                 todo.updateToDo(todoHeader.getId(), name, description, priority, classification, date1, startHour, date2, endHour, percent);
@@ -416,8 +416,8 @@ function test(){
                 out.println("</div>");
   }
 
-  /* Add || Update || View || DiffusionListOK */
-  else if (action.equals("Update") || action.equals("Add") || action.equals("View") || action.equals("DiffusionListOK")) {
+  /* Add || Edit || View || DiffusionListOK */
+  else if (action.equals("Edit") || action.equals("Add") || action.equals("View") || action.equals("DiffusionListOK")) {
 %>
 <center>
 <view:board>
@@ -617,9 +617,9 @@ out.println(frame.printMiddle());
                                         ButtonPane pane = graphicFactory.getButtonPane();
                                         Button button = null;
                                         if (todoHeader.getId() != null)
-                                                button = graphicFactory.getFormButton(todo.getString("mettreAJour"), "javascript:onClick=reallyUpdate()", false);
+                                                button = graphicFactory.getFormButton(todo.getString("mettreAJour"), "javascript:onClick=update()", false);
                                         else
-                                                button = graphicFactory.getFormButton(todo.getString("ajouter"), "javascript:onClick=reallyAdd()", false);
+                                                button = graphicFactory.getFormButton(todo.getString("ajouter"), "javascript:onClick=save()", false);
 
                                         pane.addButton(button);
 
