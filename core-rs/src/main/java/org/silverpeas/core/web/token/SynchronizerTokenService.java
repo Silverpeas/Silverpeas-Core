@@ -46,6 +46,7 @@ import javax.servlet.http.HttpSession;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A service to manage the synchronizer tokens used in Silverpeas to protect the user sessions or
@@ -65,12 +66,14 @@ public class SynchronizerTokenService {
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
   private static final String UNPROTECTED_URI_RULE =
-      "(?i)(?!.*(/icons/|/images/|/qaptcha|rpdcsearch/|rclipboard/|rselectionpeaswrapper/|rusernotification/|services/usernotifications/|blockingNews|services/password/)).*";
+      "(?i)(?![\\w/]{0,500}(/icons/|/images/|/qaptcha|rpdcsearch/|rclipboard" +
+          "/|rselectionpeaswrapper/|rusernotification/|services/usernotifications/|blockingNews" +
+          "|services/password/)).{0,500}";
   private static final String DEFAULT_GET_RULE_KEYWORDS = "(delete|update|creat|save|block)";
   private static final String DEFAULT_GET_RULE_ON_KEYWORD =
-      "(?i)^.*" + DEFAULT_GET_RULE_KEYWORDS + ".*$";
+      "(?i)^.{0,500}" + DEFAULT_GET_RULE_KEYWORDS + ".{0,500}$";
   private static final String DEFAULT_GET_RULE =
-      "(?i)^/\\w+[\\w/]*/jsp/.*" + DEFAULT_GET_RULE_KEYWORDS + ".*$";
+      "(?i)^/\\w+[\\w/]{0,500}/jsp/.{0,500}" + DEFAULT_GET_RULE_KEYWORDS + ".{0,500}$";
   private static final SilverLogger logger = SilverLogger.getLogger("silverpeas.core.security");
   private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList("POST", "PUT",
       "DELETE");
@@ -184,14 +187,21 @@ public class SynchronizerTokenService {
    * validated.
    */
   public boolean isAProtectedResource(HttpServletRequest request, final boolean onKeywordsOnly) {
+    // attempt to bypass the protection by overflowing the regexp matching
+    if (request.getRequestURI().length() > 500) {
+      return true;
+    }
     boolean isProtected = false;
     if (request.getRequestURI().matches(UNPROTECTED_URI_RULE)) {
       isProtected = DEFAULT_PROTECTED_METHODS.contains(request.getMethod());
       if (!isProtected && "GET".equals(request.getMethod())) {
         String path = getRequestPath(request);
+        String query = Optional.ofNullable(request.getQueryString())
+            .map(q -> "?" + q)
+            .orElse("");
         isProtected = onKeywordsOnly ?
-            path.matches(DEFAULT_GET_RULE_ON_KEYWORD) :
-            path.matches(DEFAULT_GET_RULE);
+            (path + query).matches(DEFAULT_GET_RULE_ON_KEYWORD) :
+            (path + query).matches(DEFAULT_GET_RULE);
       }
     }
     return isProtected;
