@@ -51,9 +51,8 @@ public class AdministrationServiceProviderIT {
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addPublicationTemplateFeatures()
-        .testFocusedOn((warBuilder) -> {
-          ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures();
-        }).build();
+        .testFocusedOn(warBuilder ->
+            ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures()).build();
   }
 
   @Test

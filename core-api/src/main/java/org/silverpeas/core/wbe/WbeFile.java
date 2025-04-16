@@ -70,11 +70,11 @@ public abstract class WbeFile implements Securable {
   /**
    * Silverpeas's identifier identifies the file from point of view of Silverpeas's platform.
    * <p>
-   * In most of case, {@link #id()} will return same identifier as {@link #silverpeasId()} returns.
+   * In most of case, {@link #id()} will return same identifier.
    * </p>
    * <p>
    * But sometimes, when a temporary view exists for a file and that the temporary view is the
-   * content exposed for modifications, {@link #silverpeasId()} returns the identifier of the
+   * content exposed for modifications, it returns the identifier of the
    * document and {@link #id()} returns the identifier of the view (the one used by Web Browser Edition exchanges).
    * </p>
    * @return a unique identifier as string.
