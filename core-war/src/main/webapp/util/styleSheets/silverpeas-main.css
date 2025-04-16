@@ -7754,10 +7754,3 @@ input.dateToPick,
   margin: -1em 0 0 -0.25em;
 }
 
-/*********** For ConverseJS as a workaround of a Firefox bug */
-@-moz-document url-prefix(){
-  .conversejs .chatbox .chat-content .chat-content__messages {
-    overflow-x: auto;
-    display: block;
-  }
-}
