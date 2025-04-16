@@ -58,7 +58,8 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(AdministrationSearchGroupIT.class)
         .addCommonBasicUtilities().addPublicationTemplateFeatures().addSilverpeasExceptionBases()
-        .testFocusedOn((w) -> ((WarBuilder4LibCore) w).addAdministrationFeatures()).build();
+        .testFocusedOn(w ->
+            ((WarBuilder4LibCore) w).addAdministrationFeatures()).build();
   }
 
   @Test

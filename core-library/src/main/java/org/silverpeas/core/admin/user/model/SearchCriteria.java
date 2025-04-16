@@ -26,11 +26,13 @@ package org.silverpeas.core.admin.user.model;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Criteria to use in a search of resources managed and exposed in Silverpeas (like user profiles or
  * user groups).
  */
+@SuppressWarnings("UnusedReturnValue")
 public interface SearchCriteria {
 
   class Constants {
@@ -68,8 +70,9 @@ public interface SearchCriteria {
 
   /**
    * Appends a criterion on the user domain for which the search must be constrained to. The
-   * properties of the resources to fetch have to satisfy this criterion.
-   * This criterion replaces any previous criterion on the user domains.
+   * properties of the resources to fetch have to satisfy this criterion. This criterion replaces
+   * any previous criterion on the user domains.
+   *
    * @param domainIds the unique identifier of the user domain.
    * @return the criteria enriched with a criterion on the user domain.
    */
@@ -77,8 +80,9 @@ public interface SearchCriteria {
 
   /**
    * Appends a criterion on the user groups for which the search must be constrained to. The
-   * properties of the resources to fetch have to satisfy this criterion.
-   * This criterion replaces any previous criterion on the user groups.
+   * properties of the resources to fetch have to satisfy this criterion. This criterion replaces
+   * any previous criterion on the user groups.
+   *
    * @param groupIds the unique identifiers of the groups.
    * @return the criteria enriched with a criterion on the user groups.
    */
@@ -86,8 +90,9 @@ public interface SearchCriteria {
 
   /**
    * Appends a criterion on the user access level for which the search must be constrained to. The
-   * properties of the resources to fetch have to satisfy this criterion.
-   * This criterion replaces any previous criterion on the user access levels.
+   * properties of the resources to fetch have to satisfy this criterion. This criterion replaces
+   * any previous criterion on the user access levels.
+   *
    * @param accessLevels the access levels aimed.
    * @return the criteria enriched with a criterion on the user access level.
    */
@@ -104,12 +109,13 @@ public interface SearchCriteria {
 
   /**
    * Appends a criterion on the user roles for which the search must be constrained to. The
-   * properties of the resources to fetch have to satisfy this criterion.
-   * This criterion replaces any previous criterion on the user roles.
+   * properties of the resources to fetch have to satisfy this criterion. This criterion replaces
+   * any previous criterion on the user roles.
    * <p>
-   * This criterion is useless without any criterion on either the component instance or on both
-   * the component instance and the resource for which the roles are defined.
+   * This criterion is useless without any criterion on either the component instance or on both the
+   * component instance and the resource for which the roles are defined.
    * </p>
+   *
    * @param roleNames the name of the user roles on which the criterion has to be built.
    * @return the criteria enriched with a criterion on the role names.
    */
@@ -118,16 +124,18 @@ public interface SearchCriteria {
   /**
    * Specifies that each result item MUST match all specified roles if any.
    * <p>
-   *   If no role criteria is set, this criteria has no effect.
+   * If no role criteria is set, this criteria has no effect.
    * </p>
+   *
    * @return the criteria enriched with a criterion on the role name clause.
    */
   SearchCriteria matchingAllRoleNames();
 
   /**
    * Appends a criteria on the user profiles for which the search must be constrained to. The
-   * properties of the resources to fetch have to satisfy this criterion.
-   * This criterion replaces any previous criterion on the user profiles.
+   * properties of the resources to fetch have to satisfy this criterion. This criterion replaces
+   * any previous criterion on the user profiles.
+   *
    * @param userIds the user identifiers.
    * @return the criteria enriched with a criterion on the user identifiers.
    */
@@ -140,16 +148,18 @@ public interface SearchCriteria {
    * One, and only one, domain id will be mandatory!
    * </p>
    * This criterion replaces any previous criterion on the user profiles.
+   *
    * @param userSpecificIds the user specific identifiers.
    * @return the criteria enriched with a criterion on the user identifiers.
    */
   SearchCriteria onUserSpecificIds(String... userSpecificIds);
 
   /**
-   * Appends a criterion on the user states to be excluded in the search of users. The
-   * properties of the resources to fetch have to satisfy this criterion. By default, the deleted
-   * users are always excluded but not the removed users. Latter have to be explicitly excluded.
-   * This criterion replaces any previous criterion on the user states.
+   * Appends a criterion on the user states to be excluded in the search of users. The properties of
+   * the resources to fetch have to satisfy this criterion. By default, the deleted users are always
+   * excluded but not the removed users. Latter have to be explicitly excluded. This criterion
+   * replaces any previous criterion on the user states.
+   *
    * @param userStates the user states that exclude users from the result.
    * @return the criteria enriched with a criterion on the user states.
    */
@@ -158,10 +168,12 @@ public interface SearchCriteria {
   /**
    * Forces to take into account removed users.
    * <p>
-   *   This method has priority over the {@link #onUserStatesToExclude(UserState...)} one.
-   *   It means that if {@link #includeRemovedUsers()} is called then {@link UserState#REMOVED}
-   *   state is removed from result of {@link #onUserStatesToExclude(UserState...)} method call.
+   * This method has priority over the {@link SearchCriteria#onUserStatesToExclude(UserState...)}
+   * one. It means that if {@link SearchCriteria#includeRemovedUsers()} is called then
+   * {@link UserState#REMOVED} state is removed from result of
+   * {@link #onUserStatesToExclude(UserState...)} method call.
    * </p>
+   *
    * @return the criteria enriched with a criterion on the user states.
    */
   SearchCriteria includeRemovedUsers();
@@ -169,17 +181,32 @@ public interface SearchCriteria {
   /**
    * Appends a criterion on a resources pagination. The pagination is a mechanism to distribute the
    * resources to fetch in one or more pages of same size and to navigate among theses different
-   * available pages.
-   * Yet, this criterion is about the page of resources to fetch.
+   * available pages. Yet, this criterion is about the page of resources to fetch.
+   *
    * @param page the page of resources to fetch.
    * @return the criteria enriched with a criterion on the resources pagination.
    */
   SearchCriteria onPagination(final PaginationPage page);
 
   /**
-   * Is this criteria empty?
+   * Clears all the criteria. The criteria set is then empty.
+   */
+  void clear();
+
+  /**
+   * Is this criteria set empty?
    *
    * @return true if this object has no any criteria, false otherwise.
    */
   boolean isEmpty();
+
+  /**
+   * Accepts the specified visitor so that it can do some peculiar operations with this criteria
+   * like refining them according to some criteria set.
+   *
+   * @param visitor the visitor to accept.
+   * @throws SilverpeasRuntimeException if an unexpected error occurred when visiting this search
+   * criteria.
+   */
+  void accept(SearchCriteriaVisitor visitor) throws SilverpeasRuntimeException;
 }

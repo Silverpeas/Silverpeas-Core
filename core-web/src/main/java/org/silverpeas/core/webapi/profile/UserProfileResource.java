@@ -37,9 +37,10 @@ import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
-import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -75,7 +76,7 @@ import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.USERS_B
  */
 @WebService
 @Path(USERS_BASE_URI)
-@Authenticated
+@Authorized
 public class UserProfileResource extends RESTWebService {
 
   /**
@@ -95,12 +96,13 @@ public class UserProfileResource extends RESTWebService {
   private RelationShipService relationShipService;
 
   /**
-   * Gets the profile of the user whose the API token is either passed in the {@code
-   * Authorization} HTTP header (Bearer authentication scheme, IETF RFC 6750) or with the query
-   * parameter {@code access_token} (see IETF RFC 6750).
+   * Gets the profile of the user whose the API token is either passed in the {@code Authorization}
+   * HTTP header (Bearer authentication scheme, IETF RFC 6750) or with the query parameter
+   * {@code access_token} (see IETF RFC 6750).
    * <p>
    * This endpoint works also with a basic authentication instead of a bearer one.
    * </p>
+   *
    * @return The user entity corresponding to the token specified in the request.
    */
   @GET
@@ -128,6 +130,7 @@ public class UserProfileResource extends RESTWebService {
    * the users that matches the query. This is usefull for clients that use the pagination to filter
    * the count of the answered users.
    * </p>
+   *
    * @param userIds requested user identifiers
    * @param groupIds the identifier of the groups the users must belong to. The particular
    * identifier "all" means all user groups.
@@ -176,10 +179,10 @@ public class UserProfileResource extends RESTWebService {
     }
     UserProfilesSearchCriteriaBuilder criteriaBuilder =
         UserProfilesSearchCriteriaBuilder.aSearchCriteria()
-        .withDomainIds(effectiveDomainIds.toArray(new String[0]))
-        .withGroupIds(groupIds.toArray(new String[0]))
-        .withName(name)
-        .withPaginationPage(fromPage(page));
+            .withDomainIds(effectiveDomainIds.toArray(new String[0]))
+            .withGroupIds(groupIds.toArray(new String[0]))
+            .withName(name)
+            .withPaginationPage(fromPage(page));
     if (CollectionUtil.isNotEmpty(userIds)) {
       criteriaBuilder.withUserIds(userIds.toArray(new String[0]));
     }
@@ -211,7 +214,7 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets the profile on the user that is identified by the unique identifier refered by the URI.
+   * Gets the profile on the user that is identified by the unique identifier referred by the URI.
    * The unique identifier in the URI accepts also the specific term <i>me</i> to refers the current
    * user of the session within which the request is received.
    *
@@ -245,6 +248,7 @@ public class UserProfileResource extends RESTWebService {
    * the users that matches the query. This is usefull for clients that use the pagination to filter
    * the count of the answered users.
    * </p>
+   *
    * @param instanceId the unique identifier of the component instance the users should have access
    * to.
    * @param groupId the unique identifier of the group the users must belong to. The particular
@@ -294,13 +298,13 @@ public class UserProfileResource extends RESTWebService {
     }
     UserProfilesSearchCriteriaBuilder criteriaBuilder =
         UserProfilesSearchCriteriaBuilder.aSearchCriteria()
-        .withDomainIds(domainIds.toArray(new String[0]))
-        .withComponentInstanceId(instanceId)
-        .withRoles(roleNames, matchingAllRoles)
-        .withResourceId(resource)
-        .withGroupIds(groupId)
-        .withName(name)
-        .withPaginationPage(fromPage(page));
+            .withDomainIds(domainIds.toArray(new String[0]))
+            .withComponentInstanceId(instanceId)
+            .withRoles(roleNames, matchingAllRoles)
+            .withResourceId(resource)
+            .withGroupIds(groupId)
+            .withName(name)
+            .withPaginationPage(fromPage(page));
 
     // Users to exclude by their state
     setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
@@ -363,13 +367,13 @@ public class UserProfileResource extends RESTWebService {
     if (contactIds.length > 0) {
       UserProfilesSearchCriteriaBuilder criteriaBuilder =
           UserProfilesSearchCriteriaBuilder.aSearchCriteria()
-          .withComponentInstanceId(instanceId)
-          .withDomainIds(domainId)
-          .withRoles(roleNames, matchingAllRoles)
-          .withResourceId(resource)
-          .withUserIds(contactIds)
-          .withName(name)
-          .withPaginationPage(fromPage(page));
+              .withComponentInstanceId(instanceId)
+              .withDomainIds(domainId)
+              .withRoles(roleNames, matchingAllRoles)
+              .withResourceId(resource)
+              .withUserIds(contactIds)
+              .withName(name)
+              .withPaginationPage(fromPage(page));
 
       // Users to exclude by their state
       setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
@@ -457,7 +461,7 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets the detail about the user that matchs the specified identifier. The identifier is a
+   * Gets the detail about the user that matches the specified identifier. The identifier is a
    * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
    * means the current user of the underlying HTTP session.
    *
@@ -473,7 +477,7 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets all details about the user that matchs the specified identifier. The identifier is a
+   * Gets all details about the user that matches the specified identifier. The identifier is a
    * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
    * means the current user of the underlying HTTP session.
    *
@@ -489,6 +493,14 @@ public class UserProfileResource extends RESTWebService {
   }
 
   private boolean isCurrentUser(String identifier) {
-    return "me".equals(identifier);
+    return "me".equals(identifier) || getUser().getId().equals(identifier);
+  }
+
+  @Override
+  public void validateUserAuthorization(UserPrivilegeValidation validation) {
+    User currentUser = getUser();
+    if (currentUser.isAccessGuest()) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
   }
 }

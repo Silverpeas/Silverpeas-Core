@@ -241,14 +241,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
     this.user.setEmailAddress(emailAddress);
   }
 
-  public void setDeletedState(boolean deletedState) {
-    // It is not possible to handle this data from Web Services.
-  }
-
-  public void setDeactivatedState(boolean deactivatedState) {
-    // It is not possible to handle this data from Web Services.
-  }
-
   @Override
   public String getAvatar() {
     if (!isDefined(avatar)) {
@@ -289,7 +281,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   @Override
-  @XmlElement
   public String getSpecificId() {
     return this.user.getSpecificId();
   }
@@ -300,7 +291,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   @Override
-  @XmlElement
   public String getLogin() {
     return this.user.getLogin();
   }
@@ -314,10 +304,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   @XmlElement(defaultValue = "")
   public String getStatus() {
     return this.user.getStatus();
-  }
-
-  public void setStatus(String newStatus) {
-    // nothing to do. This method is required for the decoding from JSON
   }
 
   public String getDomainName() {
