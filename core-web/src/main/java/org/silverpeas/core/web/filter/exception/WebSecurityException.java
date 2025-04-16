@@ -36,7 +36,7 @@ public abstract class WebSecurityException extends SilverpeasException {
 
   /**
    * Default constructor.
-   * @param message
+   * @param message the reason of the exception
    */
   protected WebSecurityException(final String message) {
     super(message + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));

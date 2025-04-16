@@ -35,10 +35,6 @@ import org.silverpeas.web.todo.control.ToDoSessionController;
 
 import java.util.Collection;
 
-/**
- * Class declaration
- * @author
- */
 public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionController> {
 
   private static final long serialVersionUID = 6455939825707914384L;
@@ -74,9 +70,7 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
    */
   public String getDestination(String function, ToDoSessionController scc,
       HttpRequest request) {
-
-    String destination = "";
-
+    String destination;
     try {
 
       final String defaultDestination = "/todo/jsp/todo.jsp";
@@ -84,7 +78,7 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
         scc.getSelectedTodoIds().clear();
         destination = defaultDestination;
       } else if (function.startsWith("searchResult")) {
-        destination = "/todo/jsp/todoEdit.jsp?Action=Update&ToDoId="
+        destination = "/todo/jsp/todoEdit.jsp?Action=Edit&ToDoId="
             + request.getParameter("Id");
       } else if (function.startsWith("diffusion")) {
         // initialisation du userPanel avec les participants
@@ -97,7 +91,7 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
       } else if ("DeleteTodo".equals(function)) {
         request.mergeSelectedItemsInto(scc.getSelectedTodoIds());
         if (!scc.getSelectedTodoIds().isEmpty()) {
-          scc.removeTabToDo(scc.getSelectedTodoIds().toArray(new String[scc.getSelectedTodoIds().size()]));
+          scc.removeTabToDo(scc.getSelectedTodoIds().toArray(new String[0]));
         }
         scc.getSelectedTodoIds().clear();
         destination = defaultDestination;
