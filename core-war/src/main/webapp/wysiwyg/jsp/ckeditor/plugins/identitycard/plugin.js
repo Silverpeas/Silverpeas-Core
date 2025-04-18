@@ -90,8 +90,11 @@ CKEDITOR.plugins.add('identitycard', {
 });
 
 function updateContent(widget) {
-  var widgetUI = widget.element;
-  var widgetData = widget.data;
+  if (!widget.data.userId)
+    return;
+
+  let widgetUI = widget.element;
+  let widgetData = widget.data;
   widgetUI.setAttribute('rel', widget.data.userId);
 
   $.ajax({
@@ -128,11 +131,9 @@ function updateContent(widget) {
                   }
                 }
               });
-            } else {
-              if (item.getAttribute('class') === 'field ' + key) {
-                item.setHtml(val);
-                break;
-              }
+            } else if (item.getAttribute('class') === 'field ' + key) {
+              item.setHtml(val);
+              break;
             }
           }
         }

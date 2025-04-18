@@ -23,13 +23,16 @@
  */
 package org.silverpeas.core.admin.user.model;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -37,6 +40,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 /**
  * A conjunction of criteria in the search of user groups.
  */
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class GroupsSearchCriteria extends AbstractSearchCriteria {
 
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
@@ -51,6 +55,13 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
   private static final String ROOT_GROUP = "mustBeRoot";
   private static final String NAME = "name";
   private static final String PAGINATION = "pagination";
+
+  /**
+   * Constructs a search criteria on the groups for which all the groups have to be got.
+   */
+  public GroupsSearchCriteria() {
+    criteria.put(GROUP_ID, Constants.ANY);
+  }
 
   @Override
   public GroupsSearchCriteria onName(String name) {
@@ -184,7 +195,8 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
   }
 
   public boolean isCriterionOnGroupIdsSet() {
-    return criteria.containsKey(GROUP_ID);
+    return criteria.containsKey(GROUP_ID)
+        && ArrayUtils.isNotEmpty((String[]) criteria.get(GROUP_ID));
   }
 
   public boolean isCriterionOnDomainIdSet() {
@@ -198,7 +210,7 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
   public boolean isCriterionOnMixedDomainIdSet() {
     if (criteria.containsKey(DOMAIN_IDS)) {
       String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
-      return Arrays.stream(domainIds).anyMatch(Domain.MIXED_DOMAIN_ID::equals);
+      return Arrays.asList(domainIds).contains(Domain.MIXED_DOMAIN_ID);
     }
     return false;
   }
@@ -324,8 +336,7 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
       return false;
     }
     final GroupsSearchCriteria other = (GroupsSearchCriteria) obj;
-    return this.criteria == other.criteria ||
-        (this.criteria != null && this.criteria.equals(other.criteria));
+    return Objects.equals(this.criteria, other.criteria);
   }
 
   @Override
@@ -338,6 +349,11 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();
+  }
+
+  @Override
+  public void accept(SearchCriteriaVisitor visitor) throws SilverpeasRuntimeException {
+    visitor.visit(this);
   }
 
   /**

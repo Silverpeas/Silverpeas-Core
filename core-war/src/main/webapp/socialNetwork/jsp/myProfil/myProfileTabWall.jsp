@@ -33,9 +33,9 @@
 <%@page import="java.util.List"%>
 
 <%
-	UserFull userFull = (UserFull) request.getAttribute("UserFull");
+	UserFull theUser = (UserFull) request.getAttribute("UserFull");
 	boolean wall = view.equals(MyProfileRoutes.MyWall.toString());
-	String urlServlet = URLUtil.getApplicationURL()+"/RnewsFeedJSONServlet?userId="+userFull.getId();
+	String urlServlet = URLUtil.getApplicationURL()+"/RnewsFeedJSONServlet?userId="+ theUser.getId();
 	if (!wall) {
 	  urlServlet += "&View=MyFeed";
 	}

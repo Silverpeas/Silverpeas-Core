@@ -140,4 +140,9 @@ public abstract class AbstractSearchCriteria implements SearchCriteria {
     return isCriterionOnRoleNamesSet() && getCriterionOnRoleNames().length > 1 &&
         Boolean.TRUE.equals(criteria.get(MATCHING_ALL_ROLE_NAMES));
   }
+
+  @Override
+  public void clear() {
+    criteria.clear();
+  }
 }

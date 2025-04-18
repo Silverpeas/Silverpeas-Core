@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.user.model;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Arrays;
@@ -43,8 +44,8 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
 
   public static final String[] ANY_GROUPS = Constants.ANY;
-  private static final String USER_ACCESS_LEVELS = "userAccessLevels";
 
+  private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
   private static final String USER_SPECIFIC_IDS = "userSpecificIds";
@@ -56,6 +57,13 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
   private static final String LAST_NAME = "lastName";
   private static final String PAGINATION = "pagination";
   private static final String ROLE_GROUPS = "groupIdsInRole";
+
+  /**
+   * Constructs a search criteria on users for which all users have to be got.
+   */
+  public UserDetailsSearchCriteria() {
+    criteria.put(USER_IDS, Constants.ANY);
+  }
 
   @Override
   public UserDetailsSearchCriteria onName(String name) {
@@ -197,6 +205,10 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
         !((Map<String, Set<String>>) criteria.get(ROLE_GROUPS)).isEmpty();
   }
 
+  /**
+   * Is there is a criterion on a resource?
+   * @return true if a criterion on a resource in Silverpeas is set. False otherwise.
+   */
   public boolean isCriterionOnResourceIdSet() {
     return criteria.containsKey(RESOURCE_ID);
   }
@@ -206,7 +218,7 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
   }
 
   public boolean isCriterionOnUserIdsSet() {
-    return criteria.containsKey(USER_IDS);
+    return criteria.containsKey(USER_IDS) && isNotEmpty((String[]) criteria.get(USER_IDS));
   }
 
   public boolean isCriterionOnUserSpecificIdsSet() {
@@ -365,5 +377,10 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();
+  }
+
+  @Override
+  public void accept(SearchCriteriaVisitor visitor) throws SilverpeasRuntimeException {
+    visitor.visit(this);
   }
 }

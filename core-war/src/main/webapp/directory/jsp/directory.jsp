@@ -170,7 +170,9 @@
     }
 
     function showContact(url) {
-      jQuery.popup.load(url).show('free', {
+      // contactPopup is used by the JSP rendered within the popup to close it
+      window.contactPopup = jQuery.popup.load(url);
+      window.contactPopup.show('free', {
         title : 'Contact'
       });
     }
@@ -314,9 +316,9 @@
 
       <c:if test="${not empty sources && fn:length(sources)>1}">
         <div id="sources">
-          Voir :
+          <fmt:message key="directory.filter"/>
           <select name="SourceId">
-            <option value="-1">Tout</option>
+            <option value="-1"><fmt:message key="directory.all"/></option>
             <c:forEach var="source" items="${sources}">
               <c:choose>
                 <c:when test="${source.selected}">

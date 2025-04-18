@@ -27,9 +27,8 @@ package org.silverpeas.core.admin.service;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
@@ -71,11 +70,9 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(AdministrationSearchGroupIT.class)
         .addCommonBasicUtilities().addPublicationTemplateFeatures().addSilverpeasExceptionBases()
-        .testFocusedOn((w) -> ((WarBuilder4LibCore) w).addAdministrationFeatures()).build();
+        .testFocusedOn(w ->
+            ((WarBuilder4LibCore) w).addAdministrationFeatures()).build();
   }
-
-  @Rule
-  public ExpectedException exceptionRule = ExpectedException.none();
 
   @Test
   public void noCriteria() throws AdminException {
@@ -209,14 +206,13 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
   }
 
   @Test
-  public void specificIdsCriteriaError() throws AdminException {
-    exceptionRule.expect(AdminException.class);
-    exceptionRule.expectMessage("Fail to get users matching some criteria");
+  public void specificIdsCriteriaError() {
     // getting an error if several domain ids criterion is set with the specific ids ones
-    admin.searchUsers(newUserSearchCriteriaBuilder()
-        .withDomainIds(DOMAIN_SP_ID, DOMAIN_SQL_ID)
-        .withSpecificIds("11")
-        .build());
+    Assert.assertThrows("Fail to get users matching some criteria", AdminException.class,
+        () -> admin.searchUsers(newUserSearchCriteriaBuilder()
+            .withDomainIds(DOMAIN_SP_ID, DOMAIN_SQL_ID)
+            .withSpecificIds("11")
+            .build()));
   }
 
   @Test

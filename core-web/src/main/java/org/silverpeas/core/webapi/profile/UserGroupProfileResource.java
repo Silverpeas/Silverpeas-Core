@@ -26,19 +26,17 @@ package org.silverpeas.core.webapi.profile;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.rs.RESTWebService;
-import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -46,21 +44,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.GROUPS_BASE_URI;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a
- * way to access a representation of one or several user groups. This representation is vehiculed as
- * a Web entity in the HTTP requests and responses.
- *
+ * way to access a representation of one or several user groups. This representation is carried as a
+ * Web entity in the HTTP requests and responses.
+ * <p>
  * The user groups that are published depend on some parameters whose the domain isolation and the
  * profile of the user behind the requesting. The domain isolation defines the visibility of a user
  * or a group of groups in a given domain to the others domains in Silverpeas.
  */
 @WebService
 @Path(GROUPS_BASE_URI)
-@Authenticated
+@Authorized
 public class UserGroupProfileResource extends RESTWebService {
 
   /**
@@ -119,7 +117,8 @@ public class UserGroupProfileResource extends RESTWebService {
     // Common parameters
     criteriaBuilder.withDomainId(domainId).withName(name).withPaginationPage(fromPage(page));
 
-    SilverpeasList<Group> allGroups = getOrganisationController().searchGroups(criteriaBuilder.build());
+    SilverpeasList<Group> allGroups =
+        getOrganisationController().searchGroups(criteriaBuilder.build());
     UserGroupProfileEntity[] entities =
         asWebEntity(allGroups, locatedAt(getUri().getAbsolutePath()));
     return Response.ok(entities).
@@ -128,7 +127,7 @@ public class UserGroupProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets the groups of users having the priviledges to access the specified Silverpeas application
+   * Gets the groups of users having the privileges to access the specified Silverpeas application
    * instance. In the context some groups are parents of others groups, only the parent groups are
    * fetched, no their subgroups.
    *
@@ -136,10 +135,11 @@ public class UserGroupProfileResource extends RESTWebService {
    * @param withChildren if true the sub groups are also returned.
    * @param roles the roles the groups must play. Null if no specific roles have to be played by the
    * groups.
-   * @param matchingAllRoles boolean at true if the groups must play all the roles, false otherwise.
+   * @param matchingAllRoles boolean at true if the groups must play all the roles, false
+   * otherwise.
    * @param resource the unique identifier of the resource in the component instance the groups to
    * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
-   * one. If it is not set, by default the resource refered is the whole component instance. As for
+   * one. If it is not set, by default the resource referred is the whole component instance. As for
    * component instance identifier, a resource one is defined by its type followed by its
    * identifier.
    * @param name the pattern on the name the groups name must match. Null if all groups for the
@@ -156,7 +156,7 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Path("application/{instanceId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getGroupsInApplication(@PathParam("instanceId") String instanceId, //NOSONAR
+  public Response getGroupsInApplication(@PathParam("instanceId") String instanceId,
       @QueryParam("withChildren") boolean withChildren,
       @QueryParam("roles") String roles,
       @QueryParam("matchingAllRoles") boolean matchingAllRoles,
@@ -195,7 +195,8 @@ public class UserGroupProfileResource extends RESTWebService {
     // Users to exclude by their state
     userStateFilter(criteriaBuilder, userStatesToExclude);
 
-    SilverpeasList<Group> groups = getOrganisationController().searchGroups(criteriaBuilder.build());
+    SilverpeasList<Group> groups =
+        getOrganisationController().searchGroups(criteriaBuilder.build());
     URI groupsUri = getUri().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
         header(RESPONSE_HEADER_GROUPSIZE, groups.originalListSize()).
@@ -205,7 +206,7 @@ public class UserGroupProfileResource extends RESTWebService {
   /**
    * Gets the group of users identified by the specified path.
    *
-   * @param groupPath the path of group identifiers, from the root group downto the seeked one.
+   * @param groupPath the path of group identifiers, from the root group down to the seeked one.
    * @return the JSON representation of the user group.
    */
   @GET
@@ -221,8 +222,8 @@ public class UserGroupProfileResource extends RESTWebService {
   /**
    * Gets the direct subgroups of the group of groups identified by the specified path.
    *
-   * @param groups the path of group identifiers, from the root group downto the group for which the
-   * direct subgroups are seeked.
+   * @param groups the path of group identifiers, from the root group down to the group for which
+   * the direct subgroups are seeked.
    * @param name a pattern the subgroup names must match. If null, all the direct subgroups are
    * fetched.
    * @param page the pagination parameters formatted as "page number;item count in the page". From
@@ -266,7 +267,8 @@ public class UserGroupProfileResource extends RESTWebService {
     // Users to exclude by their state
     userStateFilter(criteriaBuilder, userStatesToExclude);
 
-    SilverpeasList<Group> subgroups = getOrganisationController().searchGroups(criteriaBuilder.build());
+    SilverpeasList<Group> subgroups =
+        getOrganisationController().searchGroups(criteriaBuilder.build());
     return Response.ok(asWebEntity(subgroups, locatedAt(getUri().getAbsolutePath()))).
         header(RESPONSE_HEADER_GROUPSIZE, subgroups.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, subgroups.originalListSize()).build();
@@ -306,5 +308,13 @@ public class UserGroupProfileResource extends RESTWebService {
 
   private UserGroupProfileEntity asWebEntity(Group group, URI groupUri) {
     return UserGroupProfileEntity.fromGroup(group).withAsUri(groupUri);
+  }
+
+  @Override
+  public void validateUserAuthorization(UserPrivilegeValidation validation) {
+    User currentUser = getUser();
+    if (currentUser.isAccessGuest()) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
   }
 }

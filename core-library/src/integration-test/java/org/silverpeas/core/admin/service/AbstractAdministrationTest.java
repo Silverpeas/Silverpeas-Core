@@ -63,6 +63,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  * Look at CommonAdministrationIT.ods to get a better view of data.
  * @author silveryocha
  */
+@SuppressWarnings("SameParameterValue")
 public abstract class AbstractAdministrationTest {
 
   private static final String SCRIPTS_PATH =
@@ -74,43 +75,43 @@ public abstract class AbstractAdministrationTest {
   private static final String COMMON_DATA_INSERTION_SCRIPTS =
       SCRIPTS_PATH + "/insert-administration-database.sql";
 
-  final static String DOMAIN_SP_ID = "0";
-  final static String DOMAIN_SQL_ID = "1";
+  static final String DOMAIN_SP_ID = "0";
+  static final String DOMAIN_SQL_ID = "1";
 
-  final static String USER_ADM_0_ID_VALID = "0";
-  final static String USER_SPU1_1001_ID_VALID = "1001";
-  final static String USER_SPU2_1002_ID_BLOCKED = "1002";
-  final static String USER_SPU3_1003_ID_EXPIRED = "1003";
-  final static String USER_SPU4_1004_ID_VALID = "1004";
-  final static String USER_SPU5_1005_ID_VALID = "1005";
-  final static String USER_SPU6_1006_ID_VALID = "1006";
-  final static String USER_SPU7_1007_ID_DEACTIVATED = "1007";
-  final static String USER_SPU8_1008_ID_VALID = "1008";
-  final static String USER_SPU9_1009_ID_VALID = "1009";
-  final static String USER_SPU10_1010_ID_VALID = "1010";
-  final static String USER_SPU11_1011_ID_REMOVED = "1011";
-  final static String USER_SPU12_1012_ID_VALID = "1012";
-  final static String USER_SPU13_1013_ID_VALID = "1013";
-  final static String USER_SPU14_1014_ID_VALID = "1014";
-  final static String USER_SPU15_1015_ID_DELETED = "1015";
-  final static String USER_SPU16_1016_ID_VALID = "1016";
-  final static String USER_SQLU1_2001_ID_VALID = "2001";
-  final static String USER_SQLU2_2002_ID_VALID = "2002";
-  final static String USER_SQLU3_2003_ID_DELETED = "2003";
-  final static String USER_SQLU4_2004_ID_VALID = "2004";
-  final static String USER_SQLU5_2005_ID_VALID = "2005";
-  final static String USER_SQLU6_2006_ID_REMOVED = "2006";
-  final static String USER_SQLU7_2007_ID_VALID = "2007";
-  final static String USER_SQLU8_2008_ID_DELETED = "2008";
-  final static String USER_SQLU9_2009_ID_VALID = "2009";
-  final static String USER_SQLU10_2010_ID_VALID = "2010";
-  final static String USER_SQLU11_2011_ID_VALID = "2011";
-  final static String USER_SQLU12_2012_ID_REMOVED = "2012";
-  final static String USER_SQLU13_2013_ID_VALID = "2013";
-  final static String USER_SQLU14_2014_ID_VALID = "2014";
-  final static String USER_SQLU15_2015_ID_DELETED = "2015";
+  static final String USER_ADM_0_ID_VALID = "0";
+  static final String USER_SPU1_1001_ID_VALID = "1001";
+  static final String USER_SPU2_1002_ID_BLOCKED = "1002";
+  static final String USER_SPU3_1003_ID_EXPIRED = "1003";
+  static final String USER_SPU4_1004_ID_VALID = "1004";
+  static final String USER_SPU5_1005_ID_VALID = "1005";
+  static final String USER_SPU6_1006_ID_VALID = "1006";
+  static final String USER_SPU7_1007_ID_DEACTIVATED = "1007";
+  static final String USER_SPU8_1008_ID_VALID = "1008";
+  static final String USER_SPU9_1009_ID_VALID = "1009";
+  static final String USER_SPU10_1010_ID_VALID = "1010";
+  static final String USER_SPU11_1011_ID_REMOVED = "1011";
+  static final String USER_SPU12_1012_ID_VALID = "1012";
+  static final String USER_SPU13_1013_ID_VALID = "1013";
+  static final String USER_SPU14_1014_ID_VALID = "1014";
+  static final String USER_SPU15_1015_ID_DELETED = "1015";
+  static final String USER_SPU16_1016_ID_VALID = "1016";
+  static final String USER_SQLU1_2001_ID_VALID = "2001";
+  static final String USER_SQLU2_2002_ID_VALID = "2002";
+  static final String USER_SQLU3_2003_ID_DELETED = "2003";
+  static final String USER_SQLU4_2004_ID_VALID = "2004";
+  static final String USER_SQLU5_2005_ID_VALID = "2005";
+  static final String USER_SQLU6_2006_ID_REMOVED = "2006";
+  static final String USER_SQLU7_2007_ID_VALID = "2007";
+  static final String USER_SQLU8_2008_ID_DELETED = "2008";
+  static final String USER_SQLU9_2009_ID_VALID = "2009";
+  static final String USER_SQLU10_2010_ID_VALID = "2010";
+  static final String USER_SQLU11_2011_ID_VALID = "2011";
+  static final String USER_SQLU12_2012_ID_REMOVED = "2012";
+  static final String USER_SQLU13_2013_ID_VALID = "2013";
+  static final String USER_SQLU14_2014_ID_VALID = "2014";
+  static final String USER_SQLU15_2015_ID_DELETED = "2015";
 
-  final static String[] SP_DOMAIN_NOT_DELETED_USER_IDS_SORTED_BY_NAME = new String[]{
+  static final String[] SP_DOMAIN_NOT_DELETED_USER_IDS_SORTED_BY_NAME = new String[]{
       USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID, USER_SPU10_1010_ID_VALID,
       USER_SPU11_1011_ID_REMOVED,
       USER_SPU12_1012_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
@@ -120,7 +121,7 @@ public abstract class AbstractAdministrationTest {
       USER_SPU8_1008_ID_VALID, USER_SPU9_1009_ID_VALID
   };
 
-  final static String[] SQL_DOMAIN_NOT_DELETED_USER_IDS_SORTED_BY_NAME = new String[]{
+  static final String[] SQL_DOMAIN_NOT_DELETED_USER_IDS_SORTED_BY_NAME = new String[]{
       USER_SQLU1_2001_ID_VALID, USER_SQLU10_2010_ID_VALID, USER_SQLU11_2011_ID_VALID,
       USER_SQLU12_2012_ID_REMOVED,
       USER_SQLU13_2013_ID_VALID, USER_SQLU14_2014_ID_VALID,
@@ -131,47 +132,47 @@ public abstract class AbstractAdministrationTest {
       USER_SQLU9_2009_ID_VALID
   };
 
-  final static String[] ALL_NOT_DELETED_USER_IDS_SORTED_BY_NAME = Stream
+  static final String[] ALL_NOT_DELETED_USER_IDS_SORTED_BY_NAME = Stream
       .concat(Stream.of(SP_DOMAIN_NOT_DELETED_USER_IDS_SORTED_BY_NAME),
               Stream.of(SQL_DOMAIN_NOT_DELETED_USER_IDS_SORTED_BY_NAME))
       .toArray(String[]::new);
 
-  final static String GROUP_MIX_1_ID = "1";
-  final static String GROUP_MIX_2_ID = "2";
-  final static String GROUP_MIX_3_ID = "3";
-  final static String GROUP_MIX_31_ID = "31";
-  final static String GROUP_MIX_311_ID = "311";
-  final static String GROUP_MIX_312_ID = "312";
-  final static String GROUP_SP_1_ID = "1001";
-  final static String GROUP_SP_2_ID = "1002";
-  final static String GROUP_SQL_1_ID = "2001";
-  final static String GROUP_SQL_11_ID = "2011";
+  static final String GROUP_MIX_1_ID = "1";
+  static final String GROUP_MIX_2_ID = "2";
+  static final String GROUP_MIX_3_ID = "3";
+  static final String GROUP_MIX_31_ID = "31";
+  static final String GROUP_MIX_311_ID = "311";
+  static final String GROUP_MIX_312_ID = "312";
+  static final String GROUP_SP_1_ID = "1001";
+  static final String GROUP_SP_2_ID = "1002";
+  static final String GROUP_SQL_1_ID = "2001";
+  static final String GROUP_SQL_11_ID = "2011";
 
-  final static String[] ALL_GROUP_IDS_SORTED_BY_NAME = new String[] {
+  static final String[] ALL_GROUP_IDS_SORTED_BY_NAME = new String[] {
       GROUP_MIX_1_ID, GROUP_MIX_2_ID, GROUP_MIX_3_ID, GROUP_MIX_31_ID, GROUP_MIX_311_ID, GROUP_MIX_312_ID,
       GROUP_SP_1_ID, GROUP_SP_2_ID,
       GROUP_SQL_1_ID, GROUP_SQL_11_ID
   };
 
-  final static Integer[] ALL_GROUP_NB_USERS_SORTED_BY_NAME = new Integer[] {
+  static final Integer[] ALL_GROUP_NB_USERS_SORTED_BY_NAME = new Integer[] {
       0, 0, 0, 0, 0, 0,
       0, 0,
       0, 0
   };
 
-  final static Integer[] ALL_GROUP_TOTAL_NB_USERS_SORTED_BY_NAME = new Integer[] {
+  static final Integer[] ALL_GROUP_TOTAL_NB_USERS_SORTED_BY_NAME = new Integer[] {
       1, 4, 11, 10, 5, 5,
       2, 2,
       5, 3
   };
 
-  final static String INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID = "1";
-  final static String INSTANCE_SPACE_A_LEVEL_2_BLOG_ID = "2";
-  final static String INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID = "3";
+  static final String INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID = "1";
+  static final String INSTANCE_SPACE_A_LEVEL_2_BLOG_ID = "2";
+  static final String INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID = "3";
 
-  final static String INSTANCE_SPACE_A_LEVEL_1_KMELIA_ROOT_FOLDER_ID = "10";
-  final static String INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_1_ID = "101";
-  final static String INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID = "1011";
+  static final String INSTANCE_SPACE_A_LEVEL_1_KMELIA_ROOT_FOLDER_ID = "10";
+  static final String INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_1_ID = "101";
+  static final String INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID = "1011";
 
   @Inject
   Administration admin;
@@ -272,7 +273,7 @@ public abstract class AbstractAdministrationTest {
   }
 
   static class UserSearchCriteriaBuilder {
-    private UserDetailsSearchCriteria searchCriteria;
+    private final UserDetailsSearchCriteria searchCriteria;
 
     private UserSearchCriteriaBuilder() {
       searchCriteria = new UserDetailsSearchCriteria();
@@ -354,7 +355,7 @@ public abstract class AbstractAdministrationTest {
   }
 
   static class GroupSearchCriteriaBuilder {
-    private GroupsSearchCriteria searchCriteria;
+    private final GroupsSearchCriteria searchCriteria;
     private String domainId = null;
     private boolean withMixedDomain = false;
 

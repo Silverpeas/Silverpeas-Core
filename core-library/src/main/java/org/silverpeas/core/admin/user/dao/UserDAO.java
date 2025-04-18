@@ -59,10 +59,11 @@ public class UserDAO {
   private static final String GROUP_USER_REL_TABLE = "st_group_user_rel";
   private static final String USER_COLUMNS =
       "DISTINCT(st_user.id),st_user.specificId,st_user.domainId,"
-      + "login,firstName,lastName,loginMail,email,accessLevel,"
-      + "loginQuestion,loginAnswer,st_user.creationDate,st_user.saveDate,version,tosAcceptanceDate,"
-      + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
-      + "st_user.state,st_user.stateSaveDate, notifManualReceiverLimit, sensitiveData";
+          + "login,firstName,lastName,loginMail,email,accessLevel,"
+          + "loginQuestion,loginAnswer,st_user.creationDate,st_user.saveDate,version," +
+          "tosAcceptanceDate,"
+          + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
+          + "st_user.state,st_user.stateSaveDate, notifManualReceiverLimit, sensitiveData";
   private static final String STATE_CRITERION = "state = ?";
   private static final String ID_CRITERION = "id = ?";
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";
@@ -85,7 +86,7 @@ public class UserDAO {
     final int nextId = DBUtil.getNextId(USER_TABLE);
     final Instant now = new Date().toInstant();
 
-    if(UserState.UNKNOWN.equals(user.getState())) {
+    if (UserState.UNKNOWN.equals(user.getState())) {
       user.setState(UserState.VALID);
     }
     JdbcSqlQuery.insertInto(USER_TABLE)
@@ -153,6 +154,7 @@ public class UserDAO {
 
   /**
    * Gets the user with the specified unique identifier.
+   *
    * @param connection the connection to the data source to use
    * @param id the unique identifier of the user to get.
    * @return the user or null if no such user exist.
@@ -167,6 +169,7 @@ public class UserDAO {
 
   /**
    * Gets the users corresponding to specified unique identifiers.
+   *
    * @param connection the connection to the data source to use
    * @param ids the unique identifiers of the users to get.
    * @return a list of user.
@@ -175,7 +178,11 @@ public class UserDAO {
   public List<UserDetail> getUserByIds(final Connection connection, final Collection<String> ids)
       throws SQLException {
     return JdbcSqlQuery.streamBySplittingOn(
-        ids.stream().map(Integer::parseInt).collect(Collectors.toList()), idBatch ->
+            ids.stream()
+                .filter(StringUtil::isDefined)
+                .map(Integer::parseInt)
+                .collect(Collectors.toList()),
+            idBatch ->
                 JdbcSqlQuery.select(USER_COLUMNS)
                     .from(USER_TABLE)
                     .where("id").in(idBatch)
@@ -204,19 +211,20 @@ public class UserDAO {
   public List<UserDetail> getUsersBySpecificIds(final Connection connection, final String domainId,
       final Collection<String> specificIds) throws SQLException {
     return JdbcSqlQuery.streamBySplittingOn(specificIds, idBatch ->
-        JdbcSqlQuery.select(USER_COLUMNS)
-            .from(USER_TABLE)
-            .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
-            .and(SPECIFIC_ID).in(idBatch)
-            .executeWith(connection, UserDAO::fetchUser))
+            JdbcSqlQuery.select(USER_COLUMNS)
+                .from(USER_TABLE)
+                .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
+                .and(SPECIFIC_ID).in(idBatch)
+                .executeWith(connection, UserDAO::fetchUser))
         .collect(Collectors.toList());
   }
 
   /**
    * Gets all the users that were removed in the specified domains.
+   *
    * @param connection a connection to the data source.
-   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
-   * are passed, then all the domains are taken by the request.
+   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains are
+   * passed, then all the domains are taken by the request.
    * @return a list of user details.
    * @throws SQLException if an error while requesting the users.
    */
@@ -241,9 +249,10 @@ public class UserDAO {
 
   /**
    * Gets all the users that were deleted in the specified domains and that weren't yet blanked.
+   *
    * @param connection a connection to the data source.
-   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
-   * are passed, then all the domains are taken by the request.
+   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains are
+   * passed, then all the domains are taken by the request.
    * @return a list of user details.
    * @throws SQLException if an error while requesting the users.
    */
@@ -261,9 +270,10 @@ public class UserDAO {
 
   /**
    * Gets all the users in the specified user domains that have sensitive information.
+   *
    * @param connection a connection to the data source.
-   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
-   * are passed, then all the domains are taken by the request.
+   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains are
+   * passed, then all the domains are taken by the request.
    * @return a list of user details.
    * @throws SQLException if an error while requesting the users.
    */
@@ -299,6 +309,7 @@ public class UserDAO {
 
   /**
    * Updates the specified user by blanking some of its profile information.
+   *
    * @param connection a connection to the data source.
    * @param user the user to blank.
    * @throws SQLException if the update fails.
@@ -312,6 +323,7 @@ public class UserDAO {
 
   /**
    * Updates into the data source the specified user.
+   *
    * @param connection a connection to the data source.
    * @param user the user to update.
    * @throws SQLException if the update fails.
@@ -416,7 +428,8 @@ public class UserDAO {
         .getOrDefault(groupId, emptyList());
   }
 
-  public Map<String, List<String>> getDirectUserIdsByGroup(Connection connection, final List<String> groupIds,
+  public Map<String, List<String>> getDirectUserIdsByGroup(Connection connection,
+      final List<String> groupIds,
       final boolean includeRemoved)
       throws SQLException {
     final Object[] userStatesToExclude = includeRemoved
@@ -430,7 +443,8 @@ public class UserDAO {
           .and("groupId").in(groupIds.stream().map(Integer::parseInt).collect(Collectors.toList()))
           .and(STATE).notIn(userStatesToExclude)
           .orderBy(LAST_NAME)
-          .executeWith(connection, row -> MapUtil.putAddList(result, Integer.toString(row.getInt(1)), Integer.toString(row.getInt(2))));
+          .executeWith(connection, row -> MapUtil.putAddList(result,
+              Integer.toString(row.getInt(1)), Integer.toString(row.getInt(2))));
     }
     return result;
   }
@@ -495,6 +509,7 @@ public class UserDAO {
 
   /**
    * Returns all the User ids having directly a given space userRole.
+   *
    * @param spaceUserRoleId the unique identifier of the space user role.
    * @param includeRemoved true to include {@link UserState#REMOVED}.
    * @return all the User ids having directly a given space userRole.
@@ -555,7 +570,8 @@ public class UserDAO {
     return getAllUsers(con, domainIds, null);
   }
 
-  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(Connection con, List<String> domainIds)
+  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(Connection con,
+      List<String> domainIds)
       throws SQLException {
     return getAllUsers(con, domainIds, "id DESC");
   }
