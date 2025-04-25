@@ -743,7 +743,13 @@ public class UserDetail implements User {
   }
 
   private File getAvatarFile() {
-    return new File(FileRepositoryManager.getAvatarPath(), getAvatarFileName());
+    boolean ignoreCaseForPropertyValue = generalSettings.getBoolean("avatar.ignoreCaseForPropertyValue", true);
+    String fileName = getAvatarFileName();
+    File avatar = new File(FileRepositoryManager.getAvatarPath(), fileName);
+    if (ignoreCaseForPropertyValue) {
+      avatar = avatar.exists()?avatar:new File(FileRepositoryManager.getAvatarPath(), fileName.toUpperCase());
+    }
+    return avatar;
   }
 
   @Override
