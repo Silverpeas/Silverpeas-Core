@@ -42,6 +42,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -70,6 +71,9 @@ public class LastPublicationDAOIT {
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)
       .loadInitialDataSetFrom(DATASET_SQL_SCRIPT);
 
+  @Inject
+  private PublicationDAO publicationDAO;
+
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4Publication.onWarForTestClass(LastPublicationDAOIT.class)
@@ -80,7 +84,7 @@ public class LastPublicationDAOIT {
   public void selectLatestPksByStatus() throws Exception {
     try (Connection con = getSafeConnection()) {
       List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
-      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+      Collection<PublicationPK> keys = publicationDAO.selectPksByCriteria(con, PublicationCriteria
           .onComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .mustHaveAtLeastOneNodeFather()
@@ -97,7 +101,7 @@ public class LastPublicationDAOIT {
   public void selectLatestPksByStatusExcludingTrashNode() throws Exception {
     try (Connection con = getSafeConnection()) {
       List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
-      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+      Collection<PublicationPK> keys = publicationDAO.selectPksByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .orderByDescendingLastUpdateDate());
@@ -113,7 +117,7 @@ public class LastPublicationDAOIT {
   public void selectLatestPksByStatusWithoutCheckingNodeFathers() throws Exception {
     try (Connection con = getSafeConnection()) {
       List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
-      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+      Collection<PublicationPK> keys = publicationDAO.selectPksByCriteria(con, PublicationCriteria
           .onComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .orderByDescendingLastUpdateDate());
@@ -129,7 +133,7 @@ public class LastPublicationDAOIT {
   public void selectLatestPksByStatusWithSmallPaginationFirstPageResult() throws Exception {
     try (Connection con = getSafeConnection()) {
       List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
-      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+      Collection<PublicationPK> keys = publicationDAO.selectPksByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .orderByDescendingLastUpdateDate()
@@ -145,7 +149,7 @@ public class LastPublicationDAOIT {
   public void selectLatestPksByStatusWithSmallPaginationSecondPageResult() throws Exception {
     try (Connection con = getSafeConnection()) {
       List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
-      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+      Collection<PublicationPK> keys = publicationDAO.selectPksByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .orderByDescendingLastUpdateDate()
@@ -169,7 +173,7 @@ public class LastPublicationDAOIT {
       calend.set(SECOND, 0);
       calend.set(MILLISECOND, 0);
       OffsetDateTime since = OffsetDateTime.ofInstant(calend.getTime().toInstant(), ZoneId.systemDefault());
-      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+      Collection<PublicationPK> keys = publicationDAO.selectPksByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .lastUpdatedSince(since)
@@ -179,7 +183,7 @@ public class LastPublicationDAOIT {
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100"),
               new PublicationPK("100", "kmelia100")));
-      keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+      keys = publicationDAO.selectPksByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .lastUpdatedSince(since)
@@ -189,7 +193,7 @@ public class LastPublicationDAOIT {
       assertThat(keys.size(), is(2));
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100")));
-      keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+      keys = publicationDAO.selectPksByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .lastUpdatedSince(since)

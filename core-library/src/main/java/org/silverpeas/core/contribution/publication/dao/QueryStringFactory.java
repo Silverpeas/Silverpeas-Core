@@ -95,10 +95,11 @@ public class QueryStringFactory {
     // common select
     query.append("SELECT P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, ");
     query.append("P.pubBeginDate, P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, ");
-    query.append("P.pubKeywords, P.pubContent, P.pubStatus, P.pubRemovalDate, P.pubRemoverId, ");
+    query.append("P.pubKeywords, P.pubContent, P.pubStatus, ");
     query.append("P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, ");
     query.append("P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, ");
     query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
+    query.append("P.pubRemovalDate, P.pubRemoverId, ");
     query.append("F.pubOrder FROM ");
     query.append(tableName).append(" P, ").append(tableName).append("Father F ");
     query.append("WHERE F.instanceId = ? AND F.nodeId = ? AND F.pubId = P.pubId ");
@@ -128,10 +129,11 @@ public class QueryStringFactory {
       selectNotInFatherPK = "SELECT DISTINCT P.pubId, P.infoId, P.pubName, P.pubDescription, " +
           "P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, " +
           "P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, P.pubStatus, " +
-          "P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubRemovalDate, " +
-          "P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubRemoverId, " +
-          "P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang " + "FROM " + tableName +
-          " P, " + tableName + "Father F WHERE F.instanceId = ? AND F.nodeId <> ? " +
+          "P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate,  " +
+          "P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, " +
+          "P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubRemovalDate, " +
+          "P.pubRemoverId FROM " + tableName + " P, " + tableName + "Father F " +
+          "WHERE F.instanceId = ? AND F.nodeId <> ? " +
           "AND F.pubId = P.pubId AND (" + "( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR " +
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR " +
           "( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR " +
@@ -143,19 +145,19 @@ public class QueryStringFactory {
 
   public static synchronized String getLoadRow(final String tableName) {
     if (loadRow == null) {
-      loadRow = "select" + getLoadRowFields() + " from " + tableName + " where pubId = ? ";
+      loadRow = "select " + getLoadRowFields() + " from " + tableName + " where pubId = ? ";
     }
     return loadRow;
   }
 
   public static synchronized String getLoadRowFields() {
     if (loadRowFields == null) {
-      loadRowFields = " pubid, infoid, pubname, pubdescription, pubcreationdate, " +
-          "pubbegindate, pubenddate, pubcreatorid, pubimportance, pubversion, pubkeywords," +
-          "pubcontent, pubstatus, pubupdatedate, pubRemovalDate, pubRemoverId, " +
-          "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour," +
-          "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus," +
-          "lang ";
+      loadRowFields = "pubid, infoid, pubname, pubdescription, pubcreationdate, " +
+          "pubbegindate, pubenddate, pubcreatorid, pubimportance, pubversion, pubkeywords, " +
+          "pubcontent, pubstatus, pubupdatedate, " +
+          "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour, " +
+          "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus, " +
+          "lang, pubRemovalDate, pubRemoverId";
     }
     return loadRowFields;
   }

@@ -104,6 +104,17 @@ public class WAComponentRegistry implements Initialization {
   }
 
   /**
+   * This initializer requires to be started among the first initialization services as it sets up
+   * the available Silverpeas application registry that can be required for other initialization
+   * services.
+   * @return the priority level. Lesser is the value, higher is the priority.
+   */
+  @Override
+  public int getPriority() {
+    return 0;
+  }
+
+  /**
    * Gets the WAComponent instance registered under the specified name.
    * @param componentName the name of the Silverpeas component.
    * @return an optional WAComponent instance if such instance exists under the given name.

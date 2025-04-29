@@ -138,7 +138,8 @@ public class TestContext {
   public PublicationDetail getPublication(final String pubId) {
     try (Connection connection = DBUtil.openConnection()) {
       PublicationPK pk = new PublicationPK(pubId, KMELIA_ID);
-      return PublicationDAO.selectByPrimaryKey(connection, pk);
+      PublicationDAO publicationDAO = ServiceProvider.getService(PublicationDAO.class);
+      return publicationDAO.selectByPrimaryKey(connection, pk);
     } catch (SQLException e) {
       throw new RuntimeException(e.getMessage());
     }

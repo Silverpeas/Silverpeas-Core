@@ -42,6 +42,7 @@ import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.DateUtil;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.*;
 
@@ -59,6 +60,9 @@ public class PublicationDAOIT {
 
   private static final String TABLE_CREATION_SCRIPT = "create-table.sql";
   private static final String DATASET_SQL_SCRIPT = "test-publication-dao-dataset.sql";
+
+  @Inject
+  private PublicationDAO publicationDAO;
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)
@@ -110,9 +114,9 @@ public class PublicationDAOIT {
           .setKeywords(keywords)
           .setContentPagePath(contenu)
           .build();
-      PublicationDAO.insertRow(con, detail);
+      publicationDAO.insertRow(con, detail);
 
-      PublicationDetail result = PublicationDAO.loadRow(con, pk);
+      PublicationDetail result = publicationDAO.loadRow(con, pk);
       detail.setUpdateDate(now.getTime());
       detail.setUpdaterId(creatorId);
       detail.setInfoId("0");
@@ -144,7 +148,7 @@ public class PublicationDAOIT {
   public void testSelectByPrimaryKey() throws Exception {
     try (Connection con = getSafeConnection()) {
       PublicationPK primaryKey = new PublicationPK("100", "kmelia200");
-      PublicationDetail result = PublicationDAO.selectByPrimaryKey(con, primaryKey);
+      PublicationDetail result = publicationDAO.selectByPrimaryKey(con, primaryKey);
       assertThat(result, is(notNullValue()));
       assertEquals(primaryKey, result.getPK());
       assertEquals("Homer Simpson", result.getAuthor());
@@ -175,7 +179,7 @@ public class PublicationDAOIT {
     try (Connection con = getSafeConnection()) {
       String name = "Publication 1";
       PublicationPK primaryKey = new PublicationPK(null, "kmelia200");
-      PublicationDetail result = PublicationDAO.selectByPublicationName(con, primaryKey, name);
+      PublicationDetail result = publicationDAO.selectByPublicationName(con, primaryKey, name);
       primaryKey = new PublicationPK("100", "kmelia200");
       assertEquals(primaryKey, result.getPK());
       assertEquals("Homer Simpson", result.getAuthor());
@@ -207,7 +211,7 @@ public class PublicationDAOIT {
       String name = "Publication 1";
       PublicationPK primaryKey = new PublicationPK(null, "kmelia200");
       int nodeId = 110;
-      PublicationDetail result = PublicationDAO.
+      PublicationDetail result = publicationDAO.
           selectByPublicationNameAndNodeId(con, primaryKey, name, nodeId);
       primaryKey = new PublicationPK("100", "kmelia200");
       assertEquals(primaryKey, result.getPK());
@@ -238,7 +242,7 @@ public class PublicationDAOIT {
   public void testSelectByFatherPK_Connection_NodePK() throws Exception {
     try (Connection con = getSafeConnection()) {
       NodePK fatherPK = new NodePK("110", "kmelia200");
-      Collection<PublicationDetail> result = PublicationDAO.selectByFatherPK(con, fatherPK);
+      Collection<PublicationDetail> result = publicationDAO.selectByFatherPK(con, fatherPK);
       assertNotNull(result);
       assertEquals(2, result.size());
       Iterator<PublicationDetail> iter = result.iterator();
@@ -295,7 +299,7 @@ public class PublicationDAOIT {
       NodePK fatherPK = new NodePK("110", "kmelia200");
       String userId = "100";
       Collection<PublicationDetail> result =
-          PublicationDAO.selectByFatherPK(con, fatherPK, null, false, userId);
+          publicationDAO.selectByFatherPK(con, fatherPK, null, false, userId);
       assertNotNull(result);
       assertEquals(1, result.size());
       Iterator<PublicationDetail> iter = result.iterator();
@@ -320,7 +324,7 @@ public class PublicationDAOIT {
       assertEquals("300", detail.getValidatorId());
       assertEquals("Publication 1", detail.getTitle());
 
-      result = PublicationDAO.selectByFatherPK(con, fatherPK, null, true, userId);
+      result = publicationDAO.selectByFatherPK(con, fatherPK, null, true, userId);
       assertNotNull(result);
       assertEquals(1, result.size());
       iter = result.iterator();
@@ -359,7 +363,7 @@ public class PublicationDAOIT {
       List<String> status = new ArrayList<>();
       status.add("Valid");
       boolean filterOnVisibilityPeriod = true;
-      List<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, "kmelia200",
+      List<PublicationDetail> result = publicationDAO.selectByFatherIds(con, fatherIds, "kmelia200",
           sorting, status,
           filterOnVisibilityPeriod);
       assertThat(result.size(), is(2));
@@ -368,7 +372,7 @@ public class PublicationDAOIT {
       fatherIds.clear();
       fatherIds.add("999");
 
-      result = PublicationDAO.selectByFatherIds(con, fatherIds, "kmelia200", sorting, status,
+      result = publicationDAO.selectByFatherIds(con, fatherIds, "kmelia200", sorting, status,
           filterOnVisibilityPeriod);
       assertThat(result.size(), is(0));
     }
@@ -381,14 +385,14 @@ public class PublicationDAOIT {
   public void testSelectByStatus_3args_1() throws Exception {
     try (Connection con = getSafeConnection()) {
       String status = "Valid";
-      Collection<PublicationDetail> result = PublicationDAO.selectPublicationsByCriteria(con,
+      Collection<PublicationDetail> result = publicationDAO.selectPublicationsByCriteria(con,
           PublicationCriteria
               .excludingTrashNodeOnComponentInstanceIds("kmelia200")
               .ofStatus(status));
       assertThat(result.size(), is(2));
 
       status = "Draft";
-      result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
+      result = publicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds("kmelia200")
           .ofStatus(status));
       assertThat(result.size(), is(0));
@@ -405,21 +409,21 @@ public class PublicationDAOIT {
       componentIds.add("kmelia200");
       componentIds.add("kmelia201");
       String status = "Valid";
-      Collection<PublicationDetail> result = PublicationDAO.selectPublicationsByCriteria(con,
+      Collection<PublicationDetail> result = publicationDAO.selectPublicationsByCriteria(con,
           PublicationCriteria
               .excludingTrashNodeOnComponentInstanceIds(componentIds)
               .ofStatus(status));
       assertThat(result.size(), is(2));
 
       status = "Draft";
-      result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
+      result = publicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(status));
       assertThat(result.size(), is(0));
 
       status = "Valid";
       componentIds.remove("kmelia200");
-      result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
+      result = publicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(status));
       assertThat(result.size(), is(0));
@@ -433,7 +437,7 @@ public class PublicationDAOIT {
   public void testLoadRow() throws Exception {
     try (Connection con = getSafeConnection()) {
       PublicationPK pk = new PublicationPK("100", "kmelia200");
-      PublicationDetail result = PublicationDAO.loadRow(con, pk);
+      PublicationDetail result = publicationDAO.loadRow(con, pk);
       assertEquals(pk, result.getPK());
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
@@ -462,7 +466,7 @@ public class PublicationDAOIT {
   public void testChangeInstanceId() throws Exception {
     try (Connection con = getSafeConnection()) {
       PublicationPK pk = new PublicationPK("100", "kmelia200");
-      PublicationDetail detail = PublicationDAO.loadRow(con, pk);
+      PublicationDetail detail = publicationDAO.loadRow(con, pk);
       assertEquals(pk, detail.getPK());
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
@@ -482,9 +486,9 @@ public class PublicationDAOIT {
       assertEquals("300", detail.getValidatorId());
       assertEquals("Publication 1", detail.getTitle());
       String targetInstance = "kmelia" + RandomGenerator.getRandomInt(600);
-      PublicationDAO.changeInstanceId(con, pk, targetInstance);
+      publicationDAO.changeInstanceId(con, pk, targetInstance);
       pk = new PublicationPK("100", targetInstance);
-      detail = PublicationDAO.loadRow(con, pk);
+      detail = publicationDAO.loadRow(con, pk);
       assertEquals(pk, detail.getPK());
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
@@ -513,7 +517,7 @@ public class PublicationDAOIT {
   public void testStoreRow() throws Exception {
     try (Connection con = getSafeConnection()) {
       PublicationPK pk = new PublicationPK("100", "kmelia200");
-      PublicationDetail detail = PublicationDAO.loadRow(con, pk);
+      PublicationDetail detail = publicationDAO.loadRow(con, pk);
       assertEquals(pk, detail.getPK());
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
@@ -566,8 +570,8 @@ public class PublicationDAOIT {
       detail.setContentPagePath(contenu);
       detail.setBeginHour(DateUtil.formatTime(beginDate));
       detail.setEndHour(DateUtil.formatTime(endDate));
-      PublicationDAO.storeRow(con, detail);
-      PublicationDetail result = PublicationDAO.loadRow(con, pk);
+      publicationDAO.storeRow(con, detail);
+      PublicationDetail result = publicationDAO.loadRow(con, pk);
       detail.setUpdateDate(now.getTime());
       detail.setUpdaterId(creatorId);
       detail.setInfoId("0");
@@ -600,7 +604,7 @@ public class PublicationDAOIT {
     try (Connection con = getSafeConnection()) {
       String name = "Publication 1";
       PublicationPK primaryKey = new PublicationPK(null, "kmelia200");
-      PublicationDetail result = PublicationDAO.selectByName(con, primaryKey, name);
+      PublicationDetail result = publicationDAO.selectByName(con, primaryKey, name);
       primaryKey = new PublicationPK("100", "kmelia200");
       assertEquals(primaryKey, result.getPK());
       assertEquals("Homer Simpson", result.getAuthor());
@@ -632,7 +636,7 @@ public class PublicationDAOIT {
       PublicationPK pubPK = new PublicationPK("100", "kmelia200");
       String name = "Publication 1";
       int nodeId = 110;
-      PublicationDetail result = PublicationDAO.selectByNameAndNodeId(con, pubPK, name, nodeId);
+      PublicationDetail result = publicationDAO.selectByNameAndNodeId(con, pubPK, name, nodeId);
       assertEquals(pubPK, result.getPK());
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
@@ -663,7 +667,7 @@ public class PublicationDAOIT {
       String user200 = "200";//who updated pub1 and pub2
       String pub1Id = "100";
 
-      PublicationDetail detail1 = PublicationDAO.loadRow(con, new PublicationPK(pub1Id));
+      PublicationDetail detail1 = publicationDAO.loadRow(con, new PublicationPK(pub1Id));
 
 //who created  pub1
       SocialInformationPublication sp1 = new SocialInformationPublication(new PublicationWithStatus(
@@ -676,14 +680,14 @@ public class PublicationDAOIT {
       Date end = DateUtil.parse("2008/11/30");
 
       List<SocialInformationPublication> list100DOA =
-          PublicationDAO.getAllPublicationsIDbyUserid(con,
+          publicationDAO.getAllPublicationsIDbyUserid(con,
               user100, begin, end);
       assertEquals("Must be equal", list100.get(0), list100DOA.get(0));
 
 //who created pub2
       String user101 = "101";//who created pub2
       String pub2Id = "101";
-      PublicationDetail detail2 = PublicationDAO.loadRow(con, new PublicationPK(pub2Id));
+      PublicationDetail detail2 = publicationDAO.loadRow(con, new PublicationPK(pub2Id));
       SocialInformationPublication sp2 = new SocialInformationPublication(new PublicationWithStatus(
           (detail2), false));
       assertNotNull("SocialInformationPublication2 must be not null", sp2);
@@ -691,7 +695,7 @@ public class PublicationDAOIT {
       List<SocialInformation> list101 = new ArrayList<>();
       list101.add(sp2);
       List<SocialInformationPublication> list101DOA =
-          PublicationDAO.getAllPublicationsIDbyUserid(con,
+          publicationDAO.getAllPublicationsIDbyUserid(con,
               user101, begin, end);
       assertThat(list101.get(0), is(list101DOA.get(0)));
 
@@ -710,12 +714,12 @@ public class PublicationDAOIT {
       list200.add(sp2User200);
       list200.add(sp1User200);
       List<? extends SocialInformation> list200DOA =
-          PublicationDAO.getAllPublicationsIDbyUserid(con, user200, begin, end);
+          publicationDAO.getAllPublicationsIDbyUserid(con, user200, begin, end);
       assertEquals("Must be equal", list200.get(0), list200DOA.get(0));
       assertEquals("Must be equal", list200.get(1), list200DOA.get(1));
 
       // test nbr of elements
-      list200DOA = PublicationDAO.getAllPublicationsIDbyUserid(con, user200,
+      list200DOA = publicationDAO.getAllPublicationsIDbyUserid(con, user200,
           begin, end);
       assertEquals("Must be equal", list200.get(0), list200DOA.get(0));
       List<String> options = new ArrayList<>();
@@ -723,7 +727,7 @@ public class PublicationDAOIT {
       List<String> myContactsIds = new ArrayList<>();
       myContactsIds.add(user100);
       myContactsIds.add(user200);
-      list200DOA = PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds,
+      list200DOA = publicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds,
           options, begin, end);
       assertNotNull("SocialInformationPublication of my contact must be not null", list200DOA);
       assertThat(list200DOA.isEmpty(), is(false));

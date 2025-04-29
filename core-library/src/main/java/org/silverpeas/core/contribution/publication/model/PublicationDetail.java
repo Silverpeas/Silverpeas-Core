@@ -247,6 +247,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.removalDate = removalDate;
   }
 
+  public void setRemovalStatus(Date removalDate, String removerId) {
+    setRemovalDate(removalDate);
+    setRemoverId(removerId);
+  }
+
   public String getRemoverId() {
     return removerId;
   }
