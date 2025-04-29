@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.publication.dao;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -63,6 +64,7 @@ import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
  * @author Nicolas Eysseric
  */
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve", "SqlSourceToSinkFlow"})
+@Repository
 public class PublicationDAO extends AbstractDAO {
   // if beginDate is null, it will be replace in database with it
   private static final String NULL_BEGIN_DATE = "0000/00/00";
@@ -108,6 +110,8 @@ public class PublicationDAO extends AbstractDAO {
   private static final String WHERE_CONJUNCTION = "WHERE ";
   private static final String AND_CONJUNCTION = "AND ";
   private static final String INSTANCE_ID = "instanceId = ?";
+  private static final String PUB_REMOVAL_DATE = "pubRemovalDate";
+  private static final String PUB_REMOVER_ID = "pubRemoverId";
 
   private PublicationDAO() {
   }
@@ -119,7 +123,7 @@ public class PublicationDAO extends AbstractDAO {
    * must be deleted.
    * @throws SQLException on SQL error
    */
-  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+  public void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
     JdbcSqlQuery.deleteFrom(PUBLICATION_TABLE_NAME).where(INSTANCE_ID, componentInstanceId)
         .execute();
   }
@@ -131,11 +135,11 @@ public class PublicationDAO extends AbstractDAO {
    * @param pk the unique database identifier of the publication
    * @param userId the unique identifier of the user asking the publication removal.
    */
-  public static void removePubByPk(Connection con, PublicationPK pk, String userId)
+  public void removePubByPk(Connection con, PublicationPK pk, String userId)
       throws SQLException {
     JdbcSqlQuery.update(PUBLICATION_TABLE_NAME)
-        .withUpdateParam("pubRemovalDate", DateUtil.today2SQLDate())
-        .withUpdateParam("pubRemoverId", userId)
+        .withUpdateParam(PUB_REMOVAL_DATE, DateUtil.today2SQLDate())
+        .withUpdateParam(PUB_REMOVER_ID, userId)
         .where("pubId = ?", Integer.parseInt(pk.getId()))
         .and(INSTANCE_ID, pk.getInstanceId())
         .executeWith(con);
@@ -148,16 +152,16 @@ public class PublicationDAO extends AbstractDAO {
    *
    * @param pk the unique database identifier of the publication
    */
-  public static void restorePubByPk(Connection con, PublicationPK pk) throws SQLException {
+  public void restorePubByPk(Connection con, PublicationPK pk) throws SQLException {
     JdbcSqlQuery.update(PUBLICATION_TABLE_NAME)
-        .withUpdateParam("pubRemovalDate", null)
-        .withUpdateParam("pubRemoverId", null)
+        .withUpdateParam(PUB_REMOVAL_DATE, null)
+        .withUpdateParam(PUB_REMOVER_ID, null)
         .where("pubId = ?", Integer.parseInt(pk.getId()))
         .and(INSTANCE_ID, pk.getInstanceId())
         .executeWith(con);
   }
 
-  public static int getNbPubByFatherPath(Connection con, NodePK fatherPK,
+  public int getNbPubByFatherPath(Connection con, NodePK fatherPK,
       String fatherPath) throws SQLException {
     int result = 0;
     PublicationPK pubPK = new PublicationPK(UNDEFINED_ID, fatherPK);
@@ -213,14 +217,14 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static Map<String, Integer> getDistributionTree(final Connection con,
+  public Map<String, Integer> getDistributionTree(final Connection con,
       final DistributionTreeCriteria criteria) throws SQLException {
     final DistributionTreeCriteria completedCriteria = new DistributionTreeCriteria(criteria)
         .ignoringInstanceIds(getRemovedInstanceIdsLinkedToInstance(con, criteria));
     return loadDistributionTree(con, completedCriteria);
   }
 
-  private static List<String> getRemovedInstanceIdsLinkedToInstance(final Connection con,
+  private List<String> getRemovedInstanceIdsLinkedToInstance(final Connection con,
       final DistributionTreeCriteria criteria) throws SQLException {
     final String instanceId = criteria.getInstanceId();
     final JdbcSqlQuery query = JdbcSqlQuery
@@ -243,7 +247,7 @@ public class PublicationDAO extends AbstractDAO {
             .orElse(null));
   }
 
-  private static Map<String, Integer> loadDistributionTree(final Connection con,
+  private Map<String, Integer> loadDistributionTree(final Connection con,
       final DistributionTreeCriteria criteria) throws SQLException {
     final String instanceId = criteria.getInstanceId();
     final JdbcSqlQuery query = JdbcSqlQuery
@@ -277,15 +281,16 @@ public class PublicationDAO extends AbstractDAO {
     return nodes;
   }
 
-  public static void insertRow(Connection con, PublicationDetail detail) {
+  public void insertRow(Connection con, PublicationDetail detail) {
     final String insertStatement = "insert into " + detail.getPK()
         .getTableName() + " (pubId, infoId, pubName, pubDescription, pubCreationDate," +
         " pubBeginDate, pubEndDate, pubCreatorId, pubImportance, pubVersion, pubKeywords," +
         " pubContent, pubStatus, pubUpdateDate," +
         " instanceId, pubUpdaterId, pubValidateDate, pubValidatorId, pubBeginHour, pubEndHour," +
-        " pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang) " +
+        " pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang," +
+        " pubRemovalDate, pubRemoverId)" +
         " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , " +
-        "? , ? , ? , ? , ?)";
+        "? , ? , ? , ? , ?, ?, ?)";
 
     try (PreparedStatement prepStmt = con.prepareStatement(insertStatement)) {
       prepStmt.setInt(1, Integer.parseInt(detail.getPK().getId()));
@@ -332,6 +337,14 @@ public class PublicationDAO extends AbstractDAO {
         prepStmt.setString(25, detail.getLanguage());
       }
 
+      if (detail.isRemoved()) {
+        prepStmt.setString(26, DateUtil.formatDate(detail.getRemovalDate()));
+        prepStmt.setString(27, detail.getRemoverId());
+      } else {
+        prepStmt.setNull(26, Types.VARCHAR);
+        prepStmt.setNull(27, Types.VARCHAR);
+      }
+
       prepStmt.executeUpdate();
     } catch (Exception e) {
       SilverLogger.getLogger(PublicationDAO.class).error(e);
@@ -342,7 +355,7 @@ public class PublicationDAO extends AbstractDAO {
     return !StringUtil.isDefined(object);
   }
 
-  public static void deleteRow(Connection con, PublicationPK pk)
+  public void deleteRow(Connection con, PublicationPK pk)
       throws SQLException {
     PublicationFatherDAO.removeAllFathers(con, pk); // Delete associations
     // between pub and nodes
@@ -355,7 +368,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static PublicationDetail selectByPrimaryKey(Connection con,
+  public PublicationDetail selectByPrimaryKey(Connection con,
       PublicationPK primaryKey) throws SQLException {
 
     try {
@@ -368,12 +381,12 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static PublicationDetail selectByPublicationName(Connection con,
+  public PublicationDetail selectByPublicationName(Connection con,
       PublicationPK primaryKey, String name) throws SQLException {
     return selectByName(con, primaryKey, name);
   }
 
-  public static PublicationDetail selectByPublicationNameAndNodeId(Connection con,
+  public PublicationDetail selectByPublicationNameAndNodeId(Connection con,
       PublicationPK primaryKey, String name, int nodeId) throws SQLException {
     return selectByNameAndNodeId(con, primaryKey, name, nodeId);
   }
@@ -413,13 +426,13 @@ public class PublicationDAO extends AbstractDAO {
       String updaterId = defaultStringIfNotDefined(rs.getString("pubUpdaterId"), creatorId);
 
       Date removalDate;
-      String r = rs.getString("pubRemovalDate");
+      String r = rs.getString(PUB_REMOVAL_DATE);
       if (r != null) {
         removalDate = DateUtil.parseDate(r);
       } else {
         removalDate = null;
       }
-      String removerId = defaultStringIfNotDefined(rs.getString("pubRemoverId"), null);
+      String removerId = defaultStringIfNotDefined(rs.getString(PUB_REMOVER_ID), null);
 
       Date validateDate;
       String strValDate = rs.getString("pubValidateDate");
@@ -467,17 +480,17 @@ public class PublicationDAO extends AbstractDAO {
     return pub;
   }
 
-  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK)
+  public Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     return selectByFatherPK(con, fatherPK, null);
   }
 
-  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
+  public Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
       String sorting, boolean filterOnVisibilityPeriod) throws SQLException {
     return selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod, null);
   }
 
-  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
+  public Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
       String sorting, boolean filterOnVisibilityPeriod, String userId)
       throws SQLException {
     PublicationPK pubPK = new PublicationPK(UNDEFINED_ID, fatherPK);
@@ -528,12 +541,12 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
+  public Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
       String sorting) throws SQLException {
     return selectByFatherPK(con, fatherPK, sorting, true, null);
   }
 
-  public static Collection<PublicationDetail> selectNotInFatherPK(Connection con, NodePK fatherPK,
+  public Collection<PublicationDetail> selectNotInFatherPK(Connection con, NodePK fatherPK,
       String sorting) throws SQLException {
     PublicationPK pubPK = new PublicationPK(UNDEFINED_ID, fatherPK);
     String selectStatement = QueryStringFactory.getSelectNotInFatherPK(pubPK.getTableName());
@@ -563,7 +576,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static List<PublicationDetail> selectByFatherIds(Connection con,
+  public List<PublicationDetail> selectByFatherIds(Connection con,
       List<String> fatherIds, String instanceId, String sorting,
       List<String> status, boolean filterOnVisibilityPeriod) throws SQLException {
 
@@ -591,7 +604,7 @@ public class PublicationDAO extends AbstractDAO {
     selectStatement.append(
         "P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, ");
     selectStatement.append(
-        "P.pubCloneId, P.pubCloneStatus, P.lang, F.puborder ");
+        "P.pubCloneId, P.pubCloneStatus, P.lang, P.pubRemovalDate, P.pubRemoverId, F.puborder ");
     selectStatement.append("from ").append(PUBLICATION_TABLE_NAME).append(" P, ")
         .append(PUBLICATION_TABLE_NAME).append(FATHER_F);
 
@@ -655,7 +668,7 @@ public class PublicationDAO extends AbstractDAO {
     return list;
   }
 
-  public static List<PublicationDetail> getByIds(final Connection con,
+  public List<PublicationDetail> getByIds(final Connection con,
       final Collection<String> publicationIds, final Set<PublicationPK> indexedPks) {
     try {
       final Map<String, PublicationDetail> result = new HashMap<>(publicationIds.size());
@@ -714,7 +727,7 @@ public class PublicationDAO extends AbstractDAO {
    * @return a list of {@link PublicationDetail} instances.
    * @throws SQLException on database error.
    */
-  public static List<PublicationDetail> getMinimalDataByIds(Connection con,
+  public List<PublicationDetail> getMinimalDataByIds(Connection con,
       Collection<PublicationPK> ids) throws SQLException {
     final List<Integer> pubIds = ids.stream()
         .map(p -> Integer.parseInt(p.getId()))
@@ -752,7 +765,7 @@ public class PublicationDAO extends AbstractDAO {
     return result;
   }
 
-  public static SilverpeasList<PublicationPK> selectPksByCriteria(final Connection con,
+  public SilverpeasList<PublicationPK> selectPksByCriteria(final Connection con,
       final PublicationCriteria criteria) throws SQLException {
     if (!criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
       final JdbcSqlQuery query = prepareSelectPksByCriteria(criteria);
@@ -766,7 +779,7 @@ public class PublicationDAO extends AbstractDAO {
     return new SilverpeasArrayList<>(0);
   }
 
-  public static SilverpeasList<PublicationDetail> selectPublicationsByCriteria(final Connection con,
+  public SilverpeasList<PublicationDetail> selectPublicationsByCriteria(final Connection con,
       final PublicationCriteria criteria) throws SQLException {
     if (!criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
       final JdbcSqlQuery query = prepareSelectPublicationsByCriteria(criteria);
@@ -780,7 +793,7 @@ public class PublicationDAO extends AbstractDAO {
     return new SilverpeasArrayList<>(0);
   }
 
-  private static JdbcSqlQuery prepareSelectPublicationsByCriteria(
+  private JdbcSqlQuery prepareSelectPublicationsByCriteria(
       final PublicationCriteria criteria) {
     if (criteria.mustJoinOnNodeFatherTable()) {
       return JdbcSqlQuery.select("DISTINCT P.*");
@@ -789,7 +802,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  private static JdbcSqlQuery prepareSelectPksByCriteria(final PublicationCriteria criteria) {
+  private JdbcSqlQuery prepareSelectPksByCriteria(final PublicationCriteria criteria) {
     final JdbcSqlQuery query;
     if (criteria.mustJoinOnNodeFatherTable()) {
       query = JdbcSqlQuery.select("DISTINCT(P.pubId)");
@@ -808,7 +821,7 @@ public class PublicationDAO extends AbstractDAO {
     return query;
   }
 
-  private static void configureSelectByCriteria(final JdbcSqlQuery query,
+  private void configureSelectByCriteria(final JdbcSqlQuery query,
       final PublicationCriteria criteria) {
     criteria.getOrderByList().stream()
         .filter(o -> o == QUERY_ORDER_BY.BEGIN_VISIBILITY_DATE_ASC ||
@@ -821,7 +834,7 @@ public class PublicationDAO extends AbstractDAO {
         );
   }
 
-  private static void configureFromByCriteria(final JdbcSqlQuery query,
+  private void configureFromByCriteria(final JdbcSqlQuery query,
       final PublicationCriteria criteria) {
     query.from(PUBLICATION_TABLE_NAME + " P");
     if (criteria.mustJoinOnNodeFatherTable()) {
@@ -835,7 +848,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  private static void configureClausesByCriteria(final JdbcSqlQuery query,
+  private void configureClausesByCriteria(final JdbcSqlQuery query,
       final PublicationCriteria criteria) {
     final List<Integer> componentIds = criteria.getComponentInstanceIds().stream()
         .map(ComponentInst::getComponentLocalId)
@@ -873,7 +886,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  private static void visibleFilter(final JdbcSqlQuery sqlQuery, final String conjunction,
+  private void visibleFilter(final JdbcSqlQuery sqlQuery, final String conjunction,
       final OffsetDateTime visibilityDate, final String target) {
     final java.util.Date asDateType = TemporalConverter.asDate(visibilityDate);
     final String dateNow = formatDate(asDateType);
@@ -894,7 +907,7 @@ public class PublicationDAO extends AbstractDAO {
     return format(sqlToFormat, prefix);
   }
 
-  private static void nonVisibleFilter(final JdbcSqlQuery sqlQuery, final String conjunction,
+  private void nonVisibleFilter(final JdbcSqlQuery sqlQuery, final String conjunction,
       final OffsetDateTime invisibilityDate) {
     final java.util.Date asDateType = TemporalConverter.asDate(invisibilityDate);
     final String dateNow = formatDate(asDateType);
@@ -905,7 +918,7 @@ public class PublicationDAO extends AbstractDAO {
         .or("(? = P.pubEndDate", dateNow).and("? > P.pubEndHour))", hourNow);
   }
 
-  private static void configureOrderingByCriteria(final JdbcSqlQuery query,
+  private void configureOrderingByCriteria(final JdbcSqlQuery query,
       final PublicationCriteria criteria) {
     final List<QUERY_ORDER_BY> orderBies = criteria.getOrderByList();
     if (!orderBies.isEmpty()) {
@@ -916,7 +929,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  private static void configureExecution(final JdbcSqlQuery query,
+  private void configureExecution(final JdbcSqlQuery query,
       final PublicationCriteria criteria) {
     final PaginationPage pagination = criteria.getPagination();
     if (pagination != null) {
@@ -928,7 +941,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static Collection<PublicationDetail> selectAllPublications(Connection con,
+  public Collection<PublicationDetail> selectAllPublications(Connection con,
       String instanceId, String sorting) throws SQLException {
     StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append(SELECT_FROM).append(PUBLICATION_TABLE_NAME).append(
@@ -950,7 +963,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static Collection<PublicationDetail> getOrphanPublications(Connection con,
+  public Collection<PublicationDetail> getOrphanPublications(Connection con,
       final String componentId) throws SQLException {
     final String query = SELECT_FROM + PUBLICATION_TABLE_NAME +
         " where pubId NOT IN (Select pubId from SB_Publication_PubliFather)  and instanceId=?";
@@ -968,7 +981,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static PublicationDetail loadRow(Connection con, PublicationPK pk)
+  public PublicationDetail loadRow(Connection con, PublicationPK pk)
       throws SQLException {
     String selectStatement = QueryStringFactory.getLoadRow(pk.getTableName());
 
@@ -987,7 +1000,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static void changeInstanceId(Connection con, PublicationPK pubPK,
+  public void changeInstanceId(Connection con, PublicationPK pubPK,
       String newInstanceId) throws SQLException {
 
     int rowCount;
@@ -1008,7 +1021,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static void storeRow(Connection con, PublicationDetail detail)
+  public void storeRow(Connection con, PublicationDetail detail)
       throws SQLException {
     int rowCount;
     try (PreparedStatement prepStmt = con.prepareStatement(UPDATE_PUBLICATION)) {
@@ -1082,7 +1095,7 @@ public class PublicationDAO extends AbstractDAO {
   }
 
   // Added by ney - 23/08/2001
-  public static PublicationDetail selectByName(Connection con,
+  public PublicationDetail selectByName(Connection con,
       PublicationPK pubPK, String name) throws SQLException {
     PublicationDetail pub = null;
     String selectStatement = QueryStringFactory.getSelectByName();
@@ -1100,7 +1113,7 @@ public class PublicationDAO extends AbstractDAO {
     return pub;
   }
 
-  public static PublicationDetail selectByNameAndNodeId(Connection con,
+  public PublicationDetail selectByNameAndNodeId(Connection con,
       PublicationPK pubPK, String name, int nodeId) throws SQLException {
     PublicationDetail pub = null;
     String selectStatement = QueryStringFactory.getSelectByNameAndNodeId();
@@ -1119,7 +1132,7 @@ public class PublicationDAO extends AbstractDAO {
     return pub;
   }
 
-  public static Collection<PublicationDetail> selectBetweenDate(Connection con, String beginDate,
+  public Collection<PublicationDetail> selectBetweenDate(Connection con, String beginDate,
       String endDate, String instanceId) throws SQLException {
     final String selectStatement = SELECT_FROM + PUBLICATION_TABLE_NAME +
         " where instanceId = ? " +
@@ -1145,7 +1158,7 @@ public class PublicationDAO extends AbstractDAO {
     }
   }
 
-  public static SilverpeasList<SocialInformationPublication> getAllPublicationsIDbyUserid(
+  public SilverpeasList<SocialInformationPublication> getAllPublicationsIDbyUserid(
       Connection con,
       String userId, Date begin, Date end) throws SQLException {
     final PaginationCriterion pagination =
@@ -1175,7 +1188,7 @@ public class PublicationDAO extends AbstractDAO {
     return buildSocialInformationResult(con, pubIds, statusMapping);
   }
 
-  private static SilverpeasList<SocialInformationPublication> buildSocialInformationResult(
+  private SilverpeasList<SocialInformationPublication> buildSocialInformationResult(
       final Connection con, final List<String> pubIds,
       final Map<String, List<Boolean>> statusMapping) {
     final Map<String, PublicationDetail> publications = new HashMap<>(pubIds.size());
@@ -1191,7 +1204,7 @@ public class PublicationDAO extends AbstractDAO {
         .collect(SilverpeasList.collector(pubIds));
   }
 
-  public static List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)
       throws SQLException {
     if (options.isEmpty()) {
@@ -1226,7 +1239,7 @@ public class PublicationDAO extends AbstractDAO {
     return buildSocialInformationResult(con, pubIds, statusMapping);
   }
 
-  public static Collection<PublicationDetail> getDraftsByUser(Connection con, String userId)
+  public Collection<PublicationDetail> getDraftsByUser(Connection con, String userId)
       throws SQLException {
     final String sb = SELECT_FROM_SB_PUBLICATION_PUBLI +
         "where pubUpdaterId = ? " +
@@ -1252,7 +1265,7 @@ public class PublicationDAO extends AbstractDAO {
     return publications;
   }
 
-  public static List<PublicationDetail> getByTargetValidatorId(Connection con, String userId)
+  public List<PublicationDetail> getByTargetValidatorId(Connection con, String userId)
       throws SQLException {
     final String sb = SELECT_FROM_SB_PUBLICATION_PUBLI +
         "where pubTargetValidatorId like ?";
@@ -1273,7 +1286,7 @@ public class PublicationDAO extends AbstractDAO {
     return publications;
   }
 
-  public static void updateTargetValidatorIds(Connection con, PublicationDetail detail)
+  public void updateTargetValidatorIds(Connection con, PublicationDetail detail)
       throws SQLException {
     try (PreparedStatement prepStmt = con.prepareStatement(
         "update SB_Publication_Publi set pubtargetvalidatorid = ? where pubid = ? and instanceid " +

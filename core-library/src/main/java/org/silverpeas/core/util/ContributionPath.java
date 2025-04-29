@@ -49,15 +49,15 @@ public abstract class ContributionPath<T extends Contribution> extends ArrayList
 
   protected final transient Map<String, Pair<String, String>> lastPathByLanguage = new HashMap<>();
 
-  public ContributionPath() {
+  protected ContributionPath() {
     super();
   }
 
-  public ContributionPath(final int initialCapacity) {
+  protected ContributionPath(final int initialCapacity) {
     super(initialCapacity);
   }
 
-  public ContributionPath(@Nonnull final Collection<? extends T> c) {
+  protected ContributionPath(@Nonnull final Collection<? extends T> c) {
     super(c);
   }
 

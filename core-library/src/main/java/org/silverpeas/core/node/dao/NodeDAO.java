@@ -78,6 +78,9 @@ public class NodeDAO extends AbstractDAO {
       "SELECT nodepath FROM sb_node_node WHERE " + "nodeid = ? AND instanceid = ?";
   private static final String SELECT_DESCENDANTS_ID_BY_PATH = "SELECT nodeid FROM sb_node_node " +
       "WHERE nodePath LIKE ? AND instanceid = ? ORDER BY nodeid";
+  private static final String INSTANCE_ID_IS = "instanceId = ?";
+  private static final String NODE_REMOVAL_DATE = "nodeRemovalDate";
+  private static final String NODE_REMOVER_ID = "nodeRemoverId";
   private final Map<String, List<NodeDetail>> allTrees = new ConcurrentHashMap<>();
   private static final String SELECT_QUERY = "selectQuery = ";
   private static final String COMPO_NAME = " compo name = ";
@@ -103,7 +106,7 @@ public class NodeDAO extends AbstractDAO {
    * @throws SQLException if a SQL error occurs
    */
   public void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.deleteFrom("sb_node_node").where("instanceId = ?", componentInstanceId)
+    JdbcSqlQuery.deleteFrom("sb_node_node").where(INSTANCE_ID_IS, componentInstanceId)
         .execute();
   }
 
@@ -725,15 +728,46 @@ public class NodeDAO extends AbstractDAO {
     String status = nd.getStatus();
     String type = nd.getNodeType() == null ? NodeDetail.DEFAULT_NODE_TYPE : nd.getNodeType();
     String language = nd.getLanguage();
+    String creationDate = nd.getCreationDate() == null ? DateUtil.today2SQLDate() :
+        DateUtil.formatDate(nd.getCreationDate());
     int fatherId = -1;
     int nbBrothers = 0;
     if (nd.getFatherPK() != null) {
       fatherId = Integer.parseInt(nd.getFatherPK().getId());
       nbBrothers = getChildrenNumber(con, nd.getFatherPK());
     }
-
     nd.setOrder(nbBrothers + 1);
 
+    newId = getNewId(nd);
+    var query = JdbcSqlQuery.insertInto(nd.getNodePK().getTableName())
+        .withInsertParam("nodeId", newId)
+        .withInsertParam("nodeName", name)
+        .withInsertParam("nodeDescription", description)
+        .withInsertParam("nodeCreatorId", creatorId)
+        .withInsertParam("nodeCreationDate", creationDate)
+        .withInsertParam("nodePath", path)
+        .withInsertParam("nodeLevelNumber", level)
+        .withInsertParam("nodeFatherId", fatherId)
+        .withInsertParam("modelId", modelId)
+        .withInsertParam("nodeStatus", status)
+        .withInsertParam("instanceId", nd.getNodePK().getComponentInstanceId())
+        .withInsertParam("type", type)
+        .withInsertParam("orderNumber", nd.getOrder())
+        .withInsertParam("lang", language)
+        .withInsertParam("rightsDependsOn", Integer.parseInt(nd.getRightsDependsOn()));
+    if (nd.isRemoved()) {
+        query.withInsertParam(NODE_REMOVAL_DATE, DateUtil.formatDate(nd.getRemovalDate()));
+        query.withInsertParam(NODE_REMOVER_ID, nd.getRemoverId());
+    }
+    query.executeWith(con);
+
+    pk.setId(String.valueOf(newId));
+    unvalidateTree(con, nd.getNodePK());
+    return pk;
+  }
+
+  private static int getNewId(NodeDetail nd) {
+    int newId;
     try {
       if (nd.isUseId()) {
         newId = Integer.parseInt(nd.getNodePK().getId());
@@ -744,30 +778,7 @@ public class NodeDAO extends AbstractDAO {
     } catch (Exception e) {
       throw new NodeRuntimeException(e);
     }
-
-    final String insertQuery = "insert into " + nd.getNodePK().getTableName() +
-        " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? , ?, ? , ?)";
-    try (final PreparedStatement prepStmt = con.prepareStatement(insertQuery)) {
-      prepStmt.setInt(1, newId);
-      prepStmt.setString(2, name);
-      prepStmt.setString(3, description);
-      setDateParameter(prepStmt, 4, nd.getCreationDate(), DateUtil.today2SQLDate());
-      prepStmt.setString(5, creatorId);
-      prepStmt.setString(6, path);
-      prepStmt.setInt(7, level);
-      prepStmt.setInt(8, fatherId);
-      prepStmt.setString(9, modelId);
-      prepStmt.setString(10, status);
-      prepStmt.setString(11, nd.getNodePK().getComponentName());
-      prepStmt.setString(12, type);
-      prepStmt.setInt(13, nd.getOrder());
-      prepStmt.setString(14, language);
-      prepStmt.setInt(15, Integer.parseInt(nd.getRightsDependsOn()));
-      prepStmt.executeUpdate();
-      pk.setId(String.valueOf(newId));
-      unvalidateTree(con, nd.getNodePK());
-    }
-    return pk;
+    return newId;
   }
 
   /**
@@ -859,16 +870,20 @@ public class NodeDAO extends AbstractDAO {
   public void removeNode(Connection con, NodeDetail nodeDetail, String userId) throws SQLException {
     nodeDetail.setRemovalStatus(new Date(), userId);
     JdbcSqlQuery.update(nodeDetail.getNodePK().getTableName())
-        .withUpdateParam("nodeRemovalDate", DateUtil.date2SQLDate(nodeDetail.getRemovalDate()))
-        .withUpdateParam("nodeRemoverId", userId)
+        .withUpdateParam(NODE_REMOVAL_DATE, DateUtil.date2SQLDate(nodeDetail.getRemovalDate()))
+        .withUpdateParam(NODE_REMOVER_ID, userId)
+        .where("nodeId = ?", Integer.parseInt(nodeDetail.getNodePK().getId()))
+        .and(INSTANCE_ID_IS, nodeDetail.getNodePK().getInstanceId())
         .executeWith(con);
   }
 
   public void restoreNode(Connection con, NodeDetail nodeDetail) throws SQLException {
     nodeDetail.setRemovalStatus(null, null);
     JdbcSqlQuery.update(nodeDetail.getNodePK().getTableName())
-        .withUpdateParam("nodeRemovalDate", null)
-        .withUpdateParam("nodeRemoverId", null)
+        .withUpdateParam(NODE_REMOVAL_DATE, null)
+        .withUpdateParam(NODE_REMOVER_ID, null)
+        .where("nodeId = ?", Integer.parseInt(nodeDetail.getNodePK().getId()))
+        .and(INSTANCE_ID_IS, nodeDetail.getNodePK().getInstanceId())
         .executeWith(con);
   }
 

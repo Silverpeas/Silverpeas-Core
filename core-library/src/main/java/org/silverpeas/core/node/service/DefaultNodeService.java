@@ -444,6 +444,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   }
 
   @Override
+  @Transactional
   public void removeNode(NodeDetail nodeDetail) {
     try (Connection connection = getConnection()) {
       User remover = User.getCurrentRequester();
@@ -454,6 +455,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   }
 
   @Override
+  @Transactional
   public void restoreNode(NodeDetail node) {
     try(Connection connection = getConnection()) {
       nodeDAO.restoreNode(connection, node);
@@ -571,6 +573,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * @since 1.0
    */
   @Override
+  @Transactional
   public NodePK createNode(NodeDetail nd, NodeDetail fatherDetail) {
     try {
       if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getNodeType())) {
