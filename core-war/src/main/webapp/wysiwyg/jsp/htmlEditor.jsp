@@ -286,7 +286,7 @@
 
 <script type="text/javascript">
 
-  var $deferred;
+  let $deferred;
 
   <c:if test="${not empty param.notySuccess}">
   $(document).ready(function(){
@@ -300,7 +300,7 @@
       browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" objectType="<%=objectType%>"
       activateWysiwygBackupManager="true" />
 
-    if ($.trim($(".wysiwyg-fileStorage").text()).length == 0) {
+    if ($.trim($(".wysiwyg-fileStorage").text()).length === 0) {
       $(".wysiwyg-fileStorage").css("display", "none");
     }
   };
@@ -330,9 +330,9 @@
   }
 
   function choixLien() {
-    var index = document.recupHtml.liens.selectedIndex;
-    var str = document.recupHtml.liens.options[index].value;
-    if (index != 0 && str != null) {
+    const index = document.recupHtml.liens.selectedIndex;
+    const str = document.recupHtml.liens.options[index].value;
+    if (index !== 0 && str != null) {
       CKEDITOR.instances.editor1.insertHtml('<a href="' + str + '">' +
       str.substring(str.lastIndexOf("/") + 1) + "</a>");
     }
@@ -413,6 +413,11 @@
 
     jQuery(document).ready(function() {
       jQuery(document.recupHtml).submit(function() {
+        const wysiwygContent =
+                sp.editor.wysiwyg.lastBackupManager.instance.existsUnvalidatedContent() ?
+                        sp.editor.wysiwyg.lastBackupManager.instance.getUnvalidatedContent() : '';
+        const modifContextEnabled = ${isModificationContextEnabled};
+        const subscriptionHandled = ${isHandledSubscriptionConfirmation};
         const contributionId = {
           componentInstanceId : '<%=componentId%>',
           localId : '<%=objectId%>',
@@ -420,35 +425,31 @@
         };
         jQuery.contributionModificationContext.validateOnUpdate({
           contributionId : contributionId,
-          status : ${silfn:isDefined(wysiwygTextValue)  and isModificationContextEnabled
-           ? 'undefined'
-           : '$.contributionModificationContext.statuses.CREATION'},
+          status : wysiwygContent.length > 0 && modifContextEnabled ?
+                  undefined : '$.contributionModificationContext.statuses.CREATION',
           callback : function() {
-            <c:choose>
-            <c:when test="${silfn:isDefined(wysiwygTextValue) and isHandledSubscriptionConfirmation}">
-            jQuery.subscription.confirmNotificationSendingOnUpdate({
-              contribution : {
-                contributionId : contributionId,
-                indexable : <%=indexIt%>,
-                locationId : '${handledSubscriptionLocationId}'
-              },
-              comment : {
-                saveNote : ${silfn:booleanValue(commentActivated)}
-              },
-              subscription : {
-                componentInstanceId : '<%=componentId%>',
-                type : '${handledSubscriptionType}',
-                resourceId : '${handledSubscriptionResourceId}'
-              },
-              callback : function() {
-                commit.call(this, false);
-              }
-            });
-            </c:when>
-            <c:otherwise>
-            commit.call(this, ${silfn:isNotDefined(wysiwygTextValue) ? 'true' : 'false'});
-            </c:otherwise>
-            </c:choose>
+            if (wysiwygContent.length > 0 && subscriptionHandled) {
+              jQuery.subscription.confirmNotificationSendingOnUpdate({
+                contribution: {
+                  contributionId: contributionId,
+                  indexable: <%=indexIt%>,
+                  locationId: '${handledSubscriptionLocationId}'
+                },
+                comment: {
+                  saveNote: ${silfn:booleanValue(commentActivated)}
+                },
+                subscription: {
+                  componentInstanceId: '<%=componentId%>',
+                  type: '${handledSubscriptionType}',
+                  resourceId: '${handledSubscriptionResourceId}'
+                },
+                callback: function () {
+                  commit.call(this, false);
+                }
+              });
+            } else {
+              commit.call(this, wysiwygContent.length === 0);
+            }
         }});
         return false;
       });
