@@ -134,14 +134,10 @@ public class InvitationResource extends RESTWebService {
   }
 
   private void checkInvitationEntity(InvitationEntity invitationEntity) {
-    int senderId = invitationEntity.getSenderId();
+    int senderId = Integer.parseInt(getUser().getId());
     int receiverId = invitationEntity.getReceiverId();
     if (senderId == receiverId) {
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
-    }
-    if (senderId != Integer.parseInt(getUser().getId())
-        || receiverId != Integer.parseInt(getUser().getId())) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
 
