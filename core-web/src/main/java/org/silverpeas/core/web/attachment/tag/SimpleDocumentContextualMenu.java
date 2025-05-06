@@ -215,7 +215,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         "switchState('" + attachment.getId() + "', " + attachment.isVersioned() + ", " +
             isLastPublicVersion + ");", message);
     prepareMenuItem(builder, "deleteAttachment('" + attachment.getId() + "','" +
-        Encode.forHtml(attachment.getFilename()) + "');", resources.getString("GML.delete"));
+        Encode.forJavaScriptAttribute(attachment.getFilename()) + "');", resources.getString("GML.delete"));
     message = resources.getString("attachment.download.allowReaders");
     boolean isDownloadAllowedForReaders = attachment.isDownloadAllowedForReaders();
     if (isDownloadAllowedForReaders) {
