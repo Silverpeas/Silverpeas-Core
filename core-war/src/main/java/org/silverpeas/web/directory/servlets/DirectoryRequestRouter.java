@@ -33,13 +33,12 @@ import org.silverpeas.core.contribution.content.form.fileitem.InternalFileItem;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.DirectoryException;
 import org.silverpeas.web.directory.control.DirectorySessionController;
 import org.silverpeas.web.directory.model.DirectoryItem;
@@ -54,8 +53,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static org.silverpeas.kernel.util.StringUtil.split;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.getPaginationPageFrom;
+import static org.silverpeas.kernel.util.StringUtil.split;
 
 /**
  * @author azzedine
@@ -79,9 +78,6 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
   @Override
   public String getDestination(String function, DirectorySessionController directorySC,
       HttpRequest request) {
-    if (!LookHelper.getLookHelper(request.getSession(false)).isDirectoryDisplayEnabled()) {
-      throwHttpForbiddenError("anonymous or guest user cannot access directory");
-    }
     String destination = "";
 
     try {
