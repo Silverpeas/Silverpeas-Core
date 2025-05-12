@@ -42,6 +42,9 @@ import org.silverpeas.core.util.ServiceProvider;
  */
 public class AdministrationServiceProvider {
 
+  private AdministrationServiceProvider() {
+  }
+
   /**
    * Gets the administration service
    * @return the instance administration service.

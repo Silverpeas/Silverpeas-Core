@@ -24,32 +24,20 @@
 
 package org.silverpeas.core.admin.user.dao;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.MemoizedSupplier;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
-import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 
 /**
@@ -60,7 +48,6 @@ import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 public class SqlUserSelectorByCriteriaBuilder {
 
   private final String fields;
-  private MemoizedSupplier<SilverpeasComponentInstance> componentInstanceSupplier;
 
   SqlUserSelectorByCriteriaBuilder(final String fields) {
     this.fields = fields;
@@ -178,7 +165,7 @@ public class SqlUserSelectorByCriteriaBuilder {
 
   private void applyCriteriaOnRoles(final JdbcSqlQuery query,
       final UserDetailsSearchCriteria criteria) {
-    getSharedComponentInstanceWithRights(criteria).ifPresent(i -> {
+    criteria.getNonPublicSharedComponentInstance().ifPresent(i -> {
       int instanceId = ComponentInst.getComponentLocalId(i.getId());
       query.and("st_user.id IN (");
       query.addSqlPart(
@@ -242,25 +229,6 @@ public class SqlUserSelectorByCriteriaBuilder {
     });
   }
 
-  private Optional<SilverpeasComponentInstance> getSharedComponentInstanceWithRights(
-      final UserDetailsSearchCriteria criteria) {
-    if (componentInstanceSupplier == null) {
-      componentInstanceSupplier = new MemoizedSupplier<>(() -> {
-        if (!criteria.isCriterionOnComponentInstanceIdSet()) {
-          return null;
-        }
-        final String instanceId = criteria.getCriterionOnComponentInstanceId();
-        try {
-          return Administration.get().getComponentInstance(instanceId);
-        } catch (AdminException e) {
-          throw new SilverpeasRuntimeException(failureOnGetting("component instance", instanceId));
-        }
-      });
-    }
-    return Optional.ofNullable(componentInstanceSupplier.get())
-        .filter(i -> !i.isPersonal() && !i.isPublic());
-  }
-
   private Set<UserState> getExcludedUserStates(final UserDetailsSearchCriteria criteria) {
     final Set<UserState> excludedStates = new HashSet<>();
     excludedStates.add(UserState.DELETED);
@@ -268,7 +236,7 @@ public class SqlUserSelectorByCriteriaBuilder {
       excludedStates.addAll(Arrays.asList(criteria.getCriterionOnUserStatesToExclude()));
     }
     if (!criteria.mustIncludeRemovedUsers()) {
-      getSharedComponentInstanceWithRights(criteria)
+      criteria.getNonPublicSharedComponentInstance()
           // this clause is to be compliant with searchGroup service
           // this is a limitation induced by profile services which are excluding REMOVED users
           .ifPresent(i -> excludedStates.add(UserState.REMOVED));

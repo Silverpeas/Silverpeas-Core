@@ -27,15 +27,9 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.Date;
 import java.util.List;
-
-import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * A ComponentInstanceTable object manages the ST_ComponentInstance table.
@@ -114,22 +108,6 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   }
 
   /**
-   * Returns the ComponentInstance of a given user role.
-   * @param userRoleId id of user role
-   * @return the ComponentInstance of a given user role.
-   * @throws SQLException on error
-   */
-  public ComponentInstanceRow getComponentInstanceOfUserRole(int userRoleId)
-      throws SQLException {
-    return getUniqueRow(SELECT_USERROLE_INSTANCE, userRoleId);
-  }
-
-  private static final String SELECT_USERROLE_INSTANCE =
-      SELECT + Table.aliasColumns("i", INSTANCE_COLUMNS) +
-          " from ST_ComponentInstance i, ST_UserRole us" +
-          " where i.id = us.instanceId and us.id = ?";
-
-  /**
    * Returns all the instances in a given space
    * @param spaceId the space id
    * @return all the instances in a given space
@@ -138,7 +116,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   public ComponentInstanceRow[] getAllComponentInstancesInSpace(int spaceId)
       throws SQLException {
     List<ComponentInstanceRow> rows = getRows(SELECT_ALL_SPACE_INSTANCES, spaceId);
-    return rows.toArray(new ComponentInstanceRow[rows.size()]);
+    return rows.toArray(new ComponentInstanceRow[0]);
   }
 
   private static final String SELECT_ALL_SPACE_INSTANCES = SELECT + INSTANCE_COLUMNS +
@@ -167,7 +145,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    */
   public ComponentInstanceRow[] getRemovedComponents() throws SQLException {
     List<ComponentInstanceRow> rows = getRows(SELECT_REMOVED_COMPONENTS);
-    return rows.toArray(new ComponentInstanceRow[rows.size()]);
+    return rows.toArray(new ComponentInstanceRow[0]);
   }
 
   private static final String SELECT_REMOVED_COMPONENTS =
@@ -186,7 +164,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     String[] values =
         new String[]{sampleInstance.componentName, sampleInstance.name, sampleInstance.description};
     List<ComponentInstanceRow> rows = getMatchingRows(INSTANCE_COLUMNS, columns, values);
-    return rows.toArray(new ComponentInstanceRow[rows.size()]);
+    return rows.toArray(new ComponentInstanceRow[0]);
   }
 
   /**
@@ -196,10 +174,6 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    */
   public void createComponentInstance(ComponentInstanceRow instance)
       throws SQLException {
-    SpaceRow space = OrganizationSchema.get().space().getSpace(instance.spaceId);
-    if (space == null) {
-      throw new SQLException(unknown("space", String.valueOf(instance.spaceId)));
-    }
     insertRow(INSERT_INSTANCE, instance);
   }
 
@@ -268,7 +242,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   /**
    * Updates in the database an instance row.
    * @param instance the row with the fields of the component instance
-   * @throws SQLException
+   * @throws SQLException if the update fails.
    */
   public void updateComponentInstance(ComponentInstanceRow instance)
       throws SQLException {
@@ -306,7 +280,6 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * @param id the component id
    * @param tempLabel the temporary label
    * @param userId the user id that deletes the space
-   * @throws AdminPersistenceException on error
    */
   public void sendComponentToBasket(int id, String tempLabel, String userId)
       throws SQLException {

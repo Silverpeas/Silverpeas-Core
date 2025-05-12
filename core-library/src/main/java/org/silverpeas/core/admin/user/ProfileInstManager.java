@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
@@ -87,6 +88,13 @@ public class ProfileInstManager {
       UserRoleRow newRole = UserRoleRow.makeFrom(profileInst);
       newRole.unsetId(); // new profile id is to be defined
       newRole.setInstanceId(fatherCompLocalId);
+      ComponentInstanceRow instance = organizationSchema.instance()
+          .getComponentInstance(fatherCompLocalId);
+      if (instance == null) {
+        throw new AdminException(
+            unknown("component instance", String.valueOf(fatherCompLocalId)));
+      }
+
       organizationSchema.userRole().createUserRole(newRole);
       String sProfileNodeId = idAsString(newRole.getId());
 

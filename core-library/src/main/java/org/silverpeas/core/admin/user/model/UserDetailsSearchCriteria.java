@@ -24,15 +24,14 @@
 package org.silverpeas.core.admin.user.model;
 
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -57,6 +56,7 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
   private static final String LAST_NAME = "lastName";
   private static final String PAGINATION = "pagination";
   private static final String ROLE_GROUPS = "groupIdsInRole";
+  private MemoizedSupplier<SilverpeasComponentInstance> componentInstanceSupplier;
 
   /**
    * Constructs a search criteria on users for which all users have to be got.
@@ -382,5 +382,24 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
   @Override
   public void accept(SearchCriteriaVisitor visitor) throws SilverpeasRuntimeException {
     visitor.visit(this);
+  }
+
+  /**
+   * Gets the non public and non personal shared component instances that is targeted by a
+   * criterion.
+   * @return optionally the component instance on which it exists a criterion.
+   */
+  public Optional<SilverpeasComponentInstance> getNonPublicSharedComponentInstance() {
+    if (componentInstanceSupplier == null && isCriterionOnComponentInstanceIdSet()) {
+      throw new IllegalStateException("No supplier of component instances set whereas " +
+          "there is a criterion on them");
+    }
+    return Optional.ofNullable(componentInstanceSupplier)
+        .map(MemoizedSupplier::get)
+        .filter(i -> !i.isPersonal() && !i.isPublic());
+  }
+
+  public void setComponentInstanceSupplier(MemoizedSupplier<SilverpeasComponentInstance> componentInstanceSupplier) {
+    this.componentInstanceSupplier = componentInstanceSupplier;
   }
 }

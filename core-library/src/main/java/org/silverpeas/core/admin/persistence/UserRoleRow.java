@@ -132,6 +132,10 @@ public class UserRoleRow {
     return objectType;
   }
 
+  public boolean isInstanceIdNotDefined() {
+    return instanceId == NO_VALUE;
+  }
+
   public boolean isObjectTypeDefined() {
     return StringUtil.isDefined(objectType);
   }

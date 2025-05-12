@@ -5297,6 +5297,19 @@ class DefaultAdministration implements Administration {
   public SilverpeasList<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria)
       throws AdminException {
     try {
+      searchCriteria.setComponentInstanceSupplier(
+          new MemoizedSupplier<>(() -> {
+            if (!searchCriteria.isCriterionOnComponentInstanceIdSet()) {
+              return null;
+            }
+            final String instanceId = searchCriteria.getCriterionOnComponentInstanceId();
+            try {
+              return getComponentInstance(instanceId);
+            } catch (AdminException e) {
+              throw new SilverpeasRuntimeException(failureOnGetting("component instance",
+                  instanceId));
+            }
+          }));
       searchCriteriaVisitors.forEach(searchCriteria::accept);
       return searchCriteria.isEmpty() ?
           ListSlice.emptyList() : userManager.getUsersMatchingCriteria(searchCriteria);
@@ -5457,11 +5470,11 @@ class DefaultAdministration implements Administration {
 
       // Getting from space to clone the components to copy
       final List<ComponentInst> componentsToCopy =
-       oldSpace.getAllComponentsInst().stream().map(c -> {
-        final ComponentInst componentInst = new ComponentInst(c);
-        componentInst.setLocalId(c.getLocalId());
-        return componentInst;
-      }).collect(toList());
+          oldSpace.getAllComponentsInst().stream().map(c -> {
+            final ComponentInst componentInst = new ComponentInst(c);
+            componentInst.setLocalId(c.getLocalId());
+            return componentInst;
+          }).collect(toList());
 
       // Add space
       newSpaceId = addSpaceInst(pasteDetail.getUserId(), newSpace);

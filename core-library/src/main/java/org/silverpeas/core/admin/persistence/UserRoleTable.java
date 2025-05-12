@@ -24,7 +24,6 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -54,10 +53,10 @@ public class UserRoleTable extends Table<UserRoleRow> {
       "id,instanceId,name,roleName,description,isInherited,objectId,objectType";
 
   /**
-   * Returns the UserRole whith the given id.
-   * @param id
-   * @return the UserRole whith the given id.
-   * @throws SQLException
+   * Returns the UserRole with the given id.
+   * @param id the unique identifier of the user role.
+   * @return the UserRole with the given id.
+   * @throws SQLException if the query fails.
    */
   public UserRoleRow getUserRole(int id) throws SQLException {
     return getUniqueRow(SELECT_USERROLE_BY_ID, id);
@@ -69,11 +68,11 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Returns the UserRole with the given roleName in the given instance.
-   * @param instanceId
-   * @param roleName
+   * @param instanceId the local identifier of a component instance.
+   * @param roleName the name of the user role.
    * @return the UserRole with the given roleName in the given instance. the UserRole whith the
    * given roleName in the given instance.
-   * @throws SQLException
+   * @throws SQLException if the query fails.
    */
   public UserRoleRow getUserRole(int instanceId, String roleName, int inherited)
       throws SQLException {
@@ -102,13 +101,13 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Returns all the UserRoles of an instance.
-   * @param instanceId
+   * @param instanceId the local identifier of a component instance.
    * @return all the UserRoles of an instance.
-   * @throws SQLException
+   * @throws SQLException the the query fails.
    */
   public UserRoleRow[] getAllUserRolesOfInstance(int instanceId) throws SQLException {
     List<UserRoleRow> rows = getRows(SELECT_ALL_INSTANCE_USERROLES, instanceId);
-    return rows.toArray(new UserRoleRow[rows.size()]);
+    return rows.toArray(new UserRoleRow[0]);
   }
 
   private static final String SELECT_ALL_INSTANCE_USERROLES = SELECT
@@ -116,13 +115,13 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Returns all the UserRole ids of an instance.
-   * @param instanceId
+   * @param instanceId the local identifier of a component instance.
    * @return all the UserRole ids of an instance.
-   * @throws SQLException
+   * @throws SQLException if the query fails.
    */
   public String[] getAllUserRoleIdsOfInstance(int instanceId) throws SQLException {
     List<String> ids = getIds(SELECT_ALL_INSTANCE_USERROLE_IDS, instanceId);
-    return ids.toArray(new String[ids.size()]);
+    return ids.toArray(new String[0]);
   }
 
   private static final String SELECT_ALL_INSTANCE_USERROLE_IDS =
@@ -131,7 +130,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
   public String[] getAllObjectUserRoleIdsOfInstance(int instanceId)
       throws SQLException {
     List<String> ids = getIds(SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS, instanceId);
-    return ids.toArray(new String[ids.size()]);
+    return ids.toArray(new String[0]);
   }
 
   private static final String SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS =
@@ -139,11 +138,12 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Returns all the UserRole ids of an object in a given instance.
-   * @param objectId
-   * @param objectType
-   * @param instanceId
+   * @param objectId the unique identifier of the an contribution managed in the given component
+   * instance.
+   * @param objectType the type of the contribution.
+   * @param instanceId the local identifier of the component instance
    * @return all the UserRole ids of an object in a given instance.
-   * @throws SQLException
+   * @throws SQLException if the query fails.
    */
   public String[] getAllUserRoleIdsOfObject(int objectId, String objectType, int instanceId) throws
       SQLException {
@@ -152,7 +152,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
     params.add(objectId);
     params.add(objectType);
     List<String> ids = getIds(SELECT_ALL_OBJECT_USERROLE_IDS, params);
-    return ids.toArray(new String[ids.size()]);
+    return ids.toArray(new String[0]);
   }
 
   private static final String SELECT_ALL_OBJECT_USERROLE_IDS =
@@ -160,13 +160,13 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Returns all the direct UserRoles of user.
-   * @param userId
+   * @param userId the unique identifier of a user
    * @return all the direct UserRoles of user.
-   * @throws SQLException
+   * @throws SQLException if the query fails.
    */
   public UserRoleRow[] getDirectUserRolesOfUser(int userId) throws SQLException {
     List<UserRoleRow> rows = getRows(SELECT_USER_USERROLES, userId);
-    return rows.toArray(new UserRoleRow[rows.size()]);
+    return rows.toArray(new UserRoleRow[0]);
   }
 
   private static final String SELECT_USER_USERROLES = SELECT
@@ -175,13 +175,13 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Returns all the direct UserRoles of a group.
-   * @param groupId
+   * @param groupId the unique identifier of a user group.
    * @return all the direct UserRoles of a group.
-   * @throws SQLException
+   * @throws SQLException if the query fails.
    */
   public UserRoleRow[] getDirectUserRolesOfGroup(int groupId) throws SQLException {
     List<UserRoleRow> rows = getRows(SELECT_GROUP_USERROLES, groupId);
-    return rows.toArray(new UserRoleRow[rows.size()]);
+    return rows.toArray(new UserRoleRow[0]);
   }
 
   private static final String SELECT_GROUP_USERROLES = SELECT + USERROLE_COLUMNS
@@ -189,13 +189,11 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Inserts in the database a new userRole row.
-   * @param userRole
-   * @throws SQLException
+   * @param userRole the user role to insert
+   * @throws SQLException if the insertion fails
    */
   public void createUserRole(UserRoleRow userRole) throws SQLException {
-    ComponentInstanceRow instance = OrganizationSchema.get().instance()
-        .getComponentInstance(userRole.getInstanceId());
-    if (instance == null) {
+    if (userRole.isInstanceIdNotDefined()) {
       throw new SQLException(
           unknown("component instance", String.valueOf(userRole.getInstanceId())));
     }
@@ -236,8 +234,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Update a user role.
-   * @param userRole
-   * @throws SQLException
+   * @param userRole the user role with the updated data.
+   * @throws SQLException if the update fails.
    */
   public void updateUserRole(UserRoleRow userRole) throws SQLException {
     updateRow(UPDATE_USERROLE, userRole);
@@ -256,8 +254,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Delete the userRole
-   * @param id
-   * @throws SQLException
+   * @param id the unique identifier of the user role to delete.
+   * @throws SQLException if the deletion fails.
    */
   public void removeUserRole(int id) throws SQLException {
     UserRoleRow userRole = getUserRole(id);
@@ -275,10 +273,10 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Tests if a user has a given role (not recursive).
-   * @param userId
-   * @param userRoleId
-   * @return
-   * @throws SQLException
+   * @param userId the unique identifier of a user.
+   * @param userRoleId the unique identifier of the user role
+   * @return true if the user plays the specified role. False otherwise.
+   * @throws SQLException if the query fails.
    */
   private boolean isUserDirectlyInRole(int userId, int userRoleId) throws SQLException {
     int[] ids = new int[] { userId, userRoleId };
@@ -292,10 +290,9 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Add an user in a userRole.
-   * @param userId
-   * @param userRoleId
-   * @throws SQLException
-   * @throws AdminException
+   * @param userId the unique identifier of a user.
+   * @param userRoleId the unique identifier of a user role.
+   * @throws SQLException if the adding fails.
    */
   public void addUserInUserRole(int userId, int userRoleId) throws SQLException {
     if (isUserDirectlyInRole(userId, userRoleId)) {
@@ -317,9 +314,9 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Removes an user from a userRole.
-   * @param userId
-   * @param userRoleId
-   * @throws SQLException
+   * @param userId the unique identifier of a user.
+   * @param userRoleId the unique identifier of a user role.
+   * @throws SQLException if the removing fails.
    */
   public void removeUserFromUserRole(int userId, int userRoleId) throws SQLException {
     int[] params = new int[] { userRoleId, userId };
@@ -334,7 +331,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Removes all users from a userRole.
-   * @param userRoleId
+   * @param userRoleId the unique identifier of a user role.
    */
   public void removeAllUsersFromUserRole(int userRoleId) throws SQLException {
     SynchroDomainReport.debug("UserRoleTable.removeAllUsersFromUserRole()",
@@ -348,8 +345,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Removes all groups from a userRole.
-   * @param userRoleId
-   * @throws SQLException
+   * @param userRoleId the unique identifier of a user role.
+   * @throws SQLException if the removing fails.
    */
   public void removeAllGroupsFromUserRole(int userRoleId) throws SQLException {
 
@@ -364,10 +361,10 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Tests if a group has a given role (not recursive).
-   * @param groupId
-   * @param userRoleId
-   * @return
-   * @throws SQLException
+   * @param groupId the unique identifier of a user group.
+   * @param userRoleId the unique identifier of a user role.
+   * @return true if the group plays the specified role.
+   * @throws SQLException if the query fails.
    */
   private boolean isGroupDirectlyInRole(int groupId, int userRoleId) throws SQLException {
     int[] ids = new int[] { groupId, userRoleId };
@@ -381,9 +378,9 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Adds a group in a userRole.
-   * @param groupId
-   * @param userRoleId
-   * @throws SQLException
+   * @param groupId the unique identifier of a user group.
+   * @param userRoleId the unique identifier of a user role.
+   * @throws SQLException if the adding fails.
    */
   public void addGroupInUserRole(int groupId, int userRoleId) throws SQLException {
     if (isGroupDirectlyInRole(groupId, userRoleId)) {
@@ -406,9 +403,9 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   /**
    * Removes a group from a userRole.
-   * @param groupId
-   * @param userRoleId
-   * @throws SQLException
+   * @param groupId the unique identifier of a user group.
+   * @param userRoleId the unique identifier of a user role.
+   * @throws SQLException if the removing fails.
    */
   public void removeGroupFromUserRole(int groupId, int userRoleId) throws SQLException {
     int[] params = new int[] { userRoleId, groupId };

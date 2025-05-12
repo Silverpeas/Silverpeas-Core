@@ -24,13 +24,7 @@
 package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.component.dao.ComponentDAO;
-import org.silverpeas.core.admin.component.model.ComponentI18N;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.LocalizedParameter;
-import org.silverpeas.core.admin.component.model.Parameter;
-import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
-import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEventNotifier;
 import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
@@ -40,13 +34,12 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -54,12 +47,7 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
