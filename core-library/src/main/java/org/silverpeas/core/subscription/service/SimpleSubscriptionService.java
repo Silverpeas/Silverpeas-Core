@@ -44,10 +44,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
-/**
- * Class declaration
- * @author
- */
 @Service
 @Named("subscriptionService")
 public class SimpleSubscriptionService implements SubscriptionService, ComponentInstanceDeletion {
@@ -59,10 +55,6 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
   @Inject
   private OrganizationController organisationController;
 
-  /**
-   * Gets a database connection.
-   * @return
-   */
   private Connection getConnection() {
     try {
       return DBUtil.openConnection();

@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.notification.PublicationEvent;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.subscription.AbstractProfiledResourceSubscriptionListener;
+import org.silverpeas.core.subscription.listeners.AbstractProfiledResourceSubscriptionListener;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 

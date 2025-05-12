@@ -32,15 +32,14 @@ import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * Interface declaration
- * @author
+ * Service handling the subscriptions of the users on resources managed in Silverpeas.
  */
 public interface SubscriptionService extends Serializable {
 
   /**
-   * Register a subscription. The informations of creator identifier and creation date are ignored.
+   * Register a subscription. The information of creator identifier and creation date are ignored.
    * If subscription already exists, nothing is registered.
-   * @param subscription
+   * @param subscription the subscription to register
    */
   void subscribe(Subscription subscription);
 
@@ -50,34 +49,34 @@ public interface SubscriptionService extends Serializable {
    * <p>
    *   IMPORTANT: runtime error will be thrown if subscription is created with Anonymous or Guest user
    * </P>
-   * @param subscriptions
+   * @param subscriptions a collection of subscriptions to register.
    * @throws SubscribeRuntimeException if attempting to create subscription with Anonymous or Guest user.
    */
   void subscribe(Collection<? extends Subscription> subscriptions) throws SubscribeRuntimeException;
 
   /**
    * Unregister a subscription.
-   * @param subscription
+   * @param subscription the subscription to unregister.
    */
   void unsubscribe(Subscription subscription);
 
   /**
    * Unregister given subscriptions.
-   * @param subscriptions
+   * @param subscriptions the collection of subscriptions to unregister.
    */
   void unsubscribe(Collection<? extends Subscription> subscriptions);
 
   /**
    * Unregister all subscription in relation to the given subscriber. If the given subscriber is a
    * user, no subscription by a group is deleted even if the user is part of the group
-   * @param subscriber
+   * @param subscriber the subscriber for whom the subscriptions have to be unregistered.
    */
   void unsubscribeBySubscriber(SubscriptionSubscriber subscriber);
 
   /**
    * Unregister all subscription in relation to given subscribers. If a given subscriber is a
    * user, no subscription by a group is deleted even if the user is part of the group
-   * @param subscribers
+   * @param subscribers the subscriber for whom the subscriptions have to be unregistered.
    */
   void unsubscribeBySubscribers(Collection<? extends SubscriptionSubscriber> subscribers);
 
@@ -103,8 +102,8 @@ public interface SubscriptionService extends Serializable {
    * Checks if the given subscription already exists.
    * If the given subscription subscriber is a user but that this user is subscribed only through
    * a group subscription, the method will return false.
-   * @param subscription
-   * @return
+   * @param subscription the subscription to check its existence.
+   * @return true if the specified subscription exists, false otherwise.
    */
   boolean existsSubscription(Subscription subscription);
 
@@ -137,7 +136,7 @@ public interface SubscriptionService extends Serializable {
 
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a user.
-   * @param userId
+   * @param userId the unique identifier of a user in Silverpeas.
    * @return list of subscriptions of users that have subscribed themselves,
    *         of users that are subscribed through a subscribed group and of users that have been
    *         subscribed by an other user
@@ -146,7 +145,7 @@ public interface SubscriptionService extends Serializable {
 
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber.
-   * @param subscriber
+   * @param subscriber the subscriber.
    * @return list of subscriptions
    */
   SubscriptionList getBySubscriber(SubscriptionSubscriber subscriber);
@@ -154,8 +153,8 @@ public interface SubscriptionService extends Serializable {
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber
    * and a component (NODE or COMPONENT resources).
-   * @param subscriber
-   * @param instanceId
+   * @param subscriber the subscriber.
+   * @param instanceId the unique identifier of a component instance.
    * @return list of subscriptions
    */
   SubscriptionList getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
@@ -164,8 +163,8 @@ public interface SubscriptionService extends Serializable {
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber
    * and a resource.
-   * @param subscriber
-   * @param resource
+   * @param subscriber the subscriber.
+   * @param resource the resource subscribed by the given subscriber.
    * @return list of subscriptions
    */
   SubscriptionList getBySubscriberAndResource(SubscriptionSubscriber subscriber,
@@ -175,7 +174,7 @@ public interface SubscriptionService extends Serializable {
    * Gets all subscribers (USER and/or GROUP) that are subscribed to a resource.
    * If a group subscriber is returned into result, caller has to perform it. User subscribers
    * depending to a group subscription are not returned.
-   * @param resource
+   * @param resource a subscribed resource in Silverpeas.
    * @return list of subscription subscribers
    */
   SubscriptionSubscriberList getSubscribers(SubscriptionResource resource);
@@ -184,8 +183,8 @@ public interface SubscriptionService extends Serializable {
    * Gets all subscribers (USER and/or GROUP) that are subscribed to a resource.
    * If a group subscriber is returned into result, caller has to perform it. User subscribers
    * depending to a group subscription are not returned.
-   * @param resource
-   * @param method
+   * @param resource the subscribed resource.
+   * @param method the method used to subscribe to the resource.
    * @return list of subscription subscribers
    */
   SubscriptionSubscriberList getSubscribers(SubscriptionResource resource,
@@ -195,7 +194,7 @@ public interface SubscriptionService extends Serializable {
    * Gets all subscribers (USER and/or GROUP) that are subscribed to given resources.
    * If a group subscriber is returned into result, caller has to perform it. User subscribers
    * depending to a group subscription are not returned.
-   * @param resources
+   * @param resources the subscribed resources
    * @return list of subscription subscribers
    */
   SubscriptionSubscriberList getSubscribers(
@@ -205,8 +204,8 @@ public interface SubscriptionService extends Serializable {
    * Gets all subscribers (USER and/or GROUP) that are subscribed to given resources.
    * If a group subscriber is returned into result, caller has to perform it. User subscribers
    * depending to a group subscription are not returned.
-   * @param resources
-   * @param method
+   * @param resources the subscribed resources
+   * @param method the method used to subscribe to the resources.
    * @return list of subscription subscribers
    */
   SubscriptionSubscriberList getSubscribers(
@@ -216,8 +215,8 @@ public interface SubscriptionService extends Serializable {
    * Indicates if a subscriber is subscribed to a resource.
    * If user subscriber is searched but that the user is subscribed only through a group
    * subscription, the method will return false.
-   * @param subscriber
-   * @param resource
+   * @param subscriber the subscriber.
+   * @param resource the subscribed resource.
    * @return true if the given subscriber is subscribed to given resource
    */
   boolean isSubscriberSubscribedToResource(SubscriptionSubscriber subscriber,
@@ -225,8 +224,8 @@ public interface SubscriptionService extends Serializable {
 
   /**
    * Indicates if a user is subscribed to a resource.
-   * @param user
-   * @param resource
+   * @param user a user in Silverpeas.
+   * @param resource a subscribed resource.
    * @return true if user has subscribed himself, or if user is subscribed through a subscribed
    *         group or if user has been subscribed by an other user
    */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,35 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.silverpeas.core.calendar.subscription;
+package org.silverpeas.core.subscription.listeners;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.notification.CalendarLifeCycleEvent;
-import org.silverpeas.core.subscription.listeners.AbstractProfiledResourceSubscriptionListener;
-import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
+import org.silverpeas.core.admin.user.notification.GroupEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
 /**
- * Listener of events on the deletion of a node in a component instance to delete all subscriptions
- * on that node.
  * @author mmoquillon
  */
 @Bean
-@Singleton
-public class SubscriptionCalendarEventListener
-    extends AbstractProfiledResourceSubscriptionListener<Calendar, CalendarLifeCycleEvent> {
+public class SubscriptionGroupEventListener extends CDIResourceEventListener<GroupEvent> {
+
+  @Inject
+  private SubscriptionService subscriptionService;
 
   @Override
-  protected SubscriptionResource getSubscriptionResource(final Calendar resource) {
-    return CalendarSubscriptionResource.from(resource);
-  }
-
-  @Override
-  protected boolean isSubscriptionEnabled(final Calendar resource) {
-    return true;
+  public void onDeletion(final GroupEvent event) throws Exception {
+    subscriptionService.unsubscribeBySubscriber(
+        GroupSubscriptionSubscriber.from(event.getTransition().getBefore().getId()));
   }
 }
-  

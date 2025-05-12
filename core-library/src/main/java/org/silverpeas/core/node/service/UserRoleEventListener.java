@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,27 +21,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.subscription;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
-import org.silverpeas.core.admin.user.notification.GroupEvent;
+package org.silverpeas.core.node.service;
+
+import org.silverpeas.core.admin.user.notification.role.UserRoleEvent;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 /**
+ * Listeners of events about changes in a user role of one or more component instances. When such a
+ * user role change is detected, the listener invokes the {@link NodeProfileInstUpdater} service to
+ * remove all the users from the right profiles of the nodes (having a specific local right
+ * accesses) of the concerned component instances.
+ *
  * @author mmoquillon
  */
-@Bean
-public class SubscriptionGroupEventListener extends CDIResourceEventListener<GroupEvent> {
+@Service
+public class UserRoleEventListener extends CDIResourceEventListener<UserRoleEvent> {
 
   @Inject
-  private SubscriptionService subscriptionService;
+  private NodeProfileInstUpdater updater;
 
   @Override
-  public void onDeletion(final GroupEvent event) throws Exception {
-    subscriptionService.unsubscribeBySubscriber(
-        GroupSubscriptionSubscriber.from(event.getTransition().getBefore().getId()));
+  @Transactional
+  public void onDeletion(UserRoleEvent event) throws Exception {
+    event.getInstanceIds()
+        .forEach(instance ->
+            updater.getRemoverFor(instance)
+                .ofUsers(event.getUserIds())
+                .apply());
   }
 }
+  
