@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.notification.ProfileInstEventNotifier;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.util.StringUtil;
@@ -50,6 +51,7 @@ import java.util.Set;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.notification.system.ResourceEvent.Type.*;
 
 @Service
 @Singleton
@@ -62,6 +64,8 @@ public class ProfileInstManager {
   private OrganizationSchema organizationSchema;
   @Inject
   private RoleDAO roleDAO;
+  @Inject
+  private ProfileInstEventNotifier notifier;
 
   /**
    * Constructor
@@ -95,6 +99,8 @@ public class ProfileInstManager {
       for (String userId : profileInst.getAllUsers()) {
         organizationSchema.userRole().addUserInUserRole(idAsInt(userId), idAsInt(sProfileNodeId));
       }
+
+      notifier.notifyEventOn(CREATION, profileInst);
 
       return sProfileNodeId;
     } catch (Exception e) {
@@ -190,6 +196,7 @@ public class ProfileInstManager {
     try {
       // delete the profile node
       organizationSchema.userRole().removeUserRole(idAsInt(profileInst.getId()));
+      notifier.notifyEventOn(DELETION, profileInst);
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(PROFILE, profileInst.getId()), e);
     }
@@ -223,6 +230,8 @@ public class ProfileInstManager {
       // update the profile node
       UserRoleRow changedUserRole = UserRoleRow.makeFrom(profileInstNew);
       organizationSchema.userRole().updateUserRole(changedUserRole);
+
+      notifier.notifyEventOn(UPDATE, profileInst, profileInstNew);
 
       return idAsString(changedUserRole.getId());
     } catch (SQLException e) {

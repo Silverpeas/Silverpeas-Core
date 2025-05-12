@@ -100,7 +100,7 @@ public class ProfileInst extends BaseRightProfile {
    * @param objectId the unique identifier of the object covered by this profile.
    */
   public void setObjectId(final ProfiledObjectId objectId) {
-    this.objectId = objectId;
+    this.objectId = objectId == null ? ProfiledObjectId.NOTHING : objectId;
   }
 
   /**

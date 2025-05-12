@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -22,34 +22,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar.subscription;
+package org.silverpeas.core.admin.user.notification;
 
+import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.notification.CalendarLifeCycleEvent;
-import org.silverpeas.core.subscription.listeners.AbstractProfiledResourceSubscriptionListener;
-import org.silverpeas.core.subscription.SubscriptionResource;
-
-import javax.inject.Singleton;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
- * Listener of events on the deletion of a node in a component instance to delete all subscriptions
- * on that node.
+ * A notifier of a notification events about the creation, the update or the deletion of a profile
+ * instance.
+ *
  * @author mmoquillon
  */
 @Bean
-@Singleton
-public class SubscriptionCalendarEventListener
-    extends AbstractProfiledResourceSubscriptionListener<Calendar, CalendarLifeCycleEvent> {
-
+public class ProfileInstEventNotifier extends CDIResourceEventNotifier<ProfileInst,
+    ProfileInstEvent> {
   @Override
-  protected SubscriptionResource getSubscriptionResource(final Calendar resource) {
-    return CalendarSubscriptionResource.from(resource);
-  }
-
-  @Override
-  protected boolean isSubscriptionEnabled(final Calendar resource) {
-    return true;
+  protected ProfileInstEvent createResourceEventFrom(ResourceEvent.Type type,
+      ProfileInst... resource) {
+    return new ProfileInstEvent(type, resource);
   }
 }
   

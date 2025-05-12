@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,27 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.subscription;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
-import org.silverpeas.core.admin.user.notification.UserEvent;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
+package org.silverpeas.core.admin.user.notification;
 
-import javax.inject.Inject;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+
+import javax.validation.constraints.NotNull;
 
 /**
+ * Event to notify the creation, the modification or the deletion of an existing profile instance
+ * related to a given component instance. A profile instance is modified when at least one user
+ * or one group of users is added or remove from this profile instance.
+ *
  * @author mmoquillon
  */
-@Bean
-public class SubscriptionUserEventListener extends CDIResourceEventListener<UserEvent> {
+public class ProfileInstEvent extends AbstractResourceEvent<ProfileInst> {
 
-  @Inject
-  private SubscriptionService subscriptionService;
-
-  @Override
-  public void onDeletion(final UserEvent event) throws Exception {
-    subscriptionService.unsubscribeBySubscriber(
-        UserSubscriptionSubscriber.from(event.getTransition().getBefore().getId()));
+  public ProfileInstEvent(Type type, @NotNull ProfileInst... resource) {
+    super(type, resource);
   }
 }
+  
