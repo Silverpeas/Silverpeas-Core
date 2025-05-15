@@ -217,21 +217,22 @@
     if ($("#invitationDialog").length === 0) {
       $('<div>', {
         'id': 'invitationDialog'
-      }).append($('<form>').append($('<table>').append($('<tr>').
-              append($('<td>').addClass('txtlibform').append(LABEL_MESSAGE + '&nbsp;:')).
-              append($('<td>').append($('<textarea>', {
-                'name': 'textMessage',
-                'id': 'invitation-message',
-                'cols': '60',
-                'rows': '8'
-              })))))).appendTo($(document.body));
+      }).
+      append($('<form id="popupHelperContainer">').append($('<div class=\"skinFieldset\">').append($('<div class=\"fields\">').
+      append($('<div id="invitation-message-container">').addClass('field entireWidth').
+      append($('<label for="invitation-message">').addClass('txtlibform').append(LABEL_MESSAGE + '&nbsp;:')).
+      append($('<div>').addClass('champs').append($('<textarea>', {
+        'name': 'textMessage',
+        'id': 'invitation-message',
+        'rows': '8'
+      }))))))).appendTo($(document.body));
 
       $("#invitationDialog").dialog({
         autoOpen: false,
-        resizable: false,
+        resizable: true,
         modal: true,
         height: "auto",
-        width: 550,
+        width: 600,
         buttons: [
           {
             text: LABEL_OK,
@@ -280,7 +281,7 @@
 
       $( "#invitationCancelDialog" ).dialog({
         autoOpen: false,
-        resizable: false,
+        resizable: true,
         modal: true,
         buttons: [{
           text : LABEL_YES,
@@ -323,7 +324,7 @@
 
       $( "#invitationAcceptDialog" ).dialog({
         autoOpen: false,
-        resizable: false,
+        resizable: true,
         modal: true,
         buttons: [{
           text : LABEL_YES,
@@ -365,7 +366,7 @@
 
       $( "#relationDeleteDialog" ).dialog({
         autoOpen: false,
-        resizable: false,
+        resizable: true,
         modal: true,
         buttons: [{
           text : LABEL_YES,
