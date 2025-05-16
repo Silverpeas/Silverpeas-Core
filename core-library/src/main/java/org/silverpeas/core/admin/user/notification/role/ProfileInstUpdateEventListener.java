@@ -30,12 +30,15 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.notification.ProfileInstEvent;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
+import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,7 +53,8 @@ import java.util.stream.Stream;
  * @author mmoquillon
  */
 @Service
-class ProfileInstUpdateEventListener extends CDIResourceEventListener<ProfileInstEvent> {
+class ProfileInstUpdateEventListener
+    extends CDIAfterSuccessfulTransactionResourceEventListener<ProfileInstEvent> {
 
   @Inject
   private OrganizationController organization;
@@ -62,15 +66,19 @@ class ProfileInstUpdateEventListener extends CDIResourceEventListener<ProfileIns
   public void onUpdate(ProfileInstEvent event) {
     ProfileInst before = event.getTransition().getBefore();
     ProfileInst after = event.getTransition().getAfter();
-    ComponentInst componentInst = getComponentInstanceId(before.getComponentFatherId());
-    Set<String> removedUsers = findRemovedUsersId(componentInst, before, after);
-    if (!removedUsers.isEmpty()) {
-      UserRoleEvent userRoleEvent = UserRoleEvent.builderFor(ResourceEvent.Type.DELETION)
-          .role(before.getName())
-          .instanceId(componentInst.getId())
-          .userIds(removedUsers)
-          .build();
-      notifier.notify(userRoleEvent);
+    if (before.getObjectId().isNotDefined()) {
+      // we take in charge only changes in the right profiles of component instances, no those of
+      // resources managed by the component instances
+      ComponentInst componentInst = getComponentInstanceId(before.getComponentFatherId());
+      Set<String> removedUsers = findRemovedUsersId(componentInst, before, after);
+      if (!removedUsers.isEmpty()) {
+        UserRoleEvent userRoleEvent = UserRoleEvent.builderFor(ResourceEvent.Type.DELETION)
+            .role(before.getName())
+            .instanceId(componentInst.getId())
+            .userIds(removedUsers)
+            .build();
+        notifier.notify(userRoleEvent);
+      }
     }
   }
 
@@ -90,13 +98,15 @@ class ProfileInstUpdateEventListener extends CDIResourceEventListener<ProfileIns
       ProfileInst after) {
     List<String> usersAfter = after.getAllUsers();
     List<String> groupsAfter = after.getAllGroups();
-    String roleName =  before.getName();
+    String roleName = before.getName();
+    NoAnymorePlayedRole roleNotAnymorePlayedByUser = new NoAnymorePlayedRole(roleName,
+        componentInst.getId());
+
     // get all the users directly removed from the profile instance and who don't play anymore
     // the role for the application (they can be play another role)
     Stream<String> removedUsers = before.getAllUsers().stream()
         .filter(user -> !usersAfter.contains(user))
-        .filter(u -> Stream.of(organization.getUserProfiles(u, componentInst.getId()))
-            .noneMatch(p -> p.equalsIgnoreCase(roleName)));
+        .filter(roleNotAnymorePlayedByUser);
 
 
     // get all the users belonging to the groups removed from the profile instance and who's not
@@ -107,14 +117,33 @@ class ProfileInstUpdateEventListener extends CDIResourceEventListener<ProfileIns
         .map(g -> organization.getGroup(g))
         .flatMap(g -> Stream.of(((Group) g).getUserIds()))
         .distinct()
-        .filter(u -> Stream.of(organization.getUserProfiles(u, componentInst.getId()))
-            .noneMatch(p -> p.equalsIgnoreCase(roleName)));
+        .filter(roleNotAnymorePlayedByUser);
 
     return Stream.concat(removedUsers, removedUsersInGroups).collect(Collectors.toSet());
   }
 
   private ComponentInst getComponentInstanceId(int localComponentId) {
     return organization.getComponentInst(String.valueOf(localComponentId));
+  }
+
+  private class NoAnymorePlayedRole implements Predicate<String> {
+
+    private final Map<String, String[]> cache = new HashMap<>();
+    private final String instanceId;
+    private final String roleName;
+
+    public NoAnymorePlayedRole(String roleName, String componentInstanceId) {
+      this.instanceId = componentInstanceId;
+      this.roleName = roleName;
+    }
+
+    @Override
+    public boolean test(String userId) {
+      String[] roles = cache.computeIfAbsent(userId,
+          u -> organization.getUserProfiles(u, instanceId));
+      return roles.length == 0 ||
+          Stream.of(roles).noneMatch(p -> p.equalsIgnoreCase(roleName));
+    }
   }
 }
   
