@@ -1,0 +1,4 @@
+ConverseJS plugins require to be adapted to Silverpeas. Please inspect the diff and report the
+changes to all new versions of the plugins.
+
+Take care of the changes in the Converse.js API in the custom Silverpeas plugins.
