@@ -29,25 +29,22 @@ import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdminNotFoundException;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.notification.ProfileInstEventNotifier;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.*;
@@ -123,6 +120,7 @@ public class ProfileInstManager {
    * @return the corresponding {@link ProfileInst} if any, null otherwise.
    * @throws AdminException if an error occurred.
    */
+  @Nullable
   public ProfileInst getProfileInst(String sProfileId, final boolean includeRemovedUsersAndGroups)
       throws AdminException {
     ProfileInst profileInst = null;
@@ -218,7 +216,9 @@ public class ProfileInstManager {
    */
   public String updateProfileInst(ProfileInst profileInstNew) throws AdminException {
     ProfileInst profileInst = getProfileInst(profileInstNew.getId(), false);
-
+    if (profileInst == null) {
+      throw new AdminNotFoundException("Profile instance " + profileInstNew.getId() + " not found");
+    }
     try {
       // the groups in the previous state of the profile
       List<String> alOldProfileGroup = profileInst.getAllGroups();

@@ -934,7 +934,7 @@ public class DefaultOrganizationController implements OrganizationController {
       List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, componentId);
       List<String> profileIds = new ArrayList<>();
       for (ProfileInst profile : profiles) {
-        if (profile != null && profileNames.contains(profile.getName())) {
+        if (profileNames.contains(profile.getName())) {
           profileIds.add(profile.getId());
         }
       }

@@ -539,7 +539,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
   @Override
   @Transactional
-  public NodePK createNode(NodeDetail node) {
+  public NodeDetail createNode(NodeDetail node) {
     NodePK parentPK = node.getFatherPK();
     if (parentPK != null) {
       NodeDetail parent = getHeader(parentPK);
@@ -557,7 +557,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       NodePK newNodePK = save(node);
       NodeDetail newNode = getDetail(newNodePK);
       createIndex(newNode, false);
-      return newNode.getNodePK();
+      return newNode;
     } catch (Exception e) {
       throw new NodeRuntimeException(e);
     }
@@ -574,7 +574,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    */
   @Override
   @Transactional
-  public NodePK createNode(NodeDetail nd, NodeDetail fatherDetail) {
+  public NodeDetail createNode(NodeDetail nd, NodeDetail fatherDetail) {
     try {
       if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getNodeType())) {
         nd.setPath(fatherDetail.getPath() + fatherDetail.getNodePK().getId() + "/");
@@ -589,7 +589,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       NodeDetail newNode = getDetail(newNodePK);
 
       createIndex(newNode, false);
-      return newNode.getNodePK();
+      return newNode;
     } catch (Exception re) {
       throw new NodeRuntimeException(re);
     }

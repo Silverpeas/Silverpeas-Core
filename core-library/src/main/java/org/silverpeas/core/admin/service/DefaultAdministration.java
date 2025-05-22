@@ -1620,12 +1620,15 @@ class DefaultAdministration implements Administration {
         .orElse(profileName);
   }
 
+  @Nonnull
   @Override
   public ProfileInst getProfileInst(String sProfileId) throws AdminException {
     final ProfileInst profileInst;
     Optional<ProfileInst> optionalProfile = cache.getProfileInst(sProfileId);
     if (optionalProfile.isEmpty()) {
-      profileInst = profileManager.getProfileInst(sProfileId, false);
+      profileInst = Optional.ofNullable(profileManager.getProfileInst(sProfileId, false))
+              .orElseThrow(() ->
+                  new AdminException("Profile instance" + sProfileId + " not found"));
       cache.putProfileInst(profileInst);
     } else {
       profileInst = optionalProfile.get();
@@ -1753,6 +1756,9 @@ class DefaultAdministration implements Administration {
   @Override
   public String deleteProfileInst(String profileId, String userId) throws AdminException {
     ProfileInst profile = profileManager.getProfileInst(profileId, true);
+    if (profile == null) {
+      throw new AdminNotFoundException("Profile instance " + profileId + " not found");
+    }
     try {
       profileManager.deleteProfileInst(profile);
       if (StringUtil.isDefined(userId) &&
@@ -5284,7 +5290,9 @@ class DefaultAdministration implements Administration {
         ProfileInst profile = profileManager.getProfileInst(profileId,
             includeRemovedUsersAndGroups);
         // add users directly attach to profile
-        addAllUsersInProfile(profile, userIds);
+        if (profile != null) {
+          addAllUsersInProfile(profile, userIds);
+        }
       }
     } catch (Exception e) {
       throw new AdminException("Fail to search user ids by some profiles", e);

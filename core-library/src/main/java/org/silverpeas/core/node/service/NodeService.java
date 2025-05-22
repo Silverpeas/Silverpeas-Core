@@ -209,18 +209,18 @@ public interface NodeService {
 
   /**
    * Creates a new node in Silverpeas.
-   * @param nodeDetail the details of the node to save.
-   * @param fatherDetail the parent of the node to save.
-   * @return the unique identifier of the new node.
+   * @param nodeDetail details about the node to save.
+   * @param fatherDetail the parent of the node.
+   * @return the new node.
    */
-  NodePK createNode(NodeDetail nodeDetail, NodeDetail fatherDetail);
+  NodeDetail createNode(NodeDetail nodeDetail, NodeDetail fatherDetail);
 
   /**
    * Creates a new node in Silverpeas.
-   * @param nodeDetail the details of the node to save.
-   * @return the unique identifier of the new node.
+   * @param nodeDetail details about the node to save.
+   * @return the new node.
    */
-  NodePK createNode(NodeDetail nodeDetail);
+  NodeDetail createNode(NodeDetail nodeDetail);
 
   /**
    * Deletes definitively a node and its descendants
@@ -285,7 +285,6 @@ public interface NodeService {
    * Gets the identifiers of all of the descendants of the specified node.
    * @param nodePK the unique identifier of a node.
    * @return A collection of {@link NodePK} instances.
-   * @return A collection of NodePK
    * @see NodePK
    */
   Collection<NodePK> getDescendantPKs(NodePK nodePK);
@@ -294,7 +293,6 @@ public interface NodeService {
    * Gets all the descendants of the specified node.
    * @param nodePK the unique identifier of a node.
    * @return A collection of {@link NodePK} instances.
-   * @return A collection of NodePK
    * @see NodeDetail
    */
   List<NodeDetail> getDescendantDetails(NodePK nodePK);
@@ -303,7 +301,6 @@ public interface NodeService {
    * Gets all the descendants of the specified node.
    * @param node a node.
    * @return A collection of {@link NodePK} instances.
-   * @return A collection of NodePK
    * @see NodeDetail
    */
   List<NodeDetail> getDescendantDetails(NodeDetail node);

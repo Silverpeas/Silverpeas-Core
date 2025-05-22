@@ -611,15 +611,15 @@ public abstract class GEDImportExport extends ComponentImportExport {
             newNode.setNodePK(new NodePK("unknown", componentId));
             newNode.setFatherPK(new NodePK(parentId, componentId));
             newNode.setCreatorId(userId);
-            NodePK newNodePK;
+            NodeDetail createdNode;
             try {
-              newNodePK = getNodeService().createNode(newNode);
+              createdNode = getNodeService().createNode(newNode);
             } catch (Exception e) {
               SilverLogger.getLogger(this)
                   .error(e);
               return new ArrayList<>();
             }
-            parentId = newNodePK.getId();
+            parentId = createdNode.getId();
           }
         }
         node.setId(Integer.parseInt(parentId));
@@ -663,7 +663,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return un objet cle primaire du nouveau theme cree.
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
-  protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
+  protected abstract NodeDetail addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException;
 
   /**
@@ -740,8 +740,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     try {
       String directoryName = directory.getName();
       NodeDetail nodeDetail = new NodeDetail("unknow", directoryName, directoryName, 0, "useless");
-      nodeDetail.setNodePK(addSubTopicToTopic(nodeDetail, topicId, massiveReport));
-      return nodeDetail;
+      return addSubTopicToTopic(nodeDetail, topicId, massiveReport);
     } catch (Exception ex) {
       throw new ImportExportException("GEDImportExport.addSubTopicToTopic",
           "importExport.EX_NODE_CREATE", ex);

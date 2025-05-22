@@ -259,7 +259,9 @@ public class ComponentInstManager {
         // Insert the profileInst in the componentInst
         for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
           final ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI], false);
-          componentInst.addProfileInst(profileInst);
+          if (profileInst != null) {
+            componentInst.addProfileInst(profileInst);
+          }
         }
         componentInst.setLanguage(instance.lang);
         // translations
@@ -346,16 +348,6 @@ public class ComponentInstManager {
       organizationSchema.instance().updateComponentOrder(compLocalId, orderNum);
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("order of component", compLocalId), e);
-    }
-  }
-
-  public void updateComponentInheritance(int compLocalId, boolean inheritanceBlocked)
-      throws AdminException {
-    try {
-      organizationSchema.instance().updateComponentInheritance(compLocalId,
-          inheritanceBlocked);
-    } catch (Exception e) {
-      throw new AdminException(failureOnUpdate(COMPONENT, compLocalId), e);
     }
   }
 
@@ -489,22 +481,6 @@ public class ComponentInstManager {
       return compoIds;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("instances of component", sComponentName), e);
-    }
-  }
-
-  public String[] getComponentIdsInSpace(int spaceId) throws AdminException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-
-      // getting all componentIds available for user
-      List<String> componentIds = ComponentDAO.getComponentIdsInSpace(con, spaceId);
-      return componentIds.toArray(new String[0]);
-
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("component instances in space", spaceId), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 

@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
@@ -362,8 +363,9 @@ public interface Administration {
    *
    * @param sProfileId the unique identifier of the profile.
    * @return the role profile
-   * @throws AdminException if an error occurs
+   * @throws AdminException if an error occurs or if the profile instance isn't found
    */
+  @NonNull
   ProfileInst getProfileInst(String sProfileId) throws AdminException;
 
   /**
