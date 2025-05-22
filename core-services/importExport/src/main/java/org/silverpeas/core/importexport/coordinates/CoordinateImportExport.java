@@ -283,17 +283,12 @@ public class CoordinateImportExport {
     position.getNodePK().setComponentName(componentId);
     position.setCreationDate(new Date());
     NodeDetail fatherDetail;
-    NodePK positionPK;
-    NodeDetail positionDetail;
     try {
       fatherDetail = getNodeHeader(axisId, componentId);
-      positionPK = getNodeService().createNode(position, fatherDetail);
-
-      positionDetail = getNodeHeader(positionPK);
+      return getNodeService().createNode(position, fatherDetail);
     } catch (Exception e) {
       throw new CoordinateRuntimeException("Adding position failure", e);
     }
-    return positionDetail;
   }
 
   /**
