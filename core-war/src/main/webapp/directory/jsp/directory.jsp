@@ -84,6 +84,7 @@
 <view:sp-page>
 <view:sp-head-part>
   <link type="text/css" rel="stylesheet" href='<c:url value="/directory/jsp/css/print.css" />' media="print"/>
+  <view:link href="/util/styleSheets/fieldset.css"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <% if (extraForm != null) {
     extraForm.displayScripts(out, extraFormContext);
