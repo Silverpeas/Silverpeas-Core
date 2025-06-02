@@ -25,10 +25,10 @@ package org.silverpeas.core.web.sharing.bean;
 
 
 public class SharingNotificationVO {
-  private String selectedUsers;
-  private String externalEmails;
-  private String additionalMessage;
-  private String attachmentUrl;
+  private final String selectedUsers;
+  private final String externalEmails;
+  private final String additionalMessage;
+  private final String attachmentUrl;
 
   /**
    * @param selectedUsers list of selected users separated by comma

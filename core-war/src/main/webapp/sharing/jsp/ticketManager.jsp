@@ -44,6 +44,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:set var="mandatoryIcon"><fmt:message key='sharing.obligatoire' bundle='${icons}'/></c:set>
 <c:set var="usersIcon"><fmt:message key='sharing.users' bundle='${icons}'/></c:set>
 <c:set var="ticket" value="${requestScope.Ticket}"/>
+<jsp:useBean id="ticket" type="org.silverpeas.core.sharing.model.Ticket"/>
 <c:set var="ticketDownloads" value="${requestScope.TicketDownloads}"/>
 <jsp:useBean id="ticketDownloads" type="org.silverpeas.core.util.SilverpeasList<org.silverpeas.core.sharing.model.DownloadDetail>"/>
 <c:set var="ticketDownloadPagination" value="${requestScope.TicketDownloadPagination}"/>
@@ -61,7 +62,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 </c:if>
 <c:set var="fileName" value="${ticket.resource.name}"/>
 <c:set var="continuousChecked" value=""/>
-<c:if test="${ticket.continuous}">
+<c:if test="${ticket.unlimited}">
   <c:set var="continuousChecked" value="checked='checked'"/>
   <c:set var="endDate" value="<%= new java.util.Date() %>"/>
   <c:set var="maxAccessNb" value="0"/>
@@ -81,13 +82,13 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="tags"/>
     <script type="text/javascript">
-var continuousTicket = !<c:out value="${ticket.continuous}" />;
+let continuousTicket = !<c:out value="${ticket.unlimited}" />;
 $(window).load(function () {
   toggleContinuous();
 });
 
 $(function () {
-  var tagTriggerKeys = ['enter', 'comma', 'tab', 'semicolon', 'space'];
+  const tagTriggerKeys = ['enter', 'comma', 'tab', 'semicolon', 'space'];
   $('#ticket-email').tagit({triggerKeys:tagTriggerKeys});
 });
 
@@ -138,7 +139,7 @@ function ifCorrectFormExecute(callback) {
 
 function toggleContinuous(effect) {
   continuousTicket = !continuousTicket;
-  var isNodeSharing = <c:out value="${sharedObjectType eq 'Node'}" />;
+  let isNodeSharing = <c:out value="${sharedObjectType eq 'Node'}" />;
   if (continuousTicket) {
     $('.threshold').hide(effect);
   } else {
@@ -207,8 +208,10 @@ function toggleContinuous(effect) {
                       <label class="txtlibform" for="validity"><fmt:message key="sharing.validity"/></label>
                       <div class="champs">
                         <select id="validity" name="validity" onchange="javascript:toggleContinuous();">
-                          <option label="<fmt:message key="sharing.validity.continuous"/>" value="0" ${ticket.continuous ? 'selected="selected"' : ''}><fmt:message key="sharing.validity.continuous"/></option>
-                          <option label="<fmt:message key="sharing.validity.limited"/>" value="1" ${ticket.continuous ? '' : 'selected="selected"'}><fmt:message key="sharing.validity.limited"/></option>
+                          <option label="<fmt:message key="sharing.validity.continuous"/>"
+                                  value="0" ${ticket.unlimited ? 'selected="selected"' : ''}><fmt:message key="sharing.validity.continuous"/></option>
+                          <option label="<fmt:message key="sharing.validity.limited"/>" value="1"
+                            ${ticket.unlimited ? '' : 'selected="selected"'}><fmt:message key="sharing.validity.limited"/></option>
                         </select>
                       </div>
                       <div id="ticketValidityEndArea" class="field threshold">

@@ -58,9 +58,9 @@ function createSharingTicketPopup(sharingParam) {
 
   toggleContinuous();
 
-  if (sharingParam.type == 'Node') {
+  if (sharingParam.type === 'Node') {
     $("#objectName").text("<fmt:message key="GML.theme" />")
-  } else if (sharingParam.type == 'Publication') {
+  } else if (sharingParam.type === 'Publication') {
     $("#objectName").text("<fmt:message key="GML.publication" />")
   } else {
     //Attachment
@@ -79,8 +79,8 @@ function createSharingTicketPopup(sharingParam) {
 }
 
 function toggleContinuous(effect) {
-  var continuousTicket = $("#validity").val() == "0";
-  var nbAccessShown = $("#hiddenType").val() === 'Attachment';
+  const continuousTicket = $("#validity").val() === "0";
+  const nbAccessShown = $("#hiddenType").val() === 'Attachment';
   if (continuousTicket) {
     $('.threshold').hide(effect);
   } else {
@@ -102,7 +102,7 @@ function ifCorrectFormExecute(callback) {
   var endDate = $("#endDate").val();
   var nbAccessShown = $("#hiddenType").val() === 'Attachment';
 
-  if($("#validity").val() == "1")
+  if($("#validity").val() === "1")
   {
     if (nbAccessShown && isWhitespace(nb)) {
       errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustBeFilled'/>\n";
@@ -144,20 +144,20 @@ function ifCorrectFormExecute(callback) {
 
 
 function createTicket() {
-  var ajaxUrl = webContext + '/services/mytickets/' + $("#hiddenComponentId").val();
+  const ajaxUrl = webContext + '/services/mytickets/' + $("#hiddenComponentId").val();
 
-  var newTicket = {
-      "sharedObjectId": $("#hiddenObjectId").val(),
-      "sharedObjectType": $("#hiddenType").val(),
-      "componentId": $("#hiddenComponentId").val(),
-      "validity": $("#validity").val(),
-      "uri": '',
-      "endDateStr": $("#endDate").val(),
-      "endDateFormat": $("#endDateFormat").val(),
-      "nbAccessMax" : $("#nbAccessMax").val(),
-      "users": $("#users").val(),
-      "externalEmails" : $("#externalEmails").val(),
-      "additionalMessage" : $("#additionalMessage").val()
+  const newTicket = {
+    "sharedObjectId": $("#hiddenObjectId").val(),
+    "sharedObjectType": $("#hiddenType").val(),
+    "componentId": $("#hiddenComponentId").val(),
+    "validity": $("#validity").val(),
+    "uri": '',
+    "endDateStr": $("#endDate").val(),
+    "endDateFormat": $("#endDateFormat").val(),
+    "nbAccessMax": $("#nbAccessMax").val(),
+    "users": $("#users").val(),
+    "externalEmails": $("#externalEmails").val(),
+    "additionalMessage": $("#additionalMessage").val()
   };
 
   jQuery.ajax({
@@ -239,7 +239,7 @@ function showInformation() {
       <span class="champ-ui-dialog threshold">
         <input type="text" class="dateToPick" name="endDate" size="12" maxlength="10" value="" id="endDate" /><span class="txtsublibform">(<fmt:message key="GML.dateFormatExemple"/>)</span>
         <input type="hidden" name="endDateFormat" id="endDateFormat" value="<fmt:message key='GML.dateFormat'/>"/>
-        <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
+        <img src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
       </span>
       <div id="nbAccessMaxArea">
         <label class="label-ui-dialog threshold" for="nbAccessMax"><fmt:message key="sharing.nbAccessMax" bundle="${fsBundle}"/></label>
@@ -256,7 +256,7 @@ function showInformation() {
         <input id="users" name="users" value="" type="hidden" />
         <textarea id="users_name"  name="users$$name" cols="30" rows="2" readonly></textarea>&nbsp;
         <a href="#" onclick="javascript:SP_openWindow( webContext + '/RselectionPeasWrapper/jsp/open?formName=ticketForm&amp;elementId=users&amp;elementName=users_name&amp;selectedUsers=' + $('#users').val() + '&amp;selectionMultiple=true','selectUser',800,600,'');">
-          <img src="<c:url value='${usersIcon}' />" alt="<fmt:message key='GML.users' />" title="<fmt:message key='GML.users' />" align="absmiddle" border="0" height="15" width="15" />
+          <img src="<c:url value='${usersIcon}' />" alt="<fmt:message key='GML.users' />" title="<fmt:message key='GML.users' />" height="15" width="15" />
         </a>
       </span>
       <label class="label-ui-dialog" for="externalEmails"><fmt:message key="GML.external.emails" /></label>

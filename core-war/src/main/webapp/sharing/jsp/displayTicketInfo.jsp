@@ -36,8 +36,9 @@
   <c:set var="key" value="${requestScope.Key}"/>
   <c:set var="wallpaper" value="${requestScope.wallpaper}"/>
   <c:set var="ticket" value="${requestScope.attTicket}"/>
+  <jsp:useBean id="ticket" type="org.silverpeas.core.sharing.model.Ticket"/>
   <c:set var="endDate" value=""/>
-  <c:if test="${not ticket.continuous}">
+  <c:if test="${not ticket.unlimited}">
     <c:set var="endDate"><fmt:message key="sharing.endDate"/>:
       <view:formatDate value="${ticket.endDate}"/></c:set>
   </c:if>
