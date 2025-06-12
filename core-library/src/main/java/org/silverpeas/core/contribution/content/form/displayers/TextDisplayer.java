@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -151,7 +152,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
       } else if (field.getTypeName().equals(FileField.TYPE)) {
         value = getFilenameValue(field, pagesContext);
       } else {
-        value = Encode.forHtml(field.getValue(language));
+        value = WebEncodeHelper.convertBlanksForHtml(Encode.forHtml(field.getValue(language)));
       }
     }
 
