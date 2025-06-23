@@ -146,7 +146,7 @@ public class InvitationResource extends RESTWebService {
     if (invitation == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-    if (invitation.getSenderId() != Integer.parseInt(getUser().getId()) ||
+    if (invitation.getSenderId() != Integer.parseInt(getUser().getId()) &&
         invitation.getReceiverId() != Integer.parseInt(getUser().getId())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
