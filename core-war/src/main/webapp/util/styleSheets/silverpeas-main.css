@@ -7656,6 +7656,7 @@ input.dateToPick,
 .normal-fade-enter-from, .normal-fade-leave-to,
 .long-fade-enter-from, .long-fade-leave-to {
   opacity: 0;
+  display: none;
 }
 
 .fast-bottomTop-slide-enter-from, .fast-bottomTop-slide-leave-to,
