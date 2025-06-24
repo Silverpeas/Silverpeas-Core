@@ -46,8 +46,8 @@ public class CommentUserNotification
     implements FallbackToCoreTemplatePathBehavior {
 
   /**
-   * The name of the attribute in a notification message that refers the comment responsable of the triggering of this
-   * service.
+   * The name of the attribute in a notification message that refers the comment responsible of the
+   * triggering of this service.
    */
   public static final String NOTIFICATION_COMMENT_ATTRIBUTE = "comment";
 
@@ -57,14 +57,14 @@ public class CommentUserNotification
   private static final String TEMPLATE_PATH = "comment";
 
   /**
-   * If no property with the subject of the notification message is defined in a Silverpeas component, then the below
-   * default property is taken.
+   * If no property with the subject of the notification message is defined in a Silverpeas
+   * component, then the below default property is taken.
    */
   private static final String DEFAULT_SUBJECT_COMMENT_ADDING = "comments.commentAddingSubject";
 
   /**
-   * The name of the attribute in a notification message that refers the content commented by the comment responsable of
-   * the triggering of this service.
+   * The name of the attribute in a notification message that refers the content commented by the
+   * comment responsible of the triggering of this service.
    */
   private static final String NOTIFICATION_CONTENT_ATTRIBUTE = "content";
 
@@ -95,6 +95,7 @@ public class CommentUserNotification
    * returned by {@link #getBundle()} method and by the property given by the
    * {@link #getBundleSubjectKey()} method or the default subject for the notification about the
    * comments.
+   *
    * @param language the ISO-631 code of the language. It is here not taken into account. Only the
    * the locale of the component messages bundle is taken into account.
    * @return the subject of the notification.
@@ -118,25 +119,20 @@ public class CommentUserNotification
   }
 
   @Override
-  protected void perform(final Contribution resource) {
-    getNotificationMetaData().setOriginalExtraMessage(comment.getMessage());
-  }
-
-  @Override
   protected void performTemplateData(final String language, final Contribution resource,
       final SilverpeasTemplate template) {
     componentMessages.changeLocale(language);
     getNotificationMetaData().addLanguage(language, getTitle(), "");
-    Comment toUseInTempalte = new Comment(comment.getIdentifier(),
+    Comment toUseInTemplate = new Comment(comment.getIdentifier(),
         comment.getCreatorId(),
         comment.getResourceType(),
         comment.getResourceReference(),
         comment.getCreationDate());
-    toUseInTempalte.setLastUpdateDate(comment.getLastUpdateDate());
-    toUseInTempalte.setMessage(Encode.forHtml(comment.getMessage()));
+    toUseInTemplate.setLastUpdateDate(comment.getLastUpdateDate());
+    toUseInTemplate.setMessage(Encode.forHtml(comment.getMessage()));
     template.setAttribute("contentTitle", Encode.forHtml(resource.getTitle()));
     template.setAttribute(NOTIFICATION_CONTENT_ATTRIBUTE, getResource());
-    template.setAttribute(NOTIFICATION_COMMENT_ATTRIBUTE, toUseInTempalte);
+    template.setAttribute(NOTIFICATION_COMMENT_ATTRIBUTE, toUseInTemplate);
   }
 
   @Override

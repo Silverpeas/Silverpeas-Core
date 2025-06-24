@@ -72,7 +72,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * Default constructor
    * @param resource the resource which is the object of the notification.
    */
-  public AbstractTemplateUserNotificationBuilder(final T resource) {
+  protected AbstractTemplateUserNotificationBuilder(final T resource) {
     super(resource);
   }
 
