@@ -23,12 +23,8 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.FormFatalException;
-import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.util.ArrayUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,12 +32,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A generic FieldTemplate implementation.
@@ -321,6 +313,14 @@ public class GenericFieldTemplate implements FieldTemplate {
       addParameter(parameter.getName(), parameter.getValue(language));
     }
     return parameters;
+  }
+
+  @Override
+  public Set<FieldValueTemplate> getFieldValueTemplate(String language) {
+    var keyValuePairs = getKeyValuePairs(language);
+    return keyValuePairs.entrySet().stream()
+        .map(e -> new FieldValueTemplate(e.getKey(), e.getValue(), language))
+        .collect(Collectors.toSet());
   }
 
   public Map<String, String> getKeyValuePairs(String language) {
