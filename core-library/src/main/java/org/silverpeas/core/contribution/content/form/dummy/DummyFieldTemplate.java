@@ -25,22 +25,21 @@ package org.silverpeas.core.contribution.content.form.dummy;
 
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.FieldValueTemplate;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.util.ArrayUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A dummy FieldTemplate.
  */
 public class DummyFieldTemplate implements FieldTemplate {
 
-  private Field field;
+  private final Field field;
 
   public DummyFieldTemplate() {
     field = new TextFieldImpl();
@@ -136,12 +135,17 @@ public class DummyFieldTemplate implements FieldTemplate {
    */
   @Override
   public Map<String, String> getParameters(String language) {
-    return new HashMap<>();
+    return Map.of();
   }
 
   @Override
   public List<Parameter> getParametersObj() {
-    return new ArrayList<>();
+    return List.of();
+  }
+
+  @Override
+  public Set<FieldValueTemplate> getFieldValueTemplate(String language) {
+    return Set.of();
   }
 
   /**
@@ -177,7 +181,7 @@ public class DummyFieldTemplate implements FieldTemplate {
   }
 
   @Override
-  public Field getEmptyField(int occurrence) throws FormException {
+  public Field getEmptyField(int occurrence) {
     return field;
   }
 

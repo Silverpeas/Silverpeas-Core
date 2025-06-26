@@ -23,13 +23,11 @@
  */
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FieldValueTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
@@ -38,7 +36,7 @@ import org.silverpeas.core.workflow.api.instance.ProcessInstance;
  * A ProcessInstanceFieldTemplate describes a field of a process instance.
  */
 public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
-  public ProcessInstanceFieldTemplate(String fieldName, String typeName,
+  protected ProcessInstanceFieldTemplate(String fieldName, String typeName,
       String displayerName, String label) {
     this.fieldName = fieldName;
     this.typeName = typeName;
@@ -121,12 +119,17 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
    * (max-size, length ...).
    */
   public Map<String, String> getParameters(String language) {
-    return new HashMap<>();
+    return Map.of();
   }
 
   @Override
   public List<Parameter> getParametersObj() {
-    return new ArrayList<>();
+    return List.of();
+  }
+
+  @Override
+  public Set<FieldValueTemplate> getFieldValueTemplate(String language) {
+    return Set.of();
   }
 
   /**
