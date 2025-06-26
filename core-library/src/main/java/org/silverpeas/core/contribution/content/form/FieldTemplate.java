@@ -28,6 +28,7 @@ import org.silverpeas.core.contribution.content.form.record.Parameter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A FieldTemplate describes a specific field of a DataRecord. A FieldTemplate gives the field name,
@@ -109,5 +110,7 @@ public interface FieldTemplate extends Serializable {
   int getMaximumNumberOfOccurrences();
 
   boolean isRepeatable();
+
+  Set<FieldValueTemplate> getFieldValueTemplate(String language);
 
 }
