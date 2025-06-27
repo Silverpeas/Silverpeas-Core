@@ -59,7 +59,9 @@
     </div>
     <label ${hide(updateCategoryOnly)} id="name_label" class="label-ui-dialog" for="nameId"><fmt:message key="GML.nom"/></label>
     <div ${hide(updateCategoryOnly)} class="champ-ui-dialog">
-      <input id="nameId" name="name" size="60" maxlength="255" type="text" value="${link.name}"/>&nbsp;<img src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5" alt=""/>
+      <input id="nameId" name="name" size="60" maxlength="255" type="text"
+             value="${silfn:escapeHtml(link.name)}"/>&nbsp;<img src="<c:url
+             value='/util/icons/mandatoryField.gif' />" width="5" height="5" alt=""/>
       <c:if test="${not creationMode}">
         <input type="hidden" name="linkId" value="${link.linkId}" id="hiddenLinkId"/>
         <input type="hidden" name="position" value="${link.position}" id="hiddenPosition"/>
@@ -67,7 +69,8 @@
     </div>
     <label ${hide(updateCategoryOnly)} id="description_label" class="label-ui-dialog" for="descriptionId"><fmt:message key="GML.description"/></label>
     <div ${hide(updateCategoryOnly)} class="champ-ui-dialog">
-      <input type="text" name="description" size="60" maxlength="255" value="${link.description}" id="descriptionId"/>
+      <input type="text" name="description" size="60" maxlength="255"
+             value="${silfn:escapeHtml(link.description)}" id="descriptionId"/>
     </div>
     <c:if test="${not empty categories}">
       <label id="cat_label" class="label-ui-dialog" for="cat_id"><fmt:message key="myLinks.category"/></label>
