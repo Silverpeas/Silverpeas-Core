@@ -340,7 +340,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
           formFieldTemplate = (GenericFieldTemplate) formTemplate.getFieldTemplate(fieldName);
           dataFieldTemplate = (GenericFieldTemplate) dataTemplate.getFieldTemplate(fieldName);
           formFieldTemplate.setTypeName(dataFieldTemplate.getTypeName());
-          formFieldTemplate.setParametersObj(dataFieldTemplate.getParametersObj());
+          formFieldTemplate.setParametersObj(dataFieldTemplate.getParameters());
           formFieldTemplate.setLabelsObj(dataFieldTemplate.getLabelsObj());
         } catch (FormException e) {
           SilverLogger.getLogger(this).error(e);

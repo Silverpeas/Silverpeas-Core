@@ -31,9 +31,10 @@ import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -41,7 +42,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextField in HTML the content of a
@@ -157,15 +158,15 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
     }
 
     if (parameters.containsKey("values") || parameters.containsKey("keys")) {
-      Map<String, String> keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(
-          language);
+      var valuesTemplate = template.getFieldValuesTemplate(language);
+      var emptyValue = FieldValue.emptyFor(language);
       StringBuilder newValue = new StringBuilder();
       if (StringUtil.isDefined(value)) {
         if (value.contains("##")) {
           // Try to display a checkbox list
-          buildValuesList(value, keyValuePairs, newValue);
+          buildValuesList(value, valuesTemplate, newValue);
         } else {
-          newValue.append(keyValuePairs.get(value));
+          newValue.append(valuesTemplate.get(value).orElse(emptyValue).getLabel());
         }
       }
       value = newValue.toString();
@@ -173,19 +174,14 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
     return value;
   }
 
-  private static void buildValuesList(String value, Map<String, String> keyValuePairs,
+  private static void buildValuesList(String value, FieldValuesTemplate valuesTemplate,
       StringBuilder valuesList) {
-    //noinspection StringTokenizerDelimiter
-    StringTokenizer tokenizer = new StringTokenizer(value, "##");
-    while (tokenizer.hasMoreTokens()) {
-      String t = tokenizer.nextToken();
-      String v = keyValuePairs.get(t);
-      valuesList.append(v);
-
-      if (tokenizer.hasMoreTokens()) {
-        valuesList.append(", ");
-      }
-    }
+    var values = Parameter.decode(value).stream()
+        .map(v -> valuesTemplate.get(v)
+            .orElseThrow(() -> new NotFoundException("No such value for " + v)))
+        .map(FieldValue::getLabel)
+        .collect(Collectors.joining(", "));
+    valuesList.append(values);
   }
 
   private static String getFilenameValue(Field field, PagesContext pagesContext) {

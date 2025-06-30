@@ -24,28 +24,16 @@
 package org.silverpeas.core.webapi.contribution;
 
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -123,9 +111,8 @@ public class ContributionContentResource extends AbstractContributionResource {
       final FormEntity form = FormEntity.createFrom(formId);
       // Adding form content
       for (FieldTemplate fieldTemplate : formData.getRecordTemplate().getFieldTemplates()) {
-        final Map<String, String> keyValuePairs =
-            ((GenericFieldTemplate) fieldTemplate).getKeyValuePairs(lang);
-        if (fieldTemplate.isRepeatable() || !keyValuePairs.isEmpty()) {
+        var fieldValuesTemplate = fieldTemplate.getFieldValuesTemplate(language);
+        if (fieldTemplate.isRepeatable() || !fieldValuesTemplate.isEmpty()) {
           // Field is repeatable or multi-valuable (like checkbox)
           final List<FormFieldValueEntity>
               fieldValueEntities = getFormFieldValues(fieldTemplate, data, language);

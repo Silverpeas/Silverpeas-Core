@@ -23,10 +23,13 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
+import org.silverpeas.kernel.util.StringUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,7 +44,7 @@ public class Parameter implements Serializable {
   @XmlElement
   private String name = "";
   @XmlElement(name = "value")
-  private List<ParameterValue> parameterValuesObj = new ArrayList<>();
+  private List<ParameterValue> values = new ArrayList<>();
 
   public Parameter() {
   }
@@ -50,16 +53,44 @@ public class Parameter implements Serializable {
     this.name = name;
   }
 
+  /**
+   * Decodes the specified multivalued parameter value and gets all the values.
+   * The parameters of the template can be multivalued. In a such case, the values are encoded
+   * into a single string. This method provides a way to fetch all of them. If the specified
+   * parameterValue represents a single field value, then returns it into a list.
+   * @param parameterValue a serialized values of a parameter
+   * @return a list with the decoded values of a parameter or the single value if the specified
+   * String represent only one value.
+   */
+  public static List<String> decode(String parameterValue) {
+    if (StringUtil.isNotDefined(parameterValue)) {
+      return List.of();
+    }
+
+    final String tokenDelimiter = "##";
+    if (!parameterValue.contains(tokenDelimiter)) {
+      return List.of(parameterValue);
+    }
+
+    StringTokenizer tkn = new StringTokenizer(parameterValue, tokenDelimiter);
+    List<String> values = new ArrayList<>(tkn.countTokens());
+    while (tkn.hasMoreTokens()) {
+      String token = tkn.nextToken();
+      values.add(token);
+    }
+    return values;
+  }
+
   public String getName() {
     return this.name;
   }
 
   public String getValue(String language) {
-    if (parameterValuesObj != null) {
-      Iterator<ParameterValue> values = parameterValuesObj.iterator();
+    if (values != null) {
+      Iterator<ParameterValue> iterator = this.values.iterator();
       ParameterValue pValue = null;
-      while (values.hasNext()) {
-        pValue = values.next();
+      while (iterator.hasNext()) {
+        pValue = iterator.next();
         if (pValue.getLang().equalsIgnoreCase(language)) {
           return pValue.getValue();
         }
@@ -75,11 +106,11 @@ public class Parameter implements Serializable {
     this.name = name;
   }
 
-  public List<ParameterValue> getParameterValuesObj() {
-    return parameterValuesObj;
+  public List<ParameterValue> getParameterValues() {
+    return values;
   }
 
-  public void setParameterValuesObj(List<ParameterValue> parameterValuesObj) {
-    this.parameterValuesObj = parameterValuesObj;
+  public void setParameterValues(List<ParameterValue> parameterValues) {
+    this.values = parameterValues;
   }
 }

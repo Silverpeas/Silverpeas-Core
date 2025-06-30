@@ -24,23 +24,17 @@
 package org.silverpeas.core.contribution.content.form.displayers;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.TextField;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Nullable;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * A CheckBoxDisplayer is an object which can display a checkbox in HTML the content of a checkbox
@@ -53,8 +47,6 @@ import java.util.StringTokenizer;
  * @see FieldDisplayer
  */
 public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
-
-  private static final String VALUES = "values";
 
   /**
    * Returns the name of the managed types.
@@ -87,39 +79,35 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String selectedValues = "";
-
-    List<String> valuesFromDB = new ArrayList<>();
-    String keys = "";
-    String values = "";
-    StringBuilder html = new StringBuilder();
-    int cols = 1;
     String language = pageContext.getLanguage();
 
-    String fieldName = template.getFieldName();
-    Map<String, String> parameters = template.getParameters(language);
-    if (!field.isNull()) {
-      selectedValues = field.getValue(language);
-    }
-    //noinspection StringTokenizerDelimiter
-    StringTokenizer st = new StringTokenizer(selectedValues, "##");
-    while (st.hasMoreTokens()) {
-      valuesFromDB.add(st.nextToken());
-    }
-    if (parameters.containsKey("keys")) {
-      keys = parameters.get("keys");
-    }
-    if (parameters.containsKey(VALUES)) {
-      values = parameters.get(VALUES);
-    }
-    String cssClass = null;
-    if (parameters.containsKey("class")) {
-      cssClass = parameters.get("class");
-      if (StringUtil.isDefined(cssClass)) {
-        cssClass = "class=\"" + cssClass + "\"";
-      }
+    List<String> valuesFromDB = getSelectedValues(field, language);
+
+    StringBuilder html = new StringBuilder();
+
+     Map<String, String> parameters = template.getParameters(language);
+    String cssClass = getStyleClasses(parameters);
+    int cols = getColumnSize(parameters);
+
+    FieldValuesTemplate valuesTemplate = template.getFieldValuesTemplate(language);
+    String defaultValue = getDefaultValue(template, pageContext);
+    if (valuesTemplate.isEmpty()) {
+      valuesTemplate.withAsValue(defaultValue, defaultValue);
     }
 
+    GenerationParameters params = new GenerationParameters();
+    params.fieldTemplate = template;
+    params.fieldValuesTemplate = valuesTemplate;
+    params.cssClass = cssClass;
+    params.valuesFromDB = valuesFromDB;
+    params.defaultValue = defaultValue;
+    params.cols = cols;
+    generateHTML(html, params, pageContext);
+    out.println(html);
+  }
+
+  private int getColumnSize(Map<String, String> parameters) {
+    int cols = -1;
     try {
       if (parameters.containsKey("cols")) {
         cols = Integer.parseInt(parameters.get("cols"));
@@ -127,85 +115,74 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     } catch (NumberFormatException nfe) {
       SilverLogger.getLogger(this).error("Illegal Parameter cols: {0}", parameters.get("cols"));
     }
-
-    String defaultValue = getDefaultValue(template, pageContext);
-    if (!StringUtil.isDefined(values)) {
-      values = defaultValue;
-    }
-
-    // if either keys or values is not filled
-    // take the same for keys and values
-    if ("".equals(keys) && !"".equals(values)) {
-      keys = values;
-    }
-    if ("".equals(values) && !"".equals(keys)) {
-      values = keys;
-    }
-
-    GenerationParameters params = new GenerationParameters();
-    params.keys = keys;
-    params.values = values;
-    params.fieldName = fieldName;
-    params.cssClass = cssClass;
-    params.valuesFromDB = valuesFromDB;
-    params.defaultValue = defaultValue;
-    params.cols = cols;
-    generateHTML(html, template, pageContext, params);
-    out.println(html);
+    return cols;
   }
 
-  private void generateHTML(StringBuilder html, FieldTemplate template, PagesContext pageContext,
-      GenerationParameters params) {
-    //noinspection StringTokenizerDelimiter
-    StringTokenizer stKeys = new StringTokenizer(params.keys, "##");
-    //noinspection StringTokenizerDelimiter
-    StringTokenizer stValues = new StringTokenizer(params.values, "##");
-
-    if (stKeys.countTokens() != stValues.countTokens()) {
-      SilverLogger.getLogger(this)
-          .error("Illegal Parameters. Key count = {0}, values count = {1}", stKeys.countTokens(),
-              stValues.countTokens());
-    } else {
-      html.append("<table border=\"0\">");
-      params.stKeys = stKeys;
-      params.stValues = stValues;
-      params.nbOfTokenToDisplay = getNbHtmlObjectsDisplayed(template, pageContext);
-      int col = 0;
-      for (int i = 0; i < params.nbOfTokenToDisplay; i++) {
-        col = generateHTMLValue(html, template, pageContext, i, col, params);
+  @Nullable
+  private static String getStyleClasses(Map<String, String> parameters) {
+    String cssClass = null;
+    if (parameters.containsKey("class")) {
+      cssClass = parameters.get("class");
+      if (StringUtil.isDefined(cssClass)) {
+        cssClass = "class=\"" + cssClass + "\"";
       }
-      if (col != 0) {
+    }
+    return cssClass;
+  }
+
+  @NonNull
+  private static List<String> getSelectedValues(TextField field, String language) {
+    if (!field.isNull()) {
+      String selectedValues = field.getValue(language);
+      return Parameter.decode(selectedValues);
+    }
+    return List.of();
+  }
+
+  private void generateHTML(StringBuilder html, GenerationParameters params, PagesContext pageContext) {
+      html.append("<table border=\"0\">");
+      params.nbOfTokenToDisplay = getNbHtmlObjectsDisplayed(params.fieldTemplate, pageContext);
+      final Mutable<Integer> col = Mutable.of(0);
+      final Mutable<Integer> idx = Mutable.of(0);
+      params.fieldValuesTemplate
+          .apply(v -> col.set(generateHTMLValue(html, v, params, pageContext, col.get(),
+              idx.get())));
+      if (col.get() != 0) {
         html.append("</tr>");
       }
       html.append("</table>");
-    }
   }
 
-  private static int generateHTMLValue(StringBuilder html, FieldTemplate template,
-      PagesContext pageContext, int rowIndex, int colIndex, GenerationParameters parameters) {
+  private static int generateHTMLValue(StringBuilder html, FieldValue fieldValue,
+      GenerationParameters parameters, PagesContext pageContext, int rowIndex, int colIndex) {
     if (colIndex == 0) {
       html.append("<tr>");
     }
 
+    String fieldName = parameters.fieldTemplate.getFieldName();
     colIndex++;
     html.append("<td>");
-    String optKey = parameters.stKeys.nextToken();
-    String optValue = parameters.stValues.nextToken();
-    html.append("<input type=\"checkbox\" id=\"").append(parameters.fieldName).append("_")
+    html.append("<input type=\"checkbox\" id=\"")
+        .append(fieldName)
+        .append("_")
         .append(rowIndex);
-    html.append("\" name=\"").append(parameters.fieldName).append("\" value=\"").append(optKey)
+    html.append("\" name=\"")
+        .append(fieldName)
+        .append("\" value=\"")
+        .append(fieldValue.getKey())
         .append("\" ");
     if (StringUtil.isDefined(parameters.cssClass)) {
       html.append(parameters.cssClass);
     }
-    if (template.isDisabled() || template.isReadOnly()) {
+    if (parameters.fieldTemplate.isDisabled() || parameters.fieldTemplate.isReadOnly()) {
       html.append(" disabled=\"disabled\" ");
     }
     boolean mustBeChecked =
-        parameters.valuesFromDB.isEmpty() && !pageContext.isIgnoreDefaultValues() && (
-        optKey.equals(parameters.defaultValue) || optValue.equals(parameters.defaultValue));
+        parameters.valuesFromDB.isEmpty() && !pageContext.isIgnoreDefaultValues()
+            && (fieldValue.getKey().equals(parameters.defaultValue)
+            || fieldValue.getLabel().equals(parameters.defaultValue));
 
-    if (parameters.valuesFromDB.contains(optKey)) {
+    if (parameters.valuesFromDB.contains(fieldValue.getKey())) {
       mustBeChecked = true;
     }
 
@@ -213,11 +190,13 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       html.append(" checked=\"checked\" ");
     }
 
-    html.append("/>&nbsp;").append(optValue);
+    html.append("/>&nbsp;")
+        .append(fieldValue.getLabel());
 
     // last checkBox
-    if (rowIndex == parameters.nbOfTokenToDisplay - 1 && template.isMandatory() && !template.isDisabled() &&
-        !template.isReadOnly() && !template.isHidden() && pageContext.useMandatory()) {
+    if (rowIndex == parameters.nbOfTokenToDisplay - 1 && parameters.fieldTemplate.isMandatory()
+        && !parameters.fieldTemplate.isDisabled() && !parameters.fieldTemplate.isReadOnly()
+        && !parameters.fieldTemplate.isHidden() && pageContext.useMandatory()) {
       html.append(Util.getMandatorySnippet());
     }
 
@@ -278,39 +257,16 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
-    String keys = "";
-    String values = "";
-    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
-    if (parameters.containsKey("keys")) {
-      keys = parameters.get("keys");
-    }
-    if (parameters.containsKey(VALUES)) {
-      values = parameters.get(VALUES);
-    }
-
-    // if either keys or values is not filled
-    // take the same for keys and values
-    if (keys.isEmpty() && !values.isEmpty()) {
-      keys = values;
-    }
-
-    // Calculate numbers of html elements
-    //noinspection StringTokenizerDelimiter
-    StringTokenizer stKeys = new StringTokenizer(keys, "##");
-    return stKeys.countTokens();
-
+    return template.getFieldValuesTemplate(pagesContext.getLanguage()).size();
   }
 
   private static class GenerationParameters {
-    String keys;
-    String values;
-    String fieldName;
+    FieldTemplate fieldTemplate;
+    FieldValuesTemplate fieldValuesTemplate;
     String cssClass;
     List<String> valuesFromDB;
     String defaultValue;
     int cols;
-    StringTokenizer stKeys;
-    StringTokenizer stValues;
     int nbOfTokenToDisplay;
   }
 }

@@ -25,14 +25,13 @@ package org.silverpeas.core.contribution.content.form.dummy;
 
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FieldValueTemplate;
+import org.silverpeas.core.contribution.content.form.FieldValuesTemplate;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.util.ArrayUtil;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A dummy FieldTemplate.
@@ -43,10 +42,6 @@ public class DummyFieldTemplate implements FieldTemplate {
 
   public DummyFieldTemplate() {
     field = new TextFieldImpl();
-  }
-
-  public DummyFieldTemplate(Field field) {
-    this.field = field;
   }
 
   /**
@@ -139,13 +134,13 @@ public class DummyFieldTemplate implements FieldTemplate {
   }
 
   @Override
-  public List<Parameter> getParametersObj() {
+  public List<Parameter> getParameters() {
     return List.of();
   }
 
   @Override
-  public Set<FieldValueTemplate> getFieldValueTemplate(String language) {
-    return Set.of();
+  public FieldValuesTemplate getFieldValuesTemplate(String language) {
+    return new FieldValuesTemplate(language);
   }
 
   /**

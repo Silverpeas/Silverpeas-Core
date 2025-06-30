@@ -499,7 +499,7 @@ public class DateUtil {
         result.append('0');
       }
       result.append(minuteDuration).append('m');
-    } else if (hourDuration <= 0 && minuteDuration > 0) {
+    } else if (minuteDuration > 0) {
       result.append(minuteDuration).append('m');
     }
     if (result.length() > 0 && secondDuration < 10) {

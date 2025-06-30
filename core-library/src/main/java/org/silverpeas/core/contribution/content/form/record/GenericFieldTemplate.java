@@ -24,8 +24,9 @@
 package org.silverpeas.core.contribution.content.form.record;
 
 import org.silverpeas.core.contribution.content.form.*;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,7 +34,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A generic FieldTemplate implementation.
@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 public class GenericFieldTemplate implements FieldTemplate {
 
   private static final long serialVersionUID = 1L;
-  private static final String TOKEN_DELIMITER = "##";
   @XmlElement(required = true)
   private String fieldName;
   private Class<? extends Field> fieldImpl;
@@ -316,43 +315,70 @@ public class GenericFieldTemplate implements FieldTemplate {
   }
 
   @Override
-  public Set<FieldValueTemplate> getFieldValueTemplate(String language) {
-    var keyValuePairs = getKeyValuePairs(language);
-    return keyValuePairs.entrySet().stream()
-        .map(e -> new FieldValueTemplate(e.getKey(), e.getValue(), language))
-        .collect(Collectors.toSet());
+  public FieldValuesTemplate getFieldValuesTemplate(String language) {
+    var keyValuePairs = computeKeyValuePairs(language);
+    var valuesTemplate = new FieldValuesTemplate(language);
+    keyValuePairs.forEach(p -> valuesTemplate.withAsValue(p.getFirst(), p.getSecond()));
+    return valuesTemplate;
   }
 
-  public Map<String, String> getKeyValuePairs(String language) {
-    Map<String, String> keyValuePairs = new HashMap<>();
+  private List<Pair<String, String>> computeKeyValuePairs(String language) {
     Map<String, String> theParameters = getParameters(language);
-
     if (theParameters == null) {
-      return keyValuePairs;
+      return Collections.emptyList();
     }
-
     String keys = theParameters.get("keys");
     String values = theParameters.get("values");
+    return computeOrderedKeyValuePairs(keys, values);
+  }
+
+  /**
+   * Computes from the specified field values a dictionary of key -> value in which the key is the
+   * unique identifier of a value (fetched from the specified keys parameter) and value is the
+   * localized renderable label of the value (fetched from the specified values parameter). The
+   * identifiers of * the field values are encoded into the specified single String {@code key} and
+   * all the localized * labels of the field values are encoded into the specified single String
+   * {@code values}. For * each key in the given keys parameter must match a value label in the
+   * given values parameter.
+   *
+   * @param keys the identifiers of a field value.
+   * @param values the localized renderable label of a field value.
+   * @return a dictionary of field values such as the key is the value identifier and the value is
+   * the renderable label of the value. Be caution the order of the field values as encoded into the
+   * specified keys and values parameters is lost in the dictionary by the nature of the {@link Map}
+   * itself.
+   */
+  public static Map<String, String> computeKeyValuePairs(String keys, String values) {
+    return computeOrderedKeyValuePairs(keys, values).stream()
+        .collect(HashMap::new,
+            (m, kv) -> m.put(kv.getFirst(), kv.getSecond()),
+            HashMap::putAll);
+  }
+
+  /**
+   * Computes from the specified field values a list of pairs of key/label in which the key is the
+   * unique identifier of a value and the label the localized label of the value. The identifiers of
+   * the field values are encoded into the specified single String {@code key} and all the localized
+   * labels of the field values are encoded into the specified single String {@code values}. For
+   * each key in the given keys parameter must match a value label in the given values parameter.
+   *
+   * @param keys the identifiers of a field value.
+   * @param values the localized labels of a field value.
+   * @return a list of key/values pairs. The list is ordered in the order the keys and values are
+   * encoded into the keys and values parameters.
+   */
+  public static List<Pair<String, String>> computeOrderedKeyValuePairs(String keys, String values) {
+    List<Pair<String, String>> keyValuePairs = new ArrayList<>();
     if (keys != null && values != null) {
-      StringTokenizer kTokenizer = new StringTokenizer(keys, TOKEN_DELIMITER);
-      StringTokenizer vTokenizer = new StringTokenizer(values, TOKEN_DELIMITER);
-      while (kTokenizer.hasMoreTokens()) {
-        String key = kTokenizer.nextToken();
-        String value = vTokenizer.nextToken();
-        keyValuePairs.put(key, value);
+      var decodedKeys = Parameter.decode(keys);
+      var decodedValues = Parameter.decode(values);
+      for (int i = 0; i < decodedKeys.size(); i++) {
+        keyValuePairs.add(Pair.of(decodedKeys.get(i), decodedValues.get(i)));
       }
     } else if (keys != null) {
-      StringTokenizer kTokenizer = new StringTokenizer(keys, TOKEN_DELIMITER);
-      while (kTokenizer.hasMoreTokens()) {
-        String key = kTokenizer.nextToken();
-        keyValuePairs.put(key, key);
-      }
+      Parameter.decode(keys).forEach(k -> keyValuePairs.add(Pair.of(k, k)));
     } else if (values != null) {
-      StringTokenizer vTokenizer = new StringTokenizer(values, TOKEN_DELIMITER);
-      while (vTokenizer.hasMoreTokens()) {
-        String value = vTokenizer.nextToken();
-        keyValuePairs.put(value, value);
-      }
+      Parameter.decode(values).forEach(v -> keyValuePairs.add(Pair.of(v, v)));
     }
     return keyValuePairs;
   }
@@ -434,7 +460,7 @@ public class GenericFieldTemplate implements FieldTemplate {
    * Used by the XML mapping.
    */
   @Override
-  public List<Parameter> getParametersObj() {
+  public List<Parameter> getParameters() {
     return parametersObj;
   }
 
@@ -483,7 +509,7 @@ public class GenericFieldTemplate implements FieldTemplate {
       copy.setLabel(this.getLabel());
       copy.setLabelsObj(this.getLabelsObj());
       copy.setMandatory(this.isMandatory());
-      copy.setParametersObj(this.getParametersObj());
+      copy.setParametersObj(this.getParameters());
       copy.setReadOnly(this.isReadOnly());
       copy.setSearchable(this.isSearchable());
       copy.setTemplateName(this.getTemplateName());

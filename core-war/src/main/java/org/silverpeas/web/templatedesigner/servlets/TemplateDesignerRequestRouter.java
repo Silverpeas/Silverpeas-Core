@@ -413,8 +413,8 @@ public class TemplateDesignerRequestRouter extends
         String xmlParameterValue = request.getParameter(paramName);
         if (StringUtil.isDefined(xmlParameterValue)) {
           Parameter parameter = new Parameter(xmlParameterName);
-          parameter.getParameterValuesObj().add(new ParameterValue("fr", xmlParameterValue));
-          field.getParametersObj().add(parameter);
+          parameter.getParameterValues().add(new ParameterValue("fr", xmlParameterValue));
+          field.getParameters().add(parameter);
         }
       } else if (paramName.startsWith("Label_")) {
         String lang = paramName.substring(6);

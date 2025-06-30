@@ -64,6 +64,7 @@ public class WorkflowUtil {
    * @param language the language the formatting rules must take in charge.
    * @return the comparable of the field.
    */
+  @SuppressWarnings("rawtypes")
   public static Comparable getFieldComparable(Item[] items, FieldTemplate fieldTemplate,
       Field field, String language) {
     final String formattedValue = formatFieldValueAsString(items, fieldTemplate, field, language);
@@ -94,7 +95,7 @@ public class WorkflowUtil {
       final Item item = getItemByName(items, fieldName);
       if (item != null) {
         final Map<String, String> keyValuePairs = item.getKeyValuePairs();
-        if (keyValuePairs != null && keyValuePairs.size() > 0) {
+        if (keyValuePairs != null && !keyValuePairs.isEmpty()) {
           // Try to format a checkbox list
           fieldValueAsString = Arrays
               .stream(fieldValueAsString.split(SEVERAL_VALUE_DELIMITER))

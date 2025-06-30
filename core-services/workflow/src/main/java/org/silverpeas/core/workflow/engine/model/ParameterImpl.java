@@ -24,6 +24,7 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.silverpeas.core.workflow.api.model.Parameter;
 
@@ -102,8 +103,7 @@ public class ParameterImpl implements Parameter, Serializable {
     }
 
     final ParameterImpl parameter = (ParameterImpl) o;
-
-    return name != null ? name.equals(parameter.name) : parameter.name == null;
+    return Objects.equals(name, parameter.name);
   }
 
   @Override

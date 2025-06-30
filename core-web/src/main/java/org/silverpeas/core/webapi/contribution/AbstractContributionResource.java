@@ -27,20 +27,17 @@ import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.UserField;
-import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -48,7 +45,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: Yohann Chastagnier
@@ -90,17 +86,18 @@ public abstract class AbstractContributionResource extends RESTWebService {
       DataRecord data, String lang) throws FormException {
     final int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
     final List<FormFieldValueEntity> values = new ArrayList<>();
-    final Map<String, String> keyValuePairs =
-        ((GenericFieldTemplate) fieldTemplate).getKeyValuePairs(lang);
-    if (!keyValuePairs.isEmpty()) {
+    var empty = FieldValue.emptyFor(lang);
+    var valuesTemplate = fieldTemplate.getFieldValuesTemplate(lang);
+    if (!valuesTemplate.isEmpty()) {
       // it's a multi-value field (checkbox)
       final Field field = data.getField(fieldTemplate.getFieldName());
       final String fieldValue = field.getValue(lang);
       if (StringUtil.isDefined(fieldValue)) {
-        final String[] fieldValues = fieldValue.split("##");
+        List<String> fieldValues = Parameter.decode(fieldValue);
         for (String value : fieldValues) {
           final FormFieldValueEntity valueEntity =
-              FormFieldValueEntity.createFrom(value, keyValuePairs.getOrDefault(value, ""));
+              FormFieldValueEntity.createFrom(value,
+                  valuesTemplate.get(value).orElse(empty).getLabel());
           values.add(valueEntity);
         }
       }

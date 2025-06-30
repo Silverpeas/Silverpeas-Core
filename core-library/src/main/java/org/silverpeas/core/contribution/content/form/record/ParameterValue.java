@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
+import org.silverpeas.core.i18n.I18n;
+
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -38,7 +40,7 @@ public class ParameterValue implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @XmlAttribute
-  private String lang = "fr";
+  private String lang = I18n.get().getDefaultLanguage();
   @XmlValue
   private String value = "";
 
@@ -59,8 +61,8 @@ public class ParameterValue implements Serializable {
   }
 
   public void setLang(String lang) {
-    if (lang == null || lang.equals("")) {
-      lang = "fr";
+    if (lang == null || lang.isEmpty()) {
+      lang = I18n.get().getDefaultLanguage();
     }
     this.lang = lang;
   }

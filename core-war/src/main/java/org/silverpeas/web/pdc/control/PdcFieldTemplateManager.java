@@ -92,8 +92,8 @@ public class PdcFieldTemplateManager {
    */
   public GenericFieldTemplate getUpdatedFieldTemplate() {
     Parameter parameter = new Parameter("pdcAxis");
-    parameter.getParameterValuesObj().add(new ParameterValue("fr", getUsedAxisListToString()));
-    fieldTemplate.getParametersObj().add(parameter);
+    parameter.getParameterValues().add(new ParameterValue("fr", getUsedAxisListToString()));
+    fieldTemplate.getParameters().add(parameter);
     return fieldTemplate;
   }
 

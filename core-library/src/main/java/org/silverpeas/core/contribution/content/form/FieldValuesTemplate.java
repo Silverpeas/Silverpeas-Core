@@ -24,33 +24,49 @@
 
 package org.silverpeas.core.contribution.content.form;
 
+import java.util.*;
+import java.util.function.Consumer;
+
 /**
- * Template of a field value in a given language.
+ * Template of the values of a given field in a form.
  *
  * @author mmoquillon
  */
-public class FieldValueTemplate {
+public class FieldValuesTemplate {
 
-  private final String key;
-  private final String value;
+  private final List<FieldValue> values = new ArrayList<>(10);
   private final String language;
 
-  public FieldValueTemplate(String key, String value, String language) {
-    this.key = key;
-    this.value = value;
+  public FieldValuesTemplate(String language) {
     this.language = language;
   }
 
-  public String getKey() {
-    return key;
+  @SuppressWarnings("UnusedReturnValue")
+  public FieldValuesTemplate withAsValue(String key, String label) {
+    String k = key.isBlank() && !label.isBlank() ? label : key;
+    String l = label.isBlank() && !key.isBlank() ? key : label;
+    if (!k.isBlank() && !l.isBlank()) {
+      values.add(new FieldValue(k, l, language));
+    }
+    return this;
   }
 
-  public String getValue() {
-    return value;
+  public void apply(Consumer<FieldValue> consumer) {
+    values.forEach(consumer);
   }
 
-  public String getLanguage() {
-    return language;
+  public Optional<FieldValue> get(String key) {
+    return values.stream()
+        .filter(value -> value.getKey().equals(key))
+        .findFirst();
+  }
+
+  public boolean isEmpty() {
+    return values.isEmpty();
+  }
+
+  public int size() {
+    return values.size();
   }
 }
   

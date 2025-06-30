@@ -25,10 +25,7 @@ package org.silverpeas.core.workflow.engine.datarecord;
 
 import java.util.*;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FieldValueTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 
@@ -123,13 +120,13 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
   }
 
   @Override
-  public List<Parameter> getParametersObj() {
+  public List<Parameter> getParameters() {
     return List.of();
   }
 
   @Override
-  public Set<FieldValueTemplate> getFieldValueTemplate(String language) {
-    return Set.of();
+  public FieldValuesTemplate getFieldValuesTemplate(String language) {
+    return new FieldValuesTemplate(language);
   }
 
   /**

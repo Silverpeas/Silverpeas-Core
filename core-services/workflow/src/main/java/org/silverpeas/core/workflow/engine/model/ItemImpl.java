@@ -24,11 +24,9 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
@@ -41,8 +39,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;item&gt; element of a Process Model.
@@ -297,8 +293,6 @@ public class ItemImpl implements Item, Serializable {
   }
 
   public Map<String, String> getKeyValuePairs() {
-    Map<String, String> keyValuePairs = new HashMap<>();
-
     if (parameters != null && !parameters.isEmpty()) {
       String keys = null;
       String values = null;
@@ -311,30 +305,10 @@ public class ItemImpl implements Item, Serializable {
           values = parameter.getValue();
         }
       }
-
-      if (keys != null && values != null) {
-        StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
-        StringTokenizer vTokenizer = new StringTokenizer(values, "##");
-        while (kTokenizer.hasMoreTokens()) {
-          String key = kTokenizer.nextToken();
-          String value = vTokenizer.nextToken();
-          keyValuePairs.put(key, value);
-        }
-      } else if (keys != null && values == null) {
-        StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
-        while (kTokenizer.hasMoreTokens()) {
-          String key = kTokenizer.nextToken();
-          keyValuePairs.put(key, key);
-        }
-      } else if (keys == null && values != null) {
-        StringTokenizer vTokenizer = new StringTokenizer(values, "##");
-        while (vTokenizer.hasMoreTokens()) {
-          String value = vTokenizer.nextToken();
-          keyValuePairs.put(value, value);
-        }
-      }
+      return GenericFieldTemplate.computeKeyValuePairs(keys, values);
+    } else {
+      return Collections.emptyMap();
     }
-    return keyValuePairs;
   }
 
   @Override

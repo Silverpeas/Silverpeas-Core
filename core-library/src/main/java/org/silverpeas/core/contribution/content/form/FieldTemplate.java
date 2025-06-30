@@ -26,9 +26,7 @@ package org.silverpeas.core.contribution.content.form;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A FieldTemplate describes a specific field of a DataRecord. A FieldTemplate gives the field name,
@@ -88,12 +86,17 @@ public interface FieldTemplate extends Serializable {
   boolean isHidden();
 
   /**
-   * Returns a Map (String -> String) of named parameters which can be used by the displayer
-   * (max-size, length ...).
+   * Returns a Map (String -> String) of named parameters localized in the specified language.
+   * @see #getParameters()
    */
   Map<String, String> getParameters(String language);
 
-  List<Parameter> getParametersObj();
+  /**
+   * Gets the parameters defining this field template. The parameters provide rendering
+   * properties as well as the template of the values the field accepts.
+   * @return the list of this field parameters.
+   */
+  List<Parameter> getParameters();
 
   /**
    * Returns an empty Field built on this template.
@@ -111,6 +114,6 @@ public interface FieldTemplate extends Serializable {
 
   boolean isRepeatable();
 
-  Set<FieldValueTemplate> getFieldValueTemplate(String language);
+  FieldValuesTemplate getFieldValuesTemplate(String language);
 
 }

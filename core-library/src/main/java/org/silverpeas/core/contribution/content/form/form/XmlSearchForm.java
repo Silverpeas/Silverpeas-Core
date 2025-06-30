@@ -278,7 +278,7 @@ public class XmlSearchForm extends AbstractForm {
     paramValue.setLang("fr");
     paramValue.setValue(keys);
     parameterValues.add(paramValue);
-    paramKeys.setParameterValuesObj(parameterValues);
+    paramKeys.setParameterValues(parameterValues);
 
     Parameter paramValues = new Parameter();
     paramValues.setName("values");
@@ -287,7 +287,7 @@ public class XmlSearchForm extends AbstractForm {
     paramValue.setLang("fr");
     paramValue.setValue(values);
     parameterValues.add(paramValue);
-    paramValues.setParameterValuesObj(parameterValues);
+    paramValues.setParameterValues(parameterValues);
 
     parameters.add(paramKeys);
     parameters.add(paramValues);

@@ -60,7 +60,7 @@ public class PublicationTemplateImplTest {
     Field field = fieldTemplate.getEmptyField();
     assertThat(field, is(notNullValue()));
     assertEquals("Civilité", fieldTemplate.getLabel("fr"));
-    assertEquals(2, fieldTemplate.getParametersObj().size());
+    assertEquals(2, fieldTemplate.getParameters().size());
   }
 
   @Test
