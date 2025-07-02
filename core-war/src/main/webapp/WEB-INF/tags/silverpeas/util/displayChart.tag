@@ -82,11 +82,11 @@
 
   <script type="text/JavaScript">
     jQuery(function() {
-      var options = {
-        downloadSelector : "#${chartDomId}Container",
-        chartSelector : "#${chartDomId}",
-        isDisplayAsBars : ${isDisplayAsBarsRequired},
-        chart : <%=chart.asJson()%>
+      const options = {
+        downloadSelector: "#${chartDomId}Container",
+        chartSelector: "#${chartDomId}",
+        isDisplayAsBars: ${isDisplayAsBarsRequired},
+        chart: <%=chart.asJson()%>
       };
       <c:if test="${not empty formatToolTipValue}">
       options.formatToolTipValue = ${formatToolTipValue};

@@ -36,64 +36,64 @@
    */
   ChartManager = function(parameters) {
 
-    var dateFormat = jQuery.datepicker.regional[jQuery.datechecker.settings.language];
+    let dateFormat = jQuery.datepicker.regional[jQuery.datechecker.settings.language];
     if (!dateFormat) {
       dateFormat = jQuery.datepicker.regional[''];
     }
 
-    var params = extendsObject({
-      downloadSelector : "",
-      chartSelector : ".class",
-      isDisplayAsBars : false,
-      colors : [],
-      chart : {
-        combine : {
-          color : '#999',
-          threshold : chartPieCombinationThreshold,
-          label : ChartBundle.get("chart.other")
+    const params = extendsObject({
+      downloadSelector: "",
+      chartSelector: ".class",
+      isDisplayAsBars: false,
+      colors: [],
+      chart: {
+        combine: {
+          color: '#999',
+          threshold: chartPieCombinationThreshold,
+          label: ChartBundle.get("chart.other")
         },
-        axis : {
-          x : {
-            titleClass : 'axisLabel xaxisLabel',
-            title : ''
+        axis: {
+          x: {
+            titleClass: 'axisLabel xaxisLabel',
+            title: ''
           },
-          y : {
-            titleClass : 'axisLabel yaxisLabel',
-            title : ''
+          y: {
+            titleClass: 'axisLabel yaxisLabel',
+            title: ''
           }
         },
-        chartType : "",
-        title : "",
-        items : []
+        chartType: "",
+        title: "",
+        items: []
       },
-      labels : {
-        monthNames : dateFormat.monthNamesShort,
-        dayNames : dateFormat.dayNamesShort
+      labels: {
+        monthNames: dateFormat.monthNamesShort,
+        dayNames: dateFormat.dayNamesShort
       },
-      formatToolTipTitle : function(title, item) {
+      formatToolTipTitle: function (title, item) {
         return title;
       },
-      formatToolTipValue : function(value, item) {
+      formatToolTipValue: function (value, item) {
         return value;
       },
-      formatTickValue : function(value, axis) {
+      formatTickValue: function (value, axis) {
         return value;
       },
-      onItemClickHelp : function(item) {
+      onItemClickHelp: function (item) {
         return true;
       },
-      onItemClick : false
+      onItemClick: false
     }, parameters);
 
-    var isPieChart = params.chart.chartType === 'pie';
-    var isPeriodChart = params.chart.chartType === 'period';
+    const isPieChart = params.chart.chartType === 'pie';
+    const isPeriodChart = params.chart.chartType === 'period';
 
     if (isPieChart && !params.colors.length) {
       //noinspection JSUnresolvedVariable
       params.colors = defaultChartColors;
     }
 
-    var plotChart;
+    let plotChart;
     if (isPeriodChart) {
       plotChart = __periodChartDataToPlotChartData(params);
     } else if (isPieChart) {
@@ -124,8 +124,8 @@
     }
 
     if (params.downloadSelector) {
-      var downloadContainer = document.querySelector(params.downloadSelector);
-      var downloadButton = document.createElement('div');
+      const downloadContainer = document.querySelector(params.downloadSelector);
+      const downloadButton = document.createElement('div');
       params.downloadContainer = downloadContainer;
       params.downloadButton = downloadButton;
       if (downloadButton.classList) {
@@ -149,11 +149,11 @@
       downloadButton.addEventListener('click', function() {
         this.downloadChart();
       }.bind(this));
-      var mouseEnter = function() {
+      const mouseEnter = function () {
         downloadButton.show();
         return false;
       };
-      var mouseLeave = function() {
+      const mouseLeave = function () {
         downloadButton.hide();
         return false;
       };
@@ -170,12 +170,12 @@
       if (!params.downloadSelector) {
         return false;
       }
-      var chartTitle = params.chart.title ? (params.chart.title + '.png') : 'image.png';
+      const chartTitle = params.chart.title ? (params.chart.title + '.png') : 'image.png';
       params.downloadButton.hide();
       html2canvas(params.downloadContainer).then(function(canvas) {
           // canvas is the final rendered <canvas> element
-          var image = canvas.toDataURL();
-          download(image, chartTitle, "image/png");
+        const image = canvas.toDataURL();
+        download(image, chartTitle, "image/png");
       });
       params.downloadButton.show();
       return true;
@@ -192,7 +192,7 @@
 
 
   function __formatToolTipValue(params, value, item) {
-    var itemClickHelp = params.onItemClick && params.onItemClickHelp;
+    let itemClickHelp = params.onItemClick && params.onItemClickHelp;
     if (itemClickHelp) {
       if (typeof params.onItemClickHelp === 'function') {
         itemClickHelp = params.onItemClickHelp.call(this, item.series);
@@ -210,19 +210,19 @@
   }
 
   function __periodChartDataToPlotChartData(params) {
-    var chartItems = params.chart.items;
-    var noChartItems = chartItems.length === 0;
-    var plotData = [];
-    var plotOptions = {
-      legend : {
-        show : true
+    const chartItems = params.chart.items;
+    const noChartItems = chartItems.length === 0;
+    const plotData = [];
+    const plotOptions = {
+      legend: {
+        show: true
       },
-      axisLabels : {
-        show : true
+      axisLabels: {
+        show: true
       }
     };
 
-    var series;
+    let series;
     if (!params.isDisplayAsBars) {
       series = {
         points : {show : true}, lines : {show : true}, data : []
@@ -235,14 +235,14 @@
       }
     }
 
-    for (var i = 0; i < chartItems.length; i++) {
-      var periodData = chartItems[i];
+    for (let i = 0; i < chartItems.length; i++) {
+      const periodData = chartItems[i];
       if (params.isDisplayAsBars) {
-        var series = {
-          bars : {
-            show : true, barWidth : periodData.x.duration
+        series = {
+          bars: {
+            show: true, barWidth: periodData.x.duration
           },
-          data : [[periodData.x.startTime, periodData.y[0]]]
+          data: [[periodData.x.startTime, periodData.y[0]]]
         };
         plotData.push(series);
         if (params.colors.length) {
@@ -296,13 +296,13 @@
   }
 
   function __pieChartDataToPlotChartData(params) {
-    var chartItems = params.chart.items;
-    var plotData = [];
-    var plotOptions = {};
+    const chartItems = params.chart.items;
+    const plotData = [];
+    const plotOptions = {};
 
-    for (var i = 0; i < chartItems.length; i++) {
-      var pieData = chartItems[i];
-      var series;
+    for (let i = 0; i < chartItems.length; i++) {
+      const pieData = chartItems[i];
+      let series;
       if (params.isDisplayAsBars) {
         series = {
           bars : {
