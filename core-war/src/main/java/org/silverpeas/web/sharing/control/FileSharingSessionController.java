@@ -54,8 +54,6 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
   private static final int TICKET_CREATION_DATE_INDEX = 1;
   private static final int TICKET_END_DATE_INDEX = 4;
   private static final int TICKET_NBACCESS_DATE_INDEX = 5;
-  private static final int DEFAULT_TICKET_PAGINATION_SIZE = 25;
-  private PaginationPage ticketPagination;
   private Ticket.QUERY_ORDER_BY ticketOrderBy;
 
   private static final Map<Integer, Pair<QUERY_ORDER_BY, QUERY_ORDER_BY>> DOWNLOAD_ORDER_BIES =
@@ -63,6 +61,7 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
   private static final int DOWNLOAD_DATE_INDEX = 1;
   private static final int DOWNLOAD_IP_INDEX = 2;
   private static final int DEFAULT_PAGINATION_SIZE = 10;
+  public static final PaginationPage NO_PAGINATION = new PaginationPage(1, Integer.MAX_VALUE);
   private PaginationPage downloadPagination;
   private QUERY_ORDER_BY downloadOrderBy;
 
@@ -77,16 +76,7 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.sharing.multilang.fileSharingBundle",
         "org.silverpeas.sharing.settings.fileSharingIcons");
-    ticketPagination = new PaginationPage(1, DEFAULT_TICKET_PAGINATION_SIZE);
     downloadPagination = new PaginationPage(1, DEFAULT_PAGINATION_SIZE);
-  }
-
-  public PaginationPage getTicketPagination() {
-    return ticketPagination;
-  }
-
-  public void setTicketPagination(final PaginationPage ticketPagination) {
-    this.ticketPagination = ticketPagination;
   }
 
   public Map<Integer, Pair<Ticket.QUERY_ORDER_BY, Ticket.QUERY_ORDER_BY>> getTicketOrderBies() {
@@ -116,7 +106,7 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
   }
 
   public List<Ticket> getTicketsByUser() {
-    return getFileSharingService().getTicketsByUser(getUserId(), ticketPagination, ticketOrderBy);
+    return getFileSharingService().getTicketsByUser(getUserId(), NO_PAGINATION, ticketOrderBy);
   }
 
   public void updateTicket(Ticket ticket) {

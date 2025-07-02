@@ -23,16 +23,18 @@
  */
 package org.silverpeas.web.sharing.servlets;
 
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.sharing.control.FileSharingSessionController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,13 +43,14 @@ import java.util.Date;
 import java.util.List;
 
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.getOrderByFrom;
-import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
-    .getPaginationPageFrom;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.getPaginationPageFrom;
 
 
 public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharingSessionController> {
 
   private static final long serialVersionUID = -8855028133035807994L;
+
+  private static final String ROOT_DEST = "/sharing/jsp/";
 
   @Override
   public String getSessionControlBeanName() {
@@ -63,7 +66,6 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
   @Override
   public String getDestination(String function, FileSharingSessionController fileSharingSC,
       HttpRequest request) {
-    String rootDest = "/sharing/jsp/";
     String destination;
     try {
       switch (function) {
@@ -71,69 +73,22 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
           destination = getDestination("ViewTickets", fileSharingSC, request);
           break;
         case "ViewTickets":
-          // Download pagination and order by
-          fileSharingSC.setTicketPagination(
-              getPaginationPageFrom(request, fileSharingSC.getTicketPagination()));
-          fileSharingSC.setTicketOrderBy(getOrderByFrom(request, fileSharingSC.getTicketOrderBies()));
-          // liste des tickets visibles pour l'utilisateur
-          List<Ticket> tickets = fileSharingSC.getTicketsByUser();
-          request.setAttribute("Tickets", tickets);
-          request.setAttribute("TicketsPagination", fileSharingSC.getTicketPagination());
-          destination = rootDest + "viewTickets.jsp";
+          destination = viewTickets(fileSharingSC, request);
           break;
         case "DeleteTicket": {
-          // Suppression d'un ticket
-          String token = request.getParameter("token");
-          fileSharingSC.deleteTicket(token);
-          destination = getDestination("ViewTickets", fileSharingSC, request);
+          destination = deleteTicket(fileSharingSC, request);
           break;
         }
         case "EditTicket": {
-          String token = request.getParameter("token");
-          Ticket ticket = fileSharingSC.getTicket(token);
-          request.setAttribute("Creator", AdministrationServiceProvider.getAdminService().getUserDetail(ticket.
-              getCreatorId()).getDisplayedName());
-          if (StringUtil.isDefined(ticket.getLastModifier())) {
-            UserDetail updater = AdministrationServiceProvider.getAdminService().getUserDetail(
-                ticket.getLastModifier());
-            if (updater != null) {
-              request.setAttribute("Updater", updater.getDisplayedName());
-            }
-          }
-          // Download pagination and order by
-          fileSharingSC.setDownloadPagination(
-              getPaginationPageFrom(request, fileSharingSC.getDownloadPagination()));
-          fileSharingSC
-              .setDownloadOrderBy(getOrderByFrom(request, fileSharingSC.getDownloadOrderBies()));
-          // JSP attributes
-          request.setAttribute("Ticket", ticket);
-          request.setAttribute("TicketDownloads", fileSharingSC.getTicketDownloads(ticket));
-          request.setAttribute("TicketDownloadPagination", fileSharingSC.getDownloadPagination());
-          request.setAttribute("Url", ticket.getUrl(request));
-          request.setAttribute("Action", "UpdateTicket");
-          // appel jsp
-          destination = rootDest + "ticketManager.jsp";
+          destination = editTicket(fileSharingSC, request);
           break;
         }
         case "UpdateTicket": {
-          // récupération des paramètres venus de l'écran de saisie
-          String keyFile = request.getParameter("token");
-          Ticket ticket = updateTicket(keyFile, fileSharingSC, request);
-          ticket.setToken(keyFile);
-          // modification du lien
-          fileSharingSC.updateTicket(ticket);
-
-          SharingNotificationVO sharingParam =
-              new SharingNotificationVO(request.getParameter("users"),
-                  request.getParameter("externalEmails"), request.getParameter("additionalMessage"),
-                  ticket.getUrl(request));
-          fileSharingSC.notifyUsers(ticket, sharingParam);
-          // retour sur le liste des tickets
-          destination = getDestination("ViewTickets", fileSharingSC, request);
+          destination = updateTicket(fileSharingSC, request);
           break;
         }
         default:
-          destination = "!DownloadFile".equals(function) ? rootDest + function : "";
+          destination = "!DownloadFile".equals(function) ? ROOT_DEST + function : "";
           break;
       }
     } catch (Exception e) {
@@ -143,6 +98,70 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
 
     return destination;
 
+  }
+
+  private String updateTicket(FileSharingSessionController fileSharingSC, HttpRequest request)
+      throws ParseException {
+    // récupération des paramètres venus de l'écran de saisie
+    String keyFile = request.getParameter("token");
+    Ticket ticket = updateTicket(keyFile, fileSharingSC, request);
+    ticket.setToken(keyFile);
+    // modification du lien
+    fileSharingSC.updateTicket(ticket);
+
+    SharingNotificationVO sharingParam =
+        new SharingNotificationVO(request.getParameter("users"),
+            request.getParameter("externalEmails"), request.getParameter("additionalMessage"),
+            ticket.getUrl(request));
+    fileSharingSC.notifyUsers(ticket, sharingParam);
+    // retour sur le liste des tickets
+    return getDestination("ViewTickets", fileSharingSC, request);
+  }
+
+  @NonNull
+  private static String editTicket(FileSharingSessionController fileSharingSC,
+      HttpRequest request) throws AdminException {
+    String token = request.getParameter("token");
+    Ticket ticket = fileSharingSC.getTicket(token);
+    request.setAttribute("Creator",
+        AdministrationServiceProvider.getAdminService().getUserDetail(ticket.
+        getCreatorId()).getDisplayedName());
+    if (StringUtil.isDefined(ticket.getLastModifier())) {
+      UserDetail updater = AdministrationServiceProvider.getAdminService().getUserDetail(
+          ticket.getLastModifier());
+      if (updater != null) {
+        request.setAttribute("Updater", updater.getDisplayedName());
+      }
+    }
+    // Download pagination and order by
+    fileSharingSC.setDownloadPagination(
+        getPaginationPageFrom(request, fileSharingSC.getDownloadPagination()));
+    fileSharingSC
+        .setDownloadOrderBy(getOrderByFrom(request, fileSharingSC.getDownloadOrderBies()));
+    // JSP attributes
+    request.setAttribute("Ticket", ticket);
+    request.setAttribute("TicketDownloads", fileSharingSC.getTicketDownloads(ticket));
+    request.setAttribute("TicketDownloadPagination", fileSharingSC.getDownloadPagination());
+    request.setAttribute("Url", ticket.getUrl(request));
+    request.setAttribute("Action", "UpdateTicket");
+    // appel jsp
+    return ROOT_DEST + "ticketManager.jsp";
+  }
+
+  private String deleteTicket(FileSharingSessionController fileSharingSC, HttpRequest request) {
+    // Suppression d'un ticket
+    String token = request.getParameter("token");
+    fileSharingSC.deleteTicket(token);
+    return getDestination("ViewTickets", fileSharingSC, request);
+  }
+
+  @NonNull
+  private static String viewTickets(FileSharingSessionController fileSharingSC,
+      HttpRequest request) {
+    fileSharingSC.setTicketOrderBy(getOrderByFrom(request, fileSharingSC.getTicketOrderBies()));
+    List<Ticket> tickets = fileSharingSC.getTicketsByUser();
+    request.setAttribute("Tickets", tickets);
+    return ROOT_DEST + "viewTickets.jsp";
   }
 
   private Ticket updateTicket(String token, FileSharingSessionController fileSharingSC,
