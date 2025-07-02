@@ -31,15 +31,23 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<fmt:message var="shareIcon" key="sharing.ticket" bundle="${icons}"/>
+<c:url var="shareIconUrl" value="${shareIcon}"/>
+<fmt:message var="updateIcon" key="sharing.update" bundle="${icons}"/>
+<c:url var="updateIconUrl" value="${updateIcon}"/>
+<fmt:message var="deleteIcon" key="sharing.delete" bundle="${icons}"/>
+<c:url var="deleteIconUrl" value="${deleteIcon}"/>
+<fmt:message var="ticketIconAltText" key="sharing.ticket"/>
+<fmt:message var="updateIconAltText" key="sharing.updateTicket"/>
+<fmt:message var="deleteIconAltText" key="sharing.deleteTicket"/>
+
 <c:set var="tickets" value="${requestScope.Tickets}" />
-<jsp:useBean id="tickets" type="org.silverpeas.core.util.SilverpeasList<org.silverpeas.core.sharing.model.Ticket>"/>
-<c:set var="ticketsPagination" value="${requestScope.TicketsPagination}" />
-<jsp:useBean id="ticketsPagination" type="org.silverpeas.core.admin.PaginationPage"/>
+<jsp:useBean id="tickets"
+             type="org.silverpeas.core.util.SilverpeasList<org.silverpeas.core.sharing.model.Ticket>"/>
 
 <%@ include file="check.jsp" %>
-<html>
-<head>
-  <view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
   <script type="text/javascript">
     function editTicket(token) {
       location.href = "EditTicket?token=" + token;
@@ -56,8 +64,8 @@
 	window.open(url);
     }
   </script>
-</head>
-<body id="sharing-overview">
+</view:sp-head-part>
+<view:sp-body-part id="sharing-overview">
 <fmt:message key="sharing.tickets" var="browseBar"/>
 <form name="readForm" action="" method="post">
   <input type="hidden" name="mode"/>
@@ -65,7 +73,7 @@
   <view:window>
     <view:frame>
       <div id="ticket-list">
-        <view:arrayPane var="ticketList" routingAddress="ViewTickets" numberLinesPerPage="${ticketsPagination.pageSize}">
+        <view:arrayPane var="ticketList" routingAddress="ViewTickets">
           <fmt:message key="GML.creationDate" var="creationLabel"/>
           <view:arrayColumn title="${creationLabel}" sortable="true"/>
 
@@ -98,15 +106,11 @@
               <view:arrayCellText text="${creationDate}"/>
               <c:set var="lien" value="${ticket.resource.URL}"/>
               <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\' target=\'_blank\'>${ticket.resource.name}</a>"/>
-              <%
-                IconPane iconPane = gef.getIconPane();
-                Icon keyIcon = iconPane.addIcon();
-                keyIcon.setProperties(resource.getIcon("sharing.ticket"),
-                    resource.getString("sharing.ticket"), "javascript:go('" + ((Ticket) pageContext.
-                        getAttribute("ticket")).getUrl(request) + "');");
-                pageContext.setAttribute("ticketIcon", keyIcon.print());
-              %>
-              <view:arrayCellText text="${ticketIcon}"/>
+              <view:arrayCellText>
+                <view:icon iconName="${shareIconUrl}"
+                           altText="${ticketIconAltText}"
+                           action="javascript:go('${ticket.getUrl(pageContext.request)}');"/>
+              </view:arrayCellText>
               <c:if test="${ticket.endDate ne null}">
                 <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
               </c:if>
@@ -115,26 +119,21 @@
                 <c:set var="accessCount" value="${ticket.nbAccess} / ${ticket.nbAccessMax}"/>
               </c:if>
               <c:if test="${ticket.sharedObjectType eq 'Attachment' && ticket.nbAccessMax le 0}">
-                <fmt:message key="sharing.access.unlimited" var="sharingUnlimited"></fmt:message>
+                <fmt:message key="sharing.access.unlimited" var="sharingUnlimited"/>
                 <c:set var="accessCount" value="${ticket.nbAccess} / ${sharingUnlimited}"/>
               </c:if>
               <view:arrayCellText text="${endDate}" />
               <view:arrayCellText text="${accessCount}" />
-              <%
-                iconPane = gef.getIconPane();
-                Icon updateIcon = iconPane.addIcon();
-                Icon deleteIcon = iconPane.addIcon();
-                String token = ((Ticket) pageContext.getAttribute("ticket")).getToken();
-                updateIcon.setProperties(resource.getIcon("sharing.update"),
-                    resource.getString("sharing.updateTicket"),
-                    "javaScript:onClick=editTicket('" + token + "')");
-                deleteIcon.setProperties(resource.getIcon("sharing.delete"),
-                    resource.getString("sharing.deleteTicket"),
-                    "javaScript:onClick=deleteTicket('" + token + "')");
-                pageContext.setAttribute("ticketUpdateDeleteIcons",
-                    updateIcon.print() + "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
-              %>
-              <view:arrayCellText text="${ticketUpdateDeleteIcons}"/>
+              <view:arrayCellText>
+                <view:icons>
+                  <view:icon iconName="${updateIconUrl}"
+                             altText="${updateIconAltText}"
+                             action="javaScript:onClick=editTicket('${ticket.token}');"/>
+                  <view:icon iconName="${deleteIconUrl}"
+                             altText="${deleteIconAltText}"
+                             action="javaScript:onClick=deleteTicket('${ticket.token}');"/>
+                </view:icons>
+              </view:arrayCellText>
             </view:arrayLine>
           </view:arrayLines>
         </view:arrayPane>
@@ -159,5 +158,5 @@
   <input type="hidden" name="token"/>
 </form>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
