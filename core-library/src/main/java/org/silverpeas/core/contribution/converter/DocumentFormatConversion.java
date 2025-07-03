@@ -47,7 +47,7 @@ public interface DocumentFormatConversion {
    * @param options additional options such as "PageRange"
    * @return the file with the converted document.
    */
-  File convert(File source, DocumentFormat inFormat, FilterOption... options);
+  File convert(File source, DocumentFormat inFormat, FilterOption<?>... options);
 
   /**
    * Converts the specified document in the specified format. The format should be supported by the
@@ -58,7 +58,7 @@ public interface DocumentFormatConversion {
    * @param outFormat the format into which the document has to be converted.
    * @return the destination file.
    */
-  File convert(File source, File destination, DocumentFormat outFormat, FilterOption... options);
+  File convert(File source, File destination, DocumentFormat outFormat, FilterOption<?>... options);
 
   /**
    * Converts the specified inputstream/format in the specified outputstream/format.
@@ -68,7 +68,7 @@ public interface DocumentFormatConversion {
    * @param outFormat the format into which the document has to be converted.
    */
   void convert(InputStream source, DocumentFormat inFormat, OutputStream destination,
-      DocumentFormat outFormat, FilterOption... options);
+      DocumentFormat outFormat, FilterOption<?>... options);
 
 
   /**
