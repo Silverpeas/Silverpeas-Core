@@ -64,7 +64,7 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
   @Override
   public File convert(final File source, final DocumentFormat inFormat,
-      final FilterOption... options) {
+      final FilterOption<?>... options) {
     final String fileName = FilenameUtils.getBaseName(source.getName()) + '.' + inFormat.name();
     final File destination = new File(FileRepositoryManager.getTemporaryPath() + fileName);
     return convert(source, destination, inFormat, options);
@@ -72,7 +72,7 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
   @Override
   public File convert(final File source, final File destination, final DocumentFormat outFormat,
-      final FilterOption... options) {
+      final FilterOption<?>... options) {
     if (isNotFormatSupported(outFormat)) {
       throw new DocumentFormatException("The conversion of the file to the format " +
           outFormat.toString() + " isn't supported");
@@ -93,7 +93,7 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   @Override
   public void convert(final InputStream source, final DocumentFormat inFormat,
       final OutputStream destination, final DocumentFormat outFormat,
-      final FilterOption... options) {
+      final FilterOption<?>... options) {
     if (isNotFormatSupported(outFormat)) {
       throw new DocumentFormatException("The conversion of the stream to the format " +
           outFormat.toString() + " isn't supported");
@@ -114,17 +114,17 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
     return !Arrays.asList(getSupportedFormats()).contains(format);
   }
 
-  private DocumentConverter getDocumentConverter(final FilterOption... options) {
+  private DocumentConverter getDocumentConverter(final FilterOption<?>... options) {
     OfficeManager manager = service.getOfficeManager();
     LocalConverter.Builder builder = LocalConverter.builder().officeManager(manager);
     if (options.length > 0) {
       final Map<String, Object> filterData = new HashMap<>();
       final Map<String, Object> customProperties = new HashMap<>();
-      for (final FilterOption option : options) {
+      for (final FilterOption<?> option : options) {
         filterData.put(option.getName(), option.getValue());
       }
       customProperties.put("FilterData", filterData);
-      builder = builder.storeProperties(customProperties);
+      builder.storeProperties(customProperties);
     }
     return builder.build();
   }
