@@ -3,5 +3,4 @@ Created-By: Silverpeas
 Dependencies: org.jboss.as.naming,
   org.slf4j,
   org.apache.xerces,
-  org.apache.lucene-7,
   jdk.unsupported

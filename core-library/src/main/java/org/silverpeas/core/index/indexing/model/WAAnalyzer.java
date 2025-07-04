@@ -24,14 +24,13 @@
 package org.silverpeas.core.index.indexing.model;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.fr.FrenchAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
-import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.util.ElisionFilter;
 import org.silverpeas.core.i18n.I18n;
@@ -75,6 +74,7 @@ public final class WAAnalyzer extends Analyzer {
    * @param language the ISO 631-1 code of the language
    * @return an analyser of a text written in the given language.
    */
+  @SuppressWarnings("resource")
   public static Analyzer getAnalyzer(String language) {
     return ofNullable(languageMap.get(language)).orElseGet(() -> {
       final String computedLanguage = ofNullable(language)
@@ -92,10 +92,9 @@ public final class WAAnalyzer extends Analyzer {
    */
   @Override
   protected TokenStreamComponents createComponents(final String s) {
-    final Tokenizer source = new StandardTokenizer();
+    Tokenizer source = new StandardTokenizer();
     // remove 's and . from token
-    TokenStream result = new StandardFilter(source);
-    result = new LowerCaseFilter(result);
+    TokenFilter result = new LowerCaseFilter(source);
     // remove some non-explicit terms
     result = new StopFilter(result, FrenchAnalyzer.getDefaultStopSet());
     // remove [cdjlmnst-qu]' from token

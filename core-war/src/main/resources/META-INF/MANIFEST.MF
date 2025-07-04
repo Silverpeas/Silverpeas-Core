@@ -4,5 +4,4 @@ Dependencies: org.jboss.as.naming,
   org.slf4j,
   org.apache.xerces,
   org.apache.cxf.impl meta-inf,
-  org.apache.cxf services,
-  org.apache.lucene-7
+  org.apache.cxf services
