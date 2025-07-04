@@ -23,9 +23,7 @@
  */
 package org.silverpeas.core.process.io.file;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
@@ -37,6 +35,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.kernel.exception.NotFoundException;
 
 /**
  * This is an handler that permits to perform transactional file manipulations. It has to be used
@@ -47,10 +46,6 @@ import org.silverpeas.core.process.session.ProcessSession;
  */
 public class FileHandler extends AbstractFileHandler {
 
-  /**
-   * Default constructor
-   * @param session
-   */
   protected FileHandler(final ProcessSession session) {
     super(session);
   }
@@ -82,8 +77,9 @@ public class FileHandler extends AbstractFileHandler {
   /**
    * Gets the handled file that represents the file in session path if exists or if the file doesn't
    * exist into destination path. Otherwise it represents the file from the destination path.
-   * @param basePath
+   * @param basePath the base path of the directory from which the file has to be got
    * @param names relative path from basePath param
+   * @return the {@link HandledFile} at the specified location.
    */
   public HandledFile getHandledFile(final FileBasePath basePath, final String... names) {
     return getHandledFile(basePath, new File(basePath.getPath()), names);
@@ -92,10 +88,11 @@ public class FileHandler extends AbstractFileHandler {
   /**
    * Gets the handled file that represents the file in session path if exists or if the file doesn't
    * exist into destination path. Otherwise it represents the file from the destination path.
-   * @param basePath
+   * @param basePath the base path of the directory from which the file has to be got
    * @param file the file or path whose the start of file path is equals to the root file path
    * defined by basePath param
    * @param names relative path from basePath param
+   * @return the {@link HandledFile} at the specified location.
    */
   public HandledFile getHandledFile(final FileBasePath basePath, final File file,
       final String... names) {
@@ -136,7 +133,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   protected InputStream openInputStream(final FileBasePath basePath, final File file)
-      throws Exception {
+      throws IOException {
     verify(basePath, file);
     final File sessionFile = translateToSessionPath(basePath, file);
     if (sessionFile.exists()) {
@@ -156,13 +153,6 @@ public class FileHandler extends AbstractFileHandler {
 
   // -----------------------------------------------------------------------
 
-  /**
-   * Adding this simple method based on listFiles from @see FileUtils
-   * @param basePath
-   * @param directory
-   * @param extensions
-   * @return
-   */
   protected Collection<File> listFiles(final FileBasePath basePath, final File directory,
       final String... extensions) {
     return listFiles(basePath, directory, true, extensions);
@@ -215,13 +205,6 @@ public class FileHandler extends AbstractFileHandler {
     return mergeFileLists(basePath, listFiles, realFiles);
   }
 
-  /**
-   * Centralizes merging treatment between session path content and real path content
-   * @param basePath
-   * @param sessionFiles
-   * @param realFiles
-   * @return
-   */
   private Collection<File> mergeFileLists(final FileBasePath basePath,
       final Collection<File> sessionFiles, final Collection<File> realFiles) {
     final Collection<File> listFiles = new LinkedList<>();
@@ -249,7 +232,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   protected boolean contentEquals(final FileBasePath basePath, final File file1, final File file2)
-      throws Exception {
+      throws IOException {
     verify(basePath, file1);
     verify(basePath, file2);
     return FileUtils.contentEquals(getExistingFile(basePath, file1),
@@ -262,7 +245,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   protected boolean contentEquals(final File file1, final FileBasePath basePath, final File file2)
-      throws Exception {
+      throws IOException {
     verify(basePath, file2);
     return FileUtils.contentEquals(file1, getExistingFile(basePath, file2));
   }
@@ -304,7 +287,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   protected long copyFile(final FileBasePath basePath, final File input, final OutputStream output)
-      throws Exception {
+      throws IOException {
     verify(basePath, input);
     return FileUtils.copyFile(getExistingFile(basePath, input), output);
   }
@@ -351,7 +334,7 @@ public class FileHandler extends AbstractFileHandler {
 
     final Collection<File> files = listFiles(basePath, directory);
     if (files == null) { // null if security restricted
-      throw new Exception("Failed to list contents of " + directory);
+      throw new IOException("Failed to list contents of " + directory);
     }
 
     for (final File file : files) {
@@ -374,7 +357,7 @@ public class FileHandler extends AbstractFileHandler {
   /**
    * @see FileUtils
    */
-  protected String readFileToString(final FileBasePath basePath, final File file) throws Exception {
+  protected String readFileToString(final FileBasePath basePath, final File file) throws IOException {
     return readFileToString(basePath, file, null);
   }
 
@@ -382,7 +365,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   protected String readFileToString(final FileBasePath basePath, final File file,
-      final String encoding) throws Exception {
+      final String encoding) throws IOException {
     verify(basePath, file);
     return FileUtils.readFileToString(getExistingFile(basePath, file), encoding);
   }
@@ -391,7 +374,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   protected byte[] readFileToByteArray(final FileBasePath basePath, final File file)
-      throws Exception {
+      throws IOException {
     verify(basePath, file);
     return FileUtils.readFileToByteArray(getExistingFile(basePath, file));
   }
@@ -399,7 +382,7 @@ public class FileHandler extends AbstractFileHandler {
   /**
    * @see FileUtils
    */
-  protected List<String> readLines(final FileBasePath basePath, final File file) throws Exception {
+  protected List<String> readLines(final FileBasePath basePath, final File file) throws IOException {
     return readLines(basePath, file, null);
   }
 
@@ -407,7 +390,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   protected List<String> readLines(final FileBasePath basePath, final File file,
-      final String encoding) throws Exception {
+      final String encoding) throws IOException {
     verify(basePath, file);
     return FileUtils.readLines(getExistingFile(basePath, file), encoding);
   }
@@ -504,6 +487,7 @@ public class FileHandler extends AbstractFileHandler {
   /**
    * @see FileUtils
    */
+  @SuppressWarnings("SameParameterValue")
   protected void copyInputStreamToFile(final FileBasePath basePath, final File file,
       final InputStream inputStream, final boolean append) throws Exception {
     verify(basePath, file);
@@ -523,6 +507,7 @@ public class FileHandler extends AbstractFileHandler {
   /**
    * @see FileUtils
    */
+  @SuppressWarnings("SameParameterValue")
   protected void writeLines(final FileBasePath basePath, final File file,
       final Collection<?> lines, final boolean append) throws Exception {
     writeLines(basePath, file, null, lines, null, append);
@@ -555,6 +540,7 @@ public class FileHandler extends AbstractFileHandler {
   /**
    * @see FileUtils
    */
+  @SuppressWarnings("SameParameterValue")
   protected void writeLines(final FileBasePath basePath, final File file, final String encoding,
       final Collection<?> lines, final boolean append) throws Exception {
     writeLines(basePath, file, encoding, lines, null, append);
@@ -686,8 +672,12 @@ public class FileHandler extends AbstractFileHandler {
   protected boolean isFileOlder(final FileBasePath basePath, final File file, final File reference) {
     verify(basePath, file);
     verify(basePath, reference);
-    return FileUtils.isFileOlder(getExistingFile(basePath, file),
-        getExistingFile(basePath, reference));
+    try {
+      return FileUtils.isFileOlder(getExistingFile(basePath, file),
+          getExistingFile(basePath, reference));
+    } catch (FileNotFoundException e) {
+      throw new NotFoundException(e.getMessage());
+    }
   }
 
   /**

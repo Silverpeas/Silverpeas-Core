@@ -91,7 +91,8 @@ public class DocumentNodeStoreFactory implements NodeStoreFactory {
                 conf.getNodeCachePercentage(),
                 conf.getPrevDocCachePercentage(),
                 conf.getChildrenCachePercentage(),
-                conf.getDiffCachePercentage())
+                conf.getDiffCachePercentage(),
+                DocumentNodeStoreBuilder.DEFAULT_PREV_NO_PROP_CACHE_PERCENTAGE)
             .setCacheSegmentCount(conf.getCacheSegmentCount())
             .setCacheStackMoveDistance(conf.getCacheStackMoveDistance())
             .setMaxReplicationLag(conf.getMaxReplicationLag(), TimeUnit.SECONDS)
