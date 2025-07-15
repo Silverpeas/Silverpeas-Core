@@ -152,6 +152,11 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addClasses(EntityReference.class);
     addCalendarBaseFeatures();
     addPackages(true, "org.silverpeas.core.util.logging.sys");
+    addMavenDependencies("org.apache.lucene:lucene-core");
+    addMavenDependencies("org.apache.lucene:lucene-queryparser");
+    addMavenDependencies("org.apache.lucene:lucene-queries");
+    addMavenDependencies("org.apache.lucene:lucene-suggest");
+    addMavenDependencies("org.apache.lucene:lucene-analysis-common");
     addMavenDependencies("org.apache.tika:tika-core");
     addMavenDependencies("org.apache.tika:tika-parsers-standard-package");
     addMavenDependencies("com.drewnoakes:metadata-extractor");
