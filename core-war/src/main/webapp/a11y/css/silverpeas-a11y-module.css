@@ -25,7 +25,7 @@
 .sp-a11y-module .sp-a11y-open-menu,
 .sp-a11y-module .sp-a11y-close-menu {
   display: block;
-  background: #0274be url(../icons/human.svg) center center no-repeat;
+  background: #0274be center center no-repeat;
   background-image: url(../icons/human.svg) !important;
   background-size: 3em auto;
   border: 2px solid #FFF;
@@ -63,11 +63,11 @@
     font-size: 1em;
     border-bottom: 1px solid rgb(0 0 0 / 0.2);
 
-    &.selected a {
+    &.selected button {
       font-weight: bold !important;
     }
 
-    &.selected a::after {
+    &.selected button::after {
       content: '×';
       font-size: 28px;
       display: block;
@@ -77,20 +77,22 @@
       right: 0.05em;
     }
 
-    & a {
+    & button {
       display: block;
+      width: 100%;
       padding: 1.25em 2em 1.25em 4.25em;
       position: relative;
+      border: 0;
     }
 
-    & a:hover {
+    & button:hover {
       background-color: #000 !important;
       color: #FFF !important;
     }
   }
 }
 
-.sp-a11y-menu a::before {
+.sp-a11y-menu button::before {
   width: 3.75em;
   height: 100%;
   content: ' ';
@@ -101,24 +103,24 @@
   bottom: 0;
 }
 
-#contrast-gl a::before {
+#contrast-gl button::before {
   background: #FFF url(../icons/packA11y.png) center 8px no-repeat;
 }
 
-#contrast-hc a::before {
+#contrast-hc button::before {
   background: #FFF url(../icons/packA11y.png) center -55px no-repeat;
 }
 
-#contrast-nhc a::before {
+#contrast-nhc button::before {
   background: #000 url(../icons/packA11y.png) center -113px no-repeat;
 }
 
-#font-b a::before {
+#font-b button::before {
   background: #FFF url(../icons/packA11y.png) center -173px no-repeat;
 }
 
 
-#click-zone-e a::before {
+#click-zone-e button::before {
   content: ' Link ';
   margin: 0.25em;
   border: 1px dashed #1a0dab;
@@ -131,45 +133,45 @@
   height: calc(100% - 1em);
 }
 
-#links-u a::before {
+#links-u button::before {
   content: ' Link ';
   line-height: 3.5em;
   text-align: center;
   text-decoration: underline;
 }
 
-html[xml\:lang="fr"] #click-zone-e a::before,
-html[xml\:lang="fr"] #links-u a::before {
+html[xml\:lang="fr"] #click-zone-e button::before,
+html[xml\:lang="fr"] #links-u button::before {
   content: ' Lien ';
 }
 
-html[xml\:lang="de"] #click-zone-e a::before,
-html[xml\:lang="de"] #links-u a::before {
+html[xml\:lang="de"] #click-zone-e button::before,
+html[xml\:lang="de"] #links-u button::before {
   content: ' Link ';
 }
 
-html[xml\:lang="es"] #click-zone-e a::before,
-html[xml\:lang="es"] #links-u a::before {
+html[xml\:lang="es"] #click-zone-e button::before,
+html[xml\:lang="es"] #links-u button::before {
   content: ' Enlace ';
 }
 
-html[xml\:lang="ru"] #click-zone-e a::before,
-html[xml\:lang="ru"] #links-u a::before {
+html[xml\:lang="ru"] #click-zone-e button::before,
+html[xml\:lang="ru"] #links-u button::before {
   content: ' Cсылка ';
 }
 
-.a11y-big-font #contrast-gl a::before {
+.a11y-big-font #contrast-gl button::before {
   background-position: center 33px;
 }
 
-.a11y-big-font #contrast-hc a::before {
+.a11y-big-font #contrast-hc button::before {
   background-position: center -29px;
 }
 
-.a11y-big-font #contrast-nhc a::before {
+.a11y-big-font #contrast-nhc button::before {
   background-position: center -93px;
 }
 
-.a11y-big-font #font-b a::before {
+.a11y-big-font #font-b button::before {
   background-position: center -153px;
 }

@@ -24,16 +24,10 @@
 
 .a11y-contrast-grey-level {
   filter: grayscale(100%);
-  -webkit-filter: grayscale(100%);
-  -webkit-filter: grayscale(1);
-  -moz-filter: grayscale(100%);
-  -ms-filter: grayscale(100%);
-  -o-filter: grayscale(100%);
-  filter: gray
 }
 
 .a11y-underlined-links {
-  & a {
+  & button {
     text-decoration: underline !important;
     color: blue !important
   }
@@ -86,7 +80,7 @@
     background-color: #FFF !important;
   }
 
-  & button,
+  & button[type*="ubmit"],
   & input,
   & select,
   & textarea,
@@ -149,7 +143,7 @@
   & .sp_button,
   & #menutoggle,
   & .link-more,
-  & button,
+  & button[type*="ubmit"],
   & #list-news-lecteur-view li,
   & .bgDegradeGris.header,
   & .bgDegradeGris .header {
@@ -198,6 +192,7 @@
 /** NEGATIVE HIGH CONTRAST **/
 
 .a11y-negative-high-contrast {
+
   background-image: none;
   color: yellow !important;
   font-weight: 500 !important;
@@ -243,7 +238,7 @@
     background-image: none !important;
   }
 
-  & button,
+  & button[type*="ubmit"],
   & input,
   & select,
   & textarea,
@@ -314,7 +309,7 @@
   & .sp_button,
   & #menutoggle,
   & .link-more,
-  & button,
+  & button[type*="ubmit"],
   & #list-news-lecteur-view li {
     background-color: #000 !important;
     background-image: none !important;
@@ -426,6 +421,12 @@
 
 .a11y-enlarged-click-zone {
   & a {
+    display: inline-block;
+    padding: 1em;
+    border: 1px dashed blue !important;
+  }
+
+  & button {
     display: inline-block;
     padding: 1em;
     border: 1px dashed blue !important;

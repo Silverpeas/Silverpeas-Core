@@ -48,9 +48,9 @@
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="menu">
-  <a href="javascript:void(0)" class="sp-a11y-open-menu" title="${openMenuLabel}"
+  <button type="button" class="sp-a11y-open-menu" title="${openMenuLabel}"
      v-bind:style="{'display':(isClosed?'block':'none')}"
-     v-on:click="open"><span>${openMenuLabel}</span></a>
+     v-on:click="open"><span>${openMenuLabel}</span></button>
   <silverpeas-slide-transition-group v-if="'${slideType}' !== 'none'" slide-type="${slideType}" v-on:leave="onLeave">
     <div v-if="isOpen">
       <silverpeas-a11y-menu-open v-bind:definitions="definitions"
@@ -73,8 +73,8 @@
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="menu-open">
-    <a href="javascript:void(0)" class="sp-a11y-close-menu" title="${closeMenuLabel}"
-       v-on:click="$emit('close')"><span>${closeMenuLabel}</span></a>
+    <button type="button" class="sp-a11y-close-menu" title="${closeMenuLabel}"
+       v-on:click="$emit('close')"><span>${closeMenuLabel}</span></button>
     <ul class="sp-a11y-menu">
       <template v-for="definition in definitions"
                 v-bind:key="definition.id">
@@ -94,8 +94,8 @@
 <silverpeas-component-template name="definition-value">
   <li v-bind:id="id" class="sp-a11y-menu-definition-value"
       v-bind:class="{'selected':selected}">
-    <a href="javascript:void(0)"
+    <button type="button"
        v-on:click="selectOrUnselect"
-       v-html="value.label"></a>
+       v-html="value.label"></button>
   </li>
 </silverpeas-component-template>
