@@ -91,7 +91,7 @@
   cursor: pointer;
 }
 
-.map-marker a {
+.map-marker a, .map-marker button {
   font-size: 1.2em;
   font-weight: bold;
   color: white;

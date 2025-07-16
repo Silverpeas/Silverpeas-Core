@@ -33,7 +33,7 @@
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="marker">
   <div class="map-marker" v-bind:class="cssClassList" v-bind:style="styles" v-on:click="toggleWindow">
-    <a href="javascript:void(0)" v-html="marker.getLabel()"></a>
+    <button type="button" class="link" v-html="marker.getLabel()"></button>
     <div class="pointer"></div>
   </div>
 </silverpeas-component-template>
@@ -41,7 +41,8 @@
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="tip-marker">
   <div class="map-tip-marker">
-    <a class="map-tip-marker-button" href="javascript:void(0)" v-on:click="toggleWindow"></a>
+    <button type="button" class="link map-tip-marker-button"
+             v-on:click="toggleWindow"></button>
     <div class="map-tip-marker-content" v-on:click="setCurrentClass"><slot></slot></div>
   </div>
 </silverpeas-component-template>

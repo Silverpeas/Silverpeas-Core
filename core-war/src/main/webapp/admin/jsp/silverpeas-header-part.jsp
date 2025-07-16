@@ -79,7 +79,7 @@
 <view:includePlugin name="userNotification"/>
 <view:includePlugin name="basketSelection"/>
 <view:includePlugin name="ticker" />
-<style type="text/css">
+<style>
   #shortcuts {
     bottom: 25px;
     position: absolute;
@@ -101,7 +101,7 @@
 <view:loadScript src="/util/javaScript/lookV5/topBar.js"/>
 <script type="text/javascript">
   function goToHome() {
-    var params = {"FromTopBar" : '1'};
+    const params = {"FromTopBar": '1'};
     <%if (goToFavoriteSpaceOnHomeLink) {%>
     params.SpaceId = "<%=m_MainSessionCtrl.getFavoriteSpace()%>";
     <%}%>
@@ -126,12 +126,12 @@
   <c:if test="${displayConnectedUsers}">
   window.USERSESSION_PROMISE.then(function() {
     spUserSession.addEventListener('connectedUsersChanged', function(event) {
-      var nb = event.detail.data.nb;
-      var $container = jQuery("#connectedUsers");
+      const nb = event.detail.data.nb;
+      const $container = jQuery("#connectedUsers");
       if (nb <= 0) {
         $container.hide();
       } else {
-        var label = " ${labelConnectedUsers}";
+        let label = " ${labelConnectedUsers}";
         if (nb === 1) {
           label = " ${labelConnectedUser}";
         }
@@ -160,7 +160,8 @@
     <div class="userNav">
       <c:if test="${not isAnonymousAccess and not isAccessGuest}">
         <span id="connectedUsers" style="display:none">
-          <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
+          <button class="link"
+                  onclick="spUserSession.viewConnectedUsers();"></button>
           <span> | </span>
         </span>
         <div id="header-user-notifications" class="silverpeas-user-notifications">
@@ -168,7 +169,7 @@
                                          one-unread-label="${labelUnreadUserNotification}"
                                          several-unread-label="${labelUnreadUserNotifications}">
             <span>
-              <a href="javascript:void(0)"></a>
+              <button class="link"></button>
               <span> | </span>
             </span>
           </silverpeas-user-notifications>
@@ -176,7 +177,7 @@
         <div id="header-basket-selection" class="silverpeas-basket-selection">
           <silverpeas-basket-selection v-on:api="setApi">
             <span>
-              <a href="javascript:void(0)"></a>
+              <button class="link"></button>
               <span> | </span>
             </span>
           </silverpeas-basket-selection>
@@ -232,10 +233,11 @@
 
   <% if (!topItems.isEmpty()) { %>
   <div id="shortcuts">
-    <table border="0" cellspacing="0" cellpadding="0">
+    <table>
+      <th></th>
       <tr>
         <td class="gaucheShortcuts">&nbsp;</td>
-        <td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
+        <td style="white-space: nowrap;"><img alt="space" src="${icon_px}" width="40" height="1"/></td>
         <%
           for ( TopItem item :topItems) {
             //le composant est-il celui selectionne ?
@@ -243,8 +245,9 @@
             if (item.getId().equals(currentComponentId) || item.getId().equals(currentSpaceId))
               cssStyle = "activeShortcut";
         %>
-        <td nowrap="nowrap" align="center" id="item<%=item.getId()%>" class="<%=cssStyle%>"><nobr><a href="javaScript:goToItem('<%=m_sContext%><%=item.getUrl()%>', '<%=item.getId()%>');"><%=item.getLabel()%></a></nobr></td>
-        <td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
+        <td style="white-space: nowrap;" id="item<%=item.getId()%>" class="<%=cssStyle%>"><span
+                style="white-space: nowrap;"><a href="javaScript:goToItem('<%=m_sContext%><%=item.getUrl()%>', '<%=item.getId()%>');"><%=item.getLabel()%></a></span></td>
+        <td style="white-space: nowrap;"><img alt="space" src="${icon_px}" width="40" height="1"/></td>
         <% } %>
         <td class="droiteShortcuts">&nbsp;</td>
       </tr>
@@ -254,10 +257,11 @@
 
   <% if(helper.isBackOfficeVisible()) { %>
   <div id="administration">
-    <table border="0" cellspacing="0" cellpadding="0">
+    <table>
+      <th></th>
       <tr>
         <td>
-          <a href="javascript:void(0)" onclick="spWindow.loadAdminHomePage();"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
+          <button class=link" type="button" onclick="spWindow.loadAdminHomePage();"><%=helper.getString("lookSilverpeasV5.backOffice")%></button>
         </td>
       </tr>
     </table>
