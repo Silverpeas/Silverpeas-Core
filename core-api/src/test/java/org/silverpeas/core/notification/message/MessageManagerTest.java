@@ -45,13 +45,13 @@ import static org.hamcrest.Matchers.*;
 class MessageManagerTest {
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     MessageManager.initialize();
     assertThat(getMessageContainer().getMessages(), emptyIterable());
   }
 
   @AfterEach
-  public void tearDown() {
+  void tearDown() {
     MessageManager.clear(MessageManager.getRegistredKey());
     MessageManager.destroy();
   }

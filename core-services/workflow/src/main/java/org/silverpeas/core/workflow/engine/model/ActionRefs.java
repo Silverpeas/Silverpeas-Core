@@ -53,38 +53,21 @@ public class ActionRefs implements Serializable, AllowedActions {
     actionRefList = new ArrayList<>();
   }
 
-  /*
-   * (non-Javadoc)
-   * @seecom.silverpeas.workflow.api.model.AllowedActions#addAllowedAction(com.
-   * silverpeas.workflow.api.model.AllowedAction)
-   */
   @Override
   public void addAllowedAction(AllowedAction allowedAction) {
     actionRefList.add(allowedAction);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AllowedActions#createAllowedAction()
-   */
   @Override
   public AllowedAction createAllowedAction() {
     return new ActionRef();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AllowedActions#iterateAllowedAction()
-   */
   @Override
   public Iterator<AllowedAction> iterateAllowedAction() {
     return actionRefList.iterator();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AllowedActions#getAllowedActions()
-   */
   @Override
   public Action[] getAllowedActions() {
     if (actionRefList == null) {
@@ -100,10 +83,6 @@ public class ActionRefs implements Serializable, AllowedActions {
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AllowedActions#getAllowedAction(java. lang.String)
-   */
   @Override
   public AllowedAction getAllowedAction(String strActionName) {
     AllowedAction allowedAction = new ActionRef();

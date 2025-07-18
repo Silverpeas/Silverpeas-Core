@@ -85,7 +85,6 @@ public interface Presentation extends Serializable {
   /**
    * Delete the Columns object with the given name
    * @param strRoleName the name of the Columns object (a role name)
-   * @throws WorkflowException when the Columns for the given name have not been found.
    */
-  void deleteColumns(String strRoleName) throws WorkflowException;
+  void deleteColumns(String strRoleName);
 }

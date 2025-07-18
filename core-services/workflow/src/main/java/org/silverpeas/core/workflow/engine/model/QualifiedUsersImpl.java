@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.QualifiedUsers;
 import org.silverpeas.core.workflow.api.model.RelatedGroup;
 import org.silverpeas.core.workflow.api.model.RelatedUser;
@@ -33,7 +32,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -43,7 +41,7 @@ import java.util.Vector;
  * &lt;notifiedUsers&gt; and &lt;interestedUsers&gt; elements of a Process Model.
  **/
 @XmlAccessorType(XmlAccessType.NONE)
-public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
+public class QualifiedUsersImpl implements QualifiedUsers {
 
   private static final long serialVersionUID = -6137211965745730173L;
   @XmlElement(name = "userInRole", type = UserInRoleImpl.class)
@@ -74,6 +72,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * Get the userInRoles
    * @return the userInRoles as a Vector
    */
+  @Override
   public UserInRole getUserInRole(String strRoleName) {
     UserInRole userInRole = new UserInRoleImpl();
     userInRole.setRoleName(strRoleName);
@@ -91,7 +90,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    */
   @Override
   public UserInRole[] getUserInRoles() {
-    return userInRoleList.toArray(new UserInRole[userInRoleList.size()]);
+    return userInRoleList.toArray(new UserInRole[0]);
   }
 
   /*
@@ -137,7 +136,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    */
   @Override
   public RelatedUser[] getRelatedUsers() {
-    return relatedUserList.toArray(new RelatedUser[relatedUserList.size()]);
+    return relatedUserList.toArray(new RelatedUser[0]);
   }
 
   /**
@@ -187,12 +186,8 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * @see QualifiedUsers#removeRelatedUser(RelatedUser )
    */
   @Override
-  public void removeRelatedUser(RelatedUser reference) throws WorkflowException {
-    if (!relatedUserList.remove(reference)) {
-      throw new WorkflowException("QualifiedUsersImpl.removeRelatedUser()",
-          "workflowEngine.EX_RELATED_USER_NOT_FOUND", reference == null ? "<null>" : reference.
-          getRelation() + ", " + reference.getRole());
-    }
+  public void removeRelatedUser(RelatedUser reference) {
+    relatedUserList.remove(reference);
   }
 
   /**

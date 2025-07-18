@@ -57,10 +57,8 @@ public interface ContextualDesignations extends Serializable {
    * Remove a matching contextualDesignation from the collection. The collection shall be searched
    * for a Designation with the same language and role.
    * @param contextualDesignation a model of the contextualDesignation to be removed.
-   * @throws WorkflowException when a matching contextualDescription could not be found.
    */
-  void removeContextualDesignation(ContextualDesignation contextualDesignation) throws
-      WorkflowException;
+  void removeContextualDesignation(ContextualDesignation contextualDesignation);
 
   /**
    * Get the designation for the given role and language; make an exact match, do not fall-back to

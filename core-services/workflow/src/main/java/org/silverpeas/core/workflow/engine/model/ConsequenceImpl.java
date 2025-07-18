@@ -23,19 +23,10 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
+import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.workflow.api.model.Consequence;
-import org.silverpeas.core.workflow.api.model.QualifiedUsers;
-import org.silverpeas.core.workflow.api.model.State;
-import org.silverpeas.core.workflow.api.model.StateSetter;
-import org.silverpeas.core.workflow.api.model.Triggers;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -45,7 +36,7 @@ import java.util.Vector;
  */
 @XmlRootElement(name = "consequence")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ConsequenceImpl implements Consequence, Serializable {
+public class ConsequenceImpl implements Consequence {
 
   private static final long serialVersionUID = -905677587105320693L;
   @XmlAttribute
@@ -76,10 +67,7 @@ public class ConsequenceImpl implements Consequence, Serializable {
     kill = false;
   }
 
-  /*
-   * (non-Javadoc) @see Consequence#getTargetState(java.lang.
-   * String)
-   */
+  @Override
   public State getTargetState(String strStateName) {
     return getState(strStateName, targetStateList);
   }
@@ -93,10 +81,7 @@ public class ConsequenceImpl implements Consequence, Serializable {
     return null;
   }
 
-  /**
-   * Get the target states
-   * @return the target states as a Vector
-   */
+  @Override
   public State[] getTargetStates() {
     return getStates(targetStateList);
   }
@@ -115,96 +100,61 @@ public class ConsequenceImpl implements Consequence, Serializable {
     return states;
   }
 
-  /*
-   * (non-Javadoc) @see Consequence#addTargetState(com.silverpeas
-   * .workflow.api.model.StateSetter)
-   */
+  @Override
   public void addTargetState(StateSetter stateSetter) {
     targetStateList.add(stateSetter);
   }
 
-  /*
-   * (non-Javadoc) @see Consequence#getUnsetState(java.lang.String
-   * )
-   */
+  @Override
   public State getUnsetState(String strStateName) {
     return getState(strStateName, unsetStateList);
   }
 
-  /**
-   * Get the states to unset
-   * @return the states to unset as a Vector
-   */
+  @Override
   public State[] getUnsetStates() {
     return getStates(unsetStateList);
   }
 
-  /*
-   * (non-Javadoc) @see Consequence#addUnsetState(com.silverpeas
-   * .workflow.api.model.StateSetter)
-   */
+  @Override
   public void addUnsetState(StateSetter stateSetter) {
     unsetStateList.add(stateSetter);
   }
 
-  /**
-   * Get the flag that specifies if instance has to be removed
-   * @return true if instance has to be removed
-   */
+  @Override
   public boolean getKill() {
     return kill;
   }
 
-  /**
-   * Set the flag that specifies if instance has to be removed
-   * @param kill true if instance has to be removed
-   */
+  @Override
   public void setKill(boolean kill) {
     this.kill = kill;
   }
 
-  /**
-   * Get all the users that have to be notified
-   * @return QualifiedUsers object containing notified users
-   */
+  @Override
   public List<QualifiedUsers> getNotifiedUsers() {
     return this.notifiedUsersList;
   }
 
-  /**
-   * Set all the users that have to be notified
-   * @param notifiedUsersList object containing notified users
-   */
+  @Override
   public void setNotifiedUsers(List<QualifiedUsers> notifiedUsersList) {
     this.notifiedUsersList = notifiedUsersList;
   }
-  
-  /*
-   * (non-Javadoc) @see Consequence#getItem()
-   */
+
+  @Override
   public String getItem() {
     return item;
   }
 
-  /*
-   * (non-Javadoc) @see Consequence#getOperator()
-   */
+  @Override
   public String getOperator() {
     return operator;
   }
 
-  /*
-   * (non-Javadoc) @see Consequence#getValue()
-   */
+  @Override
   public String getValue() {
     return value;
   }
 
-  /**
-   * Check if the consequence is verified or not
-   * @param itemValue - the value of the folder item (specified in xml attribute 'item'
-   * @return true if the consequence is verified
-   */
   @Override
   public boolean isVerified(String itemValue) {
     if (getItem() == null && getOperator() == null && getValue() == null) {
@@ -228,67 +178,99 @@ public class ConsequenceImpl implements Consequence, Serializable {
       }
     }
 
-    if (getValue() != null && getValue().length() == 0) {
+    if (getValue() != null && getValue().isEmpty()) {
       processValueAsInt = false;
       processValueAsString = true;
     }
 
+    return processOperator(itemValue, processValueAsString, processValueAsInt, iValue, fValue);
+  }
+
+  private boolean processOperator(String itemValue, boolean processValueAsString, boolean processValueAsInt, int iValue, float fValue) {
     if ("=".equals(getOperator())) {
-      if (processValueAsString) {
-        return itemValue.equalsIgnoreCase(getValue());
-      } else if (processValueAsInt) {
-        return iValue == getValueAsInt();
-      } else {
-        return Float.compare(fValue, getValueAsFloat()) == 0;
-      }
+      return processEquals(itemValue, processValueAsString, processValueAsInt, iValue, fValue);
     } else if ("!=".equals(getOperator())) {
-      if (processValueAsString) {
-        return !itemValue.equalsIgnoreCase(getValue());
-      } else if (processValueAsInt) {
-        return iValue != getValueAsInt();
-      } else {
-        return Float.compare(fValue, getValueAsFloat()) != 0;
-      }
+      return processInequals(itemValue, processValueAsString, processValueAsInt, iValue, fValue);
     } else if (getOperator().equals(">")) {
-      if (processValueAsString) {
-        return itemValue.compareTo(getValue()) > 0;
-      } else if (processValueAsInt) {
-        return iValue > getValueAsInt();
-      } else {
-        return Float.compare(fValue, getValueAsFloat()) > 0;
-      }
+      return processGreater(itemValue, processValueAsString, processValueAsInt, iValue, fValue);
     } else if (getOperator().equals(">=")) {
-      if (processValueAsString) {
-        return itemValue.compareTo(getValue()) >= 0;
-      } else if (processValueAsInt) {
-        return iValue >= getValueAsInt();
-      } else {
-        return Float.compare(fValue, getValueAsFloat()) >= 0;
-      }
+      return processGreaterOrEquals(itemValue, processValueAsString, processValueAsInt, iValue, fValue);
     } else if (getOperator().equals("<")) {
-      if (processValueAsString) {
-        return itemValue.compareTo(getValue()) < 0;
-      } else if (processValueAsInt) {
-        return iValue < getValueAsInt();
-      } else {
-        return Float.compare(fValue, getValueAsFloat()) < 0;
-      }
+      return processLesser(itemValue, processValueAsString, processValueAsInt, iValue, fValue);
     } else if (getOperator().equals("<=")) {
-      if (processValueAsString) {
-        return itemValue.compareTo(getValue()) <= 0;
-      } else if (processValueAsInt) {
-        return iValue <= getValueAsInt();
-      } else {
-        return Float.compare(fValue, getValueAsFloat()) <= 0;
-      }
+      return processLesserOrEquals(itemValue, processValueAsString, processValueAsInt, iValue, fValue);
     } else if (getOperator().equals("contains")) {
-      if (processValueAsString) {
-        return itemValue.contains(getValue());
-      }
-      return false;
+      return processContains(itemValue, processValueAsString);
     }
 
     return false;
+  }
+
+  private boolean processContains(String itemValue, boolean processValueAsString) {
+    if (processValueAsString) {
+      return itemValue.contains(getValue());
+    }
+    return false;
+  }
+
+  private boolean processLesserOrEquals(String itemValue, boolean processValueAsString, boolean processValueAsInt, int iValue, float fValue) {
+    if (processValueAsString) {
+      return itemValue.compareTo(getValue()) <= 0;
+    } else if (processValueAsInt) {
+      return iValue <= getValueAsInt();
+    } else {
+      return Float.compare(fValue, getValueAsFloat()) <= 0;
+    }
+  }
+
+  private boolean processLesser(String itemValue, boolean processValueAsString, boolean processValueAsInt, int iValue, float fValue) {
+    if (processValueAsString) {
+      return itemValue.compareTo(getValue()) < 0;
+    } else if (processValueAsInt) {
+      return iValue < getValueAsInt();
+    } else {
+      return Float.compare(fValue, getValueAsFloat()) < 0;
+    }
+  }
+
+  private boolean processGreaterOrEquals(String itemValue, boolean processValueAsString, boolean processValueAsInt, int iValue, float fValue) {
+    if (processValueAsString) {
+      return itemValue.compareTo(getValue()) >= 0;
+    } else if (processValueAsInt) {
+      return iValue >= getValueAsInt();
+    } else {
+      return Float.compare(fValue, getValueAsFloat()) >= 0;
+    }
+  }
+
+  private boolean processGreater(String itemValue, boolean processValueAsString, boolean processValueAsInt, int iValue, float fValue) {
+    if (processValueAsString) {
+      return itemValue.compareTo(getValue()) > 0;
+    } else if (processValueAsInt) {
+      return iValue > getValueAsInt();
+    } else {
+      return Float.compare(fValue, getValueAsFloat()) > 0;
+    }
+  }
+
+  private boolean processInequals(String itemValue, boolean processValueAsString, boolean processValueAsInt, int iValue, float fValue) {
+    if (processValueAsString) {
+      return !itemValue.equalsIgnoreCase(getValue());
+    } else if (processValueAsInt) {
+      return iValue != getValueAsInt();
+    } else {
+      return Float.compare(fValue, getValueAsFloat()) != 0;
+    }
+  }
+
+  private boolean processEquals(String itemValue, boolean processValueAsString, boolean processValueAsInt, int iValue, float fValue) {
+    if (processValueAsString) {
+      return itemValue.equalsIgnoreCase(getValue());
+    } else if (processValueAsInt) {
+      return iValue == getValueAsInt();
+    } else {
+      return Float.compare(fValue, getValueAsFloat()) == 0;
+    }
   }
 
   private float getValueAsFloat() {
@@ -309,10 +291,12 @@ public class ConsequenceImpl implements Consequence, Serializable {
     operator = string;
   }
 
+  @Override
   public void setValue(String string) {
     value = string;
   }
 
+  @Override
   public Triggers getTriggers() {
     return triggers;
   }

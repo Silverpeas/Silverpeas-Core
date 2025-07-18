@@ -43,7 +43,7 @@ public interface FunctionHandler {
    * @throws WorkflowDesignerException when something goes wrong
    * @throws WorkflowException when something goes wrong
    */
-  public String getDestination(String function,
+  String getDestination(String function,
       WorkflowDesignerSessionController workflowDesignerSC,
       HttpServletRequest request) throws WorkflowDesignerException,
       WorkflowException;

@@ -23,17 +23,11 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.TimeOutAction;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 /**
  * Representation of the &lt;timeoutAction&gt; element of a Process Model.
@@ -41,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "timeOutAction")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TimeOutActionImpl implements TimeOutAction, Serializable {
+public class TimeOutActionImpl implements TimeOutAction {
 
   private static final long serialVersionUID = -7434214806057433378L;
   @XmlIDREF

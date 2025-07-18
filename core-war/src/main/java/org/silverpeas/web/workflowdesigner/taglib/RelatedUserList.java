@@ -23,46 +23,40 @@
  */
 package org.silverpeas.web.workflowdesigner.taglib;
 
-import org.silverpeas.core.util.WebEncodeHelper;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Iterator;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.core.workflow.api.model.RelatedUser;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
 import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
-import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
+import org.silverpeas.core.workflow.api.model.RelatedUser;
+
+import javax.servlet.jsp.JspException;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Iterator;
 
 /**
  * Class implementing the tag &lt;relatedUserList&gt; from workflowEditor.tld
  */
-public class RelatedUserList extends TagSupport {
+@SuppressWarnings("unused")
+public class RelatedUserList extends WorkflowTagSupport {
   private static final long serialVersionUID = 5328962749360952253L;
-  private String strContext, strCurrentScreen;
+  private String strContext;
+  private String strCurrentScreen;
   private Iterator<RelatedUser> iterRelatedUser;
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
-   */
+  @Override
   public int doStartTag() throws JspException {
-    String strEditURL, strPaneTitle, strParticipant = "", strFolderItem = "", strRelation = "", strRole =
-        "", strContextEncoded, strParametersEncoded;
-
     try {
       GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
           "SessionGraphicElementFactory");
       MultiSilverpeasBundle resource = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
           "resources");
-      strPaneTitle = resource.getString("workflowDesigner.list.relatedUser");
-      strContextEncoded = URLEncoder.encode(strContext + "/relatedUser", "UTF-8");
+      String strPaneTitle = resource.getString("workflowDesigner.list.relatedUser");
+      String strContextEncoded = URLEncoder.encode(strContext + "/relatedUser", Charsets.UTF_8);
 
       ArrayPane relatedUserPane = gef.getArrayPane("relatedUserList", strCurrentScreen,
           pageContext.getRequest(), pageContext.getSession());
@@ -75,67 +69,56 @@ public class RelatedUserList extends TagSupport {
       ArrayColumn column = relatedUserPane.addArrayColumn(resource.getString("GML.operations"));
       column.setSortable(false);
 
-      StringBuilder sb = new StringBuilder(2000);
       while (iterRelatedUser.hasNext()) {
         RelatedUser relatedUser = iterRelatedUser.next();
-        sb.setLength(0);
-        sb.append("?context=");
-        sb.append(strContextEncoded);
+        String modifParams = "?context=" + strContextEncoded;
+        String removalParams = "{context: '" + strContextEncoded + "'";
+
+        String strParticipant;
         if (relatedUser.getParticipant() != null) {
           strParticipant = relatedUser.getParticipant().getName();
-          sb.append("&participant=");
-          sb.append(URLEncoder.encode(strParticipant, "UTF-8"));
+          modifParams += "&participant=" + URLEncoder.encode(strParticipant, Charsets.UTF_8);
+          removalParams += ", participants: '" + URLEncoder.encode(strParticipant, Charsets.UTF_8) + "'";
         } else {
           strParticipant = "";
         }
 
+        String strFolderItem;
         if (relatedUser.getFolderItem() != null) {
           strFolderItem = relatedUser.getFolderItem().getName();
-          sb.append("&folderItem=");
-          sb.append(URLEncoder.encode(strFolderItem, "UTF-8"));
+          modifParams += "&folderItem=" + URLEncoder.encode(strFolderItem, Charsets.UTF_8);
+          removalParams += ", folderItems: '" + URLEncoder.encode(strFolderItem, Charsets.UTF_8) + "'";
         } else {
           strFolderItem = "";
         }
 
+        String strRelation;
         if (relatedUser.getRelation() != null) {
           strRelation = relatedUser.getRelation();
-          sb.append("&relation=");
-          sb.append(URLEncoder.encode(strRelation, "UTF-8"));
+          modifParams += "&relation=" + URLEncoder.encode(strRelation, Charsets.UTF_8);
+          removalParams += ", relations: '" + URLEncoder.encode(strRelation, Charsets.UTF_8) + "'";
         } else {
           strRelation = "";
         }
 
+        String strRole;
         if (relatedUser.getRole() != null) {
           strRole = relatedUser.getRole();
-          sb.append("&role=");
-          sb.append(URLEncoder.encode(strRole, "UTF-8"));
+          modifParams += "&role=" + URLEncoder.encode(strRole, Charsets.UTF_8);
+          removalParams += ", roles: '" + URLEncoder.encode(strRole, Charsets.UTF_8) + "'";
         } else {
           strRole = "";
         }
 
-        strParametersEncoded = sb.toString();
-        strEditURL = "ModifyRelatedUser" + strParametersEncoded;
+        String strEditURL = "ModifyRelatedUser" + modifParams;
+        String strRemoveJS = "javascript:confirmRemove('RemoveRelatedUser', "
+            + removalParams + ", '" + resource.getString("workflowDesigner.confirmRemoveJS")
+            + " "
+            + WebEncodeHelper.javaStringToJsString(resource.getString("workflowDesigner.relatedUser"))
+            + " ?');";
 
-        // Create the remove link
-        //
-        sb.setLength(0);
-        sb.append("javascript:confirmRemove('RemoveRelatedUser");
-        sb.append(strParametersEncoded);
-        sb.append("', '");
-        sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
-        sb.append(" ");
-        sb.append(WebEncodeHelper.javaStringToJsString(resource
-            .getString("workflowDesigner.relatedUser")));
-        sb.append(" ?');");
+        IconPane iconPane = addIconPane(gef, resource, strEditURL, strRemoveJS);
 
-        IconPane iconPane = gef.getIconPane();
-        Icon updateIcon = iconPane.addIcon();
-        Icon delIcon = iconPane.addIcon();
-        updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"), resource
-            .getString("GML.modify"), strEditURL);
-        delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
-            resource.getString("GML.delete"), sb.toString());
-        iconPane.setSpacing("30px");
         ArrayLine row = relatedUserPane.addArrayLine();
         row.addArrayCellLink(strParticipant, strEditURL);
         row.addArrayCellLink(strFolderItem, strEditURL);

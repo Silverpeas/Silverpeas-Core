@@ -26,19 +26,14 @@ package org.silverpeas.core.workflow.engine.model;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Item;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
 
 /**
  * Class implementing the representation of the &lt;column&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "column")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ColumnImpl implements Column, Serializable {
+public class ColumnImpl implements Column {
   private static final long serialVersionUID = 3766121048611753846L;
 
   @XmlIDREF

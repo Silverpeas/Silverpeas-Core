@@ -25,6 +25,7 @@ package org.silverpeas.core.workflow.api.model;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
@@ -34,7 +35,7 @@ import java.util.Iterator;
  * <li>&lt;interestedUsers&gt;</li>
  * </ul>
  */
-public interface QualifiedUsers {
+public interface QualifiedUsers extends Serializable {
   /**
    * Get the userInRoles
    * @return the userInRoles as an array
@@ -99,9 +100,8 @@ public interface QualifiedUsers {
   /**
    * Remove a RelatedUser from the collection
    * @param reference the reference of the RelatedUser to be removed
-   * @throws WorkflowException when something goes wrong
    */
-  void removeRelatedUser(RelatedUser reference) throws WorkflowException;
+  void removeRelatedUser(RelatedUser reference);
 
   /**
    * Get the related groups

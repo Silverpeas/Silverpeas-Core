@@ -78,6 +78,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="java.io.UnsupportedEncodingException"%>
 <%@ page import="java.net.URLEncoder"%>
+<%@ page import="java.nio.charset.StandardCharsets"%>
 
 
 <%@ page import="java.util.ArrayList"%>
@@ -117,8 +118,7 @@ ArrayCellRadio  cellRadio;
  String componentId = browseContext[3];
 %>
 
-<%! public static final String UTF8 = "UTF-8";
-
+<%!
     public void addContextualDesignation( OperationPane    operationPane,
                                           MultiSilverpeasBundle resource,
                                           String           strContext,
@@ -130,9 +130,9 @@ ArrayCellRadio  cellRadio;
             operationPane.addOperation(resource.getIcon("workflowDesigner.add"),
                                        resource.getString(strAddActionKey),
                                        "AddContextualDesignation?context="
-                                       + URLEncoder.encode( strContext, UTF8 )
+                                       + URLEncoder.encode( strContext, StandardCharsets.UTF_8 )
                                        + "&parentScreen="
-                                       + URLEncoder.encode( strParentScreen, UTF8 ) );
+                                       + URLEncoder.encode( strParentScreen, StandardCharsets.UTF_8 ) );
     }
 
     public void addItem( OperationPane    operationPane,
@@ -144,7 +144,7 @@ ArrayCellRadio  cellRadio;
         if ( operationPane != null )
             operationPane.addOperationOfCreation( resource.getIcon("workflowDesigner.add"),
                                         resource.getString( strAddActionKey ),
-                                        "AddItem?context=" + URLEncoder.encode( strContext, "UTF-8") );
+                                        "AddItem?context=" + URLEncoder.encode( strContext, StandardCharsets.UTF_8) );
     }
 
     public void addRelatedUser( OperationPane    operationPane,
@@ -155,6 +155,7 @@ ArrayCellRadio  cellRadio;
         if ( operationPane != null )
             operationPane.addOperation(resource.getIcon("workflowDesigner.add"),
                                        resource.getString("workflowDesigner.add.relatedUser"),
-                                       "AddRelatedUser?context=" + URLEncoder.encode( strContext, "UTF-8") );
+                                       "AddRelatedUser?context="
+                                               + URLEncoder.encode( strContext, StandardCharsets.UTF_8) );
     }
 %>
