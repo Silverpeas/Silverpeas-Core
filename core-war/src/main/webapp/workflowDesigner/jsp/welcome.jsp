@@ -23,7 +23,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -54,20 +55,18 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
-Iterator  workflows = ((List) request.getAttribute("ProcessFileNames")).iterator();
+Iterator<String>  workflows = ((List<String>) request.getAttribute("ProcessFileNames")).iterator();
 ArrayPane arrayPane;
 String    strProcessFileName,
           strProcessFileNameURLEncoded,
           strProcessFileNameJSEncoded;
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.list.workflow"));
@@ -88,8 +87,8 @@ column.setSortable( false );
 
 while ( workflows.hasNext() )
 {
-	strProcessFileName = (String) workflows.next();
-    strProcessFileNameURLEncoded = URLEncoder.encode( strProcessFileName, UTF8);
+	strProcessFileName = workflows.next();
+    strProcessFileNameURLEncoded = URLEncoder.encode( strProcessFileName, StandardCharsets.UTF_8);
     strProcessFileNameJSEncoded = WebEncodeHelper.javaStringToJsString( strProcessFileName );
 
     row       = arrayPane.addArrayLine();
@@ -106,9 +105,9 @@ while ( workflows.hasNext() )
                               + strProcessFileNameURLEncoded );
 	delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
 	                      resource.getString("GML.delete"),
-                          "javascript:confirmRemove('RemoveWorkflow?ProcessFileName="
-                          + URLEncoder.encode( strProcessFileNameJSEncoded, UTF8)
-                          + "', '"
+                          "javascript:confirmRemove('RemoveWorkflow', {ProcessFileName: '"
+                          + URLEncoder.encode( strProcessFileNameJSEncoded, StandardCharsets.UTF_8)
+                          + "'}, '"
                           + resource.getString("workflowDesigner.confirmRemoveJS") + " "
                           + strProcessFileNameJSEncoded + " ?');" );
 	iconPane.setSpacing("30px");
@@ -131,5 +130,5 @@ out.println(arrayPane.print());
 <%
 out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

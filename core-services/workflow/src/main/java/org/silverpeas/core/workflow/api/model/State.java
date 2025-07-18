@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;state&gt; element of a Process Model.
  */
-public interface State {
+public interface State extends Serializable {
   /**
    * Get the name of this state
    * @return state's name

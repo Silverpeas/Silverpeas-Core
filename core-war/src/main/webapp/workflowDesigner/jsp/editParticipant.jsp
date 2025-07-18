@@ -41,17 +41,16 @@
     boolean         fExistingParticipant = ( (Boolean)request.getAttribute( "IsExisitingParticipant" ) ).booleanValue();
 %>
 
-<HTML>
-<HEAD>
-  <view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script language="javaScript">
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        if ( isWhitespace(document.participantForm.name.value) )
+      if ( isWhitespace(document.participantForm.name.value) )
         {
             errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
             errorNb++;
@@ -72,8 +71,8 @@
         }
     }
 </script>
-</HEAD>
-<BODY class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.participants"), strCancelAction);
@@ -152,5 +151,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

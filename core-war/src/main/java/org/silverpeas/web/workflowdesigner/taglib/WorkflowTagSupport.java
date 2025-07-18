@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,23 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.workflow.api.model;
 
-import java.io.Serializable;
+package org.silverpeas.web.workflowdesigner.taglib;
+
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
+
+import javax.servlet.jsp.tagext.TagSupport;
 
 /**
- * Interface describing a representation of the &lt;userInRole&gt; element of a Process Model.
+ * Common properties of all the tag defined for the workflow web pages.
+ *
+ * @author mmoquillon
  */
-public interface UserInRole extends Serializable {
+public abstract class WorkflowTagSupport extends TagSupport {
 
-  /**
-   * Get name of the role
-   */
-  String getRoleName();
-
-  /**
-   * Set name of the role
-   * @param roleName the name of the role
-   */
-  void setRoleName(String roleName);
+  protected IconPane addIconPane(GraphicElementFactory gef, MultiSilverpeasBundle resource,
+      String modifAction, String removalAction) {
+    var iconPane = gef.getIconPane();
+    var updateIcon = iconPane.addIcon();
+    var delIcon = iconPane.addIcon();
+    updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
+        resource.getString("GML.modify"), modifAction);
+    delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
+        resource.getString("GML.delete"), removalAction);
+    iconPane.setSpacing("30px");
+    return iconPane;
+  }
 }
+  

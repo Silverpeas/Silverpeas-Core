@@ -23,16 +23,14 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Parameter;
 
+import java.io.Serializable;
+import java.util.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -146,92 +144,52 @@ public class ItemImpl implements Item, Serializable {
     this.computed = computed;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setFormula(java.lang.String)
-   */
+  @Override
   public void setFormula(String formula) {
     this.formula = formula;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setMapTo(java.lang.String)
-   */
+  @Override
   public void setMapTo(String mapTo) {
     this.mapTo = mapTo;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setName(java.lang.String)
-   */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setReadonly(boolean)
-   */
+  @Override
   public void setReadonly(boolean readonly) {
     this.readonly = readonly;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setType(java.lang.String)
-   */
+  @Override
   public void setType(String type) {
     this.type = type;
   }
 
-  /**
-   * Get description in specific language for the given role
-   * @param role role for which the description is
-   * @param language description's language
-   * @return wanted description as a String object. If description is not found, search description
-   * with given role and default language, if not found again, return the default description in
-   * given language, if not found again, return the default description in default language, if not
-   * found again, return empty string.
-   */
+  @Override
   public String getDescription(String role, String language) {
     return getDescriptions().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#getDescriptions()
-   */
+  @Override
   public ContextualDesignations getDescriptions() {
     return new SpecificLabelListHelper(descriptions);
   }
 
-  /**
-   * Get label in specific language for the given role
-   * @param role role for which the label is
-   * @param language label's language
-   * @return wanted label as a String object. If label is not found, search label with given role
-   * and default language, if not found again, return the default label in given language, if not
-   * found again, return the default label in default language, if not found again, return empty
-   * string.
-   */
+  @Override
   public String getLabel(String role, String language) {
     return getLabels().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#getLabels()
-   */
+  @Override
   public ContextualDesignations getLabels() {
     return new SpecificLabelListHelper(labels);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#getParameter(java.lang.String)
-   */
+  @Override
   public Parameter getParameter(String strName) {
     Parameter reference = new ParameterImpl();
     int idx;
@@ -246,52 +204,30 @@ public class ItemImpl implements Item, Serializable {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#createParameter()
-   */
+  @Override
   public Parameter createParameter() {
     return new ParameterImpl();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#addParameter(com.silverpeas.workflow
-   * .api.model.Parameter)
-   */
+  @Override
   public void addParameter(Parameter parameter) {
     parameters.add(parameter);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#iterateParameters()
-   */
+  @Override
   public Iterator<Parameter> iterateParameter() {
     return parameters.iterator();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#removeParameter(java.lang.String)
-   */
-  public void removeParameter(String strName) throws WorkflowException {
-    Parameter parameter = createParameter();
-
-    parameter.setName(strName);
-
+  @Override
+  public void removeParameter(String strName) {
     if (parameters == null) {
       return;
     }
-
-    if (!parameters.remove(parameter)) {
-      throw new WorkflowException("ItemImpl.removeParameter()", //$NON-NLS-1$
-          "workflowEngine.EX_PARAMETER_NOT_FOUND", // $NON-NLS-1$
-          strName == null ? "<null>" //$NON-NLS-1$
-              : strName);
-    }
+    parameters.removeIf(p -> p.getName().equals(strName));
   }
 
+  @Override
   public Map<String, String> getKeyValuePairs() {
     if (parameters != null && !parameters.isEmpty()) {
       String keys = null;

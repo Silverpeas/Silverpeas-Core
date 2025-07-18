@@ -37,16 +37,15 @@
                              strEditorName = (String)request.getAttribute( "EditorName" ),
                              strContext = (String)request.getAttribute( "context" ); // context
 %>
-<html>
-<head>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script language="javaScript">
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        if ( isWhitespace(document.designationForm.content.value) )
+      if ( isWhitespace(document.designationForm.content.value) )
         {
             errorMsg+="  - '<%=resource.getString("workflowDesigner.content")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
             errorNb++;
@@ -67,8 +66,8 @@
         }
     }
 </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName( resource.getString(strEditorName) );
@@ -140,5 +139,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -33,8 +33,8 @@
     Item            item = (Item)request.getAttribute("Item");
     String          strCancelAction = (String)request.getAttribute("parentScreen"),
                     strContext = (String)request.getAttribute("context"),
-                    strParameterContext = URLEncoder.encode( strContext + "/parameters", UTF8 ),
-                    strCurrentScreen = "ModifyItem?context=" + URLEncoder.encode( strContext, UTF8 ),
+                    strParameterContext = URLEncoder.encode( strContext + "/parameters", StandardCharsets.UTF_8 ),
+                    strCurrentScreen = "ModifyItem?context=" + URLEncoder.encode( strContext, StandardCharsets.UTF_8 ),
                     strDescriptionContext = strContext + "/descriptions",
                     strLabelContext = strContext + "/labels",
                     strEditParameter,
@@ -46,21 +46,20 @@
                     astrTypeValues = (String[])request.getAttribute( "TypeValues" ),
                     astrTypeNames = astrTypeValues.clone();
     Parameter       parameter;
-    Iterator        iterParameters = item.iterateParameter();
-    boolean         fExistingItem = ( (Boolean)request.getAttribute( "IsExisitingItem" ) ).booleanValue();
-    StringBuffer    sb = new StringBuffer();
+    Iterator<Parameter> iterParameters = item.iterateParameter();
+    boolean         fExistingItem = (Boolean) request.getAttribute("IsExisitingItem");
+    StringBuilder sb = new StringBuilder();
 %>
-<HTML>
-<HEAD>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script language="javaScript">
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        if ( isWhitespace(document.itemForm.name.value) )
+      if ( isWhitespace(document.itemForm.name.value) )
         {
             errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
             errorNb++;
@@ -81,8 +80,8 @@
         }
     }
 </script>
-</HEAD>
-<BODY class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.editor.item") );
@@ -154,21 +153,23 @@
 
     while ( iterParameters.hasNext() )
     {
-        parameter = (Parameter)iterParameters.next();
+        parameter = iterParameters.next();
         iconPane = gef.getIconPane();
         iconPane.setSpacing("30px");
         updateIcon = iconPane.addIcon();
         delIcon = iconPane.addIcon();
-        strParameterName = "&name=" + URLEncoder.encode( parameter.getName(), UTF8 );
-        strEditParameter = "ModifyParameter?context=" + strParameterContext + strParameterName;
+        strParameterName = URLEncoder.encode( parameter.getName(), StandardCharsets.UTF_8 );
+        strEditParameter = "ModifyParameter?context=" + strParameterContext +
+                "&name=" + strParameterName;
 
         // Create the remove link
         //
         sb.setLength(0);
-        sb.append("javascript:confirmRemove('RemoveParameter?context=" );
+        sb.append("javascript:confirmRemove('RemoveParameter', {context: '" );
         sb.append( strParameterContext );
+        sb.append("', name: '");
         sb.append( strParameterName );
-        sb.append( "', '" );
+        sb.append( "'}, '" );
         sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
         sb.append( " " );
         sb.append( WebEncodeHelper.javaStringToJsString( parameter.getName() ) );
@@ -250,5 +251,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

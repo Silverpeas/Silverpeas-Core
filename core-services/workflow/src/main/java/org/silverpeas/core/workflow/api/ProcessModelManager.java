@@ -63,9 +63,8 @@ public interface ProcessModelManager {
   /**
    * Create a new ProcessModel descriptor that is not yet saved in a XML file.
    * @return ProcessModel object
-   * @throws WorkflowException when something goes wrong
    */
-  ProcessModel createProcessModelDescriptor() throws WorkflowException;
+  ProcessModel createProcessModelDescriptor();
 
   /**
    * Delete a ProcessModel with given model id

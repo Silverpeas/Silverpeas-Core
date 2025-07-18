@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
-
 import java.io.Serializable;
 import java.util.Iterator;
 
@@ -72,7 +70,6 @@ public interface Forms extends Serializable {
    * Remove the form identified by name and role
    * @param strName the form name
    * @param strRole the name of the role, may be <code>null</code>
-   * @throws WorkflowException if the role cannot be found
    */
-  void removeForm(String strName, String strRole) throws WorkflowException;
+  void removeForm(String strName, String strRole);
 }

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  **/
 @XmlRootElement(name = "action")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ActionImpl implements Action, Serializable {
+public class ActionImpl implements Action {
   private static final long serialVersionUID = -6984785710903135661L;
   @XmlID
   @XmlAttribute
@@ -82,129 +81,77 @@ public class ActionImpl implements Action, Serializable {
     kind = "update";
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Action#getLabels()
-   */
+  @Override
   public ContextualDesignations getLabels() {
     return new SpecificLabelListHelper(labels);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Action#getLabel(java.lang.String, java.lang.String)
-   */
+  @Override
   public String getLabel(String role, String language) {
     return getLabels().getLabel(role, language);
   }
 
-  /**
-   * Get all the users allowed to execute this action
-   * @return object containing QualifiedUsers
-   */
+  @Override
   public QualifiedUsers getAllowedUsers() {
     return allowedUsers;
   }
 
-  /**
-   * Get all the consequences of this action
-   * @return Consequences objects
-   */
+  @Override
   public Consequences getConsequences() {
     return consequences;
   }
 
-  /**
-   * Get the form associated with this action
-   * @return form object
-   */
+  @Override
   public Form getForm() {
     return form;
   }
 
-  /**
-   * Get the name of this action
-   * @return action's name
-   */
+  @Override
   public String getName() {
     return name;
   }
 
-  /**
-   * Get the kind of this action (update, create or delete)
-   * @return action's kind
-   */
+  @Override
   public String getKind() {
     return kind;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Action#getDescriptions()
-   */
+  @Override
   public ContextualDesignations getDescriptions() {
     return new SpecificLabelListHelper(descriptions);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Action#getDescription(java.lang.String,
-   * java.lang.String)
-   */
+  @Override
   public String getDescription(String role, String language) {
     return getDescriptions().getLabel(role, language);
   }
 
-  /**
-   * Create and return an object implementing QalifiedUsers
-   */
-  public QualifiedUsers createQualifiedUsers() {
-    return new QualifiedUsersImpl();
-  }
-
-  /**
-   * Set the list of users allowed to execute this action
-   * @param allowedUsers allowed users
-   **/
+  @Override
   public void setAllowedUsers(QualifiedUsers allowedUsers) {
     this.allowedUsers = allowedUsers;
   }
 
-  /**
-   * Create and return and object implementing Consequences
-   */
+  @Override
   public Consequences createConsequences() {
     return new ConsequencesImpl();
   }
 
-  /**
-   * Set the consequences of this action
-   * @param consequences
-   */
+  @Override
   public void setConsequences(Consequences consequences) {
     this.consequences = consequences;
   }
 
-  /**
-   * Set the form associated to this action
-   * @param form associated form
-   **/
+  @Override
   public void setForm(Form form) {
     this.form = (FormImpl) form;
   }
 
-  /**
-   * Set the name of this action
-   * @param name action's name
-   */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /**
-   * Set the kind of this action
-   * @param kind action's kind
-   */
+  @Override
   public void setKind(String kind) {
     this.kind = kind;
   }
@@ -214,7 +161,7 @@ public class ActionImpl implements Action, Serializable {
    * @return unique key
    */
   public String getKey() {
-    return name;
+    return getName();
   }
 
 }

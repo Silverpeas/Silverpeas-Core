@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.workflow.api.model.TimeOutAction;
 import org.silverpeas.core.workflow.api.model.TimeOutActions;
 
@@ -40,7 +38,7 @@ import java.util.List;
  **/
 @XmlRootElement(name = "timeOutActions")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TimeOutActionsImpl implements Serializable, TimeOutActions {
+public class TimeOutActionsImpl implements TimeOutActions {
   private static final long serialVersionUID = 7973279591384251532L;
   @XmlElement(name = "timeOutAction", type = TimeOutActionImpl.class)
   private List<TimeOutAction> timeoutActionList;
@@ -52,15 +50,12 @@ public class TimeOutActionsImpl implements Serializable, TimeOutActions {
     timeoutActionList = new ArrayList<>();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AllowedActions#getAllowedActions()
-   */
+  @Override
   public TimeOutAction[] getTimeOutActions() {
     if (timeoutActionList == null) {
       return new TimeOutAction[0];
     }
-    return timeoutActionList.toArray(new TimeOutAction[timeoutActionList.size()]);
+    return timeoutActionList.toArray(new TimeOutAction[0]);
   }
 
 }

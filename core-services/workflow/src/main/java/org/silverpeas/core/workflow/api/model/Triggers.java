@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;triggers&gt; element of a Process Model.
  */
-public interface Triggers {
+public interface Triggers extends Serializable {
 
   /**
    * Iterate through the Trigger objects
