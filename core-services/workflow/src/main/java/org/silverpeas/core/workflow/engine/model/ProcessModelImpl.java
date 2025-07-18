@@ -115,68 +115,45 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     labels = new ArrayList<>();
     descriptions = new ArrayList<>();
     presentation = createPresentation();
+    dataFolder = new DataFolderImpl();
   }
 
-  /**
-   * Get the id of this process model
-   * @return process model id
-   */
+  @Override
   public String getModelId() {
     return this.modelId;
   }
 
-  /**
-   * Set the id of this process model
-   * @param modelId process model id
-   */
+  @Override
   public void setModelId(String modelId) {
     this.modelId = modelId;
   }
 
-  /**
-   * Get the name of this process model
-   * @return process model's name
-   */
+  @Override
   public String getName() {
     return this.name;
   }
 
-  /**
-   * Set the name of this process model
-   * @param name process model's name
-   */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /**
-   * Get the presentation configuration
-   * @return presentation configuration
-   */
+  @Override
   public Presentation getPresentation() {
     return presentation;
   }
 
-  /**
-   * Set the presentation's configuration
-   * @param presentation presentation's configuration
-   */
+  @Override
   public void setPresentation(Presentation presentation) {
     this.presentation = presentation;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createPresentation()
-   */
+  @Override
   public Presentation createPresentation() {
     return new PresentationImpl();
   }
 
-  /**
-   * Get the participants definition
-   * @return participants definition
-   */
+  @Override
   public Participant[] getParticipants() {
     if (participants == null) {
       return new Participant[0];
@@ -184,34 +161,22 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return participants.getParticipants();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#getAllParticipants()
-   */
+  @Override
   public Participants getParticipantsEx() {
     return participants;
   }
 
-  /**
-   * Set the participants definition
-   * @param participants participants definition
-   */
+  @Override
   public void setParticipants(Participants participants) {
     this.participants = participants;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createParticipants()
-   */
+  @Override
   public Participants createParticipants() {
     return new ParticipantsImpl();
   }
 
-  /**
-   * Get the roles definition
-   * @return roles definition
-   */
+  @Override
   public Role[] getRoles() {
     if (roles == null) {
       return new Role[0];
@@ -219,11 +184,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return roles.getRoles();
   }
 
-  /**
-   * Get the role definition with given name
-   * @param name role name
-   * @return wanted role definition
-   */
+  @Override
   public Role getRole(String name) {
     if (roles == null) {
       return null;
@@ -231,34 +192,22 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return roles.getRole(name);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#getAllRoles()
-   */
+  @Override
   public Roles getRolesEx() {
     return roles;
   }
 
-  /**
-   * Set the roles definition
-   * @param roles roles definition
-   */
+  @Override
   public void setRoles(Roles roles) {
     this.roles = roles;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createRoles()
-   */
+  @Override
   public Roles createRoles() {
     return new RolesImpl();
   }
 
-  /**
-   * Get the states defined for this process model
-   * @return states defined for this process model
-   */
+  @Override
   public State[] getStates() {
     if (states == null) {
       return new State[0];
@@ -266,19 +215,12 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return states.getStates();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#getAllStates()
-   */
+  @Override
   public States getStatesEx() {
     return states;
   }
 
-  /**
-   * Get the state with the given name
-   * @param name state name
-   * @return wanted state
-   */
+  @Override
   public State getState(String name) {
     if (states == null) {
       return null;
@@ -286,26 +228,17 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return states.getState(name);
   }
 
-  /**
-   * Set the states defined for this process model
-   * @param states states defined for this process model
-   */
+  @Override
   public void setStates(States states) {
     this.states = states;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createStates()
-   */
+  @Override
   public States createStates() {
     return new StatesImpl();
   }
 
-  /**
-   * Get the actions defined for this process model
-   * @return actions defined for this process model
-   */
+  @Override
   public Action[] getActions() {
     if (actions == null) {
       return new Action[0];
@@ -313,19 +246,12 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return actions.getActions();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#getAllActions()
-   */
+  @Override
   public Actions getActionsEx() {
     return actions;
   }
 
-  /**
-   * Get the action with the given name
-   * @param name action name
-   * @return the wanted action
-   */
+  @Override
   public Action getAction(String name) throws WorkflowException {
     if (actions == null) {
       return null;
@@ -333,86 +259,52 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return actions.getAction(name);
   }
 
-  /**
-   * Set the actions defined for this process model
-   * @param actions actions defined for this process model
-   */
+  @Override
   public void setActions(Actions actions) {
     this.actions = actions;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createActions()
-   */
+  @Override
   public Actions createActions() {
     return new ActionsImpl();
   }
 
-  /**
-   * Get the data folder defined for this process model
-   * @return data folder defined for this process model. it contains all the items declarations
-   */
+  @Override
   public DataFolder getDataFolder() {
     return dataFolder;
   }
 
-  /**
-   * Set the data folder defined for this process model
-   * @param dataFolder data folder defined for this process model. it contains all the items
-   * declarations
-   */
+  @Override
   public void setDataFolder(DataFolder dataFolder) {
     this.dataFolder = dataFolder;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createDataFolder()
-   */
+  @Override
   public DataFolder createDataFolder() {
     return new DataFolderImpl();
   }
 
-  /**
-   * Get the user infos defined for this process model It contains all the items necessary about
-   * user to allow him to use the instance
-   * @return user infos defined for this process model.
-   */
+  @Override
   public DataFolder getUserInfos() {
     return userInfos;
   }
 
-  /**
-   * Set the user infos defined for this process model It contains all the items necessary about
-   * user to allow him to use the instance
-   * @param userInfos user infos defined for this process model.
-   */
+  @Override
   public void setUserInfos(DataFolder userInfos) {
     this.userInfos = userInfos;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#getAllForms()
-   */
+  @Override
   public Forms getForms() {
     return forms;
   }
 
-  /**
-   * Get the form with the given name
-   * @param name form name
-   * @return the wanted form
-   */
+  @Override
   public Form getForm(String name) {
     return getForm(name, null);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#getForm(java.lang.String, java.lang.String)
-   */
+  @Override
   public Form getForm(String name, String role) {
     if (forms == null) {
       return null;
@@ -420,98 +312,57 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return forms.getForm(name, role);
   }
 
-  /**
-   * Set the forms defined for this process model
-   * @param forms forms defined for this process model.
-   */
+  @Override
   public void setForms(Forms forms) {
     this.forms = forms;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createForms()
-   */
+  @Override
   public Forms createForms() {
     return new FormsImpl();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#getLabels()
-   */
+  @Override
   public ContextualDesignations getLabels() {
     return new SpecificLabelListHelper(labels);
   }
 
-  /**
-   * Get label in specific language for the given role
-   * @param role role for which the label is
-   * @param language label's language
-   * @return wanted label as a String object. If label is not found, search label with given role
-   * and default language, if not found again, return the default label in given language, if not
-   * found again, return the default label in default language, if not found again, return empty
-   * string.
-   */
+  @Override
   public String getLabel(String role, String language) {
     return getLabels().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#getDescriptions()
-   */
+  @Override
   public ContextualDesignations getDescriptions() {
     return new SpecificLabelListHelper(descriptions);
   }
 
-  /**
-   * Get description in specific language for the given role
-   * @param role role for which the description is
-   * @param language description's language
-   * @return wanted description as a String object. If description is not found, search description
-   * with given role and default language, if not found again, return the default description in
-   * given language, if not found again, return the default description in default language, if not
-   * found again, return empty string.
-   */
+  @Override
   public String getDescription(String role, String language) {
     return getDescriptions().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createQualifiedUsers()
-   */
+  @Override
   public QualifiedUsers createQualifiedUsers() {
     return new QualifiedUsersImpl();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createRelatedUser()
-   */
+  @Override
   public RelatedUser createRelatedUser() {
     return new RelatedUserImpl();
   }
 
-  /**
-   * Returns the name of the record set where are saved all the folder of the instance built from
-   * this model.
-   */
+  @Override
   public String getFolderRecordSetName() {
     return modelId + ":" + "folder";
   }
 
-  /**
-   * Returns the name of the record set where are saved all the data of the named form.
-   */
+  @Override
   public String getFormRecordSetName(String formName) {
     return modelId + ":" + "form:" + formName;
   }
 
-  /**
-   * Returns the record set where are saved all the folder of the instance built from this model.
-   */
+  @Override
   public RecordSet getFolderRecordSet() throws WorkflowException {
     // Now, the folder is read from xml file and no more in database
     // This permit to add items to the folder
@@ -533,9 +384,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return new GenericRecordSet(idTemplate);
   }
 
-  /**
-   * Returns the record set where are saved all the data of the named form.
-   */
+  @Override
   public RecordSet getFormRecordSet(String formName) throws WorkflowException {
     try {
       RecordSet recordSet =
@@ -586,19 +435,13 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     }
   }
 
-  /**
-   * Returns the form (if any) associated to the named action. Returns null if the action has no
-   * form. Throws a WorkflowException if the action is unknown.
-   */
+  @Override
   public Form getActionForm(String actionName) throws WorkflowException {
     Action action = getAction(actionName);
     return action.getForm();
   }
 
-  /**
-   * Returns the action of kind create Throws a WorkflowException if there is no action of type
-   * create
-   */
+  @Override
   public Action getCreateAction(String role) throws WorkflowException {
     Action[] someActions = getActions();
 
@@ -619,11 +462,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     throw new WorkflowException(PROCESS_MODEL, "workflowEngine.ERR_NO_CREATE_ACTION_DEFINED");
   }
 
-  /**
-   * Returns the Form which be used to publish the form associated to the named
-   * action. Returns null if the action has no form. Throws a WorkflowException if the action is
-   * unknown.
-   */
+  @Override
   public org.silverpeas.core.contribution.content.form.Form getPublicationForm(String actionName, String roleName,
       String lang) throws WorkflowException {
     Action action = getAction(actionName);
@@ -634,10 +473,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     return getConcreteForm(action.getForm(), roleName, lang, false);
   }
 
-  /**
-   * Returns the Form which be used to publish the form associated to the named
-   * action or form. Returns null if the action has no form.
-   */
+  @Override
   public org.silverpeas.core.contribution.content.form.Form getPresentationForm(String name, String roleName, String lang)
       throws WorkflowException {
     Action action = null;
@@ -694,6 +530,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
    * @param roleName  Role of the current user
    * @param lang Lang of the current user
    */
+  @Override
   public DataRecord getNewActionRecord(String actionName, String roleName, String lang,
       DataRecord data) throws WorkflowException {
     Action action = getAction(actionName);
@@ -709,6 +546,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
    * @param roleName Role of the current user
    * @param lang Lang of the current user
    */
+  @Override
   public DataRecord getNewUserInfosRecord(String roleName, String lang) throws WorkflowException {
     try {
       return this.getUserInfos().toRecordTemplate(roleName, lang, false).getEmptyRecord();
@@ -721,6 +559,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
   /**
    * Returns the roles under which an user can create a new instance
    */
+  @Override
   public String[] getCreationRoles() throws WorkflowException {
     try {
       List<String> someRoles = new ArrayList<>();
@@ -754,6 +593,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
    * @param role Role of the current user
    * @param lang Lang of the current user
    */
+  @Override
   public RecordTemplate getAllDataTemplate(String role, String lang) {
     RecordTemplate template = instanceDataTemplates.get(role + "\n" + lang);
 
@@ -772,6 +612,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
    * @param role Role of the current user
    * @param lang Lang of the current user
    */
+  @Override
   public RecordTemplate getRowTemplate(String role, String lang) {
     RecordTemplate template = rowTemplates.get(role + "\n" + lang);
 
@@ -791,6 +632,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
    * @param lang Lang of the current user
    * @param isProcessIdVisible Case if id is deplayed or not
    */
+  @Override
   public RecordTemplate getRowTemplate(String role, String lang, boolean isProcessIdVisible) {
     RecordTemplate template = rowTemplates.get(role + "\n" + lang);
     if (template == null) {

@@ -23,27 +23,20 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Participant;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;participant&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "participant")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ParticipantImpl implements Participant, Serializable {
+public class ParticipantImpl implements Participant {
   private static final long serialVersionUID = -6272061474366848845L;
   @XmlID
   @XmlAttribute
@@ -79,14 +72,12 @@ public class ParticipantImpl implements Participant, Serializable {
    * given language, if not found again, return the default description in default language, if not
    * found again, return empty string.
    */
+  @Override
   public String getDescription(String role, String language) {
     return getDescriptions().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Participant#getDescriptions()
-   */
+  @Override
   public ContextualDesignations getDescriptions() {
     return new SpecificLabelListHelper(descriptions);
   }
@@ -100,46 +91,32 @@ public class ParticipantImpl implements Participant, Serializable {
    * found again, return the default label in default language, if not found again, return empty
    * string.
    */
+  @Override
   public String getLabel(String role, String language) {
     return getLabels().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Participant#getLabels()
-   */
+  @Override
   public ContextualDesignations getLabels() {
     return new SpecificLabelListHelper(labels);
   }
 
-  /**
-   * Get the name of this participant
-   * @return participant's name
-   */
+  @Override
   public String getName() {
     return this.name;
   }
 
-  /**
-   * Get the state that defined participant has resolved
-   * @return state that defined participant has resolved
-   */
+  @Override
   public String getResolvedState() {
     return this.resolvedState;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Participant#setName(java.lang.String)
-   */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Participant#setResolvedState(java.lang .String)
-   */
+  @Override
   public void setResolvedState(String resolvedState) {
     this.resolvedState = resolvedState;
   }

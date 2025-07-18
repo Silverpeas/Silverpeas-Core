@@ -23,21 +23,29 @@
  */
 package org.silverpeas.web.workflowdesigner.taglib;
 
-import java.io.IOException;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane;
 
+import javax.servlet.jsp.JspException;
+import java.io.IOException;
+
 /**
  * Class implementing the tag &lt;processModelTabs&gt; from workflowEditor.tld
  */
-public class ProcessModelTabs extends TagSupport {
+public class ProcessModelTabs extends WorkflowTagSupport {
 
   private static final long serialVersionUID = 5607804796452218902L;
+  private static final String MODIFY_WORKFLOW = "ModifyWorkflow";
+  private static final String VIEW_PRESENTATION = "ViewPresentation";
+  private static final String VIEW_PARTICIPANTS = "ViewParticipants";
+  private static final String VIEW_STATES = "ViewStates";
+  private static final String VIEW_ACTIONS = "ViewActions";
+  private static final String VIEW_USER_INFOS = "ViewUserInfos";
+  private static final String VIEW_DATA_FOLDER = "ViewDataFolder";
+  private static final String VIEW_FORMS = "ViewForms";
+  private static final String VIEW_ROLES = "ViewRoles";
+
   private String strCurrentTab;
 
   /**
@@ -54,10 +62,7 @@ public class ProcessModelTabs extends TagSupport {
     strCurrentTab = currentTab;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
-   */
+  @Override
   public int doStartTag() throws JspException {
     GraphicElementFactory gef;
     MultiSilverpeasBundle resource;
@@ -69,32 +74,32 @@ public class ProcessModelTabs extends TagSupport {
         "resources");
     tabbedPane = gef.getTabbedPane();
 
-    tabbedPane.addTab(resource.getString("GML.head"), "ModifyWorkflow"
-        .equals(strCurrentTab) ? "#" : "ModifyWorkflow", "ModifyWorkflow"
+    tabbedPane.addTab(resource.getString("GML.head"), MODIFY_WORKFLOW
+        .equals(strCurrentTab) ? "#" : MODIFY_WORKFLOW, MODIFY_WORKFLOW
         .equals(strCurrentTab));
-    tabbedPane.addTab(resource.getString("workflowDesigner.roles"), "ViewRoles"
-        .equals(strCurrentTab) ? "#" : "ViewRoles", "ViewRoles"
+    tabbedPane.addTab(resource.getString("workflowDesigner.roles"), VIEW_ROLES
+        .equals(strCurrentTab) ? "#" : VIEW_ROLES, VIEW_ROLES
         .equals(strCurrentTab));
     tabbedPane.addTab(resource.getString("workflowDesigner.presentation"),
-        "ViewPresentation".equals(strCurrentTab) ? "#" : "ViewPresentation",
-        "ViewPresentation".equals(strCurrentTab));
+        VIEW_PRESENTATION.equals(strCurrentTab) ? "#" : VIEW_PRESENTATION,
+        VIEW_PRESENTATION.equals(strCurrentTab));
     tabbedPane.addTab(resource.getString("workflowDesigner.participants"),
-        "ViewParticipants".equals(strCurrentTab) ? "#" : "ViewParticipants",
-        "ViewParticipants".equals(strCurrentTab));
+        VIEW_PARTICIPANTS.equals(strCurrentTab) ? "#" : VIEW_PARTICIPANTS,
+        VIEW_PARTICIPANTS.equals(strCurrentTab));
     tabbedPane.addTab(resource.getString("workflowDesigner.states"),
-        "ViewStates".equals(strCurrentTab) ? "#" : "ViewStates", "ViewStates"
+        VIEW_STATES.equals(strCurrentTab) ? "#" : VIEW_STATES, VIEW_STATES
         .equals(strCurrentTab));
     tabbedPane.addTab(resource.getString("workflowDesigner.actions"),
-        "ViewActions".equals(strCurrentTab) ? "#" : "ViewActions",
-        "ViewActions".equals(strCurrentTab));
+        VIEW_ACTIONS.equals(strCurrentTab) ? "#" : VIEW_ACTIONS,
+        VIEW_ACTIONS.equals(strCurrentTab));
     tabbedPane.addTab(resource.getString("workflowDesigner.userInfos"),
-        "ViewUserInfos".equals(strCurrentTab) ? "#" : "ViewUserInfos",
-        "ViewUserInfos".equals(strCurrentTab));
+        VIEW_USER_INFOS.equals(strCurrentTab) ? "#" : VIEW_USER_INFOS,
+        VIEW_USER_INFOS.equals(strCurrentTab));
     tabbedPane.addTab(resource.getString("workflowDesigner.dataFolder"),
-        "ViewDataFolder".equals(strCurrentTab) ? "#" : "ViewDataFolder",
-        "ViewDataFolder".equals(strCurrentTab));
-    tabbedPane.addTab(resource.getString("workflowDesigner.forms"), "ViewForms"
-        .equals(strCurrentTab) ? "#" : "ViewForms", "ViewForms"
+        VIEW_DATA_FOLDER.equals(strCurrentTab) ? "#" : VIEW_DATA_FOLDER,
+        VIEW_DATA_FOLDER.equals(strCurrentTab));
+    tabbedPane.addTab(resource.getString("workflowDesigner.forms"), VIEW_FORMS
+        .equals(strCurrentTab) ? "#" : VIEW_FORMS, VIEW_FORMS
         .equals(strCurrentTab));
 
     try {

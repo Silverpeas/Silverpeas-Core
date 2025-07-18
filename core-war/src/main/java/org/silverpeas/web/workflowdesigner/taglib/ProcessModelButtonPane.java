@@ -23,20 +23,18 @@
  */
 package org.silverpeas.web.workflowdesigner.taglib;
 
-import java.io.IOException;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane;
 import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 
+import javax.servlet.jsp.JspException;
+import java.io.IOException;
+
 /**
  * Class implementing the tag &lt;buttonPane&gt; from workflowEditor.tld
  */
-public class ProcessModelButtonPane extends TagSupport {
+public class ProcessModelButtonPane extends WorkflowTagSupport {
 
   private static final long serialVersionUID = 2771341684220021139L;
   private String strCancelAction;
@@ -55,10 +53,7 @@ public class ProcessModelButtonPane extends TagSupport {
     strCancelAction = cancelAction;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
-   */
+  @Override
   public int doStartTag() throws JspException {
     GraphicElementFactory gef;
     MultiSilverpeasBundle resource;
@@ -71,9 +66,9 @@ public class ProcessModelButtonPane extends TagSupport {
     buttonPane = gef.getButtonPane();
     resource = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
         "resources");
-    validateButton = (Button) gef.getFormButton(resource
+    validateButton = gef.getFormButton(resource
         .getString("GML.validate"), "javascript:sendData();", false);
-    cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"),
+    cancelButton = gef.getFormButton(resource.getString("GML.cancel"),
         strCancelAction, false);
 
     buttonPane.addButton(validateButton);

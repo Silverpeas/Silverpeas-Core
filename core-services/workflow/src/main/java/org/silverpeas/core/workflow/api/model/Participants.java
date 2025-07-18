@@ -67,7 +67,6 @@ public interface Participants extends Serializable {
   /**
    * Remove an participant from the collection
    * @param strParticipantName the name of the participant to be removed.
-   * @throws WorkflowException when the participant could not be deleted.
    */
-  void removeParticipant(String strParticipantName) throws WorkflowException;
+  void removeParticipant(String strParticipantName);
 }

@@ -73,7 +73,8 @@ public class MessageFilter implements Filter {
         chain.doFilter(request, response);
       } finally {
         // Remove message container if no message registered
-        if (MessageManager.getMessageContainer(registredKey).getMessages().isEmpty()) {
+        var container = MessageManager.getMessageContainer(registredKey);
+        if (container != null && container.getMessages().isEmpty() ) {
           MessageManager.clear(registredKey);
           httpResponse.setHeader(HTTP_MESSAGEKEY, null);
         }

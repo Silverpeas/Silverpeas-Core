@@ -28,13 +28,7 @@ import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Input;
 import org.silverpeas.core.workflow.api.model.Item;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +37,7 @@ import java.util.List;
  **/
 @XmlRootElement(name = "input")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ItemRef implements Input, Serializable {
+public class ItemRef implements Input {
   private static final long serialVersionUID = 4356623937044121281L;
   @XmlIDREF
   @XmlAttribute
@@ -117,6 +111,7 @@ public class ItemRef implements Input, Serializable {
    * Get default value
    * @return default value
    */
+  @Override
   public String getValue() {
     return this.value;
   }

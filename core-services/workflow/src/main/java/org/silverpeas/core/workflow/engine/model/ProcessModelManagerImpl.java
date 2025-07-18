@@ -73,7 +73,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * ResourceLocator object to retrieve settings in a properties file
    */
-  private static SettingBundle settings =
+  private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.workflow.engine.settings");
 
   /**
@@ -110,7 +110,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * Recursive method to retrieve all process models in and below the given directory
    * @param strProcessModelDir the directory to start with
    * @return a list of strings containing the relative path and file name of the model
-   * @throws IOException
+   * @throws IOException if an IO error occurs
    */
   private List<String> findProcessModels(String strProcessModelDir) throws IOException {
     Iterator<File> subFoldersIterator =
@@ -186,7 +186,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * @see ProcessModelManager#createProcessModelDescriptor ()
    */
   @Override
-  public ProcessModel createProcessModelDescriptor() throws WorkflowException {
+  public ProcessModel createProcessModelDescriptor() {
     return new ProcessModelImpl();
   }
 
@@ -362,7 +362,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   @Override
   public String getProcessModelDir() {
     String dir = FileUtil.convertPathToServerOS(settings.getString("ProcessModelDir", null));
-    if (dir != null && !dir.endsWith(File.separator)) {
+    if (!dir.endsWith(File.separator)) {
       dir = dir + File.separatorChar;
     }
     return dir;
@@ -384,7 +384,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       while (rs.next()) {
         peasIds.add(rs.getString(1));
       }
-      return peasIds.toArray(new String[peasIds.size()]);
+      return peasIds.toArray(new String[0]);
     } catch (SQLException se) {
       throw new WorkflowException("ProcessModelManagerImpl.getAllPeasId",
           "workflowEngine.EX_ERR_GET_ALL_PEAS_IDS",
@@ -444,7 +444,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   protected String getProcessPath(String processFileName) {
     String processModelDir = settings.getString("ProcessModelDir");
     processModelDir = processModelDir.replace('\\', '/');
-    if (processModelDir.length() > 0 && !processModelDir.endsWith("/")) {
+    if (!processModelDir.isEmpty() && !processModelDir.endsWith("/")) {
       processModelDir = processModelDir + '/';
     }
     return processModelDir + processFileName;

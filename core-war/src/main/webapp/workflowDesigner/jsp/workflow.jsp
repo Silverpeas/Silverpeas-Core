@@ -138,12 +138,15 @@
 <view:frame>
 <!-- help -->
 <div class="inlineMessage">
-	<table border="0"><tr>
-		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+	<table>
+      <tr><th></th></tr>
+      <tr>
+		<td class="absmiddle"><img alt="info"
+                                    src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
 		<td><%=resource.getString("workflowDesigner.help.workflowHeader") %></td>
 	</tr></table>
 </div>
-<br clear="all"/>
+<br />
 <form name="workflowHeaderForm" action="UpdateWorkflow" method="post">
   <%
     out.println(processPane.print());

@@ -66,7 +66,6 @@ public interface Roles extends Serializable {
   /**
    * Remove an role from the collection
    * @param strRoleName the name of the role to be removed.
-   * @throws WorkflowException if the role cannot be found.
    */
-  void removeRole(String strRoleName) throws WorkflowException;
+  void removeRole(String strRoleName);
 }

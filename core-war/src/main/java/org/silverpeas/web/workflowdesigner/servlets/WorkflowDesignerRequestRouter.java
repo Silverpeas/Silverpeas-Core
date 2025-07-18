@@ -25,70 +25,53 @@ package org.silverpeas.web.workflowdesigner.servlets;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.engine.model.ProcessModelImpl;
 import org.silverpeas.core.workflow.engine.model.SpecificLabel;
 import org.silverpeas.core.workflow.engine.model.StateRef;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionController;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
+import java.net.URLDecoder;
+import java.util.*;
 
 public class WorkflowDesignerRequestRouter extends
     AdminComponentRequestRouter<WorkflowDesignerSessionController> {
 
   private static final long serialVersionUID = -6747786008527861783L;
-  static private Map<String, FunctionHandler> mapHandler; // mapping of functions to their handlers
-  static final private String root = "/workflowDesigner/jsp/"; // the root
-
-  // directory for
-  // all the *.jsp
+  private static final String REDIRECT_TO = "redirectTo";
+  private static Map<String, FunctionHandler> mapHandler; // mapping of functions to their handlers
+  private static final String ROOT_URL = "/workflowDesigner/jsp/"; // the root
+  private static final String REDIRECTION_URL = ROOT_URL + "redirect.jsp";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "WorkflowDesigner";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
+  @Override
   public WorkflowDesignerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new WorkflowDesignerSessionController(mainSessionCtrl, componentContext);
   }
 
-  /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   *
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param workflowDesignerSC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
-   */
   @Override
   public String getAdminDestination(String function,
       WorkflowDesignerSessionController workflowDesignerSC, HttpRequest request) {
@@ -101,17 +84,14 @@ public class WorkflowDesignerRequestRouter extends
       }
 
       if (destination == null) {
-        request.setAttribute("redirectTo", "Main");
-        destination = root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, "Main");
+        destination = REDIRECTION_URL;
       }
 
 
-    } catch (WorkflowDesignerException e) {
+    } catch (WorkflowDesignerException | WorkflowException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
-      destination = root + "errorpageMain.jsp";
-    } catch (WorkflowException e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
-      destination = root + "errorpageMain.jsp";
+      destination = ROOT_URL + "errorpageMain.jsp";
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
@@ -121,19 +101,13 @@ public class WorkflowDesignerRequestRouter extends
     return destination;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.GenericServlet#init()
-   */
+  @Override
   public void init() throws ServletException {
     super.init();
     initHandlers();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
-   */
+  @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     initHandlers();
@@ -142,14 +116,14 @@ public class WorkflowDesignerRequestRouter extends
   /**
    *
    */
-  static private FunctionHandler getHandler(String function) {
+  private static FunctionHandler getHandler(String function) {
     return mapHandler.get(function);
   }
 
   /**
    * Initialise the map of the function handlers
    */
-  synchronized private void initHandlers() {
+  private synchronized void initHandlers() {
     if (mapHandler != null) {
       return;
     }
@@ -207,7 +181,7 @@ public class WorkflowDesignerRequestRouter extends
     mapHandler.put("ViewDataFolder", hndlViewDataFolder);
     mapHandler.put("ViewForms", hndlViewForms);
     mapHandler.put("AddForm", hndlEditForm);
-    mapHandler.put("ModifyForm", hndlEditForm);
+    mapHandler.put("EditForm", hndlEditForm);
     mapHandler.put("UpdateForm", hndlUpdateForm);
     mapHandler.put("RemoveForm", hndlRemoveForm);
     mapHandler.put("AddInput", hndlEditInput);
@@ -235,17 +209,18 @@ public class WorkflowDesignerRequestRouter extends
   /**
    * Handles the "Main" function and lists the workflows
    */
-  private static FunctionHandler hndlListWorkflow = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlListWorkflow = (function, workflowDesignerSC, request) -> {
     Workflow.getProcessModelManager().clearProcessModelCache();
     request.setAttribute("ProcessFileNames", workflowDesignerSC.listProcessModels());
-    return root + "welcome.jsp";
+    return ROOT_URL + "welcome.jsp";
   };
+
   /**
    * Handles the "AddWorkflow", "EditWorkflow" and "ModifyWorkflow" functions
    */
-  private static FunctionHandler hndlEditWorkflow = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlEditWorkflow = (function, workflowDesignerSC, request) -> {
     String strProcessFileName;
-    ProcessModel processModel = null;
+    ProcessModel processModel;
 
     if ("AddWorkflow".equals(function)) {
       processModel = workflowDesignerSC.createProcessModel();
@@ -256,16 +231,17 @@ public class WorkflowDesignerRequestRouter extends
       strProcessFileName = request.getParameter("ProcessFileName");
 
       if (StringUtil.isDefined(strProcessFileName)) {
-        processModel = workflowDesignerSC.loadProcessModel(strProcessFileName);
+        workflowDesignerSC.loadProcessModel(strProcessFileName);
       }
 
       // redirect to change the function name and remove the parameter
       // "ProcessFileName"
       //
-      request.setAttribute("redirectTo", "ModifyWorkflow");
-      return root + "redirect.jsp";
-    } else // ModifyWorkflow
-    {
+      request.setAttribute(REDIRECT_TO, "ModifyWorkflow");
+      return REDIRECTION_URL;
+    } else {
+      // ModifyWorkflow
+
       // Get the Process Model and the file name from the SC
       //
       processModel = workflowDesignerSC.getProcessModel();
@@ -281,54 +257,41 @@ public class WorkflowDesignerRequestRouter extends
     // also pass an info whether the component descriptor has already been
     // defined.
     request.setAttribute("componentDescriptor", workflowDesignerSC.getComponentDescriptorName());
-    return root + "workflow.jsp";
+    return ROOT_URL + "workflow.jsp";
   };
+
   /**
    * Handles the "ImportWorkflow, DoImportWorkflow" functions
    */
-  private static FunctionHandler hndlImportWorkflow = new FunctionHandler() {
+  private static final FunctionHandler hndlImportWorkflow = (function, workflowDesignerSC, request) -> {
+    if ("ImportWorkflow".equals(function)) {
+      return ROOT_URL + "importWorkflow.jsp";
+    } else if ("DoImportWorkflow".equals(function)) {
+      List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 
-    public String getDestination(String function,
-        WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
-      if ("ImportWorkflow".equals(function)) {
-        return root + "importWorkflow.jsp";
-      } else if ("DoImportWorkflow".equals(function)) {
-        List<FileItem> items = HttpRequest.decorate(request).getFileItems();
+      /*
+       * Une seule donnée le fichier à uploader.
+       */
+      if (items.size() == 1) {
+        FileItem item = items.get(0);
 
-        /*
-         * Une seule donnée le fichier à uploader.
-         */
-        if (items.size() == 1) {
-          FileItem item = items.get(0);
+        workflowDesignerSC.uploadProcessModel(item);
 
-          workflowDesignerSC.uploadProcessModel(item);
-
-        }
-
-        return hndlListWorkflow.getDestination("Main", workflowDesignerSC,
-            request);
-      } else {
-        return hndlListWorkflow.getDestination("Main", workflowDesignerSC,
-            request);
       }
+
+      return hndlListWorkflow.getDestination("Main", workflowDesignerSC,
+          request);
+    } else {
+      return hndlListWorkflow.getDestination("Main", workflowDesignerSC,
+          request);
     }
   };
+
   /**
    * Handles the "UpdateWorkflow" function
    */
-  private static FunctionHandler hndlUpdateWorkflow = (function, workflowDesignerSC, request) -> {
-    String strProcessFileName = request.getParameter("ProcessFileName"), strProcessName =
-        request.getParameter("name");
-
-    // The parameters may not be defined if the action is launched from a
-    // screen
-    // other than 'workflow header'
-    //
-    if (!StringUtil.isDefined(strProcessFileName)) {
-      strProcessFileName = null;
-    }
+  private static final FunctionHandler hndlUpdateWorkflow = (function, workflowDesignerSC, request) -> {
+    String strProcessName = request.getParameter("name");
 
     if (StringUtil.isDefined(strProcessName)) {
       ProcessModel processModel = new ProcessModelImpl();
@@ -339,41 +302,45 @@ public class WorkflowDesignerRequestRouter extends
 
     workflowDesignerSC.saveProcessModel();
 
-    request.setAttribute("redirectTo", "Main");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "Main");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveWorkflow" function
    */
-  private static FunctionHandler hndlRemoveWorkflow = (function, workflowDesignerSC, request) -> {
-    workflowDesignerSC.removeProcessModel(request.getParameter("ProcessFileName"));
-    request.setAttribute("redirectTo", "Main");
-    return root + "redirect.jsp";
+  private static final FunctionHandler hndlRemoveWorkflow = (function, workflowDesignerSC, request) -> {
+    String processName = URLDecoder.decode(request.getParameter("ProcessFileName"), Charsets.UTF_8);
+    workflowDesignerSC.removeProcessModel(processName);
+    request.setAttribute(REDIRECT_TO, "Main");
+    return REDIRECTION_URL;
   };
 
   /**
    * Handles the "GenerateComponentDescription" function and lists the workflows
    */
-  private static FunctionHandler hndlGenerateComponentDescription =
+  private static final FunctionHandler hndlGenerateComponentDescription =
       (function, workflowDesignerSC, request) -> {
         // Generate the component descriptor
         workflowDesignerSC.generateComponentDescriptor();
 
-        request.setAttribute("redirectTo", "ModifyWorkflow");
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, "ModifyWorkflow");
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "ViewRoles" function
    */
-  private static FunctionHandler hndlViewRoles = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlViewRoles = (function, workflowDesignerSC, request) -> {
     request.setAttribute("Roles", workflowDesignerSC.getProcessModel().getRolesEx());
 
-    return root + "roles.jsp";
+    return ROOT_URL + "roles.jsp";
   };
+
   /**
    * Handles the "AddRole" and "ModifyRole" function
    */
-  private static FunctionHandler hndlEditRole = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlEditRole = (function, workflowDesignerSC, request) -> {
     String strRoleName = request.getParameter("role");
     Role role;
 
@@ -392,41 +359,47 @@ public class WorkflowDesignerRequestRouter extends
     }
     request.setAttribute("Role", role);
 
-    return root + "editRole.jsp";
+    return ROOT_URL + "editRole.jsp";
 
   };
+
+  private static final String NAME_ORIGINAL = "name_original";
   /**
    * Handles the "UpdateRole" function
    */
-  private static FunctionHandler hndlUpdateRole = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlUpdateRole = (function, workflowDesignerSC, request) -> {
     Role role = workflowDesignerSC.createRole();
 
     role.setName(request.getParameter("name"));
-    workflowDesignerSC.updateRole(role, request.getParameter("name_original"));
+    workflowDesignerSC.updateRole(role, request.getParameter(NAME_ORIGINAL));
 
-    request.setAttribute("redirectTo", "ViewRoles");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewRoles");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveRole" function
    */
-  private static FunctionHandler hndlRemoveRole = (function, workflowDesignerSC, request) -> {
-    workflowDesignerSC.removeRole(request.getParameter("role"));
+  private static final FunctionHandler hndlRemoveRole = (function, workflowDesignerSC, request) -> {
+    String roleName = URLDecoder.decode(request.getParameter("role"), Charsets.UTF_8);
+    workflowDesignerSC.removeRole(roleName);
 
-    request.setAttribute("redirectTo", "ViewRoles");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewRoles");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "ViewPresentation" function
    */
-  private static FunctionHandler hndlViewPresentation = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlViewPresentation = (function, workflowDesignerSC, request) -> {
     request.setAttribute("Presentation", workflowDesignerSC.getProcessModel().getPresentation());
-    return root + "presentation.jsp";
+    return ROOT_URL + "presentation.jsp";
   };
+
   /**
    * Handles the "AddColumns" and "ModifyColumns" functions
    */
-  private static FunctionHandler hndlEditColumns = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlEditColumns = (function, workflowDesignerSC, request) -> {
     Columns columns;
 
     if ("AddColumns".equals(function)) {
@@ -448,12 +421,13 @@ public class WorkflowDesignerRequestRouter extends
     request.setAttribute("FolderItemNames",
         workflowDesignerSC.retrieveFolderItemNames(false, false));
 
-    return root + "editColumns.jsp";
+    return ROOT_URL + "editColumns.jsp";
   };
+
   /**
    * Handles the "UpdateColumns" function
    */
-  private static FunctionHandler hndlUpdateColumns = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlUpdateColumns = (function, workflowDesignerSC, request) -> {
       String role = null;
       if (StringUtil.isDefined(request.getParameter("role")))
           role = request.getParameter("role");
@@ -475,29 +449,33 @@ public class WorkflowDesignerRequestRouter extends
     //
     workflowDesignerSC.updateColumns(columns, request.getParameter("role_original"));
 
-    request.setAttribute("redirectTo", "ViewPresentation");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewPresentation");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveColumns" function
    */
-  private static FunctionHandler hndlRemoveColumns = (function, workflowDesignerSC, request) -> {
-    workflowDesignerSC.deleteColumns(request.getParameter("columns"));
+  private static final FunctionHandler hndlRemoveColumns = (function, workflowDesignerSC, request) -> {
+    String column = URLDecoder.decode(request.getParameter("column"), Charsets.UTF_8);
+    workflowDesignerSC.deleteColumns(column);
 
-    request.setAttribute("redirectTo", "ViewPresentation");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewPresentation");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "ViewParticipants" function
    */
-  private static FunctionHandler hndlViewParticipants = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlViewParticipants = (function, workflowDesignerSC, request) -> {
     request.setAttribute("Participants", workflowDesignerSC.getProcessModel().getParticipantsEx());
-    return root + "participants.jsp";
+    return ROOT_URL + "participants.jsp";
   };
+
   /**
    * Handles the "AddParticipant" and "ModifyParicipant" function
    */
-  private static FunctionHandler hndlEditParticipant = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlEditParticipant = (function, workflowDesignerSC, request) -> {
     String strParticipantName = request.getParameter("participant");
     Participant participant;
 
@@ -520,12 +498,13 @@ public class WorkflowDesignerRequestRouter extends
     request.setAttribute("Participant", participant);
     request.setAttribute("StateNames", workflowDesignerSC.retrieveStateNames(true));
 
-    return root + "editParticipant.jsp";
+    return ROOT_URL + "editParticipant.jsp";
   };
+
   /**
    * Handles the "UpdateParticipant" function
    */
-  private static FunctionHandler hndlUpdateParticipant =
+  private static final FunctionHandler hndlUpdateParticipant =
       (function, workflowDesignerSC, request) -> {
         Participant participant = workflowDesignerSC.createParticipant();
         String strResolvedState = request.getParameter("resolvedState");
@@ -536,32 +515,36 @@ public class WorkflowDesignerRequestRouter extends
 
         participant.setName(request.getParameter("name"));
         participant.setResolvedState(strResolvedState);
-        workflowDesignerSC.updateParticipant(participant, request.getParameter("name_original"));
+        workflowDesignerSC.updateParticipant(participant, request.getParameter(NAME_ORIGINAL));
 
-        request.setAttribute("redirectTo", "ViewParticipants");
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, "ViewParticipants");
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "RemoveParticipant" function
    */
-  private static FunctionHandler hndlRemoveParticipant =
+  private static final FunctionHandler hndlRemoveParticipant =
       (function, workflowDesignerSC, request) -> {
-        workflowDesignerSC.removeParticipant(request.getParameter("participant"));
+        String participant = URLDecoder.decode(request.getParameter("participant"), Charsets.UTF_8);
+        workflowDesignerSC.removeParticipant(participant);
 
-        request.setAttribute("redirectTo", "ViewParticipants");
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, "ViewParticipants");
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "ViewStates" function
    */
-  private static FunctionHandler hndlViewStates = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlViewStates = (function, workflowDesignerSC, request) -> {
     request.setAttribute("States", workflowDesignerSC.getProcessModel().getStatesEx());
-    return root + "states.jsp";
+    return ROOT_URL + "states.jsp";
   };
+
   /**
    * Handles the "AddState" and "ModifyState" function
    */
-  private static FunctionHandler hndlEditState = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlEditState = (function, workflowDesignerSC, request) -> {
     String strStateName = request.getParameter("state");
     State state;
 
@@ -581,16 +564,17 @@ public class WorkflowDesignerRequestRouter extends
     request.setAttribute("State", state);
     request.setAttribute("ActionNames", workflowDesignerSC.retrieveActionNames(true));
 
-    return root + "editState.jsp";
+    return ROOT_URL + "editState.jsp";
   };
+
   /**
    * Handles the "UpdateState" function
    */
-  private static FunctionHandler hndlUpdateState = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlUpdateState = (function, workflowDesignerSC, request) -> {
     State state = workflowDesignerSC.createState();
-    String strTimeoutAction = request.getParameter("timeoutAction"), strTimeoutInterval =
-        request.getParameter("timeoutInterval"), strNotifyAdmin =
-        request.getParameter("notifyAdmin");
+    String strTimeoutAction = request.getParameter("timeoutAction");
+    String strTimeoutInterval = request.getParameter("timeoutInterval");
+    String strNotifyAdmin = request.getParameter("notifyAdmin");
     String[] astrAllowedActions = request.getParameterValues("allow");
 
     state.setName(request.getParameter("name"));
@@ -621,26 +605,31 @@ public class WorkflowDesignerRequestRouter extends
       state.setAllowedActions(allowedActions);
     }
 
-    workflowDesignerSC.updateState(state, request.getParameter("name_original"));
+    workflowDesignerSC.updateState(state, request.getParameter(NAME_ORIGINAL));
 
-    request.setAttribute("redirectTo", "ViewStates");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewStates");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveState" function
    */
-  private static FunctionHandler hndlRemoveState = (function, workflowDesignerSC, request) -> {
-    workflowDesignerSC.removeState(request.getParameter("state"));
+  private static final FunctionHandler hndlRemoveState = (function, workflowDesignerSC, request) -> {
+    String state = URLDecoder.decode(request.getParameter("state"), Charsets.UTF_8);
+    workflowDesignerSC.removeState(state);
 
-    request.setAttribute("redirectTo", "ViewStates");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewStates");
+    return REDIRECTION_URL;
   };
+
+  private static final String CONTEXT = "context";
+  private static final String PARENT_SCREEN = "parentScreen";
   /**
    * Handles the "AddQualifiedUsers" and "ModifyQualifiedUsers" function
    */
-  private static FunctionHandler hndlEditQualifiedUsers =
+  private static final FunctionHandler hndlEditQualifiedUsers =
       (function, workflowDesignerSC, request) -> {
-        String strContext = request.getParameter("context");
+        String strContext = request.getParameter(CONTEXT);
         QualifiedUsers qualifiedUsers;
         StringTokenizer strtok;
         String strElement;
@@ -697,20 +686,23 @@ public class WorkflowDesignerRequestRouter extends
 
         request.setAttribute("RoleNames", workflowDesignerSC.retrieveRoleNames(true, false));
         request.setAttribute("QualifiedUsers", qualifiedUsers);
-        request.setAttribute("context", strContext);
-        request.setAttribute("parentScreen", calculateParentScreen(workflowDesignerSC, strContext));
-        request.setAttribute("EditorName", calculateEditorName(strContext));
+        request.setAttribute(CONTEXT, strContext);
+        request.setAttribute(PARENT_SCREEN, calculateParentScreen(request, workflowDesignerSC,
+            strContext));
+        request.setAttribute("EditorName",
+            calculateEditorName(Objects.requireNonNull(strContext)));
 
-        return root + "editQualifiedUsers.jsp";
+        return ROOT_URL + "editQualifiedUsers.jsp";
 
       };
+
   /**
    * Handles the "UpdateQualifiedUsers" function
    */
-  private static FunctionHandler hndlUpdateQualifiedUsers =
+  private static final FunctionHandler hndlUpdateQualifiedUsers =
       (function, workflowDesignerSC, request) -> {
         final String strRole = request.getParameter("role");
-        final String strContext = request.getParameter("context");
+        final String strContext = request.getParameter(CONTEXT);
         final String strMessage = request.getParameter("message");
         final String linkDisabled = request.getParameter("linkDisabled");
         String[] astrUserInRole = request.getParameterValues("userInRole");
@@ -743,33 +735,38 @@ public class WorkflowDesignerRequestRouter extends
         //
         workflowDesignerSC.updateQualifiedUsers(qualifiedUsers, strContext);
 
-        request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+            strContext));
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "RemoveQualifiedUsers" function
    */
-  private static FunctionHandler hndlRemoveQualifiedUsers =
+  private static final FunctionHandler hndlRemoveQualifiedUsers =
       (function, workflowDesignerSC, request) -> {
-        String strContext = request.getParameter("context");
+        String strContext = URLDecoder.decode(request.getParameter(CONTEXT), Charsets.UTF_8);
 
         workflowDesignerSC.setQualifiedUsers(null, strContext);
 
-        request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+            strContext));
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "ViewActions" function
    */
-  private static FunctionHandler hndlViewActions = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlViewActions = (function, workflowDesignerSC, request) -> {
     request.setAttribute("Actions", workflowDesignerSC.getProcessModel().getActionsEx());
 
-    return root + "actions.jsp";
+    return ROOT_URL + "actions.jsp";
   };
+
   /**
    * Handles the "AddAction" and "ModifyAction" function
    */
-  private static FunctionHandler hndlEditAction = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlEditAction = (function, workflowDesignerSC, request) -> {
     String strActionName = request.getParameter("action");
     Action action;
 
@@ -791,12 +788,13 @@ public class WorkflowDesignerRequestRouter extends
     request.setAttribute("FormNames", workflowDesignerSC.retrieveFormNames(true));
     request.setAttribute("KindValues", workflowDesignerSC.retrieveActionKindCodes());
 
-    return root + "editAction.jsp";
+    return ROOT_URL + "editAction.jsp";
   };
+
   /**
    * Handles the "UpdateAction" function
    */
-  private static FunctionHandler hndlUpdateAction = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlUpdateAction = (function, workflowDesignerSC, request) -> {
     Action action = workflowDesignerSC.createAction();
 
     action.setName(request.getParameter("name"));
@@ -807,25 +805,28 @@ public class WorkflowDesignerRequestRouter extends
     }
     action.setKind(request.getParameter("kind"));
 
-    workflowDesignerSC.updateAction(action, request.getParameter("name_original"));
+    workflowDesignerSC.updateAction(action, request.getParameter(NAME_ORIGINAL));
 
-    request.setAttribute("redirectTo", "ViewActions");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewActions");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveAction" function
    */
-  private static FunctionHandler hndlRemoveAction = (function, workflowDesignerSC, request) -> {
-    workflowDesignerSC.removeAction(request.getParameter("action"));
+  private static final FunctionHandler hndlRemoveAction = (function, workflowDesignerSC, request) -> {
+    String action = URLDecoder.decode(request.getParameter("action"), Charsets.UTF_8);
+    workflowDesignerSC.removeAction(action);
 
-    request.setAttribute("redirectTo", "ViewActions");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewActions");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "AddConsequence" and "ModifyConsequence" function
    */
-  private static FunctionHandler hndlEditConsequence = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context");
+  private static final FunctionHandler hndlEditConsequence = (function, workflowDesignerSC, request) -> {
+    String strContext = request.getParameter(CONTEXT);
     int iConsequence;
     Action action = workflowDesignerSC.findAction(strContext);
     Consequences consequences = action.getConsequences();
@@ -843,7 +844,7 @@ public class WorkflowDesignerRequestRouter extends
       consequence = consequences.createConsequence();
       consequence.setItem(WorkflowDesignerSessionController.NEW_ELEMENT_NAME);
       iConsequence = consequences.getConsequenceList().size();
-      strContext = strContext + "/consequences/" + Integer.toString(iConsequence);
+      strContext = strContext + "/consequences/" + iConsequence;
       request.setAttribute("IsExisitingConsequence", Boolean.FALSE);
     } else // ModifyConsequence
     {
@@ -857,22 +858,27 @@ public class WorkflowDesignerRequestRouter extends
           SilverpeasException.ERROR, "workflowDesigner.EX_CONSEQUENCE_NOT_FOUND"); //$NON-NLS-1$
     }
     request.setAttribute("Consequence", consequence);
-    request.setAttribute("context", strContext);
-    request.setAttribute("parentScreen", calculateParentScreen(workflowDesignerSC, strContext));
+    request.setAttribute(CONTEXT, strContext);
+    request.setAttribute(PARENT_SCREEN, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
     request.setAttribute("StateNames", workflowDesignerSC.retrieveStateNames(false));
     request.setAttribute("FolderItemNames",
         workflowDesignerSC.retrieveFolderItemNames(true, false));
     request.setAttribute("Operators", workflowDesignerSC.retrieveOperators(true));
 
-    return root + "editConsequence.jsp";
+    return ROOT_URL + "editConsequence.jsp";
   };
+
+  private static final String VALUE = "value";
   /**
    * Handles the "UpdateConsequence" function
    */
-  private static FunctionHandler hndlUpdateConsequence =
+  private static final FunctionHandler hndlUpdateConsequence =
       (function, workflowDesignerSC, request) -> {
-        String strContext = request.getParameter("context"), strItem = request.getParameter("item"),
-            strKill = request.getParameter("kill"), strSetUnset;
+        String strContext = request.getParameter(CONTEXT);
+        String strItem = request.getParameter("item");
+        String strKill = request.getParameter("kill");
+        String strSetUnset;
         Action action = workflowDesignerSC.findAction(strContext);
         Consequences consequences = action.getConsequences();
         Consequence consequence;
@@ -886,16 +892,12 @@ public class WorkflowDesignerRequestRouter extends
           consequence = action.getConsequences().createConsequence();
         }
 
-        if (StringUtil.isDefined(strKill)) {
-          consequence.setKill(true);
-        } else {
-          consequence.setKill(false);
-        }
+        consequence.setKill(StringUtil.isDefined(strKill));
 
         if (StringUtil.isDefined(strItem)) {
           consequence.setItem(strItem);
           consequence.setOperator(request.getParameter("operator"));
-          consequence.setValue(request.getParameter("value"));
+          consequence.setValue(request.getParameter(VALUE));
         }
 
         // Set / Unset States
@@ -920,64 +922,73 @@ public class WorkflowDesignerRequestRouter extends
 
         workflowDesignerSC.updateConsequence(consequence, strContext);
 
-        request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+            strContext));
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "MoveConsequence" function
    */
-  private static FunctionHandler hndlMoveConsequence = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context");
-    int nDirection = Integer.parseInt(request.getParameter("direction")), iConsequence =
-        Integer.parseInt(request.getParameter("consequenceNo"));
+  private static final FunctionHandler hndlMoveConsequence = (function, workflowDesignerSC, request) -> {
+    String strContext = request.getParameter(CONTEXT);
+    int nDirection = Integer.parseInt(request.getParameter("direction"));
+    int iConsequence = Integer.parseInt(request.getParameter("consequenceNo"));
 
     workflowDesignerSC.moveConsequence(strContext, iConsequence, nDirection);
 
-    request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveConsequence" function
    */
-  private static FunctionHandler hndlRemoveConsequence =
+  private static final FunctionHandler hndlRemoveConsequence =
       (function, workflowDesignerSC, request) -> {
-        String strContext = request.getParameter("context");
+        String strContext =URLDecoder.decode(request.getParameter(CONTEXT), Charsets.UTF_8);
 
         workflowDesignerSC.removeConsequence(strContext);
 
-        request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+            strContext));
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "ViewUserInfos" function
    */
-  private static FunctionHandler hndlViewUserInfos = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlViewUserInfos = (function, workflowDesignerSC, request) -> {
     request.setAttribute("Items", workflowDesignerSC.getProcessModel().getUserInfos());
-    request.setAttribute("context", WorkflowDesignerSessionController.USER_INFOS);
+    request.setAttribute(CONTEXT, WorkflowDesignerSessionController.USER_INFOS);
 
-    return root + "userInfos.jsp";
+    return ROOT_URL + "userInfos.jsp";
   };
+
   /**
    * Handles the "ViewDataFolder" function
    */
-  private static FunctionHandler hndlViewDataFolder = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlViewDataFolder = (function, workflowDesignerSC, request) -> {
     request.setAttribute("Items", workflowDesignerSC.getProcessModel().getDataFolder());
-    request.setAttribute("context", WorkflowDesignerSessionController.DATA_FOLDER);
-    return root + "dataFolder.jsp";
+    request.setAttribute(CONTEXT, WorkflowDesignerSessionController.DATA_FOLDER);
+    return ROOT_URL + "dataFolder.jsp";
   };
+
   /**
    * Handles the "ViewForms" function
    */
-  private static FunctionHandler hndlViewForms = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlViewForms = (function, workflowDesignerSC, request) -> {
     request.setAttribute("Forms", workflowDesignerSC.getProcessModel().getForms());
-    return root + "forms.jsp";
+    return ROOT_URL + "forms.jsp";
   };
+
   /**
    * Handles the "AddForm" and "ModifyForm" function
    */
-  private static FunctionHandler hndlEditForm = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context"), strFormType =
-        WorkflowDesignerSessionController.FORM_TYPE_ACTION;
+  private static final FunctionHandler hndlEditForm = (function, workflowDesignerSC, request) -> {
+    String strContext = request.getParameter(CONTEXT);
+    String strFormType = WorkflowDesignerSessionController.FORM_TYPE_ACTION;
     Form form;
 
     if ("AddForm".equals(function)) {
@@ -999,20 +1010,22 @@ public class WorkflowDesignerRequestRouter extends
     }
 
     request.setAttribute("Form", form);
-    request.setAttribute("context", strContext);
+    request.setAttribute(CONTEXT, strContext);
     request.setAttribute("type", strFormType);
     request.setAttribute("RoleNames", workflowDesignerSC.retrieveRoleNames(true, false));
 
-    return root + "editForm.jsp";
+    return ROOT_URL + "editForm.jsp";
   };
+
   /**
    * Handles the "UpdateForm" function
    */
-  private static FunctionHandler hndlUpdateForm = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlUpdateForm = (function, workflowDesignerSC, request) -> {
     Form form = workflowDesignerSC.createForm();
-    String strHTMLFileName = request.getParameter("HTMLFileName"), strRole =
-        request.getParameter("role"), strRoleOriginal = request.getParameter("role_original"),
-        strFormType = request.getParameter("type");
+    String strHTMLFileName = request.getParameter("HTMLFileName");
+    String strRole = request.getParameter("role");
+    String strRoleOriginal = request.getParameter("role_original");
+    String strFormType = request.getParameter("type");
 
     form.setName(request.getParameter("name"));
 
@@ -1039,26 +1052,29 @@ public class WorkflowDesignerRequestRouter extends
       form.setRole(null);
     }
 
-    workflowDesignerSC.updateForm(form, request.getParameter("context"),
-        request.getParameter("name_original"), strRoleOriginal);
+    workflowDesignerSC.updateForm(form, request.getParameter(CONTEXT),
+        request.getParameter(NAME_ORIGINAL), strRoleOriginal);
 
-    request.setAttribute("redirectTo", "ViewForms");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewForms");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveForm" function
    */
-  private static FunctionHandler hndlRemoveForm = (function, workflowDesignerSC, request) -> {
-    workflowDesignerSC.removeForm(request.getParameter("context"));
+  private static final FunctionHandler hndlRemoveForm = (function, workflowDesignerSC, request) -> {
+    String context = URLDecoder.decode(request.getParameter(CONTEXT));
+    workflowDesignerSC.removeForm(context);
 
-    request.setAttribute("redirectTo", "ViewForms");
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, "ViewForms");
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "AddInput" and "ModifyInput" function
    */
-  private static FunctionHandler hndlEditInput = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context");
+  private static final FunctionHandler hndlEditInput = (function, workflowDesignerSC, request) -> {
+    String strContext = request.getParameter(CONTEXT);
     int iInput;
     Form form = workflowDesignerSC.findForm(strContext);
     Input input;
@@ -1074,7 +1090,7 @@ public class WorkflowDesignerRequestRouter extends
       input = form.createInput();
       input.setValue(WorkflowDesignerSessionController.NEW_ELEMENT_NAME);
       iInput = form.getInputs().length;
-      strContext = strContext + "/inputs[" + Integer.toString(iInput) + "]";
+      strContext = strContext + "/inputs[" + iInput + "]";
       request.setAttribute("IsExisitingInput", Boolean.FALSE);
     } else // ModifyInput
     {
@@ -1088,21 +1104,23 @@ public class WorkflowDesignerRequestRouter extends
           SilverpeasException.ERROR, "workflowDesigner.EX_INPUT_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Input", input);
-      request.setAttribute("context", strContext);
-      request.setAttribute("parentScreen", calculateParentScreen(
+      request.setAttribute(CONTEXT, strContext);
+      request.setAttribute(PARENT_SCREEN, calculateParentScreen(request,
           workflowDesignerSC, strContext));
       request.setAttribute("TypesAndDisplayers", workflowDesignerSC.retrieveTypesAndDisplayers());
       request.setAttribute("FolderItems", workflowDesignerSC.retrieveFolderItems());
 
-      return root + "editInput.jsp";
+      return ROOT_URL + "editInput.jsp";
   };
+
   /**
    * Handles the "UpdateInput" function
    */
-  private static FunctionHandler hndlUpdateInput = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context"), strItem = request.getParameter("item"),
-        strValue = request.getParameter("value"), strDisplayer =
-        request.getParameter("displayerName");
+  private static final FunctionHandler hndlUpdateInput = (function, workflowDesignerSC, request) -> {
+    String strContext = request.getParameter(CONTEXT);
+    String strItem = request.getParameter("item");
+    String strValue = request.getParameter(VALUE);
+    String strDisplayer = request.getParameter("displayerName");
     Form form = workflowDesignerSC.findForm(strContext);
     Input input;
 
@@ -1115,17 +1133,9 @@ public class WorkflowDesignerRequestRouter extends
     }
     input = form.createInput();
 
-    if (StringUtil.isDefined(request.getParameter("mandatory"))) {
-      input.setMandatory(true);
-    } else {
-      input.setMandatory(false);
-    }
+    input.setMandatory(StringUtil.isDefined(request.getParameter("mandatory")));
 
-    if (StringUtil.isDefined(request.getParameter("readonly"))) {
-      input.setReadonly(true);
-    } else {
-      input.setReadonly(false);
-    }
+    input.setReadonly(StringUtil.isDefined(request.getParameter("readonly")));
 
     if (StringUtil.isDefined(strItem)) {
       input.setItem(workflowDesignerSC.getProcessModel().getDataFolder().getItem(strItem));
@@ -1141,28 +1151,33 @@ public class WorkflowDesignerRequestRouter extends
 
     workflowDesignerSC.updateInput(input, strContext);
 
-    request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveInput" function
    */
-  private static FunctionHandler hndlRemoveInput = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context");
-
+  private static final FunctionHandler hndlRemoveInput = (function, workflowDesignerSC, request) -> {
+    String strContext = URLDecoder.decode(request.getParameter(CONTEXT), Charsets.UTF_8);
     workflowDesignerSC.removeInput(strContext);
 
-    request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "AddRelatedUser" and "ModifyRelatedUser" functions
    */
-  private static FunctionHandler hndlEditRelatedUser = (function, workflowDesignerSC, request) -> {
+  private static final FunctionHandler hndlEditRelatedUser = (function, workflowDesignerSC, request) -> {
     RelatedUser relatedUser;
-    String strContext = request.getParameter("context"), strParticipant =
-        request.getParameter("participant"), strFolderItem = request.getParameter("folderItem"),
-        strRelation = request.getParameter("relation"), strRole = request.getParameter("role");
+    String strContext = request.getParameter(CONTEXT);
+    String strParticipant = request.getParameter("participant");
+    String strFolderItem = request.getParameter("folderItem");
+    String strRelation = request.getParameter("relation");
+    String strRole = request.getParameter("role");
 
     if ("AddRelatedUser".equals(function)) {
       relatedUser = workflowDesignerSC.getProcessModel().createRelatedUser();
@@ -1198,23 +1213,27 @@ public class WorkflowDesignerRequestRouter extends
     request.setAttribute("FolderItemNames", workflowDesignerSC.retrieveFolderItemNames(true, true));
     request.setAttribute("UserInfoNames", workflowDesignerSC.retrieveUserInfoItemNames(true, true));
     request.setAttribute("RelatedUser", relatedUser);
-    request.setAttribute("context", strContext);
-    request.setAttribute("parentScreen", calculateParentScreen(workflowDesignerSC, strContext));
+    request.setAttribute(CONTEXT, strContext);
+    request.setAttribute(PARENT_SCREEN, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
 
-    return root + "editRelatedUser.jsp";
+    return ROOT_URL + "editRelatedUser.jsp";
   };
+
   /**
    * Handles the "UpdateRelatedUser" function
    */
-  private static FunctionHandler hndlUpdateRelatedUser =
+  private static final FunctionHandler hndlUpdateRelatedUser =
       (function, workflowDesignerSC, request) -> {
-        String strParticipantOriginal = request.getParameter("participant_original"),
-            strFolderItemOriginal = request.getParameter("folderItem_original"),
-            strRelationOriginal = request.getParameter("relation_original"), strRoleOriginal =
-            request.getParameter("role_original"), strParticipant =
-            request.getParameter("participant"), strFolderItem = request.getParameter("folderItem"),
-            strRelation = request.getParameter("relation"), strRole = request.getParameter("role"),
-            strContext = request.getParameter("context");
+        String strParticipantOriginal = request.getParameter("participant_original");
+        String strFolderItemOriginal = request.getParameter("folderItem_original");
+        String strRelationOriginal = request.getParameter("relation_original");
+        String strRoleOriginal = request.getParameter("role_original");
+        String strParticipant = request.getParameter("participant");
+        String strFolderItem = request.getParameter("folderItem");
+        String strRelation = request.getParameter("relation");
+        String strRole = request.getParameter("role");
+        String strContext = request.getParameter(CONTEXT);
         RelatedUser relatedUser = workflowDesignerSC.getProcessModel().createRelatedUser();
 
         if (!StringUtil.isDefined(strParticipantOriginal)) {
@@ -1235,7 +1254,6 @@ public class WorkflowDesignerRequestRouter extends
               .getParticipantsEx()
               .getParticipant(strParticipant));
         } else {
-          strParticipant = null;
           relatedUser.setParticipant(null);
         }
 
@@ -1243,7 +1261,6 @@ public class WorkflowDesignerRequestRouter extends
           relatedUser.setFolderItem(
               workflowDesignerSC.getProcessModel().getDataFolder().getItem(strFolderItem));
         } else {
-          strFolderItem = null;
           relatedUser.setFolderItem(null);
         }
 
@@ -1259,41 +1276,48 @@ public class WorkflowDesignerRequestRouter extends
 
         workflowDesignerSC.updateRelatedUser(relatedUser, strContext, strParticipantOriginal,
             strFolderItemOriginal, strRelationOriginal, strRoleOriginal);
-        request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+            strContext));
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "RemoveRelatedUser" function
    */
-  private static FunctionHandler hndlRemoveRelatedUser =
+  private static final FunctionHandler hndlRemoveRelatedUser =
       (function, workflowDesignerSC, request) -> {
         RelatedUser relatedUser = workflowDesignerSC.getProcessModel().createRelatedUser();
-        String strContext = request.getParameter("context"), strParticipant =
-            request.getParameter("participant"), strFolderItem = request.getParameter("folderItem"),
-            strRelation = request.getParameter("relation"), strRole = request.getParameter("role");
+        String strContext = URLDecoder.decode(request.getParameter(CONTEXT), Charsets.UTF_8);
+        String strParticipant = request.getParameter("participant");
+        String strFolderItem = request.getParameter("folderItem");
+        String strRelation = request.getParameter("relation");
+        String strRole = request.getParameter("role");
 
         if (StringUtil.isDefined(strParticipant)) {
           relatedUser.setParticipant(workflowDesignerSC.getProcessModel()
               .getParticipantsEx()
-              .getParticipant(strParticipant));
+              .getParticipant(URLDecoder.decode(strParticipant, Charsets.UTF_8)));
         } else {
-          strParticipant = null;
           relatedUser.setParticipant(null);
         }
 
         if (StringUtil.isDefined(strFolderItem)) {
           relatedUser.setFolderItem(
-              workflowDesignerSC.getProcessModel().getDataFolder().getItem(strFolderItem));
+              workflowDesignerSC.getProcessModel()
+                  .getDataFolder().getItem(URLDecoder.decode(strFolderItem, Charsets.UTF_8)));
         } else {
-          strFolderItem = null;
           relatedUser.setFolderItem(null);
         }
 
         if (!StringUtil.isDefined(strRelation)) {
           strRelation = null;
+        } else  {
+          strRelation = URLDecoder.decode(strRelation, Charsets.UTF_8);
         }
         if (!StringUtil.isDefined(strRole)) {
           strRole = null;
+        } else {
+          strRole = URLDecoder.decode(strRole, Charsets.UTF_8);
         }
 
         relatedUser.setRelation(strRelation);
@@ -1303,16 +1327,18 @@ public class WorkflowDesignerRequestRouter extends
         //
         workflowDesignerSC.removeRelatedUser(relatedUser, strContext);
 
-        request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+            strContext));
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "AddContextualDesignation" and "ModifyContextualDesignation" functions
    */
-  private static FunctionHandler hndlEditContextualDesignation =
+  private static final FunctionHandler hndlEditContextualDesignation =
       (function, workflowDesignerSC, request) -> {
         ContextualDesignation designation;
-        String strContext = request.getParameter("context");
+        String strContext = request.getParameter(CONTEXT);
 
         if ("AddContextualDesignation".equals(function)) {
           designation = workflowDesignerSC.createDesignation();
@@ -1333,20 +1359,22 @@ public class WorkflowDesignerRequestRouter extends
         request.setAttribute("LanguageNames", workflowDesignerSC.retrieveLanguageNames(true));
         request.setAttribute("LanguageCodes", workflowDesignerSC.retrieveLanguageCodes(true));
         request.setAttribute("ContextualDesignation", designation);
-        request.setAttribute("context", strContext);
-        request.setAttribute("parentScreen", request.getParameter("parentScreen"));
+        request.setAttribute(CONTEXT, strContext);
+        request.setAttribute(PARENT_SCREEN, request.getParameter(PARENT_SCREEN));
         request.setAttribute("EditorName", calculateEditorName(strContext));
 
-        return root + "editContextualDesignation.jsp";
+        return ROOT_URL + "editContextualDesignation.jsp";
       };
+
   /**
    * Handles the "UpdateContextualDesignation" function
    */
-  private static FunctionHandler hndlUpdateContextualDesignation =
+  private static final FunctionHandler hndlUpdateContextualDesignation =
       (function, workflowDesignerSC, request) -> {
-        String strLanguage = request.getParameter("lang_original"), strRole =
-            request.getParameter("role_original"), strContext = request.getParameter("context"),
-            strParentScreen = request.getParameter("parentScreen");
+        String strLanguage = request.getParameter("lang_original");
+        String strRole = request.getParameter("role_original");
+        String strContext = request.getParameter(CONTEXT);
+        String strParentScreen = request.getParameter(PARENT_SCREEN);
         ContextualDesignation designation = new SpecificLabel();
 
         designation.setLanguage(request.getParameter("lang"));
@@ -1356,33 +1384,44 @@ public class WorkflowDesignerRequestRouter extends
         workflowDesignerSC.updateContextualDesignations(strContext, designation, strLanguage,
             strRole);
 
-        request.setAttribute("redirectTo", strParentScreen);
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, applySessionToken(request, strParentScreen));
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "RemoveContextualDesignation" function
    */
-  private static FunctionHandler hndlRemoveContextualDesignation =
+  private static final FunctionHandler hndlRemoveContextualDesignation =
       (function, workflowDesignerSC, request) -> {
         ContextualDesignation contextualDesignation = new SpecificLabel();
-        String strContext = request.getParameter("context"), strParentScreen =
-            request.getParameter("parentScreen");
+        String strContext = URLDecoder.decode(request.getParameter(CONTEXT), Charsets.UTF_8);
+        String strParentScreen = URLDecoder.decode(request.getParameter(PARENT_SCREEN), Charsets.UTF_8);
 
-        contextualDesignation.setRole(request.getParameter("role"));
-        contextualDesignation.setLanguage(request.getParameter("lang"));
+        String role = request.getParameter("role");
+        if (StringUtil.isDefined(role)) {
+          role = URLDecoder.decode(role, Charsets.UTF_8);
+        }
+
+        String language = request.getParameter("lang");
+        if (StringUtil.isDefined(language)) {
+          language = URLDecoder.decode(language, Charsets.UTF_8);
+        }
+        contextualDesignation.setRole(role);
+        contextualDesignation.setLanguage(language);
 
         // remove the contextual designation concerned
         //
         workflowDesignerSC.removeContextualDesignation(strContext, contextualDesignation);
 
-        request.setAttribute("redirectTo", strParentScreen);
-        return root + "redirect.jsp";
+        request.setAttribute(REDIRECT_TO, applySessionToken(request, strParentScreen));
+        return REDIRECTION_URL;
       };
+
   /**
    * Handles the "AddItem" and "ModifyItem" function
    */
-  private static FunctionHandler hndlEditItem = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context");
+  private static final FunctionHandler hndlEditItem = (function, workflowDesignerSC, request) -> {
+    String strContext = request.getParameter(CONTEXT);
     Item item;
 
     if ("AddItem".equals(function)) {
@@ -1400,23 +1439,28 @@ public class WorkflowDesignerRequestRouter extends
           SilverpeasException.ERROR, "workflowEngine.EX_ITEM_NOT_FOUND"); //$NON-NLS-1$
     }
     request.setAttribute("Item", item);
-    request.setAttribute("context", strContext);
-    request.setAttribute("parentScreen", calculateParentScreen(workflowDesignerSC, strContext));
+    request.setAttribute(CONTEXT, strContext);
+    request.setAttribute(PARENT_SCREEN, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
     request.setAttribute("TypeValues", workflowDesignerSC.retrieveItemTypeCodes(true));
     request.setAttribute("UserInfosNames",
         workflowDesignerSC.retrieveUserInfoItemNames(true, false));
 
-    return root + "editItem.jsp";
+    return ROOT_URL + "editItem.jsp";
   };
+
   /**
    * Handles the "UpdateItem" function
    */
-  private static FunctionHandler hndlUpdateItem = (function, workflowDesignerSC, request) -> {
-    String strNameOriginal = request.getParameter("name_original"), strName =
-        request.getParameter("name"), strComupted = request.getParameter("computed"), strMapTo =
-        request.getParameter("mapTo"), strType = request.getParameter("type"), strReadonly =
-        request.getParameter("readonly"), strFormula = request.getParameter("formula"), strContext =
-        request.getParameter("context");
+  private static final FunctionHandler hndlUpdateItem = (function, workflowDesignerSC, request) -> {
+    String strNameOriginal = request.getParameter(NAME_ORIGINAL);
+    String strName = request.getParameter("name");
+    String strComupted = request.getParameter("computed");
+    String strMapTo = request.getParameter("mapTo");
+    String strType = request.getParameter("type");
+    String strReadonly = request.getParameter("readonly");
+    String strFormula = request.getParameter("formula");
+    String strContext = request.getParameter(CONTEXT);
     Item item = workflowDesignerSC.createItem(strContext);
 
     if (!StringUtil.isDefined(strMapTo)) {
@@ -1444,25 +1488,29 @@ public class WorkflowDesignerRequestRouter extends
     item.setType(strType);
 
     workflowDesignerSC.updateItem(item, strContext, strNameOriginal);
-    request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveItem" function
    */
-  private static FunctionHandler hndlRemoveItem = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context");
-
+  private static final FunctionHandler hndlRemoveItem = (function, workflowDesignerSC, request) -> {
+    String strContext = URLDecoder.decode(request.getParameter(CONTEXT), Charsets.UTF_8);
     workflowDesignerSC.removeItem(strContext);
 
-    request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "AddParameter" and "ModifyParameter" function
    */
-  private static FunctionHandler hndlEditParameter = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context"), strName = request.getParameter("name");
+  private static final FunctionHandler hndlEditParameter = (function, workflowDesignerSC, request) -> {
+    String strContext = request.getParameter(CONTEXT);
+    String strName = request.getParameter("name");
     Item item = workflowDesignerSC.findItem(strContext);
     Parameter parameter;
 
@@ -1486,18 +1534,21 @@ public class WorkflowDesignerRequestRouter extends
           SilverpeasException.ERROR, "workflowEngine.EX_PARAMETER_NOT_FOUND"); //$NON-NLS-1$
     }
     request.setAttribute("Parameter", parameter);
-    request.setAttribute("context", strContext);
-    request.setAttribute("parentScreen", calculateParentScreen(workflowDesignerSC, strContext));
+    request.setAttribute(CONTEXT, strContext);
+    request.setAttribute(PARENT_SCREEN, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
 
-    return root + "editParameter.jsp";
+    return ROOT_URL + "editParameter.jsp";
   };
+
   /**
    * Handles the "UpdateParameter" function
    */
-  private static FunctionHandler hndlUpdateParameter = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context"), strName = request.getParameter("name"),
-        strValue = request.getParameter("value"), strNameOriginal =
-        request.getParameter("name_original");
+  private static final FunctionHandler hndlUpdateParameter = (function, workflowDesignerSC, request) -> {
+    String strContext = request.getParameter(CONTEXT);
+    String strName = request.getParameter("name");
+    String strValue = request.getParameter(VALUE);
+    String strNameOriginal = request.getParameter(NAME_ORIGINAL);
     Item item = workflowDesignerSC.findItem(strContext);
     Parameter parameter;
 
@@ -1517,19 +1568,23 @@ public class WorkflowDesignerRequestRouter extends
 
     workflowDesignerSC.updateParameter(parameter, strContext, strNameOriginal);
 
-    request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
+    return REDIRECTION_URL;
   };
+
   /**
    * Handles the "RemoveParameter" function
    */
-  private static FunctionHandler hndlRemoveParameter = (function, workflowDesignerSC, request) -> {
-    String strContext = request.getParameter("context"), strName = request.getParameter("name");
+  private static final FunctionHandler hndlRemoveParameter = (function, workflowDesignerSC, request) -> {
+    String strContext = URLDecoder.decode(request.getParameter(CONTEXT), Charsets.UTF_8);
+    String strName = URLDecoder.decode(request.getParameter("name"), Charsets.UTF_8);
 
     workflowDesignerSC.removeParameter(strContext, strName);
 
-    request.setAttribute("redirectTo", calculateParentScreen(workflowDesignerSC, strContext));
-    return root + "redirect.jsp";
+    request.setAttribute(REDIRECT_TO, calculateParentScreen(request, workflowDesignerSC,
+        strContext));
+    return REDIRECTION_URL;
   };
 
   /**
@@ -1537,7 +1592,7 @@ public class WorkflowDesignerRequestRouter extends
    * @param strContext the context
    * @return resource key to retrieve the name
    */
-  static private String calculateEditorName(String strContext) {
+  private static String calculateEditorName(String strContext) {
     int iSlash = strContext.lastIndexOf('/');
     String strEditor;
 
@@ -1547,28 +1602,25 @@ public class WorkflowDesignerRequestRouter extends
       strEditor = strContext;
     }
 
-    if (WorkflowDesignerSessionController.LABELS.equals(strEditor)) {
-      return "workflowDesigner.editor.label";
-    } else if (WorkflowDesignerSessionController.DESCRIPTIONS.equals(strEditor)) {
-      return "workflowDesigner.editor.description";
-    } else if (WorkflowDesignerSessionController.TITLES.equals(strEditor)) {
-      return "workflowDesigner.editor.title";
-    } else if (WorkflowDesignerSessionController.ACTIVITIES.equals(strEditor)) {
-      return "workflowDesigner.editor.activity";
-    } else if (WorkflowDesignerSessionController.WORKING_USERS
-        .equals(strEditor)) {
-      return "workflowDesigner.editor.workingUsers";
-    } else if (WorkflowDesignerSessionController.INTERESTED_USERS
-        .equals(strEditor)) {
-      return "workflowDesigner.editor.interestedUsers";
-    } else if (WorkflowDesignerSessionController.ALLOWED_USERS
-        .equals(strEditor)) {
-      return "workflowDesigner.editor.allowedUsers";
-    } else if (WorkflowDesignerSessionController.NOTIFIED_USERS
-        .equals(strEditor)) {
-      return "workflowDesigner.editor.notifiedUsers";
-    } else {
-      return null;
+    switch (strEditor) {
+      case WorkflowDesignerSessionController.LABELS:
+        return "workflowDesigner.editor.label";
+      case WorkflowDesignerSessionController.DESCRIPTIONS:
+        return "workflowDesigner.editor.description";
+      case WorkflowDesignerSessionController.TITLES:
+        return "workflowDesigner.editor.title";
+      case WorkflowDesignerSessionController.ACTIVITIES:
+        return "workflowDesigner.editor.activity";
+      case WorkflowDesignerSessionController.WORKING_USERS:
+        return "workflowDesigner.editor.workingUsers";
+      case WorkflowDesignerSessionController.INTERESTED_USERS:
+        return "workflowDesigner.editor.interestedUsers";
+      case WorkflowDesignerSessionController.ALLOWED_USERS:
+        return "workflowDesigner.editor.allowedUsers";
+      case WorkflowDesignerSessionController.NOTIFIED_USERS:
+        return "workflowDesigner.editor.notifiedUsers";
+      default:
+        return null;
     }
   }
 
@@ -1577,161 +1629,193 @@ public class WorkflowDesignerRequestRouter extends
    * @param strContext the context
    * @param workflowDesignerSC session controller
    * @return the relative URL
-   * @throws WorkflowException
+   * @throws WorkflowException if the computation fails
    */
-  private static String calculateParentScreen(WorkflowDesignerSessionController workflowDesignerSC,
+  private static String calculateParentScreen(HttpServletRequest request,
+      WorkflowDesignerSessionController workflowDesignerSC,
       String strContext) throws WorkflowException {
-    StringTokenizer strtok;
-    String strElement, strParentScreen = "";
-    StringBuffer sb = new StringBuffer();
-
     if (strContext == null) {
-      return strParentScreen;
+      return "";
     }
 
-    strtok = new StringTokenizer(strContext, "/[]"); //$NON-NLS-1$
-
+    var strtok = new StringTokenizer(strContext, "/[]");
+    String strParentScreen = "";
     try {
-      strElement = strtok.nextToken();
+      StringBuilder sb = new StringBuilder();
       sb.append("?context=");
 
+      String strElement = strtok.nextToken();
       if (WorkflowDesignerSessionController.LABELS.equals(strElement)
           || WorkflowDesignerSessionController.DESCRIPTIONS.equals(strElement)) {
         strParentScreen = "ModifyWorkflow";
       } else if (WorkflowDesignerSessionController.ROLES.equals(strElement)) {
         strParentScreen = "ModifyRole?role=" + strtok.nextToken();
-      } else if (WorkflowDesignerSessionController.PRESENTATION
-          .equals(strElement)) {
+      } else if (WorkflowDesignerSessionController.PRESENTATION.equals(strElement)) {
         strParentScreen = "ModifyColumns?columns=" + strtok.nextToken();
       } else if (WorkflowDesignerSessionController.STATES.equals(strElement)) {
-        State state;
-
-        strElement = strtok.nextToken();
-        state = workflowDesignerSC.getProcessModel().getStatesEx().getState(
-            strElement);
-        strElement = strtok.nextToken();
-
-        sb.append(WorkflowDesignerSessionController.STATES);
-        sb.append("/");
-        sb.append(state.getName());
-
-        strParentScreen = "ModifyState?state=" + state.getName();
-
-        if (WorkflowDesignerSessionController.WORKING_USERS.equals(strElement)) {
-          if (WorkflowDesignerSessionController.RELATED_USER.equals(strtok
-              .nextToken())) {
-            // is a 'relatedUser'
-            //
-            sb.append("/");
-            sb.append(WorkflowDesignerSessionController.WORKING_USERS);
-            strParentScreen = "ModifyQualifiedUsers" + sb.toString();
-          }
-        } else if (WorkflowDesignerSessionController.INTERESTED_USERS
-            .equals(strElement)) {
-          if (WorkflowDesignerSessionController.RELATED_USER.equals(strtok
-              .nextToken())) {
-            // is a 'relatedUser'
-            //
-            sb.append("/");
-            sb.append(WorkflowDesignerSessionController.INTERESTED_USERS);
-            strParentScreen = "ModifyQualifiedUsers" + sb.toString();
-          }
-        }
+        strParentScreen = parentScreenForStates(workflowDesignerSC, strtok, sb);
       } else if (WorkflowDesignerSessionController.ACTIONS.equals(strElement)) {
-        Action action;
-
-        strElement = strtok.nextToken();
-        action = workflowDesignerSC.getProcessModel().getActionsEx().getAction(
-            strElement);
-        strElement = strtok.nextToken(); // allowedUsers or consequences
-
-        sb.append(WorkflowDesignerSessionController.ACTIONS);
-        sb.append("/");
-        sb.append(action.getName());
-
-        strParentScreen = "ModifyAction?action=" + action.getName();
-
-        if (WorkflowDesignerSessionController.ALLOWED_USERS.equals(strElement)) {
-          // is a 'relatedUser'
-          //
-          if (WorkflowDesignerSessionController.RELATED_USER.equals(strtok
-              .nextToken())) {
-            sb.append("/");
-            sb.append(WorkflowDesignerSessionController.ALLOWED_USERS);
-            strParentScreen = "ModifyQualifiedUsers" + sb.toString();
-          }
-        } else if (WorkflowDesignerSessionController.CONSEQUENCES
-            .equals(strElement)) {
-          sb.append("/");
-          sb.append(WorkflowDesignerSessionController.CONSEQUENCES);
-          sb.append("/");
-          sb.append(strtok.nextToken()); // consequence no.
-
-          // notified users
-          //
-          if (WorkflowDesignerSessionController.NOTIFIED_USERS.equals(strtok.nextToken())) {
-            strParentScreen = "ModifyConsequence" + sb.toString();
-            // related users
-            if (WorkflowDesignerSessionController.RELATED_USER.equals(strtok.nextToken())) {
-              sb.append("/");
-              sb.append(WorkflowDesignerSessionController.NOTIFIED_USERS);
-
-              strParentScreen = "ModifyQualifiedUsers" + sb.toString();
-            }
-          }
-        }
-      } else if (WorkflowDesignerSessionController.DATA_FOLDER
-          .equals(strElement)) {
-        strParentScreen = "ViewDataFolder";
-
-        sb.append(WorkflowDesignerSessionController.DATA_FOLDER);
-        sb.append("/");
-        sb.append(strtok.nextToken()); // item name
-
-        if (WorkflowDesignerSessionController.PARAMETERS.equals(strtok
-            .nextToken())) {
-          strParentScreen = "ModifyItem" + sb.toString();
-        }
-      } else if (WorkflowDesignerSessionController.USER_INFOS
-          .equals(strElement)) {
-        strParentScreen = "ViewUserInfos";
-
-        sb.append(WorkflowDesignerSessionController.USER_INFOS);
-        sb.append("/");
-        sb.append(strtok.nextToken()); // item name
-
-        if (WorkflowDesignerSessionController.PARAMETERS.equals(strtok
-            .nextToken())) {
-          strParentScreen = "ModifyItem" + sb.toString();
-        }
+        strParentScreen = parentScreenForActions(workflowDesignerSC, strtok, sb);
+      } else if (WorkflowDesignerSessionController.DATA_FOLDER.equals(strElement)) {
+        strParentScreen = parentScreenForDataFolder(strtok, sb);
+      } else if (WorkflowDesignerSessionController.USER_INFOS.equals(strElement)) {
+        strParentScreen = parentScreenForUserInfo(strtok, sb);
       } else if (WorkflowDesignerSessionController.FORMS.equals(strElement)) {
-        sb.append(WorkflowDesignerSessionController.FORMS);
-        sb.append("[");
-        sb.append(strtok.nextToken()); // frorm & role name
-        sb.append("]");
-        strElement = strtok.nextToken();
-
-        if (WorkflowDesignerSessionController.INPUTS.equals(strElement)) {
-          strParentScreen = "ModifyForm" + sb.toString();
-
-          sb.append("/");
-          sb.append(WorkflowDesignerSessionController.INPUTS);
-          sb.append("[");
-          sb.append(strtok.nextToken()); // input no
-          sb.append("]");
-          strElement = strtok.nextToken();
-
-          if (WorkflowDesignerSessionController.LABELS.equals(strElement)) {
-            strParentScreen = "ModifyInput" + sb.toString();
-          }
-        } else if (WorkflowDesignerSessionController.TITLES.equals(strElement)) {
-          strParentScreen = "ModifyForm" + sb.toString();
-        }
+        strParentScreen = parentScreenForForms(strtok, sb);
       }
     } catch (NoSuchElementException e) {
       // Thrown when no token was found where expected
       // do nothing, just return null...
+      SilverLogger.getLogger(WorkflowDesignerRequestRouter.class).error(e.getMessage());
+    }
+    return applySessionToken(request, strParentScreen);
+  }
+
+  private static String parentScreenForUserInfo(StringTokenizer strtok, StringBuilder sb) {
+    String strParentScreen = "ViewUserInfos";
+
+    sb.append(WorkflowDesignerSessionController.USER_INFOS);
+    sb.append("/");
+    sb.append(strtok.nextToken()); // item name
+
+    if (strtok.hasMoreTokens() &&
+        WorkflowDesignerSessionController.PARAMETERS.equals(strtok.nextToken())) {
+      strParentScreen = "ModifyItem" + sb;
     }
     return strParentScreen;
+  }
+
+  private static String parentScreenForDataFolder(StringTokenizer strtok, StringBuilder sb) {
+    String strParentScreen = "ViewDataFolder";
+
+    sb.append(WorkflowDesignerSessionController.DATA_FOLDER);
+    sb.append("/");
+    sb.append(strtok.nextToken()); // item name
+
+    if (strtok.hasMoreTokens() &&
+        WorkflowDesignerSessionController.PARAMETERS.equals(strtok.nextToken())) {
+      strParentScreen = "ModifyItem" + sb;
+    }
+    return strParentScreen;
+  }
+
+  private static String parentScreenForStates(WorkflowDesignerSessionController workflowDesignerSC,
+      StringTokenizer strtok, StringBuilder sb) {
+    String nextStrElement = strtok.nextToken();
+    State state = workflowDesignerSC.getProcessModel().getStatesEx().getState(nextStrElement);
+    nextStrElement = strtok.nextToken();
+
+    sb.append(WorkflowDesignerSessionController.STATES);
+    sb.append("/");
+    sb.append(state.getName());
+
+    String strParentScreen = "ModifyState?state=" + state.getName();
+
+    if (WorkflowDesignerSessionController.WORKING_USERS.equals(nextStrElement)) {
+      if (WorkflowDesignerSessionController.RELATED_USER.equals(strtok
+          .nextToken())) {
+        // is a 'relatedUser'
+        //
+        sb.append("/");
+        sb.append(WorkflowDesignerSessionController.WORKING_USERS);
+        strParentScreen = "ModifyQualifiedUsers" + sb;
+      }
+    } else if (WorkflowDesignerSessionController.INTERESTED_USERS
+        .equals(nextStrElement) && WorkflowDesignerSessionController.RELATED_USER.equals(strtok
+        .nextToken())) {
+      // is a 'relatedUser'
+      //
+      sb.append("/");
+      sb.append(WorkflowDesignerSessionController.INTERESTED_USERS);
+      strParentScreen = "ModifyQualifiedUsers" + sb;
+    }
+    return strParentScreen;
+  }
+
+  private static String parentScreenForActions(WorkflowDesignerSessionController workflowDesignerSC,
+      StringTokenizer strtok, StringBuilder sb) throws WorkflowException {
+    Action action;
+    String strElement = strtok.nextToken();
+    action = workflowDesignerSC.getProcessModel().getActionsEx().getAction(strElement);
+    strElement = strtok.nextToken(); // allowedUsers or consequences
+
+    sb.append(WorkflowDesignerSessionController.ACTIONS);
+    sb.append("/");
+    sb.append(action.getName());
+
+    String strParentScreen = "ModifyAction?action=" + action.getName();
+
+    if (WorkflowDesignerSessionController.ALLOWED_USERS.equals(strElement)) {
+      // is a 'relatedUser'
+      //
+      if (strtok.hasMoreTokens() &&
+          WorkflowDesignerSessionController.RELATED_USER.equals(strtok.nextToken())) {
+        sb.append("/");
+        sb.append(WorkflowDesignerSessionController.ALLOWED_USERS);
+        strParentScreen = "ModifyQualifiedUsers" + sb;
+      }
+    } else if (WorkflowDesignerSessionController.CONSEQUENCES.equals(strElement)) {
+      sb.append("/");
+      sb.append(WorkflowDesignerSessionController.CONSEQUENCES);
+      sb.append("/");
+      sb.append(strtok.nextToken()); // consequence no.
+
+      // notified users
+      //
+      if (strtok.hasMoreTokens() &&
+          WorkflowDesignerSessionController.NOTIFIED_USERS.equals(strtok.nextToken())) {
+        strParentScreen = "ModifyConsequence" + sb;
+        // related users
+        if (strtok.hasMoreTokens() &&
+            WorkflowDesignerSessionController.RELATED_USER.equals(strtok.nextToken())) {
+          sb.append("/");
+          sb.append(WorkflowDesignerSessionController.NOTIFIED_USERS);
+
+          strParentScreen = "ModifyQualifiedUsers" + sb;
+        }
+      }
+    }
+    return strParentScreen;
+  }
+
+  private static String parentScreenForForms(StringTokenizer strtok, StringBuilder sb) {
+    sb.append(WorkflowDesignerSessionController.FORMS);
+    sb.append("[");
+    sb.append(strtok.nextToken()); // form & role name
+    sb.append("]");
+    String nextStrElement = strtok.nextToken();
+
+    String strParentScreen = "";
+    if (WorkflowDesignerSessionController.INPUTS.equals(nextStrElement)) {
+      strParentScreen = "EditForm" + sb;
+
+      sb.append("/");
+      sb.append(WorkflowDesignerSessionController.INPUTS);
+      sb.append("[");
+      sb.append(strtok.nextToken()); // input no
+      sb.append("]");
+
+      if (strtok.hasMoreTokens()) {
+        nextStrElement = strtok.nextToken();
+
+        if (WorkflowDesignerSessionController.LABELS.equals(nextStrElement)) {
+          strParentScreen = "ModifyInput" + sb;
+        }
+      }
+    } else if (WorkflowDesignerSessionController.TITLES.equals(nextStrElement)) {
+      strParentScreen = "EditForm" + sb;
+    }
+    return strParentScreen;
+  }
+
+  private static String applySessionToken(HttpServletRequest request, String strParentScreen) {
+    var tokenService = SynchronizerTokenService.getInstance();
+    var token = tokenService.getSessionToken(request);
+    if (token.isDefined()) {
+      return strParentScreen + (strParentScreen.contains("?") ? "&" : "?") +
+          SynchronizerTokenService.SESSION_TOKEN_KEY + "=" + token.getValue();
+    } else {
+      return strParentScreen;
+    }
   }
 }

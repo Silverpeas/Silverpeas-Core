@@ -112,7 +112,7 @@ public interface Form extends Serializable {
    * Remove the input specified by the index
    * @param idx the index
    */
-  void removeInput(int idx) throws WorkflowException;
+  void removeInput(int idx);
 
   /**
    * Get all the titles

@@ -63,7 +63,10 @@ import org.silverpeas.kernel.logging.SilverLogger;
  */
 public class MessageManager {
 
-  private static SimpleCache applicationCache =
+  private MessageManager() {
+  }
+
+  private static final SimpleCache applicationCache =
       CacheAccessorProvider.getApplicationCacheAccessor().getCache();
 
   public static String initialize() {
@@ -161,16 +164,15 @@ public class MessageManager {
         StringUtil.isDefined(language) ? language : container.getLanguage());
   }
 
-
   public static MessageContainer getMessageContainer(String registredKey) {
-    try {
-      return applicationCache.get(registredKey, MessageContainer.class);
-    } catch (NullPointerException e) {
-      SilverLogger.getLogger(MessageManager.class)
-          .silent(e)
+      var container = applicationCache
+          .get(StringUtil.defaultStringIfNotDefined(registredKey), MessageContainer.class);
+      if (container == null) {
+        SilverLogger.getLogger(MessageManager.class)
           .debug("No Message Container registered with key ''{0}''!", registredKey);
-      return null;
-    }
+        return null;
+      }
+      return container;
   }
 
   /**

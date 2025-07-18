@@ -27,19 +27,15 @@ import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Participant;
 import org.silverpeas.core.workflow.api.model.RelatedUser;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
+import java.util.Objects;
 
 /**
  * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "relatedUser")
 @XmlAccessorType(XmlAccessType.NONE)
-public class RelatedUserImpl implements RelatedUser, Serializable {
+public class RelatedUserImpl implements RelatedUser {
   private static final long serialVersionUID = -7371460894690406952L;
   @XmlIDREF
   @XmlAttribute
@@ -52,64 +48,42 @@ public class RelatedUserImpl implements RelatedUser, Serializable {
   @XmlAttribute
   private String role;
 
-  /**
-   * Get the referred participant
-   */
+  @Override
   public Participant getParticipant() {
     return participant;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see RelatedUser#setParticipant(com.silverpeas
-   * .workflow.api.model.Participant)
-   */
+  @Override
   public void setParticipant(Participant participant) {
     this.participant = (ParticipantImpl) participant;
   }
 
-  /**
-   * Get the referred item
-   */
+  @Override
   public Item getFolderItem() {
     return folderItem;
   }
 
-  /**
-   * Set the referred item
-   * @param folderItem item to refer
-   */
+  @Override
   public void setFolderItem(Item folderItem) {
     this.folderItem = (ItemImpl) folderItem;
   }
 
-  /**
-   * Get the relation between user and participant
-   */
+  @Override
   public String getRelation() {
     return this.relation;
   }
 
-  /**
-   * Set the relation between user and participant
-   * @param relation relation as a String
-   */
+  @Override
   public void setRelation(String relation) {
     this.relation = relation;
   }
 
-  /**
-   * Get the role to which the related user will be affected
-   * @return the role name
-   */
+  @Override
   public String getRole() {
     return this.role;
   }
 
-  /**
-   * Set the role to which the related user will be affected
-   * @param role role as a String
-   */
+  @Override
   public void setRole(String role) {
     this.role = role;
   }
@@ -124,17 +98,10 @@ public class RelatedUserImpl implements RelatedUser, Serializable {
     }
 
     final RelatedUserImpl that = (RelatedUserImpl) o;
-
-    if (participant != null ? !participant.equals(that.participant) : that.participant != null) {
-      return false;
-    }
-    if (folderItem != null ? !folderItem.equals(that.folderItem) : that.folderItem != null) {
-      return false;
-    }
-    if (relation != null ? !relation.equals(that.relation) : that.relation != null) {
-      return false;
-    }
-    return role != null ? role.equals(that.role) : that.role == null;
+    return Objects.equals(participant, that.participant) &&
+        Objects.equals(folderItem, that.folderItem) &&
+        Objects.equals(relation, that.relation) &&
+        Objects.equals(role, that.role);
   }
 
   @Override

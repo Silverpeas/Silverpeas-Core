@@ -23,11 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.model.States;
@@ -36,13 +31,16 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;states&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "states")
 @XmlAccessorType(XmlAccessType.NONE)
-public class StatesImpl implements Serializable, States {
+public class StatesImpl implements States {
 
   private static final long serialVersionUID = -2580715672830095678L;
   @XmlElement(name = "state", type = StateImpl.class)
@@ -65,10 +63,7 @@ public class StatesImpl implements Serializable, States {
     stateList.add(state);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see States#createState()
-   */
+  @Override
   public State createState() {
     return new StateImpl();
   }
@@ -96,13 +91,10 @@ public class StatesImpl implements Serializable, States {
     if (stateList == null) {
       return new State[0];
     }
-    return stateList.toArray(new State[stateList.size()]);
+    return stateList.toArray(new State[0]);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see States#iterateState()
-   */
+  @Override
   public Iterator<State> iterateState() {
     return stateList.iterator();
   }
