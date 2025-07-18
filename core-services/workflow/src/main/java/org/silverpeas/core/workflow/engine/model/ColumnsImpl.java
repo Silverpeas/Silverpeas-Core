@@ -23,26 +23,22 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Columns;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class implementing the representation of the &lt;columns&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "columns")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ColumnsImpl implements Serializable, Columns {
+public class ColumnsImpl implements Columns {
   private static final long serialVersionUID = -179308759997989687L;
 
   @XmlElement(name = "column", type = ColumnImpl.class)
@@ -106,10 +102,8 @@ public class ColumnsImpl implements Serializable, Columns {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-
     final ColumnsImpl columns = (ColumnsImpl) o;
-
-    return roleName != null ? roleName.equals(columns.roleName) : columns.roleName == null;
+    return Objects.equals(roleName, columns.roleName);
   }
 
   @Override

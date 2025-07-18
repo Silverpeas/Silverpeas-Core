@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * Interface describing a representation of the &lt;columns&gt; element of a Process Model.
  */
-public interface Columns {
+public interface Columns extends Serializable {
 
   /**
    * Get the referenced Column objects as a list

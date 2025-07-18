@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;column&gt; element of a Process Model.
  **/
-public interface Column {
+public interface Column extends Serializable {
   /**
    * Get the item to show in this column
    * @return the item

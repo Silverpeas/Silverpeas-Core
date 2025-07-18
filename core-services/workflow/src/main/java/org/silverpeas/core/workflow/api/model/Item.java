@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
@@ -167,9 +165,8 @@ public interface Item extends Serializable {
   /**
    * Remove the parameter specified by its name
    * @param strName the name of the parameter
-   * @throws WorkflowException when the parameter cannot be found
    */
-  void removeParameter(String strName) throws WorkflowException;
+  void removeParameter(String strName);
 
   /**
    * Gets the parameters as a dictionary of keys to values.

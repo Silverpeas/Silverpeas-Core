@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -33,8 +33,8 @@
     Parameter       parameter = (Parameter)request.getAttribute("Parameter");
     String          strCancelAction = (String)request.getAttribute("parentScreen"),
                     strContext = (String)request.getAttribute("context"),
-                    strCurrentScreen = "ModifyParameter?context=" + URLEncoder.encode(strContext, UTF8)
-                                       + "parameter=" + URLEncoder.encode(parameter.getName(), UTF8);
+                    strCurrentScreen = "ModifyParameter?context=" + URLEncoder.encode(strContext, StandardCharsets.UTF_8)
+                                       + "parameter=" + URLEncoder.encode(parameter.getName(), StandardCharsets.UTF_8);
     ArrayPane       parameterPane = gef.getArrayPane( "parameterName", strCurrentScreen, request, session );
 %>
 <HTML>

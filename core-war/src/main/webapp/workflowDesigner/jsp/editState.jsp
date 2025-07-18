@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -37,25 +37,24 @@
                     strDescriptionContext = "states/" + state.getName() + "/descriptions",
                     strLabelContext = "states/" + state.getName() + "/labels",
                     strActivityContext = "states/" + state.getName() + "/activities",
-                    strWorkingContext = URLEncoder.encode( "states/" + state.getName() + "/workingUsers", UTF8 ),
-                    strInterestedContext = URLEncoder.encode( "states/" + state.getName() + "/interestedUsers", UTF8 );
+                    strWorkingContext = URLEncoder.encode( "states/" + state.getName() + "/workingUsers", StandardCharsets.UTF_8 ),
+                    strInterestedContext = URLEncoder.encode( "states/" + state.getName() + "/interestedUsers", StandardCharsets.UTF_8 );
     ArrayPane       statePane = gef.getArrayPane( "statePane", strCurrentScreen, request, session ),
                     usersPane = gef.getArrayPane( "usersPane", strCurrentScreen, request, session ),
                     allowedActionsPane = gef.getArrayPane( "allowedActionsPane", strCurrentScreen, request, session );
     String[]        astrActionNames = (String[])request.getAttribute( "ActionNames" ),
                     astrActionValues = (String[])astrActionNames.clone();
     Action          timeoutAction = state.getTimeoutAction();
-    boolean         fExistingState = ( (Boolean)request.getAttribute( "IsExisitingState" ) ).booleanValue();
+    boolean         fExistingState = (Boolean) request.getAttribute("IsExisitingState");
     StringBuffer    sb = new StringBuffer();
 %>
-<HTML>
-<HEAD>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script language="javaScript">
     function activateTimeout()
     {
-        if ( document.stateForm.timeoutAction.options.selectedIndex == 0 )
+        if ( document.stateForm.timeoutAction.options.selectedIndex === 0 )
         {
             // Clear and block timeout interval & notify admin
             //
@@ -78,10 +77,10 @@
 
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        if ( isWhitespace(document.stateForm.name.value) )
+      if ( isWhitespace(document.stateForm.name.value) )
         {
             errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
             errorNb++;
@@ -89,7 +88,7 @@
 
         // If timeout action has been specified then an integer value must be given for timeout interval
         //
-        if ( document.stateForm.timeoutAction.options.selectedIndex != 0
+        if ( document.stateForm.timeoutAction.options.selectedIndex !== 0
              && ( isEmpty(document.stateForm.timeoutInterval.value)
                   || !isInteger(document.stateForm.timeoutInterval.value) ) )
         {
@@ -115,11 +114,10 @@
                            + errorMsg;
                 jQuery.popup.error(errorMsg);
         }
-        return result;
     }
 </script>
-</HEAD>
-<BODY onLoad="activateTimeout()"  class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part onLoad="activateTimeout()"  cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.states"), strCancelAction);
@@ -209,9 +207,9 @@
             // Create the remove link
             //
             sb.setLength(0);
-            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers?context=" );
+            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers', {context: '" );
             sb.append( strWorkingContext );
-            sb.append( "', '" );
+            sb.append( "'}, '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
             sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.workingUsers") ) );
@@ -256,9 +254,9 @@
             // Create the remove link
             //
             sb.setLength(0);
-            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers?context=" );
+            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers', {context: '" );
             sb.append( strInterestedContext );
-            sb.append( "', '" );
+            sb.append( "'}, '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
             sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.interestedUsers") ) );
@@ -373,5 +371,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

@@ -29,20 +29,19 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
 
-<HTML>
-<HEAD>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 
 <script language="javascript">
 
 	function sendData()
 	{
-	var errorMsg = "";
-	var errorNb = 0;
-	var xmlFile = stripInitialWhitespace(document.importWorkflowForm.xmlFile.value);
+      let errorMsg = "";
+      let errorNb = 0;
+      const xmlFile = stripInitialWhitespace(document.importWorkflowForm.xmlFile.value);
 
-	if (xmlFile == "")
+      if (!xmlFile || xmlFile === "")
 	{
 		errorMsg+="  - '<%=resource.getString("workflowDesigner.import.filename")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
 		errorNb++;
@@ -64,8 +63,8 @@
 	}
 
 </script>
-</HEAD>
-<BODY>
+</view:sp-head-part>
+<view:sp-body-part>
 <%
 	browseBar.setDomainName(resource.getString("workflowDesigner.toolName") );
 	browseBar.setComponentName(resource.getString("workflowDesigner.importWorkflow"), "#" );
@@ -86,7 +85,8 @@
     out.println(board.printBefore());
 %>
 	<FORM NAME="importWorkflowForm" METHOD="POST" ACTION="DoImportWorkflow" enctype="multipart/form-data">
-		<table cellpadding=5 cellspacing=2 border=0 width="98%" >
+		<table>
+            <tr><th></th></tr>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("workflowDesigner.import.filename")%> :</td>
 				<td><input type="file" name="xmlFile" size="30"></td>
@@ -102,5 +102,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

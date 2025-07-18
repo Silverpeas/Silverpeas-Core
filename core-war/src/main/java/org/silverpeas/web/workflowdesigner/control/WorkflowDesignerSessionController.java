@@ -36,7 +36,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
@@ -50,6 +50,8 @@ import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.model.ProcessModelManagerImpl;
 import org.silverpeas.core.workflow.engine.model.SpecificLabel;
 import org.silverpeas.core.workflow.util.WorkflowUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 
 import java.io.File;
@@ -100,12 +102,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   // process model is referenced
 
   /**
-* Standard Session Controller Constructeur
-*
-* @param mainSessionCtrl The user's profile
-* @param componentContext The component's profile
-*
-*/
+   * Standard Session Controller Constructeur
+   *
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
+   */
   public WorkflowDesignerSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
@@ -115,11 +116,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Get the list of all process models available for edition
-*
-* @return A list of Strings containing relative paths to process model file names.
-* @throws WorkflowDesignerException
-*/
+   * Get the list of all process models available for edition
+   *
+   * @return A list of Strings containing relative paths to process model file names.
+   * @throws WorkflowDesignerException if an error occurs while getting the process models
+   */
   public List<String> listProcessModels() throws WorkflowDesignerException {
     try {
       return Workflow.getProcessModelManager().listProcessModels();
@@ -130,30 +131,24 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Create a new ProcessModel descriptor that is not yet saved in a XML file.
-*
-* @return ProcessModel object
-*/
-  public ProcessModel createProcessModel() throws WorkflowDesignerException {
-    try {
-      processModel = Workflow.getProcessModelManager().createProcessModelDescriptor();
-      processModelFileName = NEW_ELEMENT_NAME;
-      referencedInComponent = null;
-      return processModel;
-    } catch (WorkflowException e) {
-      throw new WorkflowDesignerException("WorkflowDesignerSessionController.createPorcesModel",
-          SilverpeasException.ERROR, "workflowDesigner.EX_CREATING_PROCESS_DESCRIPTIOR_FAILED", e);
-    }
+   * Create a new ProcessModel descriptor that is not yet saved in a XML file.
+   *
+   * @return ProcessModel object
+   */
+  public ProcessModel createProcessModel() {
+    processModel = Workflow.getProcessModelManager().createProcessModelDescriptor();
+    processModelFileName = NEW_ELEMENT_NAME;
+    referencedInComponent = null;
+    return processModel;
   }
 
   /**
-* Load the process model from the specified file, cache it before returning.
-*
-* @param strProcessFileName relative path and the file name
-* @return An object implementing the ProcessModel interface
-* @throws WorkflowDesignerException
-*/
-  public ProcessModel loadProcessModel(String strProcessFileName)
+   * Load the process model from the specified file, cache it before returning.
+   *
+   * @param strProcessFileName relative path and the file name
+   * @throws WorkflowDesignerException if an error occurs while loading the process model
+   */
+  public void loadProcessModel(String strProcessFileName)
       throws WorkflowDesignerException {
     try {
       // Load the process model from the XML file
@@ -166,7 +161,6 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       //
       referencedInComponent = findComponentDescriptor(processModelFileName);
 
-      return processModel;
     } catch (WorkflowException e) {
       throw new WorkflowDesignerException("WorkflowDesignerSessionController.loadProcesModel",
           SilverpeasException.ERROR, "workflowDesigner.EX_LOADING_PROCES_MODEL_FAILED", e);
@@ -175,6 +169,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
 
   /**
    * Save the currently cached process model in a XML file
+   *
    * @throws WorkflowDesignerException when the saving goes wrong...
    */
   public void saveProcessModel()
@@ -205,11 +200,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Removes the process model descriptor file from the filesystem
-*
-* @param strProcessModelFileName the relative path to the process file name
-* @throws WorkflowDesignerException when something goes wrong
-*/
+   * Removes the process model descriptor file from the filesystem
+   *
+   * @param strProcessModelFileName the relative path to the process file name
+   * @throws WorkflowDesignerException when something goes wrong
+   */
   public void removeProcessModel(String strProcessModelFileName)
       throws WorkflowDesignerException {
     try {
@@ -220,7 +215,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       String componentName = findComponentDescriptor(strProcessModelFileName);
       if (componentName != null) {
         WAComponentRegistry registry = WAComponentRegistry.get();
-        registry.getWAComponent(componentName).ifPresent(wa -> registry.removeWorkflow(wa));
+        registry.getWAComponent(componentName).ifPresent(registry::removeWorkflow);
       }
     } catch (Exception e) {
       throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeProcesModel",
@@ -229,52 +224,52 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* An object implementing the ProcessModel interface containing the currently loaded model or null
-* if none.
-*/
+   * An object implementing the ProcessModel interface containing the currently loaded model or null
+   * if none.
+   */
   public ProcessModel getProcessModel() {
     return processModel;
   }
 
   /**
-* Is it a new Process Model that has not yet been saved to a file?
-*/
+   * Is it a new Process Model that has not yet been saved to a file?
+   */
   public Boolean isNewProcessModel() {
     return NEW_ELEMENT_NAME.equals(processModelFileName);
   }
 
   /**
-* The relative path and file name of the currently loaded model or null if none.
-*/
+   * The relative path and file name of the currently loaded model or null if none.
+   */
   public String getProcessFileName() {
     return processModelFileName;
   }
 
   /**
-* The name of the component descriptor that references this process model definition
-*
-* @return the component descriptor file name (without .xml) or <code>null</code> if no components
-* reference this process model.
-*/
+   * The name of the component descriptor that references this process model definition
+   *
+   * @return the component descriptor file name (without .xml) or <code>null</code> if no components
+   * reference this process model.
+   */
   public String getComponentDescriptorName() {
     return referencedInComponent;
   }
 
   /**
-* Update the header of the cached process model
-*
-* @param processModel the reference object
-*/
+   * Update the header of the cached process model
+   *
+   * @param processModel the reference object
+   */
   public void updateProcessModelHeader(ProcessModel processModel) {
     // Update the current process Model
     this.processModel.setName(processModel.getName());
   }
 
   /**
-* Create a new columns object to be added to the model
-*
-* @return an object implementing Columns
-*/
+   * Create a new columns object to be added to the model
+   *
+   * @return an object implementing Columns
+   */
   public Columns addColumns() {
     Columns columns = processModel.getPresentation().createColumns();
 
@@ -283,11 +278,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update or insert a new columns section of the presentation element of the cached process model
-*
-* @param source the reference object
-* @throws WorkflowDesignerException
-*/
+   * Update or insert a new columns section of the presentation element of the cached process model
+   *
+   * @param source the reference object
+   * @throws WorkflowDesignerException if an error occurs while updaring the columns.
+   */
   public void updateColumns(Columns source, String strRoleOriginal)
       throws WorkflowDesignerException {
     Columns check = processModel.getPresentation().getColumnsByRole(source.getRoleName());
@@ -302,34 +297,27 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
             SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
       }
-    }
-    else
+    } else {
       deleteColumns(strRoleOriginal);
+    }
 
     processModel.getPresentation().addColumns(source);
   }
 
   /**
-* Removes the 'columns' object specified by the role name
-*
-* @param strRoleName the value of the role attribute
-* @throws WorkflowDesignerException when something goes wrong
-*/
-  public void deleteColumns(String strRoleName)
-      throws WorkflowDesignerException {
-    try {
-      processModel.getPresentation().deleteColumns(strRoleName);
-    } catch (WorkflowException e) {
-      throw new WorkflowDesignerException("WorkflowDesignerSessionController.deleteColumns",
-          SilverpeasException.ERROR, "workflowDesigner.EX_DELETING_COLUMNS_FAILED", e);
-    }
+   * Removes the 'columns' object specified by the role name
+   *
+   * @param strRoleName the value of the role attribute
+   */
+  public void deleteColumns(String strRoleName) {
+    processModel.getPresentation().deleteColumns(strRoleName);
   }
 
   /**
-* Create a new role object to be added to the model
-*
-* @return an object implementing Role
-*/
+   * Create a new role object to be added to the model
+   *
+   * @return an object implementing Role
+   */
   public Role createRole() {
     Roles roles = processModel.getRolesEx();
     if (roles == null) {
@@ -343,12 +331,12 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update or insert a new role element of the cached process model
-*
-* @param source the data carrier object
-* @param strNameOriginal the original name of the object
-* @throws WorkflowDesignerException if another object with the same name already exists
-*/
+   * Update or insert a new role element of the cached process model
+   *
+   * @param source the data carrier object
+   * @param strNameOriginal the original name of the object
+   * @throws WorkflowDesignerException if another object with the same name already exists
+   */
   public void updateRole(Role source, String strNameOriginal)
       throws WorkflowDesignerException {
     Role check = processModel.getRolesEx().getRole(source.getName());
@@ -389,11 +377,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the role specified
-*
-* @param strRoleName the name of the role
-* @throws WorkflowDesignerException if the role cannot be found or is referenced elsewhere.
-*/
+   * Remove the role specified
+   *
+   * @param strRoleName the name of the role
+   * @throws WorkflowDesignerException if the role cannot be found or is referenced elsewhere.
+   */
   public void removeRole(String strRoleName) throws WorkflowDesignerException {
     Map<ContextualDesignations, String> mapDesignations = collectContextualDesignations();
     Iterator<ContextualDesignations> iterKeys = mapDesignations.keySet().iterator();
@@ -483,30 +471,24 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
           throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole",
               SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED",
               mapQualifiedUsers.get(qualifiedUsers) + " (relatedUser: ["
-                + (relatedUser.getParticipant() == null ? "" : (" participant: '" + relatedUser
+                  + (relatedUser.getParticipant() == null ? "" : (" participant: '" + relatedUser
                   .getParticipant().getName() + "'"))
-                + (relatedUser.getFolderItem() == null ? "" : (" folderItem: '"
+                  + (relatedUser.getFolderItem() == null ? "" : (" folderItem: '"
                   + relatedUser.getFolderItem().getName() + "'"))
-                + (relatedUser.getRelation() == null ? "" : (" relation: '"
+                  + (relatedUser.getRelation() == null ? "" : (" relation: '"
                   + relatedUser.getRelation() + "'")) + " role: '" + strRoleName + "'" + " ])");
         }
       }
     }
 
-    try {
-      processModel.getRolesEx().removeRole(strRoleName);
-      processModel.setRoles(null);
-    } catch (WorkflowException e) {
-      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole",
-          SilverpeasException.ERROR, "workflowDesigner.EX_ROLE_NOT_FOUND");
-    }
+    processModel.getRolesEx().removeRole(strRoleName);
   }
 
   /**
-* Create a new participant object to be added to the model
-*
-* @return an object implementing Participant
-*/
+   * Create a new participant object to be added to the model
+   *
+   * @return an object implementing Participant
+   */
   public Participant createParticipant() {
     Participants participants = processModel.getParticipantsEx();
     Participant participant;
@@ -522,11 +504,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update or insert a new participant element of the cached process model
-*
-* @param source the reference object
-* @throws WorkflowDesignerException
-*/
+   * Update or insert a new participant element of the cached process model
+   *
+   * @param source the reference object
+   * @throws WorkflowDesignerException if an error occurs while updating the participant
+   */
   public void updateParticipant(Participant source, String strNameOriginal)
       throws WorkflowDesignerException {
     Participant check = processModel.getParticipantsEx().getParticipant(
@@ -568,12 +550,12 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the participant specified
-*
-* @param strParticipantName the name of the participant
-* @throws WorkflowDesignerException if the participant cannot be found or is referenced
-* elsewhere.
-*/
+   * Remove the participant specified
+   *
+   * @param strParticipantName the name of the participant
+   * @throws WorkflowDesignerException if the participant cannot be found or is referenced
+   * elsewhere.
+   */
   public void removeParticipant(String strParticipantName) throws WorkflowDesignerException {
     Participant reference = processModel.getParticipantsEx().getParticipant(strParticipantName);
 
@@ -611,20 +593,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       }
     }
 
-    try {
-      processModel.getParticipantsEx().removeParticipant(strParticipantName);
-      processModel.setParticipants(null);
-    } catch (WorkflowException e) {
-      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeParticipant",
-          SilverpeasException.ERROR, "workflowDesigner.EX_PARTICIPANT_NOT_FOUND");
-    }
+    processModel.getParticipantsEx().removeParticipant(strParticipantName);
   }
 
   /**
-* Create a new state object to be added to the model
-*
-* @return an object implementing State
-*/
+   * Create a new state object to be added to the model
+   *
+   * @return an object implementing State
+   */
   public State createState() {
     States states = processModel.getStatesEx();
     State state;
@@ -640,11 +616,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update or insert a new state element of the cached process model
-*
-* @param source the reference object
-* @throws WorkflowDesignerException
-*/
+   * Update or insert a new state element of the cached process model
+   *
+   * @param source the reference object
+   * @throws WorkflowDesignerException if an error occurs while updating state
+   */
   public void updateState(State source, String strNameOriginal)
       throws WorkflowDesignerException {
     State check = processModel.getStatesEx().getState(source.getName()), state;
@@ -686,11 +662,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the state specified
-*
-* @param strStateName the name of the state
-* @throws WorkflowDesignerException if the state cannot be found or is referenced elsewhere.
-*/
+   * Remove the state specified
+   *
+   * @param strStateName the name of the state
+   * @throws WorkflowDesignerException if the state cannot be found or is referenced elsewhere.
+   */
   public void removeState(String strStateName) throws WorkflowDesignerException {
     Actions actions = processModel.getActionsEx();
     Participants participants = processModel.getParticipantsEx();
@@ -727,8 +703,8 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
 
       while (iterParticipant.hasNext()) {
         Participant participant = iterParticipant.next();
-
-        if (participant.getResolvedState().equals(strStateName)) {
+        String resolvedState = participant.getResolvedState();
+        if (StringUtil.isDefined(resolvedState) && resolvedState.equals(strStateName)) {
           throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeState",
               SilverpeasException.ERROR,
               "workflowDesigner.EX_ELEMENT_REFERENCED", "participant : '"
@@ -747,14 +723,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update Qualified Users referenced by the context, create the object if it was <code>null</code>
-* before.
-*
-* @param source the new Qualified Users
-* @param strContext the context of the QualifiedUsers being updated
-* @throws WorkflowException when the update goes wrong
-* @throws WorkflowDesignerException when the update goes wrong
-*/
+   * Update Qualified Users referenced by the context, create the object if it was <code>null</code>
+   * before.
+   *
+   * @param source the new Qualified Users
+   * @param strContext the context of the QualifiedUsers being updated
+   * @throws WorkflowException when the update goes wrong
+   * @throws WorkflowDesignerException when the update goes wrong
+   */
   public void updateQualifiedUsers(QualifiedUsers source, String strContext)
       throws WorkflowException, WorkflowDesignerException {
     QualifiedUsers qualifiedUsers = findQualifiedUsers(strContext);
@@ -775,16 +751,16 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Find a related user corresponding to the criteria given
-*
-* @param strContext the context
-* @param strParticipant the name of the participant, may be <code>null</code>
-* @param strFolderItem the name of the data folder item, may be <code>null</code>
-* @param strRelation the relation, may be <code>null</code>
-* @param strRole the name of the role, may be <code>null</code>
-* @return an object implementing RelatedUser
-* @throws WorkflowException when something goes wrong
-*/
+   * Find a related user corresponding to the criteria given
+   *
+   * @param strContext the context
+   * @param strParticipant the name of the participant, may be <code>null</code>
+   * @param strFolderItem the name of the data folder item, may be <code>null</code>
+   * @param strRelation the relation, may be <code>null</code>
+   * @param strRole the name of the role, may be <code>null</code>
+   * @return an object implementing RelatedUser
+   * @throws WorkflowException when something goes wrong
+   */
   public RelatedUser findRelatedUser(String strContext, String strParticipant,
       String strFolderItem, String strRelation, String strRole)
       throws WorkflowException {
@@ -820,18 +796,17 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update a related user corresponding to the criteria given
-*
-* @param strContext the context
-* @param strParticipantOriginal the original name of the participant, may be <code>null</code>
-* @param strFolderItemOriginal the original name of the data folder item, may be
-* <code>null</code>
-* @param strRelationOriginal the original relation, may be <code>null</code>
-* @param strRoleOriginal the original name of the role, may be <code>null</code>
-* @return an object implementing RelatedUser
-* @throws WorkflowDesignerException when something goes wrong
-* @throws WorkflowException when something goes wrong
-*/
+   * Update a related user corresponding to the criteria given
+   *
+   * @param strContext the context
+   * @param strParticipantOriginal the original name of the participant, may be <code>null</code>
+   * @param strFolderItemOriginal the original name of the data folder item, may be
+   * <code>null</code>
+   * @param strRelationOriginal the original relation, may be <code>null</code>
+   * @param strRoleOriginal the original name of the role, may be <code>null</code>
+   * @throws WorkflowDesignerException when something goes wrong
+   * @throws WorkflowException when something goes wrong
+   */
   public void updateRelatedUser(RelatedUser source, String strContext,
       String strParticipantOriginal, String strFolderItemOriginal,
       String strRelationOriginal, String strRoleOriginal)
@@ -913,13 +888,12 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the related user specified
-*
-* @param reference the reference for the related user to remove
-* @param strContext the context
-* @throws WorkflowException if the related user cannot be found or when something goes
-* wrong
-*/
+   * Remove the related user specified
+   *
+   * @param reference the reference for the related user to remove
+   * @param strContext the context
+   * @throws WorkflowException if the related user cannot be found or when something goes wrong
+   */
   public void removeRelatedUser(RelatedUser reference, String strContext)
       throws WorkflowException {
     QualifiedUsers qualifiedUsers = findQualifiedUsers(strContext);
@@ -927,10 +901,10 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Create a new action object to be added to the model
-*
-* @return an object implementing Action
-*/
+   * Create a new action object to be added to the model
+   *
+   * @return an object implementing Action
+   */
   public Action createAction() {
     Actions actions = processModel.getActionsEx();
     Action action;
@@ -946,13 +920,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update or insert a new action element of the cached process model
-*
-* @param source the reference object
-* @param strNameOriginal
-* @throws WorkflowDesignerException when something goes wrong
-* @throws WorkflowException when something goes wrong
-*/
+   * Update or insert a new action element of the cached process model
+   *
+   * @param source the reference object
+   * @param strNameOriginal the original name of the action
+   * @throws WorkflowDesignerException when something goes wrong
+   * @throws WorkflowException when something goes wrong
+   */
   public void updateAction(Action source, String strNameOriginal)
       throws WorkflowDesignerException, WorkflowException {
     Action check = null, action;
@@ -1002,14 +976,12 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the action specified
-*
-* @param strActionName the name of the action
-* @throws WorkflowException if the action cannot be found
-* @throws WorkflowDesignerException if the action is referenced elsewhere
-*/
-  public void removeAction(String strActionName)
-      throws WorkflowException, WorkflowDesignerException {
+   * Remove the action specified
+   *
+   * @param strActionName the name of the action
+   * @throws WorkflowDesignerException if the action is referenced elsewhere
+   */
+  public void removeAction(String strActionName) throws WorkflowDesignerException {
     States states = processModel.getStatesEx();
 
     // check if this action is referenced in states
@@ -1046,22 +1018,16 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
     }
 
     processModel.getActionsEx().removeAction(strActionName);
-
-    // Was this the last action defined?
-    //
-    if (!processModel.getActionsEx().iterateAction().hasNext()) {
-      processModel.setActions(null);
-    }
   }
 
   /**
-* Update or insert a new consequence element of the cached process model
-*
-* @param source the reference object
-* @param strContext the context of Consequence
-* @throws WorkflowDesignerException when something goes wrong
-* @throws WorkflowException when something goes wrong
-*/
+   * Update or insert a new consequence element of the cached process model
+   *
+   * @param source the reference object
+   * @param strContext the context of Consequence
+   * @throws WorkflowDesignerException when something goes wrong
+   * @throws WorkflowException when something goes wrong
+   */
   public void updateConsequence(Consequence source, String strContext)
       throws WorkflowDesignerException, WorkflowException {
     Action action = findAction(strContext);
@@ -1118,13 +1084,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Move the consequence specified by the context inside the collection
-*
-* @param strContext the context of the consequence
-* @param iConsequence the current index of the consequence in the collection
-* @param nDirection the offset and the direction to move by
-* @throws WorkflowDesignerException if the consequence cannot be found.
-*/
+   * Move the consequence specified by the context inside the collection
+   *
+   * @param strContext the context of the consequence
+   * @param iConsequence the current index of the consequence in the collection
+   * @param nDirection the offset and the direction to move by
+   * @throws WorkflowDesignerException if the consequence cannot be found.
+   */
   public void moveConsequence(String strContext, int iConsequence, int nDirection) throws
       WorkflowDesignerException {
     try {
@@ -1145,11 +1111,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the consequence specified by the context
-*
-* @param strContext the context of the consequence
-* @throws WorkflowDesignerException if the consequence cannot be found.
-*/
+   * Remove the consequence specified by the context
+   *
+   * @param strContext the context of the consequence
+   * @throws WorkflowDesignerException if the consequence cannot be found.
+   */
   public void removeConsequence(String strContext)
       throws WorkflowDesignerException {
     try {
@@ -1170,10 +1136,10 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Create a new form object to be added to the model
-*
-* @return an object implementing Form
-*/
+   * Create a new form object to be added to the model
+   *
+   * @return an object implementing Form
+   */
   public Form createForm() {
     Forms forms = processModel.getForms();
     Form form;
@@ -1189,11 +1155,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Find the form by context
-*
-* @param strContext the context
-* @return a Form object
-*/
+   * Find the form by context
+   *
+   * @param strContext the context
+   * @return a Form object
+   */
   public Form findForm(String strContext) {
     String[] astrElements;
     String strRoleName;
@@ -1209,7 +1175,6 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
           } else {
             strRoleName = astrElements[2];
           }
-
           form = processModel.getForms().getForm(astrElements[1], strRoleName);
         }
       } catch (RuntimeException e) {
@@ -1221,16 +1186,16 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update Form referenced by the context.
-*
-* @param source the object carrying the new values
-* @param strContext the context of the form being updated
-* @param strNameOriginal the original name of the form
-* @throws WorkflowDesignerException when the update goes wrong
-*/
+   * Update Form referenced by the context.
+   *
+   * @param source the object carrying the new values
+   * @param strContext the context of the form being updated
+   * @param strNameOriginal the original name of the form
+   * @throws WorkflowDesignerException when the update goes wrong
+   */
   public void updateForm(Form source, String strContext,
       String strNameOriginal, String strRoleOriginal) throws WorkflowDesignerException {
-    Form form = null;
+    Form form;
 
     Form check = processModel.getForms().getForm(source.getName(),
         source.getRole());
@@ -1295,12 +1260,12 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the form described by the context
-*
-* @param strContext the context
-* @throws WorkflowException if the form cannot be found
-* @throws WorkflowDesignerException if the form is referenced elsewhere
-*/
+   * Remove the form described by the context
+   *
+   * @param strContext the context
+   * @throws WorkflowException if the form cannot be found
+   * @throws WorkflowDesignerException if the form is referenced elsewhere
+   */
   public void removeForm(String strContext) throws WorkflowException,
       WorkflowDesignerException {
     String[] astrElements;
@@ -1337,12 +1302,6 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
           }
 
           processModel.getForms().removeForm(astrElements[1], strRoleName);
-
-          // Was this the last form?
-          //
-          if (!processModel.getForms().iterateForm().hasNext()) {
-            processModel.setForms(null);
-          }
         }
       } catch (ArrayIndexOutOfBoundsException e) {
         // Thrown when no token was found where expected
@@ -1355,11 +1314,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Find the input by context
-*
-* @param strContext the context
-* @return a Input object
-*/
+   * Find the input by context
+   *
+   * @param strContext the context
+   * @return a Input object
+   */
   public Input findInput(String strContext) {
     String[] astrElements;
     Input input = null;
@@ -1369,13 +1328,10 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       astrElements = strContext.split("[,/\\[\\]]", -2);
 
       try {
-        if (astrElements[5].length() > 0) {
+        if (!astrElements[5].isEmpty()) {
           input = form.getInput(Integer.parseInt(astrElements[5]));
         }
-      } catch (ArrayIndexOutOfBoundsException e) {
-        // Thrown when no token was found where expected
-        // do nothing, just return null...
-      } catch (NumberFormatException e) {
+      } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
         // Thrown when no token was found where expected
         // do nothing, just return null...
       }
@@ -1384,12 +1340,12 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update or insert a new input element of the cached process model
-*
-* @param source the reference object
-* @param strContext the context of Input
-* @throws WorkflowDesignerException when something goes wrong
-*/
+   * Update or insert a new input element of the cached process model
+   *
+   * @param source the reference object
+   * @param strContext the context of Input
+   * @throws WorkflowDesignerException when something goes wrong
+   */
   public void updateInput(Input source, String strContext)
       throws WorkflowDesignerException {
     Form form = findForm(strContext);
@@ -1436,14 +1392,12 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the input specified by the context
-*
-* @param strContext the context of the input
-* @throws WorkflowDesignerException if the input cannot be found.
-* @throws WorkflowException if the input cannot be found
-*/
-  public void removeInput(String strContext) throws WorkflowDesignerException,
-      WorkflowException {
+   * Remove the input specified by the context
+   *
+   * @param strContext the context of the input
+   * @throws WorkflowDesignerException if the input cannot be found.
+   */
+  public void removeInput(String strContext) throws WorkflowDesignerException {
     Form form = findForm(strContext);
     String[] astrElements;
 
@@ -1451,7 +1405,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       astrElements = strContext.split("[,/\\[\\]]", -2);
 
       try {
-        if (astrElements[5].length() > 0) {
+        if (!astrElements[5].isEmpty()) {
           form.removeInput(Integer.parseInt(astrElements[5]));
           return;
         }
@@ -1469,10 +1423,10 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Create a new ContextualDesignation object to be added to the model
-*
-* @return an object implementing ContextualDesignation
-*/
+   * Create a new ContextualDesignation object to be added to the model
+   *
+   * @return an object implementing ContextualDesignation
+   */
   public ContextualDesignation createDesignation() {
     ContextualDesignation designation = new SpecificLabel();
 
@@ -1480,15 +1434,6 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
     return designation;
   }
 
-  /**
-* Update or insert a new ContextualDesignation element of the cached process model
-*
-* @param strContext
-* @param source the reference object
-* @param strLangOriginal
-* @param strRoleOriginal
-* @throws WorkflowDesignerException
-*/
   public void updateContextualDesignations(String strContext,
       ContextualDesignation source, String strLangOriginal,
       String strRoleOriginal) throws WorkflowDesignerException {
@@ -1538,14 +1483,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Finds the contextual designation with the given attributes in the specified context
-*
-* @param strContext the context of the designation
-* @param strLanguage the language
-* @param strRole the role name
-* @return contextual designation of the given role & name or <code>null</code>
-* @throws WorkflowDesignerException if something goes wrong
-*/
+   * Finds the contextual designation with the given attributes in the specified context
+   *
+   * @param strContext the context of the designation
+   * @param strLanguage the language
+   * @param strRole the role name
+   * @return contextual designation of the given role & name or <code>null</code>
+   * @throws WorkflowDesignerException if something goes wrong
+   */
   public ContextualDesignation findContextualDesignation(String strContext,
       String strRole, String strLanguage) throws WorkflowDesignerException {
     return findContextualDesignations(strContext).getSpecificLabel(strRole,
@@ -1553,33 +1498,27 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Removes the contextual designation with the attributes as the reference object in the specified
-* context
-*
-* @param strContext the context of the designation
-* @param contextualDesignation the reference object
-* @throws WorkflowDesignerException when something goes wrong e.g. designation not found
-*/
+   * Removes the contextual designation with the attributes as the reference object in the specified
+   * context
+   *
+   * @param strContext the context of the designation
+   * @param contextualDesignation the reference object
+   * @throws WorkflowDesignerException when something goes wrong e.g. designation not found
+   */
   public void removeContextualDesignation(String strContext,
       ContextualDesignation contextualDesignation)
       throws WorkflowDesignerException {
-    try {
-      findContextualDesignations(strContext).removeContextualDesignation(
-          contextualDesignation);
-    } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeContextualDesignation",
-          SilverpeasException.ERROR, "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_NOT_FOUND");
-    }
+    findContextualDesignations(strContext).removeContextualDesignation(
+        contextualDesignation);
   }
 
   /**
-* Finds the contextual designations object in the specified context
-*
-* @param strContext the context of the designations
-* @return ContextualDesignations collection or <code>null</code> if nothing found
-* @throws WorkflowDesignerException when something goes wrong
-*/
+   * Finds the contextual designations object in the specified context
+   *
+   * @param strContext the context of the designations
+   * @return ContextualDesignations collection or <code>null</code> if nothing found
+   * @throws WorkflowDesignerException when something goes wrong
+   */
   private ContextualDesignations findContextualDesignations(String strContext)
       throws WorkflowDesignerException {
     StringTokenizer strtok;
@@ -1721,13 +1660,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Collect all the object of the type ContextualDesignations instantiated in the Process Model
-*
-* @return a map, where the key is the reference to the object and the value is a textual
-* description of the object location
-*/
+   * Collect all the object of the type ContextualDesignations instantiated in the Process Model
+   *
+   * @return a map, where the key is the reference to the object and the value is a textual
+   * description of the object location
+   */
   private Map<ContextualDesignations, String> collectContextualDesignations() {
-    Map<ContextualDesignations, String> map = new IdentityHashMap<ContextualDesignations, String>();
+    Map<ContextualDesignations, String> map = new IdentityHashMap<>();
     Roles roles = processModel.getRolesEx();
 
     // Process Model Labels & Descriptions
@@ -1843,10 +1782,10 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Create a new item object to be added to the model
-*
-* @return an object implementing Item
-*/
+   * Create a new item object to be added to the model
+   *
+   * @return an object implementing Item
+   */
   public Item createItem(String strContext) {
     Item item = null;
     if (strContext != null) {
@@ -1875,11 +1814,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Find the Item specified by the context
-*
-* @param strContext the context
-* @return an Item object or <code>null</code>
-*/
+   * Find the Item specified by the context
+   *
+   * @param strContext the context
+   * @return an Item object or <code>null</code>
+   */
   public Item findItem(String strContext) {
     Item item = null;
     if (strContext != null) {
@@ -1896,19 +1835,20 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       } catch (NoSuchElementException e) {
         // Thrown when no token was found where expected
         // do nothing, just return null...
+        SilverLogger.getLogger(this).error(e.getMessage());
       }
     }
     return item;
   }
 
   /**
-* Update Item referenced by the context.
-*
-* @param source the object carrying the new values
-* @param strContext the context of the item being updated
-* @param strNameOriginal the original name of the item
-* @throws WorkflowDesignerException when the update goes wrong
-*/
+   * Update Item referenced by the context.
+   *
+   * @param source the object carrying the new values
+   * @param strContext the context of the item being updated
+   * @param strNameOriginal the original name of the item
+   * @throws WorkflowDesignerException when the update goes wrong
+   */
   public void updateItem(Item source, String strContext, String strNameOriginal)
       throws WorkflowDesignerException {
     Item item, check = null;
@@ -1971,15 +1911,15 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the item described by the context
-*
-* @param strContext the context
-* @throws WorkflowException when the item cannot be found
-* @throws WorkflowDesignerException when the item is referenced elsewhere
-*/
+   * Remove the item described by the context
+   *
+   * @param strContext the context
+   * @throws WorkflowException when the item cannot be found
+   * @throws WorkflowDesignerException when the item is referenced elsewhere
+   */
   public void removeItem(String strContext) throws WorkflowException,
       WorkflowDesignerException {
-    String strItemName = null;
+    String strItemName;
     DataFolder items;
 
     if (strContext == null) {
@@ -2002,8 +1942,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       } else {
         throw new WorkflowException("WorkflowDesignerSessionController.removeItem()",
             "workflowEngine.EX_ITEM_NOT_FOUND", // $NON-NLS-1$
-            strItemName == null ? "<null>"
-                : strItemName);
+            "<null>");
       }
     } catch (NoSuchElementException e) {
       throw new WorkflowException("WorkflowDesignerSessionController.removeItem()",
@@ -2178,13 +2117,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Update Parameter referenced by the context and parameter name.
-*
-* @param source the object carrying the new values
-* @param strContext the context of the item being updated
-* @param strNameOriginal the original name of the parameter
-* @throws WorkflowDesignerException when the update goes wrong
-*/
+   * Update Parameter referenced by the context and parameter name.
+   *
+   * @param source the object carrying the new values
+   * @param strContext the context of the item being updated
+   * @param strNameOriginal the original name of the parameter
+   * @throws WorkflowDesignerException when the update goes wrong
+   */
   public void updateParameter(Parameter source, String strContext,
       String strNameOriginal) throws WorkflowDesignerException {
     Item item = findItem(strContext);
@@ -2221,23 +2160,22 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Remove the parameter described by the context and name
-*
-* @param strContext the context
-* @param strName the name of the parameter
-* @throws WorkflowException
-*/
-  public void removeParameter(String strContext, String strName) throws WorkflowException {
+   * Remove the parameter described by the context and name
+   *
+   * @param strContext the context
+   * @param strName the name of the parameter
+   */
+  public void removeParameter(String strContext, String strName) {
     Item item = findItem(strContext);
     item.removeParameter(strName);
   }
 
   /**
-* Find the QualifiedUsers specified by the context
-*
-* @param strContext the context
-* @return a QualifiedUsers object or <code>null</code>
-*/
+   * Find the QualifiedUsers specified by the context
+   *
+   * @param strContext the context
+   * @return a QualifiedUsers object or <code>null</code>
+   */
   public QualifiedUsers findQualifiedUsers(String strContext)
       throws WorkflowException {
     StringTokenizer strtok;
@@ -2291,34 +2229,27 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
                 List<QualifiedUsers> qualifiedUsersList = consequence.getNotifiedUsers();
                 if (i != -1 && qualifiedUsersList != null && !qualifiedUsersList.isEmpty()) {
                   qualifiedUsers = qualifiedUsersList.get(i);
-                } else {
-                  qualifiedUsers = null;
                 }
               }
             }
           }
         }
-      } catch (NoSuchElementException e) {
+      } catch (NoSuchElementException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
         // Thrown when no token was found where expected
         // do nothing, just return null...
-      } catch (ArrayIndexOutOfBoundsException e) {
-        // Thrown when no consequence was found at the specified index
-        // do nothing, just return null...
-      } catch (NumberFormatException e) {
-        // Thrown when no token was found where expected
-        // do nothing, just return null...
-      }
+      } // Thrown when no consequence was found at the specified index
+
     }
     return qualifiedUsers;
   }
 
   /**
-* Set the QualifiedUsers specified by the context to the given value
-*
-* @param qualifiedUsers the new value of qualified users
-* @param strContext the context
-* @throws WorkflowDesignerException When the qualified users' parent could not be found
-*/
+   * Set the QualifiedUsers specified by the context to the given value
+   *
+   * @param qualifiedUsers the new value of qualified users
+   * @param strContext the context
+   * @throws WorkflowDesignerException When the qualified users' parent could not be found
+   */
   public void setQualifiedUsers(QualifiedUsers qualifiedUsers, String strContext)
       throws WorkflowException, WorkflowDesignerException {
     if (strContext != null) {
@@ -2382,13 +2313,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Collect all the objects of the type QalifiedUsers instantiated in the Process Model
-*
-* @return a map, where the key is the reference to the object and the value is a textual
-* description of the object location
-*/
+   * Collect all the objects of the type QalifiedUsers instantiated in the Process Model
+   *
+   * @return a map, where the key is the reference to the object and the value is a textual
+   * description of the object location
+   */
   private Map<QualifiedUsers, String> collectQualifiedUsers() {
-    Map<QualifiedUsers, String> map = new IdentityHashMap<QualifiedUsers, String>();
+    Map<QualifiedUsers, String> map = new IdentityHashMap<>();
 
     // States
     //
@@ -2446,11 +2377,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Get the Action specified by the context
-*
-* @param strContext the context
-* @return an Action object or <code>null</code>
-*/
+   * Get the Action specified by the context
+   *
+   * @param strContext the context
+   * @return an Action object or <code>null</code>
+   */
   public Action findAction(String strContext) throws WorkflowException {
     StringTokenizer strtok;
     String strElement;
@@ -2475,11 +2406,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Find the Consequence specified by the context
-*
-* @param strContext the context
-* @return an Consequence object or <code>null</code>
-*/
+   * Find the Consequence specified by the context
+   *
+   * @param strContext the context
+   * @return an Consequence object or <code>null</code>
+   */
   public Consequence findConsequence(String strContext)
       throws WorkflowException {
     StringTokenizer strtok;
@@ -2492,12 +2423,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
 
       try {
         if (action != null) {
-          strElement = strtok.nextToken(); // actions/
-          strElement = strtok.nextToken(); // <name>
-          strElement = strtok.nextToken(); // consequences/
+          strtok.nextToken(); // actions/
+          strtok.nextToken(); // <name>
+          strtok.nextToken(); // consequences/
           strElement = strtok.nextToken(); // <consequence-no>
 
-          consequence = action.getConsequences().getConsequenceList().get(Integer.parseInt(strElement));
+          consequence =
+              action.getConsequences().getConsequenceList().get(Integer.parseInt(strElement));
         }
       } catch (NoSuchElementException e) {
         // Thrown when no token was found where expected
@@ -2514,14 +2446,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Returns the language codes as configured in the properties
-*
-* @param fDefault if <code>true</code> the 'default' option shall be included
-* @return an array of language codes
-*/
+   * Returns the language codes as configured in the properties
+   *
+   * @param fDefault if <code>true</code> the 'default' option shall be included
+   * @return an array of language codes
+   */
   public String[] retrieveLanguageCodes(boolean fDefault) {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString("languages"), ",");
-    List<String> list = new ArrayList<String>(strtok.countTokens() + 1);
+    List<String> list = new ArrayList<>(strtok.countTokens() + 1);
     if (fDefault) {
       list.add("default");
     }
@@ -2533,16 +2465,16 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Returns names of available languages as configured in the properties, localised for the current
-* user
-*
-* @param fDefault if <code>true</code> the 'default' option shall be included
-* @return an array of language names
-*/
+   * Returns names of available languages as configured in the properties, localised for the current
+   * user
+   *
+   * @param fDefault if <code>true</code> the 'default' option shall be included
+   * @return an array of language names
+   */
   public String[] retrieveLanguageNames(boolean fDefault) {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString("languages"), ",");
     Locale locale = new Locale(getLanguage());
-    List<String> list = new ArrayList<String>(strtok.countTokens() + 1);
+    List<String> list = new ArrayList<>(strtok.countTokens() + 1);
     if (fDefault) {
       list.add(getString("workflowDesigner.default"));
     }
@@ -2555,11 +2487,11 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Returns the item type codes as configured in the properties
-*
-* @param fNone if <code>true</code> the 'None' option shall be included
-* @return an array of codes
-*/
+   * Returns the item type codes as configured in the properties
+   *
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @return an array of codes
+   */
   public String[] retrieveItemTypeCodes(boolean fNone) {
     String[] types = TypeManager.getInstance().getTypeNames();
     if (fNone) {
@@ -2569,14 +2501,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Returns a list of comparison operators as configured in the properties,
-*
-* @param fNone if <code>true</code> the 'none' option shall be included
-* @return an array of operators
-*/
+   * Returns a list of comparison operators as configured in the properties,
+   *
+   * @param fNone if <code>true</code> the 'none' option shall be included
+   * @return an array of operators
+   */
   public String[] retrieveOperators(boolean fNone) {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString("operators"), ",");
-    List<String> list = new ArrayList<String>(strtok.countTokens() + 1);
+    List<String> list = new ArrayList<>(strtok.countTokens() + 1);
 
     if (fNone) {
       list.add("");
@@ -2590,13 +2522,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Returns the action kind codes as configured in the properties retrieve
-*
-* @return an array of codes
-*/
+   * Returns the action kind codes as configured in the properties retrieve
+   *
+   * @return an array of codes
+   */
   public String[] retrieveActionKindCodes() {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString("actionKinds"), ",");
-    List<String> list = new ArrayList<String>(strtok.countTokens());
+    List<String> list = new ArrayList<>(strtok.countTokens());
     while (strtok.hasMoreTokens()) {
       list.add(strtok.nextToken());
     }
@@ -2609,13 +2541,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Produce a list of action names
-*
-* @param fNone if <code>true</code> the 'None' option shall be included
-* @return an array of Strings or an empty array.
-*/
+   * Produce a list of action names
+   *
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @return an array of Strings or an empty array.
+   */
   public String[] retrieveActionNames(boolean fNone) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     Actions actions = getProcessModel().getActionsEx();
     if (fNone) {
       list.add("");
@@ -2630,14 +2562,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Produce a list of role names
-*
-* @param fNone if <code>true</code> the 'None' option shall be included
-* @param fDefault if <code>true</code> the 'default' option shall be included
-* @return an array of Strings or an empty array.
-*/
+   * Produce a list of role names
+   *
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @param fDefault if <code>true</code> the 'default' option shall be included
+   * @return an array of Strings or an empty array.
+   */
   public String[] retrieveRoleNames(boolean fNone, boolean fDefault) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     Roles roles = getProcessModel().getRolesEx();
     if (fNone) {
       list.add("");
@@ -2655,13 +2587,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Produce a list of state names
-*
-* @param fNone if <code>true</code> the 'None' option shall be included
-* @return an array of Strings or an empty array.
-*/
+   * Produce a list of state names
+   *
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @return an array of Strings or an empty array.
+   */
   public String[] retrieveStateNames(boolean fNone) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     States states = getProcessModel().getStatesEx();
     if (fNone) {
       list.add("");
@@ -2676,13 +2608,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Produce a list of participant names
-*
-* @param fNone if <code>true</code> the 'None' option shall be included
-* @return an array of Strings or an empty array.
-*/
+   * Produce a list of participant names
+   *
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @return an array of Strings or an empty array.
+   */
   public String[] retrieveParticipantNames(boolean fNone) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     Participants participants = getProcessModel().getParticipantsEx();
     if (fNone) {
       list.add("");
@@ -2698,14 +2630,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Produce a list of user info item names, optionally those where the type = 'user'
-*
-* @param fNone if <code>true</code> the 'None' option shall be included
-* @param fUsersOnly if <code>true</code> only the items of type 'user' shall be included
-* @return an array of Strings or an empty array.
-*/
+   * Produce a list of user info item names, optionally those where the type = 'user'
+   *
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @param fUsersOnly if <code>true</code> only the items of type 'user' shall be included
+   * @return an array of Strings or an empty array.
+   */
   public String[] retrieveUserInfoItemNames(boolean fNone, boolean fUsersOnly) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     DataFolder userInfos = getProcessModel().getUserInfos();
     if (fNone) {
       list.add("");
@@ -2726,14 +2658,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Produce a list of data folder item names, optionally those where the type = 'user'
-*
-* @param fNone if <code>true</code> the 'None' option shall be included
-* @param fUsersOnly if <code>true</code> only the items of type 'user' shall be included
-* @return an array of Strings or an empty array.
-*/
+   * Produce a list of data folder item names, optionally those where the type = 'user'
+   *
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @param fUsersOnly if <code>true</code> only the items of type 'user' shall be included
+   * @return an array of Strings or an empty array.
+   */
   public String[] retrieveFolderItemNames(boolean fNone, boolean fUsersOnly) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     DataFolder dataFolder = getProcessModel().getDataFolder();
 
     if (fNone) {
@@ -2761,14 +2693,14 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Produce a list of form names, only forms other than 'presentationForm' and 'printForm'
-*
-* @param fNone if <code>true</code> the 'None' option shall be included
-* @return an array of Strings or an empty array.
-*/
+   * Produce a list of form names, only forms other than 'presentationForm' and 'printForm'
+   *
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @return an array of Strings or an empty array.
+   */
   public String[] retrieveFormNames(boolean fNone) {
     Forms forms = getProcessModel().getForms();
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     if (fNone) {
       list.add("");
     }
@@ -2790,15 +2722,18 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   /**
    * Generates component descriptor file in the appropriate directory, stores the new descriptor's
    * name to be able to access it later
+   *
    * @throws WorkflowDesignerException when something goes wrong
    */
   public void generateComponentDescriptor() throws WorkflowDesignerException {
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("workflow");
+    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
+        "workflow");
     final String sureProcessModelFileName = processModelFileName.replace("\\", "/");
     template.setAttribute("processModelFileName", sureProcessModelFileName);
 
     final WAComponent waComponent = new WAComponent();
-    final LocalizedWAComponentRegistry localizedCmpRegistry = new LocalizedWAComponentRegistry(waComponent);
+    final LocalizedWAComponentRegistry localizedCmpRegistry =
+        new LocalizedWAComponentRegistry(waComponent);
     final List<LocalizedWAComponent> stLocalizedCmpLabels = new ArrayList<>();
     final List<LocalizedWAComponent> stLocalizedCmpDescriptions = new ArrayList<>();
     final Map<String, List<LocalizedProfile>> stLocalizedCmpProfiles = new HashMap<>();
@@ -2882,7 +2817,8 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
     Optional.of(xmlComponentTemp.getParentFile())
         .filter(f -> !f.exists())
         .ifPresent(File::mkdirs);
-    try (final PrintWriter out = new PrintWriter(new FileWriter(xmlComponentTemp, Charsets.UTF_8))) {
+    try (final PrintWriter out =
+             new PrintWriter(new FileWriter(xmlComponentTemp, Charsets.UTF_8))) {
       out.print(template.applyFileTemplate("xmlComponent"));
     } catch (IOException e) {
       throw new WorkflowDesignerException(
@@ -2929,13 +2865,13 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Finds the component that references the given process model
-*
-* @param strProcessModelFileName the relative path to the file containing the process model
-* description
-* @return the name of the component descriptor file name (without .XML ) or <code>null</code> if
-* no components reference the given model.
-*/
+   * Finds the component that references the given process model
+   *
+   * @param strProcessModelFileName the relative path to the file containing the process model
+   * description
+   * @return the name of the component descriptor file name (without .XML ) or <code>null</code> if
+   * no components reference the given model.
+   */
   private String findComponentDescriptor(String strProcessModelFileName) {
     Collection<WAComponent> waComponents = WAComponent.getAll();
     if (strProcessModelFileName != null) {
@@ -2957,16 +2893,16 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-* Upload given process model in workflow repository.
-*
-* @param model process model file
-* @throws WorkflowDesignerException , WorkflowException
-*/
+   * Upload given process model in workflow repository.
+   *
+   * @param model process model file
+   * @throws WorkflowDesignerException , WorkflowException
+   */
   public void uploadProcessModel(FileItem model)
-      throws WorkflowDesignerException, WorkflowException {
+      throws WorkflowDesignerException {
     String name = model.getName();
     if (name != null) {
-      name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
+      name = name.substring(name.lastIndexOf(File.separator) + 1);
       name = replaceSpecialChars(name);
 
       ProcessModelManager manager = WorkflowHub.getProcessModelManager();

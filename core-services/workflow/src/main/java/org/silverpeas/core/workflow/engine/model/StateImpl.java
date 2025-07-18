@@ -23,32 +23,19 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import org.silverpeas.core.workflow.api.model.Action;
-import org.silverpeas.core.workflow.api.model.AllowedActions;
-import org.silverpeas.core.workflow.api.model.ContextualDesignation;
-import org.silverpeas.core.workflow.api.model.ContextualDesignations;
-import org.silverpeas.core.workflow.api.model.QualifiedUsers;
-import org.silverpeas.core.workflow.api.model.State;
-import org.silverpeas.core.workflow.api.model.TimeOutAction;
-import org.silverpeas.core.workflow.api.model.TimeOutActions;
+import org.silverpeas.core.workflow.api.model.*;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class implementing the representation of the &lt;state&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "state")
 @XmlAccessorType(XmlAccessType.NONE)
-public class StateImpl implements State, Serializable {
+public class StateImpl implements State {
   private static final long serialVersionUID = -3019436287850255663L;
 
   @XmlAttribute
@@ -114,70 +101,32 @@ public class StateImpl implements State, Serializable {
   // labels
   // //////////////////
 
-  /*
-   * (non-Javadoc)
-   * @see State#getLabels()
-   */
+  @Override
   public ContextualDesignations getLabels() {
     return new SpecificLabelListHelper(labels);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getLabel(java.lang.String, java.lang.String)
-   */
+  @Override
   public String getLabel(String role, String language) {
     return getLabels().getLabel(role, language);
   }
 
-  // //////////////////
-  // activities
-  // //////////////////
-
-  /*
-   * (non-Javadoc)
-   * @see State#getActivities()
-   */
+  @Override
   public ContextualDesignations getActivities() {
     return new SpecificLabelListHelper(activities);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getActivity(java.lang.String, java.lang.String)
-   */
-  public String getActivity(String role, String language) {
-    return getActivities().getLabel(role, language);
-  }
-
-  // //////////////////
-  // descriptions
-  // //////////////////
-
-  /*
-   * (non-Javadoc)
-   * @see State#getDescriptions()
-   */
+  @Override
   public ContextualDesignations getDescriptions() {
     return new SpecificLabelListHelper(descriptions);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getDescription(java.lang.String, java.lang.String)
-   */
+  @Override
   public String getDescription(String role, String language) {
     return getDescriptions().getLabel(role, language);
   }
 
-  // //////////////////
-  // Miscellaneous
-  // //////////////////
-
-  /**
-   * Get actions available in this state
-   * @return allowedActions allowed actions
-   */
+  @Override
   public Action[] getAllowedActions() {
     // check for allowedActions attribute
     if (allowedActions == null) {
@@ -186,10 +135,7 @@ public class StateImpl implements State, Serializable {
     return allowedActions.getAllowedActions();
   }
 
-  /**
-   * Get timeout actions for this state
-   * @return timeout actions
-   */
+  @Override
   public TimeOutAction[] getTimeOutActions() {
     if (timeOutActions == null) {
       return new TimeOutAction[0];
@@ -198,18 +144,17 @@ public class StateImpl implements State, Serializable {
     return timeOutActions.getTimeOutActions();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getAllAllowedActions()
-   */
+  @Override
   public AllowedActions getAllowedActionsEx() {
     return allowedActions;
   }
 
+  @Override
   public AllowedActions createAllowedActions() {
     return new ActionRefs();
   }
 
+  @Override
   public Action[] getFilteredActions() {
     if (filteredActions == null) {
       return new Action[0];
@@ -223,135 +168,77 @@ public class StateImpl implements State, Serializable {
     filteredActions = allowedActions;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getInterestedUsers()
-   */
+  @Override
   public QualifiedUsers getInterestedUsers() {
-    if (interestedUsers == null) {
-      return new QualifiedUsersImpl();
-    } else {
-      return this.interestedUsers;
-    }
+    return Objects.requireNonNullElseGet(interestedUsers, QualifiedUsersImpl::new);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getInterestedUsersEx()
-   */
+  @Override
   public QualifiedUsers getInterestedUsersEx() {
     return interestedUsers;
   }
 
-  /**
-   * Get the name of this state
-   * @return state's name
-   */
+  @Override
   public String getName() {
     return this.name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getWorkingUsers()
-   */
+  @Override
   public QualifiedUsers getWorkingUsers() {
-    if (workingUsers == null) {
-      return new QualifiedUsersImpl();
-    } else {
-      return this.workingUsers;
-    }
+    return Objects.requireNonNullElseGet(workingUsers, QualifiedUsersImpl::new);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getWorkingUsersEx()
-   */
+  @Override
   public QualifiedUsers getWorkingUsersEx() {
     return workingUsers;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * State#setAllowedActions(com.silverpeas.workflow.api.model
-   * .AllowedActions)
-   */
+  @Override
   public void setAllowedActions(AllowedActions allowedActions) {
     this.allowedActions = allowedActions;
   }
 
-  /**
-   * Set all the users interested by this state
-   * @param interestedUsers object containing interested users
-   */
+  @Override
   public void setInterestedUsers(QualifiedUsers interestedUsers) {
     this.interestedUsers = interestedUsers;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#setName(java.lang.String)
-   */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /**
-   * Set all the users who can act in this state
-   * @param workingUsers object containing these users
-   */
+  @Override
   public void setWorkingUsers(QualifiedUsers workingUsers) {
     this.workingUsers = workingUsers;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#getTimeoutInterval()
-   */
+  @Override
   public int getTimeoutInterval() {
     return timeoutInterval;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#setTimeoutInterval(int)
-   */
+  @Override
   public void setTimeoutInterval(int hours) {
     timeoutInterval = hours;
   }
 
-  /**
-   * Get the timeout action of this state Action that will played if timeout is triggered
-   * @return timeout action
-   */
+  @Override
   public Action getTimeoutAction() {
     return timeOutAction;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * State#setTimeoutAction(com.silverpeas.workflow.api.model.
-   * Action)
-   */
+  @Override
   public void setTimeoutAction(Action timeoutAction) {
     this.timeOutAction = (ActionImpl) timeoutAction;
   }
 
-  /**
-   * Get flag for admin notification if true, the timeout manager will send a notification to all
-   * supervisors
-   * @return admin notification flag
-   */
+  @Override
   public boolean getTimeoutNotifyAdmin() {
     return timeoutNotifyAdmin;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#setTimeoutNotifyAdmin(boolean)
-   */
+  @Override
   public void setTimeoutNotifyAdmin(boolean timeoutAction) {
     this.timeoutNotifyAdmin = timeoutAction;
   }
@@ -366,7 +253,6 @@ public class StateImpl implements State, Serializable {
     }
 
     final StateImpl state = (StateImpl) o;
-
     return name.equals(state.name);
   }
 

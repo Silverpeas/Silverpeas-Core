@@ -24,6 +24,7 @@
 
 --%>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.nio.charset.StandardCharsets" %>
 <%--
 
     Copyright (C) 2000 - 2024 Silverpeas
@@ -60,10 +61,10 @@
     Input           input = (Input)request.getAttribute("Input");
     String          strCancelAction = (String)request.getAttribute("parentScreen"),
                     strContext = (String)request.getAttribute("context"),
-                    strCurrentScreen = "ModifyInput?context=" + URLEncoder.encode( strContext, UTF8 ),
+                    strCurrentScreen = "ModifyInput?context=" + URLEncoder.encode( strContext, StandardCharsets.UTF_8 ),
                     strLabelContext = strContext + "/labels";
     ArrayPane       inputPane = gef.getArrayPane( "inputPane", strCurrentScreen, request, session );
-    boolean         fExistingInput = ( (Boolean)request.getAttribute( "IsExisitingInput" ) ).booleanValue();
+    boolean         fExistingInput = (Boolean) request.getAttribute("IsExisitingInput");
     List<Item>      folderItems = (List<Item>) request.getAttribute("FolderItems");
     List<String>    folderItemNames = new ArrayList<>();
     folderItemNames.add(resource.getString("GML.none"));
@@ -72,17 +73,16 @@
     }
     Map<String, List<String>> typesAndDisplayers = (Map<String, List<String>>) request.getAttribute("TypesAndDisplayers");
 %>
-<HTML>
-<HEAD>
-<view:looknfeel withCheckFormScript="true"/>
-<script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
-<script language="javaScript">
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
+<script type="application/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
+<script type="application/javascript">
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        if ( document.inputForm.item.options.selectedIndex == 0
+      if ( document.inputForm.item.options.selectedIndex === 0
              && isWhitespace(document.inputForm.value.value) )
         {
             errorMsg+="  - '<%=resource.getString("workflowDesigner.folderItem")%>'"
@@ -107,33 +107,33 @@
         }
     }
 
-    var items = [];
+    const items = [];
     <% for (Item item : folderItems) {%>
     items["<%=item.getName()%>"] = "<%=item.getType()%>";
     <% } %>
 
-    var displayers = [];
+    const displayers = [];
     <% for (String type : typesAndDisplayers.keySet()) {
-       String displayers = "";
+       StringBuilder displayers = new StringBuilder();
        for (String displayer : typesAndDisplayers.get(type)) {
-        if (!displayers.isEmpty()) {
-          displayers += ",";
+        if (displayers.length() > 0) {
+          displayers.append(",");
         }
-        displayers += "\""+displayer+"\"";
+        displayers.append("\"").append(displayer).append("\"");
        }
        %>
       displayers["<%=type%>"] = [<%=displayers%>];
     <% } %>
 
     function changeDisplayersList() {
-      var itemName = $("select[name='item']").val();
-      var itemType = items[itemName];
-      var itemDisplayers = displayers[itemType];
+      const itemName = $("select[name='item']").val();
+      const itemType = items[itemName];
+      const itemDisplayers = displayers[itemType];
 
-      var displayerSelect = $("select[name='displayerName']");
+      const displayerSelect = $("select[name='displayerName']");
       displayerSelect.empty();
-      var options = '';
-      for (var j = 0; j < itemDisplayers.length; j++){
+      let options = '';
+      for (let j = 0; j < itemDisplayers.length; j++){
         options += "<option value='" +itemDisplayers[j]+ "'>" +itemDisplayers[j]+ "</option>";
       }
       displayerSelect.html(options);
@@ -155,8 +155,8 @@
     });
 
 </script>
-</HEAD>
-<BODY class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.editor.form"), strCancelAction );
@@ -237,5 +237,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

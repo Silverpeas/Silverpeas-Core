@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
-    if (response.isCommitted() == false)
+    if (!response.isCommitted())
         response.resetBuffer();
 %>
 <%--
@@ -53,22 +53,22 @@
     if ( exception instanceof SilverpeasException )
         detailedString = ( (SilverpeasException)exception ).getExtraInfos();
 %>
-<HTML>
-<HEAD>
+<view:sp-page>
+<view:sp-head-part>
 <TITLE><%= generalMessage.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
-</HEAD>
+</view:sp-head-part>
 
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+<view:sp-body-part>
 <%
 					out.println(window.printBefore());
 					out.println(frame.printBefore());
 %>
-<CENTER>
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
+<div class="center">
+<table class="intfdcolor">
+    <tr><th></th></tr>
 	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
-			<center>
+		<td class="intfdcolor4 nowrap">
+			<div class="center">
 				<br>
 				<span class="txtnav">
 					<% if (exStr != null)
@@ -83,7 +83,7 @@
                        }
                     %>
 				</span>
-			</center>
+			</div>
 			<br>
 		</td>
 	</tr>
@@ -95,10 +95,10 @@
           buttonPane.addButton((Button) gef.getFormButton(generalMessage.getString("GML.back"), "javascript:history.go(-1);", false));
           out.println(buttonPane.print());
 %>
-</CENTER>
+</div>
 <%
                 out.println(frame.printAfter());
                 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

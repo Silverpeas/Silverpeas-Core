@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
@@ -47,33 +48,22 @@ public class RelatedGroupImpl implements RelatedGroup, Serializable {
   @XmlAttribute
   private String role;
 
-  /**
-   * Get the referred item
-   */
+  @Override
   public Item getFolderItem() {
     return folderItem;
   }
 
-  /**
-   * Set the referred item
-   * @param folderItem item to refer
-   */
+  @Override
   public void setFolderItem(Item folderItem) {
     this.folderItem = (ItemImpl) folderItem;
   }
 
-  /**
-   * Get the role to which the related user will be affected
-   * @return the role name
-   */
+  @Override
   public String getRole() {
     return this.role;
   }
 
-  /**
-   * Set the role to which the related user will be affected
-   * @param role role as a String
-   */
+  @Override
   public void setRole(String role) {
     this.role = role;
   }
@@ -88,11 +78,7 @@ public class RelatedGroupImpl implements RelatedGroup, Serializable {
     }
 
     final RelatedGroupImpl that = (RelatedGroupImpl) o;
-
-    if (folderItem != null ? !folderItem.equals(that.folderItem) : that.folderItem != null) {
-      return false;
-    }
-    return role != null ? role.equals(that.role) : that.role == null;
+    return Objects.equals(folderItem, that.folderItem) && Objects.equals(role, that.role);
   }
 
   @Override

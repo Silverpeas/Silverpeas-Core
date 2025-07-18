@@ -23,20 +23,17 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.model.Forms;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;forms&gt; element of a Process Model.
@@ -96,13 +93,12 @@ public class FormsImpl implements Serializable, Forms {
   public Form getForm(String name, String role) {
     Form form2Return = null;
     for (Form form : formList) {
-      if (name.equals(form.getName())) {
-        if (role != null && role.equalsIgnoreCase(form.getRole())) {
-          form2Return = form;
-        } else if (form.getRole() == null && form2Return == null) {
+      if (name.equals(form.getName()) &&
+          (role != null && role.equalsIgnoreCase(form.getRole()) ||
+            form.getRole() == null && form2Return == null)) {
           form2Return = form;
         }
-      }
+
     }
 
     return form2Return;
@@ -122,7 +118,7 @@ public class FormsImpl implements Serializable, Forms {
    * @see Forms#removeForm(java.lang.String, java.lang.String)
    */
   @Override
-  public void removeForm(String strName, String strRole) throws WorkflowException {
+  public void removeForm(String strName, String strRole) {
     Iterator<Form> iter = formList.iterator();
     while (iter.hasNext()) {
       Form form = iter.next();
@@ -132,8 +128,5 @@ public class FormsImpl implements Serializable, Forms {
         return;
       }
     }
-    throw new WorkflowException("FormsImpl.removeForm", SilverpeasException.ERROR,
-        "workflowEngine.EX_FORM_NOT_FOUND");
-
   }
 }
