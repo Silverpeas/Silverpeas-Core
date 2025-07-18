@@ -28,6 +28,7 @@
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
+<%@ taglib prefix="vies" uri="http://www.silverpeas.com/tld/viewGenerator" %>
 <%
     QualifiedUsers           qualifiedUsers = (QualifiedUsers)request.getAttribute( "QualifiedUsers" );
     Boolean                  fDisplayRoleSelector = (Boolean)request.getAttribute( "RoleSelector" ),
@@ -43,24 +44,22 @@
                              inRolePane = gef.getArrayPane( "inRolePane", "", request, session );
 %>
 
-<html>
-<head>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
     function sendData()
     {
-        var errorMsg = '';
-        var errorNb = 0;
-        var result;
-        var fExistingQualifiedUser = <%=fExistingQualifiedUser.toString()%>;
-        var fUserInRoleVisible = true;
-        var fMessageVisible = <%=fNotifiedUser.toString()%>;
-        var fRelatedUserDefined = <%=Boolean.toString( qualifiedUsers.iterateRelatedUser().hasNext() )%>;
-        var fUserInRoleDefined = false;
-        var i = 0;
+      let errorMsg = '';
+      let errorNb = 0;
+      let fExistingQualifiedUser = <%=fExistingQualifiedUser.toString()%>;
+      const fUserInRoleVisible = true;
+      let fMessageVisible = <%=fNotifiedUser.toString()%>;
+      let fRelatedUserDefined = <%=Boolean.toString( qualifiedUsers.iterateRelatedUser().hasNext())%>;
+      let fUserInRoleDefined = false;
+      let i = 0;
 
-        // Verify only for an existing (not new object)
+      // Verify only for an existing (not new object)
         //
         if ( fExistingQualifiedUser )
         {
@@ -112,18 +111,18 @@
         }
     }
 </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName( resource.getString(strEditorName) );
 
-    if ( fExistingQualifiedUser.booleanValue() )
+    if (fExistingQualifiedUser)
         addRelatedUser( operationPane, resource, strContext );
 
     // Role - display for workingUsers and InterestedUsers, omit for AllowedUsers and Notified users
     //
-    if ( fDisplayRoleSelector.booleanValue() )
+    if (fDisplayRoleSelector)
     {
         headerPane.setTitle(resource.getString(strEditorName));
         row = headerPane.addArrayLine();
@@ -138,7 +137,7 @@
 
     // add a row with the message to the header pane
     //
-    if ( fNotifiedUser.booleanValue() )
+    if (fNotifiedUser)
     {
         row = headerPane.addArrayLine();
         cellText = row.addArrayCellText( resource.getString("workflowDesigner.message") );
@@ -180,13 +179,13 @@
     out.println("<table border=\"0\"><tr>");
     out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resource.getIcon("workflowDesigner.info")+"\"></td>");
 
-    if ( fNotifiedUser.booleanValue() )
+    if (fNotifiedUser)
     {
         out.println("<td>"+resource.getString("workflowDesigner.help.notifiedUsers")+"</td>");
     }
     else  // allowed, interested or working users
     {
-        if ( fDisplayRoleSelector.booleanValue() ) // interested or working users
+        if (fDisplayRoleSelector) // interested or working users
             out.println("<td>"+resource.getString("workflowDesigner.help.interestedOrWorkingUsers")+"</td>");
         else                                       // allowed users
             out.println("<td>"+resource.getString("workflowDesigner.help.allowedUsers")+"</td>");
@@ -202,7 +201,7 @@
     <input type="hidden" name="role_original" value="<%=qualifiedUsers.getRole()%> "/>
     <input type="hidden" name="context" value="<%=strContext%>" />
 <%
-    if ( fDisplayRoleSelector.booleanValue() || fNotifiedUser.booleanValue() ) {
+    if (fDisplayRoleSelector || fNotifiedUser) {
         out.println( headerPane.print() );
     }
 
@@ -223,5 +222,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

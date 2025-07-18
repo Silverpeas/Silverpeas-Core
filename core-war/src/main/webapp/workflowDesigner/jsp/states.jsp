@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -35,18 +35,16 @@ States      states = (States)request.getAttribute( "States" );
 ArrayPane   arrayPane = gef.getArrayPane("stateList", strCurrentTab, request, session);
 State       state;
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
 function sendData() {
     document.workflowHeaderForm.submit();
 }
 </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.states") );
@@ -64,13 +62,13 @@ column.setSortable(false);
 
 if ( states != null )
 {
-    Iterator    iterState = states.iterateState();
+    Iterator<State> iterState = states.iterateState();
 
     while ( iterState.hasNext() )
     {
         Action timeoutAction;
 
-        state = (State)iterState.next();
+        state = iterState.next();
         strStateName = state.getName();
         timeoutAction = state.getTimeoutAction();
 
@@ -81,8 +79,8 @@ if ( states != null )
         delIcon = iconPane.addIcon();
         delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
                               resource.getString("GML.delete"),
-                              "javascript:confirmRemove('RemoveState?state="
-                              + URLEncoder.encode(strStateName, UTF8) + "', '"
+                              "javascript:confirmRemove('RemoveState', {state: '"
+                              + URLEncoder.encode(strStateName, StandardCharsets.UTF_8) + "'}, '"
                               + resource.getString("workflowDesigner.confirmRemoveJS") + " "
                               + WebEncodeHelper.javaStringToJsString( strStateName ) + " ?');" );
         updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
@@ -105,8 +103,11 @@ out.println(window.printBefore());
 <view:areaOfOperationOfCreation/>
 <!-- help -->
 <div class="inlineMessage">
-	<table border="0"><tr>
-		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+	<table>
+        <tr><th></th></tr>
+        <tr>
+		<td class="absmiddle"><img alt="info"
+                                    src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
 		<td><%=resource.getString("workflowDesigner.help.states") %></td>
 	</tr></table>
 </div>
@@ -121,5 +122,5 @@ out.println(arrayPane.print());
 <%
 out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

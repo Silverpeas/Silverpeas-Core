@@ -23,18 +23,12 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.model.Column;
-import org.silverpeas.core.workflow.api.model.Columns;
-import org.silverpeas.core.workflow.api.model.ContextualDesignation;
-import org.silverpeas.core.workflow.api.model.ContextualDesignations;
-import org.silverpeas.core.workflow.api.model.Presentation;
+import org.silverpeas.core.workflow.api.model.*;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,7 +39,7 @@ import java.util.Vector;
  **/
 @XmlRootElement(name = "presentation")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PresentationImpl implements Presentation, Serializable {
+public class PresentationImpl implements Presentation {
 
   private static final long serialVersionUID = 8175832964614235239L;
   @XmlElement(name = "title", type = SpecificLabel.class)
@@ -61,23 +55,12 @@ public class PresentationImpl implements Presentation, Serializable {
     columnsList = new Vector<>();
   }
 
-  // //////////////////
-  // titles
-  // //////////////////
-
-  /*
-   * (non-Javadoc)
-   * @see Presentation#getTitles()
-   */
+  @Override
   public ContextualDesignations getTitles() {
     return new SpecificLabelListHelper(titles);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Presentation#getTitle(java.lang.String,
-   * java.lang.String)
-   */
+  @Override
   public String getTitle(String role, String language) {
     return getTitles().getLabel(role, language);
   }
@@ -88,6 +71,7 @@ public class PresentationImpl implements Presentation, Serializable {
    * @param strRoleName the name of the role
    * @return the contents of 'Columns' as an array of 'Column'
    */
+  @Override
   public Column[] getColumns(String strRoleName) {
     Columns columns = getColumnsByRole(strRoleName);
     if (columns == null) {
@@ -96,10 +80,7 @@ public class PresentationImpl implements Presentation, Serializable {
     return columns.getColumnList().toArray(new Column[0]);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Presentation#getColumnsByRole(java.lang .String)
-   */
+  @Override
   public Columns getColumnsByRole(String strRoleName) {
     Columns search;
     int index;
@@ -126,42 +107,26 @@ public class PresentationImpl implements Presentation, Serializable {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Presentation#createColumns()
-   */
+  @Override
   public Columns createColumns() {
     return new ColumnsImpl();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Presentation#addColumns(com.silverpeas
-   * .workflow.api.model.Columns)
-   */
+  @Override
   public void addColumns(Columns columns) {
     columnsList.add(columns);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Presentation#iterateColumns()
-   */
+  @Override
   public Iterator<Columns> iterateColumns() {
     return columnsList.iterator();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Presentation#deleteColumns(java.lang. String)
-   */
-  public void deleteColumns(String strRoleName) throws WorkflowException {
-    Columns search = createColumns();
-    search.setRoleName(strRoleName);
-    if (!columnsList.remove(search)) {
-      throw new WorkflowException("PresentationImpl.deleteColumns",
-          "workflowEngine.EX_COLUMNS_NOT_FOUND",
-          "Columns role name=" + (strRoleName == null ? "<null>" : strRoleName));
+  @Override
+  public void deleteColumns(String strRoleName) {
+    if (columnsList == null) {
+      return;
     }
+    columnsList.removeIf(c -> c.getRoleName().equals(strRoleName));
   }
 }

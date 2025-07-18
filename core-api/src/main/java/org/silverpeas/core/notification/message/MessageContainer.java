@@ -24,6 +24,7 @@
 package org.silverpeas.core.notification.message;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 
@@ -83,6 +84,7 @@ public class MessageContainer {
     }
   }
 
+  @NonNull
   public Set<Message> getMessages() {
     return messages;
   }

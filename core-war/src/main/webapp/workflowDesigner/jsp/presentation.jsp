@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -29,25 +29,23 @@
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
 function sendData() {
     document.workflowHeaderForm.submit();
 }
 </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
-String          strColumnList,
-                strCurrentTab   = "ViewPresentation";
-ArrayPane       columnPane = gef.getArrayPane("columnsList", strCurrentTab, request, session);
+StringBuilder strColumnList;
+    String strCurrentTab   = "ViewPresentation";
+    ArrayPane       columnPane = gef.getArrayPane("columnsList", strCurrentTab, request, session);
 Presentation    presentation = (Presentation)request.getAttribute( "Presentation" );
-Iterator        iterColumns = presentation.iterateColumns(),
-                iterColumn;
+Iterator<Columns> iterColumns = presentation.iterateColumns();
+Iterator<Column> iterColumn;
 
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.presentationTab"));
@@ -68,7 +66,7 @@ column.setSortable(false);
 //
 while ( iterColumns.hasNext() )
 {
-    Columns columns = (Columns)iterColumns.next();
+    Columns columns = iterColumns.next();
 
     row = columnPane.addArrayLine();
     iconPane = gef.getIconPane();
@@ -80,27 +78,27 @@ while ( iterColumns.hasNext() )
                              "ModifyColumns?columns=" + columns.getRoleName() );
     delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
                           resource.getString("GML.delete"),
-                          "javascript:confirmRemove('RemoveColumns?columns="
-                          + URLEncoder.encode(columns.getRoleName(), UTF8) + "', '"
+                          "javascript:confirmRemove('RemoveColumns', {columns: '"
+                          + URLEncoder.encode(columns.getRoleName(), StandardCharsets.UTF_8) + "'}, '"
                           + resource.getString("workflowDesigner.confirmRemoveJS") + " "
                           + WebEncodeHelper.javaStringToJsString( columns.getRoleName() ) + " ?');" );
     iconPane.setSpacing("30px");
 
-    // Build a comma-separated list of refrenced items to put in the 'column list' column
+    // Build a comma-separated list of referenced items to put in the 'column list' column
     //
-    strColumnList = "";
+    strColumnList = new StringBuilder();
     iterColumn = columns.iterateColumn();
 
     while ( iterColumn.hasNext() )
     {
-        if ( strColumnList.length() > 0 )
-            strColumnList += ", ";
+        if (strColumnList.length() > 0)
+            strColumnList.append(", ");
 
-        strColumnList += ((Column)iterColumn.next()).getItem().getName();
+        strColumnList.append(iterColumn.next().getItem().getName());
     }
 
     row.addArrayCellLink( columns.getRoleName(), "ModifyColumns?columns=" + columns.getRoleName() );
-    row.addArrayCellLink( strColumnList, "ModifyColumns?columns=" + columns.getRoleName() );
+    row.addArrayCellLink(strColumnList.toString(), "ModifyColumns?columns=" + columns.getRoleName() );
     row.addArrayCellIconPane(iconPane);
 }
 
@@ -111,8 +109,11 @@ out.println(window.printBefore());
 <view:areaOfOperationOfCreation/>
 <!-- help -->
 <div class="inlineMessage">
-	<table border="0"><tr>
-		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+	<table>
+        <tr><th></th></tr>
+        <tr>
+		<td class="absmiddle"><img alt="info"
+                                    src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
 		<td><%=resource.getString("workflowDesigner.help.presentation") %></td>
 	</tr></table>
 </div>
@@ -134,5 +135,5 @@ out.println( columnPane.print() );
 <%
 out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

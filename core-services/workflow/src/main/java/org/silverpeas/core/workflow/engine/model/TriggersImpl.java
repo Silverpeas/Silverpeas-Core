@@ -23,10 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-
 import org.silverpeas.core.workflow.api.model.Trigger;
 import org.silverpeas.core.workflow.api.model.Triggers;
 
@@ -35,13 +31,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;triggers&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "triggers")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TriggersImpl implements Serializable, Triggers {
+public class TriggersImpl implements Triggers {
   private static final long serialVersionUID = -2251572849084710965L;
 
   @XmlElement(name = "trigger", type = TriggerImpl.class)

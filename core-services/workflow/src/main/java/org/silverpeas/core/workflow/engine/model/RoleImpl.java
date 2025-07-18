@@ -23,26 +23,20 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Role;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;role&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "role")
 @XmlAccessorType(XmlAccessType.NONE)
-public class RoleImpl implements Role, Serializable {
+public class RoleImpl implements Role {
   private static final long serialVersionUID = 1005254939500303606L;
   @XmlAttribute
   private String name;
@@ -67,59 +61,37 @@ public class RoleImpl implements Role, Serializable {
     descriptions = new ArrayList<>();
   }
 
-  /**
-   * Get the name of the Role
-   * @return role's name
-   */
+  @Override
   public String getName() {
     return this.name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Role#setName(java.lang.String)
-   */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Role#getLabels()
-   */
+  @Override
   public ContextualDesignations getLabels() {
     return new SpecificLabelListHelper(labels);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Role#getLabel(java.lang.String, java.lang.String)
-   */
+  @Override
   public String getLabel(String role, String language) {
     return getLabels().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Role#addLabel(com.silverpeas.workflow
-   * .api.model.ContextualDesignation)
-   */
+  @Override
   public void addLabel(ContextualDesignation label) {
     labels.add(label);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Role#getDescriptions()
-   */
+  @Override
   public ContextualDesignations getDescriptions() {
     return new SpecificLabelListHelper(descriptions);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Role#getDescription(java.lang.String, java.lang.String)
-   */
+  @Override
   public String getDescription(String role, String language) {
     return getDescriptions().getLabel(role, language);
   }

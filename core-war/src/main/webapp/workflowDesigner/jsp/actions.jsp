@@ -25,7 +25,8 @@
 --%>
 <%@ page import="org.silverpeas.core.workflow.api.model.Actions" %>
 <%@ page import="org.silverpeas.core.workflow.api.model.Action" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -65,18 +66,16 @@ Actions actions = (Actions)request.getAttribute( "Actions" );
 ArrayPane  actionsPane = gef.getArrayPane("actionsList", strCurrentTab, request, session);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
 function sendData() {
     document.workflowHeaderForm.submit();
 }
 </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName") );
 browseBar.setComponentName(resource.getString("workflowDesigner.actions") );
@@ -96,11 +95,11 @@ column.setSortable(false);
 if ( actions != null )
 {
     Action action;
-    Iterator   iterAction = actions.iterateAction();
+    Iterator<Action> iterAction = actions.iterateAction();
 
     while ( iterAction.hasNext() )
     {
-        action = (Action)iterAction.next();
+        action = iterAction.next();
         strActionName = action.getName();
         strModifyAction = "ModifyAction?action=" + strActionName;
         row    = actionsPane.addArrayLine();
@@ -110,8 +109,8 @@ if ( actions != null )
         delIcon = iconPane.addIcon();
         delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
                               resource.getString("GML.delete"),
-                              "javascript:confirmRemove('RemoveAction?action="
-                              + URLEncoder.encode(strActionName, UTF8) + "', '"
+                              "javascript:confirmRemove('RemoveAction', {action: '"
+                              + URLEncoder.encode(strActionName, StandardCharsets.UTF_8) + "'}, '"
                               + resource.getString("workflowDesigner.confirmRemoveJS")
                               + " " + WebEncodeHelper.javaStringToJsString(strActionName) + " ?');" );
 
@@ -135,10 +134,14 @@ out.println(window.printBefore());
 <view:areaOfOperationOfCreation/>
 <!-- help -->
 <div class="inlineMessage">
-	<table border="0"><tr>
-		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+	<table>
+        <tr><th></th></tr>
+        <tr>
+		<td class="absmiddle"><img alt="info"
+                                    src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
 		<td><%=resource.getString("workflowDesigner.help.actions") %></td>
-	</tr></table>
+	    </tr>
+    </table>
 </div>
 <br/>
 <%
@@ -151,5 +154,5 @@ out.println(actionsPane.print());
 <%
 out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

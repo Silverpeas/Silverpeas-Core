@@ -43,6 +43,7 @@ import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.model.Input;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Parameter;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -85,63 +86,40 @@ public class FormImpl implements Form, Serializable {
     inputList = new Vector<>();
   }
 
-  /**
-   * Get the name of this form
-   * @return form's name
-   */
+  @Override
   public String getName() {
     return this.name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#getRole()
-   */
+  @Override
   public String getRole() {
     return role;
   }
 
-  /**
-   * Get the name of HTML file to show this form if no HTML file is defined, XMLForm will be used to
-   * create the form
-   * @return form's name
-   */
+  @Override
   public String getHTMLFileName() {
     return this.htmlFileName;
   }
 
-  /**
-   * Set the name of HTML file to show this form if no HTML file is defined, XMLForm will be used to
-   * display the form
-   * @return form's name
-   */
+  @Override
   public void setHTMLFileName(String htmlFileName) {
     this.htmlFileName = htmlFileName;
   }
 
-  /**
-   * Get the inputs
-   * @return the inputs as an array
-   */
+  @Override
   public Input[] getInputs() {
     if (inputList == null) {
       return new Input[0];
     }
-    return inputList.toArray(new ItemRef[0]);
+    return inputList.toArray(new Input[0]);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#getInput(int)
-   */
+  @Override
   public Input getInput(int idx) {
     return inputList.get(idx);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#getInput(com.silverpeas.workflow .api.model.Input)
-   */
+  @Override
   public Input getInput(Input reference) {
     int idx = inputList.indexOf(reference);
 
@@ -152,88 +130,58 @@ public class FormImpl implements Form, Serializable {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#addInput(com.silverpeas.workflow .api.model.Input)
-   */
+  @Override
   public void addInput(Input input) {
     inputList.add(input);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#iterateInput()
-   */
+  @Override
   public Iterator<Input> iterateInput() {
     return inputList.iterator();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#createInput()
-   */
+  @Override
   public Input createInput() {
     return new ItemRef();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#removeInput(int)
-   */
-  public void removeInput(int idx) throws WorkflowException {
+  @Override
+  public void removeInput(int idx) {
     inputList.remove(idx);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#getTitles()
-   */
+  @Override
   public ContextualDesignations getTitles() {
     return new SpecificLabelListHelper(titles);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#getTitle(java.lang.String, java.lang.String)
-   */
+  @Override
   public String getTitle(String role, String language) {
     return getTitles().getLabel(role, language);
   }
 
-  /**
-   * Set the name of this form
-   * @param name form's name
-   **/
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Form#setRole(java.lang.String)
-   */
+  @Override
   public void setRole(String role) {
     this.role = role;
   }
 
-  /**
-   * Converts this object in a RecordTemplate object
-   * @return the resulting RecordTemplate
-   */
+  @Override
   public RecordTemplate toRecordTemplate(String role, String lang)
       throws WorkflowException {
     return toRecordTemplate(role, lang, false);
   }
 
-  /**
-   * Converts this object in a DataRecord object
-   * @return the resulting DataRecord object with the default values set
-   */
+  @Override
   public DataRecord getDefaultRecord(String role, String lang, DataRecord data)
       throws WorkflowException {
     try {
-      String fieldName = "";
-      String value = "";
+      String fieldName;
+      String value;
       DataRecord defaultRecord = this.toRecordTemplate(role, lang).getEmptyRecord();
 
       if (inputList == null) {
@@ -242,10 +190,8 @@ public class FormImpl implements Form, Serializable {
 
       // Add all fields description in the RecordTemplate
       int count = 0;
-      for (int i = 0; i < inputList.size(); i++) {
+      for (Input input : inputList) {
         // Get the input
-        Input input = inputList.get(i);
-
         // Get the item name referenced by this input
         Item item = input.getItem();
         if (item == null) {
@@ -273,26 +219,19 @@ public class FormImpl implements Form, Serializable {
     }
   }
 
-  /**
-   * Converts this object in a RecordTemplate object
-   * @return the resulting RecordTemplate
-   */
+  @Override
   public RecordTemplate toRecordTemplate(String role, String lang,
       boolean readOnly) throws WorkflowException {
     GenericRecordTemplate rt = new GenericRecordTemplate();
-    String label = "";
-
     if (inputList == null) {
       return rt;
     }
 
-    int count = 0;
-
     try {
       // Add all fields description in the RecordTemplate
-      for (int i = 0; i < inputList.size(); i++) {
+      int count = 0;
+      for (Input input : inputList) {
         // Get the item definition
-        Input input = inputList.get(i);
         ItemImpl item = (ItemImpl) input.getItem();
         if (item == null) {
           item = new ItemImpl();
@@ -302,38 +241,12 @@ public class FormImpl implements Form, Serializable {
         }
 
         // create a new FieldTemplate and set attributes
-        GenericFieldTemplate ft = new GenericFieldTemplate(item.getName(), item
-            .getType());
-        if (readOnly) {
-          ft.setReadOnly(true);
-        } else {
-          ft.setReadOnly(input.isReadonly());
-        }
-        ft.setMandatory(input.isMandatory());
-        ft.setTemplateName("form:"+name);
-        if (input.getDisplayerName() != null
-            && input.getDisplayerName().length() > 0) {
-          ft.setDisplayerName(input.getDisplayerName());
-        }
+        GenericFieldTemplate ft = createNewFieldTemplate(input, item, readOnly);
 
-        if (role != null && lang != null) {
-          label = input.getLabel(role, lang);
-          if (label == null || label.length() == 0) {
-            ft.addLabel(item.getLabel(role, lang), lang);
-          } else {
-            ft.addLabel(label, lang);
-          }
-        }
+        setRoleInFieldTemplate(ft, input, item, role, lang);
 
         // add parameters
-        Iterator<Parameter> parameters = item.iterateParameter();
-        Parameter param = null;
-        while (parameters.hasNext()) {
-          param = parameters.next();
-          if (param != null) {
-            ft.addParameter(param.getName(), param.getValue());
-          }
-        }
+        addParametersInFieldTemplate(ft, item);
 
         // add the new FieldTemplate in RecordTemplate
         rt.addFieldTemplate(ft);
@@ -344,6 +257,48 @@ public class FormImpl implements Form, Serializable {
       throw new WorkflowException("FormImpl.toRecordTemplate()",
           "workflowEngine.EX_ERR_BUILD_FIELD_TEMPLATE", fe);
     }
+  }
+
+  private static void addParametersInFieldTemplate(GenericFieldTemplate ft, ItemImpl item) {
+    Iterator<Parameter> parameters = item.iterateParameter();
+    Parameter param;
+    while (parameters.hasNext()) {
+      param = parameters.next();
+      if (param != null) {
+        ft.addParameter(param.getName(), param.getValue());
+      }
+    }
+  }
+
+  private static void setRoleInFieldTemplate(GenericFieldTemplate ft, Input input, ItemImpl item,
+      String role, String lang) {
+    String label;
+    if (role != null && lang != null) {
+      label = input.getLabel(role, lang);
+      if (label == null || label.isEmpty()) {
+        ft.addLabel(item.getLabel(role, lang), lang);
+      } else {
+        ft.addLabel(label, lang);
+      }
+    }
+  }
+
+  @NonNull
+  private GenericFieldTemplate createNewFieldTemplate(Input input, ItemImpl item, boolean readOnly)
+      throws FormException {
+    GenericFieldTemplate ft = new GenericFieldTemplate(item.getName(), item.getType());
+    if (readOnly) {
+      ft.setReadOnly(true);
+    } else {
+      ft.setReadOnly(input.isReadonly());
+    }
+    ft.setMandatory(input.isMandatory());
+    ft.setTemplateName("form:" + name);
+    if (input.getDisplayerName() != null
+        && !input.getDisplayerName().isEmpty()) {
+      ft.setDisplayerName(input.getDisplayerName());
+    }
+    return ft;
   }
 
 }

@@ -65,7 +65,7 @@ public class DataFolderImpl implements DataFolder, Serializable {
    */
   @Override
   public Item[] getItems() {
-    return itemList.toArray(new Item[itemList.size()]);
+    return itemList.toArray(new Item[0]);
   }
 
   /*
@@ -134,11 +134,6 @@ public class DataFolderImpl implements DataFolder, Serializable {
     }
   }
 
-  /**
-   * Converts this object in a RecordTemplate object
-   * @param readonly
-   * @return the resulting RecordTemplate
-   */
   @Override
   public RecordTemplate toRecordTemplate(String role, String lang, boolean readonly) throws
       WorkflowException {
@@ -149,37 +144,42 @@ public class DataFolderImpl implements DataFolder, Serializable {
 
     try {
       // Add all fields description in the RecordTemplate
-      for (Item item : itemList) {
-        // if item is map to a userfull detail, it must not be shown in userinfo form
-        if (item.getMapTo() == null || item.getMapTo().length() == 0) {
-          // create a new FieldTemplate and set attributes
-          GenericFieldTemplate ft = new GenericFieldTemplate(item.getName(), item.getType());
-
-          // add parameters to new FieldTemplate
-          Iterator<Parameter> parameters = item.iterateParameter();
-          while (parameters.hasNext()) {
-            Parameter parameter = parameters.next();
-            if (parameter != null) {
-              ft.addParameter(parameter.getName(), parameter.getValue());
-            }
-          }
-
-          if (role != null && lang != null) {
-            ft.setReadOnly(readonly);
-            ft.setMandatory(!readonly);
-
-            ft.addLabel(item.getLabel(role, lang), lang);
-          }
-
-          // add the new FieldTemplate in RecordTemplate
-          rt.addFieldTemplate(ft);
-        }
-      }
+      addFieldDescription(rt, role, lang, readonly);
     } catch (FormException fe) {
       throw new WorkflowException("DataFolderImpl.toRecordTemplate",
           "workflowEngine.EX_ERR_BUILD_FIELD_TEMPLATE", fe);
     }
 
     return rt;
+  }
+
+  private void addFieldDescription(GenericRecordTemplate rt, String role, String lang,
+      boolean readonly) throws FormException {
+    for (Item item : itemList) {
+      // if item is map to a userfull detail, it must not be shown in userinfo form
+      if (item.getMapTo() == null || item.getMapTo().isEmpty()) {
+        // create a new FieldTemplate and set attributes
+        GenericFieldTemplate ft = new GenericFieldTemplate(item.getName(), item.getType());
+
+        // add parameters to new FieldTemplate
+        Iterator<Parameter> parameters = item.iterateParameter();
+        while (parameters.hasNext()) {
+          Parameter parameter = parameters.next();
+          if (parameter != null) {
+            ft.addParameter(parameter.getName(), parameter.getValue());
+          }
+        }
+
+        if (role != null && lang != null) {
+          ft.setReadOnly(readonly);
+          ft.setMandatory(!readonly);
+
+          ft.addLabel(item.getLabel(role, lang), lang);
+        }
+
+        // add the new FieldTemplate in RecordTemplate
+        rt.addFieldTemplate(ft);
+      }
+    }
   }
 }

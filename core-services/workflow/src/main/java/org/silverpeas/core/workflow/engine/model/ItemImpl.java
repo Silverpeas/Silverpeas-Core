@@ -23,26 +23,15 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Parameter;
+import org.silverpeas.kernel.util.Pair;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.*;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Class implementing the representation of the &lt;item&gt; element of a Process Model.
@@ -51,6 +40,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ItemImpl implements Item, Serializable {
 
+  private static final String DELIM_TOKEN = "##";
   @XmlID
   @XmlAttribute
   private String name;
@@ -150,92 +140,52 @@ public class ItemImpl implements Item, Serializable {
     this.computed = computed;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setFormula(java.lang.String)
-   */
+  @Override
   public void setFormula(String formula) {
     this.formula = formula;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setMapTo(java.lang.String)
-   */
+  @Override
   public void setMapTo(String mapTo) {
     this.mapTo = mapTo;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setName(java.lang.String)
-   */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setReadonly(boolean)
-   */
+  @Override
   public void setReadonly(boolean readonly) {
     this.readonly = readonly;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#setType(java.lang.String)
-   */
+  @Override
   public void setType(String type) {
     this.type = type;
   }
 
-  /**
-   * Get description in specific language for the given role
-   * @param role role for which the description is
-   * @param language description's language
-   * @return wanted description as a String object. If description is not found, search description
-   * with given role and default language, if not found again, return the default description in
-   * given language, if not found again, return the default description in default language, if not
-   * found again, return empty string.
-   */
+  @Override
   public String getDescription(String role, String language) {
     return getDescriptions().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#getDescriptions()
-   */
+  @Override
   public ContextualDesignations getDescriptions() {
     return new SpecificLabelListHelper(descriptions);
   }
 
-  /**
-   * Get label in specific language for the given role
-   * @param role role for which the label is
-   * @param language label's language
-   * @return wanted label as a String object. If label is not found, search label with given role
-   * and default language, if not found again, return the default label in given language, if not
-   * found again, return the default label in default language, if not found again, return empty
-   * string.
-   */
+  @Override
   public String getLabel(String role, String language) {
     return getLabels().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#getLabels()
-   */
+  @Override
   public ContextualDesignations getLabels() {
     return new SpecificLabelListHelper(labels);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#getParameter(java.lang.String)
-   */
+  @Override
   public Parameter getParameter(String strName) {
     Parameter reference = new ParameterImpl();
     int idx;
@@ -250,91 +200,78 @@ public class ItemImpl implements Item, Serializable {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#createParameter()
-   */
+  @Override
   public Parameter createParameter() {
     return new ParameterImpl();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#addParameter(com.silverpeas.workflow
-   * .api.model.Parameter)
-   */
+  @Override
   public void addParameter(Parameter parameter) {
     parameters.add(parameter);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#iterateParameters()
-   */
+  @Override
   public Iterator<Parameter> iterateParameter() {
     return parameters.iterator();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Item#removeParameter(java.lang.String)
-   */
-  public void removeParameter(String strName) throws WorkflowException {
-    Parameter parameter = createParameter();
-
-    parameter.setName(strName);
-
+  @Override
+  public void removeParameter(String strName) {
     if (parameters == null) {
       return;
     }
-
-    if (!parameters.remove(parameter)) {
-      throw new WorkflowException("ItemImpl.removeParameter()", //$NON-NLS-1$
-          "workflowEngine.EX_PARAMETER_NOT_FOUND", // $NON-NLS-1$
-          strName == null ? "<null>" //$NON-NLS-1$
-              : strName);
-    }
+    parameters.removeIf(p -> p.getName().equals(strName));
   }
 
+  @Override
   public Map<String, String> getKeyValuePairs() {
     Map<String, String> keyValuePairs = new HashMap<>();
 
     if (parameters != null && !parameters.isEmpty()) {
-      String keys = null;
-      String values = null;
-
-      for (Parameter parameter : parameters) {
-        if (parameter != null && "keys".equals(parameter.getName())) {
-          keys = parameter.getValue();
-        }
-        if (parameter != null && "values".equals(parameter.getName())) {
-          values = parameter.getValue();
-        }
-      }
-
+      var keysValues = getKeysValues(parameters);
+      String keys = keysValues.getFirst();
+      String values = keysValues.getSecond();
       if (keys != null && values != null) {
-        StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
-        StringTokenizer vTokenizer = new StringTokenizer(values, "##");
-        while (kTokenizer.hasMoreTokens()) {
-          String key = kTokenizer.nextToken();
-          String value = vTokenizer.nextToken();
-          keyValuePairs.put(key, value);
-        }
-      } else if (keys != null && values == null) {
-        StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
-        while (kTokenizer.hasMoreTokens()) {
-          String key = kTokenizer.nextToken();
-          keyValuePairs.put(key, key);
-        }
-      } else if (keys == null && values != null) {
-        StringTokenizer vTokenizer = new StringTokenizer(values, "##");
-        while (vTokenizer.hasMoreTokens()) {
-          String value = vTokenizer.nextToken();
-          keyValuePairs.put(value, value);
-        }
+        putKeysValues(keys, values, keyValuePairs);
+      } else if (keys != null) {
+        putKeysValues(keys, keyValuePairs);
+      } else if (values != null) {
+        putKeysValues(values, keyValuePairs);
       }
     }
     return keyValuePairs;
+  }
+
+  private static void putKeysValues(String keys, Map<String, String> keyValuePairs) {
+    StringTokenizer kTokenizer = new StringTokenizer(keys, DELIM_TOKEN);
+    while (kTokenizer.hasMoreTokens()) {
+      String key = kTokenizer.nextToken();
+      keyValuePairs.put(key, key);
+    }
+  }
+
+  private static void putKeysValues(String keys, String values, Map<String, String> keyValuePairs) {
+    StringTokenizer kTokenizer = new StringTokenizer(keys, DELIM_TOKEN);
+    StringTokenizer vTokenizer = new StringTokenizer(values, DELIM_TOKEN);
+    while (kTokenizer.hasMoreTokens()) {
+      String key = kTokenizer.nextToken();
+      String value = vTokenizer.nextToken();
+      keyValuePairs.put(key, value);
+    }
+  }
+
+  private Pair<String, String> getKeysValues(List<Parameter> parameters) {
+    String keys = null;
+    String values = null;
+    for (Parameter parameter : parameters) {
+      if (parameter != null && "keys".equals(parameter.getName())) {
+        keys = parameter.getValue();
+      }
+      if (parameter != null && "values".equals(parameter.getName())) {
+        values = parameter.getValue();
+      }
+    }
+    return new Pair<>(keys, values);
   }
 
   @Override

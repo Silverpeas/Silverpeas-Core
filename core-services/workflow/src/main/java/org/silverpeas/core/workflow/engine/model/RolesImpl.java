@@ -23,12 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Role;
 import org.silverpeas.core.workflow.api.model.Roles;
 
@@ -36,6 +30,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;roles&gt; element of a Process Model.
@@ -99,7 +97,7 @@ public class RolesImpl implements Serializable, Roles {
     if (roleList == null) {
       return new Role[0];
     }
-    return roleList.toArray(new Role[roleList.size()]);
+    return roleList.toArray(new Role[0]);
   }
 
   /*
@@ -116,16 +114,10 @@ public class RolesImpl implements Serializable, Roles {
    * @see Roles#removeRole(java.lang.String)
    */
   @Override
-  public void removeRole(String strRoleName) throws WorkflowException {
-    Role role = createRole();
-    role.setName(strRoleName);
+  public void removeRole(String strRoleName) {
     if (roleList == null) {
       return;
     }
-
-    if (!roleList.remove(role)) {
-      throw new WorkflowException("RolesImpl.removeRole()", "workflowEngine.EX_ROLE_NOT_FOUND",
-          strRoleName == null ? "<null>" : strRoleName);
-    }
+    roleList.removeIf(r -> r.getName().equals(strRoleName));
   }
 }

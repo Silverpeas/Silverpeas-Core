@@ -23,54 +23,41 @@
  */
 package org.silverpeas.web.workflowdesigner.taglib;
 
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
+import org.silverpeas.core.workflow.api.model.DataFolder;
+import org.silverpeas.core.workflow.api.model.Item;
+
+import javax.servlet.jsp.JspException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.workflow.api.model.DataFolder;
-import org.silverpeas.core.workflow.api.model.Item;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
-import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;
-import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
-import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
-import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
-
 /**
  * Class implementing the tag &lt;itemList&gt; from workflowEditor.tld
  */
-public class ItemList extends TagSupport {
+@SuppressWarnings("unused")
+public class ItemList extends WorkflowTagSupport {
 
   private static final long serialVersionUID = -7885970074029478168L;
-  private String strContext, strPaneTitleKey, strCurrentScreen;
+  private String strContext;
+  private String strPaneTitleKey;
+  private String strCurrentScreen;
   private DataFolder items;
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
-   */
+  @Override
   public int doStartTag() throws JspException {
-    GraphicElementFactory gef;
-    MultiSilverpeasBundle resource;
-    ArrayPane itemPane;
-    ArrayLine row;
-    ArrayColumn column;
-    String strContextEncoded, strEditURL, strPaneTitle;
-    StringBuilder sb = new StringBuilder();
-
     try {
-      gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
+      var gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
           "SessionGraphicElementFactory");
-      resource = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
+      var resource = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
           "resources");
-      strPaneTitle = resource.getString(strPaneTitleKey);
+      String strPaneTitle = resource.getString(strPaneTitleKey);
 
-      itemPane = gef.getArrayPane("itemList", strCurrentScreen, pageContext
+      var itemPane = gef.getArrayPane("itemList", strCurrentScreen, pageContext
           .getRequest(), pageContext.getSession());
       itemPane.setVisibleLineNumber(20);
       itemPane.setTitle(strPaneTitle);
@@ -80,56 +67,11 @@ public class ItemList extends TagSupport {
       itemPane.addArrayColumn(resource.getString("workflowDesigner.computed"));
       itemPane.addArrayColumn(resource
           .getString("workflowDesigner.directoryEntry")); // mapTo
-      column = itemPane.addArrayColumn(resource.getString("GML.operations"));
+      var column = itemPane.addArrayColumn(resource.getString("GML.operations"));
       column.setSortable(false);
 
       if (items != null) {
-        IconPane iconPane;
-        Icon updateIcon;
-        Icon delIcon;
-        Item item;
-        Iterator<Item> iterItem = items.iterateItem();
-
-        while (iterItem.hasNext()) {
-          item = iterItem.next();
-          strContextEncoded = URLEncoder.encode(strContext + "/"
-              + item.getName(), "UTF-8");
-          strEditURL = "ModifyItem?context=" + strContextEncoded;
-
-          // Create the remove link
-          //
-          sb.setLength(0);
-          sb.append("javascript:confirmRemove('RemoveItem?context=");
-          sb.append(strContextEncoded);
-          sb.append("', '");
-          sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
-          sb.append(" ");
-          sb.append(WebEncodeHelper.javaStringToJsString(item.getName()));
-          sb.append(" ?');");
-
-          iconPane = gef.getIconPane();
-          updateIcon = iconPane.addIcon();
-          delIcon = iconPane.addIcon();
-          updateIcon.setProperties(resource
-              .getIcon("workflowDesigner.smallUpdate"), resource
-              .getString("GML.modify"), strEditURL);
-          delIcon.setProperties(resource
-              .getIcon("workflowDesigner.smallDelete"), resource
-              .getString("GML.delete"), sb.toString());
-          iconPane.setSpacing("30px");
-
-          row = itemPane.addArrayLine();
-          row.addArrayCellLink(item.getName(), strEditURL);
-          row.addArrayCellLink(item.getType() == null ? "" : item.getType(),
-              strEditURL);
-          row.addArrayCellLink(resource.getString(item.isReadonly() ? "GML.yes"
-              : "GML.no"), strEditURL);
-          row.addArrayCellLink(resource.getString(item.isComputed() ? "GML.yes"
-              : "GML.no"), strEditURL);
-          row.addArrayCellLink(item.getMapTo() == null ? "" : item.getMapTo(),
-              strEditURL);
-          row.addArrayCellIconPane(iconPane);
-        }
+        addItem(gef, resource, itemPane);
       }
 
       pageContext.getOut().println(itemPane.print());
@@ -137,6 +79,34 @@ public class ItemList extends TagSupport {
       throw new JspException("Error when printing the Items", e);
     }
     return super.doStartTag();
+  }
+
+  private void addItem(GraphicElementFactory gef, MultiSilverpeasBundle resource, ArrayPane itemPane) {
+    Iterator<Item> iterItem = items.iterateItem();
+    while (iterItem.hasNext()) {
+      var item = iterItem.next();
+      String strContextEncoded = URLEncoder.encode(strContext + "/"
+          + item.getName(), Charsets.UTF_8);
+      String strEditURL = "ModifyItem?context=" + strContextEncoded;
+      String removalJs = "javascript:confirmRemove('RemoveItem', {context: '"
+          + strContextEncoded + "'}, '"
+          + resource.getString("workflowDesigner.confirmRemoveJS") + " "
+          + WebEncodeHelper.javaStringToJsString(item.getName()) + " ?');";
+
+      var iconPane = addIconPane(gef, resource, strEditURL, removalJs);
+
+      var row = itemPane.addArrayLine();
+      row.addArrayCellLink(item.getName(), strEditURL);
+      row.addArrayCellLink(item.getType() == null ? "" : item.getType(),
+          strEditURL);
+      row.addArrayCellLink(resource.getString(item.isReadonly() ? "GML.yes"
+          : "GML.no"), strEditURL);
+      row.addArrayCellLink(resource.getString(item.isComputed() ? "GML.yes"
+          : "GML.no"), strEditURL);
+      row.addArrayCellLink(item.getMapTo() == null ? "" : item.getMapTo(),
+          strEditURL);
+      row.addArrayCellIconPane(iconPane);
+    }
   }
 
   /**

@@ -44,17 +44,12 @@ public class StateRef implements Serializable, StateSetter {
   @XmlAttribute
   private StateImpl state;
 
-  /**
-   * Get the referred state
-   */
+  @Override
   public State getState() {
     return this.state;
   }
 
-  /**
-   * Set the referred state
-   * @param state state to refer
-   */
+  @Override
   public void setState(State state) {
     this.state = (StateImpl) state;
   }

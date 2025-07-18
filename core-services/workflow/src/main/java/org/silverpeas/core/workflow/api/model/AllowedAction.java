@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;allowedAction&gt; element of a Process Model.
  */
-public interface AllowedAction {
+public interface AllowedAction extends Serializable {
 
   /**
    * Get the allowed action
