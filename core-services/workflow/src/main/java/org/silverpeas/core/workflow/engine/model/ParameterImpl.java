@@ -24,6 +24,7 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.silverpeas.core.workflow.api.model.Parameter;
 
@@ -64,6 +65,7 @@ public class ParameterImpl implements Parameter, Serializable {
    * Get the name of the Parameter
    * @return parameter's name
    */
+  @Override
   public String getName() {
     return this.name;
   }
@@ -72,6 +74,7 @@ public class ParameterImpl implements Parameter, Serializable {
    * Set the name of the Parameter
    * @param name parameter's name
    */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
@@ -80,6 +83,7 @@ public class ParameterImpl implements Parameter, Serializable {
    * Get the value of the Parameter
    * @return parameter's value
    */
+  @Override
   public String getValue() {
     return this.value;
   }
@@ -88,6 +92,7 @@ public class ParameterImpl implements Parameter, Serializable {
    * Set the value of the Parameter
    * @param value parameter's value
    */
+  @Override
   public void setValue(String value) {
     this.value = value;
   }
@@ -100,10 +105,8 @@ public class ParameterImpl implements Parameter, Serializable {
     if (!(o instanceof ParameterImpl)) {
       return false;
     }
-
     final ParameterImpl parameter = (ParameterImpl) o;
-
-    return name != null ? name.equals(parameter.name) : parameter.name == null;
+    return Objects.equals(name, parameter.name);
   }
 
   @Override

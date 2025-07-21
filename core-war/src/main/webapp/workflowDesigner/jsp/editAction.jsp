@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -32,25 +32,24 @@
 <%
     Action          action = (Action)request.getAttribute("Action");
     String          strCancelAction = "ViewActions",
-                    strCurrentScreen = "ModifyAction?action=" + URLEncoder.encode( action.getName(), UTF8 ),
+                    strCurrentScreen = "ModifyAction?action=" + URLEncoder.encode( action.getName(), StandardCharsets.UTF_8 ),
                     strDescriptionContext = "actions/" + action.getName() + "/descriptions",
                     strLabelContext = "actions/" + action.getName() + "/labels",
-                    strAllowedContext = URLEncoder.encode( "actions/" + action.getName() + "/allowedUsers", UTF8),
+                    strAllowedContext = URLEncoder.encode( "actions/" + action.getName() + "/allowedUsers", StandardCharsets.UTF_8),
                     strEditConsequence,
                     strItem,
-                    strConsequenceContext = URLEncoder.encode( "actions/" + action.getName() + "/consequences", UTF8),
+                    strConsequenceContext = URLEncoder.encode( "actions/" + action.getName() + "/consequences", StandardCharsets.UTF_8),
                     strContextEncoded;
     ArrayPane       actionPane = gef.getArrayPane( "actionPane", strCurrentScreen, request, session ),
                     usersPane = gef.getArrayPane( "usersPane", strCurrentScreen, request, session ),
                     consequencesPane = gef.getArrayPane( "consequencesPane", strCurrentScreen, request, session );
     String[]        astrFormNames = (String[])request.getAttribute( "FormNames" ),
                     astrKindValues = (String[])request.getAttribute( "KindValues" );
-    boolean         fExistingAction = ( (Boolean)request.getAttribute( "IsExisitingAction" ) ).booleanValue();
+    boolean         fExistingAction = (Boolean) request.getAttribute("IsExisitingAction");
     StringBuffer    sb = new StringBuffer();
 %>
-<html>
-<head>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
     function move(direction, iConsequence)
@@ -61,19 +60,19 @@
 
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        var actionName = document.actionForm.name.value;
-        var formName = document.actionForm.form.value;
+      const actionName = document.actionForm.name.value;
+      const formName = document.actionForm.form.value;
 
-        if ( isWhitespace(actionName) )
+      if ( isWhitespace(actionName) )
         {
             errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
             errorNb++;
         }
 
-        if (actionName.toLowerCase() == formName.toLowerCase()) {
+        if (actionName.toLowerCase() === formName.toLowerCase()) {
 		      errorMsg+="  - <%=resource.getString("workflowDesigner.action.js.different")%>\n";
             errorNb++;
         }
@@ -93,8 +92,8 @@
         }
     }
 </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.actions"), strCancelAction);
@@ -125,11 +124,10 @@
     cellText.setStyleSheet( "txtlibform" );
     row.addArrayCellText( "" );
 
-    for ( int i = 0; i < astrKindValues.length; i++ )
-    {
+    for (String astrKindValue : astrKindValues) {
         row = actionPane.addArrayLine();
-        row.addArrayCellRadio( "kind", astrKindValues[i], astrKindValues[i].equals( action.getKind() ) );
-        row.addArrayCellText( astrKindValues[i] );
+        row.addArrayCellRadio("kind", astrKindValue, astrKindValue.equals(action.getKind()));
+        row.addArrayCellText(astrKindValue);
     }
 
     // Allowed users
@@ -172,9 +170,9 @@
             // Create the remove link
             //
             sb.setLength(0);
-            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers?context=" );
+            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers', {context: '" );
             sb.append( strAllowedContext );
-            sb.append( "', '" );
+            sb.append( "'}, '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
             sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.allowedUsers") ) );
@@ -209,17 +207,17 @@
     if ( fExistingAction )
         operationPane.addOperation(resource.getIcon("workflowDesigner.add"),
             resource.getString("workflowDesigner.add.consequence"),
-            "AddConsequence?context=" + URLEncoder.encode( "actions/" + action.getName(), UTF8 ) );
+            "AddConsequence?context=" + URLEncoder.encode( "actions/" + action.getName(), StandardCharsets.UTF_8) );
 
     if ( action.getConsequences() != null )
     {
-        Consequence   consequence;
-        Iterator      iterConsequences = action.getConsequences().iterateConsequence();
+        Consequence consequence;
+        Iterator<Consequence> iterConsequences = action.getConsequences().iterateConsequence();
         int           idx = 0;
 
         while ( iterConsequences.hasNext() )
         {
-            consequence = (Consequence)iterConsequences.next();
+            consequence = iterConsequences.next();
             iconPane = gef.getIconPane();
             iconPane.setSpacing("30px");
             updateIcon = iconPane.addIcon();
@@ -234,16 +232,16 @@
             sb.append( action.getName() );
             sb.append( "/consequences/" );
             sb.append( idx );
-            strContextEncoded = URLEncoder.encode( sb.toString(), "UTF-8" );
+            strContextEncoded = URLEncoder.encode( sb.toString(), StandardCharsets.UTF_8);
 
             strEditConsequence = "ModifyConsequence?context=" + strContextEncoded;
 
             // Create the remove link
             //
             sb.setLength(0);
-            sb.append("javascript:confirmRemove('RemoveConsequence?context=" );
+            sb.append("javascript:confirmRemove('RemoveConsequence', {context: '" );
             sb.append( strContextEncoded );
-            sb.append( "', '" );
+            sb.append( "'}, '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
             sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.consequence") ) );
@@ -360,5 +358,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

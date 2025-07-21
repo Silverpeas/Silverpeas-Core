@@ -26,21 +26,15 @@ package org.silverpeas.web.token;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.token.exception.TokenValidationException;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -51,9 +45,8 @@ import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 /**
  * A validator of a session token for each incoming request. For each protected web resources, the
  * requests are expected to carry a synchronizer token that must match the token mapped with the
- * user session. The request validation is in fact delegated to a
- * {@link SynchronizerTokenService} instance; this object just process the
- * status of the validation.
+ * user session. The request validation is in fact delegated to a {@link SynchronizerTokenService}
+ * instance; this object just process the status of the validation.
  *
  * @author mmoquillon
  */
@@ -76,12 +69,12 @@ public class SessionSynchronizerTokenValidator implements Filter {
    * If the request is sent within an opened user session but it doesn't carry a valid session
    * synchronizer token, then it is rejected and a forbidden status is sent back.
    * </p>
+   *
    * @param request The servlet request to validate.
    * @param response The servlet response to sent back.
    * @param chain The filter chain we are processing
-   *
-   * @exception IOException if an input/output error occurs
-   * @exception ServletException if a servlet error occurs
+   * @throws IOException if an input/output error occurs
+   * @throws ServletException if a servlet error occurs
    */
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -161,11 +154,15 @@ public class SessionSynchronizerTokenValidator implements Filter {
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {
-    return tokenService.isAProtectedResource(request, false) && !isFileDragAndDrop(request) &&
-        !isCredentialManagement(request) && !isSsoAuthentication(request) &&
-        !isWebServiceRequested(request) &&
-        !isWebBrowserEditionResource(request) && !isCMISResource(request) &&
-        !isDragAndDropWebEditionResource(request);
+    return tokenService.isAProtectedResource(request, false)
+        && !(isFileDragAndDrop(request) ||
+            isCredentialManagement(request) ||
+            isSsoAuthentication(request) ||
+            isWebServiceRequested(request) ||
+            isWebBrowserEditionResource(request) ||
+            isCMISResource(request) ||
+            isDragAndDropWebEditionResource(request) ||
+            isWorkflowDesignerResource(request));
   }
 
   private boolean isWebDAVResource(HttpServletRequest request) {
@@ -195,6 +192,10 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private boolean isDragAndDropWebEditionResource(HttpServletRequest request) {
     return request.getRequestURI().contains(getApplicationURL() + "/Rddwe/");
+  }
+
+  private boolean isWorkflowDesignerResource(HttpServletRequest request) {
+    return request.getRequestURI().contains(getApplicationURL() + "/RworkflowDesigner/");
   }
 
   private static class UnauthenticatedRequestException extends Exception {

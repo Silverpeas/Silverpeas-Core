@@ -68,7 +68,6 @@ public interface Actions extends Serializable {
   /**
    * Remove an action from the collection
    * @param strActionName the name of the action to be removed.
-   * @throws WorkflowException when the action cannot be found
    */
-  void removeAction(String strActionName) throws WorkflowException;
+  void removeAction(String strActionName);
 }

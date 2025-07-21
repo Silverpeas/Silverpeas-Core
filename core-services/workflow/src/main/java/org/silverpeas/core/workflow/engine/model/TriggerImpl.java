@@ -27,12 +27,7 @@ import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.api.model.Trigger;
 import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.Vector;
 
@@ -41,7 +36,7 @@ import java.util.Vector;
  **/
 @XmlRootElement(name = "trigger")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TriggerImpl extends AbstractReferrableObject implements Trigger, Serializable {
+public class TriggerImpl extends AbstractReferrableObject implements Trigger {
   private static final long serialVersionUID = -5923330362725539310L;
   @XmlAttribute
   private String name;

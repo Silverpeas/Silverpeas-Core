@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -36,10 +36,8 @@ Roles      roles = (Roles)request.getAttribute( "Roles" );
 ArrayPane  rolesPane = gef.getArrayPane("rolesList", strCurrentTab, request, session);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
     function sendData()
@@ -47,8 +45,8 @@ ArrayPane  rolesPane = gef.getArrayPane("rolesList", strCurrentTab, request, ses
         document.workflowHeaderForm.submit();
     }
 </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName") );
 browseBar.setComponentName(resource.getString("workflowDesigner.roles") );
@@ -65,11 +63,11 @@ column.setSortable(false);
 
 if ( roles != null )
 {
-    Iterator   iterRole = roles.iterateRole();
+    Iterator<Role> iterRole = roles.iterateRole();
 
     while ( iterRole.hasNext() )
     {
-        strRoleName = ( (Role)iterRole.next() ).getName();
+        strRoleName = iterRole.next().getName();
 	row    = rolesPane.addArrayLine();
 	iconPane = gef.getIconPane();
 	iconPane.setSpacing("30px");
@@ -77,16 +75,17 @@ if ( roles != null )
 	delIcon = iconPane.addIcon();
 	delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
 	                      resource.getString("GML.delete"),
-	                      "javascript:confirmRemove('RemoveRole?role="
-                                                        + URLEncoder.encode(strRoleName, UTF8) + "', '"
+	                      "javascript:confirmRemove('RemoveRole', {role: '"
+                                                        + URLEncoder.encode(strRoleName, StandardCharsets.UTF_8) +
+								  "'}, '"
                                                         + resource.getString("workflowDesigner.confirmRemoveJS")
                                                         + " " + WebEncodeHelper.javaStringToJsString( strRoleName ) + " ?');" );
 	updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
 	                         resource.getString("GML.modify"),
-	                         "ModifyRole?role=" + URLEncoder.encode(strRoleName, UTF8) );
+	                         "ModifyRole?role=" + URLEncoder.encode(strRoleName, StandardCharsets.UTF_8) );
 
 
-	row.addArrayCellLink( strRoleName, "ModifyRole?role=" + URLEncoder.encode(strRoleName, UTF8) );
+	row.addArrayCellLink( strRoleName, "ModifyRole?role=" + URLEncoder.encode(strRoleName, StandardCharsets.UTF_8) );
 	row.addArrayCellIconPane(iconPane);
     }
 }
@@ -98,8 +97,11 @@ out.println(window.printBefore());
 <view:areaOfOperationOfCreation/>
 <!-- help -->
 <div class="inlineMessage">
-	<table border="0"><tr>
-		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+	<table>
+		<tr><th></th></tr>
+		<tr>
+		<td class="absmiddle"><img alt="info"
+									src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
 		<td><%=resource.getString("workflowDesigner.help.roles") %></td>
 	</tr></table>
 </div>
@@ -114,5 +116,5 @@ out.println(rolesPane.print());
 <%
 out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

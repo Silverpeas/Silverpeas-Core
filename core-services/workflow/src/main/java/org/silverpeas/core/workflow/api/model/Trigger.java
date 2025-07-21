@@ -26,11 +26,12 @@ package org.silverpeas.core.workflow.api.model;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
 
 import javax.inject.Named;
+import java.io.Serializable;
 
 /**
  * Interface describing a representation of the &lt;trigger&gt; element of a Process Model.
  */
-public interface Trigger {
+public interface Trigger extends Serializable {
   /**
    * Get the name of the Trigger
    * @return parameter's name

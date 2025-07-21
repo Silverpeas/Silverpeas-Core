@@ -48,21 +48,20 @@
                                              ? ""
                                              : relatedUser.getFolderItem().getName();
 %>
-<HTML>
-<HEAD>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script language="javaScript">
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        // Just one of the fields should be filled
+      // Just one of the fields should be filled
         //
-        if ( ( document.relatedUserForm.participant.options.selectedIndex == 0
-               && document.relatedUserForm.folderItem.options.selectedIndex == 0 )
-              || ( document.relatedUserForm.participant.options.selectedIndex != 0
-                   && document.relatedUserForm.folderItem.options.selectedIndex != 0 ) )
+        if ( ( document.relatedUserForm.participant.options.selectedIndex === 0
+               && document.relatedUserForm.folderItem.options.selectedIndex === 0 )
+              || ( document.relatedUserForm.participant.options.selectedIndex !== 0
+                   && document.relatedUserForm.folderItem.options.selectedIndex !== 0 ) )
         {
             errorMsg+=" - <%=resource.getString("workflowDesigner.Either")%>"
                       + " '<%=resource.getString("workflowDesigner.participant")%>'"
@@ -87,8 +86,8 @@
         }
     }
 </script>
-</HEAD>
-<BODY class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName( resource.getString("workflowDesigner.editor.relatedUser") );
@@ -170,5 +169,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

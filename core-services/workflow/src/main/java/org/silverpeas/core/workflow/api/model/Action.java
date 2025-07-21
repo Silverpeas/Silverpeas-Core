@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;action&gt; element of a Process Model.
  **/
-public interface Action {
+public interface Action extends Serializable {
   /**
    * Get the name of this action
    * @return action's name

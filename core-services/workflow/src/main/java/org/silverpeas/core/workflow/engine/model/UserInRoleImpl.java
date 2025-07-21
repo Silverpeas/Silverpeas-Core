@@ -23,21 +23,20 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.workflow.api.model.UserInRole;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * Class implementing the representation of the &lt;userInRole&gt; element of a Process Model.
  **/
 @XmlRootElement(name = "userInRole")
 @XmlAccessorType(XmlAccessType.NONE)
-public class UserInRoleImpl implements UserInRole, Serializable {
+public class UserInRoleImpl implements UserInRole {
   private static final long serialVersionUID = -6419166381111612814L;
   @XmlAttribute(name = "name")
   private String roleName;
@@ -49,17 +48,12 @@ public class UserInRoleImpl implements UserInRole, Serializable {
     super();
   }
 
-  /**
-   * Get name of the role
-   */
+  @Override
   public String getRoleName() {
     return this.roleName;
   }
 
-  /**
-   * Set name of the role
-   * @param roleName
-   */
+  @Override
   public void setRoleName(String roleName) {
     this.roleName = roleName;
   }
@@ -74,8 +68,7 @@ public class UserInRoleImpl implements UserInRole, Serializable {
     }
 
     final UserInRoleImpl that = (UserInRoleImpl) o;
-
-    return roleName != null ? roleName.equals(that.roleName) : that.roleName == null;
+    return Objects.equals(roleName, that.roleName);
   }
 
   @Override

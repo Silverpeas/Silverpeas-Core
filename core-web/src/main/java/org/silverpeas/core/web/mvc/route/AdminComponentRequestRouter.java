@@ -70,8 +70,7 @@ public abstract class AdminComponentRequestRouter<T extends AbstractAdminCompone
         ofNullable(request.getAttribute("javax.servlet.jsp.jspException"))
             .filter(ForbiddenRuntimeException.class::isInstance)
             .map(ForbiddenRuntimeException.class::cast)
-            .stream()
-            .forEach(forbidden::set);
+            .ifPresent(forbidden::set);
       }
     } catch (final ForbiddenRuntimeException e) {
       forbidden.set(e);

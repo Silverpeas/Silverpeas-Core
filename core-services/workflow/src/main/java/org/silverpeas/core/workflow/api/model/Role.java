@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;role&gt; element of a Process Model.
  */
-public interface Role {
+public interface Role extends Serializable {
   /**
    * Get the name of the Role
    * @return role's name

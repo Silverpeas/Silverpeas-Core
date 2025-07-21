@@ -45,25 +45,22 @@ String          strCancelAction = "ViewPresentation";
 <script type="text/javascript">
 
     function sendData() {
-        var errorMsg = "";
-        var errorNb = 0;
-        var fChecked = false;
-        var i = 0;
-
-        for ( i = 0; i < document.columnsForm.column.length; i++ )
+      let errorMsg = "";
+      let errorNb = 0;
+      let fChecked = false;
+      for (let i = 0; document.columnsForm.column && i < document.columnsForm.column.length; i++ )
             fChecked = fChecked || document.columnsForm.column[i].checked;
 
-        var totalElementsChecked = <%=columns.getColumnList().size()%>;
-        if ( document.columnsForm.column != null )
-        {
-          for ( i = 0 ; i < document.columnsForm.elements.length ; i++ ) {
-            oElement = document.columnsForm.elements[i] ;
-            if ( oElement.tagName.toLowerCase( ) == "input" ) {
-              if ( oElement.type.toLowerCase( ) == "checkbox" )
+        const totalElementsChecked = <%=columns.getColumnList().size()%>;
+        if ( document.columnsForm.column != null ) {
+          for (let i = 0 ; i < document.columnsForm.elements.length ; i++ ) {
+            let oElement = document.columnsForm.elements[i] ;
+            if ( oElement.tagName.toLowerCase( ) === "input" ) {
+              if ( oElement.type.toLowerCase( ) === "checkbox" )
                    fChecked = fChecked || oElement.checked;
             }
           }
-          if (totalElementsChecked>i && !fChecked)
+          if (totalElementsChecked > i && !fChecked)
             fChecked = true;
         }
 
@@ -111,14 +108,13 @@ cellSelect.setSize( "1" );
 //Fill the 'columns' section
 // Prepare a list of column names, based on the dataFolder
 //
-for ( int i = 0; i < astrFolderItemNames.length; i++ )
-{
-    row = columnPane.addArrayLine();
-    row.addArrayCellCheckbox( "column",
-                              astrFolderItemNames[i],null,
-                              columns.getColumn( astrFolderItemNames[i] ) != null );
-    row.addArrayCellText( astrFolderItemNames[i] );
-}
+    for (String astrFolderItemName : astrFolderItemNames) {
+        row = columnPane.addArrayLine();
+        row.addArrayCellCheckbox("column",
+                astrFolderItemName, null,
+                columns.getColumn(astrFolderItemName) != null);
+        row.addArrayCellText(astrFolderItemName);
+    }
 
 out.println(window.printBefore());
 out.println(frame.printBefore());
