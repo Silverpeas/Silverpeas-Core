@@ -305,6 +305,7 @@
     <module>core-web-test</module>
     <module>core-web</module>
     <module>core-war</module>
+    <module>core-integration-tests</module>
   </modules>
 
 </project>
