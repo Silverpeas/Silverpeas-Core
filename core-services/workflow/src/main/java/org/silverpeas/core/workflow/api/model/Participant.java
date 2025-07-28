@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;participant&gt; element of a Process Model.
  */
-public interface Participant {
+public interface Participant extends Serializable {
   /**
    * Get the name of this participant
    * @return participant's name

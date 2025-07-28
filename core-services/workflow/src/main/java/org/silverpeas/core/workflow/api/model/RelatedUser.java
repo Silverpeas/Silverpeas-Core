@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;relatedUser&gt; element of a Process Model.
  */
-public interface RelatedUser {
+public interface RelatedUser extends Serializable {
   /**
    * Get the referred participant
    * @return Participant object

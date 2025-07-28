@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;timeoutAction&gt; element of a Process Model.
  */
-public interface TimeOutAction {
+public interface TimeOutAction extends Serializable {
 
   /**
    * Get timeoutAction order. As several timeout might be defined, an order is set.

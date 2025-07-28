@@ -23,7 +23,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -59,8 +60,8 @@
     Consequence     consequence = (Consequence)request.getAttribute("Consequence");
     String          strParentScreen = (String)request.getAttribute( "parentScreen" ),
                     strContext = (String)request.getAttribute("context"),
-                    strNotifiedContext = URLEncoder.encode( strContext + "/notifiedUsers", UTF8 ),
-                    strCurrentScreen = "ModifyConsequence?context=" + URLEncoder.encode( strContext, UTF8 );
+                    strNotifiedContext = URLEncoder.encode( strContext + "/notifiedUsers", StandardCharsets.UTF_8 ),
+                    strCurrentScreen = "ModifyConsequence?context=" + URLEncoder.encode( strContext, StandardCharsets.UTF_8 );
     ArrayPane       consequencePane = gef.getArrayPane( "consequencePane", strCurrentScreen, request, session ),
                     usersPane = gef.getArrayPane( "usersPane", strCurrentScreen, request, session ),
                     setUnsetPane = gef.getArrayPane( "setUnsetPane", strCurrentScreen, request, session );
@@ -69,17 +70,16 @@
                     astrFolderItemValues = (String[])astrFolderItemNames.clone(),
                     astrOperatorNames = (String[])request.getAttribute( "Operators" ),
                     astrOperatorValues = (String[])astrOperatorNames.clone();
-    boolean         fExistingConsequence = ( (Boolean)request.getAttribute( "IsExisitingConsequence" ) ).booleanValue();
+    boolean         fExistingConsequence = (Boolean) request.getAttribute("IsExisitingConsequence");
     StringBuffer    sb = new StringBuffer();
 %>
-<HTML>
-<HEAD>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script language="javaScript">
     function activateCondition()
     {
-        if ( document.consequenceForm.item.options.selectedIndex == 0 )
+        if ( document.consequenceForm.item.options.selectedIndex === 0 )
         {
             // Clear and block operator & value
             //
@@ -101,12 +101,12 @@
 
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        if ( document.consequenceForm.item.options.selectedIndex != 0 )
+      if ( document.consequenceForm.item.options.selectedIndex !== 0 )
         {
-            if ( document.consequenceForm.operator.options.selectedIndex == 0 )
+            if ( document.consequenceForm.operator.options.selectedIndex === 0 )
             {
                 errorMsg+="  - '<%=resource.getString("workflowDesigner.operator")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
                 errorNb++;
@@ -134,8 +134,8 @@
         }
     }
 </script>
-</HEAD>
-<BODY onLoad="activateCondition()" class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part onLoad="activateCondition()" cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.consequences"), strParentScreen);
@@ -192,22 +192,21 @@
 
     // Print a list of state names, based on the 'states' element
     //
-    for ( int i = 0; i < astrStateValues.length; i ++ )
-    {
-        boolean  fSet = consequence.getTargetState( astrStateValues[i] ) != null,
-                 fUnSet = consequence.getUnsetState( astrStateValues[i] ) != null;
+    for (String astrStateValue : astrStateValues) {
+        boolean fSet = consequence.getTargetState(astrStateValue) != null,
+                fUnSet = consequence.getUnsetState(astrStateValue) != null;
 
         row = setUnsetPane.addArrayLine();
-        row.addArrayCellRadio( WebEncodeHelper.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
-                               "",
-                               ! (fSet || fUnSet) );
-        row.addArrayCellRadio( WebEncodeHelper.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
-                               "set",
-                               fSet );
-        row.addArrayCellRadio( WebEncodeHelper.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
-                               "unset",
-                               fUnSet );
-        row.addArrayCellText( astrStateValues[i] );
+        row.addArrayCellRadio(WebEncodeHelper.javaStringToHtmlString("setUnset_" + astrStateValue),
+                "",
+                !(fSet || fUnSet));
+        row.addArrayCellRadio(WebEncodeHelper.javaStringToHtmlString("setUnset_" + astrStateValue),
+                "set",
+                fSet);
+        row.addArrayCellRadio(WebEncodeHelper.javaStringToHtmlString("setUnset_" + astrStateValue),
+                "unset",
+                fUnSet);
+        row.addArrayCellText(astrStateValue);
     }
 
     // Notified users
@@ -249,9 +248,9 @@
 	            // Create the remove link
 	            //
 	            sb.setLength(0);
-	            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers?context=" );
+	            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers', {context: '" );
 	            sb.append( indexedStrNotifiedContext );
-	            sb.append( "', '" );
+	            sb.append( "'}, '" );
 	            sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
 	            sb.append( " " );
 	            sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.notifiedUsers") ) );
@@ -308,5 +307,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

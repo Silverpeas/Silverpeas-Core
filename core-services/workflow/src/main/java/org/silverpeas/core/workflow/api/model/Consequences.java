@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;consequences&gt; element of a Process Model.
  */
-public interface Consequences {
+public interface Consequences extends Serializable {
   /**
    * Get the target consequences
    * @return the target consequences as a Vector

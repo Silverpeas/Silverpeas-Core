@@ -23,14 +23,12 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,13 +42,6 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
 
   @XmlElement(type = SpecificLabel.class)
   private List<ContextualDesignation> labels;
-
-  /**
-   * Constructor
-   */
-  public SpecificLabelListHelper() {
-    this.labels = new ArrayList<>();
-  }
 
   /**
    * Constructor
@@ -94,9 +85,9 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
    */
   @Override
   public ContextualDesignation getSpecificLabel(String role, String language) {
-    SpecificLabel label = null;
-    for (int l = 0; l < labels.size(); l++) {
-      label = (SpecificLabel) labels.get(l);
+    SpecificLabel label;
+    for (ContextualDesignation contextualDesignation : labels) {
+      label = (SpecificLabel) contextualDesignation;
       if (role != null && role.equals(label.getRole()) && language != null
           && language.equals(label.getLanguage())) {
         return label;
@@ -145,17 +136,12 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
    */
   @Override
   public void removeContextualDesignation(
-      ContextualDesignation contextualDesignation) throws WorkflowException {
+      ContextualDesignation contextualDesignation) {
     if (labels == null) {
       return;
     }
-    if (!labels.removeIf(d ->
+    labels.removeIf(d ->
         d.getRole().equals(contextualDesignation.getRole()) &&
-        d.getLanguage().equals(contextualDesignation.getLanguage()))) {
-      throw new WorkflowException("SpecificLabelListHelper.removeContextualDesignation()",
-          //$NON-NLS-1$
-          "workflowEngine.EX_DESIGNATION_NOT_FOUND", // $NON-NLS-1$
-          contextualDesignation == null ? "<null>" : contextualDesignation.getContent());
-    }
+        d.getLanguage().equals(contextualDesignation.getLanguage()));
   }
 }

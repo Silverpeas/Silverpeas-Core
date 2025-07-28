@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Interface describing a representation of the &lt;consequence&gt; element of a Process Model.
  */
-public interface Consequence {
+public interface Consequence extends Serializable {
   /**
    * Get the item on which the comparison will be processed
    * @return the item name

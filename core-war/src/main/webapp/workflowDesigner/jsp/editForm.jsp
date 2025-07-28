@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.nio.charset.StandardCharsets" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -35,7 +35,7 @@
                     strFormType = (String)request.getAttribute("type"),
                     strContext = (String)request.getAttribute("context"),
                     strInputContext = strContext + "/inputs",
-                    strCurrentScreen = "ModifyForm?context=" + URLEncoder.encode( strContext, UTF8 ),
+                    strCurrentScreen = "EditForm?context=" + URLEncoder.encode( strContext, StandardCharsets.UTF_8),
                     strTitleContext = strContext + "/titles",
                     strEditInput,
                     strInputContextEncoded,
@@ -43,19 +43,18 @@
     ArrayPane       formPane = gef.getArrayPane( "formPane", strCurrentScreen, request, session ),
                     inputsPane = gef.getArrayPane( "inputsPane", strCurrentScreen, request, session );
     String[]        astrRoleNames = (String[])request.getAttribute( "RoleNames" ),
-                    astrRoleValues = (String[])astrRoleNames.clone();
+                    astrRoleValues = astrRoleNames.clone();
     Input           input;
-    Iterator        iterInputs = form.iterateInput();
+    Iterator<Input> iterInputs = form.iterateInput();
     int             idx = 0;
-    boolean         fExistingForm = ( (Boolean)request.getAttribute( "IsExisitingForm" ) ).booleanValue();
-    StringBuffer    sb = new StringBuffer();
+    boolean         fExistingForm = (Boolean) request.getAttribute("IsExisitingForm");
+    StringBuilder sb = new StringBuilder();
 %>
 
-<HTML>
-<HEAD>
-<view:looknfeel withCheckFormScript="true"/>
-<script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
-<script language="javaScript">
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
+<script type="application/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
+<script type="application/javascript">
     function switchType()
     {
         // Which type of form is it?
@@ -89,10 +88,10 @@
 
     function sendData()
     {
-        var errorMsg = "";
-        var errorNb = 0;
+      let errorMsg = "";
+      let errorNb = 0;
 
-        // Which type of form is it?
+      // Which type of form is it?
         //
         if ( document.formForm.type[0].checked
              && isWhitespace( document.formForm.name.value ) )
@@ -126,8 +125,8 @@
         }
     }
 </script>
-</HEAD>
-<BODY onLoad="switchType()" class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part onLoad="switchType()" cssClass="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.forms"));
@@ -191,40 +190,42 @@
     //Fill the 'inputs' section
     //
     inputsPane.setTitle(resource.getString("workflowDesigner.list.input"));
-    column = inputsPane.addArrayColumn(resource.getString("workflowDesigner.folderItem"));
-    column = inputsPane.addArrayColumn(resource.getString("workflowDesigner.value"));
-    column = inputsPane.addArrayColumn(resource.getString("workflowDesigner.readonly"));
-    column = inputsPane.addArrayColumn(resource.getString("workflowDesigner.displayerName"));
-    column = inputsPane.addArrayColumn(resource.getString("GML.requiredField"));
+    inputsPane.addArrayColumn(resource.getString("workflowDesigner.folderItem"));
+    inputsPane.addArrayColumn(resource.getString("workflowDesigner.value"));
+    inputsPane.addArrayColumn(resource.getString("workflowDesigner.readonly"));
+    inputsPane.addArrayColumn(resource.getString("workflowDesigner.displayerName"));
+    inputsPane.addArrayColumn(resource.getString("GML.requiredField"));
     column = inputsPane.addArrayColumn(resource.getString("GML.operations"));
     column.setSortable(false);
 
     if ( fExistingForm )
         operationPane.addOperation(resource.getIcon("workflowDesigner.add"),
             resource.getString("workflowDesigner.add.input"),
-            "AddInput?context=" + URLEncoder.encode(strInputContext, UTF8) );
+            "AddInput?context=" + URLEncoder.encode(strInputContext, StandardCharsets.UTF_8) );
 
     while ( iterInputs.hasNext() )
     {
-        input = (Input)iterInputs.next();
+        input = iterInputs.next();
         iconPane = gef.getIconPane();
         iconPane.setSpacing("30px");
         updateIcon = iconPane.addIcon();
         delIcon = iconPane.addIcon();
 
         strItemName = input.getItem() == null ? "" : input.getItem().getName();
-        strInputContextEncoded = URLEncoder.encode( strInputContext + "[" + Integer.toString( idx ) + "]", UTF8 );
+        strInputContextEncoded = URLEncoder.encode( strInputContext + "[" + idx + "]", StandardCharsets.UTF_8 );
         strEditInput = "ModifyInput?context=" + strInputContextEncoded;
 
         // Create the remove link
         //
         sb.setLength(0);
-        sb.append("javascript:confirmRemove('RemoveInput?context=" );
+        sb.append("javascript:confirmRemove('RemoveInput', {context: '" );
         sb.append( strInputContextEncoded );
-        sb.append( "', '" );
+        sb.append( "'}, '" );
         sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
         sb.append( " " );
         sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.input") ) );
+        sb.append(" ");
+        sb.append(strItemName);
         sb.append( " ?');" );
 
         row = inputsPane.addArrayLine();
@@ -293,5 +294,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</view:sp-body-part>
+</view:sp-page>

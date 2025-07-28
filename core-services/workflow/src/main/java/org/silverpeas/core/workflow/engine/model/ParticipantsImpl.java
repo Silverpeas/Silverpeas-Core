@@ -23,12 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Participant;
 import org.silverpeas.core.workflow.api.model.Participants;
 
@@ -36,6 +30,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;participants&gt; element of a Process Model.
@@ -83,7 +81,7 @@ public class ParticipantsImpl implements Serializable, Participants {
     if (participantList == null) {
       return new Participant[0];
     }
-    return participantList.toArray(new Participant[participantList.size()]);
+    return participantList.toArray(new Participant[0]);
   }
 
   /**
@@ -118,16 +116,10 @@ public class ParticipantsImpl implements Serializable, Participants {
    * @see Participants#removeParticipant(java.lang .String)
    */
   @Override
-  public void removeParticipant(String strParticipantName) throws WorkflowException {
-    Participant participant = createParticipant();
-    participant.setName(strParticipantName);
+  public void removeParticipant(String strParticipantName) {
     if (participantList == null) {
       return;
     }
-    if (!participantList.remove(participant)) {
-      throw new WorkflowException("ParticipantsImpl.removeParticipant()",
-          "workflowEngine.EX_PARTICIPANT_NOT_FOUND",
-          strParticipantName == null ? "<null>" : strParticipantName);
-    }
+    participantList.removeIf(p -> p.getName().equals(strParticipantName));
   }
 }

@@ -23,68 +23,47 @@
  */
 package org.silverpeas.web.workflowdesigner.taglib;
 
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.workflow.api.model.ContextualDesignation;
+import org.silverpeas.core.workflow.api.model.ContextualDesignations;
+
+import javax.servlet.jsp.JspException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.workflow.api.model.ContextualDesignation;
-import org.silverpeas.core.workflow.api.model.ContextualDesignations;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
-import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;
-import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
-import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
-import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
-
 /**
  * Class implementing the tag &lt;contextualDesignationList&gt; from workflowEditor.tld
  */
-public class ContextualDesignationList extends TagSupport {
+@SuppressWarnings("unused")
+public class ContextualDesignationList extends WorkflowTagSupport {
 
   private static final long serialVersionUID = 2510045275428248323L;
 
-  private static final String UTF8 = "UTF-8"; // encoding
 
-  private String strContext, // the context of the designation
-      strParentScreen, // TODO refactor, use the RR.calculateParentScreen()
-      strPaneTitleKey, // The resource key to retrieve the pane title
-      strColumnLabelKey; // The resource key to retrieve the column label
+  private String strContext; // the context of the designation
+  private String strParentScreen; // the parent screen
+  private String strPaneTitleKey; // The resource key to retrieve the pane title
+  private String strColumnLabelKey; // The resource key to retrieve the column label
 
   private ContextualDesignations designations;
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
-   */
+  @Override
   public int doStartTag() throws JspException {
-    ArrayPane designationPane;
-    ArrayLine ligne;
-    IconPane iconPane;
-    Icon updateIcon;
-    Icon delIcon;
-    ArrayColumn column;
-    ContextualDesignation designation;
-    StringBuilder sb;
-    String strParametersEncoded, strEditURL, strPaneTitle, strColumnLabel;
-    GraphicElementFactory gef;
-    MultiSilverpeasBundle resource;
-
     try {
-      gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
+      var gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
           "SessionGraphicElementFactory");
-      resource = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
+      var resource = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
           "resources");
-      strPaneTitle = resource.getString(strPaneTitleKey);
-      strColumnLabel = resource.getString(strColumnLabelKey);
-      strContext = URLEncoder.encode(strContext, UTF8);
-      strParentScreen = URLEncoder.encode(strParentScreen, UTF8);
+      String strPaneTitle = resource.getString(strPaneTitleKey);
+      String strColumnLabel = resource.getString(strColumnLabelKey);
+      strContext = URLEncoder.encode(strContext, Charsets.UTF_8);
+      strParentScreen = URLEncoder.encode(strParentScreen, Charsets.UTF_8);
 
-      designationPane = gef.getArrayPane("designationList", strParentScreen,
+      var designationPane = gef.getArrayPane("designationList", strParentScreen,
           pageContext.getRequest(), pageContext.getSession());
       designationPane.setVisibleLineNumber(20);
       designationPane.setTitle(strPaneTitle);
@@ -92,59 +71,46 @@ public class ContextualDesignationList extends TagSupport {
       designationPane.addArrayColumn(resource
           .getString("workflowDesigner.role"));
       designationPane.addArrayColumn(strColumnLabel);
-      column = designationPane.addArrayColumn(resource
+      var column = designationPane.addArrayColumn(resource
           .getString("GML.operations"));
       column.setSortable(false);
 
       Iterator<ContextualDesignation> iterDesignations = designations.iterateContextualDesignation();
-      sb = new StringBuilder();
-
       while (iterDesignations.hasNext()) {
-        designation = iterDesignations.next();
+        ContextualDesignation designation = iterDesignations.next();
+        String encodedRole = URLEncoder.encode(designation.getRole(), Charsets.UTF_8);
+        String encodedLanguage = URLEncoder.encode(designation.getLanguage(), Charsets.UTF_8);
 
         // Create the parameters
-        //
-        sb.setLength(0);
-        sb.append("?role=");
-        sb.append(URLEncoder.encode(designation.getRole(), UTF8));
-        sb.append("&lang=");
-        sb.append(URLEncoder.encode(designation.getLanguage(), UTF8));
-        sb.append("&parentScreen="); // FIXME refactor
-        sb.append(strParentScreen);
-        sb.append("&context=");
-        sb.append(strContext);
+        String modifParameters = "?role=" + encodedRole
+            + "&lang=" + encodedLanguage
+            + "&parentScreen=" + strParentScreen
+            + "&context=" + strContext;
+        String removalParameters = "{role: '" + encodedRole
+            + "', lang: '" + encodedLanguage
+            + "', parentScreen: '" + strParentScreen
+            + "', context: '" + strContext
+            + "'}";
 
-        strParametersEncoded = sb.toString();
-        strEditURL = "ModifyContextualDesignation" + strParametersEncoded;
+        String strEditURL = "ModifyContextualDesignation" + modifParameters;
 
         // Create the remove link
         //
-        sb.setLength(0);
-        sb.append("javascript:confirmRemove('RemoveContextualDesignation");
-        sb.append(strParametersEncoded);
-        sb.append("', '");
-        sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
-        sb.append(" ");
-        sb.append(WebEncodeHelper.javaStringToJsString(designation.getLanguage()));
-        sb.append(", ");
-        sb.append(WebEncodeHelper.javaStringToJsString(designation.getRole()));
-        sb.append(" ?');");
+        String strRemoveJS = "javascript:confirmRemove('RemoveContextualDesignation', "
+            + removalParameters
+            + ", '"
+            + resource.getString("workflowDesigner.confirmRemoveJS")
+            + " " + WebEncodeHelper.javaStringToJsString(designation.getLanguage())
+            + ", "
+            + WebEncodeHelper.javaStringToJsString(designation.getRole()) + " ?');";
 
-        iconPane = gef.getIconPane();
-        updateIcon = iconPane.addIcon();
-        delIcon = iconPane.addIcon();
-        updateIcon.setProperties(resource
-            .getIcon("workflowDesigner.smallUpdate"), resource
-            .getString("GML.modify"), strEditURL);
-        delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
-            resource.getString("GML.delete"), sb.toString());
-        iconPane.setSpacing("30px");
+        var iconPane = addIconPane(gef, resource, strEditURL, strRemoveJS);
 
-        ligne = designationPane.addArrayLine();
-        ligne.addArrayCellLink(designation.getLanguage(), strEditURL);
-        ligne.addArrayCellLink(designation.getRole(), strEditURL);
-        ligne.addArrayCellLink(designation.getContent(), strEditURL);
-        ligne.addArrayCellIconPane(iconPane);
+        var line = designationPane.addArrayLine();
+        line.addArrayCellLink(designation.getLanguage(), strEditURL);
+        line.addArrayCellLink(designation.getRole(), strEditURL);
+        line.addArrayCellLink(designation.getContent(), strEditURL);
+        line.addArrayCellIconPane(iconPane);
       }
 
       pageContext.getOut().println(designationPane.print());

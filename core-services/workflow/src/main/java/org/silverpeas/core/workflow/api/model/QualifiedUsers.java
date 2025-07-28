@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
-
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
@@ -34,7 +33,7 @@ import java.util.Iterator;
  * <li>&lt;interestedUsers&gt;</li>
  * </ul>
  */
-public interface QualifiedUsers {
+public interface QualifiedUsers extends Serializable {
   /**
    * Get the userInRoles
    * @return the userInRoles as an array
@@ -61,8 +60,8 @@ public interface QualifiedUsers {
 
   /**
    * Get the userInRoles
-   * @param strRoleName
-   * @return the userInRoles as a Vector
+   * @param strRoleName the role
+   * @return the user playing the role
    */
   UserInRole getUserInRole(String strRoleName);
 
@@ -99,9 +98,8 @@ public interface QualifiedUsers {
   /**
    * Remove a RelatedUser from the collection
    * @param reference the reference of the RelatedUser to be removed
-   * @throws WorkflowException when something goes wrong
    */
-  void removeRelatedUser(RelatedUser reference) throws WorkflowException;
+  void removeRelatedUser(RelatedUser reference);
 
   /**
    * Get the related groups
@@ -135,7 +133,7 @@ public interface QualifiedUsers {
 
   /**
    * Get the user id used as sender for message.
-   * @return
+   * @return the identifier of the message sender
    */
   String getSenderId();
 
