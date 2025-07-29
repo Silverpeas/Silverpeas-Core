@@ -48,6 +48,8 @@ public class FileExistenceCheckingProcessor extends AbstractSilverpeasFileProces
           validatedFile = SilverpeasFile.NO_FILE;
         }
         break;
+      default:
+        break;
     }
     return validatedFile;
   }

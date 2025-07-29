@@ -28,6 +28,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.utils.XMLReaderUtils;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
@@ -41,7 +42,7 @@ import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 @Service
 public class TikaInitialization implements Initialization {
   @Override
-  public void init() throws Exception {
+  public void init() {
     final SettingBundle settingBundle =
         ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.IndexEngine");
     final int poolSize =
@@ -52,7 +53,15 @@ public class TikaInitialization implements Initialization {
       indexingLogger()
           .error("Failure while setting the size of the SAX parsers pool to " + poolSize +
               ". Rollback to the default pool size (" + XMLReaderUtils.DEFAULT_POOL_SIZE + ")", e);
+      setDefaultPoolSize();
+    }
+  }
+
+  private static void setDefaultPoolSize() {
+    try {
       XMLReaderUtils.setPoolSize(XMLReaderUtils.DEFAULT_POOL_SIZE);
+    } catch (TikaException e) {
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

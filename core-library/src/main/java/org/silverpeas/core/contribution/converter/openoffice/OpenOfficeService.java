@@ -24,12 +24,13 @@
 
 package org.silverpeas.core.contribution.converter.openoffice;
 
-import org.jodconverter.core.office.AbstractOfficeManagerPool;
+import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Singleton;
@@ -58,7 +59,7 @@ public class OpenOfficeService implements Initialization {
   private OfficeManager officeManager;
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     String home = settings.getString(OPENOFFICE_HOME, null);
     String ports = settings.getString(OPENOFFICE_PORT, "8100");
     long taskQueueTimeout = settings.getLong(OPENOFFICE_QUEUE_TIMEOUT, DEFAULT_TASK_QUEUE_TIMEOUT);
@@ -68,18 +69,26 @@ public class OpenOfficeService implements Initialization {
         .map(String::trim)
         .mapToInt(Integer::parseInt)
         .toArray();
-    LocalOfficeManager.Builder builder = LocalOfficeManager.builder()
+    LocalOfficeManager.Builder config = LocalOfficeManager.builder()
         .install()
         .officeHome(home)
         .portNumbers(portNumbers)
         .taskExecutionTimeout(taskExecutionTimeout)
         .taskQueueTimeout(taskQueueTimeout);
+    startOfficeManager(config);
+  }
+
+  private void startOfficeManager(LocalOfficeManager.Builder builder) {
     officeManager = builder.build();
-    officeManager.start();
+    try {
+      officeManager.start();
+    } catch (OfficeException e) {
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
+    }
   }
 
   @Override
-  public void release() throws Exception {
+  public void release() {
     OfficeUtils.stopQuietly(officeManager);
   }
 

@@ -60,14 +60,8 @@ public class ToolRegistry implements Initialization {
     return ServiceProvider.getService(ToolRegistry.class);
   }
 
-  /**
-   * Initializes some resources required by the services or performs some initialization processes
-   * at Silverpeas startup.
-   * @throws Exception if an error occurs during the initialization process. In this case
-   * the Silverpeas startup fails.
-   */
   @Override
-  public void init() throws Exception {
+  public void init() {
     Stream.of(ResourceLocator.getGeneralSettingBundle().getString("availableToolIds", ""))
         .flatMap(s -> Stream.of(s.split("[ ,;]")))
         .filter(StringUtil::isDefined)

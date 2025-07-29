@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.calendar;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.web.mvc.util.WysiwygEditorConfigRegistry;
 import org.silverpeas.core.web.util.WysiwygEditorConfig;
@@ -31,12 +32,13 @@ import org.silverpeas.core.web.util.WysiwygEditorConfig;
  * Initializes some resources required by the Calendar UI.
  * @author mmoquillon
  */
+@Service
 public class CalendarInitialization implements Initialization {
 
   private static final String DEFAULT_COMPONENT_NAME = "calendar";
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     WysiwygEditorConfig wysiwygEditorConfig = new WysiwygEditorConfig(DEFAULT_COMPONENT_NAME);
     wysiwygEditorConfig.setToolbar(DEFAULT_COMPONENT_NAME);
     wysiwygEditorConfig.setFileBrowserDisplayed(true);

@@ -25,12 +25,10 @@ package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerProvider;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.SchedulingInitializer;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -45,21 +43,29 @@ import static org.silverpeas.core.util.DateUtil.toLocalDate;
  * @author mmoquillon
  */
 @Service
-public class DeleteRemovedSpacesScheduler implements Initialization {
+public class DeleteRemovedSpacesScheduler extends SchedulingInitializer {
 
   protected static final String JOB_NAME = "DeleteRemovedSpacesJob";
+  private final Job job = new DeleteRemovedSpacesJob();
 
   @Inject
   private Administration admin;
 
+  @NonNull
   @Override
-  public void init() throws Exception {
-    if (isAutomaticDeletionOfRemovedSpacesEnabled()) {
-      final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
-      scheduler.unscheduleJob(JOB_NAME);
-      scheduler.scheduleJob(new DeleteRemovedSpacesJob(),
-          JobTrigger.triggerAt(getDeletionOfRemovedSpacesCron()));
-    }
+  protected String getCron() {
+    return getDeletionOfRemovedSpacesCron();
+  }
+
+  @NonNull
+  @Override
+  protected Job getJob() {
+    return job;
+  }
+
+  @Override
+  protected boolean isSchedulingEnabled() {
+    return isAutomaticDeletionOfRemovedSpacesEnabled();
   }
 
   private class DeleteRemovedSpacesJob extends Job {

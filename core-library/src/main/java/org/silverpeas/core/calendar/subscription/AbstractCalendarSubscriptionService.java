@@ -48,7 +48,7 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
 public abstract class AbstractCalendarSubscriptionService extends AbstractResourceSubscriptionService {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     super.init();
     SubscriptionFactory.get().register(CALENDAR,
         (r, s, i) -> new CalendarSubscriptionResource(new ResourceReference(r, i)),

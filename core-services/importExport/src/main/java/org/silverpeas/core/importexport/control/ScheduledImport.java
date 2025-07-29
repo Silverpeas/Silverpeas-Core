@@ -45,6 +45,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Objects;
 
 @Service
 public class ScheduledImport implements SchedulerEventListener, Initialization {
@@ -90,7 +91,7 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
     MultiSilverpeasBundle resource = new MultiSilverpeasBundle(multilang, "fr");
 
     File[] files = dir.listFiles();
-    for (File file : files) {
+    for (File file : Objects.requireNonNull(files)) {
       if (file.isFile()) {
         String extension = FileRepositoryManager.getFileExtension(file.getName());
         if ("xml".equalsIgnoreCase(extension)) {

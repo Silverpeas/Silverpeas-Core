@@ -54,7 +54,7 @@ public abstract class AbstractFileProcessCheck extends AbstractProcessCheck {
    * )
    */
   @Override
-  public final void check(final ProcessExecutionContext processExecutionContext) throws Exception {
+  public final void check(final ProcessExecutionContext processExecutionContext) {
     checkFiles(processExecutionContext, processExecutionContext.getFileHandler());
   }
 
@@ -63,16 +63,15 @@ public abstract class AbstractFileProcessCheck extends AbstractProcessCheck {
    * associated to the current execution of chained Silverpeas processes is passed.
    * @param processExecutionContext the context of chained list of checks execution.
    * @param fileHandler the instance of the file handler.
-   * @throws Exception
    */
   public abstract void checkFiles(ProcessExecutionContext processExecutionContext,
       final FileHandler fileHandler);
 
   /**
    * Identifying all component instances aimed by the process chained execution
-   * @param processExecutionProcess
-   * @param fileHandler
-   * @return
+   * @param processExecutionProcess the process execution context
+   * @param fileHandler the handler on a file.
+   * @return a set of component instance identifiers.
    */
   protected final Set<String> identifyComponentInstances(
       final ProcessExecutionContext processExecutionProcess, final FileHandler fileHandler) {

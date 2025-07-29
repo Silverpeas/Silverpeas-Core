@@ -45,7 +45,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 public class PublicationTemplateIntegrityProcessor implements Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     BackgroundProcessTask.push(new DeprecatedTemplateCleaner());
   }
 
@@ -59,7 +59,7 @@ public class PublicationTemplateIntegrityProcessor implements Initialization {
         Transaction.performInOne(() -> {
           componentIds.stream()
               .filter(c -> isDefined(SilverpeasComponentInstance.getComponentName(c)))
-              .filter(c -> !SilverpeasComponentInstance.getById(c).isPresent())
+              .filter(c -> SilverpeasComponentInstance.getById(c).isEmpty())
               .forEach(c -> PublicationTemplateManager.getInstance().delete(c));
           return null;
         });

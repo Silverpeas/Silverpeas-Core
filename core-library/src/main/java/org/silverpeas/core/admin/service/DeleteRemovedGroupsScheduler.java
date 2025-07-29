@@ -26,12 +26,10 @@ package org.silverpeas.core.admin.service;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerProvider;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.SchedulingInitializer;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.time.LocalDate;
@@ -47,18 +45,26 @@ import static org.silverpeas.core.util.DateUtil.toLocalDate;
  * @author silveryocha
  */
 @Service
-public class DeleteRemovedGroupsScheduler implements Initialization {
+public class DeleteRemovedGroupsScheduler extends SchedulingInitializer {
 
   protected static final String JOB_NAME = "DeleteRemovedGroupsJob";
+  private final Job job = new DeleteRemovedGroupsJob();
+
+  @NonNull
+  @Override
+  protected String getCron() {
+    return getDeletionOfRemovedGroupsCron();
+  }
+
+  @NonNull
+  @Override
+  protected Job getJob() {
+    return job;
+  }
 
   @Override
-  public void init() throws Exception {
-    if (isAutomaticDeletionOfRemovedGroupsEnabled()) {
-      final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
-      scheduler.unscheduleJob(JOB_NAME);
-      scheduler.scheduleJob(new DeleteRemovedGroupsJob(),
-          JobTrigger.triggerAt(getDeletionOfRemovedGroupsCron()));
-    }
+  protected boolean isSchedulingEnabled() {
+    return isAutomaticDeletionOfRemovedGroupsEnabled();
   }
 
   private static class DeleteRemovedGroupsJob extends Job {

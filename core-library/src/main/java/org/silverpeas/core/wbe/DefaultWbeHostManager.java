@@ -24,15 +24,18 @@
 
 package org.silverpeas.core.wbe;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SilverpeasUserSession;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -187,6 +190,8 @@ public class DefaultWbeHostManager implements WbeHostManager {
     return getEnabledClients().filter(c -> c.isHandled(file)).findFirst();
   }
 
+  @Technical
+  @Bean
   public static class WbeCacheCleanerJob extends Job implements Initialization {
 
     private static final String WBE_CLEANER_JOB_NAME = "WbeCleanerJob";
@@ -212,7 +217,7 @@ public class DefaultWbeHostManager implements WbeHostManager {
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() throws SchedulerException {
       logger().debug(() -> "initializing Web Browser Edition cleaner JOB");
       scheduler.unscheduleJob(WBE_CLEANER_JOB_NAME);
       scheduler.scheduleJob(this, JobTrigger.triggerEvery(5, TimeUnit.MINUTE));

@@ -25,9 +25,10 @@ package org.silverpeas.core.io.media.video.ffmpeg;
 
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecution.Config;
-import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Map;
 
@@ -37,27 +38,31 @@ public class FFmpegToolManager implements Initialization {
   private static boolean isActivated = false;
 
   @Override
-  public void init() throws Exception {
+  public void init() {
 
     // SwfTools settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
-      if ("path".equals(entry.getKey().toLowerCase())) {
+      if ("path".equalsIgnoreCase(entry.getKey())) {
         try {
           CommandLine commandLine = new CommandLine("ffmpeg");
           commandLine.addArgument("-version");
           ExternalExecution.exec(commandLine, Config.init().doNotDisplayErrorTrace());
-          isActivated = true;
+          activateFfmpeg();
         } catch (final Exception e) {
           // FFmpeg is not installed
-          System.err.println("ffmpeg is not installed");
+          SilverLogger.getLogger(this).error("ffmpeg is not installed");
         }
       }
     }
   }
 
+  private static void activateFfmpeg() {
+    isActivated = true;
+  }
+
   /**
-   * Indicates if ffmpeg is actived
-   * @return
+   * Is ffmpeg is activated for Silverpeas?
+   * @return true if ffmpeg can be used. False otherwise.
    */
   public static boolean isActivated() {
     return isActivated;

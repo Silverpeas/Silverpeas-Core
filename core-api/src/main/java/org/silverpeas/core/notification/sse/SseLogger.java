@@ -51,7 +51,7 @@ public class SseLogger implements Initialization {
   }
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     initLogger();
   }
 }

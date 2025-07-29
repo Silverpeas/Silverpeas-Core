@@ -50,7 +50,7 @@ public class DocumentTemplateResourceViewProvider
   private DocumentTemplateService service;
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     ResourceViewProviderRegistry.get().addNewEmbedMediaProvider(this);
   }
 

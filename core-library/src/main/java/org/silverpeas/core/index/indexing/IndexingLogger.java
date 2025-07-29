@@ -51,7 +51,7 @@ public class IndexingLogger implements Initialization {
   }
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     initLogger();
   }
 }

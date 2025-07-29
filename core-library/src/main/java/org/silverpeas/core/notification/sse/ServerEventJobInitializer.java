@@ -24,12 +24,13 @@
 package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulingInitializer;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -41,25 +42,35 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
  * This JOB is in charge of cleanup the SSE contexts if necessary.
  */
 @Service
-class ServerEventJobInitializer implements Initialization {
+class ServerEventJobInitializer extends SchedulingInitializer {
 
   private static final String JOB_NAME = "ServerEventJob";
 
   @Inject
   private Scheduler scheduler;
+  private final Job job = new ServerEventCleanerJob();
+  private final int sseAsyncJobTrigger = getSseAsyncJobTrigger();
 
   @Override
-  public void init() throws Exception {
+  protected JobTrigger getTrigger() {
+    return JobTrigger.triggerEvery(sseAsyncJobTrigger, TimeUnit.SECOND);
+  }
 
-    // Setting JOB
-    scheduler.unscheduleJob(JOB_NAME);
-    final int sseAsyncJobTrigger = getSseAsyncJobTrigger();
-    if (sseAsyncJobTrigger > 0) {
+  @NonNull
+  @Override
+  protected String getCron() {
+    return "";
+  }
 
-      // Job instance
-      final ServerEventCleanerJob job = new ServerEventCleanerJob();
-      scheduler.scheduleJob(job, JobTrigger.triggerEvery(sseAsyncJobTrigger, TimeUnit.SECOND));
-    }
+  @NonNull
+  @Override
+  protected Job getJob() {
+    return job;
+  }
+
+  @Override
+  protected boolean isSchedulingEnabled() {
+    return sseAsyncJobTrigger > 0;
   }
 
   private static class ServerEventCleanerJob extends Job {

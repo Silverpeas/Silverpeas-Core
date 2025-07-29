@@ -40,12 +40,12 @@ import java.util.EventListener;
 public interface UserAuthenticationListener extends EventListener, Initialization {
 
   @Override
-  default void init() throws Exception {
+  default void init() {
     UserAuthenticationListenerRegistration.register(this);
   }
 
   @Override
-  default void release() throws Exception {
+  default void release() {
     UserAuthenticationListenerRegistration.unregister(this);
   }
 

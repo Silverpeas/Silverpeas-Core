@@ -163,7 +163,7 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   @Override
-  public void release() throws Exception {
+  public void release() throws SchedulerException {
     scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
   }
 

@@ -27,16 +27,17 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.*;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 
 import static org.silverpeas.core.admin.AdminSettings.*;
+import static org.silverpeas.core.admin.AdminSettings.getDeletionOfRemovedUsersCron;
+import static org.silverpeas.core.admin.AdminSettings.isAutomaticDeletionOfRemovedUsersEnabled;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.util.DateUtil.toLocalDate;
 
@@ -45,18 +46,26 @@ import static org.silverpeas.core.util.DateUtil.toLocalDate;
  * @author silveryocha
  */
 @Service
-public class DeleteRemovedUsersScheduler implements Initialization {
+public class DeleteRemovedUsersScheduler extends SchedulingInitializer {
 
   protected static final String JOB_NAME = "DeleteRemovedUsersJob";
+  private final Job job = new DeleteRemovedUsersJob();
+
+  @NonNull
+  @Override
+  protected String getCron() {
+    return getDeletionOfRemovedUsersCron();
+  }
+
+  @NonNull
+  @Override
+  protected Job getJob() {
+    return job;
+  }
 
   @Override
-  public void init() throws Exception {
-    if (isAutomaticDeletionOfRemovedUsersEnabled()) {
-      final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
-      scheduler.unscheduleJob(JOB_NAME);
-      scheduler.scheduleJob(new DeleteRemovedUsersJob(),
-          JobTrigger.triggerAt(getDeletionOfRemovedUsersCron()));
-    }
+  protected boolean isSchedulingEnabled() {
+    return isAutomaticDeletionOfRemovedUsersEnabled();
   }
 
   private static class DeleteRemovedUsersJob extends Job {

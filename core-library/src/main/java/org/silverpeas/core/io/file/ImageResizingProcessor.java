@@ -27,6 +27,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.io.media.image.option.OrientationOption;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
@@ -34,6 +35,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -126,9 +128,7 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
         imagePath = resizedImage.getPath();
         if (sourceImage.exists() &&
             (!resizedImage.exists() || sourceImage.lastModified() >= resizedImage.lastModified())) {
-          if (!resizedImage.getParentFile().exists()) {
-            resizedImage.getParentFile().mkdirs();
-          }
+          createImageFolder(resizedImage.getParentFile());
           final DimensionOption dimension =
               DimensionOption.widthAndHeight(parameters.getWidth(), parameters.getHeight());
           final OrientationOption auto = OrientationOption.auto();
@@ -140,15 +140,25 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
     return imagePath;
   }
 
+  private static void createImageFolder(File directory) {
+    if (!directory.exists()) {
+      try {
+        Files.createDirectories(directory.toPath());
+      } catch (IOException e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    }
+  }
+
   private static class ResizingParameters {
 
     private static final ResizingParameters NO_RESIZING =
         new ResizingParameters(null, null, -1, -1);
 
-    private Integer width;
-    private Integer height;
-    private File sourceImage;
-    private File destinationImage;
+    private final Integer width;
+    private final Integer height;
+    private final File sourceImage;
+    private final File destinationImage;
 
     public ResizingParameters(File sourceImage, File destinationImage, Integer width,
         Integer height) {

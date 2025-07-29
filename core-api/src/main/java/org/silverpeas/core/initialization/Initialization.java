@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.initialization;
 
+import org.silverpeas.kernel.SilverpeasException;
+
 /**
  * This is a markup interface. It qualifies the services that are dedicated to initialize some
- * resources or some others services. The initialization services has to implement the {@code
- * Initialization#init()} method. The {@code Initialization#release()} method is optional and
+ * resources or some others services. The initialization services has to implement the {@link
+ * Initialization#init()} method. The {@link  Initialization#release()} method is optional and
  * does nothing by default.
  * @author mmoquillon
  */
@@ -35,10 +37,10 @@ public interface Initialization {
   /**
    * Initializes some resources required by the services or performs some initialization processes
    * at Silverpeas startup.
-   * @throws java.lang.Exception if an error occurs during the initialization process. In this case
-   * the Silverpeas startup fails.
+   * @throws SilverpeasException if an error occurs during the initialization. The error won't
+   * stop the bootstrap of Silverpeas and will be logged for further investigation.
    */
-  void init() throws Exception;
+  void init() throws SilverpeasException;
 
   /**
    * Gets the priority level of the execution of {@link #init()} method.
@@ -54,9 +56,9 @@ public interface Initialization {
   /**
    * Releases the previously initialized resources at Silverpeas shutdown. The implementation of
    * this method is optional. By default it does nothing.
-   * @throws java.lang.Exception if an error occurs during the shutdown process. In this case, a log
-   * will be outputed and the shutdown goes one.
+   * @throws SilverpeasException if an error occurs during the shutdown process. The error won't
+   * stop the shutdown of Silverpeas and it will be logged for further investigation.
    */
-  default void release() throws Exception {
+  default void release() throws SilverpeasException {
   }
 }

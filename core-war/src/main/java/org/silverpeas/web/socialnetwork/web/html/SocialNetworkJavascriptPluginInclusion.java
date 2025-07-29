@@ -56,10 +56,9 @@ public class SocialNetworkJavascriptPluginInclusion implements Initialization {
     add(SOCIAL_MY_PROFILE, SocialNetworkJavascriptPluginInclusion::includeMyProfile);
   }
 
-  static ElementContainer includeMyProfile(final ElementContainer xhtml, String language) {
+  static void includeMyProfile(final ElementContainer xhtml, String language) {
     xhtml.addElement(WebPlugin.get().getHtml(IMAGETOOL, language));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "silverpeas-my-profile.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-my-profile.js"));
-    return xhtml;
   }
 }

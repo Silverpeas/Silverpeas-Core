@@ -24,11 +24,15 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import edu.psu.swe.scim.server.exception.InvalidProviderException;
+import edu.psu.swe.scim.server.exception.UnableToRetrieveExtensionsException;
 import edu.psu.swe.scim.server.provider.ProviderRegistry;
 import edu.psu.swe.scim.spec.resources.ScimGroup;
 import edu.psu.swe.scim.spec.resources.ScimUser;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -50,8 +54,13 @@ public class ScimConfigurator implements Initialization {
   private Instance<ScimGroupAdminService> scimGroupAdminServices;
 
   @Override
-  public void init() throws Exception {
-    providerRegistry.registerProvider(ScimUser.class, scimUserAdminProvider);
-    providerRegistry.registerProvider(ScimGroup.class, scimGroupAdminServices);
+  public void init() {
+    try {
+      providerRegistry.registerProvider(ScimUser.class, scimUserAdminProvider);
+      providerRegistry.registerProvider(ScimGroup.class, scimGroupAdminServices);
+    } catch (InvalidProviderException | JsonProcessingException |
+             UnableToRetrieveExtensionsException e) {
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
+    }
   }
 }

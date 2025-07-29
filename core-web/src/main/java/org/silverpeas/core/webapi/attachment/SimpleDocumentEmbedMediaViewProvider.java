@@ -50,7 +50,7 @@ public class SimpleDocumentEmbedMediaViewProvider implements ResourceViewProvide
   private AttachmentService service;
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     ResourceViewProviderRegistry.get().addNewEmbedMediaProvider(this);
   }
 

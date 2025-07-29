@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
@@ -32,17 +31,22 @@ import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.scheduler.*;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig;
 import org.silverpeas.core.thread.ManagedThreadPoolException;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -99,6 +103,9 @@ public class ICalendarEventSynchronization implements Initialization {
   @Inject
   private Event<CalendarBatchSynchronizationErrorEvent> notifier;
 
+  @Inject
+  private Instance<Scheduler> schedulerProvider;
+
   private ICalendarEventSynchronization() {
 
   }
@@ -112,12 +119,11 @@ public class ICalendarEventSynchronization implements Initialization {
   }
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     try {
       final SettingBundle settings = ResourceLocator.getSettingBundle(CALENDAR_SETTINGS);
       final String cron = settings.getString("calendar.synchronization.cron");
-
-      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
+      Scheduler scheduler = schedulerProvider.get();
       scheduler.unscheduleJob(getClass().getSimpleName());
       scheduler.scheduleJob(new Job(getClass().getSimpleName()) {
         @Override
@@ -131,8 +137,8 @@ public class ICalendarEventSynchronization implements Initialization {
   }
 
   @Override
-  public void release() throws Exception {
-    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
+  public void release() throws SchedulerException {
+    Scheduler scheduler = schedulerProvider.get();
     scheduler.unscheduleJob(getClass().getSimpleName());
   }
 

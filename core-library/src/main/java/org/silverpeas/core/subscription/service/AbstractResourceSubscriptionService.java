@@ -49,7 +49,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
     Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     ResourceSubscriptionProvider.registerResourceSubscriptionService(this);
   }
 
@@ -76,6 +76,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
       final String componentInstanceId, final SubscriptionResourceType resourceType,
       final String resourceId, final SubscriberDirective... directives) {
     final Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
+    // nothing is done here about other types, explicit component implementation MUST exist.
     if (NODE == resourceType) {
       final NodePath path = !"kmax".equals(componentInstanceId) ? getNodeService()
           .getPath(new NodePK(resourceId, componentInstanceId)) : null;
@@ -83,8 +84,6 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
       addAllSubscribersAboutComponentInstance(componentInstanceId, subscribers);
     } else if (COMPONENT == resourceType) {
       addAllSubscribersAboutComponentInstance(componentInstanceId, subscribers);
-    } else {
-      // nothing is done here about other types, explicit component implementation MUST exist.
     }
     return new SubscriptionSubscriberList(subscribers);
   }

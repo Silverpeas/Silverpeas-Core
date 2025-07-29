@@ -56,7 +56,7 @@ public class JsonPdfToolManager implements Initialization {
   private boolean isActivated = false;
 
   @Override
-  public void init() throws Exception {
+  public void init() {
 
     // pdf2json settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {

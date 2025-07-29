@@ -15,7 +15,7 @@ import javax.inject.Singleton;
 @Singleton
 public class LDAPTasksInitialization implements Initialization {
   @Override
-  public void init() throws Exception {
+  public void init() {
     SilverLogger.getLogger(this).info("Register the dictionary access credentials encryption");
     LDAPCredentialsEncryptionIterator iterator = new LDAPCredentialsEncryptionIterator();
     ContentEncryptionService.get().registerForContentCiphering(iterator);

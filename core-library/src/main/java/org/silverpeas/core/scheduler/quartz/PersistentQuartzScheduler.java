@@ -71,7 +71,7 @@ public class PersistentQuartzScheduler extends QuartzScheduler {
   }
 
   @Override
-  public void release() throws Exception {
+  public void release() throws org.silverpeas.core.scheduler.SchedulerException {
     shutdown();
   }
 

@@ -61,7 +61,7 @@ import static org.silverpeas.kernel.util.Mutable.of;
 public abstract class AbstractPublicationSubscriptionService extends AbstractResourceSubscriptionService {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     super.init();
     SubscriptionFactory.get().register(PUBLICATION,
         (r, s, i) -> new PublicationSubscriptionResource(new PublicationPK(r, i)),

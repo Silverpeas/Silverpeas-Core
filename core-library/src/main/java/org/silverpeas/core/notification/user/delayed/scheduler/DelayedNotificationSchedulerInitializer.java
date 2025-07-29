@@ -25,12 +25,16 @@ package org.silverpeas.core.notification.user.delayed.scheduler;
 
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.notification.user.client.NotificationURLProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
+
+import java.text.ParseException;
 
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
     .getCronOfDelayedNotificationSending;
@@ -50,11 +54,15 @@ public class DelayedNotificationSchedulerInitializer implements NotificationURLP
   private DelayedNotificationListener listener;
 
   @Override
-  public void init() throws Exception {
-    final String cron = getCronOfDelayedNotificationSending();
-    scheduler.unscheduleJob(JOB_NAME);
-    if (StringUtils.isNotBlank(cron)) {
-      scheduler.scheduleJob(JOB_NAME, JobTrigger.triggerAt(cron), listener);
+  public void init() {
+    try {
+      final String cron = getCronOfDelayedNotificationSending();
+      scheduler.unscheduleJob(JOB_NAME);
+      if (StringUtils.isNotBlank(cron)) {
+        scheduler.scheduleJob(JOB_NAME, JobTrigger.triggerAt(cron), listener);
+      }
+    } catch (SchedulerException | ParseException e) {
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

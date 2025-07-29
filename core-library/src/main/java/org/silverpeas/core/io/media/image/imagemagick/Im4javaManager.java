@@ -39,7 +39,7 @@ import java.util.Map;
 public class Im4javaManager implements Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
 
     // Im4java settings
     if (!verify(ProcessStarter.getGlobalSearchPath())) {
@@ -53,9 +53,9 @@ public class Im4javaManager implements Initialization {
   }
 
   /**
-   * Verify the ImageMagick existence from a given path
-   * @param path
-   * @return
+   * Verify the ImageMagick existence from a given path.
+   * @param path the path in which the ImageMagick binary can be found.
+   * @return true if ImageMagick has been found. False otherwise.
    */
   private boolean verify(String path) {
     boolean verified = true;
@@ -79,8 +79,8 @@ public class Im4javaManager implements Initialization {
   }
 
   /**
-   * Indicates if im4java is activated
-   * @return
+   * Indicates if im4java is activated for Silverpeas.
+   * @return true if Im4Java library is enabled. False otherwise.
    */
   public static boolean isActivated() {
     return StringUtil.isDefined(ProcessStarter.getGlobalSearchPath());

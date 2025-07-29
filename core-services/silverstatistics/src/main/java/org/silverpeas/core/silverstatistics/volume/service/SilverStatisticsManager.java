@@ -23,21 +23,17 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
-import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.*;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConfigException;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -64,7 +60,7 @@ import static org.silverpeas.core.silverstatistics.volume.model.StatType.*;
 public class SilverStatisticsManager implements Initialization {
 
   private static final String STAT_SIZE_JOB_NAME = "SilverStatisticsSize";
-  private static final String STAT_CUMUL_JOB_NAME = "SilverStatisticsCumul";
+  private static final String STAT_CUMULI_JOB_NAME = "SilverStatisticsCumul";
   private static final String STAT_VOLUME_JOB_NAME = "SilverStatisticsVolume";
   // List of directory to compute size
   private List<String> directoryToScan = null;
@@ -96,7 +92,7 @@ public class SilverStatisticsManager implements Initialization {
       final String consolidationStatCron = settings.getString("scheduledCumulStatTimeStamp");
       initSchedulerStatistics(sizeStatCron, STAT_SIZE_JOB_NAME, this::doGetStatSize);
       initSchedulerStatistics(volumeStatCron, STAT_VOLUME_JOB_NAME, this::doGetStatVolume);
-      initSchedulerStatistics(consolidationStatCron, STAT_CUMUL_JOB_NAME,
+      initSchedulerStatistics(consolidationStatCron, STAT_CUMULI_JOB_NAME,
           this::doConsolidationStat);
       initDirectoryToScan(settings);
     } catch (SilverStatisticsConfigException e) {
@@ -107,11 +103,11 @@ public class SilverStatisticsManager implements Initialization {
   }
 
   @Override
-  public void release() throws Exception {
+  public void release() throws SchedulerException {
     Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     scheduler.unscheduleJob(STAT_SIZE_JOB_NAME);
     scheduler.unscheduleJob(STAT_VOLUME_JOB_NAME);
-    scheduler.unscheduleJob(STAT_CUMUL_JOB_NAME);
+    scheduler.unscheduleJob(STAT_CUMULI_JOB_NAME);
   }
 
   /**
@@ -192,14 +188,11 @@ public class SilverStatisticsManager implements Initialization {
     }
   }
 
-  /**
-   * @param resource
-   */
   private void initDirectoryToScan(SettingBundle resource) {
     try {
       // read the directories
       int i = 0;
-      String directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i), null);
+      String directoryPath = resource.getString("SilverPeasDataPath" + i, null);
       // for each directory
       while (directoryPath != null) {
         // Test existence
@@ -209,38 +202,36 @@ public class SilverStatisticsManager implements Initialization {
         }
         directoryToScan.add(directoryPath);
         i++;
-        directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i), null);
+        directoryPath = resource.getString("SilverPeasDataPath" + i, null);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Statistics directory scanning in error", e);
     }
   }
 
-  /**
-   * @param userId the user identifier
-   * @param volume
-   * @param dateAccess the access date
-   * @param peasType
-   * @param spaceId the space identifier
-   * @param componentId the component instance identifier (silverpeas application)
-   */
   public void addStatVolume(String userId, long volume, Date dateAccess, String peasType,
       String spaceId, String componentId) {
     if (statsConfig.isRun(Volume)) {
-      StringBuilder stat = new StringBuilder();
-      stat.append(DateUtil.formatAsISO8601Day(dateAccess));
-      stat.append(SEPARATOR);
-      stat.append(userId);
-      stat.append(SEPARATOR);
-      stat.append(peasType);
-      stat.append(SEPARATOR);
-      stat.append(spaceId);
-      stat.append(SEPARATOR);
-      stat.append(componentId);
-      stat.append(SEPARATOR);
-      stat.append(String.valueOf(volume));
+      StringBuilder stat = buildStatisticData(userId, dateAccess, peasType, spaceId, componentId);
+      stat.append(volume);
       sendStatistic(Volume, stat);
     }
+  }
+
+  private StringBuilder buildStatisticData(String userId, Date dateAccess, String peasType, String spaceId,
+      String componentId) {
+    StringBuilder stat = new StringBuilder();
+    stat.append(DateUtil.formatAsISO8601Day(dateAccess));
+    stat.append(SEPARATOR);
+    stat.append(userId);
+    stat.append(SEPARATOR);
+    stat.append(peasType);
+    stat.append(SEPARATOR);
+    stat.append(spaceId);
+    stat.append(SEPARATOR);
+    stat.append(componentId);
+    stat.append(SEPARATOR);
+    return stat;
   }
 
   private void sendStatistic(StatType type, CharSequence stat) {
@@ -257,41 +248,16 @@ public class SilverStatisticsManager implements Initialization {
     }
   }
 
-  /**
-   * Add access statistic
-   * @param userId the user identifier
-   * @param dateAccess the access date
-   * @param peasType
-   * @param spaceId the space identifier
-   * @param componentId the component instance identifier (silverpeas application)
-   */
   public void addStatAccess(String userId, Date dateAccess, String peasType, String spaceId,
       String componentId) {
     // should feed Access (see SilverStatistics.properties)
     if (statsConfig.isRun(Access)) {
-      StringBuilder stat = new StringBuilder();
-      stat.append(DateUtil.formatAsISO8601Day(dateAccess));
-      stat.append(SEPARATOR);
-      stat.append(userId); // userId
-      stat.append(SEPARATOR);
-      stat.append(peasType);
-      stat.append(SEPARATOR);
-      stat.append(spaceId);
-      stat.append(SEPARATOR);
-      stat.append(componentId);
-      stat.append(SEPARATOR);
+      StringBuilder stat = buildStatisticData(userId, dateAccess, peasType, spaceId, componentId);
       stat.append("1"); // countAccess
       sendStatistic(Access, stat);
     }
   }
 
-  /**
-   * Add connection statistic
-   * @param userId the user identifier
-   * @param dateConnection connection date
-   * @param count
-   * @param duration the connection duration
-   */
   public void addStatConnection(String userId, Date dateConnection, int count, long duration) {
     // should feed connexion (see SilverStatistics.properties)
     if (statsConfig.isRun(Connexion)) {
@@ -303,18 +269,12 @@ public class SilverStatisticsManager implements Initialization {
       stat.append(SEPARATOR);
       stat.append(Long.toString(count)); // countConnection
       stat.append(SEPARATOR);
-      stat.append(Long.toString(duration)); // duration
+      stat.append(duration); // duration
 
       sendStatistic(Connexion, stat);
     }
   }
 
-  /**
-   * Add statistics size
-   * @param date
-   * @param dirName
-   * @param dirSize
-   */
   public void addStatSize(Date date, String dirName, long dirSize) {
     if (statsConfig.isRun(Size)) {
       StringBuilder stat = new StringBuilder();
@@ -324,7 +284,7 @@ public class SilverStatisticsManager implements Initialization {
       stat.append(dirName);
       stat.append(SEPARATOR);
       // directorySize
-      stat.append(Long.toString(dirSize));
+      stat.append(dirSize);
       sendStatistic(Size, stat);
     }
   }

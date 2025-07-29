@@ -42,7 +42,6 @@ public interface ProcessCheck extends Initialization {
   /**
    * Contains the treatment of the verification.
    * @param processExecutionContext the context of the chained list of checks execution.
-   * @throws Exception
    */
-  void check(ProcessExecutionContext processExecutionContext) throws Exception;
+  void check(ProcessExecutionContext processExecutionContext);
 }

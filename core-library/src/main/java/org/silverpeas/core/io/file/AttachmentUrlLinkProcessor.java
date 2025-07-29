@@ -51,15 +51,15 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor {
 
   private static final int PRIORITY = MAX_PRIORITY - 20;
-  private static List<Pattern> ATTACHMENT_ID_FROM_LINK_PATTERNS = Arrays
+  private static final List<Pattern> ATTACHMENT_ID_FROM_LINK_PATTERNS = Arrays
       .asList(Pattern.compile("(?i)/attachmentId/([a-z\\-0-9]+)/"),
           Pattern.compile("(?i)/File/([a-z\\-0-9]+)"));
 
-  private static List<Pattern> ATTACHMENT_LANG_FROM_LINK_PATTERNS = Arrays
+  private static final List<Pattern> ATTACHMENT_LANG_FROM_LINK_PATTERNS = Arrays
       .asList(Pattern.compile("(?i)/lang/([a-z]+)/"),
           Pattern.compile("(?i)ContentLanguage=([a-z]+)"));
 
-  private static Pattern SIZE_DIRECTIVE_FROM_LINK = Pattern.compile("(?i)/size/([0-9 x]+)");
+  private static final Pattern SIZE_DIRECTIVE_FROM_LINK = Pattern.compile("(?i)/size/([0-9 x]+)");
 
   @Override
   public String processBefore(final String attachmentLink, final ProcessingContext context) {

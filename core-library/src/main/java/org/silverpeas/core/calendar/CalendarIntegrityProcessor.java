@@ -43,7 +43,7 @@ import java.util.List;
 public class CalendarIntegrityProcessor implements Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     BackgroundProcessTask.push(new DeletedUserCalendarCleaner());
   }
 

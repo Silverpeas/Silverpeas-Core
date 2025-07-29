@@ -37,7 +37,7 @@ import org.silverpeas.core.util.security.SecuritySettings;
 public class ChatInitialization implements Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     final ChatSettings chatSettings = ChatServer.getChatSettings();
     if (chatSettings.isChatEnabled()) {
       final SecuritySettings.Registration registration = SecuritySettings.registration();

@@ -102,14 +102,8 @@ public class PersonalComponentRegistry implements Initialization {
     return ServiceProvider.getService(PersonalComponentRegistry.class);
   }
 
-  /**
-   * Initializes some resources required by the services or performs some initialization processes
-   * at Silverpeas startup.
-   * @throws Exception if an error occurs during the initialization process. In this case
-   * the Silverpeas startup fails.
-   */
   @Override
-  public void init() throws Exception {
+  public void init() {
     Path descriptorHome = getPersonalComponentDescriptorHome();
     try (Stream<Path> paths = Files.find(descriptorHome, MAX_DEPTH,
         (p, a) -> p.toFile().isFile() &&
@@ -118,6 +112,8 @@ public class PersonalComponentRegistry implements Initialization {
         PersonalComponent component = loadComponent(p.toFile());
         componentsByName.put(component.getName(), component);
       });
+    } catch (IOException e) {
+      throw new SilverpeasRuntimeException(e);
     }
   }
 

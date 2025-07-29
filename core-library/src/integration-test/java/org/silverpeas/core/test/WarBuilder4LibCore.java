@@ -101,6 +101,7 @@ import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.WithNested;
 import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.io.file.IIOProviderInitializer;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
@@ -116,6 +117,7 @@ import org.silverpeas.core.reminder.DefaultReminderRepository;
 import org.silverpeas.core.security.html.DefaultHtmlSanitizer;
 import org.silverpeas.core.security.html.HtmlSanitizer;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.test.image.IIOProviderContextListener;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.jcr.SilverpeasJcrInitialization;
 import org.silverpeas.core.test.office.OfficeServiceInitializationListener;
@@ -146,7 +148,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   protected <T> WarBuilder4LibCore(final Class<T> test) {
     super(test);
-    addClasses(DefaultReminderRepository.class);
+    addClasses(DefaultReminderRepository.class, IIOProviderInitializer.class);
     addServiceProviderFeatures();
     addBundleBaseFeatures();
     addClasses(EntityReference.class);
@@ -162,6 +164,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependencies("com.drewnoakes:metadata-extractor");
     addClasses(ErrorAnnotationProcessor.class, LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("maven.properties");
+    addWebListener(IIOProviderContextListener.class);
   }
 
   /**

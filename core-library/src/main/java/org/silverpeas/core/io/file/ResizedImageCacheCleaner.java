@@ -24,19 +24,16 @@
 package org.silverpeas.core.io.file;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.SchedulingInitializer;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -44,41 +41,51 @@ import java.util.List;
  * @author mmoquillon
  */
 @Service
-public class ResizedImageCacheCleaner extends Job implements Initialization {
+public class ResizedImageCacheCleaner extends SchedulingInitializer {
 
   private static final String CRON_PROPERTY = "image.cleaner.cron";
 
   @Inject
   private Scheduler scheduler;
+  private final Job job = new ResizedImageCacheCleanerJob();
 
+  @NonNull
   @Override
-  public void init() throws SchedulerException, ParseException {
+  protected String getCron() {
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-    if (scheduler.isJobScheduled(getName())) {
-      scheduler.unscheduleJob(getName());
-    }
-    String cron = settings.getString(CRON_PROPERTY);
-    if (StringUtil.isDefined(cron)) {
-        scheduler.scheduleJob(this, JobTrigger.triggerAt(cron));
-    }
+    return settings.getString(CRON_PROPERTY, "");
   }
 
-
-  /**
-   * Creates a new job
-   */
-  public ResizedImageCacheCleaner() {
-    super(ResizedImageCacheCleaner.class.getSimpleName());
+  @NonNull
+  @Override
+  protected Job getJob() {
+    return job;
   }
 
   @Override
-  public void execute(final JobExecutionContext context) {
-    List<String> originalImagePaths = ImageCache.getAllImageEntries();
-    for (String originalImagePath: originalImagePaths) {
-      File originalImage = new File(originalImagePath);
-      if (!originalImage.exists()) {
-        ImageCache.removeImages(originalImagePath);
+  protected boolean isSchedulingEnabled() {
+    return true;
+  }
+
+
+  private static class ResizedImageCacheCleanerJob extends Job {
+
+    /**
+     * Creates a new job
+     */
+    public ResizedImageCacheCleanerJob() {
+      super(ResizedImageCacheCleanerJob.class.getSimpleName());
+    }
+
+    @Override
+    public void execute(final JobExecutionContext context) {
+      List<String> originalImagePaths = ImageCache.getAllImageEntries();
+      for (String originalImagePath: originalImagePaths) {
+        File originalImage = new File(originalImagePath);
+        if (!originalImage.exists()) {
+          ImageCache.removeImages(originalImagePath);
+        }
       }
     }
   }

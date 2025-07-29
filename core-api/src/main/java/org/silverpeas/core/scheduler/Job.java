@@ -45,13 +45,13 @@ import org.silverpeas.kernel.SilverpeasException;
  */
 public abstract class Job {
 
-  private String name;
+  private final String name;
 
   /**
    * Creates a new job with the specified name.
    * @param name the name under which the job has to be registered in the scheduler.
    */
-  public Job(final String name) {
+  protected Job(final String name) {
     if (name == null || name.trim().isEmpty()) {
       throw new IllegalArgumentException("The job name is required!");
     }

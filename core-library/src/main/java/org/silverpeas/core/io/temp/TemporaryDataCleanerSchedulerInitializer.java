@@ -24,25 +24,18 @@
 package org.silverpeas.core.io.temp;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerProvider;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.SchedulingInitializer;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -63,29 +56,35 @@ import static org.silverpeas.core.io.temp.TemporaryDataManagementSetting.getTime
  */
 @Service
 @Singleton
-public class TemporaryDataCleanerSchedulerInitializer implements Initialization {
+public class TemporaryDataCleanerSchedulerInitializer extends SchedulingInitializer {
 
   protected static final String JOB_NAME = "TemporayDataCleanerJob";
   private static final File tempPath = new File(FileRepositoryManager.getTemporaryPath());
 
   private Future<Void> startTask;
+  private final TemporaryDataCleanerJob job = new TemporaryDataCleanerJob();
 
   @Override
-  public void init() throws Exception{
-
-    // Job instance
-    final TemporaryDataCleanerJob temporaryDataCleanerJob = new TemporaryDataCleanerJob();
-
+  protected void preSchedule() {
     // Cleaning temporary data at start if requested
-    startTask = temporaryDataCleanerJob.startCleanProcess(getTimeAfterThatFilesMustBeDeletedAtServerStart());
+    startTask = job.startCleanProcess(getTimeAfterThatFilesMustBeDeletedAtServerStart());
+  }
 
-    // Setting CRON
-    final String cron = TemporaryDataManagementSetting.getJobCron();
-    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
-    scheduler.unscheduleJob(JOB_NAME);
-    if (StringUtil.isDefined(cron)) {
-      scheduler.scheduleJob(temporaryDataCleanerJob, JobTrigger.triggerAt(cron));
-    }
+  @NonNull
+  @Override
+  protected String getCron() {
+    return TemporaryDataManagementSetting.getJobCron();
+  }
+
+  @NonNull
+  @Override
+  protected Job getJob() {
+    return job;
+  }
+
+  @Override
+  protected boolean isSchedulingEnabled() {
+    return true;
   }
 
   Optional<Future<Void>> getStartTask() {
@@ -222,9 +221,10 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
       return nbDeletedDirectories;
     }
 
+    @NonNull
     @Override
-    public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
-        throws IOException {
+    public FileVisitResult preVisitDirectory(@NonNull final Path dir,
+        @NonNull final BasicFileAttributes attrs) throws IOException {
       try {
         return super.preVisitDirectory(dir, attrs);
       } finally {
@@ -235,9 +235,10 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
       }
     }
 
+    @NonNull
     @Override
-    public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
-        throws IOException {
+    public FileVisitResult visitFile(@NonNull final Path file,
+        @NonNull final BasicFileAttributes attrs) throws IOException {
       try {
         return super.visitFile(file, attrs);
       } finally {
@@ -254,8 +255,9 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
       }
     }
 
+    @NonNull
     @Override
-    public FileVisitResult postVisitDirectory(final Path dir, final IOException exc)
+    public FileVisitResult postVisitDirectory(@NonNull final Path dir, final IOException exc)
         throws IOException {
       try {
         return super.postVisitDirectory(dir, exc);

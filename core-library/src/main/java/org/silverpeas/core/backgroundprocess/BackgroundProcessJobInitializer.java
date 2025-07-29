@@ -24,12 +24,13 @@
 package org.silverpeas.core.backgroundprocess;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulingInitializer;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -39,18 +40,34 @@ import static java.text.MessageFormat.format;
  * This JOB is in charge of cleanup the background process contexts if necessary.
  */
 @Service
-class BackgroundProcessJobInitializer implements Initialization {
+class BackgroundProcessJobInitializer extends SchedulingInitializer {
 
   private static final String JOB_NAME = "BackgroundProcessJob";
 
   @Inject
   private Scheduler scheduler;
+  private final Job job = new BackgroundProcessCleanerJob();
 
   @Override
-  public void init() throws Exception {
-    scheduler.unscheduleJob(JOB_NAME);
-    final BackgroundProcessCleanerJob job = new BackgroundProcessCleanerJob();
-    scheduler.scheduleJob(job, JobTrigger.triggerEvery(5, TimeUnit.MINUTE));
+  protected JobTrigger getTrigger() {
+    return JobTrigger.triggerEvery(5, TimeUnit.MINUTE);
+  }
+
+  @NonNull
+  @Override
+  protected String getCron() {
+    return "";
+  }
+
+  @NonNull
+  @Override
+  protected Job getJob() {
+    return job;
+  }
+
+  @Override
+  protected boolean isSchedulingEnabled() {
+    return true;
   }
 
   private static class BackgroundProcessCleanerJob extends Job {

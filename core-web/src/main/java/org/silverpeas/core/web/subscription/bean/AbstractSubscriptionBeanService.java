@@ -48,7 +48,7 @@ public abstract class AbstractSubscriptionBeanService implements SubscriptionBea
     Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     SubscriptionBeanProvider.registerSubscriptionBeanService(this);
   }
 
@@ -84,6 +84,8 @@ public abstract class AbstractSubscriptionBeanService implements SubscriptionBea
     for (final Subscription subscription : subscriptions) {
       // Subscriptions managed at this level are only those of node subscription.
       final SubscriptionResourceType currentType = subscription.getResource().getType();
+      // nothing is done here about other types than component and node, explicit component
+      // implementation MUST exist.
       if (COMPONENT.equals(currentType)) {
         controller.getComponentInstance(subscription.getResource().getInstanceId())
                   .ifPresent(i -> converted.add(new ComponentSubscriptionBean(subscription, i, language)));
@@ -93,8 +95,6 @@ public abstract class AbstractSubscriptionBeanService implements SubscriptionBea
           final NodePath path = NodeService.get().getPath(subscription.getResource().getPK());
           converted.add(new NodeSubscriptionBean(subscription, path, i, language));
         });
-      } else {
-        // nothing is done here about other types, explicit component implementation MUST exist.
       }
     }
     return converted;
