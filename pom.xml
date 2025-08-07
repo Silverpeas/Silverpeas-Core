@@ -37,7 +37,7 @@
 
   <groupId>org.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>6.4.4-SNAPSHOT</version>
+  <version>6.4.4</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
   <url>https://www.silverpeas.org/docs/core</url>
@@ -51,7 +51,7 @@
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
     <url>https://github.com/Silverpeas/Silverpeas-Core</url>
-    <tag>HEAD</tag>
+    <tag>6.4.4</tag>
   </scm>
 
   <repositories>
