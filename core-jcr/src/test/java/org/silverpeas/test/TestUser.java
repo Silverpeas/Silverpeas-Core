@@ -272,8 +272,8 @@ public class TestUser implements User {
   }
 
   @Override
-  public String getDurationOfCurrentSession() {
-    return "0";
+  public long getDurationOfCurrentSession() {
+    return 0;
   }
 
   @Override

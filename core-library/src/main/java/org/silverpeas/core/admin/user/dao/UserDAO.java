@@ -104,12 +104,12 @@ public class UserDAO {
         .withInsertParam("creationDate", now)
         .withInsertParam(SAVE_DATE, now)
         .withInsertParam("version", 0)
-        .withInsertParam("tosAcceptanceDate", toInstance(user.getTosAcceptanceDate()))
-        .withInsertParam("lastLoginDate", toInstance(user.getLastLoginDate()))
+        .withInsertParam("tosAcceptanceDate", toInstant(user.getTosAcceptanceDate()))
+        .withInsertParam("lastLoginDate", toInstant(user.getLastLoginDate()))
         .withInsertParam("nbSuccessfulLoginAttempts", user.getNbSuccessfulLoginAttempts())
         .withInsertParam("lastLoginCredentialUpdateDate",
-            toInstance(user.getLastLoginCredentialUpdateDate()))
-        .withInsertParam("expirationDate", toInstance(user.getExpirationDate()))
+            toInstant(user.getLastLoginCredentialUpdateDate()))
+        .withInsertParam("expirationDate", toInstant(user.getExpirationDate()))
         .withInsertParam(STATE, user.getState())
         .withInsertParam(STATE_SAVE_DATE, now)
         .withInsertParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
@@ -343,14 +343,14 @@ public class UserDAO {
         .withUpdateParam("loginAnswer", user.getLoginAnswer())
         .withUpdateParam(SAVE_DATE, now)
         .withUpdateParam("version", user.getVersion() + 1)
-        .withUpdateParam("tosAcceptanceDate", toInstance(user.getTosAcceptanceDate()))
-        .withUpdateParam("lastLoginDate", toInstance(user.getLastLoginDate()))
+        .withUpdateParam("tosAcceptanceDate", toInstant(user.getTosAcceptanceDate()))
+        .withUpdateParam("lastLoginDate", toInstant(user.getLastLoginDate()))
         .withUpdateParam("nbSuccessfulLoginAttempts", user.getNbSuccessfulLoginAttempts())
         .withUpdateParam("lastLoginCredentialUpdateDate",
-            toInstance(user.getLastLoginCredentialUpdateDate()))
-        .withUpdateParam("expirationDate", toInstance(user.getExpirationDate()))
+            toInstant(user.getLastLoginCredentialUpdateDate()))
+        .withUpdateParam("expirationDate", toInstant(user.getExpirationDate()))
         .withUpdateParam(STATE, user.getState())
-        .withUpdateParam(STATE_SAVE_DATE, toInstance(user.getStateSaveDate()))
+        .withUpdateParam(STATE_SAVE_DATE, toInstant(user.getStateSaveDate()))
         .withUpdateParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
         .withUpdateParam("sensitiveData", user.hasSensitiveData())
         .where(ID_CRITERION, Integer.parseInt(user.getId()))
@@ -608,7 +608,7 @@ public class UserDAO {
     return u;
   }
 
-  private Instant toInstance(final Date aDate) {
+  private Instant toInstant(final Date aDate) {
     return aDate == null ? null : aDate.toInstant();
   }
 }

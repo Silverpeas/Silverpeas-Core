@@ -384,7 +384,7 @@ public class ChatUser extends UserDetail {
   }
 
   @Override
-  public String getDurationOfCurrentSession() {
+  public long getDurationOfCurrentSession() {
     return user.getDurationOfCurrentSession();
   }
 

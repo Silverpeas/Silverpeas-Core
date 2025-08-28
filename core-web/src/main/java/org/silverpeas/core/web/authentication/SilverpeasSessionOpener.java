@@ -117,7 +117,7 @@ public class SilverpeasSessionOpener {
             !controller.getCurrentUserDetail().isDeactivatedState()) {
           if (!UserDetail.isAnonymousUser(controller.getUserId())) {
             sessionInfo = sessionManagement.openSession(controller.getCurrentUserDetail(), request);
-            registerSuccessfulConnexion(controller);
+            registerSuccessfulConnexion(sessionInfo);
             SynchronizerTokenService.getInstance().setUpSessionTokens(sessionInfo);
           } else {
             sessionManagement.openAnonymousSession(request);
@@ -190,7 +190,7 @@ public class SilverpeasSessionOpener {
           // Get and store password change capabilities
           controller.setAllowPasswordChange(isPasswordChangedAllowed(session));
           // Registering the successful connexion at this time
-          registerSuccessfulConnexion(controller);
+          registerSuccessfulConnexion(sessionInfo);
         }
       }
 
@@ -241,11 +241,11 @@ public class SilverpeasSessionOpener {
 
   /**
    * Some treatments in case of successful login
-   * @param controller a valid main controller
+   * @param sessionInfo the new user session
    */
-  private void registerSuccessfulConnexion(MainSessionController controller) {
+  private void registerSuccessfulConnexion(SessionInfo sessionInfo) {
     // Last login date + nb successful login (reloading user data explicitly)
-    UserDetail user = UserDetail.getById(controller.getUserId());
+    UserDetail user = sessionInfo.getUserDetail();
     user.setLastLoginDate(DateUtil.getNow());
     user.setNbSuccessfulLoginAttempts(user.getNbSuccessfulLoginAttempts() + 1);
     AdminController adminController = ServiceProvider.getService(AdminController.class);

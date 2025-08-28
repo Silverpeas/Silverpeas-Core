@@ -72,7 +72,7 @@ class SilverpeasJCRSchemaRegisterTest extends SecurityTest {
   }
 
   @Test
-  void createANodeAccordingToTheSchema() throws Exception {
+  void createANodeAccordingToTheSchema() {
     schemaRegister.register();
     String instanceId = "kmelia42";
 

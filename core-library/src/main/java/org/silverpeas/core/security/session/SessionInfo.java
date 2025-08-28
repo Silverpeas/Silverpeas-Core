@@ -24,6 +24,7 @@
 package org.silverpeas.core.security.session;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 
@@ -171,8 +172,8 @@ public abstract class SessionInfo implements SilverpeasUserSession {
    * Gets the profile of the user that opened the session.
    * @return a UserDetail instance with the profile information on the user.
    */
-  public User getUserDetail() {
-    return userDetail;
+  public UserDetail getUserDetail() {
+    return (UserDetail) userDetail;
   }
 
   /**

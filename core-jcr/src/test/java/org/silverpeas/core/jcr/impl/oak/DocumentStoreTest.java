@@ -86,7 +86,7 @@ public class DocumentStoreTest extends SecurityTest {
       .build();
 
   @BeforeAll
-  public static void startMongoDB() {
+  static void startMongoDB() {
     assertDoesNotThrow(() -> {
       Net localhost = Net.builder()
           .bindIp("localhost")
@@ -102,7 +102,7 @@ public class DocumentStoreTest extends SecurityTest {
   }
 
   @AfterAll
-  public static void stopMongoDB() {
+  static void stopMongoDB() {
     mongo.close();
   }
 

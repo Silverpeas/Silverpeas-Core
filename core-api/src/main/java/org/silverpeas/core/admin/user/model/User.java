@@ -392,11 +392,13 @@ public interface User extends Serializable, Comparable<User> {
   String getStatus();
 
   /**
-   * Gets the duration of the current user session since its last registered login date.
-   * @return the formatted duration of the current user session, or empty string if the user is not
+   * Gets the duration in milliseconds of the current user session since its last registered login
+   * date. In the case the user has several opened sessions, only the latest one is taken into
+   * account.
+   * @return the duration in milliseconds of the current user session, or 0 if the user isn't
    * connected.
    */
-  String getDurationOfCurrentSession();
+  long getDurationOfCurrentSession();
 
   /**
    * Indicates if a limitation exists about the number of receivers the user can notify manually.
