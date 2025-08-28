@@ -830,11 +830,11 @@ public class UserDetail implements User {
   }
 
   @Override
-  public String getDurationOfCurrentSession() {
+  public long getDurationOfCurrentSession() {
     if (isConnected()) {
-      return DateUtil.formatDuration(new Date().getTime() - getLastLoginDate().getTime());
+      return new Date().getTime() - getLastLoginDate().getTime();
     }
-    return "";
+    return 0;
   }
 
   @Override

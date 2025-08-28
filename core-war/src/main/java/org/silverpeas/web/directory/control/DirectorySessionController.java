@@ -43,7 +43,6 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.chat.ChatUser;
-import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.service.ContactService;
@@ -637,6 +636,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     template.setAttribute("type", getString("GML.user.type." + user.getAccessLevel()));
     template.setAttribute(CONTEXT_ATTR, URLUtil.getApplicationURL());
     template.setAttribute("notMyself", !user.getOriginalId().equals(getUserId()));
+    template.setAttribute("connectionDuration",
+        DateUtil.formatDuration(otherUser.getDurationOfCurrentSession()));
     template.setAttribute("chatEnabled", currentUser.isChatEnabled() && otherUser.isChatEnabled());
     template.setAttribute("aContact", otherUser.isInRelationWith(getUserId()));
     Invitation invitationSent = currentUser.getInvitationSentTo(otherUser.getId());

@@ -42,12 +42,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * {@link org.silverpeas.core.contribution.model.ContributionModel} objects.
  * @author mmoquillon
  */
-public class ContributionModelTest {
+class ContributionModelTest {
 
-  private User bart = new MyUser("1", "Bart", "Simpson").inDomainById("0");
+  private final User bart = new MyUser("1", "Bart", "Simpson").inDomainById("0");
 
   @Test
-  public void testOnAccessor() {
+  void testOnAccessor() {
     OffsetDateTime expectedDate = OffsetDateTime.now().minusMonths(1);
     MyContribution myContribution =
         new MyContribution("42").authoredBy(bart).publishAt(expectedDate);
@@ -61,7 +61,7 @@ public class ContributionModelTest {
   }
 
   @Test
-  public void testOnAccessorWithParameters() {
+  void testOnAccessorWithParameters() {
     final String language = "en";
     MyContribution myContribution =
         new MyContribution("42").authoredBy(bart).publishAt(OffsetDateTime.now().minusMonths(1));
@@ -73,7 +73,7 @@ public class ContributionModelTest {
   }
 
   @Test
-  public void testOnMethod() {
+  void testOnMethod() {
     MyContribution myContribution = new MyContribution("42").authoredBy(bart);
     assertThat(myContribution.isPublished(), is(false));
 
@@ -82,7 +82,7 @@ public class ContributionModelTest {
   }
 
   @Test
-  public void testOnMethodWithParameters() {
+  void testOnMethodWithParameters() {
     OffsetDateTime actualDate = OffsetDateTime.now().minusDays(2);
     MyContribution myContribution = new MyContribution("42").authoredBy(bart);
     assertThat(myContribution.isPublished(), is(false));
@@ -95,23 +95,23 @@ public class ContributionModelTest {
   }
 
   @Test
-  public void testOnFilterByTypeWithMatchFirst() {
+  void testOnFilterByTypeWithMatchFirst() {
     OffsetDateTime expectedDate = OffsetDateTime.now().minusMonths(1);
     MyContribution myContribution =
         new MyContribution("42").authoredBy(bart).publishAt(expectedDate);
 
     Optional<OffsetDateTime> actualDate = myContribution.getModel()
         .filterByType("publicationDate")
-        .matchFirst(d -> LocalDateTime.class.isAssignableFrom(d),
+        .matchFirst(LocalDateTime.class::isAssignableFrom,
             d -> ((LocalDateTime) d).atOffset(ZoneOffset.UTC))
-        .matchFirst(d -> OffsetDateTime.class.isAssignableFrom(d), d -> (OffsetDateTime) d)
+        .matchFirst(OffsetDateTime.class::isAssignableFrom, d -> (OffsetDateTime) d)
         .result();
     assertThat(actualDate.isPresent(), is(true));
     assertThat(actualDate.get(), is(expectedDate.withOffsetSameInstant(ZoneOffset.UTC)));
   }
 
   @Test
-  public void testOnFilterByTypeWithMatch() {
+  void testOnFilterByTypeWithMatch() {
     OffsetDateTime expectedDate = OffsetDateTime.now().minusMonths(1);
     MyContribution myContribution =
         new MyContribution("42").authoredBy(bart).publishAt(expectedDate);
@@ -119,9 +119,9 @@ public class ContributionModelTest {
     Mutable<OffsetDateTime> actualDate = Mutable.empty();
     myContribution.getModel()
         .filterByType("publicationDate")
-        .match(d -> LocalDateTime.class.isAssignableFrom(d),
+        .match(LocalDateTime.class::isAssignableFrom,
             d -> actualDate.set(((LocalDateTime) d).atOffset(ZoneOffset.UTC)))
-        .match(d -> OffsetDateTime.class.isAssignableFrom(d),
+        .match(OffsetDateTime.class::isAssignableFrom,
             d -> actualDate.set((OffsetDateTime) d));
 
     assertThat(actualDate.isPresent(), is(true));
@@ -129,15 +129,15 @@ public class ContributionModelTest {
   }
 
   @Test
-  public void testOnFilterByTypeWithParameters() {
+  void testOnFilterByTypeWithParameters() {
     OffsetDateTime dateTime = OffsetDateTime.now().minusMonths(1);
     MyContribution myContribution = new MyContribution("42").authoredBy(bart);
 
     Optional<LocalizedContribution> publishedContribution = myContribution.getModel()
         .filterByType("publishAt", dateTime)
-        .matchFirst(d -> LocalizedContribution.class.isAssignableFrom(d),
+        .matchFirst(LocalizedContribution.class::isAssignableFrom,
             d -> (LocalizedContribution) d)
-        .matchFirst(d -> Contribution.class.isAssignableFrom(d),
+        .matchFirst(Contribution.class::isAssignableFrom,
             d -> LocalizedContribution.from((Contribution) d, "en"))
         .result();
     assertThat(publishedContribution.isPresent(), is(true));

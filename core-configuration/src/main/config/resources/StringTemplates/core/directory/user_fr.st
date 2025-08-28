@@ -17,7 +17,7 @@
 			$else$
 				<img src="$context$/util/icons/online.gif" alt="connected"/>
 			$endif$
-			Connecté depuis $user.durationOfCurrentSession$
+			Connecté depuis $connectionDuration$
 	$else$
 	   <img src="$context$/util/icons/offline.gif" alt="deconnected"/> Déconnecté
         $endif$

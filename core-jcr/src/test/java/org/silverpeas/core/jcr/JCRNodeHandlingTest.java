@@ -91,7 +91,7 @@ class JCRNodeHandlingTest extends SecurityTest {
   private static String expectedNodeId;
 
   @BeforeAll
-  public static void prepareFileStorage() throws IOException {
+  static void prepareFileStorage() throws IOException {
     Path jcrHome = Path.of(JCR_HOME);
     if (!Files.exists(jcrHome)) {
       Files.createDirectories(jcrHome);
@@ -99,7 +99,7 @@ class JCRNodeHandlingTest extends SecurityTest {
   }
 
   @AfterAll
-  public static void purgeFileStorage() throws IOException {
+  static void purgeFileStorage() throws IOException {
     Path jcrHome = Path.of(JCR_HOME);
     if (Files.exists(jcrHome)) {
       FileUtil.delete(jcrHome.toFile());
@@ -107,13 +107,13 @@ class JCRNodeHandlingTest extends SecurityTest {
   }
 
   @BeforeEach
-  public void initSilverpeasJCRSchema() throws Exception {
+  void initSilverpeasJCRSchema() {
     SilverpeasJCRSchemaRegister register = new SilverpeasJCRSchemaRegister();
     register.register();
   }
 
   @BeforeEach
-  public void createANode() throws RepositoryException {
+  void createANode() throws RepositoryException {
     try (JCRSession session = JCRSession.openSystemSession()) {
       final String instanceId = "kmelia42";
       final String type = "attachments";

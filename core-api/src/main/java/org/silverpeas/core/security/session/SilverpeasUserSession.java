@@ -40,7 +40,7 @@ public interface SilverpeasUserSession {
   String getId();
 
   /**
-   * Gets the user which as opened to session.
+   * Gets the Silverpeas user related by this user session.
    * @return a {@link User} instance.
    */
   User getUser();

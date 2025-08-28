@@ -252,6 +252,15 @@
     <function-signature>java.lang.String getLanguageLabel( java.lang.String, java.lang.String) </function-signature>
   </function>
   <function>
+    <description>Function to format a duration in milliseconds.</description>
+    <name>formatDuration</name>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
+    <function-signature>java.lang.String formatDuration(long)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatDuration(user.durationOfCurrentSession)}">
+    </example>
+  </function>
+  <function>
     <description>Function to format a Temporal.</description>
     <name>formatTemporal</name>
     <function-class>org.silverpeas.core.date.TemporalFormatter</function-class>

@@ -249,8 +249,8 @@ public class MyUser implements User {
   }
 
   @Override
-  public String getDurationOfCurrentSession() {
-    return "unlimited!";
+  public long getDurationOfCurrentSession() {
+    return 0;
   }
 
   @Override

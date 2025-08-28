@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -68,8 +69,8 @@
 		<h2 class="userName"><%=userFull.getFirstName() %> <br /><%=userFull.getLastName() %></h2>
 		<p class="infoConnection">
 		<% if (userDetail.isConnected()) { %>
-      <img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="GML.user.online.for" /> <%=userDetail
-				.getDurationOfCurrentSession()%>
+      <img src="<%=m_context%>/util/icons/online.gif" alt="connected"/>
+            <fmt:message key="GML.user.online.for" /> <%=DateUtil.formatDuration(userDetail.getDurationOfCurrentSession())%>
     <% } else { %>
 		  <img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="GML.user.offline" />
     <% } %>

@@ -60,8 +60,8 @@
 				<span class="userName">
 					${member.lastName} ${member.firstName}
 					<img src="${context}/util/icons/connected.png"
-						alt="<fmt:message key="GML.user.online.for" /> ${member.durationOfCurrentSession}"
-						title="<fmt:message key="GML.user.online.for" /> ${member.durationOfCurrentSession}"/>
+						alt="<fmt:message key="GML.user.online.for" /> ${silfn:formatDuration(member.durationOfCurrentSession)}"
+						title="<fmt:message key="GML.user.online.for" /> ${silfn:formatDuration(member.durationOfCurrentSession)}"/>
 				</span>
 
 				<div class="userStatut">
