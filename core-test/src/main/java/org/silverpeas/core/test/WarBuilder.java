@@ -34,6 +34,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.silverpeas.core.test.integration.IIOProviderContextListener;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.test.integration.SilverpeasLoggerInitializationListener;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
@@ -81,7 +82,9 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
-   * same packages of the specified test class.
+   * same packages of the specified test class. The war builder will include by default the
+   * following web servlet listeners: {@link SilverpeasLoggerInitializationListener} and
+   * {@link IIOProviderContextListener}.
    * @param classOfTest the class of the test for which a war archive will be build.
    * @param <U> the type of the test.
    */
@@ -98,6 +101,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     war.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
     logInfo("Adding initialization listener");
     addWebListener(SilverpeasLoggerInitializationListener.class);
+    addWebListener(IIOProviderContextListener.class);
   }
 
   /**
