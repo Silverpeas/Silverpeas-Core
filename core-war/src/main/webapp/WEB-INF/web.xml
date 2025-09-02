@@ -722,18 +722,6 @@
   <!-- CMIS endpoints -->
 
   <servlet>
-    <description>Endpoint of the Web Services binding of the Silverpeas CMIS 1.1 implementation</description>
-    <display-name>CMIS 1.1 Web Services Binding</display-name>
-    <servlet-name>cmisws</servlet-name>
-    <servlet-class>org.apache.chemistry.opencmis.server.impl.webservices.CmisWebServicesServlet</servlet-class>
-    <init-param>
-      <description>CMIS version of this endpoint</description>
-      <param-name>cmisVersion</param-name>
-      <param-value>1.1</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet>
     <description>Endpoint of the AtomPub binding of the Silverpeas CMIS 1.1 implementation</description>
     <display-name>CMIS 1.1 PubAtom Binding</display-name>
     <servlet-name>cmisatompub</servlet-name>
@@ -750,11 +738,6 @@
     </init-param>
     <load-on-startup>2</load-on-startup>
   </servlet>
-
-  <servlet-mapping>
-    <servlet-name>cmisws</servlet-name>
-    <url-pattern>/cmis/ws/*</url-pattern>
-  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>cmisatompub</servlet-name>
     <url-pattern>/cmis/atompub/*</url-pattern>
