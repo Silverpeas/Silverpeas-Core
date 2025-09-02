@@ -205,7 +205,7 @@ if(listResult != null) {
 					arrayLine.addArrayCellText("");
 				}
 
-				String creaName = searchResult.getCreaName();
+				String creaName = searchResult.getCreatorName();
 				arrayLine.addArrayCellText(creaName);
 			}
 
