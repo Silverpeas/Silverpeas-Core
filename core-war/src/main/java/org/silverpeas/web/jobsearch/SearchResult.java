@@ -38,10 +38,6 @@ public class SearchResult {
   private List<String> path = null;
   private String url = null;
 
-  public SearchResult() {
-
-  }
-
   public String getName() {
     return name;
   }
@@ -62,19 +58,19 @@ public class SearchResult {
     return creaDate;
   }
 
-  public void setCreaDate(Date creaDate) {
-    this.creaDate = DateUtil.toLocalDate(creaDate);
+  public void setCreationDate(Date creationDate) {
+    this.creaDate = DateUtil.toLocalDate(creationDate);
   }
 
-  public void setCreaDate(LocalDate creaDate) {
-    this.creaDate = creaDate;
+  public void setCreationDate(LocalDate creationDate) {
+    this.creaDate = creationDate;
   }
 
-  public String getCreaName() {
+  public String getCreatorName() {
     return creaName;
   }
 
-  public void setCreaName(String creaName) {
+  public void setCreaorName(String creaName) {
     this.creaName = creaName;
   }
 

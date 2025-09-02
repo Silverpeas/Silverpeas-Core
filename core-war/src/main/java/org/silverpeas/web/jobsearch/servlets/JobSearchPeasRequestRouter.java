@@ -39,43 +39,19 @@ import java.util.List;
 public class JobSearchPeasRequestRouter extends
     ComponentRequestRouter<JobSearchPeasSessionController> {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 9185878202301815494L;
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public JobSearchPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new JobSearchPeasSessionController(mainSessionCtrl, componentContext);
   }
 
-  /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   */
   @Override
   public String getSessionControlBeanName() {
     return "jobSearchPeas";
   }
 
-  /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   *
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param jobSearchPeasSC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
-   */
   @Override
   public String getDestination(String function, JobSearchPeasSessionController jobSearchPeasSC,
       HttpRequest request) {
@@ -89,7 +65,7 @@ public class JobSearchPeasRequestRouter extends
       } else if ("SearchResult".equals(function)) {
         String searchField = request.getParameter("SearchField");
         searchField = searchField.trim();//supprime les espaces avant et après la chaine
-        while(searchField.length()>=1 && (searchField.charAt(0) == '*' || searchField.charAt(0) == '?')) {
+        while(!searchField.isEmpty() && (searchField.charAt(0) == '*' || searchField.charAt(0) == '?')) {
           //supprime les * et ? en début de chaine : non supportés par Lucène
           if(searchField.length() == 1) {
             searchField = "";
