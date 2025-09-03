@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.silverpeas.kernel</groupId>
       <artifactId>silverpeas-kernel</artifactId>
-      <version>1.2</version>
+      <version>1.3</version>
     </dependency>
     <dependency>
       <groupId>org.owasp.encoder</groupId>
@@ -101,7 +101,7 @@
     <dependency>
       <groupId>org.silverpeas.kernel</groupId>
       <artifactId>silverpeas-kernel-test</artifactId>
-      <version>1.2</version>
+      <version>1.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
