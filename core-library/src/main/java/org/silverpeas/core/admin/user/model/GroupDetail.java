@@ -41,6 +41,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 public class GroupDetail implements Group {
 
   private static final long serialVersionUID = 4430574302630237352L;
+  private String instanceId = null;
   private String id = null;
   private String specificId = null;
   private String domainId = null;
@@ -76,6 +77,7 @@ public class GroupDetail implements Group {
     id = toClone.id;
     specificId = toClone.specificId;
     domainId = toClone.domainId;
+    instanceId = toClone.instanceId;
     superGroupId = toClone.superGroupId;
     name = toClone.name;
     description = toClone.description;
@@ -85,6 +87,7 @@ public class GroupDetail implements Group {
     saveDate = toClone.getSaveDate();
     state = toClone.getState();
     stateSaveDate = toClone.getStateSaveDate();
+    setTotalNbUsers(-1);
   }
 
   /**
@@ -162,6 +165,14 @@ public class GroupDetail implements Group {
    */
   public void setDescription(String newDescription) {
     this.description = Objects.requireNonNullElse(newDescription, "");
+  }
+
+  protected void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
+
+  public String getInstanceId() {
+    return instanceId;
   }
 
   /**
@@ -325,6 +336,11 @@ public class GroupDetail implements Group {
   @Override
   public Date getStateSaveDate() {
     return stateSaveDate;
+  }
+
+  @Override
+  public boolean isApplicationManaged() {
+    return instanceId != null;
   }
 
   /**
