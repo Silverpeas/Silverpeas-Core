@@ -701,7 +701,6 @@ public class AdminController implements java.io.Serializable {
    * Get ALL the domain's groups
    */
   public GroupDetail[] getRootGroupsOfDomain(String domainId) {
-
     try {
       return admin.getRootGroupsOfDomain(domainId);
     } catch (Exception e) {

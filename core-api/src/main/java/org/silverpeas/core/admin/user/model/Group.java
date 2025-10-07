@@ -203,4 +203,12 @@ public interface Group extends Serializable, Comparable<Group> {
    * @return the date of last state save (when it changes) as {@link Date}.
    */
   Date getStateSaveDate();
+
+  /**
+   * Is this group of users is directly managed by an application in Silverpeas or is it a group
+   * of a user domain?
+   * @return true if this group is managed by an application. False if it is managed by a user
+   * domain.
+   */
+  boolean isApplicationManaged();
 }

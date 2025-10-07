@@ -1,0 +1,2 @@
+ALTER TABLE ST_Group
+ADD instanceId VARCHAR(500) NULL;
