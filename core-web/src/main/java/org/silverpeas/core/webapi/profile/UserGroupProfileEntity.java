@@ -247,6 +247,11 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   }
 
   @Override
+  public boolean isApplicationManaged() {
+    return group.isApplicationManaged();
+  }
+
+  @Override
   public String[] getUserIds() {
     return group.getUserIds();
   }
