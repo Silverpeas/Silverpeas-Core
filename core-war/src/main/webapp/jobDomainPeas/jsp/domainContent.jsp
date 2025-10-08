@@ -65,6 +65,7 @@
   boolean isUserAddingAllowed = (Boolean)request.getAttribute("isUserAddingAllowedForGroupManager");
   boolean groupInClipboard = (Boolean) request.getAttribute("groupInClipboard");
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
+  Group[] appGroups = (Group[])request.getAttribute("appGroups");
     //noinspection unchecked
     List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
@@ -188,6 +189,7 @@
 
 <c:set var="mixedDomain" value="<%=mixedDomain%>"/>
 <c:set var="groupList" value="<%=Arrays.asList(subGroups)%>"/>
+<c:set var="appGroupList" value="<%=Arrays.asList(appGroups)%>"/>
 <c:set var="ldapDomain" value="<%=isDomainLdap%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -268,13 +270,18 @@ out.println(window.printBefore());
     <h2 class="principal-content-title sql-domain"><%=getDomainLabel(domObject, resource)%>
     </h2>
     <div id="number-user-group-domainContent">
-      <% if (!mixedDomain) { %>
-      <span id="number-user-domainContent"><%=subUsers.size() %> <%=resource
-          .getString("GML.user_s") %></span>
-      <% } %>
+      <c:if test="${not mixedDomain}">
+      <span id="number-user-domainContent"><%=subUsers.size() %> <%=resource.getString("GML.user_s") %></span>
       <c:if test="${isGroupHandled}">
-        <span> -</span>
+      <span> -</span>
+      </c:if>
+      </c:if>
+      <c:if test="${isGroupHandled}">
         <span id="number-group-domainContent"><%=subGroups.length %> <%=resource.getString("GML.group_s") %></span>
+        <c:if test="${fn:length(appGroupList)} > 0}">
+            <span> -</span>
+            <span id="number-app-group-domainContent"><%=appGroups.length%> <%=resource.getString("GML.appGroup_s") %></span>
+        </c:if>
       </c:if>
     </div>
     <% if (StringUtil.isDefined(domObject.getDescription()) && !mixedDomain) { %>
@@ -302,6 +309,7 @@ out.println(window.printBefore());
   <c:if test="${isGroupHandled}">
     <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
     <fmt:message var="groupArrayTitle" key="JDP.groups"/>
+    <fmt:message var="appGroupArrayTitle" key="JDP.appGroups"/>
     <fmt:message var="groupLabel" key="GML.groupe"/>
     <fmt:message var="nameLabel" key="GML.name"/>
     <fmt:message var="usersLabel" key="GML.users"/>
@@ -340,6 +348,38 @@ out.println(window.printBefore());
         });
       </script>
     </div>
+
+    <c:if test="${mixedDomain and fn:length(appGroupList) > 0 }">
+        <br/>
+        <div id="dynamic-app-group-container">
+            <view:arrayPane var="_dc_appw_group"
+                            routingAddress="domainContent.jsp"
+                            numberLinesPerPage="<%=JobDomainSettings.m_GroupsByPage%>"
+                            title="${appGroupArrayTitle} (${fn:length(appGroupList)})"
+                            export="true">
+                <view:arrayColumn title="" sortable="false"/>
+                <view:arrayColumn title="${nameLabel}" sortable="false"/>
+                <view:arrayColumn title="${usersLabel}" sortable="false"/>
+                <view:arrayColumn title="${descriptionLabel}" sortable="false"/>
+                <view:arrayLines var="group" items="${appGroupList}">
+                    <view:arrayLine>
+                        <view:arrayCellText>${iconPanel}</view:arrayCellText>
+                        <view:arrayCellText><view:a href="${groupCommonLinkPart}${group.id}">${silfn:escapeHtml(group.name)}</view:a></view:arrayCellText>
+                        <view:arrayCellText>${group.totalUsersCount}</view:arrayCellText>
+                        <view:arrayCellText text="${silfn:escapeHtml(group.description)}"/>
+                    </view:arrayLine>
+                </view:arrayLines>
+            </view:arrayPane>
+            <script type="text/javascript">
+              whenSilverpeasReady(function() {
+                sp.arrayPane.ajaxControls('#dynamic-app-group-container', {
+                  before : arrayBeforeAjaxRequest
+                });
+              });
+            </script>
+        </div>
+    </c:if>
+
   </c:if>
   <br/>
   <c:if test="${not mixedDomain}">

@@ -1322,6 +1322,28 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         getSuperGroupId()) || "-1".equals(gr.getSuperGroupId()));
   }
 
+  /**
+   * Gets all the root groups of the current user domain, split in two according their type: the
+   * first ones are those managed by the domain whereas the second ones are the application managed
+   * groups. Later are defined only in the mixed domain so for any other user domains the second
+   * returned array in the pair is empty.
+   *
+   * @return a pair of two arrays: the first one with the groups managed by the current user domain
+   * and the second one the groups managed by applications. Latter is empty if the user domain isn't
+   * the mixed one.
+   * @throws JobDomainPeasException if an error occurs while getting the root groups of the current
+   * domain.
+   */
+  public Pair<Group[], Group[]> getRootGroupsPerType() throws JobDomainPeasException {
+    var rootGroups = getSubGroups(false);
+    if (!getTargetDomain().isMixedOne()) {
+      return Pair.of(rootGroups, new Group[0]);
+    }
+    var allRootGroups = splitGroupsByType(rootGroups);
+    return Pair.of(allRootGroups.getFirst().toArray(new Group[0]),
+        allRootGroups.getSecond().toArray(new Group[0]));
+  }
+
   public Group[] getSubGroups(boolean isParentGroup) throws JobDomainPeasException {
     Group[] groups;
 
@@ -1397,6 +1419,11 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
   public boolean createGroup(String idParent, String groupName,
       String groupDescription, String groupRule) throws JobDomainPeasException {
+    GroupDetail parent = adminCtrl.getGroupById(idParent);
+    if (parent != null && parent.isApplicationManaged()) {
+      throw new JobDomainPeasException(idParent + " is an application managed group");
+    }
+
     GroupDetail theNewGroup = new GroupDetail();
 
     String rule = groupRule;
@@ -1429,6 +1456,9 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     GroupDetail theModifiedGroup = adminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
       throw new JobDomainPeasException(unknown("group", idGroup));
+    }
+    if (theModifiedGroup.isApplicationManaged()) {
+      throw new JobDomainPeasException(idGroup + " is an application managed group");
     }
     boolean isSynchronizationToPerform =
         isDefined(groupRule) && !groupRule.equalsIgnoreCase(theModifiedGroup.getRule());
@@ -1480,7 +1510,11 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     return true;
   }
 
-  public boolean removeGroup(String groupId) {
+  public boolean removeGroup(String groupId) throws JobDomainPeasException {
+    var group =  adminCtrl.getGroupById(groupId);
+    if (group != null && group.isApplicationManaged()) {
+      throw new JobDomainPeasException(groupId + " is an application managed group");
+    }
     if (adminCtrl.removeGroupById(groupId).isEmpty()) {
       SilverLogger.getLogger(this).warn(format("Group {0} is already removed", groupId));
     }
@@ -1489,9 +1523,13 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     return true;
   }
 
-  public boolean deleteGroup(String groupId) {
+  public boolean deleteGroup(String groupId) throws JobDomainPeasException {
     boolean deleted = false;
-    if (adminCtrl.getGroupById(groupId) != null) {
+    var group = adminCtrl.getGroupById(groupId);
+    if (group != null) {
+      if (group.isApplicationManaged()) {
+        throw new JobDomainPeasException(groupId + " is an application managed group");
+      }
       deleted = !adminCtrl.deleteGroupById(groupId).isEmpty();
     }
     if (!deleted) {
@@ -1695,17 +1733,42 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     return manageableGroupIds.contains(getTargetGroup().getId());
   }
 
-  public Group[] getAllRootGroups() {
+  /**
+   * Gets all the root groups of the current user domain. The groups are splitted in two according
+   * to their type. The first ones are the domain groups whereas the second ones are the application
+   * groups. Application groups are only defined in the mixed domain; in any other domain, there is
+   * no application groups.
+   *
+   * @return a pair with the domain's user groups and with the application groups.
+   */
+  public Pair<Group[], Group[]> getAllRootGroups() {
     if (targetDomainId.isEmpty()) {
-      return new Group[0];
+      return Pair.of(new Group[0], new Group[0]);
     }
     Group[] selGroupsArray = targetDomain.getGroupPage();
 
     if (isOnlyGroupManager()) {
       selGroupsArray = filterGroupsToGroupManager(selGroupsArray);
     }
-    JobDomainSettings.sortGroups(selGroupsArray);
-    return selGroupsArray;
+
+    var allRootGroups = splitGroupsByType(selGroupsArray);
+    allRootGroups.getFirst().sort(Group::compareTo);
+    allRootGroups.getSecond().sort(Group::compareTo);
+    return Pair.of(allRootGroups.getFirst().toArray(new Group[0]),
+        allRootGroups.getSecond().toArray(new Group[0]));
+  }
+
+  private Pair<List<Group>, List<Group>> splitGroupsByType(Group[] groups) {
+    List<Group> domainGroups = new ArrayList<>();
+    List<Group> applicationGroups = new ArrayList<>();
+    for (Group group : groups) {
+      if (group.isApplicationManaged()) {
+        applicationGroups.add(group);
+      } else {
+        domainGroups.add(group);
+      }
+    }
+    return Pair.of(domainGroups, applicationGroups);
   }
 
   private Group[] filterGroupsToGroupManager(Group[] groups) {
@@ -2562,6 +2625,9 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   private void copyOrCutGroup(String groupId, boolean cut) throws AdminException {
     try {
       Group group = adminCtrl.getGroupById(groupId);
+      if (group.isApplicationManaged()) {
+        throw new AdminException(groupId + " is an application managed group");
+      }
       GroupSelection groupSelection = new GroupSelection(group);
       groupSelection.setCut(cut);
       addClipboardSelection(groupSelection);
@@ -2576,8 +2642,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
    * of the current domain if there is no current group. The group to paste has to belong to the
    * same current domain and there shouldn't be any group having the same name in the current group
    * or among the root groups of the domain (in the case there is no current group). Any selected
-   * group which don't belong to the same domain will be ignored whereas an exception will be
-   * thrown if there is already a group with the same name.
+   * group which don't belong to the same domain will be ignored whereas an exception will be thrown
+   * if there is already a group with the same name.
    *
    * @throws AdminException if an error occurs while pasting the given group of users.
    */
@@ -2596,7 +2662,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         if (clipObject != null && clipObject.isDataFlavorSupported(GroupSelection.GROUP_FLAVOR)) {
           GroupDetail group =
               (GroupDetail) clipObject.getTransferData(GroupSelection.GROUP_FLAVOR);
-          if (Objects.equals(group.getDomainId(), domainId)) {
+          if (Objects.equals(group.getDomainId(), domainId) && !group.isApplicationManaged()) {
             if (clipObject.isCut()) {
               adminCtrl.moveGroup(group, parentGroupId);
               refresh();

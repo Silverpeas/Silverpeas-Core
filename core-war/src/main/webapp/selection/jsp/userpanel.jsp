@@ -348,7 +348,20 @@
            * Centralization of getting user group data in order to handle common parameters.
            */
           function __getUserGroups(params) {
-            return UserGroup.get(__applyCommonParameters(params));
+            return UserGroup.get(__applyCommonParameters(params)).then(__sortGroupsByType);
+          }
+
+          function __sortGroupsByType(groups) {
+            let domainGroups = [];
+            let appManagedGroups = [];
+            for (let i = 0; i < groups.length; i++) {
+              if (groups[i].managedByApp) {
+                appManagedGroups.push(groups[i]);
+              } else {
+                domainGroups.push(groups[i]);
+              }
+            }
+            return domainGroups.concat(appManagedGroups);
           }
 
             /* The root of the user group tree. It can be then considered as any other user group */

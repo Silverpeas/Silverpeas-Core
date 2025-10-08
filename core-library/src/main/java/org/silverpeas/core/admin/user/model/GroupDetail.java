@@ -167,7 +167,7 @@ public class GroupDetail implements Group {
     this.description = Objects.requireNonNullElse(newDescription, "");
   }
 
-  protected void setInstanceId(String instanceId) {
+  public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
   }
 
