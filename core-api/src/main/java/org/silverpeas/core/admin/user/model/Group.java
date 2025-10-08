@@ -206,7 +206,7 @@ public interface Group extends Serializable, Comparable<Group> {
 
   /**
    * Is this group of users is directly managed by an application in Silverpeas or is it a group
-   * of a user domain?
+   * managed in a user domain?
    * @return true if this group is managed by an application. False if it is managed by a user
    * domain.
    */
