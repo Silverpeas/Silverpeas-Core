@@ -61,12 +61,7 @@ public class JobDomainSettings {
   }
 
   static public void sortGroups(Group[] toSort) {
-    Arrays.sort(toSort, new Comparator<Group>() {
-
-      public int compare(Group o1, Group o2) {
-        return o1.compareTo(o2);
-        }
-            });
+    Arrays.sort(toSort, Comparable::compareTo);
   }
 
   static public void sortUsers(UserDetail[] toSort) {
