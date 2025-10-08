@@ -49,8 +49,10 @@
 <c:if test="${requestScope.CurrentDomain != null}">
   <c:set var="currentDomainId" value="${requestScope.CurrentDomain.id}"/>
 </c:if>
-<c:set var="allRootGroups" value="${requestScope.allRootGroups}"/>
-<jsp:useBean id="allRootGroups" type="org.silverpeas.core.admin.user.model.Group[]"/>
+<c:set var="domainRootGroups" value="${requestScope.domainRootGroups}"/>
+<c:set var="appRootGroups" value="${requestScope.appRootGroups}"/>
+<jsp:useBean id="domainRootGroups" type="org.silverpeas.core.admin.user.model.Group[]"/>
+<jsp:useBean id="appRootGroups" type="org.silverpeas.core.admin.user.model.Group[]"/>
 
 <%@ include file="check.jsp" %>
 
@@ -97,14 +99,26 @@
     </c:otherwise>
   </c:choose>
 </div>
-<c:if test="${fn:length(allRootGroups) > 0}">
+<c:if test="${fn:length(domainRootGroups) > 0}">
   <div class="intfdcolor51 domain-group-list">
-    <c:forEach var="group" items="${allRootGroups}">
+    <c:forEach var="group" items="${domainRootGroups}">
       <img class="GroupIcon" src="${group.synchronized ? synchronizedGroupIconUrl : groupIconUrl}" alt="${groupLabel}" title="${groupLabel}"/>
       &nbsp;<a href="javascript:void(0)" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalUsersCount).concat(')')}
       </a><br/>
     </c:forEach>
   </div>
+</c:if>
+<c:if test="${fn:length(appRootGroups) > 0}">
+    <c:if test="${fn:length(domainRootGroups) > 0}">
+     <hr/>
+    </c:if>
+    <div class="intfdcolor51 domain-group-list">
+        <c:forEach var="group" items="${appRootGroups}">
+            <img class="GroupIcon" src="${groupIconUrl}" alt="${groupLabel}" title="${groupLabel}"/>
+            &nbsp;<a href="javascript:void(0)" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalUsersCount).concat(')')}
+            </a><br/>
+        </c:forEach>
+    </div>
 </c:if>
 <script type="text/javascript">
   spAdminLayout.getBody().getNavigation().dispatchEvent('load');

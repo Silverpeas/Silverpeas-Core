@@ -81,7 +81,7 @@
   if (groupsPath != null) {
     browseBar.setPath(groupsPath);
   }
-  if (isDomainRW) {
+  if (isDomainRW && !grObject.isApplicationManaged()) {
     if (!isGroupManager) {
       showTabs = true;
       // Group operations
@@ -138,9 +138,11 @@
     operationPane.addOperation(resource.getIcon("JDP.groupSynchro"), resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
     operationPane.addOperation(resource.getIcon("JDP.groupUnsynchro"), resource.getString("JDP.groupUnsynchro"), "groupUnSynchro?Idgroup=" + thisGroupId);
   }
-  operationPane.addLine();
+  if (operationPane.nbOperations() > 0) {
+      operationPane.addLine();
+  }
   operationPane.addOperation("useless", resource.getString("JDP.user.rights.action"), "groupViewRights");
-  if (isRightCopyReplaceEnabled) {
+  if (isRightCopyReplaceEnabled && !grObject.isApplicationManaged()) {
     operationPane.addOperation("useless", resource.getString("JDP.rights.assign"), "javascript:assignSameRights()");
   }
   if (onlySpaceManager) {
@@ -505,8 +507,9 @@ if (showTabs) {
 <c:set var="ASSIGNATION_MODE_REPLACE"><%= JobDomainPeasSessionController.REPLACE_RIGHTS %></c:set>
 
 <% if (isRightCopyReplaceEnabled) { %>
+    <br/>
 <div id="assignRightsDialog" title="<fmt:message key="JDP.rights.assign"/>">
-  <form accept-charset="UTF-8" enctype="multipart/form-data;charset=utf-8" id="affected-profil"
+  <form accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" id="affected-profil"
         name="rightsForm" action="AssignSameRights" method="post">
       <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
     <label class="label-ui-dialog" for="profil-from"><fmt:message key="JDP.rights.assign.as"/></label>
