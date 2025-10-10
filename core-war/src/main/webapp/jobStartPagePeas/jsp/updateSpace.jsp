@@ -24,7 +24,6 @@
 
 --%>
 <%@page import="org.silverpeas.core.util.UnitUtil"%>
-<%@ page import="org.silverpeas.core.util.memory.MemoryData" %>
 <%@ page import="org.silverpeas.core.util.memory.MemoryUnit" %>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -38,7 +37,8 @@
 
 <%
 String		translation 		= request.getParameter("Translation");
-boolean 	isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
+boolean isInheritanceEnable = JobStartPagePeasSettings.isInheritanceEnabled
+        && (Boolean) request.getAttribute("inheritanceSupported");
 boolean isUserAdmin = (Boolean) request.getAttribute("isUserAdmin");
 
 // Component space quota
@@ -78,59 +78,58 @@ function B_CANCEL_ONCLICK() {
 }
 
 function ifCorrectFormExecute(callback) {
-	var errorMsg = "";
-	var errorNb = 0;
+  let errorMsg = "";
+  let errorNb = 0;
 
-		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
-		var desc = document.infoSpace.Description;
+  const name = stripInitialWhitespace(document.infoSpace.NameObject.value);
+  const desc = document.infoSpace.Description;
 
-    if (isWhitespace(name)) {
-			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
-			errorNb++;
-		}
+  if (isWhitespace(name)) {
+    errorMsg += "  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
 
-	var textAreaLength = 400;
-		var s = desc.value;
-		if (! (s.length <= textAreaLength)) {
-		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
-		errorNb++;
-		}
+  const textAreaLength = 400;
+  const s = desc.value;
+  if (!(s.length <= textAreaLength)) {
+    errorMsg += "  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
+    errorNb++;
+  }
 
-    <% if (isComponentSpaceQuotaActivated) { %>
-     var componentSpaceQuota = document.infoSpace.ComponentSpaceQuota.value;
-     if (isWhitespace(componentSpaceQuota)) {
-       errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
-       errorNb++;
-     }
-    <% } %>
+  <% if (isComponentSpaceQuotaActivated) { %>
+  const componentSpaceQuota = document.infoSpace.ComponentSpaceQuota.value;
+  if (isWhitespace(componentSpaceQuota)) {
+    errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
+  <% } %>
 
-    <% if (isDataStorageQuotaActivated) { %>
-      var dataStorageQuota = document.infoSpace.DataStorageQuota.value;
-      if (isWhitespace(dataStorageQuota)) {
-        errorMsg += "  - '<%=resource.getString("JSPP.dataStorageQuota")%>' <%=resource.getString("MustContainsText")%>\n";
-        errorNb++;
-      }
-    <% } %>
+  <% if (isDataStorageQuotaActivated) { %>
+  const dataStorageQuota = document.infoSpace.DataStorageQuota.value;
+  if (isWhitespace(dataStorageQuota)) {
+    errorMsg += "  - '<%=resource.getString("JSPP.dataStorageQuota")%>' <%=resource.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
+  <% } %>
 
-     switch(errorNb) {
-       case 0 :
-         callback.call(this);
-         break;
-       case 1 :
-         errorMsg = "<%=resource.getString("ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-         jQuery.popup.error(errorMsg);
-         break;
-       default :
-          errorMsg = "<%=resource.getString("ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-          jQuery.popup.error(errorMsg);
-     }
+  switch (errorNb) {
+    case 0 :
+      callback.call(this);
+      break;
+    case 1 :
+      errorMsg = "<%=resource.getString("ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=resource.getString("ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
 }
 
 <%
 String lang = "";
-Iterator<String> codes = space.getTranslations().keySet().iterator();
-while (codes.hasNext()) {
-	lang = codes.next();
+for(String s: space.getTranslations().keySet()){
+	lang = s;
 	out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(space.getName(lang))+"\";\n");
 	out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(space.getDescription(lang))+"\";\n");
 }
@@ -153,32 +152,32 @@ function removeTranslation() {
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
 %>
-	<table border="0" cellspacing="0" cellpadding="5" width="100%">
+	<table>
 		<%=I18NHelper.getFormLine(resource, space, translation)%>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
-			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60" value="<%=WebEncodeHelper.javaStringToHtmlString(space.getName(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></td>
+			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60" value="<%=WebEncodeHelper.javaStringToHtmlString(space.getName(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/></td>
 		</tr>
 		<tr>
-			<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
+			<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
 			<td><textarea id="spaceDescription" name="Description" rows="4" cols="49"><%=WebEncodeHelper.javaStringToHtmlString(space.getDescription(translation))%></textarea></td>
 		</tr>
     <% if (isComponentSpaceQuotaActivated) { %>
       <tr>
         <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
-        <td><input type="text" name="ComponentSpaceQuota" size="5" maxlength="4" value="<%=componentSpaceQuotaMaxCount%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
+        <td><input type="text" name="ComponentSpaceQuota" size="5" maxlength="4" value="<%=componentSpaceQuotaMaxCount%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
       </tr>
     <% } %>
     <% if (isDataStorageQuotaActivated) { %>
       <tr>
         <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
-        <td><input type="text" id="spaceDataStorageQuota" name="DataStorageQuota" size="9" maxlength="10" value="<%=dataStorageQuotaMaxCount%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
+        <td><input type="text" id="spaceDataStorageQuota" name="DataStorageQuota" size="9" maxlength="10" value="<%=dataStorageQuotaMaxCount%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
       </tr>
     <% } %>
-		<% if (isInHeritanceEnable && !space.isRoot()) { %>
+		<% if (isInheritanceEnable && !space.isRoot()) { %>
 		<tr>
-			<td class="textePetitBold" nowrap="nowrap" valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
-			<td align="left" valign="top" width="100%">
+			<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+			<td>
 			<% if (space.isInheritanceBlocked()) { %>
 				<input type="radio" name="InheritanceBlocked" value="true" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
 				<input type="radio" name="InheritanceBlocked" value="false" /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
@@ -190,7 +189,7 @@ function removeTranslation() {
 		</tr>
 		<% } %>
 		<tr>
-			<td colspan="2"><img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
+			<td colspan="2"><img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
 		</tr>
 	</table>
 <%

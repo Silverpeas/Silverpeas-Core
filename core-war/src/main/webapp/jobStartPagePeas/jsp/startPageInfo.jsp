@@ -54,6 +54,7 @@
 <c:set var="isBackupEnable" value="${requestScope.IsBackupEnable}" />
 <c:set var="isInHeritanceEnable" value="${requestScope.IsInheritanceEnable}" />
 <c:set var="copiedComponentNames" value="${requestScope.CopiedComponents}" />
+<c:set var="communityEnabled" value="${requestScope['communityEnabled']}" />
 <c:set var="m_context" value="<%=m_context%>" />
 
 <c:set var="maintenancePlatform" value="<%=JobStartPagePeasSessionController.MAINTENANCE_PLATFORM%>"/>
@@ -116,6 +117,7 @@
 <fmt:message key="JSPP.CopyComponent" var="CopyIcon" bundle="${icons}"/>
 <fmt:message key="JSPP.PasteComponent" var="PasteIcon" bundle="${icons}"/>
 <fmt:message key="JSPP.subspaceAdd" var="SubspaceAddIcon" bundle="${icons}"/>
+<fmt:message key="JSPP.communityAdd" var="addCommunityIcon" bundle="${icons}" />
 <fmt:message key="JSPP.instanceAdd" var="InstanceAddIcon" bundle="${icons}"/>
 <fmt:message key="JSPP.update" var="UpdateIcon" bundle="${icons}"/>
 
@@ -257,9 +259,14 @@
         </c:if>
         <view:operationSeparator/>
         <view:operationOfCreation icon="${m_context}${SubspaceAddIcon}" altText="${SubSpacePanelCreateTitle}" action="CreateSpace?SousEspace=SousEspace"/>
-        <c:if test="${not isComponentSpaceQuotaFull}">
-          <view:operationOfCreation icon="${m_context}${InstanceAddIcon}" altText="${ComponentPanelCreateTitle}" action="ListComponent"/>
+        <c:if test="${communityEnabled}">
+           <fmt:message var="communityAdd" key="JSPP.communitySpaceCreateTitle" />
+           <fmt:message var="addCommunityIcon" key="JSPP.communityAdd" bundle="${icons}" />
+           <view:operationOfCreation altText="${communityAdd}"
+                                     icon="${m_context}${addCommunityIcon}"
+                                     action="CreateCommunity"/>
         </c:if>
+        <view:operationOfCreation icon="${m_context}${InstanceAddIcon}" altText="${ComponentPanelCreateTitle}" action="ListComponent"/>
       </view:operationPane>
     </c:if>
     <view:window>
@@ -289,16 +296,6 @@
           <div class="inlineMessage">
             ${maintenanceStateLabel}
           </div>
-          <br/>
-        </c:if>
-
-        <c:if test="${isComponentSpaceQuotaFull}">
-          <div class="inlineMessage-nok"><%=space.getComponentSpaceQuotaReachedErrorMessage(resource.getLanguage())%></div>
-          <br/>
-        </c:if>
-
-        <c:if test="${isDataStorageQuotaFull}">
-          <div class="inlineMessage-nok"><%=space.getDataStorageQuotaReachedErrorMessage(resource.getLanguage())%></div>
           <br/>
         </c:if>
 

@@ -24,9 +24,13 @@
 
 // we prefer here to split the change into two SQL requests instead of using a join one for
 // stability and database-dialect agnostic reasons
-def communityGroups = sql.rows('SELECT groupId, instanceId from sc_community')
-communityGroups.each { group ->
-    sql.execute "UPDATE st_group SET instanceId = '${group.instanceId}' WHERE id = ${group.groupId}"
+def communities = sql.rows('SELECT groupId, spaceId from sc_community')
+communities.each { community ->
+    sql.executeUpdate("UPDATE st_space SET isCommunity = ? WHERE id = ?",
+            [true, communities.spaceId])
+    sql.executeUpdate("UPDATE st_group SET spaceId = ? WHERE id = ?",
+            [community.spaceId, community.groupId])
 }
+
 
 

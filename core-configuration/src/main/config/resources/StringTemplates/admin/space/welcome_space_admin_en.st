@@ -1,12 +1,16 @@
 <h2 class="txtNav"><center>Welcome to space & applications management</center></h2>
 
 <p class="accroche">Silverpeas is structured into spaces that contain applications. Each space may also contains sub-spaces.<br/>
-A wide range of applications ready to use is offered to meet all your needs : document management, image gallery, blog, surveys, project management...<br/>
+$if(communityEnabled)$
+Beside the spaces, it is possible to create communities. Those are peculiar spaces that users themselves request to join, rather than having one administrator grants them access.
+<br/>
+$endif$
+A wide range of applications ready to use is provided to meet all your needs : document management, image gallery, blog, surveys, project management...<br/>
 As an <b>administrator</b> you can manage all spaces and applications.</p>
 
 <div id="txt_evolutivite">
-<h3>It's very easy to change the structure of your platform !</h3>
-<p>You can create a root space quickly following <a class="txtnav" href="CreateSpace">this link</a> or when following right corner operation <b class="yuimenu"> Create a space </b> from menu <b>What do you want to do next ?</b>.<br/>
+<h3>It's very easy to change the structure of your platform!</h3>
+<p>You can create a root space quickly following <a class="txtnav" href="CreateSpace">this link</a> or when following right corner operation <b class="yuimenu"> Create a space </b> from menu <b>What do you want to do next?</b>.<br/>
 </p><p>All first-level spaces are accessible in the drop-down list on the left. To edit, delete or manage a space, simply select it from this list.<br/>
 The content of the selected space will then appear in this list.
 All the operations available on this space are accessible via the menu <b>What do you want to do next?</b>.<br/>

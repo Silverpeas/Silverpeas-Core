@@ -41,6 +41,7 @@
 <c:set var="isBackupEnable" value="${requestScope['IsBackupEnable']}" />
 <c:set var="isBasketEnable" value="${requestScope['IsBasketEnable']}" />
 <c:set var="clipboardNotEmpty" value="${requestScope['ObjectsSelectedInClipboard']}" />
+<c:set var="communityEnabled" value="${requestScope['communityEnabled']}" />
 
 <c:set var="content" value="${requestScope['Content']}" />
 
@@ -50,7 +51,6 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
-<!--
 function clipboardPaste() {
 	$.progressMessage();
 	location.href="Paste";
@@ -60,7 +60,6 @@ function recoverRights() {
 	$.progressMessage();
 	location.href = "RecoverSpaceRights";
 }
--->
 </script>
 </head>
 <body class="startPageContentWelcome page_content_admin">
@@ -69,36 +68,46 @@ function recoverRights() {
 	<fmt:message var="spaceAdd" key="JSPP.SpacePanelCreateTitle" />
     <fmt:message var="addIcon" key="JSPP.subspaceAdd" bundle="${icons}" />
     <c:url var="addIcon" value="${addIcon}"/>
-    <view:operationOfCreation altText="${spaceAdd}" icon="${addIcon}" action="CreateSpace"></view:operationOfCreation>
+    <view:operationOfCreation altText="${spaceAdd}" icon="${addIcon}" action="CreateSpace"/>
+
+    <c:if test="${communityEnabled}">
+    <fmt:message var="communityAdd" key="JSPP.communitySpaceCreateTitle" />
+    <fmt:message var="addCommunityIcon" key="JSPP.communityAdd" bundle="${icons}" />
+    <c:url var="addCommunityIcon" value="${addCommunityIcon}"/>
+    <view:operationOfCreation altText="${communityAdd}" icon="${addCommunityIcon}"
+                              action="CreateCommunity"/>
+    </c:if>
 
     <c:if test="${clipboardNotEmpty}">
 	<fmt:message var="paste" key="GML.paste" />
-	<view:operation altText="${paste}" icon="" action="javascript:onClick=clipboardPaste();"></view:operation>
+	<view:operation altText="${paste}" icon="" action="javascript:onClick=clipboardPaste();"/>
     </c:if>
 
     <c:choose>
 		<c:when test="${globalMode}">
 			<fmt:message var="maintenance" key="JSPP.maintenanceModeToOff" />
 			<view:operationSeparator/>
-		<view:operation altText="${maintenance}" icon="" action="DesactivateMaintenance?allIntranet=1"></view:operation>
+		<view:operation altText="${maintenance}" icon=""
+                        action="DesactivateMaintenance?allIntranet=1"/>
 		</c:when>
 		<c:otherwise>
 			<fmt:message var="maintenance" key="JSPP.maintenanceModeToOn" />
 			<view:operationSeparator/>
-		<view:operation altText="${maintenance}" icon="" action="ActivateMaintenance?allIntranet=1"></view:operation>
+		<view:operation altText="${maintenance}" icon=""
+                        action="ActivateMaintenance?allIntranet=1"/>
 		</c:otherwise>
 	</c:choose>
 
 	<c:if test="${JobStartPagePeasSettings.recoverRightsEnable}">
 		<view:operationSeparator/>
 	<fmt:message var="recover" key="JSPP.spaceRecover" />
-	<view:operation altText="${recover}" icon="" action="javascript:onClick=recoverRights();"></view:operation>
+	<view:operation altText="${recover}" icon="" action="javascript:onClick=recoverRights();"/>
     </c:if>
 
     <c:if test="${isBasketEnable}">
 		<view:operationSeparator/>
 	<fmt:message var="bin" key="JSPP.Bin" />
-	<view:operation altText="${bin}" icon="" action="ViewBin"></view:operation>
+	<view:operation altText="${bin}" icon="" action="ViewBin"/>
     </c:if>
 </view:operationPane>
 </c:if>
