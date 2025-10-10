@@ -1400,7 +1400,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   public boolean createGroup(String idParent, String groupName,
       String groupDescription, String groupRule) throws JobDomainPeasException {
     GroupDetail parent = adminCtrl.getGroupById(idParent);
-    if (parent != null && parent.isApplicationManaged()) {
+    if (parent != null && parent.isCommunityGroup()) {
       throw new JobDomainPeasException(idParent + " is an application managed group");
     }
 
@@ -1437,7 +1437,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     if (theModifiedGroup == null) {
       throw new JobDomainPeasException(unknown("group", idGroup));
     }
-    if (theModifiedGroup.isApplicationManaged()) {
+    if (theModifiedGroup.isCommunityGroup()) {
       throw new JobDomainPeasException(idGroup + " is an application managed group");
     }
     boolean isSynchronizationToPerform =
@@ -1492,7 +1492,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
   public boolean removeGroup(String groupId) throws JobDomainPeasException {
     var group =  adminCtrl.getGroupById(groupId);
-    if (group != null && group.isApplicationManaged()) {
+    if (group != null && group.isCommunityGroup()) {
       throw new JobDomainPeasException(groupId + " is an application managed group");
     }
     if (adminCtrl.removeGroupById(groupId).isEmpty()) {
@@ -1507,7 +1507,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     boolean deleted = false;
     var group = adminCtrl.getGroupById(groupId);
     if (group != null) {
-      if (group.isApplicationManaged()) {
+      if (group.isCommunityGroup()) {
         throw new JobDomainPeasException(groupId + " is an application managed group");
       }
       deleted = !adminCtrl.deleteGroupById(groupId).isEmpty();
@@ -1742,7 +1742,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     List<Group> domainGroups = new ArrayList<>();
     List<Group> applicationGroups = new ArrayList<>();
     for (Group group : groups) {
-      if (group.isApplicationManaged()) {
+      if (group.isCommunityGroup()) {
         applicationGroups.add(group);
       } else {
         domainGroups.add(group);
@@ -2605,7 +2605,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   private void copyOrCutGroup(String groupId, boolean cut) throws AdminException {
     try {
       Group group = adminCtrl.getGroupById(groupId);
-      if (group.isApplicationManaged()) {
+      if (group.isCommunityGroup()) {
         throw new AdminException(groupId + " is an application managed group");
       }
       GroupSelection groupSelection = new GroupSelection(group);
@@ -2642,7 +2642,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         if (clipObject != null && clipObject.isDataFlavorSupported(GroupSelection.GROUP_FLAVOR)) {
           GroupDetail group =
               (GroupDetail) clipObject.getTransferData(GroupSelection.GROUP_FLAVOR);
-          if (Objects.equals(group.getDomainId(), domainId) && !group.isApplicationManaged()) {
+          if (Objects.equals(group.getDomainId(), domainId) && !group.isCommunityGroup()) {
             if (clipObject.isCut()) {
               adminCtrl.moveGroup(group, parentGroupId);
               refresh();

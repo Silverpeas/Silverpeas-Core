@@ -36,7 +36,8 @@ boolean isUserAdmin = (Boolean)request.getAttribute("isUserAdmin");
 boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
 long    defaultDataStorageQuota = JobStartPagePeasSettings.dataStorageInSpaceQuotaDefaultMaxCount;
 boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
-boolean isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
+boolean isInheritanceEnable = JobStartPagePeasSettings.isInheritanceEnabled &&
+        (Boolean) request.getAttribute("inheritanceSupported");
 
 	browseBar.setSpaceId(spaceId);
 	if (m_SousEspace == null) {
@@ -155,7 +156,7 @@ out.println(board.printBefore());
           <td><input type="text" name="DataStorageQuota" size="9" maxlength="10" value="<%=defaultDataStorageQuota%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
         </tr>
       <% } %>
-      <% if (isInHeritanceEnable && spaceId != null) { %>
+      <% if (isInheritanceEnable && spaceId != null) { %>
       <tr>
         <td class="txtlibform" nowrap="nowrap" valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
         <td align="left" valign="top" width="100%">

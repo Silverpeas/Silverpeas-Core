@@ -28,24 +28,24 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
  * This class manage the informations needed for job start page
- * @c.bonin
+ * @author c.bonin
  */
 public class JobStartPagePeasSettings {
   public static boolean m_IsProfileEditable;
   public static boolean isBackupEnable;
   public static boolean isBasketEnable;
   public static boolean useBasketWhenAdmin;
-  public static boolean isInheritanceEnable;
+  public static boolean isInheritanceEnabled;
   public static boolean isPublicParameterEnable;
   public static boolean useComponentsCopy;
-  public static String SPACEDISPLAYPOSITION_AFTER;
-  public static String SPACEDISPLAYPOSITION_BEFORE;
-  public static String SPACEDISPLAYPOSITION_TODEFINE;
-  public static String SPACEDISPLAYPOSITION_CONFIG;
+  public static String SPACE_DISPLAY_POSITION_AFTER;
+  public static String SPACE_DISPLAY_POSITION_BEFORE;
+  public static String SPACE_DISPLAY_POSITION_TODEFINE;
+  public static String SPACE_DISPLAY_POSITION_CONFIG;
   public static boolean recoverRightsEnable;
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
-  public static boolean componentsInSpaceQuotaActivated = false;
+  public static boolean componentsInSpaceQuotaActivated;
   public static boolean dataStorageInSpaceQuotaActivated;
   public static long dataStorageInSpaceQuotaDefaultMaxCount;
   public static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
@@ -59,13 +59,13 @@ public class JobStartPagePeasSettings {
     isBackupEnable = rs.getBoolean("IsBackupEnable", false);
     isBasketEnable = rs.getBoolean("UseBasket", false);
     useBasketWhenAdmin = rs.getBoolean("UseBasketWhenAdmin", false);
-    isInheritanceEnable = rs.getBoolean("UseProfileInheritance", false);
+    isInheritanceEnabled = rs.getBoolean("UseProfileInheritance", false);
     isPublicParameterEnable = rs.getBoolean("UsePublicParameter", true);
     useComponentsCopy = rs.getBoolean("UseComponentsCopy", false);
-    SPACEDISPLAYPOSITION_CONFIG = rs.getString("DisplaySpacePositionConfiguration", "BEFORE");
-    SPACEDISPLAYPOSITION_AFTER = rs.getString("DisplaySpacesAfterComponents", "AFTER");
-    SPACEDISPLAYPOSITION_BEFORE = rs.getString("DisplaySpacesBeforeComponents", "BEFORE");
-    SPACEDISPLAYPOSITION_TODEFINE = rs.getString("DisplaySpacesToDefine", "TODEFINE");
+    SPACE_DISPLAY_POSITION_CONFIG = rs.getString("DisplaySpacePositionConfiguration", "BEFORE");
+    SPACE_DISPLAY_POSITION_AFTER = rs.getString("DisplaySpacesAfterComponents", "AFTER");
+    SPACE_DISPLAY_POSITION_BEFORE = rs.getString("DisplaySpacesBeforeComponents", "BEFORE");
+    SPACE_DISPLAY_POSITION_TODEFINE = rs.getString("DisplaySpacesToDefine", "TODEFINE");
     recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");

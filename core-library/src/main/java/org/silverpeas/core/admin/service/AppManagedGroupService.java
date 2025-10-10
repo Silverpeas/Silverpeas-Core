@@ -94,7 +94,7 @@ public class AppManagedGroupService {
 
   /**
    * Creates the specified user group for the Silverpeas application related by the group. The
-   * Silverpeas application is identified with the {@link AppManagedGroupDetail#getInstanceId()}
+   * Silverpeas application is identified with the {@link AppManagedGroupDetail#getSpaceId()}
    * property.
    *
    * @param group the user group to create in Silverpeas for the underlying component instance.

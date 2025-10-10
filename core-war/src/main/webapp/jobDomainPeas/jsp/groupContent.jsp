@@ -81,7 +81,7 @@
   if (groupsPath != null) {
     browseBar.setPath(groupsPath);
   }
-  if (isDomainRW && !grObject.isApplicationManaged()) {
+  if (isDomainRW && !grObject.isCommunityGroup()) {
     if (!isGroupManager) {
       showTabs = true;
       // Group operations
@@ -142,7 +142,7 @@
       operationPane.addLine();
   }
   operationPane.addOperation("useless", resource.getString("JDP.user.rights.action"), "groupViewRights");
-  if (isRightCopyReplaceEnabled && !grObject.isApplicationManaged()) {
+  if (isRightCopyReplaceEnabled && !grObject.isCommunityGroup()) {
     operationPane.addOperation("useless", resource.getString("JDP.rights.assign"), "javascript:assignSameRights()");
   }
   if (onlySpaceManager) {
