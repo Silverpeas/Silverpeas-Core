@@ -1,21 +1,25 @@
-<h2 class="txtNav"><center>Willkommen beim Bereich & Application Management</center></h2>
+<h2 class="txtNav"><center>Willkommen bei der Verwaltung von Bereichen und Anwendungen</center></h2>
 
-<p class="accroche">Silverpeas wird in Bereiche, die Anwendungen enthalten strukturiert. Jeder Bereich kann auch Unterbereiche enthalten.<br/>
-Eine breite Palette von gebrauchsfertigen Anwendunge werden angeboten um alle Ihre Bedürfnisse zu erfüllen: Dokumenten-Management, Bildergalerie, Blog, Umfragen, Projektmanagement ...<br/>
-Als <b>Bereich Verwalter</b>, können Sie alle Bereiche die Ihnen wichtig sind verwalten.</p>
+<p class="accroche">Silverpeas ist in Bereiche unterteilt, die Anwendungen enthalten. Jeder Bereich kann auch Unterbereiche enthalten.<br/>
+$if(communityEnabled)$
+Neben den Bereiche ist es mÃ¶glich, Communities zu erstellen. Dabei handelt es sich um besondere Bereiche, denen die Nutzer selbst beitreten mÃ¶chten, anstatt dass ihnen ein Administrator den Zugang gewÃ¤hrt.
+<br/>
+$endif$
+Es steht Ihnen eine groÃŸe Auswahl an gebrauchsfertigen Anwendungen zur VerfÃ¼gung, die all Ihren Anforderungen gerecht werden: Dokumentenverwaltung, Bildergalerie, Blog, Umfragen, Projektverwaltung...<br/>
+Als <b>Bereichsverwalter</b> kÃ¶nnen Sie alle Bereiche, fÃ¼r die Sie zustÃ¤ndig sind, frei verwalten.</p>
 
 <div id="txt_evolutivite">
-<h3>Es ist sehr einfach, die Struktur Ihres Bereichs zu ändern!</h3>
-<p>Alle First-Level-Bereiche sind über die Dropdown-Liste auf der linken Seite zugänglich. <br/>Um eine Bereich zu bearbeiten, löschen oder verwalten, wählen Sie ihn einfach aus dieser Liste aus.<br/>
-Der Inhalt des ausgewählten Bereichs wird dann in dieser Liste angezeigt.
-Alle Operationen auf diesem Bereich sind über das Menü <b>Was wollen Sie tun ?</b> erreichbar..<br/>
-Sie können insbesondere:</p>
+<h3>Die Struktur Ihres Bereichs zu Ã¤ndern ist ein Kinderspiel!</h3>
+<p>Alle Bereiche der ersten Ebene sind in der Dropdown-Liste auf der linken Seite zugÃ¤nglich. Um einen Bereich zu Ã¤ndern, zu lÃ¶schen oder zu ergÃ¤nzen, wÃ¤hlen Sie ihn einfach aus dieser Liste aus.<br/>
+Der Inhalt des ausgewÃ¤hlten Bereichs wird dann unter dieser Dropdown-Liste angezeigt.
+Alle fÃ¼r diesen Bereich verfÃ¼gbaren VorgÃ¤nge sind Ã¼ber das MenÃ¼ <b>Was mÃ¶chten Sie tun?</b> zugÃ¤nglich.<br/>
+Sie kÃ¶nnen insbesondere:</p>
 <ul>
-<li>Anwendungen Hinzufügen, Bearbeiten oder Entfernen,</li>
-<li>die Zugriffsrechte, die für diese Anwendungen gelten definieren,</li>
-<li>Verwaltung jedem Benutzer delegieren,</li>
-<li>eine bestimmte Startseite definieren,</li>
+<li>Anwendungen hinzufÃ¼gen, Ã¤ndern oder lÃ¶schen,</li>
+<li>die fÃ¼r diese Anwendungen geltenden Zugriffsrechte festlegen,</li>
+<li>die Verwaltung an beliebige Benutzer delegieren,</li>
+<li>eine bestimmte Startseite festlegen,</li>
 <li>...</li>
 </ul>
-<p>Um einen Unterbereich oder eine Anwendung zu verwalten, klicken Sie auf ihren Namen. Es wird Ihnen den Zugriff auf alle mögliche Operationen, über das Menü <b>Was wollen Sie tun ?</b> erlaubt.</p>
+<p>Um einen Unterbereich oder eine Anwendung zu verwalten, wÃ¤hlen Sie diese aus, um Ã¼ber das MenÃ¼ <b>Was mÃ¶chten Sie tun?</b> auf alle Funktionen zuzugreifen.</p>
 </div>

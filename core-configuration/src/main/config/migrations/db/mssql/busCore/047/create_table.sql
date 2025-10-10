@@ -36,7 +36,7 @@ CREATE TABLE ST_Group
     id              int           NOT NULL,
     domainId        int           NOT NULL,
     specificId      varchar(500)  NOT NULL,
-    instanceId      varchar(500)  NULL,
+    spaceId         varchar(500)  NULL,
     superGroupId    int,
     name            varchar(100)  NOT NULL,
     description     varchar(400),
@@ -55,25 +55,26 @@ CREATE TABLE ST_Group_User_Rel
 
 CREATE TABLE ST_Space
 (
-    id				int           NOT NULL,
-    domainFatherId		int,
-    name			varchar(100)  NOT NULL,
-    description			varchar(400),
-    createdBy			int,
-    firstPageType		int           NOT NULL,
+    id				        int          NOT NULL,
+    domainFatherId		    int,
+    name			        varchar(100) NOT NULL,
+    description			    varchar(400),
+    createdBy			    int,
+    firstPageType		    int          NOT NULL,
     firstPageExtraParam		varchar(400),
-    orderNum        		int	      NOT NULL DEFAULT(0),
-    createTime 			varchar(20),
-    updateTime 			varchar(20),
-    removeTime 			varchar(20),
-    spaceStatus 		char(1),
-    updatedBy 			int,
-    removedBy 			int,
-    lang			char(2),
-    isInheritanceBlocked	int	      NOT NULL default(0),
-    look			varchar(50),
+    orderNum        		int	         NOT NULL DEFAULT(0),
+    createTime 			    varchar(20),
+    updateTime 			    varchar(20),
+    removeTime 			    varchar(20),
+    spaceStatus 		    char(1),
+    updatedBy 			    int,
+    removedBy 			    int,
+    lang			        char(2),
+    isInheritanceBlocked	int	          NOT NULL default(0),
+    isCommunity	            bit           DEFAULT(0) NOT NULL,
+    look			        varchar(50),
     displaySpaceFirst		int,
-    isPersonal			int
+    isPersonal			    int
 );
 
 CREATE TABLE ST_SpaceI18N

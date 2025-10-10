@@ -120,6 +120,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private int level;
   private boolean displaySpaceFirst;
   private boolean isPersonalSpace;
+  private boolean isCommunitySpace;
 
   @Override
   protected Class<SpaceI18N> getTranslationType() {
@@ -588,6 +589,14 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
 
   public boolean isPersonalSpace() {
     return isPersonalSpace;
+  }
+
+  public boolean isCommunitySpace() {
+    return isCommunitySpace;
+  }
+
+  public void setCommunitySpace(boolean communitySpace) {
+    isCommunitySpace = communitySpace;
   }
 
   /**

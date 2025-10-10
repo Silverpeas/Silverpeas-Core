@@ -133,7 +133,7 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 AllComponentParameters 	parameters 			= (AllComponentParameters) request.getAttribute("Parameters");
 ComponentInst[] brothers 			= (ComponentInst[]) request.getAttribute("brothers");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
-boolean isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
+boolean isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnabled;
 
 String m_JobPeas = component.getLabel(resource.getLanguage());
 

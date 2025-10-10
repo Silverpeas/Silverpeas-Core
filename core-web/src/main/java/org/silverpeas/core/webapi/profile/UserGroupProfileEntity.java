@@ -98,7 +98,7 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
     this.group = (GroupDetail) group;
     this.domainName = GroupDetail.getOrganisationController().getDomain(group.getDomainId()).getName();
     this.userCount = group.getTotalUsersCount();
-    this.managedByApp = group.isApplicationManaged();
+    this.managedByApp = group.isCommunityGroup();
   }
 
   @SuppressWarnings("unused")
@@ -250,8 +250,8 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   }
 
   @Override
-  public boolean isApplicationManaged() {
-    return group.isApplicationManaged();
+  public boolean isCommunityGroup() {
+    return group.isCommunityGroup();
   }
 
   @Override
