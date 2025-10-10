@@ -1,6 +1,10 @@
 <h2 class="txtNav"><center>Welcome to spaces and applications management</center></h2>
 
 <p class="accroche">Silverpeas is structured into spaces that contain applications. Each space may also contains sub-spaces.<br/>
+$if(communityEnabled)$
+Beside the spaces, it is possible to create communities. Those are peculiar spaces that users themselves request to join, rather than having one administrator grants them access.
+<br/>
+$endif$
 A wide range of applications ready to use is offered to meet all your needs : document management, image gallery, blog, surveys, project management...<br/>
 As a <b>space(s) manager</b>, you can manage all the spaces you care.</p>
 

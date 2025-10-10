@@ -58,12 +58,12 @@ public class AppManagedGroupDetail extends GroupDetail {
       throw new IllegalArgumentException(
           "The identifier of the application instance managing the group should be set");
     }
-    setInstanceId(instanceId);
+    setSpaceId(instanceId);
   }
 
   public AppManagedGroupDetail(GroupDetail groupDetail) {
     super(groupDetail);
-    if (!groupDetail.isApplicationManaged()) {
+    if (!groupDetail.isCommunityGroup()) {
       throw new IllegalArgumentException(
           "The specified group isn't a group managed by an application");
     }
@@ -73,7 +73,7 @@ public class AppManagedGroupDetail extends GroupDetail {
   }
 
   @Override
-  public boolean isApplicationManaged() {
+  public boolean isCommunityGroup() {
     return true;
   }
 

@@ -80,7 +80,7 @@ public class GroupDAO {
   private static final String GROUP_ID = "groupId";
   private static final String GROUP_ID_ATTR = ".groupid";
   private static final String SPECIFIC_ID = "specificId";
-  private static final String INSTANCE_ID = "instanceId";
+  private static final String SPACE_ID = "spaceId";
   private static final String DOMAIN_ID = "domainId";
   private static final String SUPER_GROUP_ID = "superGroupId";
   private static final String NAME = "name";
@@ -111,7 +111,7 @@ public class GroupDAO {
     JdbcSqlQuery.insertInto(GROUP_TABLE)
         .withInsertParam("id", nextId)
         .withInsertParam(SPECIFIC_ID, specificId)
-        .withInsertParam(INSTANCE_ID, group.getInstanceId())
+        .withInsertParam(SPACE_ID, group.getSpaceId())
         .withInsertParam(DOMAIN_ID, getDomainIdOf(group))
         .withInsertParam(SUPER_GROUP_ID, superGroupId)
         .withInsertParam(NAME, group.getName())
@@ -308,7 +308,7 @@ public class GroupDAO {
     return JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where(STATE).notIn(GroupState.REMOVED)
-        .andNull(INSTANCE_ID)
+        .andNull(SPACE_ID)
         .orderBy(NAME)
         .executeWith(connection, GroupDAO::fetchGroup);
   }
@@ -325,7 +325,7 @@ public class GroupDAO {
         .from(GROUP_TABLE)
         .where("superGroupId is null")
         .and(STATE).notIn(GroupState.REMOVED)
-        .andNull(INSTANCE_ID)
+        .andNull(SPACE_ID)
         .orderBy(NAME)
         .executeWith(connection, GroupDAO::fetchGroup);
   }
@@ -576,7 +576,7 @@ public class GroupDAO {
     }
     group.setName(rs.getString(NAME));
     group.setDescription(rs.getString(DESCRIPTION));
-    group.setInstanceId(rs.getString(INSTANCE_ID));
+    group.setSpaceId(rs.getString(SPACE_ID));
     group.setRule(rs.getString(SYNCHRO_RULE));
     group.setCreationDate(rs.getTimestamp(CREATION_DATE));
     group.setSaveDate(rs.getTimestamp(SAVE_DATE));
