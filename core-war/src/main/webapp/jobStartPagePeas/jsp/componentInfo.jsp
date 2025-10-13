@@ -119,7 +119,7 @@ operationPane.addOperation(resource.getIcon("JSPP.instanceUpdate"),resource.getS
 if (scope == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
 	operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
 	operationPane.addLine();
-	if (JobStartPagePeasSettings.useComponentsCopy) {
+	if (JobStartPagePeasSettings.USE_COMPONENTS_COPY) {
 		operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.component.copy"),"javascript:onclick=clipboardCopy()");
 		if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) {
 			operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.component.cut"),"javascript:onclick=clipboardCut()");

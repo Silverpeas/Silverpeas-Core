@@ -78,7 +78,7 @@
   browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 
   // Initializing users in domain quota
-  boolean isUserDomainQuotaFull = JobDomainSettings.usersInDomainQuotaActivated && domObject.isQuotaReached();
+  boolean isUserDomainQuotaFull = JobDomainSettings.isUsersInDomainQuotaEnabled() && domObject.isQuotaReached();
 
   // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),userPanelAccessLabel,"displaySelectUserOrGroup");
@@ -249,7 +249,7 @@ out.println(window.printBefore());
 
   <c:if test="${not mixedDomain}">
     <div class="rightContent" id="right-content-domainContent">
-      <% if (JobDomainSettings.usersInDomainQuotaActivated &&
+      <% if (JobDomainSettings.isUsersInDomainQuotaEnabled() &&
           !QuotaLoad.UNLIMITED.equals(domObject.getUserDomainQuota().getLoad())) { %>
       <div class="tag-presentation limited-number-user">
         <div class="tag-presentation-content"><span><%=resource.getStringWithParams("JDP.quota",
@@ -309,7 +309,7 @@ out.println(window.printBefore());
   <c:if test="${isGroupHandled}">
     <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
     <fmt:message var="groupArrayTitle" key="JDP.groups"/>
-    <fmt:message var="appGroupArrayTitle" key="JDP.appGroups"/>
+    <fmt:message var="appGroupArrayTitle" key="JDP.communityGroups"/>
     <fmt:message var="groupLabel" key="GML.groupe"/>
     <fmt:message var="nameLabel" key="GML.name"/>
     <fmt:message var="usersLabel" key="GML.users"/>
@@ -319,7 +319,7 @@ out.println(window.printBefore());
     <div id="dynamic-group-container">
       <view:arrayPane var="_dc_groupe"
                       routingAddress="domainContent.jsp"
-                      numberLinesPerPage="<%=JobDomainSettings.m_GroupsByPage%>"
+                      numberLinesPerPage="<%=JobDomainSettings.getGroupsNbPerPage()%>"
                       title="${groupArrayTitle} (${fn:length(groupList)})"
                       export="true">
         <view:arrayColumn title="" sortable="false"/>
@@ -354,7 +354,7 @@ out.println(window.printBefore());
         <div id="dynamic-app-group-container">
             <view:arrayPane var="_dc_appw_group"
                             routingAddress="domainContent.jsp"
-                            numberLinesPerPage="<%=JobDomainSettings.m_GroupsByPage%>"
+                            numberLinesPerPage="<%=JobDomainSettings.getGroupsNbPerPage()%>"
                             title="${appGroupArrayTitle} (${fn:length(appGroupList)})"
                             export="true">
                 <view:arrayColumn title="" sortable="false"/>
@@ -418,7 +418,7 @@ out.println(window.printBefore());
     </c:if>
     <c:set var="bundleCache" value="<%=bundleCache%>"/>
     <c:set var="userList" value="<%=subUsers%>"/>
-    <c:set var="lastConnectionColumnEnabled" value="<%=JobDomainSettings.lastConnectionColumnEnabled%>"/>
+    <c:set var="lastConnectionColumnEnabled" value="<%=JobDomainSettings.isLastConnectionInfoEnabled()%>"/>
     <c:set var="userCommonLinkPart" value="${requestScope.myComponentURL}userContent?Iduser="/>
     <fmt:message var="userArrayTitle"      key="GML.users"/>
     <fmt:message var="userStateLabel"      key="JDP.userState"/>
@@ -443,7 +443,7 @@ out.println(window.printBefore());
       </div>
       <view:arrayPane var="_dc_users"
                       routingAddress="domainContent.jsp${currentStateQuery}"
-                      numberLinesPerPage="<%=JobDomainSettings.m_UsersByPage%>"
+                      numberLinesPerPage="<%=JobDomainSettings.getUsersCountPerPage()%>"
                       title="${userArrayTitle} (${fn:length(userList)})"
                       export="true">
         <view:arrayColumn title="${userStateLabel}" compareOn="${u -> u.state.name}"/>

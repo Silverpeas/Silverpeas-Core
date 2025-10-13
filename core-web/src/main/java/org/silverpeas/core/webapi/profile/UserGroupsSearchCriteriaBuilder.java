@@ -35,7 +35,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  */
 public class UserGroupsSearchCriteriaBuilder {
 
-  private GroupsSearchCriteria searchCriteria;
+  private final GroupsSearchCriteria searchCriteria;
   private String domainId = null;
   private boolean withMixedDomain = false;
 

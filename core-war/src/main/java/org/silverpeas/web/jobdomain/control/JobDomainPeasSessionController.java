@@ -181,11 +181,11 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   public int getMinLengthLogin() {
-    return JobDomainSettings.m_MinLengthLogin;
+    return JobDomainSettings.getLoginMinLength();
   }
 
   public boolean isUserAddingAllowedForGroupManager() {
-    return JobDomainSettings.m_UserAddingAllowedForGroupManagers;
+    return JobDomainSettings.isUserAddingAllowedForGroupManagers();
   }
 
   @Override
@@ -766,10 +766,10 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     String loginError = checkCSVData(login, lineNumber, 3, true, 50);
     if (StringUtil.isDefined(loginError)) {
       listErrors.append(loginError);
-    } else if (login.length() < JobDomainSettings.m_MinLengthLogin) {// verifier
+    } else if (login.length() < JobDomainSettings.getLoginMinLength()) {// verifier
       listErrors.append(getErrorMessage(lineNumber, 3, login));
       listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
-              JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
+              JobDomainSettings.getLoginMinLength()).append(" ").append(getString("JDP.caracteres")).
           append(BR_ELEMENT);
     } else {
       // verif login unique
@@ -1671,7 +1671,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   public boolean isCommunityManager() {
-    if (!JobDomainSettings.m_UseCommunityManagement) {
+    if (!JobDomainSettings.isCommunityManagementEnabled()) {
       return false;
     }
 
@@ -1798,7 +1798,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     try {
 
       // Getting quota filled
-      if (JobDomainSettings.usersInDomainQuotaActivated) {
+      if (JobDomainSettings.isUsersInDomainQuotaEnabled()) {
         domainToCreate.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
       }
 
@@ -1806,7 +1806,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
           DomainServiceProvider.getDomainService(DomainType.SQL)).createDomain(domainToCreate);
       domainToCreate.setId(domainId);
 
-      if (JobDomainSettings.usersInDomainQuotaActivated) {
+      if (JobDomainSettings.isUsersInDomainQuotaEnabled()) {
         // Registering "users in domain" quota
         DomainServiceProvider.getUserDomainQuotaService().initialize(
             UserDomainQuotaKey.from(domainToCreate),
@@ -1896,7 +1896,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     try {
 
       boolean quotaDefined = isDefined(usersInDomainQuotaMaxCount);
-      if (JobDomainSettings.usersInDomainQuotaActivated && quotaDefined) {
+      if (JobDomainSettings.isUsersInDomainQuotaEnabled() && quotaDefined) {
         // Getting quota filled
         domain.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
       }
@@ -1906,7 +1906,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         throw new JobDomainPeasException(failureOnUpdate("domain", domain.getName()));
       }
 
-      if (JobDomainSettings.usersInDomainQuotaActivated && quotaDefined) {
+      if (JobDomainSettings.isUsersInDomainQuotaEnabled() && quotaDefined) {
         // Registering "users in domain" quota
         DomainServiceProvider.getUserDomainQuotaService().initialize(
             UserDomainQuotaKey.from(domain), domain.getUserDomainQuota().getMaxCount());
@@ -2244,7 +2244,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
    * manageable by current user
    */
   public boolean isUserInAtLeastOneGroupManageableByCurrentUser() {
-    if (!JobDomainSettings.m_UseCommunityManagement) {
+    if (!JobDomainSettings.isCommunityManagementEnabled()) {
       return false;
     }
     List<String> groupIds = getUserManageableGroupIds();

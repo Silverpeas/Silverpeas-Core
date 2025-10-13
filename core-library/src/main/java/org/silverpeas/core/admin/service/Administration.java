@@ -1523,11 +1523,37 @@ public interface Administration {
   List<String> searchUserIdsByProfile(final List<String> profileIds,
       final boolean includeRemovedUsersAndGroups) throws AdminException;
 
+  /**
+   * Search all the users matching the specified criteria.
+   * @param searchCriteria the criteria the users have to satisfy.
+   * @return a possible paginated list of users.
+   * @throws AdminException if the users cannot be fetched according to the specified criteria.
+   */
   SilverpeasList<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria)
       throws AdminException;
 
+  /**
+   * Search all the user groups matching the specified criteria. No ordering is done in the
+   * returned list of user groups.
+   * @param searchCriteria the criteria the groups have to satisfy.
+   * @return a possible paginated list of user groups.
+   * @throws AdminException if the groups cannot be fetched according to the specified criteria.
+   */
   SilverpeasList<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria)
       throws AdminException;
+
+  /**
+   * Search all the user groups matching the specified criteria and order or not the list by
+   * their type. If ordered by their type, then the first groups will be the usual ones and the
+   * last ones will the the community groups.
+   * @param searchCriteria the criteria the groups have to satisfy.
+   * @param orderedByType a flag indicating if the returned groups have to be ordered by their
+   * type.
+   * @return a possible paginated list of user groups.
+   * @throws AdminException if the groups cannot be fetched according to the specified criteria.
+   */
+  SilverpeasList<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria,
+      boolean orderedByType) throws AdminException;
 
   // -------------------------------------------------------------------------
   // Node profile management
