@@ -279,11 +279,11 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   public Boolean isProfileEditable() {
-    return JobStartPagePeasSettings.m_IsProfileEditable;
+    return JobStartPagePeasSettings.IS_PROFILE_EDITABLE;
   }
 
   public Boolean isBackupEnable() {
-    return JobStartPagePeasSettings.isBackupEnable;
+    return JobStartPagePeasSettings.IS_BACKUP_ENABLED;
   }
 
   public String getConfigSpacePosition() {
@@ -538,7 +538,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
       long dataStorageQuotaMaxCount) {
     boolean isAdmin = isUserAdmin();
     // Component space quota
-    if (isAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated) {
+    if (isAdmin && JobStartPagePeasSettings.COMPONENTS_IN_SPACE_QUOTA_ENABLED) {
       try {
         if (componentSpaceQuotaMaxCount >= 0) {
           spaceInst.setComponentSpaceQuotaMaxCount(componentSpaceQuotaMaxCount);
@@ -552,7 +552,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     }
 
     // Data storage quota
-    if (isAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated) {
+    if (isAdmin && JobStartPagePeasSettings.DATA_STORAGE_IN_SPACE_QUOTA_ENABLED) {
       try {
         if (dataStorageQuotaMaxCount >= 0) {
           spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
@@ -596,9 +596,9 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
           .error("User " + getUserId() + " isn't allowed to delete space " + spaceId);
     } else {
       SpaceInst spaceint1 = adminController.getSpaceInstById(spaceId);
-      boolean definitiveDelete = !JobStartPagePeasSettings.isBasketEnable;
-      if (JobStartPagePeasSettings.isBasketEnable && isUserAdmin()) {
-        definitiveDelete = !JobStartPagePeasSettings.useBasketWhenAdmin;
+      boolean definitiveDelete = !JobStartPagePeasSettings.IS_BASKET_ENABLED;
+      if (JobStartPagePeasSettings.IS_BASKET_ENABLED && isUserAdmin()) {
+        definitiveDelete = !JobStartPagePeasSettings.USE_BASKET_WHEN_ADMIN;
       }
 
       String res = adminController.deleteSpaceInstById(getUserDetail(), spaceint1.getId(),
@@ -826,7 +826,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
       existingComponent = getComponentInst(getManagedInstanceId());
     }
     localized.add(0, createIsHiddenParam(component, existingComponent));
-    if (JobStartPagePeasSettings.isPublicParameterEnable) {
+    if (JobStartPagePeasSettings.IS_PUBLIC_PARAMETER_ENABLED) {
       localized.add(0, createIsPublicParam(component, existingComponent));
     }
 
@@ -881,9 +881,9 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   public void deleteComponentInst(String sInstanceId) {
-    boolean definitiveDelete = !JobStartPagePeasSettings.isBasketEnable;
-    if (JobStartPagePeasSettings.isBasketEnable && isUserAdmin()) {
-      definitiveDelete = !JobStartPagePeasSettings.useBasketWhenAdmin;
+    boolean definitiveDelete = !JobStartPagePeasSettings.IS_BASKET_ENABLED;
+    if (JobStartPagePeasSettings.IS_BASKET_ENABLED && isUserAdmin()) {
+      definitiveDelete = !JobStartPagePeasSettings.USE_BASKET_WHEN_ADMIN;
     }
 
     adminController.deleteComponentInst(getUserDetail(), sInstanceId, definitiveDelete);
@@ -1278,7 +1278,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   public boolean isCommunityEnabled() {
-    return communityFactory != null;
+    return communityFactory != null && getSettings().getBoolean("UseCommunitySpace", false);
   }
 
   private CommunityFactory getCommunityFactory() {

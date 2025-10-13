@@ -103,8 +103,7 @@
   <div class="intfdcolor51 domain-group-list">
     <c:forEach var="group" items="${domainRootGroups}">
       <img class="GroupIcon" src="${group.synchronized ? synchronizedGroupIconUrl : groupIconUrl}" alt="${groupLabel}" title="${groupLabel}"/>
-      &nbsp;<a href="javascript:void(0)" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalUsersCount).concat(')')}
-      </a><br/>
+      &nbsp;<button type="button" class="link" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalUsersCount).concat(')')}</button><br/>
     </c:forEach>
   </div>
 </c:if>
@@ -115,8 +114,7 @@
     <div class="intfdcolor51 domain-group-list">
         <c:forEach var="group" items="${appRootGroups}">
             <img class="GroupIcon" src="${groupIconUrl}" alt="${groupLabel}" title="${groupLabel}"/>
-            &nbsp;<a href="javascript:void(0)" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalUsersCount).concat(')')}
-            </a><br/>
+            &nbsp;<button type="button" class="link" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalUsersCount).concat(')')}</button><br/>
         </c:forEach>
     </div>
 </c:if>

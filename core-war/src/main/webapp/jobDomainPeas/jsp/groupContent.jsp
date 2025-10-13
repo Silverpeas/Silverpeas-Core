@@ -344,6 +344,7 @@ if (showTabs) {
 </table>
 </view:board>
 <view:areaOfOperationOfCreation/>
+<c:if test="${not grObject.communityGroup}">
   <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
   <fmt:message var="groupArrayTitle" key="JDP.groups"/>
   <fmt:message var="groupLabel" key="GML.groupe"/>
@@ -355,7 +356,7 @@ if (showTabs) {
   <div id="dynamic-group-container">
     <view:arrayPane var="_gc_groupe"
                     routingAddress="groupContent.jsp"
-                    numberLinesPerPage="<%=JobDomainSettings.m_GroupsByPage%>"
+                    numberLinesPerPage="<%=JobDomainSettings.getGroupsNbPerPage()%>"
                     title="${groupArrayTitle} (${fn:length(subGroupList)})"
                     export="true">
       <view:arrayColumn title="" sortable="false"/>
@@ -385,6 +386,7 @@ if (showTabs) {
     </script>
   </div>
   <br/>
+</c:if>
 <%
   Map<UserState, Pair<String, String>> bundleCache = new HashMap<>(UserState.values().length);
   for (UserState userState : UserState.values()) {
@@ -395,7 +397,7 @@ if (showTabs) {
 %>
   <c:set var="bundleCache" value="<%=bundleCache%>"/>
   <c:set var="subUserList" value="<%=subUsers%>"/>
-  <c:set var="lastConnectionColumnEnabled" value="<%=JobDomainSettings.lastConnectionColumnEnabled%>"/>
+  <c:set var="lastConnectionColumnEnabled" value="<%=JobDomainSettings.isLastConnectionInfoEnabled()%>"/>
   <c:set var="userCommonLinkPart" value="${requestScope.myComponentURL}userContent?Iduser="/>
   <fmt:message var="userArrayTitle" key="GML.users"/>
   <fmt:message var="userStateLabel" key="JDP.userState"/>
@@ -405,7 +407,7 @@ if (showTabs) {
   <div id="dynamic-user-container">
     <view:arrayPane var="_gc_users"
                     routingAddress="groupContent.jsp"
-                    numberLinesPerPage="<%=JobDomainSettings.m_UsersByPage%>"
+                    numberLinesPerPage="<%=JobDomainSettings.getUsersCountPerPage()%>"
                     title="${userArrayTitle} (${fn:length(subUserList)})"
                     export="true">
       <view:arrayColumn title="${userStateLabel}" compareOn="${u -> u.state.name}"/>

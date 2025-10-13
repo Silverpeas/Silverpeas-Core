@@ -240,11 +240,15 @@ public interface OrganizationController {
 
   /**
    * Searches the groups that match the specified criteria.
+   *
    * @param criteria the criteria in searching of user groups.
+   * @param orderedByType are the returned groups have to be ordered by their type? If yes, then
+   * first are the usual groups and then the community ones.
    * @return a slice of the list of user groups matching the criteria or an empty list of no ones
-   * are found. user groups.
+   * are found.
    */
-  <T extends Group> SilverpeasList<T> searchGroups(GroupsSearchCriteria criteria);
+  <T extends Group> SilverpeasList<T> searchGroups(GroupsSearchCriteria criteria,
+      boolean orderedByType);
 
   /**
    * Returns the total number of distinct users recursively contained in the specified group

@@ -303,6 +303,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * @param id the component id
    * @throws SQLException on error
    */
+  @SuppressWarnings("DuplicatedCode")
   public void restoreComponentFromBasket(int id) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement statement = connection.prepareStatement(RESTORE_COMPONENT_FROM_BASKET)) {

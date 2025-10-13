@@ -33,11 +33,12 @@ String 		m_SousEspace 		= (String) request.getAttribute("SousEspace");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 boolean isUserAdmin = (Boolean)request.getAttribute("isUserAdmin");
-boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
-long    defaultDataStorageQuota = JobStartPagePeasSettings.dataStorageInSpaceQuotaDefaultMaxCount;
-boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
-boolean isInheritanceEnable = JobStartPagePeasSettings.isInheritanceEnabled &&
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENTS_IN_SPACE_QUOTA_ENABLED;
+long    defaultDataStorageQuota = JobStartPagePeasSettings.DATA_STORAGE_IN_SPACE_QUOTA_DEFAULT_MAX_COUNT;
+boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.DATA_STORAGE_IN_SPACE_QUOTA_ENABLED;
+boolean isInheritanceEnable = JobStartPagePeasSettings.IS_INHERITANCE_ENABLED &&
         (Boolean) request.getAttribute("inheritanceSupported");
+String  action = (String) request.getAttribute("Action");
 
 	browseBar.setSpaceId(spaceId);
 	if (m_SousEspace == null) {
@@ -63,57 +64,56 @@ function B_VALIDER_ONCLICK() {
 /*****************************************************************************/
 
 function ifCorrectFormExecute(callback) {
-	var errorMsg = "";
-	var errorNb = 0;
+  let errorMsg = "";
+  let errorNb = 0;
 
-		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
-    if (isWhitespace(name)) {
-      errorMsg += "  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
-      errorNb++;
-    }
+  const name = stripInitialWhitespace(document.infoSpace.NameObject.value);
+  if (isWhitespace(name)) {
+    errorMsg += "  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
 
-		var textAreaLength = 400;
-		var s = document.infoSpace.Description.value;
-    if (! (s.length <= textAreaLength)) {
+  const textAreaLength = 400;
+  const s = document.infoSpace.Description.value;
+  if (! (s.length <= textAreaLength)) {
       errorMsg += "  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
       errorNb++;
     }
 
-    <% if (isComponentSpaceQuotaActivated) { %>
-     var componentSpaceQuota = document.infoSpace.ComponentSpaceQuota.value;
-     if (isWhitespace(componentSpaceQuota)) {
-       errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
-       errorNb++;
-     }
-    <% } %>
+  <% if (isComponentSpaceQuotaActivated) { %>
+  const componentSpaceQuota = document.infoSpace.ComponentSpaceQuota.value;
+  if (isWhitespace(componentSpaceQuota)) {
+    errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
+  <% } %>
 
-    <% if (isDataStorageQuotaActivated) { %>
-      var dataStorageQuota = document.infoSpace.DataStorageQuota.value;
-      if (isWhitespace(dataStorageQuota)) {
-        errorMsg += "  - '<%=resource.getString("JSPP.dataStorageQuota")%>' <%=resource.getString("MustContainsText")%>\n";
-        errorNb++;
-      }
-    <% } %>
+  <% if (isDataStorageQuotaActivated) { %>
+  const dataStorageQuota = document.infoSpace.DataStorageQuota.value;
+  if (isWhitespace(dataStorageQuota)) {
+    errorMsg += "  - '<%=resource.getString("JSPP.dataStorageQuota")%>' <%=resource.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
+  <% } %>
 
 
-     switch(errorNb)
-     {
-        case 0 :
-            callback.call(this);
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            jQuery.popup.error(errorMsg);
-            break;
-        default :
-            errorMsg = "<%=resource.getString("ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            jQuery.popup.error(errorMsg);
-     }
+  switch (errorNb) {
+    case 0 :
+      callback.call(this);
+      break;
+    case 1 :
+      errorMsg = "<%=resource.getString("ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=resource.getString("ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
 }
 </script>
 </head>
 <body onload="document.infoSpace.NameObject.focus();" class="page_content_admin">
-<form name="infoSpace" action="EffectiveCreateSpace" method="post">
+<form name="infoSpace" action="<%= action %>" method="post">
 
 <%
 out.println(window.printBefore());

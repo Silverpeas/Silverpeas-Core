@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS ST_Space
   isInheritanceBlocked  int default(0) NOT NULL,
   look                  varchar(50),
   displaySpaceFirst     smallint,
-  isPersonal            smallint
+  isPersonal            smallint,
+  isCommunity          SMALLINT DEFAULT(0) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS SB_ContentManager_Instance

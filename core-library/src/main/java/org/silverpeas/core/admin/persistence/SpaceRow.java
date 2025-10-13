@@ -44,4 +44,5 @@ public class SpaceRow {
   public String look = null;
   public int displaySpaceFirst = -1;
   public int isPersonalSpace = -1;
+  public int isCommunitySpace = -1;
 }

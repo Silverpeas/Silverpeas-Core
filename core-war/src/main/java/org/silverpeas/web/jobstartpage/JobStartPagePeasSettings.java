@@ -31,57 +31,51 @@ import org.silverpeas.kernel.bundle.SettingBundle;
  * @author c.bonin
  */
 public class JobStartPagePeasSettings {
-  public static boolean m_IsProfileEditable;
-  public static boolean isBackupEnable;
-  public static boolean isBasketEnable;
-  public static boolean useBasketWhenAdmin;
-  public static boolean isInheritanceEnabled;
-  public static boolean isPublicParameterEnable;
-  public static boolean useComponentsCopy;
-  public static String SPACE_DISPLAY_POSITION_AFTER;
-  public static String SPACE_DISPLAY_POSITION_BEFORE;
-  public static String SPACE_DISPLAY_POSITION_TODEFINE;
-  public static String SPACE_DISPLAY_POSITION_CONFIG;
-  public static boolean recoverRightsEnable;
-  public static String TEMPLATE_PATH;
-  public static String CUSTOMERS_TEMPLATE_PATH;
-  public static boolean componentsInSpaceQuotaActivated;
-  public static boolean dataStorageInSpaceQuotaActivated;
-  public static long dataStorageInSpaceQuotaDefaultMaxCount;
-  public static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
-  public static String defaultAuthorizedFiles;
-  public static String defaultForbiddenFiles;
+  public static final boolean IS_PROFILE_EDITABLE;
+  public static final boolean IS_BACKUP_ENABLED;
+  public static final boolean IS_BASKET_ENABLED;
+  public static final boolean USE_BASKET_WHEN_ADMIN;
+  public static final boolean IS_INHERITANCE_ENABLED;
+  public static final boolean IS_PUBLIC_PARAMETER_ENABLED;
+  public static final boolean USE_COMPONENTS_COPY;
+  public static final String SPACE_DISPLAY_POSITION_AFTER;
+  public static final String SPACE_DISPLAY_POSITION_BEFORE;
+  public static final String SPACE_DISPLAY_POSITION_TODEFINE;
+  public static final String SPACE_DISPLAY_POSITION_CONFIG;
+  public static final boolean RECOVER_RIGHTS_ENABLED;
+  public static final String TEMPLATE_PATH;
+  public static final String CUSTOMERS_TEMPLATE_PATH;
+  public static final boolean COMPONENTS_IN_SPACE_QUOTA_ENABLED;
+  public static final boolean DATA_STORAGE_IN_SPACE_QUOTA_ENABLED;
+  public static final long DATA_STORAGE_IN_SPACE_QUOTA_DEFAULT_MAX_COUNT;
+  public static final long DATA_STORAGE_IN_PERSONAL_SPACE_QUOTA_DEFAULT_MAX_COUNT;
+  public static final String DEFAULT_AUTHORIZED_FILES;
+  public static final String DEFAULT_FORBIDDEN_FILES;
 
   static {
     SettingBundle rs = ResourceLocator.getSettingBundle(
         "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings");
-    m_IsProfileEditable = rs.getBoolean("IsProfileEditable", false);
-    isBackupEnable = rs.getBoolean("IsBackupEnable", false);
-    isBasketEnable = rs.getBoolean("UseBasket", false);
-    useBasketWhenAdmin = rs.getBoolean("UseBasketWhenAdmin", false);
-    isInheritanceEnabled = rs.getBoolean("UseProfileInheritance", false);
-    isPublicParameterEnable = rs.getBoolean("UsePublicParameter", true);
-    useComponentsCopy = rs.getBoolean("UseComponentsCopy", false);
+    IS_PROFILE_EDITABLE = rs.getBoolean("IsProfileEditable", false);
+    IS_BACKUP_ENABLED = rs.getBoolean("IsBackupEnable", false);
+    IS_BASKET_ENABLED = rs.getBoolean("UseBasket", false);
+    USE_BASKET_WHEN_ADMIN = rs.getBoolean("UseBasketWhenAdmin", false);
+    IS_INHERITANCE_ENABLED = rs.getBoolean("UseProfileInheritance", false);
+    IS_PUBLIC_PARAMETER_ENABLED = rs.getBoolean("UsePublicParameter", true);
+    USE_COMPONENTS_COPY = rs.getBoolean("UseComponentsCopy", false);
     SPACE_DISPLAY_POSITION_CONFIG = rs.getString("DisplaySpacePositionConfiguration", "BEFORE");
     SPACE_DISPLAY_POSITION_AFTER = rs.getString("DisplaySpacesAfterComponents", "AFTER");
     SPACE_DISPLAY_POSITION_BEFORE = rs.getString("DisplaySpacesBeforeComponents", "BEFORE");
     SPACE_DISPLAY_POSITION_TODEFINE = rs.getString("DisplaySpacesToDefine", "TODEFINE");
-    recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
+    RECOVER_RIGHTS_ENABLED = rs.getBoolean("EnableRecoverRightsOperation", false);
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
-    componentsInSpaceQuotaActivated = rs.getBoolean("quota.space.components.activated", false);
-    dataStorageInSpaceQuotaActivated = rs.getBoolean("quota.space.datastorage.activated", false);
-    dataStorageInSpaceQuotaDefaultMaxCount =
-        rs.getLong("quota.space.datastorage.default.maxCount", 0);
-    if (dataStorageInSpaceQuotaDefaultMaxCount < 0) {
-      dataStorageInSpaceQuotaDefaultMaxCount = 0;
-    }
-    dataStorageInPersonalSpaceQuotaDefaultMaxCount =
-        rs.getLong("quota.personalspace.datastorage.default.maxCount", 0);
-    if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
-      dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
-    }
-    defaultAuthorizedFiles = rs.getString("file.authorized.default", "");
-    defaultForbiddenFiles = rs.getString("file.forbidden.default", "");
+    COMPONENTS_IN_SPACE_QUOTA_ENABLED = rs.getBoolean("quota.space.components.activated", false);
+    DATA_STORAGE_IN_SPACE_QUOTA_ENABLED = rs.getBoolean("quota.space.datastorage.activated", false);
+    var quota = rs.getLong("quota.space.datastorage.default.maxCount", 0);
+    DATA_STORAGE_IN_SPACE_QUOTA_DEFAULT_MAX_COUNT =  quota < 0 ? 0 : quota;
+    quota = rs.getLong("quota.personalspace.datastorage.default.maxCount", 0);
+    DATA_STORAGE_IN_PERSONAL_SPACE_QUOTA_DEFAULT_MAX_COUNT = quota < 0 ? 0 : quota;
+    DEFAULT_AUTHORIZED_FILES = rs.getString("file.authorized.default", "");
+    DEFAULT_FORBIDDEN_FILES = rs.getString("file.forbidden.default", "");
   }
 }

@@ -5343,9 +5343,15 @@ class DefaultAdministration implements Administration {
   @Override
   public SilverpeasList<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria)
       throws AdminException {
+    return searchGroups(searchCriteria, false);
+  }
+
+  @Override
+  public SilverpeasList<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria,
+      boolean orderedByType) throws AdminException {
     searchCriteriaVisitors.forEach(searchCriteria::accept);
     return searchCriteria.isEmpty() ?
-        ListSlice.emptyList() : groupManager.getGroupsMatchingCriteria(searchCriteria);
+        ListSlice.emptyList() : groupManager.getGroupsMatchingCriteria(searchCriteria, orderedByType);
   }
 
   // -------------------------------------------------------------------------

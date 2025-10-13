@@ -37,19 +37,19 @@
 
 <%
 String		translation 		= request.getParameter("Translation");
-boolean isInheritanceEnable = JobStartPagePeasSettings.isInheritanceEnabled
+boolean isInheritanceEnable = JobStartPagePeasSettings.IS_INHERITANCE_ENABLED
         && (Boolean) request.getAttribute("inheritanceSupported");
 boolean isUserAdmin = (Boolean) request.getAttribute("isUserAdmin");
 
 // Component space quota
-boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENTS_IN_SPACE_QUOTA_ENABLED;
 String componentSpaceQuotaMaxCount = "";
 if (isComponentSpaceQuotaActivated) {
   componentSpaceQuotaMaxCount = String.valueOf(space.getComponentSpaceQuota().getMaxCount());
 }
 
 // Data storage quota
-boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
+boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.DATA_STORAGE_IN_SPACE_QUOTA_ENABLED;
 String dataStorageQuotaMaxCount = "";
 if (isDataStorageQuotaActivated) {
   dataStorageQuotaMaxCount = String.valueOf(UnitUtil.convertTo(space.getDataStorageQuota().getMaxCount(),
@@ -144,6 +144,7 @@ function removeTranslation() {
 	document.infoSpace.submit();
 }
 </script>
+<fmt:message key="GML.mandatory" var="mandatory"/>
 </view:sp-head-part>
 <view:sp-body-part cssClass="page_content_admin" onLoad="document.infoSpace.NameObject.focus();">
 <form name="infoSpace" action="EffectiveUpdateSpace" method="post">
@@ -153,10 +154,12 @@ function removeTranslation() {
 	out.println(board.printBefore());
 %>
 	<table>
+        <th></th>
 		<%=I18NHelper.getFormLine(resource, space, translation)%>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
-			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60" value="<%=WebEncodeHelper.javaStringToHtmlString(space.getName(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/></td>
+			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60"
+                       value="<%=WebEncodeHelper.javaStringToHtmlString(space.getName(translation))%>"/>&nbsp;<img alt="${mandatory}" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
@@ -165,18 +168,18 @@ function removeTranslation() {
     <% if (isComponentSpaceQuotaActivated) { %>
       <tr>
         <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
-        <td><input type="text" name="ComponentSpaceQuota" size="5" maxlength="4" value="<%=componentSpaceQuotaMaxCount%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
+        <td><input type="text" name="ComponentSpaceQuota" size="5" maxlength="4" value="<%=componentSpaceQuotaMaxCount%>"/>&nbsp;<img alt="${mandatory}" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
       </tr>
     <% } %>
     <% if (isDataStorageQuotaActivated) { %>
       <tr>
         <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
-        <td><input type="text" id="spaceDataStorageQuota" name="DataStorageQuota" size="9" maxlength="10" value="<%=dataStorageQuotaMaxCount%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
+        <td><input type="text" id="spaceDataStorageQuota" name="DataStorageQuota" size="9" maxlength="10" value="<%=dataStorageQuotaMaxCount%>">&nbsp;<img alt="${mandatory}" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
       </tr>
     <% } %>
 		<% if (isInheritanceEnable && !space.isRoot()) { %>
 		<tr>
-			<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+			<td class="textePetitBold"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
 			<td>
 			<% if (space.isInheritanceBlocked()) { %>
 				<input type="radio" name="InheritanceBlocked" value="true" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
@@ -189,7 +192,7 @@ function removeTranslation() {
 		</tr>
 		<% } %>
 		<tr>
-			<td colspan="2"><img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
+			<td colspan="2"><img alt="${mandatory}" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
 		</tr>
 	</table>
 <%
