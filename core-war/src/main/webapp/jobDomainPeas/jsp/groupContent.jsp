@@ -176,7 +176,7 @@
     const $dialog = jQuery('#deletionFormDialog');
     $dialog.popup('confirmation', {
       callback : function() {
-        var $deletionForm = jQuery('#deletionForm');
+        const $deletionForm = jQuery('#deletionForm');
         if (jQuery('#definitiveDeletion')[0].checked) {
           $deletionForm.attr("action", "groupDelete");
         } else {
@@ -285,11 +285,11 @@ $(document).ready(function() {
   });
 });
 
-var arrayBeforeAjaxRequest = function () {
-  if (${fn:length(subGroupList)} > 25) {
-    spProgressMessage.show();
-  }
-}
+  const arrayBeforeAjaxRequest = function () {
+    if (${fn:length(subGroupList)} > 25) {
+      spProgressMessage.show();
+    }
+  };
 </script>
 </view:sp-head-part>
 <view:sp-body-part cssClass="page_content_admin admin-group">
@@ -344,6 +344,7 @@ if (showTabs) {
 </table>
 </view:board>
 <view:areaOfOperationOfCreation/>
+<c:if test="${not grObject.communityGroup}">
   <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
   <fmt:message var="groupArrayTitle" key="JDP.groups"/>
   <fmt:message var="groupLabel" key="GML.groupe"/>
@@ -385,6 +386,7 @@ if (showTabs) {
     </script>
   </div>
   <br/>
+</c:if>
 <%
   Map<UserState, Pair<String, String>> bundleCache = new HashMap<>(UserState.values().length);
   for (UserState userState : UserState.values()) {

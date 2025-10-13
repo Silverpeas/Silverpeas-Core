@@ -309,7 +309,7 @@ out.println(window.printBefore());
   <c:if test="${isGroupHandled}">
     <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
     <fmt:message var="groupArrayTitle" key="JDP.groups"/>
-    <fmt:message var="appGroupArrayTitle" key="JDP.appGroups"/>
+    <fmt:message var="appGroupArrayTitle" key="JDP.communityGroups"/>
     <fmt:message var="groupLabel" key="GML.groupe"/>
     <fmt:message var="nameLabel" key="GML.name"/>
     <fmt:message var="usersLabel" key="GML.users"/>

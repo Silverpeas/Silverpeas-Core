@@ -68,7 +68,7 @@ public class GroupDAO {
   private static final String USER_ROLE_GROUPS_TABLE = "st_userrole_group_rel";
   private static final String SPACE_ROLE_GROUP = "st_spaceuserrole_group_rel";
   private static final String GROUP_COLUMNS_PATTERN =
-      "DISTINCT({0}id),{0}specificId,{0}domainId,{0}instanceId,{0}superGroupId,{0}name," +
+      "DISTINCT({0}id),{0}specificId,{0}domainId,{0}spaceId,{0}superGroupId,{0}name," +
           "{0}description,{0}synchroRule,{0}creationDate,{0}saveDate,{0}state,{0}stateSaveDate";
   private static final String GROUP_COLUMNS = format(GROUP_COLUMNS_PATTERN, EMPTY);
   private static final String SEARCH_GROUP_COLUMNS = format(GROUP_COLUMNS_PATTERN, "g.");
@@ -262,7 +262,7 @@ public class GroupDAO {
         .withUpdateParam(SYNCHRO_RULE, isDefined(group.getRule()) ? group.getRule() : null)
         .withUpdateParam(SAVE_DATE, now)
         .withUpdateParam(STATE, group.getState())
-        .withUpdateParam(STATE_SAVE_DATE, toInstance(group.getStateSaveDate()))
+        .withUpdateParam(STATE_SAVE_DATE, toInstant(group.getStateSaveDate()))
         .where(ID_CRITERION, Integer.parseInt(group.getId()))
         .executeWith(connection);
   }
@@ -594,7 +594,7 @@ public class GroupDAO {
     return Integer.parseInt(domainId);
   }
 
-  private Instant toInstance(final Date aDate) {
+  private Instant toInstant(final Date aDate) {
     return aDate == null ? null : aDate.toInstant();
   }
 }

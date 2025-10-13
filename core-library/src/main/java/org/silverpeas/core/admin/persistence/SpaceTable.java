@@ -54,13 +54,13 @@ public class SpaceTable extends Table<SpaceRow> {
 
   private static final String SPACE_COLUMNS = "id,domainFatherId,name,description,createdBy," +
       "firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus," +
-      "updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
+      "updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal,isCommunity";
 
   /**
    * Fetch the current space row from a resultSet.
-   * @param rs
-   * @return
-   * @throws SQLException
+   * @param rs the SQL result set.
+   * @return the data of a space in a {@link SpaceRow} instance.
+   * @throws SQLException if an error occurs while fetching the space data.
    */
   protected SpaceRow fetchSpace(ResultSet rs) throws SQLException {
     SpaceRow s = new SpaceRow();
@@ -113,15 +113,14 @@ public class SpaceTable extends Table<SpaceRow> {
       s.isPersonalSpace = 0;
     }
 
+    s.isCommunitySpace = rs.getInt(20);
+    if (rs.wasNull()) {
+      s.isCommunitySpace = 0;
+    }
+
     return s;
   }
 
-  /**
-   * Returns the Space whith the given id.
-   * @param id
-   * @return
-   * @throws SQLException
-   */
   public SpaceRow getSpace(int id) throws SQLException {
     return getUniqueRow(SELECT_SPACE_BY_ID, id);
   }
@@ -144,50 +143,25 @@ public class SpaceTable extends Table<SpaceRow> {
   private static final String SELECT_PERSONALSPACE =
       SELECT + SPACE_COLUMNS + " from ST_Space where isPersonal = ? and createdBy = ? ";
 
-  /**
-   * Tests if a space with given space id exists
-   * @param id
-   * @return true if the given space instance name is an existing space
-   * @throws SQLException
-   */
-  public boolean isSpaceInstExist(int id) throws SQLException {
-    return (this.getSpace(id) != null);
-  }
-
-  /**
-   * Returns all the Spaces.
-   * @return all the Spaces.
-   * @throws SQLException
-   */
   public SpaceRow[] getAllSpaces() throws SQLException {
     List<SpaceRow> rows = getRows(SELECT_ALL_SPACES);
-    return rows.toArray(new SpaceRow[rows.size()]);
+    return rows.toArray(new SpaceRow[0]);
   }
 
   private static final String SELECT_ALL_SPACES =
       SELECT + SPACE_COLUMNS + " from ST_Space" + " order by orderNum";
 
-  /**
-   * Returns all the Space ids.
-   * @return all the Space ids.
-   * @throws SQLException
-   */
   public String[] getAllSpaceIds() throws SQLException {
     List<String> ids = getIds(SELECT_ALL_SPACE_IDS);
-    return ids.toArray(new String[ids.size()]);
+    return ids.toArray(new String[0]);
   }
 
   private static final String SELECT_ALL_SPACE_IDS =
       "select id from ST_Space" + " order by orderNum";
 
-  /**
-   * Returns all the root Space ids.
-   * @return all the root Space ids.
-   * @throws SQLException
-   */
   public String[] getAllRootSpaceIds() throws SQLException {
     List<String> ids = getIds(SELECT_ALL_ROOT_SPACE_IDS);
-    return ids.toArray(new String[ids.size()]);
+    return ids.toArray(new String[0]);
   }
 
   private static final String SELECT_ALL_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE " +
@@ -195,12 +169,12 @@ public class SpaceTable extends Table<SpaceRow> {
 
   /**
    * Returns all spaces which has been removed but not definitely deleted
-   * @return all spaces which has been removed but not definitely deleted
-   * @throws SQLException
+   * @return an array with the data of all removed but not deleted spaces.
+   * @throws SQLException if an error occurs while fetching the space data
    */
   public SpaceRow[] getRemovedSpaces() throws SQLException {
     List<SpaceRow> rows = getRows(SELECT_REMOVED_SPACES);
-    return rows.toArray(new SpaceRow[rows.size()]);
+    return rows.toArray(new SpaceRow[0]);
   }
 
   private static final String SELECT_REMOVED_SPACES =
@@ -208,14 +182,14 @@ public class SpaceTable extends Table<SpaceRow> {
           SpaceInst.STATUS_REMOVED + "'" + " order by removeTime desc";
 
   /**
-   * Returns all the space ids having a given superSpace.
-   * @param superSpaceId
-   * @return all the space ids having a given superSpace.
-   * @throws SQLException
+   * Returns all the space ids having a given parent space.
+   * @param superSpaceId the unique identifier of a parent space.
+   * @return all the space ids having the specified parent space.
+   * @throws SQLException if an error occurs while requesting the subspaces identifiers.
    */
   public String[] getDirectSubSpaceIds(int superSpaceId) throws SQLException {
     List<String> ids = getIds(SELECT_SUBSPACE_IDS, superSpaceId);
-    return ids.toArray(new String[ids.size()]);
+    return ids.toArray(new String[0]);
   }
 
   private static final String SELECT_SUBSPACE_IDS =
@@ -223,10 +197,10 @@ public class SpaceTable extends Table<SpaceRow> {
           "and spaceStatus is null order by orderNum";
 
   /**
-   * Returns direct sub spaces of given space.
-   * @param superSpaceId
+   * Returns yjr direct sub spaces of the given space.
+   * @param superSpaceId the unique identifier of a space.
    * @return all direct sub spaces of given space.
-   * @throws SQLException
+   * @throws SQLException if an error occurs while fetching the subspaces.
    */
   public List<SpaceRow> getDirectSubSpaces(int superSpaceId) throws SQLException {
     return getRows(SELECT_SUBSPACES, superSpaceId);
@@ -236,11 +210,6 @@ public class SpaceTable extends Table<SpaceRow> {
       SELECT + SPACE_COLUMNS + " from ST_Space where domainFatherId = ? " +
           "and spaceStatus is null order by orderNum";
 
-  /**
-   * Inserts in the database a new space row.
-   * @param space
-   * @throws SQLException
-   */
   public void createSpace(SpaceRow space) throws SQLException {
     SpaceRow superSpace;
 
@@ -255,7 +224,7 @@ public class SpaceTable extends Table<SpaceRow> {
   }
 
   private static final String INSERT_SPACE = "insert into" + " ST_Space(" + SPACE_COLUMNS + ")" +
-      " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, SpaceRow row)
@@ -307,6 +276,8 @@ public class SpaceTable extends Table<SpaceRow> {
     } else {
       insert.setNull(19, Types.SMALLINT);
     }
+
+    insert.setInt(20, row.isCommunitySpace);
   }
 
   public void updateSpaceOrder(int spaceId, int orderNum) throws SQLException {
@@ -317,11 +288,6 @@ public class SpaceTable extends Table<SpaceRow> {
   private static final String UPDATE_SPACE_ORDER =
       "update ST_Space set" + " orderNum = ? where id = ?";
 
-  /**
-   * Updates a space row.
-   * @param space
-   * @throws SQLException
-   */
   public void updateSpace(SpaceRow space) throws SQLException {
     updateRow(UPDATE_SPACE, space);
   }
@@ -331,10 +297,10 @@ public class SpaceTable extends Table<SpaceRow> {
           " createdBy = ?," + " firstPageType = ?," + " firstPageExtraParam = ?," +
           " orderNum = ?, updateTime = ?," + " updatedBy = ?," + " spaceStatus = ?, lang = ?," +
           " isInheritanceBlocked = ?," + " look = ?," + " displaySpaceFirst = ?," +
-          " isPersonal = ? " + " where id = ?";
+          " isPersonal = ?, isCommunity = ? " + " where id = ?";
 
   @Override
-  protected void prepareUpdate(String updateQuery, PreparedStatement update, SpaceRow row)
+  protected void  prepareUpdate(String updateQuery, PreparedStatement update, SpaceRow row)
       throws SQLException {
 
     if (row.domainFatherId == 0) {
@@ -371,7 +337,9 @@ public class SpaceTable extends Table<SpaceRow> {
       update.setNull(15, Types.SMALLINT);
     }
 
-    update.setInt(16, row.id);
+    update.setInt(16, row.isCommunitySpace);
+
+    update.setInt(17, row.id);
   }
 
   public void moveSpace(int spaceId, int fatherId) throws SQLException {
@@ -383,11 +351,6 @@ public class SpaceTable extends Table<SpaceRow> {
 
   private static final String MOVE_SPACE = "update ST_SPACE set domainFatherId = ? where id = ?";
 
-  /**
-   * Delete the space and all his component instances.
-   * @param id
-   * @throws SQLException
-   */
   public void removeSpace(int id) throws SQLException {
     SpaceRow space = getSpace(id);
     if (space == null) {
@@ -410,11 +373,12 @@ public class SpaceTable extends Table<SpaceRow> {
   private static final String DELETE_SPACE = "delete from ST_Space where id = ?";
 
   /**
-   * Delete the space and all his component instances.
-   * @param id
-   * @param newName
-   * @param userId
-   * @throws SQLException
+   * Removes the specified space and all its component instances. The space and its component
+   * instances are placed into the basket.
+   * @param id the unique identifier of a space
+   * @param newName the new name of the space once in the basket
+   * @param userId the unique identifier of the user performing the task.
+   * @throws SQLException if an SQL error occurs.
    */
   public void sendSpaceToBasket(int id, String newName, String userId)
       throws SQLException {
@@ -433,10 +397,10 @@ public class SpaceTable extends Table<SpaceRow> {
       "update ST_Space set name = ?, removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
 
   /**
-   * Check if a named space already exists in given space
-   * @param fatherId
-   * @param name
-   * @throws SQLException
+   * Check if a named space already exists in the given space in the basket.
+   * @param fatherId the unique identifier of a parent space in the basket.
+   * @param name the name of a subspace.
+   * @throws SQLException if an SQL error occurs.
    */
   public boolean isSpaceIntoBasket(int fatherId, String name) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
@@ -454,10 +418,11 @@ public class SpaceTable extends Table<SpaceRow> {
       "select * from ST_Space where name = ? and domainFatherId = ? and spaceStatus = ? ";
 
   /**
-   * Remove the space from the basket Space will be available again
-   * @param id
-   * @throws SQLException
+   * Remove the space from the basket.
+   * @param id the unique identifier of the space.
+   * @throws SQLException if an SQL error occurs.
    */
+  @SuppressWarnings("DuplicatedCode")
   public void removeSpaceFromBasket(int id) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement statement = connection.prepareStatement(REMOVE_SPACE_FROM_BASKET)) {
@@ -471,20 +436,6 @@ public class SpaceTable extends Table<SpaceRow> {
 
   private static final String REMOVE_SPACE_FROM_BASKET =
       "update ST_Space set removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
-
-  /**
-   * Returns the Space of a given space user role.
-   * @param spaceUserRoleId
-   * @return the Space of a given space user role.
-   * @throws SQLException
-   */
-  public SpaceRow getSpaceOfSpaceUserRole(int spaceUserRoleId) throws SQLException {
-    return getUniqueRow(SELECT_SPACEUSERROLE_SPACE, spaceUserRoleId);
-  }
-
-  private static final String SELECT_SPACEUSERROLE_SPACE =
-      SELECT + aliasColumns("i", SPACE_COLUMNS) + " from ST_Space i, ST_SpaceUserRole us" +
-          " where i.id = us.spaceId and   us.id = ?";
 
   /**
    * Fetch the current space row from a resultSet.
