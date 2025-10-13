@@ -105,6 +105,7 @@ public class SpaceInstManager {
     spaceInst.setRemoverUserId(spaceInstToCopy.getRemoverUserId());
     spaceInst.setInheritanceBlocked(spaceInstToCopy.isInheritanceBlocked());
     spaceInst.setLook(spaceInstToCopy.getLook());
+    spaceInst.setCommunitySpace(spaceInstToCopy.isCommunitySpace());
 
     // Copy data
     spaceInst.copyDataFrom(spaceInstToCopy);
@@ -293,6 +294,7 @@ public class SpaceInstManager {
 
     spaceInst.setDisplaySpaceFirst(space.displaySpaceFirst == 1);
     spaceInst.setPersonalSpace(space.isPersonalSpace == 1);
+    spaceInst.setCommunitySpace(space.isCommunitySpace == 1);
 
     return spaceInst;
   }
@@ -645,23 +647,10 @@ public class SpaceInstManager {
     space.updatedBy = idAsInt(spaceInst.getUpdaterUserId());
     space.lang = spaceInst.getLanguage();
     space.look = spaceInst.getLook();
-
-    if (spaceInst.isInheritanceBlocked()) {
-      space.inheritanceBlocked = 1;
-    } else {
-      space.inheritanceBlocked = 0;
-    }
-
-    if (spaceInst.isDisplaySpaceFirst()) {
-      space.displaySpaceFirst = 1;
-    } else {
-      space.displaySpaceFirst = 0;
-    }
-
-    space.isPersonalSpace = 0;
-    if (spaceInst.isPersonalSpace()) {
-      space.isPersonalSpace = 1;
-    }
+    space.inheritanceBlocked = spaceInst.isInheritanceBlocked() ? 1 : 0;
+    space.displaySpaceFirst = spaceInst.isDisplaySpaceFirst() ? 1 : 0;
+    space.isPersonalSpace = spaceInst.isPersonalSpace() ? 1 : 0;
+    space.isCommunitySpace = spaceInst.isCommunitySpace() ? 1 : 0;
 
     return space;
   }

@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS ST_Space (
   look                 VARCHAR(50),
   displaySpaceFirst    SMALLINT,
   isPersonal           SMALLINT,
+  isCommunity          SMALLINT DEFAULT(0) NOT NULL,
   CONSTRAINT PK_Space PRIMARY KEY (id),
   CONSTRAINT UN_Space_1 UNIQUE (domainFatherId, name),
   CONSTRAINT FK_Space_1 FOREIGN KEY (createdBy) REFERENCES ST_User (id),

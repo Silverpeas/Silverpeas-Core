@@ -26,11 +26,9 @@
 // stability and database-dialect agnostic reasons
 def communities = sql.rows('SELECT groupId, spaceId from sc_community')
 communities.each { community ->
+    String spaceId = community.spaceId.substring(2)
     sql.executeUpdate("UPDATE st_space SET isCommunity = ? WHERE id = ?",
-            [true, communities.spaceId])
+            [1, Integer.parseInt(spaceId)])
     sql.executeUpdate("UPDATE st_group SET spaceId = ? WHERE id = ?",
             [community.spaceId, community.groupId])
 }
-
-
-

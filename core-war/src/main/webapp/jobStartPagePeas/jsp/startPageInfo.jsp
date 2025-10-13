@@ -58,11 +58,11 @@
 <c:set var="m_context" value="<%=m_context%>" />
 
 <c:set var="maintenancePlatform" value="<%=JobStartPagePeasSessionController.MAINTENANCE_PLATFORM%>"/>
-<c:set var="isComponentSpaceQuotaActivated" value="<%=JobStartPagePeasSettings.componentsInSpaceQuotaActivated%>"/>
+<c:set var="isComponentSpaceQuotaActivated" value="<%=JobStartPagePeasSettings.COMPONENTS_IN_SPACE_QUOTA_ENABLED%>"/>
 <c:if test="${isComponentSpaceQuotaActivated and (QuotaLoad.UNLIMITED eq space.componentSpaceQuota.load)}">
   <c:set var="isComponentSpaceQuotaActivated" value="false"/>
 </c:if>
-<c:set var="isDataStorageQuotaActivated" value="<%=JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated%>"/>
+<c:set var="isDataStorageQuotaActivated" value="<%=JobStartPagePeasSettings.DATA_STORAGE_IN_SPACE_QUOTA_ENABLED%>"/>
 
 <c:set var="m_SpaceName" value="${requestScope.spaceName}" />
 <c:set var="m_SpaceDescription" value="${requestScope.spaceDescription}" />
@@ -93,6 +93,9 @@
 <fmt:message key="JSPP.SubSpacePanelCreateTitle" var="SubSpacePanelCreateTitle" />
 <fmt:message key="JSPP.ComponentPanelCreateTitle" var="ComponentPanelCreateTitle" />
 <fmt:message key="JSPP.space.go" var="SpaceGoLabel" />
+<c:if test="${space.communitySpace}">
+    <fmt:message key="JSPP.community.go" var="SpaceGoLabel" />
+</c:if>
 <fmt:message key="JSPP.inheritanceBlockedComponent" var="InheritanceBlockedComponentLabel" />
 
 <fmt:message key="JSPP.inheritanceSpaceNotUsed" var="InheritanceSpaceNotUsedLabel" />
@@ -224,7 +227,9 @@
     <c:if test="${m_SpaceExtraInfos.admin}">
       <view:operationPane>
         <view:operation icon="${SpaceUpdateIcon}" altText="${SpacePanelModifyTitle}" action="javascript:onclick=updateSpace()"/>
+        <c:if test="${not space.communitySpace}">
         <view:operation icon="${UpdateHomePageIcon}" altText="${ModifyStartPageLabel}" action="javascript:onClick=spaceHomepageApp.api.open()"/>
+        </c:if>
         <c:if test="${isUserAdmin or m_SpaceName != null}">
           <view:operation icon="${SpaceOrderIcon}" altText="${SpaceOrderLabel}" action="javascript:onClick=openPopup('PlaceSpaceAfter', 750, 250)"/>
         </c:if>
@@ -236,7 +241,7 @@
         </c:if>
         <c:if test="${isUserAdmin or m_SpaceName != null}">
           <view:operation icon="${SpaceDelIcon}" altText="${SpacePanelDeleteTitle}" action="javascript:onClick=deleteSpace()"/>
-          <c:if test="${JobStartPagePeasSettings.recoverRightsEnable}">
+          <c:if test="${JobStartPagePeasSettings.RECOVER_RIGHTS_ENABLED}">
             <view:operation icon="useless" altText="${SpaceRecoverLabel}" action="javascript:onClick=recoverRights()"/>
           </c:if>
         </c:if>
@@ -245,9 +250,9 @@
           <view:operation icon="${SpaceBackupIcon}" altText="${BackupSpaceLabel}" action="${spaceBackupAction}"/>
         </c:if>
 
-        <c:if test="${JobStartPagePeasSettings.useComponentsCopy or objectsSelectedInClipboard}">
+        <c:if test="${JobStartPagePeasSettings.USE_COMPONENTS_COPY or objectsSelectedInClipboard}">
           <view:operationSeparator/>
-          <c:if test="${JobStartPagePeasSettings.useComponentsCopy}">
+          <c:if test="${JobStartPagePeasSettings.USE_COMPONENTS_COPY}">
             <view:operation icon="${CopyIcon}" altText="${CopySpaceLabel}" action="javascript:onclick=clipboardCopy()"/>
             <c:if test="${maintenanceState >= maintenancePlatform}">
               <view:operation icon="${CopyIcon}" altText="${CutSpaceLabel}" action="javascript:onclick=clipboardCut()"/>

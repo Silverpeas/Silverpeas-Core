@@ -55,7 +55,7 @@ function SubmitWithVerif() {
     } else if (isWhitespace(urlfld)) {
        errorMsg = "<% out.print(resource.getString("JDP.silverpeasServerURL")); %>";
     } else {
-       <% if (JobDomainSettings.usersInDomainQuotaActivated) { %>
+       <% if (JobDomainSettings.isUsersInDomainQuotaEnabled()) { %>
 	       var maxCount = stripInitialWhitespace(document.domainForm.userDomainQuotaMaxCount.value);
 	       if (isWhitespace(maxCount)) {
 		errorMsg = "<% out.print(resource.getString("JDP.userDomainQuotaMaxCount")); %>";
@@ -104,7 +104,7 @@ out.println(board.printBefore());
                             <input type="text" name="silverpeasServerURL" size="40" maxlength="399" value="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
                         </td>
                     </tr>
-                    <% if (JobDomainSettings.usersInDomainQuotaActivated) { %>
+                    <% if (JobDomainSettings.isUsersInDomainQuotaEnabled()) { %>
 	                    <tr>
 	                        <td class="txtlibform"><%=resource.getString("JDP.userDomainQuotaMaxCount")%> :</td>
 	                        <td>

@@ -68,7 +68,7 @@ public class GroupDAO {
   private static final String USER_ROLE_GROUPS_TABLE = "st_userrole_group_rel";
   private static final String SPACE_ROLE_GROUP = "st_spaceuserrole_group_rel";
   private static final String GROUP_COLUMNS_PATTERN =
-      "DISTINCT({0}id),{0}specificId,{0}domainId,{0}instanceId,{0}superGroupId,{0}name," +
+      "DISTINCT({0}id),{0}specificId,{0}domainId,{0}spaceId,{0}superGroupId,{0}name," +
           "{0}description,{0}synchroRule,{0}creationDate,{0}saveDate,{0}state,{0}stateSaveDate";
   private static final String GROUP_COLUMNS = format(GROUP_COLUMNS_PATTERN, EMPTY);
   private static final String SEARCH_GROUP_COLUMNS = format(GROUP_COLUMNS_PATTERN, "g.");
@@ -262,7 +262,7 @@ public class GroupDAO {
         .withUpdateParam(SYNCHRO_RULE, isDefined(group.getRule()) ? group.getRule() : null)
         .withUpdateParam(SAVE_DATE, now)
         .withUpdateParam(STATE, group.getState())
-        .withUpdateParam(STATE_SAVE_DATE, toInstance(group.getStateSaveDate()))
+        .withUpdateParam(STATE_SAVE_DATE, toInstant(group.getStateSaveDate()))
         .where(ID_CRITERION, Integer.parseInt(group.getId()))
         .executeWith(connection);
   }
@@ -391,13 +391,16 @@ public class GroupDAO {
    * </p>
    * @param connection the connection with a data source to use.
    * @param criteria a builder with which the criteria the user groups must satisfy has been built.
+   * @param orderByType is the user groups in the returned list have to be ordered by their type.
+   * If true, usual user groups are listed first and then the community ones.
    * @return a list slice of user groups matching the criteria or an empty list if no such user groups are
    * found. The slice is set by the pagination criterion. If no such criterion is provided, then it
    * is the whole list of groups matching the other criteria.
    */
   public ListSlice<GroupDetail> getGroupsByCriteria(Connection connection,
-      GroupsSearchCriteria criteria) throws SQLException {
+      GroupsSearchCriteria criteria, boolean orderByType) throws SQLException {
     return new SqlGroupSelectorByCriteriaBuilder(SEARCH_GROUP_COLUMNS)
+        .setOrderingByType(orderByType)
         .build(criteria)
         .executeWith(connection, GroupDAO::fetchGroup);
   }
@@ -594,7 +597,7 @@ public class GroupDAO {
     return Integer.parseInt(domainId);
   }
 
-  private Instant toInstance(final Date aDate) {
+  private Instant toInstant(final Date aDate) {
     return aDate == null ? null : aDate.toInstant();
   }
 }

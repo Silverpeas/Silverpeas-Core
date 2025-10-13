@@ -807,7 +807,7 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute(MIN_LENGTH_LOGIN_ATTR, jobDomainSC.getMinLengthLogin());
           request.setAttribute(CURRENT_USER_ATTR, jobDomainSC.getUserDetail());
           // if community management is activated, add groups on this user is manager
-          if (JobDomainSettings.m_UseCommunityManagement) {
+          if (JobDomainSettings.isCommunityManagementEnabled()) {
             request.setAttribute("GroupsManagedByCurrentUser",
                 jobDomainSC.getUserManageableGroups());
           }

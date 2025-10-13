@@ -23,17 +23,10 @@
  */
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
-import org.silverpeas.core.admin.persistence.GroupUserRoleTable;
-import org.silverpeas.core.admin.persistence.OrganizationSchema;
-import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
-import org.silverpeas.core.admin.persistence.SpaceUserRoleTable;
-import org.silverpeas.core.admin.persistence.UserRoleRow;
-import org.silverpeas.core.admin.persistence.UserRoleTable;
+import org.silverpeas.core.admin.persistence.*;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.GroupAlreadyExistsAdminException;
 import org.silverpeas.core.admin.user.constant.GroupState;
@@ -51,6 +44,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
@@ -109,15 +103,19 @@ public class GroupManager {
   /**
    * Gets the {@link GroupState#VALID} groups that match the specified criteria.
    *
-   * @param criteria the criteria in searching of user groups.
+   * @param criteria the criteria the user groups have to satisfy.
+   * @param orderedByType flag indicating if the groups in the returned list have to be ordered
+   * by their type. If true, then the list will have first the usual groups and then the
+   * community ones.
    * @return a slice of the list of user groups matching the criteria or an empty list of no ones
    * are found.
    * @throws AdminException if an error occurs while getting the user groups.
    */
-  public SilverpeasList<GroupDetail> getGroupsMatchingCriteria(final GroupsSearchCriteria criteria)
-      throws AdminException {
+  public SilverpeasList<GroupDetail> getGroupsMatchingCriteria(final GroupsSearchCriteria criteria,
+      boolean orderedByType) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      final GroupCriteriaFilter filter = new GroupCriteriaFilter(connection, criteria, groupDao);
+      final GroupCriteriaFilter filter = new GroupCriteriaFilter(connection, criteria,
+          orderedByType, groupDao);
       final SilverpeasList<GroupDetail> groups = filter.getFilteredValidGroups();
       String[] domainIdConstraint = new String[0];
       if (criteria.isCriterionOnDomainIdSet()) {
@@ -1054,13 +1052,15 @@ public class GroupManager {
     private final boolean childrenRequired;
     private final boolean mustMatchAllRoles;
     private final boolean logicalNameFiltering;
+    private final boolean orderedByType;
     private final Map<String, List<GroupDetail>> subGroupsOfGroupsCache = new LinkedHashMap<>();
 
     GroupCriteriaFilter(final Connection connection, final GroupsSearchCriteria criteria,
-        final GroupDAO groupDao) {
+        final boolean orderedByType, final GroupDAO groupDao) {
       this.connection = connection;
       this.criteria = criteria;
       this.groupDao = groupDao;
+      this.orderedByType = orderedByType;
       this.nameFilter = defaultStringIfNotDefined(criteria.getCriterionOnName()).replace('*', '%');
       this.childrenRequired = criteria.childrenRequired();
       this.logicalNameFiltering = childrenRequired && isDefined(nameFilter);
@@ -1077,7 +1077,7 @@ public class GroupManager {
     }
 
     SilverpeasList<GroupDetail> getFilteredValidGroups() throws SQLException {
-      List<GroupDetail> groups = groupDao.getGroupsByCriteria(connection, criteria);
+      List<GroupDetail> groups = groupDao.getGroupsByCriteria(connection, criteria, orderedByType);
       final Map<String, Set<String>> rolesByGroup = getRolesByGroup(groups);
       groups = addChildrenAndFilterOnName(groups, rolesByGroup);
       matchingAllRoles(groups, rolesByGroup);

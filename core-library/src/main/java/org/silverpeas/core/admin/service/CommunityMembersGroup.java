@@ -29,39 +29,36 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.kernel.util.StringUtil;
 
 /**
- * A group of users managed directly by an application instead of by a user domain or at
- * organization level. Such group is dedicated to gather users with which the application
- * or the users playing a role in that application can interact. The life-cycle of these
- * groups are then taken in charge by the application and not by the Silverpeas administrative
- * service and they are dedicated to be used by the application. Such groups belongs to the mixed
- * user domain and they cannot be synchronized nor be deleted or updated; only the application
- * managing group can modify and delete it.
+ * A group of a community members. Such groups are managed directly by the community to which they
+ * belong and as such they don't belong to a user domain (they are defined in the mixed domain). The
+ * life-cycle of these groups are then taken in charge by the application in charge of the members
+ * of a community space and not by the Silverpeas administrative services. They are intended to to
+ * ease the use of groups of users for the applications in charge of a community.
  *
  * @author mmoquillon
  */
-public class AppManagedGroupDetail extends GroupDetail {
+public class CommunityMembersGroup extends GroupDetail {
 
   /**
-   * Constructs a new application managed group with the given name and for the specified Silverpeas
-   * application.
+   * Constructs a new community members group with the given name and for the specified community
+   * space.
    *
    * @param name the name of the user group.
-   * @param instanceId the unique identifier of the Silverpeas instance for which this group is
+   * @param spaceId the unique identifier of the Silverpeas space for which this group is
    * created.
    */
-  public AppManagedGroupDetail(String name, String instanceId) {
+  public CommunityMembersGroup(String name, String spaceId) {
     super();
     setName(name);
     setRule(null);
     setDomainId(Domain.MIXED_DOMAIN_ID);
-    if (StringUtil.isNotDefined(instanceId)) {
-      throw new IllegalArgumentException(
-          "The identifier of the application instance managing the group should be set");
+    if (StringUtil.isNotDefined(spaceId)) {
+      throw new IllegalArgumentException("The identifier of the community space should be set");
     }
-    setSpaceId(instanceId);
+    setSpaceId(spaceId);
   }
 
-  public AppManagedGroupDetail(GroupDetail groupDetail) {
+  public CommunityMembersGroup(GroupDetail groupDetail) {
     super(groupDetail);
     if (!groupDetail.isCommunityGroup()) {
       throw new IllegalArgumentException(
@@ -101,7 +98,6 @@ public class AppManagedGroupDetail extends GroupDetail {
   public void setRule(String rule) {
     // not supported by this Group implementation
   }
-
 
 
 }

@@ -98,7 +98,7 @@ function recoverRights() {
 		</c:otherwise>
 	</c:choose>
 
-	<c:if test="${JobStartPagePeasSettings.recoverRightsEnable}">
+	<c:if test="${JobStartPagePeasSettings.RECOVER_RIGHTS_ENABLED}">
 		<view:operationSeparator/>
 	<fmt:message var="recover" key="JSPP.spaceRecover" />
 	<view:operation altText="${recover}" icon="" action="javascript:onClick=recoverRights();"/>

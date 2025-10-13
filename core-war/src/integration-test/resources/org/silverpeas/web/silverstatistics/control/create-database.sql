@@ -31,6 +31,7 @@ CREATE TABLE ST_Group
     id            int           NOT NULL,
     domainId      int           NOT NULL,
     specificId    varchar(500)  NOT NULL,
+    spaceId       VARCHAR(500),
     superGroupId  int,
     name          varchar(100)  NOT NULL,
     description   varchar(400),

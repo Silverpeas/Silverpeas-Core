@@ -18,7 +18,8 @@ CREATE TABLE ST_Space
   isInheritanceBlocked  int default(0) NOT NULL,
   look                  varchar(50),
   displaySpaceFirst     smallint,
-  isPersonal            smallint
+  isPersonal            smallint,
+  isCommunity           SMALLINT DEFAULT(0) NOT NULL
 );
 
 CREATE TABLE ST_SpaceI18N (
@@ -123,6 +124,7 @@ CREATE TABLE ST_Group (
   saveDate      timestamp,
   state         varchar(30)  NOT NULL,
   stateSaveDate timestamp    NOT NULL,
+  spaceId       varchar(500),
   CONSTRAINT PK_Group   PRIMARY KEY (id),
   CONSTRAINT UN_Group_1 UNIQUE (specificId, domainId),
   CONSTRAINT UN_Group_2 UNIQUE (superGroupId, name, domainId),

@@ -375,9 +375,10 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T extends Group> SilverpeasList<T> searchGroups(final GroupsSearchCriteria criteria) {
+  public <T extends Group> SilverpeasList<T> searchGroups(final GroupsSearchCriteria criteria,
+      boolean orderedByType) {
     try {
-      return (SilverpeasList<T>) getAdminService().searchGroups(criteria);
+      return (SilverpeasList<T>) getAdminService().searchGroups(criteria, orderedByType);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
