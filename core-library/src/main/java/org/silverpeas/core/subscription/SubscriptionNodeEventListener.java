@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2025 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,13 +27,16 @@ package org.silverpeas.core.subscription;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.notification.NodeEvent;
+import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 /**
  * Listener of events on the deletion of a node in a component instance to delete all subscriptions
  * on that node.
+ *
  * @author mmoquillon
  */
 @Bean
@@ -42,13 +45,42 @@ public class SubscriptionNodeEventListener
     extends AbstractProfiledResourceSubscriptionListener<NodeDetail, NodeEvent> {
 
   @Override
-  protected SubscriptionResource getSubscriptionResource(final NodeDetail resource) {
+  protected NodeSubscriptionResource getSubscriptionResource(final NodeDetail resource) {
     return NodeSubscriptionResource.from(resource.getNodePK());
   }
 
   @Override
   protected boolean isSubscriptionEnabled(final NodeDetail resource) {
     return true;
+  }
+
+  /**
+   * Listens for node move. In the case a node is moved to another component instance, then the
+   * subscriptions on this resource are renewed.
+   *
+   * @param event the event about the move of a node.
+   */
+  @Transactional
+  @Override
+  public void onMove(NodeEvent event) {
+    var nodeBeforeMove = event.getTransition().getBefore();
+    var nodeAfterMove = event.getTransition().getAfter();
+    if (isNodeMovedInAnotherApp(nodeBeforeMove, nodeAfterMove)) {
+      var service = getSubscriptionService();
+      var resource = getSubscriptionResource(nodeAfterMove);
+      service.getByResource(getSubscriptionResource(nodeBeforeMove)).forEach(subscription -> {
+        var renewedSubscription = new NodeSubscription(subscription.getSubscriber(), resource,
+            subscription.getCreatorId());
+        service.unsubscribe(subscription);
+        service.subscribe(renewedSubscription);
+      });
+
+    }
+  }
+
+  private boolean isNodeMovedInAnotherApp(NodeDetail nodeBeforeMove, NodeDetail nodeAfterMove) {
+    return !nodeBeforeMove.getIdentifier().getComponentInstanceId()
+        .equals(nodeAfterMove.getIdentifier().getComponentInstanceId());
   }
 }
   
