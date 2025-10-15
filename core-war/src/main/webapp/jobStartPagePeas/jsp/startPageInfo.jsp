@@ -54,14 +54,15 @@
 <c:set var="isBackupEnable" value="${requestScope.IsBackupEnable}" />
 <c:set var="isInHeritanceEnable" value="${requestScope.IsInheritanceEnable}" />
 <c:set var="copiedComponentNames" value="${requestScope.CopiedComponents}" />
+<c:set var="communityEnabled" value="${requestScope['communityEnabled']}" />
 <c:set var="m_context" value="<%=m_context%>" />
 
 <c:set var="maintenancePlatform" value="<%=JobStartPagePeasSessionController.MAINTENANCE_PLATFORM%>"/>
-<c:set var="isComponentSpaceQuotaActivated" value="<%=JobStartPagePeasSettings.componentsInSpaceQuotaActivated%>"/>
+<c:set var="isComponentSpaceQuotaActivated" value="<%=JobStartPagePeasSettings.COMPONENTS_IN_SPACE_QUOTA_ENABLED%>"/>
 <c:if test="${isComponentSpaceQuotaActivated and (QuotaLoad.UNLIMITED eq space.componentSpaceQuota.load)}">
   <c:set var="isComponentSpaceQuotaActivated" value="false"/>
 </c:if>
-<c:set var="isDataStorageQuotaActivated" value="<%=JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated%>"/>
+<c:set var="isDataStorageQuotaActivated" value="<%=JobStartPagePeasSettings.DATA_STORAGE_IN_SPACE_QUOTA_ENABLED%>"/>
 
 <c:set var="m_SpaceName" value="${requestScope.spaceName}" />
 <c:set var="m_SpaceDescription" value="${requestScope.spaceDescription}" />
@@ -116,6 +117,7 @@
 <fmt:message key="JSPP.CopyComponent" var="CopyIcon" bundle="${icons}"/>
 <fmt:message key="JSPP.PasteComponent" var="PasteIcon" bundle="${icons}"/>
 <fmt:message key="JSPP.subspaceAdd" var="SubspaceAddIcon" bundle="${icons}"/>
+<fmt:message key="JSPP.communityAdd" var="addCommunityIcon" bundle="${icons}" />
 <fmt:message key="JSPP.instanceAdd" var="InstanceAddIcon" bundle="${icons}"/>
 <fmt:message key="JSPP.update" var="UpdateIcon" bundle="${icons}"/>
 
@@ -222,7 +224,9 @@
     <c:if test="${m_SpaceExtraInfos.admin}">
       <view:operationPane>
         <view:operation icon="${SpaceUpdateIcon}" altText="${SpacePanelModifyTitle}" action="javascript:onclick=updateSpace()"/>
+        <c:if test="${not space.communitySpace}">
         <view:operation icon="${UpdateHomePageIcon}" altText="${ModifyStartPageLabel}" action="javascript:onClick=spaceHomepageApp.api.open()"/>
+        </c:if>
         <c:if test="${isUserAdmin or m_SpaceName != null}">
           <view:operation icon="${SpaceOrderIcon}" altText="${SpaceOrderLabel}" action="javascript:onClick=openPopup('PlaceSpaceAfter', 750, 250)"/>
         </c:if>
@@ -234,7 +238,7 @@
         </c:if>
         <c:if test="${isUserAdmin or m_SpaceName != null}">
           <view:operation icon="${SpaceDelIcon}" altText="${SpacePanelDeleteTitle}" action="javascript:onClick=deleteSpace()"/>
-          <c:if test="${JobStartPagePeasSettings.recoverRightsEnable}">
+          <c:if test="${JobStartPagePeasSettings.RECOVER_RIGHTS_ENABLED}">
             <view:operation icon="useless" altText="${SpaceRecoverLabel}" action="javascript:onClick=recoverRights()"/>
           </c:if>
         </c:if>
@@ -243,9 +247,9 @@
           <view:operation icon="${SpaceBackupIcon}" altText="${BackupSpaceLabel}" action="${spaceBackupAction}"/>
         </c:if>
 
-        <c:if test="${JobStartPagePeasSettings.useComponentsCopy or objectsSelectedInClipboard}">
+        <c:if test="${JobStartPagePeasSettings.USE_COMPONENTS_COPY or objectsSelectedInClipboard}">
           <view:operationSeparator/>
-          <c:if test="${JobStartPagePeasSettings.useComponentsCopy}">
+          <c:if test="${JobStartPagePeasSettings.USE_COMPONENTS_COPY}">
             <view:operation icon="${CopyIcon}" altText="${CopySpaceLabel}" action="javascript:onclick=clipboardCopy()"/>
             <c:if test="${maintenanceState >= maintenancePlatform}">
               <view:operation icon="${CopyIcon}" altText="${CutSpaceLabel}" action="javascript:onclick=clipboardCut()"/>
@@ -257,9 +261,14 @@
         </c:if>
         <view:operationSeparator/>
         <view:operationOfCreation icon="${m_context}${SubspaceAddIcon}" altText="${SubSpacePanelCreateTitle}" action="CreateSpace?SousEspace=SousEspace"/>
-        <c:if test="${not isComponentSpaceQuotaFull}">
-          <view:operationOfCreation icon="${m_context}${InstanceAddIcon}" altText="${ComponentPanelCreateTitle}" action="ListComponent"/>
+        <c:if test="${communityEnabled}">
+           <fmt:message var="communityAdd" key="JSPP.communitySpaceCreateTitle" />
+           <fmt:message var="addCommunityIcon" key="JSPP.communityAdd" bundle="${icons}" />
+           <view:operationOfCreation altText="${communityAdd}"
+                                     icon="${m_context}${addCommunityIcon}"
+                                     action="CreateCommunity"/>
         </c:if>
+        <view:operationOfCreation icon="${m_context}${InstanceAddIcon}" altText="${ComponentPanelCreateTitle}" action="ListComponent"/>
       </view:operationPane>
     </c:if>
     <view:window>
@@ -289,16 +298,6 @@
           <div class="inlineMessage">
             ${maintenanceStateLabel}
           </div>
-          <br/>
-        </c:if>
-
-        <c:if test="${isComponentSpaceQuotaFull}">
-          <div class="inlineMessage-nok"><%=space.getComponentSpaceQuotaReachedErrorMessage(resource.getLanguage())%></div>
-          <br/>
-        </c:if>
-
-        <c:if test="${isDataStorageQuotaFull}">
-          <div class="inlineMessage-nok"><%=space.getDataStorageQuotaReachedErrorMessage(resource.getLanguage())%></div>
           <br/>
         </c:if>
 

@@ -914,7 +914,9 @@ public class JobDomainPeasRequestRouter extends
         }
         long domainRight = jobDomainSC.getDomainActions();
         request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
-        request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));
+        var rootGroups = jobDomainSC.getRootGroupsPerType();
+        request.setAttribute("subGroups", rootGroups.getFirst());
+        request.setAttribute("appGroups", rootGroups.getSecond());
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(false));
         setRightManagementAttributes(request, domainRight);
 
@@ -973,7 +975,9 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.setTargetDomain(domains.get(0).getId());
         }
         request.setAttribute("allDomains", domains);
-        request.setAttribute("allRootGroups", jobDomainSC.getAllRootGroups());
+        var allRootGroup = jobDomainSC.getAllRootGroups();
+        request.setAttribute("domainRootGroups", allRootGroup.getFirst());
+        request.setAttribute("appRootGroups", allRootGroup.getSecond());
         request.setAttribute("CurrentDomain", jobDomainSC.getTargetDomain());
       } else if ("groupManagers.jsp".equals(destination)) {
         request.setAttribute(GROUP_OBJECT_ATTR, jobDomainSC.getTargetGroup());

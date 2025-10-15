@@ -1,6 +1,11 @@
 <h2 class="txtNav"><center>Bienvenue sur la gestion des espaces et des applications</center></h2>
 
 <p class="accroche">Silverpeas est structuré en espaces qui contiennent des applications. Chaque espace peut également contenir des sous espaces.<br/>
+$if(communityEnabled)$
+Outre les espaces, il est possible de créer des communautés. Ce sont des espaces particuliers pour
+lesquels ce sont les utilisateurs eux-même qui demandent à les joindre et non pas un administrateur qui leur donne accès.
+<br/>
+$endif$
 Un large choix d'applications prêtes à l'emploi vous est offert pour répondre à tous vos besoins : gestion documentaire, galerie d'images, blog, sondages, gestion de projet...<br/>
 En tant que <b>gestionnaire d'espace(s)</b>, vous pouvez gérer librement l'ensemble des espaces dont vous avez la charge.</p>
 

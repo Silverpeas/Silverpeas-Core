@@ -90,12 +90,15 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   private int userCount = -1;
   @XmlElement @NotNull @Size(min=1)
   private String domainName;
+  @XmlElement
+  private boolean managedByApp = false;
   private final GroupDetail group;
 
   private UserGroupProfileEntity(Group group) {
     this.group = (GroupDetail) group;
     this.domainName = GroupDetail.getOrganisationController().getDomain(group.getDomainId()).getName();
     this.userCount = group.getTotalUsersCount();
+    this.managedByApp = group.isCommunityGroup();
   }
 
   @SuppressWarnings("unused")
@@ -244,6 +247,11 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   @Override
   public boolean isRoot() {
     return group.isRoot();
+  }
+
+  @Override
+  public boolean isCommunityGroup() {
+    return group.isCommunityGroup();
   }
 
   @Override

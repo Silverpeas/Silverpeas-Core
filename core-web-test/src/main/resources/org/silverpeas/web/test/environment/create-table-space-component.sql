@@ -24,7 +24,8 @@ CREATE TABLE ST_Space (
   isInheritanceBlocked INT DEFAULT (0) NOT NULL,
   look                 VARCHAR(50),
   displaySpaceFirst    SMALLINT,
-  isPersonal           SMALLINT
+  isPersonal           SMALLINT,
+  isCommunity          SMALLINT DEFAULT(0) NOT NULL
 );
 ALTER TABLE ST_Space ADD CONSTRAINT PK_Space PRIMARY KEY (id);
 ALTER TABLE ST_Space ADD CONSTRAINT UN_Space_1 UNIQUE(domainFatherId, name);

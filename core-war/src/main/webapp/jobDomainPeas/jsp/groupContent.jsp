@@ -81,7 +81,7 @@
   if (groupsPath != null) {
     browseBar.setPath(groupsPath);
   }
-  if (isDomainRW) {
+  if (isDomainRW && !grObject.isCommunityGroup()) {
     if (!isGroupManager) {
       showTabs = true;
       // Group operations
@@ -138,9 +138,11 @@
     operationPane.addOperation(resource.getIcon("JDP.groupSynchro"), resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
     operationPane.addOperation(resource.getIcon("JDP.groupUnsynchro"), resource.getString("JDP.groupUnsynchro"), "groupUnSynchro?Idgroup=" + thisGroupId);
   }
-  operationPane.addLine();
+  if (operationPane.nbOperations() > 0) {
+      operationPane.addLine();
+  }
   operationPane.addOperation("useless", resource.getString("JDP.user.rights.action"), "groupViewRights");
-  if (isRightCopyReplaceEnabled) {
+  if (isRightCopyReplaceEnabled && !grObject.isCommunityGroup()) {
     operationPane.addOperation("useless", resource.getString("JDP.rights.assign"), "javascript:assignSameRights()");
   }
   if (onlySpaceManager) {
@@ -174,7 +176,7 @@
     const $dialog = jQuery('#deletionFormDialog');
     $dialog.popup('confirmation', {
       callback : function() {
-        var $deletionForm = jQuery('#deletionForm');
+        const $deletionForm = jQuery('#deletionForm');
         if (jQuery('#definitiveDeletion')[0].checked) {
           $deletionForm.attr("action", "groupDelete");
         } else {
@@ -283,11 +285,11 @@ $(document).ready(function() {
   });
 });
 
-var arrayBeforeAjaxRequest = function () {
-  if (${fn:length(subGroupList)} > 25) {
-    spProgressMessage.show();
-  }
-}
+  const arrayBeforeAjaxRequest = function () {
+    if (${fn:length(subGroupList)} > 25) {
+      spProgressMessage.show();
+    }
+  };
 </script>
 </view:sp-head-part>
 <view:sp-body-part cssClass="page_content_admin admin-group">
@@ -342,6 +344,7 @@ if (showTabs) {
 </table>
 </view:board>
 <view:areaOfOperationOfCreation/>
+<c:if test="${not grObject.communityGroup}">
   <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
   <fmt:message var="groupArrayTitle" key="JDP.groups"/>
   <fmt:message var="groupLabel" key="GML.groupe"/>
@@ -383,6 +386,7 @@ if (showTabs) {
     </script>
   </div>
   <br/>
+</c:if>
 <%
   Map<UserState, Pair<String, String>> bundleCache = new HashMap<>(UserState.values().length);
   for (UserState userState : UserState.values()) {
@@ -504,8 +508,9 @@ if (showTabs) {
 <c:set var="ASSIGNATION_MODE_REPLACE"><%= JobDomainPeasSessionController.REPLACE_RIGHTS %></c:set>
 
 <% if (isRightCopyReplaceEnabled) { %>
+    <br/>
 <div id="assignRightsDialog" title="<fmt:message key="JDP.rights.assign"/>">
-  <form accept-charset="UTF-8" enctype="multipart/form-data;charset=utf-8" id="affected-profil"
+  <form accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" id="affected-profil"
         name="rightsForm" action="AssignSameRights" method="post">
     <label class="label-ui-dialog" for="profil-from"><fmt:message key="JDP.rights.assign.as"/></label>
     <span class="champ-ui-dialog">

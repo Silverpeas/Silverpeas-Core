@@ -121,6 +121,7 @@ CREATE TABLE ST_Group (
   id            INT          NOT NULL,
   domainId      INT          NOT NULL,
   specificId    VARCHAR(500) NOT NULL,
+  spaceId       VARCHAR(500),
   superGroupId  INT,
   name          VARCHAR(100) NOT NULL,
   description   VARCHAR(400),
