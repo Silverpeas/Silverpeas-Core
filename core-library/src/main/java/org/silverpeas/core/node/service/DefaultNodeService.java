@@ -39,6 +39,8 @@ import org.silverpeas.core.node.model.NodeI18NDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.node.notification.NodeEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -79,6 +81,8 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   private NodeDAO nodeDAO;
   @Inject
   private NodeDeletion nodeDeletion;
+  @Inject
+  private NodeEventNotifier notifier;
 
   @Override
   @Transactional
@@ -264,14 +268,17 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
   @Override
   @Transactional
-  public void moveNode(NodePK nodePK, NodePK toNode, boolean preserveRights) {
+  public void moveNode(NodePK nodeToMove, NodePK toNode, boolean preserveRights) {
     NodeDetail root = getDetail(toNode);
     String newRootPath = root.getPath() + toNode.getId() + '/';
     String oldRootPath = null;
 
     Connection con = getConnection();
     try {
-      List<NodeDetail> tree = getSubTree(nodePK);
+      List<NodeDetail> tree = getSubTree(nodeToMove);
+      NodeDetail after = tree.get(0);
+      NodeDetail before = new NodeDetail(after);
+      before.setNodePK(new NodePK(nodeToMove.getId(), nodeToMove.getComponentInstanceId()));
       for (int t = 0; t < tree.size(); t++) {
         NodeDetail node = tree.get(t);
         deleteIndex(node.getNodePK());
@@ -298,8 +305,10 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         createIndex(node, true);
       }
 
-      nodeDAO.unvalidateTree(con, nodePK);
+      nodeDAO.unvalidateTree(con, nodeToMove);
       nodeDAO.unvalidateTree(con, toNode);
+
+      notifier.notifyEventOn(ResourceEvent.Type.MOVE, before, after);
     } catch (Exception e) {
       throw new NodeRuntimeException(e);
     } finally {
