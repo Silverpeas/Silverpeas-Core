@@ -333,7 +333,7 @@ public class IndexSearcher {
         query = new RegexpQuery(new Term(getFieldName(fieldName, language), queryStr));
       } else {
         QueryParser parser = new QueryParser(getFieldName(fieldName, language), analyzer);
-        parser.setDefaultOperator(QueryParser.Operator.OR);
+        parser.setDefaultOperator(defaultOperator);
         query = parse(parser, "+" + queryStr);
       }
       if (query != null) {
