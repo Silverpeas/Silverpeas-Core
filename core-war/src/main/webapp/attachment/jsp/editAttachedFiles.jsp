@@ -46,6 +46,8 @@
 <c:set var="isHugeProcessProcessing" value='<%=AttachmentHugeProcessManager.get().isOneRunningOnInstance(request.getParameter("ComponentId"))%>' />
 <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
 <c:set var="dragAndDropEnable" value="${dragAndDropEnable and not isHugeProcessProcessing}" />
+<view:setConstant constant="org.silverpeas.core.contribution.attachment.model.DocumentType.image"
+                  var="imageType"/>
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
 <c:set var="id" value="${param.Id}" />
@@ -62,6 +64,10 @@
   </c:when>
   <c:otherwise>
     <c:set var="context" value="${param.Context}" />
+    <c:set var="acceptedfileType" value=""/>
+    <c:if test="${context == imageType}">
+        <c:set var="acceptedfileType" value='accept="image/png,image/jpeg,image/gif,image/webp"'/>
+    </c:if>
   </c:otherwise>
 </c:choose>
 <c:set var="Silverpeas_Attachment_Context" scope="session" value="${context}" />
@@ -129,7 +135,7 @@
       contentType: "application/json",
       dataType: "json",
       cache: false,
-      success: function(data) {
+      success: function() {
         reloadPage();
       }
     });
@@ -142,7 +148,7 @@
       contentType: "application/json",
       dataType: "json",
       cache: false,
-      success: function(data) {
+      success: function() {
         reloadPage();
       }
     });
@@ -186,7 +192,7 @@
       cache : false,
       dataType : "json",
       data : {"allowed" : (allowed) ? allowed : false},
-      success : function(data) {
+      success : function() {
         reloadPage();
       }
     });
@@ -201,14 +207,14 @@
       cache : false,
       dataType : "json",
       data : {"enabled" : (enabled) ? enabled : false},
-      success : function(data) {
+      success : function() {
         reloadPage();
       }
     });
   }
 
   function loadAttachment(id, lang) {
-    translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
+    const translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
     $.ajax({
       url: translationsUrl,
       type: "GET",
@@ -219,7 +225,7 @@
         $('#attachmentId').val(id);
         clearAttachment();
         $.each(data, function(index, attachment) {
-          if (attachment.lang == lang) {
+          if (attachment.lang === lang) {
             displayAttachment(attachment);
             return false;
           }
@@ -229,14 +235,14 @@
     });
   }
   $(document).ready(function() {
-      $("#fileLang").on("change", function (event) {
+      $("#fileLang").on("change", function () {
         $("#fileLang option:selected").each(function () {
           alert($(this).val());
           loadAttachment($("#attachmentId").val(), $(this).val());
         });
     });
 
-    var iframeSendComplete = function() {
+    const iframeSendComplete = function () {
       reloadPage();
       $(this).dialog("close");
     };
@@ -257,12 +263,12 @@
       modal: true,
       buttons: {
         '<fmt:message key="GML.delete"/>': function() {
-          deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id");
+           const deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id");
             $.ajax({
               url: deleteUrl,
               type: "DELETE",
               cache: false,
-              success: function(data) {
+              success: function() {
                 reloadPage();
                 $(this).dialog("close");
               }
@@ -276,7 +282,7 @@
         }
       });
 
-    jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
+    jQuery(document).ajaxError(function() {
       $.closeProgressMessage();
     });
 
@@ -288,28 +294,29 @@
       modal : true,
       buttons : {
         '<fmt:message key="GML.ok"/>' : function() {
-          var filename = $.trim($("#file_create").val().split('\\').pop());
+          const filename = $.trim($("#file_create").val().split('\\').pop());
           if (filename === '') {
             return false;
           }
-          var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
+          let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
           submitUrl = submitUrl + '/' + encodeURIComponent(filename);
           $.progressMessage();
           if ("FormData" in window) {
-            var formData = new FormData($("#add-attachment-form")[0]);
+            const formData = new FormData($("#add-attachment-form")[0]);
             $.ajax(submitUrl, {
               processData : false,
               contentType : false,
               type : 'POST',
               dataType : "json",
               data : formData,
-              success : function(data) {
+              success : function() {
                 reloadPage();
               }
             });
           } else {
-            $('#add-attachment-form').attr('action', submitUrl);
-            $('#add-attachment-form').submit();
+            const $form = $('#add-attachment-form');
+            $form.attr('action', submitUrl);
+            $form.submit();
           }
         }, '<fmt:message key="GML.cancel"/>' : function() {
           $(this).dialog("close");
@@ -327,9 +334,9 @@
       modal : true,
       buttons : {
         '<fmt:message key="GML.ok"/>' : function() {
-          var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+          let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
               $(this).data('attachmentId');
-          var filename = $.trim($("#file_upload").val().split('\\').pop());
+          const filename = $.trim($("#file_upload").val().split('\\').pop());
           if (filename !== '') {
             submitUrl = submitUrl + '/' + encodeURIComponent(filename);
           } else {
@@ -337,20 +344,21 @@
           }
           $.progressMessage();
           if ("FormData" in window) {
-            var formData = new FormData($("#update-attachment-form")[0]);
+            const formData = new FormData($("#update-attachment-form")[0]);
             $.ajax(submitUrl, {
               processData : false,
               contentType : false,
               type : 'POST',
               dataType : "json",
               data : formData,
-              success : function(data) {
+              success : function() {
                 reloadPage();
               }
             });
           } else {
-            $('#update-attachment-form').attr('action', submitUrl);
-            $('#update-attachment-form').submit();
+            const $form = $('#add-attachment-form');
+            $form.attr('action', submitUrl);
+            $form.submit();
           }
         },
         '<fmt:message key="GML.delete"/>' : function() {
@@ -361,7 +369,7 @@
             contentType : "application/json",
             dataType : "json",
             cache : false,
-            success : function(data) {
+            success : function() {
               reloadPage();
               $(this).dialog("close");
             }
@@ -390,14 +398,14 @@
   }
 
   function selectFile(fileUrl) {
-    var funcNum = getUrlParam('CKEditorFuncNum');
+    const funcNum = getUrlParam('CKEditorFuncNum');
     window.opener.CKEDITOR.tools.callFunction(funcNum, fileUrl);
     window.close() ;
   }
 
   function getUrlParam(paramName) {
-    var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i') ;
-    var match = window.location.search.match(reParam) ;
+    const reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i');
+    const match = window.location.search.match(reParam);
     return (match && match.length > 1) ? match[1] : '' ;
   }
 </script>
@@ -408,26 +416,29 @@
       <fmt:message key="attachment.treatment.huge.processing"/>
     </div>
   </c:if>
-  <table border="0" width="100%">
+  <table>
     <tr>
       <td><!--formulaire de gestion des fichiers joints -->
-        <table border="0" cellspacing="3" cellpadding="0" width="100%">
+        <table>
+            <th></th>
             <tr>
-              <td colspan="8" align="center" class="intfdcolor" height="1"><img src='<c:out value="${noColorPix}" />' alt=""/></td>
+              <td colspan="8" class="intfdcolor" height="1" style="text-align: center">
+                  <img src='<c:out value="${noColorPix}" />' alt=""/></td>
             </tr>
             <tr>
-              <td align="center"><b><fmt:message key="type" /></b></td>
-              <td align="left"><b><fmt:message key="GML.file" /></b></td>
-              <td align="left"><b><fmt:message key="Title" /></b></td>
-              <td align="left"><b><fmt:message key="GML.description" /></b></td>
-              <td align="left"><b><fmt:message key="GML.size" /></b></td>
-              <td align="left"><b><fmt:message key="uploadDate" /></b></td>
+              <td style="text-align: center"><b><fmt:message key="type" /></b></td>
+              <td style="text-align: left"><b><fmt:message key="GML.file" /></b></td>
+              <td style="text-align: left"><b><fmt:message key="Title" /></b></td>
+              <td style="text-align: left"><b><fmt:message key="GML.description" /></b></td>
+              <td style="text-align: left"><b><fmt:message key="GML.size" /></b></td>
+              <td style="text-align: left"><b><fmt:message key="uploadDate" /></b></td>
               <c:if test="${not isHugeProcessProcessing}">
-                <td align="center"><b><fmt:message key="GML.operations" /></b></td>
+              <td style="text-align: center"><b><fmt:message key="GML.operations" /></b></td>
               </c:if>
             </tr>
             <tr>
-              <td colspan="8" align="center" class="intfdcolor" height="1"><img src='${noColorPix}' alt="" /></td>
+              <td colspan="8" class="intfdcolor" height="1" style="text-align: center">
+                  <img src='${noColorPix}' alt="" /></td>
             </tr>
             <c:url var="infoIcon" value="/util/icons/info.gif" />
             <c:url var="updateIcon" value="/util/icons/update.gif" />
@@ -456,17 +467,17 @@
 
               <c:url var="currentAttachmentUrl" value="${varAttachment.attachmentURL}" />
               <tr id='attachment_${varAttachment.oldSilverpeasId}'>
-                <td class="odd ${forbiddenDownloadClass}" align="center">
+                <td class="odd ${forbiddenDownloadClass}" style="text-align: center">
                   <c:choose>
                     <c:when test="${canUserDownloadFile}">
-                      <a id="other" href='<c:out value="${currentAttachmentUrl}" />' target="_blank"><img src='<c:out value="${varAttachment.displayIcon}" />' border="0" alt=""/></a>
+                      <a id="other" href='<c:out value="${currentAttachmentUrl}" />' target="_blank"><img src='<c:out value="${varAttachment.displayIcon}" />' alt=""/></a>
                     </c:when>
                     <c:otherwise>
-                      <img src='<c:out value="${varAttachment.displayIcon}" />' border="0" alt=""/>
+                      <img src='<c:out value="${varAttachment.displayIcon}" />' alt=""/>
                     </c:otherwise>
                   </c:choose>
                 </td>
-                <td class="odd ${forbiddenDownloadClass}" align="left">
+                <td class="odd ${forbiddenDownloadClass}" style="text-align: left">
                   <c:choose>
                     <c:when test="${originWysiwyg}">
                       <a href="javascript:selectFile('<c:out value="${silfn:escapeJs(currentAttachmentUrl)}" />');"><c:out value="${varAttachment.filename}" /></a>
@@ -483,7 +494,7 @@
                     </c:otherwise>
                   </c:choose>
                 </td>
-                <td class="odd ${forbiddenDownloadClass}" align="left">
+                <td class="odd ${forbiddenDownloadClass}" style="text-align: left">
                   <c:choose>
                     <c:when test="${view:isDefined(varAttachment.title)}">
                       <c:out value="${varAttachment.title}" />
@@ -491,13 +502,13 @@
                     <c:otherwise>&nbsp;</c:otherwise>
                   </c:choose>
                 </td>
-                <td class="odd ${forbiddenDownloadClass}" align="center">
+                <td class="odd ${forbiddenDownloadClass}" style="text-align: center">
                   <view:icon altText="${varAttachment.description}" iconName="${infoIcon}" />
                 </td>
-                <td class="odd" align="left"><c:out value="${view:humanReadableSize(varAttachment.size)}" /></td>
-                <td class="odd" align="left"><view:formatDate language="${sessionScope.SilverSessionController.favoriteLanguage}" value="${varAttachment.creationDate}"/></td>
+                <td class="odd" style="text-align: left"><c:out value="${view:humanReadableSize(varAttachment.size)}" /></td>
+                <td class="odd" style="text-align: left"><view:formatDate language="${sessionScope.SilverSessionController.favoriteLanguage}" value="${varAttachment.creationDate}"/></td>
                 <c:if test="${not isHugeProcessProcessing}">
-                  <td class="odd" align="right">
+                  <td class="odd" style="text-align: right">
                     <view:icons>
                       <view:icon iconName="${updateIcon}" altText="${updateIconMsg}" action="javascript:updateAttachment(\'${varAttachment.id}\', \'${varAttachment.language}\');"/>
                       <view:icon iconName="${deleteIcon}" altText="${deleteIconMsg}" action="javascript:deleteAttachment(\'${varAttachment.id}\',\'${silfn:escapeJs(varAttachment.filename)}\');"/>
@@ -523,7 +534,8 @@
               </tr>
             </c:forEach>
           <tr>
-            <td colspan="8" align="center" class="intfdcolor" height="1"><img src='<c:out value="${noColorPix}" />' alt="" /></td>
+            <td colspan="8" style="text-align: center" class="intfdcolor" height="1">
+                <img src='<c:out value="${noColorPix}" />' alt="" /></td>
           </tr>
         </table>
       </td>
@@ -546,7 +558,7 @@
       <span id="fileName"></span><br/>
       <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
       <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
-      <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
+      <input type="file" name="file_upload" size="60" id="file_upload" ${acceptedfileType} multiple/><br/>
       <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" includeLabel="true" /><br/>
       <label for="fileTitle"><fmt:message key="Title"/></label><br/>
       <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
@@ -561,7 +573,7 @@
       <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
       <input type="hidden" name="context" id="context" value="<c:out value="${context}" />" />
       <label for="file_create"><fmt:message key="fichierJoint"/></label><br/>
-      <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>
+      <input type="file" name="file_upload" size="60" id="file_create" ${acceptedfileType} multiple/><br/>
       <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" includeLabel="true" /><br/>
       <label for="fileTitleCreate"><fmt:message key="Title"/></label><br/>
       <input type="text" name="fileTitle" size="60" id="fileTitleCreate" /><br/>
