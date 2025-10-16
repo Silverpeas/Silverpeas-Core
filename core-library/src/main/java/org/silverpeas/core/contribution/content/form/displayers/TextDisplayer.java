@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.contribution.content.form.field.PublicationsPickerField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.util.DateUtil;
@@ -152,6 +153,8 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
         value = getDateValue(field, pagesContext);
       } else if (field.getTypeName().equals(FileField.TYPE)) {
         value = getFilenameValue(field, pagesContext);
+      } else if (field.getTypeName().equals(PublicationsPickerField.TYPE)) {
+        value = WebEncodeHelper.convertBlanksForHtml(field.getValue());
       } else {
         value = WebEncodeHelper.convertBlanksForHtml(Encode.forHtml(field.getValue(language)));
       }
