@@ -417,12 +417,13 @@
     </div>
   </c:if>
   <table>
+    <th></th>
     <tr>
       <td><!--formulaire de gestion des fichiers joints -->
         <table>
             <th></th>
             <tr>
-              <td colspan="8" class="intfdcolor" height="1" style="text-align: center">
+              <td colspan="8" class="intfdcolor" style="text-align: center; height: 1px">
                   <img src='<c:out value="${noColorPix}" />' alt=""/></td>
             </tr>
             <tr>
@@ -437,7 +438,7 @@
               </c:if>
             </tr>
             <tr>
-              <td colspan="8" class="intfdcolor" height="1" style="text-align: center">
+              <td colspan="8" class="intfdcolor" style="text-align: center; height: 1px">
                   <img src='${noColorPix}' alt="" /></td>
             </tr>
             <c:url var="infoIcon" value="/util/icons/info.gif" />
@@ -534,7 +535,7 @@
               </tr>
             </c:forEach>
           <tr>
-            <td colspan="8" style="text-align: center" class="intfdcolor" height="1">
+            <td colspan="8" style="text-align: center; height: 1px" class="intfdcolor">
                 <img src='<c:out value="${noColorPix}" />' alt="" /></td>
           </tr>
         </table>
