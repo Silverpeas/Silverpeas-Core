@@ -117,6 +117,7 @@ import org.silverpeas.core.reminder.DefaultReminderRepository;
 import org.silverpeas.core.security.html.DefaultHtmlSanitizer;
 import org.silverpeas.core.security.html.HtmlSanitizer;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.test.image.IIOProviderContextListener;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.jcr.SilverpeasJcrInitialization;
 import org.silverpeas.core.test.office.OfficeServiceInitializationListener;
@@ -163,6 +164,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependencies("com.drewnoakes:metadata-extractor");
     addClasses(ErrorAnnotationProcessor.class, LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("maven.properties");
+    addWebListener(IIOProviderContextListener.class);
   }
 
   /**

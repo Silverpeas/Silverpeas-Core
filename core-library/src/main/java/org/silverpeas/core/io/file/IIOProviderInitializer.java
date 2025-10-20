@@ -29,10 +29,10 @@ import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ejb.Singleton;
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ServiceRegistry;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
