@@ -38,20 +38,18 @@ import org.silverpeas.kernel.logging.Level;
 import org.silverpeas.kernel.util.SystemWrapper;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.text.MessageFormat.format;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * Integration test on the use of the Log annotation.
@@ -148,9 +146,7 @@ public class LogAnnotationIT {
     try {
       // the log file can contains more than these two records as the tests can be ran several
       // times.
-      await().pollDelay(1, TimeUnit.SECONDS)
-          .atMost(2, TimeUnit.SECONDS)
-          .untilTrue(new AtomicBoolean(true));
+      awaitUntil(2, TimeUnit.SECONDS);
       final List<String> lines = IOUtils.readLines(loggerReaderRule.getReader());
       assertThat(format("Searching {0} or {1} into \n{2}", record1, record2, lines),
           lines.stream().filter(line -> line.contains(record1) || line.contains(record2)).count(),
@@ -165,9 +161,7 @@ public class LogAnnotationIT {
     try {
       // the log file can contains more than this record as the tests can be ran several
       // times.
-      await().pollDelay(1, TimeUnit.SECONDS)
-          .atMost(2, TimeUnit.SECONDS)
-          .untilTrue(new AtomicBoolean(true));
+      awaitUntil(2, TimeUnit.SECONDS);
       final List<String> lines = IOUtils.readLines(loggerReaderRule.getReader());
       assertThat(format("Searching {0} into \n{1}", record, lines),
           lines.stream().filter(line -> line.contains(record)).count(),
