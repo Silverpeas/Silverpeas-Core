@@ -1,4 +1,3 @@
-<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%--
   Copyright (C) 2000 - 2024 Silverpeas
 
@@ -78,7 +77,7 @@
 
 <script type="text/javascript">
   sp.navigation.previousNextOn(document, function(isPrevious) {
-    var button;
+    let button;
     if (isPrevious) {
       button = $('#previousButton').get(0);
     } else {
