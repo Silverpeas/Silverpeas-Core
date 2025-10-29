@@ -52,7 +52,7 @@ public class MyLastAccessedAppliPortlet extends GenericPortlet implements FormNa
       nbApplis = Integer.parseInt(pref.getValue("nbApplis", "5"));
     }
 
-    Collection<ComponentInstLight> listApplis = new ArrayList<ComponentInstLight>();
+    Collection<ComponentInstLight> listApplis = new ArrayList<>();
     try {
       listApplis = SilverStatisticsPeasDAOAccesVolume.getLastAccessedComponentsUser(
           UserDetail.getCurrentRequester().getId(), nbApplis);

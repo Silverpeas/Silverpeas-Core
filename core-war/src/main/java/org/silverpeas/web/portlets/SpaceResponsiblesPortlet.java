@@ -23,14 +23,13 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.portlet.*;
 import java.io.IOException;
 
-public class SpaceResponsiblesPortlet extends GenericPortlet implements FormNames {
+public class SpaceResponsiblesPortlet extends SilverpeasEditablePortlet {
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
@@ -85,22 +84,10 @@ public class SpaceResponsiblesPortlet extends GenericPortlet implements FormName
   }
 
   /*
-   * Process Action.
-   */
-  @Override
-  public void processAction(ActionRequest request, ActionResponse response)
-      throws PortletException {
-    if (request.getParameter(SUBMIT_FINISHED) != null) {
-      processEditFinishedAction(request, response);
-    } else if (request.getParameter(SUBMIT_CANCEL) != null) {
-      processEditCancelAction(request, response);
-    }
-  }
-
-  /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionRequest request,
+  @Override
+  protected void processEditCancelAction(ActionRequest request,
       ActionResponse response) throws PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
@@ -109,10 +96,12 @@ public class SpaceResponsiblesPortlet extends GenericPortlet implements FormName
    * Process the "finished" action for the edit page. Set the "url" to the value specified in the
    * edit page.
    */
-  private void processEditFinishedAction(ActionRequest request, ActionResponse response)
+  @Override
+  protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
       throws PortletException {
 
-    String displayOnlySpaceManagers = request.getParameter("displayOnlySpaceManagers");
+    String displayOnlySpaceManagers = request.getRenderParameters()
+        .getValue("displayOnlySpaceManagers");
 
     // store preference
     PortletPreferences pref = request.getPreferences();
@@ -126,6 +115,7 @@ public class SpaceResponsiblesPortlet extends GenericPortlet implements FormName
     response.setPortletMode(PortletMode.VIEW);
   }
 
+  @SuppressWarnings("SameParameterValue")
   private void log(String message, Exception ex) {
     getPortletContext().log(message, ex);
   }

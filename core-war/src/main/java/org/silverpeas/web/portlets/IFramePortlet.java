@@ -23,23 +23,12 @@
  */
 package org.silverpeas.web.portlets;
 
-import java.io.IOException;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.ValidatorException;
-
-import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.kernel.util.StringUtil;
 
-public class IFramePortlet extends GenericPortlet implements FormNames {
+import javax.portlet.*;
+import java.io.IOException;
+
+public class IFramePortlet extends SilverpeasEditablePortlet {
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
@@ -61,40 +50,18 @@ public class IFramePortlet extends GenericPortlet implements FormNames {
   }
 
   /*
-   * Process Action.
-   */
-  public void processAction(ActionRequest request, ActionResponse response)
-      throws PortletException {
-    if (request.getParameter(SUBMIT_FINISHED) != null) {
-      //
-      // handle "finished" button on edit page
-      // return to view mode
-      //
-      processEditFinishedAction(request, response);
-    } else if (request.getParameter(SUBMIT_CANCEL) != null) {
-      //
-      // handle "cancel" button on edit page
-      // return to view mode
-      //
-      processEditCancelAction(request, response);
-    }
-  }
-
-  /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionRequest request,
-      ActionResponse response) throws PortletException {
+  @Override
+  protected void processEditCancelAction(ActionRequest request, ActionResponse response)
+      throws PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
 
-  /*
-   * Process the "finished" action for the edit page. Set the "url" to the value specified in the
-   * edit page.
-   */
-  private void processEditFinishedAction(ActionRequest request,
-      ActionResponse response) throws PortletException {
-    String url = request.getParameter("url");
+  @Override
+  protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
+      throws PortletException {
+    String url = request.getRenderParameters().getValue("url");
 
     // Check if it is a number
     // store preference
@@ -102,12 +69,9 @@ public class IFramePortlet extends GenericPortlet implements FormNames {
     try {
       pref.setValue("url", url);
       pref.store();
-    } catch (ValidatorException ve) {
+    } catch (ValidatorException | IOException ve) {
       getPortletContext().log("could not set url", ve);
       throw new PortletException("IFramePortlet.processEditFinishedAction", ve);
-    } catch (IOException ioe) {
-      getPortletContext().log("could not set url", ioe);
-      throw new PortletException("IFramePortlet.prcoessEditFinishedAction", ioe);
     }
     response.setPortletMode(PortletMode.VIEW);
   }

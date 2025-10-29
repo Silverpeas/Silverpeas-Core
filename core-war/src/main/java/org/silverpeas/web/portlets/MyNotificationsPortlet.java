@@ -33,14 +33,7 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.portlets.FormNames;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.portlet.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,11 +80,13 @@ public class MyNotificationsPortlet extends GenericPortlet implements FormNames 
 
   @Override
   public void processAction(ActionRequest request, ActionResponse response) throws PortletException {
-    response.setRenderParameter(ACTION_PARAMETER_NAME, request.getParameter(ACTION_PARAMETER_NAME));
-    response.setRenderParameter(COLUMN_PARAMETER_NAME, request.getParameter(COLUMN_PARAMETER_NAME));
-    response.setRenderParameter(ITEMS_PER_PAGE_PARAM, request.getParameter(ITEMS_PER_PAGE_PARAM));
-    response.setRenderParameter(INDEX_PARAMETER_NAME, request.getParameter(INDEX_PARAMETER_NAME));
-    response.setRenderParameter(TARGET_PARAMETER_NAME, request.getParameter(TARGET_PARAMETER_NAME));
+    RenderParameters reqParams = request.getRenderParameters();
+    MutableRenderParameters resParams = response.getRenderParameters();
+    resParams.setValue(ACTION_PARAMETER_NAME, reqParams.getValue(ACTION_PARAMETER_NAME));
+    resParams.setValue(COLUMN_PARAMETER_NAME, reqParams.getValue(COLUMN_PARAMETER_NAME));
+    resParams.setValue(ITEMS_PER_PAGE_PARAM, reqParams.getValue(ITEMS_PER_PAGE_PARAM));
+    resParams.setValue(INDEX_PARAMETER_NAME, reqParams.getValue(INDEX_PARAMETER_NAME));
+    resParams.setValue(TARGET_PARAMETER_NAME, reqParams.getValue(TARGET_PARAMETER_NAME));
     response.setPortletMode(PortletMode.VIEW);
   }
 

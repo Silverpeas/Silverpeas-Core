@@ -24,12 +24,11 @@
 package org.silverpeas.web.portlets;
 
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.web.portlets.FormNames;
 
 import javax.portlet.*;
 import java.io.IOException;
 
-public class NextEventsPortlet extends GenericPortlet implements FormNames {
+public class NextEventsPortlet extends SilverpeasEditablePortlet {
 
   private static final String NB_EVENTS = "nbEvents";
 
@@ -48,14 +47,18 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
     include(request, response, "edit.jsp");
   }
 
-  /** Include "help" JSP. */
+  /**
+   * Include "help" JSP.
+   */
   @Override
   public void doHelp(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "help.jsp");
   }
 
-  /** Include a page. */
+  /**
+   * Include a page.
+   */
   private void include(RenderRequest request, RenderResponse response,
       String pageName) throws PortletException {
     response.setContentType(request.getResponseContentType());
@@ -73,30 +76,11 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
   }
 
   /*
-   * Process Action.
-   */
-  @Override
-  public void processAction(ActionRequest request, ActionResponse response)
-      throws PortletException {
-    if (request.getParameter(SUBMIT_FINISHED) != null) {
-      //
-      // handle "finished" button on edit page
-      // return to view mode
-      //
-      processEditFinishedAction(request, response);
-    } else if (request.getParameter(SUBMIT_CANCEL) != null) {
-      //
-      // handle "cancel" button on edit page
-      // return to view mode
-      //
-      processEditCancelAction(response);
-    }
-  }
-
-  /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionResponse response) throws PortletException {
+  @Override
+  protected void processEditCancelAction(ActionRequest request, ActionResponse response)
+      throws PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
 
@@ -104,9 +88,10 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
    * Process the "finished" action for the edit page. Set the "url" to the value specified in the
    * edit page.
    */
-  private void processEditFinishedAction(ActionRequest request,
-      ActionResponse response) throws PortletException {
-    String nbItems = request.getParameter(TEXTBOX_NB_ITEMS);
+  @Override
+  protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
+      throws PortletException {
+    String nbItems = request.getRenderParameters().getValue(TEXTBOX_NB_ITEMS);
 
     // Check if it is a number
     try {
@@ -133,7 +118,7 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
       response.setPortletMode(PortletMode.VIEW);
 
     } catch (NumberFormatException e) {
-      response.setRenderParameter(ERROR_BAD_VALUE, "true");
+      response.getRenderParameters().setValue(ERROR_BAD_VALUE, "true");
       response.setPortletMode(PortletMode.EDIT);
     }
   }

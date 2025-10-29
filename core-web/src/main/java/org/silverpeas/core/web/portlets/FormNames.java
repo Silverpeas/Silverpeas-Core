@@ -28,25 +28,25 @@ public interface FormNames {
   /*
    * Markup element name for the "url" value in the portlet's edit mode.
    */
-  public static final String TEXTBOX_NB_ITEMS = "textboxNbItems";
+  String TEXTBOX_NB_ITEMS = "textboxNbItems";
 
   /*
    * Markup element name for the "maxAge" value in the portlet's edit mode.
    */
-  public static final String TEXTBOX_MAX_AGE = "maxAge";
+  String TEXTBOX_MAX_AGE = "maxAge";
 
   /*
    * Markup element name for the "finished" button in the portlet's edit mode.
    */
-  public static final String SUBMIT_FINISHED = "submitFinished";
+  String SUBMIT_FINISHED = "submitFinished";
 
   /*
    * Markup element name for the "cancel" button in the portlet's edit mode.
    */
-  public static final String SUBMIT_CANCEL = "submitCancel";
+  String SUBMIT_CANCEL = "submitCancel";
 
   /*
    * Error message name when the "TEXTBOX_URL" value is null.
    */
-  public static final String ERROR_BAD_VALUE = "errorBadValue";
+  String ERROR_BAD_VALUE = "errorBadValue";
 }

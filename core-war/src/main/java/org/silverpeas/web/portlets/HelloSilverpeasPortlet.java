@@ -23,35 +23,23 @@
  */
 package org.silverpeas.web.portlets;
 
+import javax.portlet.*;
 import java.io.IOException;
-
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
-import org.silverpeas.kernel.util.StringUtil;
 
 public class HelloSilverpeasPortlet extends GenericPortlet {
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    include(request, response, "portlet.jsp");
+    include(request, response);
   }
 
   /** Include a page. */
-  private void include(RenderRequest request, RenderResponse response,
-      String pageName) throws PortletException {
+  private void include(RenderRequest request, RenderResponse response) throws PortletException {
     response.setContentType(request.getResponseContentType());
-    if (!StringUtil.isDefined(pageName)) {
-      // assert
-      throw new NullPointerException("null or empty page name");
-    }
     try {
       PortletRequestDispatcher dispatcher = getPortletContext()
-          .getRequestDispatcher("/portlets/jsp/helloSilverpeas/" + pageName);
+          .getRequestDispatcher("/portlets/jsp/helloSilverpeas/portlet.jsp");
       dispatcher.include(request, response);
     } catch (IOException ioe) {
       throw new PortletException(ioe);

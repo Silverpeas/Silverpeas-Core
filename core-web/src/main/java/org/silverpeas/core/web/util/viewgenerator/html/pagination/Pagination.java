@@ -30,6 +30,7 @@ import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
+import javax.portlet.RenderParameters;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -55,7 +56,9 @@ public interface Pagination extends SimpleGraphicElement {
   static PaginationPage getPaginationPageFrom(final RenderRequest request,
       final PaginationPage currentPagination) {
     final Map<String, String> parameters = new HashMap<>();
-    request.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
+    RenderParameters renderParameters = request.getRenderParameters();
+    renderParameters.getNames().forEach(name ->
+        parameters.put(name, renderParameters.getValue(name)));
     return getPaginationPageFrom(parameters, currentPagination);
   }
 
@@ -130,11 +133,6 @@ public interface Pagination extends SimpleGraphicElement {
 
   boolean isLastPage();
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   String printIndex();
 
   String printIndex(String text);
@@ -147,11 +145,6 @@ public interface Pagination extends SimpleGraphicElement {
 
   int getLastItemIndex();
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   String printCounter();
 
   void setBaseURL(String baseUrl);

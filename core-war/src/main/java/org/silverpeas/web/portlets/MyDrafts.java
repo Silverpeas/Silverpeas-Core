@@ -25,14 +25,9 @@ package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.portlets.FormNames;
 
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.portlet.*;
 import java.io.IOException;
 
 public class MyDrafts extends GenericPortlet implements FormNames {
@@ -42,22 +37,18 @@ public class MyDrafts extends GenericPortlet implements FormNames {
       throws PortletException, IOException {
     request.setAttribute("Publications",
         getPublicationBm().getDraftsByUser(UserDetail.getCurrentRequester().getId()));
-    include(request, response, "portlet.jsp");
+    include(request, response);
   }
 
   /**
    * Include a page.
    */
-  private void include(RenderRequest request, RenderResponse response, String pageName)
+  private void include(RenderRequest request, RenderResponse response)
       throws PortletException {
     response.setContentType(request.getResponseContentType());
-    if (!StringUtil.isDefined(pageName)) {
-      // assert
-      throw new NullPointerException("null or empty page name");
-    }
     try {
       PortletRequestDispatcher dispatcher =
-          getPortletContext().getRequestDispatcher("/portlets/jsp/myDrafts/" + pageName);
+          getPortletContext().getRequestDispatcher("/portlets/jsp/myDrafts/portlet.jsp");
       dispatcher.include(request, response);
     } catch (IOException ioe) {
       throw new PortletException(ioe);

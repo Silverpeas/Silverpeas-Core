@@ -29,6 +29,7 @@ import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
+import javax.portlet.RenderParameters;
 import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -87,18 +88,20 @@ public interface ArrayPane extends SimpleGraphicElement {
    * Gets order by from given request and possible orderBies. The name of the array can be
    * specified via the attributes of given request with {@link #TARGET_PARAMETER_NAME} key.
    * @param renderRequest the request.
-   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
+   * @param orderByColumnIndex the possible order by indexed by the column index which starts
    * at 1.
    * @param defaultArrayPaneName the name of the array to search for in session in order to get
    * state and provide the right order by.
    * @return the order by.
    */
   static <O> O getOrderByFrom(final RenderRequest renderRequest,
-      final Map<Integer, Pair<O, O>> orderBiesByColumnIndex, final String defaultArrayPaneName) {
+      final Map<Integer, Pair<O, O>> orderByColumnIndex, final String defaultArrayPaneName) {
     final Map<String, String> parameters = new HashMap<>();
-    renderRequest.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
+    RenderParameters renderParameters = renderRequest.getRenderParameters();
+    renderParameters.getNames().forEach(name ->
+        parameters.put(name, renderParameters.getValue(name)));
     final HttpServletRequest request = getHttpServletRequest(renderRequest);
-    return getOrderByFrom(request, parameters, orderBiesByColumnIndex, defaultArrayPaneName);
+    return getOrderByFrom(request, parameters, orderByColumnIndex, defaultArrayPaneName);
   }
 
   /**
@@ -182,7 +185,9 @@ public interface ArrayPane extends SimpleGraphicElement {
   static PaginationPage getPaginationPageFrom(RenderRequest renderRequest,
       final String defaultArrayPaneName) {
     final Map<String, String> parameters = new HashMap<>();
-    renderRequest.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
+    RenderParameters renderParameters = renderRequest.getRenderParameters();
+    renderParameters.getNames().forEach(name ->
+        parameters.put(name, renderParameters.getValue(name)));
     final HttpServletRequest request = getHttpServletRequest(renderRequest);
     return getPaginationPageFrom(request, parameters, defaultArrayPaneName);
   }
