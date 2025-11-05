@@ -26,7 +26,6 @@
 <%@ page import="org.silverpeas.core.notification.user.client.NotificationManagerSettings" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-<%@ page import="org.silverpeas.core.util.CollectionUtil" %>
 
 <%--
 
@@ -87,7 +86,6 @@
   String action = (String) request.getAttribute("action");
   String groupsPath = (String) request.getAttribute("groupsPath");
   Integer minLengthLogin = (Integer) request.getAttribute("minLengthLogin");
-  List<Group> groups = (List<Group>) request.getAttribute("GroupsManagedByCurrentUser");
 
   boolean userCreation = "userCreate".equals(action);
   boolean extraInfosUpdatable = userCreation || "userUpdate".equals(action);
@@ -202,22 +200,7 @@ function ifCorrectBasicFormExecute(callback) {
 
   sp.promise.whenAllResolved(verifyPromises).then(function() {
     if (!SilverpeasError.show()) {
-      <% if (userCreation && CollectionUtil.isNotEmpty(groups)) { %>
-      const firstName = $("#userFirstName").val();
-      const lastName = userLastNameInput.val();
-      const email = $("#userEMail").val();
-      $.post('<%=m_context%>/JobDomainPeasAJAXServlet',
-        {FirstName : firstName, LastName : lastName, Email : email, Action : 'CheckUser'},
-        function(data) {
-          if (data === "ok") {
-            callback.call(this);
-          } else {
-            jQuery.popup.error('<fmt:message key="JDP.userAlreadyExistingError"/>');
-          }
-        }, 'text');
-      <% } else { %>
       callback.call(this);
-      <% } %>
     }
   });
 }
@@ -390,33 +373,8 @@ out.println(window.printBefore());
       </div>
     </div>
 
-        <% }
+        <% } %>
 
-        //in case of group manager, the added user must be set to one group
-        //if user manages only once group, user will be added to it
-        //else if he manages several groups, manager chooses one group
-        if (CollectionUtil.isNotEmpty(groups)) {
-      %>
-	<!--Group-->
-	<div class="field" id="form-row-group">
-			<label class="txtlibform"><fmt:message key="GML.groupe"/></label>
-			<div class="champs">
-				<% if (groups.size() == 1) {
-			Group group = groups.get(0);
-			%>
-			<%=group.getName() %> <input type="hidden" name="GroupId" id="GroupId" value="<%=group.getId()%>"/>
-			<% } else { %>
-			<select id="GroupId" name="GroupId">
-	            <% for (Group group : groups) {
-	            %>
-	            <option value="<%=group.getId()%>"><%=group.getName()%>
-	            </option>
-	            <% } %>
-	          </select>&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
-	          <% } %>
-			</div>
-		</div>
-      <% } %>
         <!--User Language-->
         <div class="field" id="form-row-user-language">
           <label class="txtlibform"><fmt:message key="JDP.userPreferredLanguage"/></label>
