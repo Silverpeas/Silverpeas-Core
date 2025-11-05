@@ -42,7 +42,6 @@ public class JobDomainSettings {
   private static final int GROUPS_PER_PAGE;
   private static final int LOGIN_MIN_LENGTH;
   private static final boolean USER_ADDING_FOR_GROUP_MANAGERS;
-  private static final boolean USE_COMMUNITY_MANAGEMENT;
   private static final boolean USERS_IN_DOMAIN_QUOTA_ACTIVATED;
   private static final boolean LAST_CONNECTION_COLUMN_ENABLED;
 
@@ -54,7 +53,6 @@ public class JobDomainSettings {
     GROUPS_PER_PAGE = rs.getInteger("GroupsByPage", 10);
     LOGIN_MIN_LENGTH = rs.getInteger("MinLengthLogin", 5);
     USER_ADDING_FOR_GROUP_MANAGERS = rs.getBoolean("UserAddingAllowedForGroupManagers", false);
-    USE_COMMUNITY_MANAGEMENT = rs.getBoolean("UseCommunityManagement", false);
     USERS_IN_DOMAIN_QUOTA_ACTIVATED = rs.getBoolean("quota.domain.users.activated", false);
     LAST_CONNECTION_COLUMN_ENABLED = rs.getBoolean("domain.users.columns.lastconnection", true);
   }
@@ -81,10 +79,6 @@ public class JobDomainSettings {
 
   public static boolean isUserAddingAllowedForGroupManagers() {
     return USER_ADDING_FOR_GROUP_MANAGERS;
-  }
-
-  public static boolean isCommunityManagementEnabled() {
-    return USE_COMMUNITY_MANAGEMENT;
   }
 
   public static boolean isUsersInDomainQuotaEnabled() {
