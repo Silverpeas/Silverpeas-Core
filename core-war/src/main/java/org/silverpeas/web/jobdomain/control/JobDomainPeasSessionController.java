@@ -296,8 +296,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       }
       granted = groupStream.map(Pair::getSecond).anyMatch(domainId::equals);
       if (!granted && readOnly) {
-        granted = (equalsUserDomain || Domain.MIXED_DOMAIN_ID.equals(domainId)) &&
-            (isOnlySpaceManager() || isCommunityManager());
+        granted = (equalsUserDomain || Domain.MIXED_DOMAIN_ID.equals(domainId)) && isOnlySpaceManager();
       }
     }
     return granted;
@@ -1661,7 +1660,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
       // and all classic domains
       domains.addAll(Arrays.asList(adminCtrl.getAllDomains()));
-    } else if (isOnlySpaceManager() || isCommunityManager()) {
+    } else if (isOnlySpaceManager()) {
       // return mixed domain...
       domains.add(adminCtrl.getDomain(Domain.MIXED_DOMAIN_ID));
 
@@ -1688,25 +1687,6 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       return !getUserDetail().getDomainId().equals(targetDomainId);
     }
     return true;
-  }
-
-  public boolean isCommunityManager() {
-    if (!JobDomainSettings.isCommunityManagementEnabled()) {
-      return false;
-    }
-
-    // check if user is able to manage at least one space and its corresponding group
-    List<Group> groups = getUserManageableGroups();
-    String[] spaceIds = getUserManageableSpaceIds();
-    for (String spaceId : spaceIds) {
-      SpaceInstLight space = getOrganisationController().getSpaceInstLightById(spaceId);
-      for (Group group : groups) {
-        if (space.getName().equalsIgnoreCase(group.getName())) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
   public boolean isGroupManagerOnCurrentGroup() {
@@ -2257,26 +2237,6 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       }
     }
     return null;
-  }
-
-  /**
-   * @return true if community management is activated and target user belongs to one group
-   * manageable by current user
-   */
-  public boolean isUserInAtLeastOneGroupManageableByCurrentUser() {
-    if (!JobDomainSettings.isCommunityManagementEnabled()) {
-      return false;
-    }
-    List<String> groupIds = getUserManageableGroupIds();
-    for (String groupId : groupIds) {
-      UserDetail[] users = getOrganisationController().getAllUsersOfGroup(groupId);
-      UserDetail user = getUser(targetUserId, users);
-
-      if (user != null) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private UserDetail getUser(String userId, UserDetail[] users) {

@@ -110,8 +110,6 @@
   boolean isX509Enabled = (Boolean) request.getAttribute("isX509Enabled");
   boolean isGroupManager = (Boolean) request.getAttribute("isOnlyGroupManager");
   boolean onlySpaceManager = (Boolean) request.getAttribute("isOnlySpaceManager");
-  boolean isUserManageableByGroupManager =
-      (Boolean) request.getAttribute("userManageableByGroupManager");
   boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
 
   String thisUserId = userObject.getId();
@@ -129,7 +127,7 @@
     browseBar.setPath(groupsPath);
   }
 
-  if (isDomainRW && isUserRW && (!isGroupManager || isUserManageableByGroupManager)) {
+  if (isDomainRW && isUserRW && !isGroupManager) {
     if (isUserFull) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),

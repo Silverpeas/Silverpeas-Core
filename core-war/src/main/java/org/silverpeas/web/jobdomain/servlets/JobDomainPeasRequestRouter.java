@@ -806,13 +806,6 @@ public class JobDomainPeasRequestRouter extends
                   jobDomainSC.getString("JDP.userAdd") + "..."));
           request.setAttribute(MIN_LENGTH_LOGIN_ATTR, jobDomainSC.getMinLengthLogin());
           request.setAttribute(CURRENT_USER_ATTR, jobDomainSC.getUserDetail());
-          // if community management is activated, add groups on this user is manager
-          if (JobDomainSettings.isCommunityManagementEnabled()) {
-            request.setAttribute("GroupsManagedByCurrentUser",
-                jobDomainSC.getUserManageableGroups());
-          }
-
-          destination = USER_CREATE_DEST;
         } else if (function.startsWith("displayUsersCsvImport")) {
           request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
@@ -1057,8 +1050,6 @@ public class JobDomainPeasRequestRouter extends
           setRightManagementAttributes(request, domainRight);
           request.setAttribute("isX509Enabled", (domainRight & ACTION_X509_USER) != 0);
           request.setAttribute(IS_ONLY_GROUP_MANAGER_ATTR, jobDomainSC.isOnlyGroupManager());
-          request.setAttribute("userManageableByGroupManager", jobDomainSC.
-              isUserInAtLeastOneGroupManageableByCurrentUser());
           request.setAttribute(IS_ONLY_SPACE_MANAGER_ATTR, jobDomainSC.isOnlySpaceManager());
         }
         setTargetUser(jobDomainSC, request);
