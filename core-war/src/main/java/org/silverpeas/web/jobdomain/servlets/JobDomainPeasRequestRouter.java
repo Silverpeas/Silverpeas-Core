@@ -726,11 +726,6 @@ public class JobDomainPeasRequestRouter extends
               jobDomainSC.getString("JDP.userAdd") + "..."));
           request.setAttribute(MIN_LENGTH_LOGIN_ATTR, jobDomainSC.getMinLengthLogin());
           request.setAttribute(CURRENT_USER_ATTR, jobDomainSC.getUserDetail());
-          // if community management is activated, add groups on this user is manager
-          if (JobDomainSettings.m_UseCommunityManagement) {
-            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC.getUserManageableGroups());
-          }
-
           destination = USER_CREATE_DEST;
         } else if (function.startsWith("displayUsersCsvImport")) {
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
@@ -914,7 +909,9 @@ public class JobDomainPeasRequestRouter extends
         }
         long domainRight = jobDomainSC.getDomainActions();
         request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
-        request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));
+        var rootGroups = jobDomainSC.getRootGroupsPerType();
+        request.setAttribute("subGroups", rootGroups.getFirst());
+        request.setAttribute("appGroups", rootGroups.getSecond());
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(false));
         setRightManagementAttributes(request, domainRight);
 
@@ -951,8 +948,6 @@ public class JobDomainPeasRequestRouter extends
           setRightManagementAttributes(request, domainRight);
           request.setAttribute("isX509Enabled", (domainRight & ACTION_X509_USER) != 0);
           request.setAttribute(IS_ONLY_GROUP_MANAGER_ATTR, jobDomainSC.isOnlyGroupManager());
-          request.setAttribute("userManageableByGroupManager", jobDomainSC.
-              isUserInAtLeastOneGroupManageableByCurrentUser());
           request.setAttribute(IS_ONLY_SPACE_MANAGER_ATTR, jobDomainSC.isOnlySpaceManager());
         }
         try {
@@ -973,7 +968,9 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.setTargetDomain(domains.get(0).getId());
         }
         request.setAttribute("allDomains", domains);
-        request.setAttribute("allRootGroups", jobDomainSC.getAllRootGroups());
+        var allRootGroup = jobDomainSC.getAllRootGroups();
+        request.setAttribute("domainRootGroups", allRootGroup.getFirst());
+        request.setAttribute("appRootGroups", allRootGroup.getSecond());
         request.setAttribute("CurrentDomain", jobDomainSC.getTargetDomain());
       } else if ("groupManagers.jsp".equals(destination)) {
         request.setAttribute(GROUP_OBJECT_ATTR, jobDomainSC.getTargetGroup());

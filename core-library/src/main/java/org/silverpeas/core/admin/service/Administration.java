@@ -35,10 +35,10 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.kernel.annotation.NonNull;
-import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.util.Pair;
 
 import java.util.Collection;
 import java.util.List;
@@ -497,7 +497,8 @@ public interface Administration {
   GroupDetail[] getGroups(String[] asGroupId) throws AdminException;
 
   /**
-   * Add the given group in Silverpeas.
+   * Add the given group in Silverpeas and in the domain related by the specified group. The domain
+   * to which the group belongs must be set ({@link Group#getDomainId()}
    *
    * @param group a user group.
    * @return the identifier of the new group.
@@ -506,10 +507,12 @@ public interface Administration {
   String addGroup(GroupDetail group) throws AdminException;
 
   /**
-   * Add the given group in Silverpeas.
+   * Add the given group in Silverpeas. If the group has to be added also in a user domain, this one
+   * has to be specified by the group ({@link Group#getDomainId()}.
    *
    * @param group a user group.
-   * @param onlyInSilverpeas performs the operation only in Silverpeas
+   * @param onlyInSilverpeas performs the operation only in Silverpeas. Otherwise it will be done
+   * also in the domain specified by the given group.
    * @return the identifier of the new group
    * @throws AdminException if an error occurs
    */
@@ -1520,11 +1523,37 @@ public interface Administration {
   List<String> searchUserIdsByProfile(final List<String> profileIds,
       final boolean includeRemovedUsersAndGroups) throws AdminException;
 
+  /**
+   * Search all the users matching the specified criteria.
+   * @param searchCriteria the criteria the users have to satisfy.
+   * @return a possible paginated list of users.
+   * @throws AdminException if the users cannot be fetched according to the specified criteria.
+   */
   SilverpeasList<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria)
       throws AdminException;
 
+  /**
+   * Search all the user groups matching the specified criteria. No ordering is done in the
+   * returned list of user groups.
+   * @param searchCriteria the criteria the groups have to satisfy.
+   * @return a possible paginated list of user groups.
+   * @throws AdminException if the groups cannot be fetched according to the specified criteria.
+   */
   SilverpeasList<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria)
       throws AdminException;
+
+  /**
+   * Search all the user groups matching the specified criteria and order or not the list by
+   * their type. If ordered by their type, then the first groups will be the usual ones and the
+   * last ones will the the community groups.
+   * @param searchCriteria the criteria the groups have to satisfy.
+   * @param orderedByType a flag indicating if the returned groups have to be ordered by their
+   * type.
+   * @return a possible paginated list of user groups.
+   * @throws AdminException if the groups cannot be fetched according to the specified criteria.
+   */
+  SilverpeasList<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria,
+      boolean orderedByType) throws AdminException;
 
   // -------------------------------------------------------------------------
   // Node profile management

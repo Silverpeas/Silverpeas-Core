@@ -118,7 +118,7 @@ public class UserGroupProfileResource extends RESTWebService {
     criteriaBuilder.withDomainId(domainId).withName(name).withPaginationPage(fromPage(page));
 
     SilverpeasList<Group> allGroups =
-        getOrganisationController().searchGroups(criteriaBuilder.build());
+        getOrganisationController().searchGroups(criteriaBuilder.build(), true);
     UserGroupProfileEntity[] entities =
         asWebEntity(allGroups, locatedAt(getUri().getAbsolutePath()));
     return Response.ok(entities).
@@ -196,7 +196,7 @@ public class UserGroupProfileResource extends RESTWebService {
     userStateFilter(criteriaBuilder, userStatesToExclude);
 
     SilverpeasList<Group> groups =
-        getOrganisationController().searchGroups(criteriaBuilder.build());
+        getOrganisationController().searchGroups(criteriaBuilder.build(), true);
     URI groupsUri = getUri().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
         header(RESPONSE_HEADER_GROUPSIZE, groups.originalListSize()).
@@ -268,7 +268,7 @@ public class UserGroupProfileResource extends RESTWebService {
     userStateFilter(criteriaBuilder, userStatesToExclude);
 
     SilverpeasList<Group> subgroups =
-        getOrganisationController().searchGroups(criteriaBuilder.build());
+        getOrganisationController().searchGroups(criteriaBuilder.build(), true);
     return Response.ok(asWebEntity(subgroups, locatedAt(getUri().getAbsolutePath()))).
         header(RESPONSE_HEADER_GROUPSIZE, subgroups.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, subgroups.originalListSize()).build();
