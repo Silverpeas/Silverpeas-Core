@@ -2042,7 +2042,10 @@ if (typeof window.sp === 'undefined') {
             if (paramPart.length > 1) {
               paramPart += '&';
             }
-            paramPart += key + "=" + paramList.join("&" + key + "=");
+            paramPart += key + "=" + encodeURIComponent(paramList[0]);
+            for (let i = 1; i < paramList.length; i++) {
+              paramPart += "&" + key + "=" + encodeURIComponent(paramList[i]);
+            }
           }
         }
         return url + (paramPart.length === 1 ? '' : paramPart);
