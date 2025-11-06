@@ -169,7 +169,7 @@ class ExportCSVBuilderTest {
     final ExportCSVBuilder builder = new ExportCSVBuilder();
     builder.addLine(aLineWith(Timestamp.valueOf("2020-01-04 10:45:56.023")));
     final String result = getCsvFrom(builder);
-    assertThat(result, is("04/01/2020" + LINE_SEPARATOR));
+    assertThat(result, is("04/01/2020 10:45" + LINE_SEPARATOR));
   }
 
   @Test
