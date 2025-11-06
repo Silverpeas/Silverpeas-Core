@@ -26,7 +26,6 @@ package org.silverpeas.core.web.export;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.date.TemporalFormatter;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -45,9 +44,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.http.FileResponse.encodeAttachmentFilenameAsUtf8;
 import static org.silverpeas.core.web.http.PreparedDownload.getPreparedDownloadToPerform;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 public class ExportCSVBuilder {
 
@@ -57,7 +56,7 @@ public class ExportCSVBuilder {
   private static final String REQUEST_ATTRIBUTE_NAME = "ExportCSVBuilder";
 
   private CSVRow header;
-  private List<CSVRow> rows = new ArrayList<>();
+  private final List<CSVRow> rows = new ArrayList<>();
 
   public static Optional<ExportCSVBuilder> getFrom(HttpRequest request) {
     return Optional.ofNullable(request.getAttribute(REQUEST_ATTRIBUTE_NAME))
@@ -148,12 +147,14 @@ public class ExportCSVBuilder {
     } else if (value instanceof Float) {
       str = Float.toString((Float) value);
     } else if (value instanceof Date) {
-      str = DateUtil.getOutputDate((Date) value, userLanguage.get());
+      Date date = (Date) value;
+      str = TemporalFormatter.toLocalized(date.toInstant(), userLanguage.get());
     } else if (value instanceof User) {
-      final User user = (User) value;
+      User user = (User) value;
       str = stringValue(user.getLastName() + " " + user.getFirstName());
     } else if (value instanceof Temporal) {
-      str = TemporalFormatter.toLocalized((Temporal) value, userZoneId.get(), userLanguage.get());
+      Temporal temporal = (Temporal) value;
+      str = TemporalFormatter.toLocalized(temporal, userZoneId.get(), userLanguage.get());
     } else  {
       str = stringValue(value.toString());
     }
@@ -168,6 +169,6 @@ public class ExportCSVBuilder {
    */
   private String stringValue(String value) {
     return "\"" + defaultStringIfNotDefined(value)
-        .replace("\"", "\"\"").replaceAll("(?i)<[ ]*br[ ]*/[ ]*>", LINE_SEPARATOR) + "\"";
+        .replace("\"", "\"\"").replaceAll("(?i)< *br */ *>", LINE_SEPARATOR) + "\"";
   }
 }

@@ -23,11 +23,7 @@
  */
 package org.silverpeas.core.date;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -221,12 +217,14 @@ public class TemporalFormatter {
     Objects.requireNonNull(temporal);
     Objects.requireNonNull(language);
     final String pattern;
+    final Temporal temporalValue = temporal instanceof Instant ?
+        OffsetDateTime.ofInstant((Instant) temporal, ZoneId.systemDefault()) : temporal;
     if (temporal.isSupported(ChronoUnit.HOURS)) {
       pattern = getDateTimePattern(language);
     } else {
       pattern = getDatePattern(language);
     }
-    return DateTimeFormatter.ofPattern(pattern).format(temporal);
+    return DateTimeFormatter.ofPattern(pattern).format(temporalValue);
   }
 
   /**
@@ -350,9 +348,10 @@ public class TemporalFormatter {
       final String language) {
     final String formatted;
     if (!temporal.isSupported(ChronoUnit.HOURS) || (temporal instanceof ChronoZonedDateTime &&
-        ((ChronoZonedDateTime) temporal).getZone().equals(zoneId)) ||
-        temporal.get(ChronoField.OFFSET_SECONDS) ==
-            ZonedDateTime.now(zoneId).get(ChronoField.OFFSET_SECONDS)) {
+        ((ChronoZonedDateTime<?>) temporal).getZone().equals(zoneId)) ||
+        (temporal.isSupported(ChronoField.OFFSET_SECONDS) &&
+            temporal.get(ChronoField.OFFSET_SECONDS) ==
+                ZonedDateTime.now(zoneId).get(ChronoField.OFFSET_SECONDS))) {
       formatted = toLocalized(temporal, language);
     } else {
       final ZoneId actualZoneId = asZonedDateTime(temporal).getZone();
