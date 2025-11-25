@@ -616,8 +616,9 @@ function _spWindow_isSilverpeasMainWindow() {
 
     /**
      * Using this method when the given parameter is for sure a permalink.
-     * Otherwise, try loadLink which will handle several link cases.
-     * @param permalink a permalink.
+     * Otherwise, try loadLink which will handle several link cases. The link is encoded before any
+     * access to the referred resource
+     * @param permalink a non URI encoded permalink.
      * @param options the options.
      * @returns {*}
      */
@@ -745,8 +746,8 @@ function _spWindow_isSilverpeasMainWindow() {
       let permalink = link;
       if (!this.isPermalink(link)) {
         let webContextIndex = link.indexOf(webContext);
-        let shortLink = webContextIndex >= 0 ? link.substr(webContextIndex + webContext.length) : link;
-        permalink = webContext + '/autoRedirect.jsp?domainId=' + this.currentUser.domainId + '&goto=' + encodeURIComponent(shortLink);
+        let shortLink = webContextIndex >= 0 ? link.substring(webContextIndex + webContext.length) : link;
+        permalink = webContext + '/autoRedirect.jsp?domainId=' + this.currentUser.domainId + '&goto=' + shortLink;
         __logDebug(link + " is not a permalink");
       }
       this.loadPermalink(permalink, options);
@@ -817,7 +818,7 @@ function _spWindow_isSilverpeasMainWindow() {
 
     let __safeSpUrl = function(url) {
       if (!url.startsWith(webContext)) {
-        url = (webContext + '/' + url).replace(/[/]+/g, '/');
+        url = (webContext + '/' + url).replace(/\/+/g, '/');
       }
       return url;
     };
