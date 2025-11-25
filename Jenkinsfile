@@ -46,17 +46,15 @@ pipeline {
       steps {
         script {
           String jdkHome = sh(script: 'echo ${SONAR_JDK_HOME}', returnStdout: true).trim()
-          withSonarQubeEnv {
-            sh """
-                JAVA_HOME=$jdkHome mvn ${SONAR_MAVEN_GOAL} \\
+          withSonarQubeEnv('Silverpeas SonarCloud') {
+             sh """
+                JAVA_HOME=$jdkHome mvn org.codehaus.mojo:sonar-maven-plugin::sonar \\
                   -Dsonar.projectKey=Silverpeas_Silverpeas-Core2 \\
                   -Dsonar.organization=silverpeas \\
                   -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
                   -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
                   -Dsonar.pullrequest.base=master \\
                   -Dsonar.pullrequest.provider=github \\
-                  -Dsonar.host.url=${SONAR_HOST_URL} \\
-                  -Dsonar.token=${SONAR_AUTH_TOKEN} \\
                   -Dsonar.scanner.force-deprecated-java-version=true
                 """
           }
