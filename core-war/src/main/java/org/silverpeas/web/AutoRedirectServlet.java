@@ -362,7 +362,7 @@ public class AutoRedirectServlet extends HttpServlet {
       this.componentIdGoTo = request.getParameter("ComponentId");
       this.spaceIdGoTo = request.getParameter("SpaceId");
       this.attachmentIdGoTo = request.getParameter("AttachmentId");
-      this.gotoUrl = request.getParameter("goto");
+      this.gotoUrl = URLUtil.decode(request.getParameter("goto"));
       this.fromResponsiveWindow = request.getParameterAsBoolean("fromResponsiveWindow");
       this.forceToLogin = request.getParameterAsBoolean("forceToLogin");
       this.language = this.mainSessionController != null
