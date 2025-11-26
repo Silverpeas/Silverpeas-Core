@@ -90,12 +90,15 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   private int userCount = -1;
   @XmlElement @NotNull @Size(min=1)
   private String domainName;
+  @XmlElement
+  private boolean isCommunity = false;
   private final GroupDetail group;
 
   private UserGroupProfileEntity(Group group) {
     this.group = (GroupDetail) group;
     this.domainName = GroupDetail.getOrganisationController().getDomain(group.getDomainId()).getName();
     this.userCount = group.getTotalUsersCount();
+    this.isCommunity = group.isCommunityGroup();
   }
 
   @SuppressWarnings("unused")
@@ -112,28 +115,6 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
     }
     this.usersUri = computeUsersUriOfGroupById(groupUri, getId());
     return this;
-  }
-
-  /**
-   * Gets the URI of its parent group.
-   *
-   * @return the URI of its parent group or null if this group is a root one.
-   */
-  public URI getParentUri() {
-    return parentUri;
-  }
-
-  /**
-   * Gets the URI at which its direct children groups can be retrieved.
-   *
-   * @return the URI at which its subgroups can be get.
-   */
-  public URI getChildrenUri() {
-    return childrenUri;
-  }
-
-  public URI getUsersUri() {
-    return usersUri;
   }
 
   @Override
@@ -247,6 +228,11 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   }
 
   @Override
+  public boolean isCommunityGroup() {
+    return isCommunity;
+  }
+
+  @Override
   public String[] getUserIds() {
     return group.getUserIds();
   }
@@ -279,4 +265,5 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   public URI getURI() {
     return this.uri;
   }
+
 }

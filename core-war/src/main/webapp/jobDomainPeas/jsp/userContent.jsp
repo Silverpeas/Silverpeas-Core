@@ -110,8 +110,6 @@
   boolean isX509Enabled = (Boolean) request.getAttribute("isX509Enabled");
   boolean isGroupManager = (Boolean) request.getAttribute("isOnlyGroupManager");
   boolean onlySpaceManager = (Boolean) request.getAttribute("isOnlySpaceManager");
-  boolean isUserManageableByGroupManager =
-      (Boolean) request.getAttribute("userManageableByGroupManager");
   boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
 
   String thisUserId = userObject.getId();
@@ -129,7 +127,7 @@
     browseBar.setPath(groupsPath);
   }
 
-  if (isDomainRW && isUserRW && (!isGroupManager || isUserManageableByGroupManager)) {
+  if (isDomainRW && isUserRW && !isGroupManager) {
     if (isUserFull) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
@@ -243,10 +241,10 @@
   </style>
   <script type="text/javascript">
     function removeUser() {
-      var $dialog = jQuery('#deletionFormDialog');
+      const $dialog = jQuery('#deletionFormDialog');
       $dialog.popup('confirmation', {
         callback : function() {
-          var $deletionForm = jQuery('#deletionForm');
+          const $deletionForm = jQuery('#deletionForm');
           if (jQuery('#definitiveDeletion')[0].checked) {
             $deletionForm.attr("action", "userDelete");
           } else {
@@ -259,16 +257,16 @@
 
     function deleteAvatar() {
       jQuery.popup.confirm("${labelDeleteAvatar}", function() {
-        var $deletionForm = jQuery('#deletionForm');
+        const $deletionForm = jQuery('#deletionForm');
         $deletionForm.attr("action", "userAvatarDelete");
         $deletionForm.submit();
       });
     }
 
     function viewSubscriptions() {
-      chemin = webContext+'<%= URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION)%>showUserSubscriptions.jsp?userId=${userInfos.id}';
-      largeur = "600";
-      hauteur = "440";
+      const chemin = webContext+'<%= URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION)%>showUserSubscriptions.jsp?userId=${userInfos.id}';
+      const largeur = "600";
+      const hauteur = "440";
       SP_openWindow(chemin, "pdcWindow", largeur, hauteur, "resizable=yes,scrollbars=yes");
     }
 
@@ -276,13 +274,14 @@
       sp.navRequest(webContext + '/RjobDomainPeas/jsp/groupOpen').withParam('groupId', groupId).go();
     }
 
-    var componentWindow = window;
+    let componentWindow = window;
+
     function openComponent(componentId) {
-      url = webContext + '/RjobStartPagePeas/jsp/OpenComponent?ComponentId=' + componentId;
-      windowName = "componentWindow";
-      larg = "800";
-      haut = "800";
-      windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+      const url = webContext + '/RjobStartPagePeas/jsp/OpenComponent?ComponentId=' + componentId;
+      const windowName = "componentWindow";
+      const larg = "800";
+      const haut = "800";
+      const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
       if (!componentWindow.closed && componentWindow.name === "componentWindow") {
         componentWindow.close();
       }
@@ -294,9 +293,9 @@
     }
 
     function ifCorrectFormExecute(callback) {
-      var errorMsg = "";
-      var errorNb = 0;
-      var sourceRightsId = document.rightsForm.sourceRightsId.value;
+      let errorMsg = "";
+      let errorNb = 0;
+      const sourceRightsId = document.rightsForm.sourceRightsId.value;
 
       if (isWhitespace(sourceRightsId)) {
         errorMsg+=" - '<fmt:message key="JDP.rights.assign.as"/>' <fmt:message key="GML.MustBeFilled"/>\n";

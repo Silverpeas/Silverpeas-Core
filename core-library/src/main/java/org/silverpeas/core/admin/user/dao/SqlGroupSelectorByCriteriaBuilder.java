@@ -41,9 +41,15 @@ import java.util.stream.Stream;
  */
 public class SqlGroupSelectorByCriteriaBuilder {
   private final String fields;
+  private boolean orderedByType = false;
 
   SqlGroupSelectorByCriteriaBuilder(final String fields) {
     this.fields = fields;
+  }
+
+  SqlGroupSelectorByCriteriaBuilder setOrderingByType(boolean orderByType) {
+    this.orderedByType = orderByType;
+    return this;
   }
 
   /**
@@ -63,7 +69,11 @@ public class SqlGroupSelectorByCriteriaBuilder {
     applyCriteriaOnRoles(query, criteria);
     applyCriteriaOnSuperGroup(query, criteria);
 
-    query.orderBy("g.name");
+    if (orderedByType) {
+      query.orderBy("g.spaceId desc", "g.name");
+    } else {
+      query.orderBy("g.name");
+    }
 
     if (criteria.isCriterionOnPaginationSet()) {
       PaginationPage page = criteria.getCriterionOnPagination();

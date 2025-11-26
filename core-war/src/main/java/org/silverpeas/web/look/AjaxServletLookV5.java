@@ -812,14 +812,14 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
   protected boolean isSpaceBeforeComponentNeeded(SpaceInstLight space) {
     // Display computing : First look at global configuration
-    if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG
-        .equalsIgnoreCase(JobStartPagePeasSettings.SPACEDISPLAYPOSITION_BEFORE)) {
+    if (JobStartPagePeasSettings.SPACE_DISPLAY_POSITION_CONFIG
+        .equalsIgnoreCase(JobStartPagePeasSettings.SPACE_DISPLAY_POSITION_BEFORE)) {
       return true;
-    } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG
-        .equalsIgnoreCase(JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER)) {
+    } else if (JobStartPagePeasSettings.SPACE_DISPLAY_POSITION_CONFIG
+        .equalsIgnoreCase(JobStartPagePeasSettings.SPACE_DISPLAY_POSITION_AFTER)) {
       return false;
-    } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG
-        .equalsIgnoreCase(JobStartPagePeasSettings.SPACEDISPLAYPOSITION_TODEFINE)) {
+    } else if (JobStartPagePeasSettings.SPACE_DISPLAY_POSITION_CONFIG
+        .equalsIgnoreCase(JobStartPagePeasSettings.SPACE_DISPLAY_POSITION_TODEFINE)) {
       return space.isDisplaySpaceFirst();
     }
     return true;

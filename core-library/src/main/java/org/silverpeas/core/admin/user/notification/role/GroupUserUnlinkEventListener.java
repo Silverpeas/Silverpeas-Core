@@ -35,6 +35,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -90,6 +91,7 @@ class GroupUserUnlinkEventListener
     return Stream.concat(Stream.of(groupId),
             admin.getPathToGroup(groupId).stream())
         .map(admin::getGroupById)
+        .filter(Objects::nonNull)
         .filter(g -> !List.of(g.getUserIds()).contains(userId))
         .flatMap(g -> Stream.of(admin.getProfileIdsOfGroup(g.getId()))
             .map(admin::getProfileInst)

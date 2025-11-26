@@ -1,37 +1,39 @@
-<h2 class="txtNav"><center>Willkommen beim Bereich & Application Management</center></h2>
+<h2 class="txtNav"><center>Willkommen bei der Verwaltung von Bereiche und Anwendungen</center></h2>
 
 <p class="accroche">Silverpeas wird in Bereiche, die Anwendungen enthalten strukturiert. Jeder Bereich kann auch Unterbereiche enthalten.<br/>
-Eine breite Palette von gebrauchsfertigen Anwendunge werden angeboten um alle Ihre Bedürfnisse zu erfüllen: Dokumenten-Management, Bildergalerie, Blog, Umfragen, Projektmanagement ...<br/>
-Als <b>Administrator</b> können Sie alle Bereiche und Anwendungen verwalten.</p>
+$if(communityEnabled)$
+Neben den Bereiche ist es mÃ¶glich, Communities zu erstellen. Dabei handelt es sich um besondere Bereiche, denen die Nutzer selbst beitreten mÃ¶chten, anstatt dass ihnen ein Administrator den Zugang gewÃ¤hrt.
+<br/>
+$endif$
+Eine breite Palette an einsatzbereiten Anwendungen steht zur VerfÃ¼gung, um all Ihren Anforderungen gerecht zu werden: Dokumentenmanagement, Bildergalerie, Blog, Umfragen, Projektmanagement...<br/>
+Als <b>Administrator</b> kÃ¶nnen Sie alle Bereiche und Anwendungen verwalten.</p>
 
 <div id="txt_evolutivite">
-<h3>Es ist sehr einfach, die Struktur Ihrer Plattform zu ändern!</h3>
-<p>Sie können schnell, unter <a class="txtnav" href="CreateSpace">diesem Link</a>, einen Wurzelbereich erstellen oder, Sie können über das "Was wollen Sie tun ?" Menü <b class="yuimenu"> einen Bereich erstellen </b>. <b>Was wollen Sie als Nächstes tun ?</b>.<br/>
-</p><p>Alle First-Level-Bereiche sind über der Dropdown-Liste auf der linken Seite zugänglich. So bearbeiten, löschen oder verwalten Sie einen Bereich, wählen Sie es einfach aus dieser Liste.<br/>
-Der Inhalt des ausgewählten Bereichs wird dann in dieser Liste angezeigt.
-Alle Operationen auf diesem Bereich sind über das Menü <b>Was wollen Sie tun ?</b> erreichbar.<br/>
-Sie können insbesondere:</p>
+<h3>Es ist sehr einfach, die Struktur Ihrer Plattform zu Ã¤ndern!</h3>
+<p>Sie kÃ¶nnen schnell einen Bereich der ersten Ebene erstellen, indem Sie <a class="txtnav" href="CreateSpace">hier klicken</a> oder im MenÃ¼ <b>Was mÃ¶chten Sie tun?</b> den Befehl <b class="yuimenu">Bereich erstellen </b>auswÃ¤hlen.</b>.<br/>
+</p><p>Alle Bereiche der ersten Ebene sind in der Dropdown-Liste auf der linken Seite zugÃ¤nglich. Um einen Bereich zu Ã¤ndern, zu lÃ¶schen oder zu ergÃ¤nzen, wÃ¤hlen Sie ihn einfach aus dieser Liste aus.<br/>
+Der Inhalt des ausgewÃ¤hlten Bereichs wird dann unter dieser Dropdown-Liste angezeigt. Alle fÃ¼r den ausgewÃ¤hlten Bereich verfÃ¼gbaren VorgÃ¤nge sind Ã¼ber das MenÃ¼ <b>Was mÃ¶chten Sie tun?</b> zugÃ¤nglich. Sie kÃ¶nnen insbesondere:</p>
 <ul>
-<li>Anwendungen Hinzufügen, Bearbeiten oder Entfernen,</li>
-<li>die Zugriffsrechte, die für diese Anwendungen gelten definieren,</li>
-<li>Verwaltung jedem Benutzer delegieren,</li>
-<li>eine bestimmte Startseite definieren,</li>
+<li>Anwendungen hinzufÃ¼gen, Ã¤ndern oder lÃ¶schen</li>
+<li>die fÃ¼r diese Anwendungen geltenden Zugriffsrechte festlegen,</li>
+<li>die Verwaltung an beliebige Benutzer delegieren,</li>
+<li>eine bestimmte Startseite festlegen,</li>
 <li>...</li>
 </ul>
-<p>Um einen Unterbereich oder eine Anwendung zu verwalten, klicken Sie auf ihren Namen. Es wird Ihnen den Zugriff auf alle mögliche Operationen, über das Menü <b>Was wollen Sie tun ?</b> erlaubt.</p>
+<p>Um einen Unterbereich oder eine Anwendung zu Ã¤ndern, wÃ¤hlen Sie diese aus, um Zugriff auf alle zugehÃ¶rigen VorgÃ¤nge zu erhalten. Auch hierfÃ¼r steht Ihnen das MenÃ¼ <b>Was mÃ¶chten Sie tun?</b> zur VerfÃ¼gung.</p>
 </div>
 
 <div id="txt_restauration">
-<h3>Oooops Ich habe den falschen Bereich gelöscht!</h3>
-<p>Um zu vermeiden dass ein Benutzer eine falsche Handlung macht, werden Bereiche und Anwendungen, nicht dauerhaft gelöscht.<br/>
-Man findet sie immer im <a class="txtnav" href="ViewBin">Papierkorb</a>.<br/>
-Der Papierkorb ist nur für Administratoren zugänglich. So sind Sie der einzige, der dauerhaft Bereiche oder Anwendungen löschen kann.<br/>
-Beachten Sie, dass Sie bei der Wiederherstellung eines Bereichs oder einer Anwendung neue spezifische Zugangsrechte gewähren müssen.</p>
+<h3>Puh... der Papierkorb fÃ¼r Bereiche und Anwendungen ist da!</h3>
+<p>Um SchÃ¤den durch unsachgemÃ¤ÃŸe Handhabung zu vermeiden, werden Bereiche und Anwendungen nicht endgÃ¼ltig gelÃ¶scht.
+Vor ihrer endgÃ¼ltigen LÃ¶schung kÃ¶nnen sie Ã¼ber den Papierkorb wiederhergestellt werden, indem Sie hier klicken oder im MenÃ¼ â€Was mÃ¶chten Sie tun?â€œ den Befehl â€Papierkorb fÃ¼r Bereiche und Anwendungenâ€œ auswÃ¤hlen. </b>.<br/>
+Dieser Papierkorb ist Administratoren vorbehalten. Sie sind also die Einzigen, die Bereiche oder Anwendungen wiederherstellen und endgÃ¼ltig lÃ¶schen kÃ¶nnen.<br/>
+Beachten Sie, dass bei der Wiederherstellung die spezifischen Rechte neu definiert werden mÃ¼ssen.</p>
 </div>
 
 <div id="txt_maintenance">
-<h3>Maintenance-Modus</h3>
-<p>Dieser Modus ermöglicht es Ihnen den Zugriff auf der Plattform zu schließen.<br/>
-Nur Administratoren können auf die Plattform zugreifen, es ist also nützlich für große Veränderungen.<br/>
-Dieser Modus ist auch in jedem Bereich zur Verfügung. Die Nutzer werden von der vorübergehende Nichtverfügbarkeit gewarnt werden.</p>
+<h3>Der Wartungsmodus</h3>
+<p>Dieser Modus ermÃ¶glicht es, die Plattform vorÃ¼bergehend nicht verfÃ¼gbar zu machen.
+Dies ist bei umfangreichen Ã„nderungen nÃ¼tzlich, da nur Administratoren auf die Plattform und ihre Inhalte zugreifen kÃ¶nnen.<br/>
+Dieser Modus ist auch auf Ebene jedes Bereichs Ã¼ber die Option <b class="yuimenu"> Wartungsmodus aktivieren </b> im MenÃ¼ <b>Was mÃ¶chten Sie tun?</b> verfÃ¼gbar. <br />In diesem Fall werden die Benutzer durch eine Meldung Ã¼ber die vorÃ¼bergehende NichtverfÃ¼gbarkeit informiert. </p>
 </div>

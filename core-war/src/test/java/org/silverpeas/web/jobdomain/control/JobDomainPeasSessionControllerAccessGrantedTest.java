@@ -295,19 +295,6 @@ class JobDomainPeasSessionControllerAccessGrantedTest {
     assertForbidden(() -> controller.checkDomainAccessGranted(OTHER_DOMAIN_ID, false));
   }
 
-  @DisplayName("User with user access level, without managed groups and community manager " +
-      "right, has granted access in read only mode")
-  @Test
-  void simpleUserDomainAccessWhenCommunityManager() {
-    controller.setCommunityManager(true);
-    controller.checkDomainAccessGranted(MIXED_DOMAIN_ID);
-    assertForbidden(() -> controller.checkDomainAccessGranted(MIXED_DOMAIN_ID, false));
-    controller.checkDomainAccessGranted(LOGGED_USER_DOMAIN_ID);
-    assertForbidden(() -> controller.checkDomainAccessGranted(LOGGED_USER_DOMAIN_ID, false));
-    assertForbidden(() -> controller.checkDomainAccessGranted(OTHER_DOMAIN_ID));
-    assertForbidden(() -> controller.checkDomainAccessGranted(OTHER_DOMAIN_ID, false));
-  }
-
   /**
    * USER
    */
@@ -462,7 +449,6 @@ class JobDomainPeasSessionControllerAccessGrantedTest {
     private static final long serialVersionUID = -2464677549792058075L;
 
     private final UserDetail loggedUser = mock(UserDetail.class);
-    private boolean communityManager = false;
     private String[] manageableSpaceIds = new String[]{};
     private List<String> manageableGroupIds = List.of();
     private Domain targetDomain = null;
@@ -481,10 +467,6 @@ class JobDomainPeasSessionControllerAccessGrantedTest {
       when(loggedUser.getId()).thenReturn("2");
       when(loggedUser.getDomainId()).thenReturn(LOGGED_USER_DOMAIN_ID);
       when(loggedUser.getAccessLevel()).thenReturn(USER);
-    }
-
-    public void setCommunityManager(final boolean communityManager) {
-      this.communityManager = communityManager;
     }
 
     public void setManageableSpaceIds(String... spaceIds) {
@@ -516,11 +498,6 @@ class JobDomainPeasSessionControllerAccessGrantedTest {
     @Override
     public Domain getTargetDomain() {
       return targetDomain;
-    }
-
-    @Override
-    public boolean isCommunityManager() {
-      return communityManager;
     }
 
     @Override

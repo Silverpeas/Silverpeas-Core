@@ -58,6 +58,7 @@ CREATE TABLE ST_Group
     id            int           NOT NULL,
     domainId      int           NOT NULL,
     specificId    varchar(500)  NOT NULL,
+    spaceId       varchar(500),
     superGroupId  int,
     name          varchar(100)  NOT NULL,
     description   varchar(400),
@@ -94,7 +95,8 @@ CREATE TABLE ST_Space
     isInheritanceBlocked	int	      default(0) NOT NULL,
     look			varchar(50),
     displaySpaceFirst		smallint,
-    isPersonal			smallint
+    isPersonal			smallint,
+    isCommunity          SMALLINT DEFAULT(0) NOT NULL
 );
 
 CREATE TABLE ST_SpaceI18N

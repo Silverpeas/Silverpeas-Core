@@ -203,4 +203,12 @@ public interface Group extends Serializable, Comparable<Group> {
    * @return the date of last state save (when it changes) as {@link Date}.
    */
   Date getStateSaveDate();
+
+  /**
+   * Is this group of users is a group of the memberships of a community, and in this case it is
+   * managed by a community space?
+   * @return true if this group is managed by a community space. False if it is managed by a
+   * user domain.
+   */
+  boolean isCommunityGroup();
 }

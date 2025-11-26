@@ -62,7 +62,7 @@
 
 <c:set var="action" value="${requestScope.action}"/>
 <c:set var="createMode" value="${fn:endsWith(action, 'Create')}"/>
-<c:set var="usersInDomainQuotaActivated" value="<%=JobDomainSettings.usersInDomainQuotaActivated%>"/>
+<c:set var="usersInDomainQuotaActivated" value="<%=JobDomainSettings.isUsersInDomainQuotaEnabled()%>"/>
 <c:set var="domain" value="${requestScope.domainObject}"/>
 <jsp:useBean id="domain" type="org.silverpeas.core.admin.domain.model.Domain"/>
 
