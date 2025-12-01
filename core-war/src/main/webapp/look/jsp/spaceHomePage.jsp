@@ -222,7 +222,6 @@
   <view:looknfeel/>
   <view:includePlugin name="lightslideshow"/>
   <script type="text/javascript">
-    <!--
     function goToSpaceItem(spaceId) {
       spWindow.loadSpace(spaceId);
     }
@@ -245,7 +244,6 @@
 
       var $s = $('.slideshow').slides();
     });
-    -->
   </script>
 </head>
 <body class="spaceHome <%=helper.getSubSpaceId() %>">
