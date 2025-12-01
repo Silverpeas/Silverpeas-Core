@@ -41,6 +41,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -359,15 +360,19 @@ public class AutoRedirectServlet extends HttpServlet {
           (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
       this.graphicElementFactory =
           (GraphicElementFactory) session.getAttribute(GE_FACTORY_SESSION_ATT);
-      this.componentIdGoTo = request.getParameter("ComponentId");
-      this.spaceIdGoTo = request.getParameter("SpaceId");
-      this.attachmentIdGoTo = request.getParameter("AttachmentId");
-      this.gotoUrl = URLUtil.decode(request.getParameter("goto"));
+      this.componentIdGoTo = encodeURL(request.getParameter("ComponentId"));
+      this.spaceIdGoTo = encodeURL(request.getParameter("SpaceId"));
+      this.attachmentIdGoTo = encodeURL(request.getParameter("AttachmentId"));
+      this.gotoUrl = encodeURL(request.getParameter("goto"));
       this.fromResponsiveWindow = request.getParameterAsBoolean("fromResponsiveWindow");
       this.forceToLogin = request.getParameterAsBoolean("forceToLogin");
       this.language = this.mainSessionController != null
           ? this.mainSessionController.getFavoriteLanguage()
           : DisplayI18NHelper.getDefaultLanguage();
+    }
+
+    private String encodeURL(String url) {
+      return StringUtil.isDefined(url) ? URLUtil.decode(url) : url;
     }
 
     private static boolean isSilverpeasIdValid(String silverpeasId) {
