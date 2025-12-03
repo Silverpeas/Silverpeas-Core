@@ -42,21 +42,21 @@ public class ImportSettings implements Cloneable {
   public static final int FROM_MANUAL = 2;
 
   private String pathToImport;
-  private UserDetail user;
-  private String componentId;
+  private final UserDetail user;
+  private final String componentId;
   private String folderId;
-  private boolean draftUsed;
-  private boolean poiUsed;
+  private final boolean draftUsed;
+  private final boolean poiUsed;
   private boolean versioningUsed;
   private int versionType;
   private String versionComment;
   private int method;
   private String contentLanguage;
   private String targetValidatorIds;
-  private PublicationDetail publicationForAllFiles = PublicationDetail.builder().build();
+  private final PublicationDetail publicationForAllFiles = PublicationDetail.builder().build();
   private String singleFileTitle;
   private String singleFileDescription;
-  private boolean useFileMetadata = isUseFileMetadataForAttachmentDataEnabled();
+  private final boolean useFileMetadata = isUseFileMetadataForAttachmentDataEnabled();
   private boolean fromDocumentTemplate;
 
   public ImportSettings(String pathToImport, UserDetail user, String componentId, String folderId,

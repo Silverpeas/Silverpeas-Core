@@ -24,6 +24,7 @@
 package org.silverpeas.web.importexport.servlets;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.documenttemplate.DocumentTemplate;
@@ -38,6 +39,9 @@ import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.URLEncoder;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
@@ -55,6 +59,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import static java.util.Optional.ofNullable;
@@ -81,11 +86,6 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res) {
-    doPost(req, res);
-  }
-
-  @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) {
     final HttpRequest request = HttpRequest.decorate(req);
     final UploadSession uploadSession = UploadSession.from(request);
@@ -100,7 +100,7 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       final String topicId = getTopicId(request);
       final boolean ignoreFolders = request.getParameterAsBoolean("IgnoreFolders");
       final boolean draftUsed = request.getParameterAsBoolean("Draft");
-      final String publicationName = request.getParameter("PublicationName");
+      final String publicationName = getPublicationName(request);
       final String publicationDescription = getPublicationDescription(uploadSession, request);
       final boolean onePublicationForAll = StringUtil.isDefined(publicationName);
       // root folder initialization
@@ -183,14 +183,21 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
   private String getPublicationKeywords(final UploadSession uploadSession,
       final HttpRequest request) {
-    return areKeywordsHandled(uploadSession) ? request.getParameter("PublicationKeywords") : "";
+    String keywords = request.getParameter("PublicationKeywords");
+    return areKeywordsHandled(uploadSession) && StringUtil.isDefined(keywords) ?
+        URLDecoder.decode(keywords, Charsets.UTF_8) : "";
   }
 
   private String getPublicationDescription(final UploadSession uploadSession,
       final HttpRequest request) {
-    return isDescriptionHandled(uploadSession) ?
-        request.getParameter("PublicationDescription") :
-        "";
+    String description = request.getParameter("PublicationDescription");
+    return isDescriptionHandled(uploadSession) && StringUtil.isDefined(description) ?
+        URLDecoder.decode(description, Charsets.UTF_8) : "";
+  }
+
+  private static String getPublicationName(HttpRequest request) {
+    String name = request.getParameter("PublicationName");
+    return StringUtil.isDefined(name) ? URLDecoder.decode(name, Charsets.UTF_8) : null;
   }
 
   private void checkUploadSession(final UploadSession uploadSession, final HttpRequest request) {
