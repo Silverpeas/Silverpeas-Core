@@ -747,7 +747,7 @@ function _spWindow_isSilverpeasMainWindow() {
       if (!this.isPermalink(link)) {
         let webContextIndex = link.indexOf(webContext);
         let shortLink = webContextIndex >= 0 ? link.substring(webContextIndex + webContext.length) : link;
-        permalink = webContext + '/autoRedirect.jsp?domainId=' + this.currentUser.domainId + '&goto=' + shortLink;
+        permalink = webContext + '/autoRedirect.jsp?domainId=' + this.currentUser.domainId + '&goto=' + encodeURIComponent(shortLink);
         __logDebug(link + " is not a permalink");
       }
       this.loadPermalink(permalink, options);
