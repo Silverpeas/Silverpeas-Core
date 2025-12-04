@@ -95,8 +95,8 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       inputField.setType(template.isHidden() ? input.hidden : input.text);
       inputField.setMaxlength("5");
       inputField.setSize("10");
-      initInputField(template, inputField, pageContext);
-
+      var elt = initInputField(template, inputField, pageContext);
+      out.println(elt);
     }
     out.println(html);
   }
