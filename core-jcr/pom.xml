@@ -31,7 +31,7 @@
   <parent>
     <artifactId>core</artifactId>
     <groupId>org.silverpeas</groupId>
-    <version>6.4.5-SNAPSHOT</version>
+    <version>6.4.5</version>
   </parent>
 
   <groupId>org.silverpeas.core</groupId>
