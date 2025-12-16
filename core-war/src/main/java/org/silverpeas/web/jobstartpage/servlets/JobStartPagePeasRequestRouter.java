@@ -113,12 +113,6 @@ public class JobStartPagePeasRequestRouter extends
         componentContext);
   }
 
-  /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   *
-   * @return
-   */
   @Override
   public String getSessionControlBeanName() {
     return "jobStartPagePeas";
@@ -156,16 +150,10 @@ public class JobStartPagePeasRequestRouter extends
     return null;
   }
 
-  /**
-   * ********************* Gestion de la navigation à gauche
-   * ****************************************
+  /*
+   * ********************* Gestion de la navigation à gauche ***************************************
    */
-  /**
-   * @param function
-   * @param jobStartPageSC
-   * @param request
-   * @return
-   */
+
   public String getDestinationNavBar(String function,
       JobStartPagePeasSessionController jobStartPageSC, HttpRequest request) {
     String destination = null;
@@ -242,16 +230,10 @@ public class JobStartPagePeasRequestRouter extends
     }
   }
 
-  /**
+  /*
    * ********************* Gestion des composants ****************************************
    */
-  /**
-   * @param function
-   * @param jobStartPageSC
-   * @param request
-   * @return
-   * @throws AdminException
-   */
+
   public String getDestinationComponent(String function,
       JobStartPagePeasSessionController jobStartPageSC, HttpRequest request) throws
       AdminException {
@@ -516,7 +498,7 @@ public class JobStartPagePeasRequestRouter extends
       SpaceInst newSpace = new SpaceInst();
       request2SpaceInst(newSpace, request);
       String spaceId = jobStartPageSC.createSpace(newSpace);
-      if (spaceId != null && spaceId.length() > 0) {
+      if (spaceId != null && !spaceId.isEmpty()) {
         initQuotaData(newSpace, request, jobStartPageSC);
         jobStartPageSC.setSpacePlace(request.getParameter("SpaceBefore"));
         refreshNavBar(jobStartPageSC, request);
@@ -543,7 +525,7 @@ public class JobStartPagePeasRequestRouter extends
       SpaceInst spaceInst = jobStartPageSC.getSpaceInstById();
       request2SpaceInst(spaceInst, request);
       String spaceId = jobStartPageSC.updateSpaceInst(spaceInst);
-      if (spaceId != null && spaceId.length() > 0) {
+      if (spaceId != null && !spaceId.isEmpty()) {
         initQuotaData(spaceInst, request, jobStartPageSC);
         refreshNavBar(jobStartPageSC, request);
         destination = getDestinationSpace(START_PAGE_INFO_DEST, jobStartPageSC, request);
@@ -563,7 +545,7 @@ public class JobStartPagePeasRequestRouter extends
       jobStartPageSC.deleteSpace(spaceId);
       refreshNavBar(jobStartPageSC, request);
       if ((jobStartPageSC.getManagedSpaceId() != null)
-          && (jobStartPageSC.getManagedSpaceId().length() > 0)) {
+          && (!jobStartPageSC.getManagedSpaceId().isEmpty())) {
         destination = START_PAGE_INFO_FULL_DEST;
       } else {
         destination = getDestination(WELCOME_FCT, jobStartPageSC, request);
@@ -610,8 +592,7 @@ public class JobStartPagePeasRequestRouter extends
       List<String> groupIds = (List<String>) StringUtil
           .splitString(request.getParameter(USER_PANEL_CURRENT_GROUP_IDS_PARAM), ',');
       jobStartPageSC
-          .initUserPanelSpaceForGroupsUsers((String) request.getAttribute("myComponentURL"),
-              userIds, groupIds);
+          .initUserPanelSpaceForGroupsUsers(userIds, groupIds);
       destination = Selection.getSelectionURL();
     } else if (function.equals("EffectiveSetSpaceProfile")) {
       String role = request.getParameter("Role");
@@ -707,70 +688,73 @@ public class JobStartPagePeasRequestRouter extends
       if (destination == null) {
         destination = "/jobStartPagePeas/jsp/" + function;
       }
-      if ("/jobStartPagePeas/jsp/jobStartPageNav.jsp".equals(destination)) {
-        request.setAttribute("Spaces", jobStartPageSC.getSpaces());
-        request.setAttribute("SubSpaces", jobStartPageSC.getSubSpaces());
-        request.setAttribute("SpaceComponents", jobStartPageSC.getSpaceComponents());
-        request.setAttribute("SubSpaceComponents", jobStartPageSC.getSubSpaceComponents());
-        request.setAttribute(CURRENT_SPACE_ID_ATTR, jobStartPageSC.getSpaceId());
-        request.setAttribute("CurrentSubSpaceId", jobStartPageSC.getSubSpaceId());
-      } else if ("/jobStartPagePeas/jsp/jobStartPageNav.json".equals(destination)) {
-        destination = sendJson(NavBarJsonEncoder.with(jobStartPageSC).encode());
-      } else if ("/jobStartPagePeas/jsp/welcome.jsp".equals(destination)) {
-        request.setAttribute(IS_USER_ADMIN_ATTR, jobStartPageSC.isUserAdmin());
-        request.setAttribute("globalMode", jobStartPageSC.isAppInMaintenance());
-        request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
-        request.setAttribute("IsBasketEnable", JobStartPagePeasSettings.isBasketEnable);
-      } else if (START_PAGE_INFO_FULL_DEST.equals(destination)) {
-        SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(); // espace
-        // courant
-        request.setAttribute(IS_USER_ADMIN_ATTR, jobStartPageSC.isUserAdmin());
-        request.setAttribute("FirstPageType", spaceint1.getFirstPageType());
-        String spaceId = jobStartPageSC.getManagedSpaceId();
-        request.setAttribute("currentSpaceId", spaceId);
-        request.setAttribute("MaintenanceState", jobStartPageSC.getCurrentSpaceMaintenanceState());
+      switch (destination) {
+        case "/jobStartPagePeas/jsp/jobStartPageNav.jsp":
+          request.setAttribute(CURRENT_SPACE_ID_ATTR, jobStartPageSC.getSpaceId());
+          break;
+        case "/jobStartPagePeas/jsp/jobStartPageNav.json":
+          destination = sendJson(NavBarJsonEncoder.with(jobStartPageSC).encode());
+          break;
+        case "/jobStartPagePeas/jsp/welcome.jsp":
+          request.setAttribute(IS_USER_ADMIN_ATTR, jobStartPageSC.isUserAdmin());
+          request.setAttribute("globalMode", jobStartPageSC.isAppInMaintenance());
+          request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
+          request.setAttribute("IsBasketEnable", JobStartPagePeasSettings.isBasketEnable);
+          break;
+        case START_PAGE_INFO_FULL_DEST:
+          SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(); // espace
 
-        setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
+          // courant
+          request.setAttribute(IS_USER_ADMIN_ATTR, jobStartPageSC.isUserAdmin());
+          request.setAttribute("FirstPageType", spaceint1.getFirstPageType());
+          String spaceId = jobStartPageSC.getManagedSpaceId();
+          request.setAttribute("currentSpaceId", spaceId);
+          request.setAttribute("MaintenanceState", jobStartPageSC.getCurrentSpaceMaintenanceState());
 
-        request.setAttribute(SPACE_EXTRA_INFOS_ATTR, jobStartPageSC.getManagedSpace());
-        request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
+          setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
 
-        request.setAttribute(INHERITANCE_ATTR, JobStartPagePeasSettings.isInheritanceEnable);
+          request.setAttribute(SPACE_EXTRA_INFOS_ATTR, jobStartPageSC.getManagedSpace());
+          request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
 
-        request.setAttribute("CopiedComponents", jobStartPageSC.getCopiedComponents());
+          request.setAttribute(INHERITANCE_ATTR, JobStartPagePeasSettings.isInheritanceEnable);
 
-        request.setAttribute(SPACE_TYPE, spaceint1);
-      } else if (COMPONENT_INFO_FULL_DEST.equals(destination)) {
-        prepareDisplayComponentInfo(jobStartPageSC, request);
-      } else if (ROLE_INSTANCE_FULL_DEST.equals(destination)) {
-        ComponentInst compoint1 = jobStartPageSC.getComponentInst(jobStartPageSC.
-            getManagedInstanceId());
-        request.setAttribute(COMPONENT_INST_ATTR, compoint1);
+          request.setAttribute("CopiedComponents", jobStartPageSC.getCopiedComponents());
 
-        request.setAttribute(PROFILES_ATTR, jobStartPageSC.getAllProfiles(compoint1));
+          request.setAttribute(SPACE_TYPE, spaceint1);
+          break;
+        case COMPONENT_INFO_FULL_DEST:
+          prepareDisplayComponentInfo(jobStartPageSC, request);
+          break;
+        case ROLE_INSTANCE_FULL_DEST:
+          ComponentInst compoint1 = jobStartPageSC.getComponentInst(jobStartPageSC.
+              getManagedInstanceId());
+          request.setAttribute(COMPONENT_INST_ATTR, compoint1);
 
-        // Profile, liste des groupes et user du role courant
-        ProfileInst profile = jobStartPageSC.getManagedProfile();
-        request.setAttribute(PROFILE_ATTR, profile);
-        request.setAttribute("listGroup", jobStartPageSC.getAllCurrentGroupInstance());
-        request.setAttribute("listUser", jobStartPageSC.getAllCurrentUserInstance());
+          request.setAttribute(PROFILES_ATTR, jobStartPageSC.getAllProfiles(compoint1));
 
-        // Profile hérité, liste des groupes et user du role hérité courant
-        ProfileInst inheritedProfile = jobStartPageSC.getManagedInheritedProfile();
-        if (inheritedProfile != null) {
-          request.setAttribute("InheritedProfile", inheritedProfile);
-          request.setAttribute("listInheritedGroups",
-              jobStartPageSC.groupIds2groups(inheritedProfile.getAllGroups()));
-          request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
-              getAllUsers()));
-        }
-        request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
-        request.setAttribute(INHERITANCE_ATTR, JobStartPagePeasSettings.isInheritanceEnable);
+          // Profile, liste des groupes et user du role courant
+          ProfileInst profile = jobStartPageSC.getManagedProfile();
+          request.setAttribute(PROFILE_ATTR, profile);
+          request.setAttribute("listGroup", jobStartPageSC.getAllCurrentGroupInstance());
+          request.setAttribute("listUser", jobStartPageSC.getAllCurrentUserInstance());
 
-        String profileHelp = jobStartPageSC.getManagedProfileHelp(compoint1.getName());
-        request.setAttribute("ProfileHelp", profileHelp);
+          // Profile hérité, liste des groupes et user du role hérité courant
+          ProfileInst inheritedProfile = jobStartPageSC.getManagedInheritedProfile();
+          if (inheritedProfile != null) {
+            request.setAttribute("InheritedProfile", inheritedProfile);
+            request.setAttribute("listInheritedGroups",
+                jobStartPageSC.groupIds2groups(inheritedProfile.getAllGroups()));
+            request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
+                getAllUsers()));
+          }
+          request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
+          request.setAttribute(INHERITANCE_ATTR, JobStartPagePeasSettings.isInheritanceEnable);
 
-        request.setAttribute(SCOPE_ATTR, jobStartPageSC.getScope());
+          String profileHelp = jobStartPageSC.getManagedProfileHelp(compoint1.getName());
+          request.setAttribute("ProfileHelp", profileHelp);
+
+          request.setAttribute(SCOPE_ATTR, jobStartPageSC.getScope());
+          break;
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);

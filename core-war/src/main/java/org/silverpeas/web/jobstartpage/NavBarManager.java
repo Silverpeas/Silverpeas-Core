@@ -28,17 +28,10 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.kernel.util.StringUtil;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
@@ -49,18 +42,16 @@ import static java.util.stream.Stream.of;
 public class NavBarManager {
   // Constants used by urlFactory
 
-  UserDetail user = null;
-  AdminController adminCtrl = null;
-  AbstractComponentSessionController sessionCtrl = null;
-  String spContext;
-  HashSet<String> manageableSpaces = new HashSet<>();
-  String currentSpaceId = null;
-  String currentSubSpaceId = null;
-  DisplaySortedCache spaces = new DisplaySortedCache();
-  DisplaySortedCache spaceComponents = new DisplaySortedCache();
-  DisplaySortedCache subSpaces = new DisplaySortedCache();
-  DisplaySortedCache subSpaceComponents = new DisplaySortedCache();
-  long elCounter = 0;
+  private UserDetail user = null;
+  private AdminController adminCtrl = null;
+  private AbstractComponentSessionController sessionCtrl = null;
+  private final HashSet<String> manageableSpaces = new HashSet<>();
+  private String currentSpaceId = null;
+  private String currentSubSpaceId = null;
+  private final DisplaySortedCache spaces = new DisplaySortedCache();
+  private final DisplaySortedCache spaceComponents = new DisplaySortedCache();
+  private final DisplaySortedCache subSpaces = new DisplaySortedCache();
+  private final DisplaySortedCache subSpaceComponents = new DisplaySortedCache();
 
   public void resetSpaceCache(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
@@ -129,12 +120,9 @@ public class NavBarManager {
 
   public void initWithUser(AbstractComponentSessionController msc, UserDetail user) {
     String sUserId = user.getId();
-
-    spContext = URLUtil.getApplicationURL();
     adminCtrl = ServiceProvider.getService(AdminController.class);
     sessionCtrl = msc;
     this.user = user;
-    elCounter = 0;
     currentSpaceId = null;
     currentSubSpaceId = null;
     subSpaces.clear();
@@ -160,8 +148,13 @@ public class NavBarManager {
 
   // Spaces functions
   // ----------------
+
+  /**
+   * Gets the availables spaces of Silverpeas.
+   * @return an unmodifiable collection of spaces.
+   */
   public Collection<DisplaySorted> getAvailableSpaces() {
-    return spaces.getSorted();
+    return unmodifiableSortedSet(spaces.getSorted());
   }
 
   public String getCurrentSpaceId() {
@@ -193,26 +186,36 @@ public class NavBarManager {
         currentSpaceId = null;
       } else {
         spaceComponents.set(createComponentObjects(spaceInst));
-        subSpaces.set(createSpaceObjects(spaceInst.getSubSpaces().stream().map(SpaceInst::getId), true));
+        subSpaces.set(createSpaceObjects(spaceInst.getSubSpaces().stream().map(SpaceInst::getId),
+            true));
       }
     }
     return StringUtil.isDefined(currentSpaceId);
   }
 
+  /**
+   * Gets the availables component instances in the current space of Silverpeas.
+   * @return an unmodifiable collection of component instances.
+   */
   public Collection<DisplaySorted> getAvailableSpaceComponents() {
     if (currentSpaceId == null) {
       return emptyList();
     }
-    return spaceComponents.getSorted();
+    return unmodifiableSortedSet(spaceComponents.getSorted());
   }
 
   // Sub-Spaces functions
   // --------------------
+
+  /**
+   * Gets the availables spaces children of the current space of Silverpeas.
+   * @return an unmodifiable collection of spaces.
+   */
   public Collection<DisplaySorted> getAvailableSubSpaces() {
     if (currentSpaceId == null) {
       return emptyList();
     }
-    return subSpaces.getSorted();
+    return unmodifiableSortedSet(subSpaces.getSorted());
   }
 
   public String getCurrentSubSpaceId() {
@@ -240,6 +243,10 @@ public class NavBarManager {
     return StringUtil.isDefined(currentSubSpaceId);
   }
 
+  /**
+   * Gets the availables component instances in the current subspace of Silverpeas.
+   * @return an unmodifiable collection of component instances.
+   */
   public Collection<DisplaySorted> getAvailableSubSpaceComponents() {
     if (currentSubSpaceId == null) {
       return emptyList();
@@ -323,7 +330,8 @@ public class NavBarManager {
 
   protected Stream<DisplaySorted> createComponentObjects(SpaceInst spaceInst) {
     // Get the space's components
-    final boolean isTheSpaceAdmin = user.isAccessAdmin() || isAdminOfSpace(new SpaceInstLight(spaceInst));
+    final boolean isTheSpaceAdmin =
+        user.isAccessAdmin() || isAdminOfSpace(new SpaceInstLight(spaceInst));
     return spaceInst.getAllComponentsInst().stream()
         .map(ci -> {
           final DisplaySorted ds = new DisplaySorted();
@@ -354,31 +362,31 @@ public class NavBarManager {
 
     /**
      * Indexes a new {@link DisplaySorted} instance by its identifier.
+     *
      * @param id the identifier.
      * @param data the {@link DisplaySorted} representing a generic data.
-     * @return the indexed instance.
      */
-    public DisplaySorted put(final String id, final DisplaySorted data) {
+    public synchronized void put(final String id, final DisplaySorted data) {
       sortedData.add(data);
-      return cache.put(id, data);
+      cache.put(id, data);
     }
 
     /**
      * Removes a {@link DisplaySorted} by its identifier.
+     *
      * @param id an identifier.
-     * @return the removed instance if any, null otherwise.
      */
-    public DisplaySorted remove(final String id) {
+    public synchronized void remove(final String id) {
       final DisplaySorted removed = cache.remove(id);
       if (removed != null) {
         sortedData.removeIf(removed::equals);
       }
-      return removed;
     }
 
     /**
      * Gets the {@link DisplaySorted} instances registered into the cache and sorted by their
      * natural ordering.
+     *
      * @return sorted instances.
      */
     public SortedSet<DisplaySorted> getSorted() {
@@ -387,6 +395,7 @@ public class NavBarManager {
 
     /**
      * Gets a registered {@link DisplaySorted} instance.
+     *
      * @param id an identifier.
      * @return a {@link DisplaySorted} if any, null otherwise.
      */
@@ -397,16 +406,17 @@ public class NavBarManager {
     /**
      * Clears the cache.
      */
-    public void clear() {
+    public synchronized void clear() {
       sortedData.clear();
       cache.clear();
     }
 
     /**
      * Clears the cache and registers the given data.
+     *
      * @param data the data to set into cache.
      */
-    public void set(final Stream<DisplaySorted> data) {
+    public synchronized void set(final Stream<DisplaySorted> data) {
       clear();
       data.forEach(d -> put(d.getId(), d));
     }

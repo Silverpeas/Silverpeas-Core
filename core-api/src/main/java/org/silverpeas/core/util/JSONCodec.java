@@ -26,7 +26,6 @@ package org.silverpeas.core.util;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -86,8 +85,8 @@ public class JSONCodec {
   public static String encodeObject(UnaryOperator<JSONObject> beanBuilder) {
     ObjectMapper mapper = getObjectMapper();
     StringWriter writer = new StringWriter();
-    JsonNode node = mapper.createObjectNode();
-    JSONObject bean = beanBuilder.apply(new JSONObject((ObjectNode) node));
+    ObjectNode node = mapper.createObjectNode();
+    JSONObject bean = beanBuilder.apply(new JSONObject(node));
     try {
       mapper.writeValue(writer, bean.getObjectNode());
     } catch (IOException ex) {
@@ -169,7 +168,7 @@ public class JSONCodec {
 
   public static class JSONObject {
 
-    private ObjectNode objectNode;
+    private final ObjectNode objectNode;
 
     protected JSONObject(ObjectNode objectNode) {
       this.objectNode = objectNode;
@@ -262,7 +261,7 @@ public class JSONCodec {
 
   public static class JSONArray {
 
-    private ArrayNode arrayNode;
+    private final ArrayNode arrayNode;
 
     protected JSONArray(ArrayNode arrayNode) {
       this.arrayNode = arrayNode;

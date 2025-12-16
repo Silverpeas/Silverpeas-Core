@@ -46,6 +46,7 @@ import static org.silverpeas.web.jobstartpage.DisplaySorted.TYPE_SUBSPACE;
 /**
  * JSON encoder dedicated to the spaces and components navigation displayed into Silverpeas's
  * administration.
+ *
  * @author silveryocha
  */
 public class NavBarJsonEncoder {
@@ -68,11 +69,14 @@ public class NavBarJsonEncoder {
    * Encodes an object containing the following data:
    * <ul>
    *  <li><strong>rootSpaces</strong>: an array of root space data</li>
-   *  <li><strong>currentRootSpace</strong>: the data of current root space if any, undefined otherwise</li>
-   *  <li><strong>spacePath</strong>: an array representing the space path to the current sub-space</li>
+   *  <li><strong>currentRootSpace</strong>: the data of current root space if any, undefined
+   *  otherwise</li>
+   *  <li><strong>spacePath</strong>: an array representing the space path to the current
+   *  sub-space</li>
    *  <li><strong>spaces</strong>: an array of current spaces</li>
    *  <li><strong>applications</strong>: an array of current application instances</li>
    * </ul>
+   *
    * @return the String representing
    */
   public String encode() {
@@ -89,21 +93,26 @@ public class NavBarJsonEncoder {
 
   /**
    * Encodes into the given JSON object the root spaces of the navigation.
+   *
    * @param jsonObject the JSON object to fill.
    */
   private void encodeRootSpaces(final JSONObject jsonObject) {
     jsonObject.putJSONArray("rootSpaces", a -> {
-      controller.getSpaces()
-          .stream()
-          .filter(DisplaySorted::isVisible)
-          .forEach(s -> a.addJSONObject(so -> encodeSpace(Pair.of(s, true), so)));
+      var spaces = controller.getSpaces();
+      synchronized (spaces) {
+        spaces.stream()
+            .filter(DisplaySorted::isVisible)
+            .map(s -> Pair.of(s, true))
+            .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
+      }
       return a;
     });
   }
 
   /**
-   * Encodes if it exists the current root space. It's about the current root space into which
-   * the sub spaces are walked through.
+   * Encodes if it exists the current root space. It's about the current root space into which the
+   * sub spaces are walked through.
+   *
    * @param jsonObject the JSON object to fill.
    */
   private void encodeCurrentRootSpace(final JSONObject jsonObject) {
@@ -117,6 +126,7 @@ public class NavBarJsonEncoder {
 
   /**
    * Encodes if any the full path to the current sub-space.
+   *
    * @param jsonObject the JSON object to fill.
    */
   private void encodeSpacePath(final JSONObject jsonObject) {
@@ -133,7 +143,8 @@ public class NavBarJsonEncoder {
       jsonObject.putJSONArray("spacePath", a -> {
         path.stream()
             .filter(DisplaySorted::isVisible)
-            .forEach(s -> a.addJSONObject(so -> encodeSpace(Pair.of(s, false), so)));
+            .map(s -> Pair.of(s, false))
+            .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
         return a;
       });
     }
@@ -141,23 +152,30 @@ public class NavBarJsonEncoder {
 
   /**
    * Encodes into the given JSON object the current spaces to display into the navigation.
+   *
    * @param jsonObject the JSON object to fill.
    */
   private void encodeSpaces(final JSONObject jsonObject) {
-    final String parentId = defaultStringIfNotDefined(controller.getSubSpaceId(), controller.getSpaceId());
+    final String parentId = defaultStringIfNotDefined(controller.getSubSpaceId(),
+        controller.getSpaceId());
     jsonObject.putJSONArray("spaces", a -> {
-      controller.getSubSpaces().stream()
-          .filter(s -> s.getParentId().equals(parentId))
-          .filter(DisplaySorted::isVisible)
-          .forEach(s -> a.addJSONObject(so -> encodeSpace(Pair.of(s, false), so)));
+      var subspaces = controller.getSubSpaces();
+      synchronized (subspaces) {
+        subspaces.stream()
+            .filter(s -> s.getParentId().equals(parentId))
+            .filter(DisplaySorted::isVisible)
+            .map(s -> Pair.of(s, false))
+            .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
+      }
       return a;
     });
   }
 
   /**
    * Centralization of the encoding of a space.
-   * @param space pair containing on the left the identification data and on the right a boolean
-   * to indicate if it is a root space.
+   *
+   * @param space pair containing on the left the identification data and on the right a boolean to
+   * indicate if it is a root space.
    * @param jsonObject the JSON object to fill.
    */
   private JSONObject encodeSpace(final Pair<DisplaySorted, Boolean> space,
@@ -171,6 +189,7 @@ public class NavBarJsonEncoder {
   /**
    * Encodes into the given JSON object the current application instances to display into the
    * navigation.
+   *
    * @param jsonObject the JSON object to fill.
    */
   private void encodeApplications(final JSONObject jsonObject) {
@@ -179,20 +198,23 @@ public class NavBarJsonEncoder {
         controller.getSpaceComponents();
     if (isNotEmpty(applications)) {
       jsonObject.putJSONArray("applications", a -> {
-        applications.stream()
-            .filter(DisplaySorted::isVisible)
-            .forEach(i -> a.addJSONObject(so -> so
-                .put(ID, i.getId())
-                .put(NAME, i.getTypeName())
-                .put(LABEL, i.getName())));
+        synchronized (applications) {
+          applications.stream()
+              .filter(DisplaySorted::isVisible)
+              .forEach(i -> a.addJSONObject(so -> so
+                  .put(ID, i.getId())
+                  .put(NAME, i.getTypeName())
+                  .put(LABEL, i.getName())));
+        }
         return a;
       });
     }
   }
 
   /**
-   * Encodes if it exists the current root space. It's about the current root space into which
-   * the sub spaces are walked through.
+   * Encodes if it exists the current root space. It's about the current root space into which the
+   * sub spaces are walked through.
+   *
    * @param jsonObject the JSON object to fill.
    */
   private void encodeCurrentComponentInstance(final JSONObject jsonObject) {
@@ -202,13 +224,16 @@ public class NavBarJsonEncoder {
           controller.getSubSpaceComponents() :
           controller.getSpaceComponents();
       if (isNotEmpty(applications)) {
-        applications.stream()
-            .filter(a -> currentApplicationId.equals(a.getId()))
-            .findFirst()
-            .ifPresent(a -> jsonObject.putJSONObject("currentApplication", o -> o
-                .put(ID, a.getId())
-                .put(NAME, a.getTypeName())
-                .put(LABEL, a.getName())));
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
+        synchronized (applications) {
+          applications.stream()
+              .filter(a -> currentApplicationId.equals(a.getId()))
+              .findFirst()
+              .ifPresent(a -> jsonObject.putJSONObject("currentApplication", o -> o
+                  .put(ID, a.getId())
+                  .put(NAME, a.getTypeName())
+                  .put(LABEL, a.getName())));
+        }
       }
     }
   }
@@ -216,6 +241,7 @@ public class NavBarJsonEncoder {
   /**
    * From given space parameters, returns the right space label against the maintenance status of
    * the space.
+   *
    * @param spaceId a space identifier.
    * @param spaceLabel the corresponding i18n space label.
    * @return the space label taking into account the maintenance status of the space.
