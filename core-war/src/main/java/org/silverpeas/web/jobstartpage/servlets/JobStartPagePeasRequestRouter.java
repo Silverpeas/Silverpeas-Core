@@ -573,8 +573,7 @@ public class JobStartPagePeasRequestRouter extends
       List<String> groupIds = (List<String>) StringUtil
           .splitString(request.getParameter(USER_PANEL_CURRENT_GROUP_IDS_PARAM), ',');
       jobStartPageSC
-          .initUserPanelSpaceForGroupsUsers((String) request.getAttribute("myComponentURL"),
-              userIds, groupIds);
+          .initUserPanelSpaceForGroupsUsers(userIds, groupIds);
       destination = Selection.getSelectionURL();
     } else if (function.equals("EffectiveSetSpaceProfile")) {
       String role = request.getParameter("Role");
@@ -661,12 +660,7 @@ public class JobStartPagePeasRequestRouter extends
       }
       switch (destination) {
         case "/jobStartPagePeas/jsp/jobStartPageNav.jsp":
-          request.setAttribute("Spaces", jobStartPageSC.getSpaces());
-          request.setAttribute("SubSpaces", jobStartPageSC.getSubSpaces());
-          request.setAttribute("SpaceComponents", jobStartPageSC.getSpaceComponents());
-          request.setAttribute("SubSpaceComponents", jobStartPageSC.getSubSpaceComponents());
           request.setAttribute(CURRENT_SPACE_ID_ATTR, jobStartPageSC.getSpaceId());
-          request.setAttribute("CurrentSubSpaceId", jobStartPageSC.getSubSpaceId());
           break;
         case "/jobStartPagePeas/jsp/jobStartPageNav.json":
           destination = sendJson(NavBarJsonEncoder.with(jobStartPageSC).encode());
@@ -678,7 +672,7 @@ public class JobStartPagePeasRequestRouter extends
           request.setAttribute("IsBasketEnable", JobStartPagePeasSettings.isBasketEnable);
           break;
         case START_PAGE_INFO_FULL_DEST:
-          SpaceInst spaceInst = jobStartPageSC.getSpaceInstById();
+          SpaceInst spaceInst = jobStartPageSC.getSpaceInstById(); // espace
 
           // courant
           request.setAttribute(IS_USER_ADMIN_ATTR, jobStartPageSC.isUserAdmin());
