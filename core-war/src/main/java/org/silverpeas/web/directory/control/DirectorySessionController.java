@@ -906,6 +906,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     QueryDescription queryDescription = queryParameters.getQueryDescription(getUserId(), "*");
     setComponentsScope(queryDescription);
+    if (StringUtil.isDefined(queryDescription.getQuery())) {
+      setCurrentQuery(queryDescription.getQuery());
+    }
     return queryDescription;
   }
 
