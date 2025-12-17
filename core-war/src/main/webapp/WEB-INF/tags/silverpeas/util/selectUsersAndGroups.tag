@@ -196,58 +196,58 @@
 
 <script type="text/javascript">
   whenSilverpeasReady(function() {
-    var userIds = [<c:forEach items="${users}" var="user" varStatus="status"><c:if test="${not status.first}">, </c:if>${user.id}</c:forEach>];
+    let userIds = [<c:forEach items="${users}" var="user" varStatus="status"><c:if test="${not status.first}">, </c:if>${user.id}</c:forEach>];
     if (userIds.length === 0) {
       userIds = [<c:forEach items="${userIds}" var="userId" varStatus="status"><c:if test="${not status.first}">, </c:if>${userId}</c:forEach>];
     }
-    var groupIds = [<c:forEach items="${groups}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>${group.id}</c:forEach>];
+    let groupIds = [<c:forEach items="${groups}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>${group.id}</c:forEach>];
     if (groupIds.length === 0) {
       groupIds = [<c:forEach items="${groupIds}" var="groupId" varStatus="status"><c:if test="${not status.first}">, </c:if>${groupId}</c:forEach>];
     }
-    var roleFilter = [<c:forEach items="${roleFilter}" var="role" varStatus="status"><c:if test="${not status.first}">, </c:if>'${role}'</c:forEach>];
-    var domainFilter = [<c:forEach items="${domainsFilter}" var="domain" varStatus="status"><c:if test="${not status.first}">, </c:if>'${domain.id}'</c:forEach>];
+    const roleFilter = [<c:forEach items="${roleFilter}" var="role" varStatus="status"><c:if test="${not status.first}">, </c:if>'${role}'</c:forEach>];
+    let domainFilter = [<c:forEach items="${domainsFilter}" var="domain" varStatus="status"><c:if test="${not status.first}">, </c:if>'${domain.id}'</c:forEach>];
     if (domainFilter.length === 0) {
       <c:if test="${not empty domainIdFilter}">
         domainFilter = ['${domainIdFilter}'];
       </c:if>
     }
-    var groupFilter = [<c:forEach items="${groupsFilter}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>'${group.id}'</c:forEach>];
-    var instance = new UserGroupSelect({
-      rootContainerId : "select-user-group-${id}",
-      simpleDetailsWhenRecipientTotalExceed : ${simpleDetailsWhenRecipientTotalExceed},
-      hideDeactivatedState : ${hideDeactivatedState},
-      domainIdFilter : domainFilter,
-      componentIdFilter : '${componentIdFilter}',
-      resourceIdFilter : '${resourceIdFilter}',
-      roleFilter : roleFilter,
-      groupFilter : groupFilter,
-      initialQuery : '${silfn:escapeJs(initialQuery)}',
-      selectOnTabulationKeyDown : ${selectOnTabulationKeyDown},
-      navigationalBehavior : ${navigationalBehavior},
-      doNotSelectAutomaticallyOnDropDownOpen : ${doNotSelectAutomaticallyOnDropDownOpen},
-      noUserPanel : ${noUserPanel},
-      noSelectionClear : ${noSelectionClear},
-      queryInputName : '${queryInputName}',
-      userInputName : '${userInputName}',
-      groupInputName : '${groupInputName}',
-      currentUserId : ${currentUserId},
-      initialUserIds : userIds,
-      initialGroupIds : groupIds,
-      displayUserZoom : ${displayUserZoom},
-      displayAvatar : ${displayAvatar},
-      multiple : ${multiple},
-      selectionType : '${selectionType}',
-      readOnly : ${readOnly},
-      mandatory : ${mandatory},
-      userManualNotificationUserReceiverLimit : ${userManualNotificationUserReceiverLimit}
+    const groupFilter = [<c:forEach items="${groupsFilter}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>'${group.id}'</c:forEach>];
+    const instance = new UserGroupSelect({
+      rootContainerId: "select-user-group-${id}",
+      simpleDetailsWhenRecipientTotalExceed: ${simpleDetailsWhenRecipientTotalExceed},
+      hideDeactivatedState: ${hideDeactivatedState},
+      domainIdFilter: domainFilter,
+      componentIdFilter: '${componentIdFilter}',
+      resourceIdFilter: '${resourceIdFilter}',
+      roleFilter: roleFilter,
+      groupFilter: groupFilter,
+      initialQuery: '${silfn:escapeJs(initialQuery)}',
+      selectOnTabulationKeyDown: ${selectOnTabulationKeyDown},
+      navigationalBehavior: ${navigationalBehavior},
+      doNotSelectAutomaticallyOnDropDownOpen: ${doNotSelectAutomaticallyOnDropDownOpen},
+      noUserPanel: ${noUserPanel},
+      noSelectionClear: ${noSelectionClear},
+      queryInputName: '${queryInputName}',
+      userInputName: '${userInputName}',
+      groupInputName: '${groupInputName}',
+      currentUserId: ${currentUserId},
+      initialUserIds: userIds,
+      initialGroupIds: groupIds,
+      displayUserZoom: ${displayUserZoom},
+      displayAvatar: ${displayAvatar},
+      multiple: ${multiple},
+      selectionType: '${selectionType}',
+      readOnly: ${readOnly},
+      mandatory: ${mandatory},
+      userManualNotificationUserReceiverLimit: ${userManualNotificationUserReceiverLimit}
       <c:if test="${not empty userPanelButtonLabel}">
-      ,userPanelButtonLabel : "${silfn:escapeJs(userPanelButtonLabel)}"
+      , userPanelButtonLabel: "${silfn:escapeJs(userPanelButtonLabel)}"
       </c:if>
       <c:if test="${not empty removeButtonLabel}">
-      ,removeButtonLabel : "${silfn:escapeJs(removeButtonLabel)}"
+      , removeButtonLabel: "${silfn:escapeJs(removeButtonLabel)}"
       </c:if>
       <c:if test="${not empty onChangeJsCallback}">
-      ,onChange : ${onChangeJsCallback}
+      , onChange: ${onChangeJsCallback}
       </c:if>
     });
     <c:if test="${not empty onReadyJsCallback}">
