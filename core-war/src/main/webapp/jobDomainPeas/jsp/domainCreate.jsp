@@ -88,12 +88,12 @@
   <view:looknfeel withCheckFormScript="true"/>
   <script language="JavaScript" type="text/javascript">
     function SubmitWithVerif(verifParams) {
-      var namefld = stripInitialWhitespace(document.domainForm.domainName.value);
-      var driverfld = stripInitialWhitespace(document.domainForm.domainDriver.value);
-      var propsfld = stripInitialWhitespace(document.domainForm.domainProperties.value);
-      var authfld = stripInitialWhitespace(document.domainForm.domainAuthentication.value);
-      var urlfld = stripInitialWhitespace(document.domainForm.silverpeasServerURL.value);
-      var errorMsg = "";
+      const namefld = stripInitialWhitespace(document.domainForm.domainName.value);
+      const driverfld = stripInitialWhitespace(document.domainForm.domainDriver.value);
+      const propsfld = stripInitialWhitespace(document.domainForm.domainProperties.value);
+      const authfld = stripInitialWhitespace(document.domainForm.domainAuthentication.value);
+      const urlfld = stripInitialWhitespace(document.domainForm.silverpeasServerURL.value);
+      let errorMsg = "";
 
       if (verifParams) {
         if (isWhitespace(namefld)) errorMsg = "${formatMissingFieldValueMessage(nameLabel)}";
@@ -136,7 +136,9 @@
         <div class="inlineMessage">${domainHelp}</div>
       </c:if>
       <form name="domainForm" action="${action}" method="POST">
-      <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+        <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
+      <table>
+          <tr><th></th></tr>
         <tr>
           <td class="txtlibform">${nameLabel} :</td>
           <td>
@@ -183,7 +185,7 @@
         </c:if>
         <tr>
           <td colspan="2">
-            (<img border="0" src="${mandatoryIconUrl}" width="5" height="5"> : ${requiredMessage})
+            (<img border="0" src="${mandatoryIconUrl}" width="5" height="5" alt="${requiredMessage}"> : ${requiredMessage})
           </td>
         </tr>
       </table>

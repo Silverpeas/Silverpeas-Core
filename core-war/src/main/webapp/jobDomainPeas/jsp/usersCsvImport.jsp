@@ -124,6 +124,7 @@ $(document).ready(function(){
 <view:window>
 <div class="inlineMessage" id="usersCsvImportInfo">${fullMessage}</div>
 <form name="csvFileForm" action="usersCsvImport" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
   <fieldset id="identity-main" class="skinFieldset">
     <legend style="display: none"></legend>
     <div class="fields">

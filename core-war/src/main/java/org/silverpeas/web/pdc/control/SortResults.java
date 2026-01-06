@@ -36,16 +36,16 @@ public interface SortResults {
    * realizes the sort or the sorting or filtering of a list of GlobalSilverResult
    * @param results List of GlobalSilverResult object
    * @param sortOrder order of sort
-   * @param sortValue type of sort to realize
-   * @param language
+   * @param sortType number indicating the type of sort to realize
+   * @param language the ISO 639-1 code of a supported language.
    * @return a sorting and/or filtering list
    */
-  public List<GlobalSilverResult> execute(List<GlobalSilverResult> results, String sortOrder,
-      String sortValue, String language);
+  List<GlobalSilverResult> execute(List<GlobalSilverResult> results, SortOrder sortOrder,
+      int sortType, String language);
 
   /**
    * Sets a PdcSearchSessionController in case this is needed by the sort
-   * @param controller
+   * @param controller the web controller for search.
    */
-  public void setPdcSearchSessionController(PdcSearchSessionController controller);
+  void setPdcSearchSessionController(PdcSearchSessionController controller);
 }

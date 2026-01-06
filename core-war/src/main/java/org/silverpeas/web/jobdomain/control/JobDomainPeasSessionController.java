@@ -64,6 +64,9 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 import org.silverpeas.core.security.encryption.X509Factory;
+import org.silverpeas.core.security.token.Token;
+import org.silverpeas.core.security.token.TokenGeneratorProvider;
+import org.silverpeas.core.security.token.synchronizer.SynchronizerToken;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -145,6 +148,22 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   private static final String BR_ELEMENT = new br().toString();
 
   private final Map<String, LocalizedWAComponent> localizedComponents = new HashMap<>();
+  private Token token = SynchronizerToken.NoneToken;
+
+  /**
+   * Apply in a secure way the specified function. The function will be executed only if the
+   * specified token matches the current one. Otherwise a
+   *
+   * @param token a security token.
+   * @param function the function to apply.
+   * @throws Exception if the administrative task fails.
+   */
+  public void securelyApply(String token, AdminTask function) throws Exception {
+    if (token == null || !this.token.isDefined() || !token.equals(this.token.getValue())) {
+      throwForbiddenError();
+    }
+    function.run();
+  }
 
   /**
    * Standard Session Controller Constructeur
@@ -246,7 +265,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   private <T> boolean isAccessGrantedOnNotFullAdminAccess(final String domainId,
-      final AccessContext<T> accessContext, final boolean readOnly) {
+      final AccessContext<T> accessContext,
+      final boolean readOnly) {
     final UserDetail ud = getUserDetail();
     final boolean equalsUserDomain = domainId.equals(ud.getDomainId());
     boolean granted = ud.isAccessDomainManager() && equalsUserDomain;
@@ -262,11 +282,11 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
           groupStream = groupStream.filter(g -> false);
         } else {
           final List<String> aimedGroupPath = Stream.concat(
-              Stream.of(aimedGroup.getId()),
-              Optional.of(aimedGroup)
-                  .filter(g -> isDefined(g.getSuperGroupId()))
-                  .stream()
-                  .flatMap(g -> getOrganisationController().getPathToGroup(g.getId()).stream()))
+                  Stream.of(aimedGroup.getId()),
+                  Optional.of(aimedGroup)
+                      .filter(g -> isDefined(g.getSuperGroupId()))
+                      .stream()
+                      .flatMap(g -> getOrganisationController().getPathToGroup(g.getId()).stream()))
               .collect(toList());
           groupStream = groupStream.filter(p -> aimedGroupPath.contains(p.getFirst().getId()));
         }
@@ -1180,7 +1200,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     if (isDefined(groupId)) {
       if (getTargetGroup() == null
           || (getTargetGroup() != null && !getTargetGroup().getId().equals(
-              groupId))) {
+          groupId))) {
         Group targetGroup = adminCtrl.getGroupById(groupId);
         // Add user access control for security purpose
         if (isOnlySpaceManager() || isUserAuthorizedToManageGroup(targetGroup)) {
@@ -1679,7 +1699,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     String newDomainId;
     try {
       newDomainId = Objects.requireNonNull(DomainServiceProvider.getDomainService(domainType))
-              .createDomain(theNewDomain);
+          .createDomain(theNewDomain);
       refresh();
     } catch (DomainCreationException e) {
       throw new JobDomainPeasException(e);
@@ -1892,7 +1912,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     String hostUrl = compoURL + "groupAddRemoveUsers";
     String cancelUrl = compoURL + "groupContent";
 
-    Selection selection = setupSelection(hostSpaceName, hostComponentName, hostPath, hostUrl, cancelUrl);
+    Selection selection = setupSelection(hostSpaceName, hostComponentName, hostPath, hostUrl,
+        cancelUrl);
 
     setDomainIdOnSelection(selection);
 
@@ -2011,8 +2032,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       listGroupToInsertUpdate = JobDomainPeasDAO.selectGroupSynchroInsertUpdateTableDomain_Group(
           theDomain);
       // 2- Traitement Domaine, appel aux webServices
-       Constructor<SynchroUserWebServiceItf> constructor = (Constructor<SynchroUserWebServiceItf>)
-           Class.forName(nomClasseWebService).getConstructor();
+      Constructor<SynchroUserWebServiceItf> constructor = (Constructor<SynchroUserWebServiceItf>)
+          Class.forName(nomClasseWebService).getConstructor();
       synchroUserWebService = constructor.newInstance();
 
       synchroUserWebService.startConnection();
@@ -2303,26 +2324,26 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     profileIds
         .map(i -> adminCtrl.getProfileInst(i))
         .forEach(p -> {
-      Objects.requireNonNull(p);
-      LocalizedComponentInstProfiles componentProfiles =
-          allProfiles.getByLocalComponentInstanceId(p.getComponentFatherId());
-      if (componentProfiles == null) {
-        ComponentInstLight currentComponent =
-            adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
-        if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
-          LocalizedWAComponent localizedWAComponent =
-              getLocalizedComponent(currentComponent.getName());
-          componentProfiles = new LocalizedComponentInstProfiles(currentComponent,
-              localizedWAComponent, getLanguage());
-          SpaceInstLight space = adminCtrl.getSpaceInstLight(currentComponent.getSpaceId());
-          componentProfiles.setSpace(space);
-          allProfiles.add(componentProfiles);
-        }
-      }
-      if (componentProfiles != null) {
-        componentProfiles.addProfile(p);
-      }
-    });
+          Objects.requireNonNull(p);
+          LocalizedComponentInstProfiles componentProfiles =
+              allProfiles.getByLocalComponentInstanceId(p.getComponentFatherId());
+          if (componentProfiles == null) {
+            ComponentInstLight currentComponent =
+                adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
+            if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
+              LocalizedWAComponent localizedWAComponent =
+                  getLocalizedComponent(currentComponent.getName());
+              componentProfiles = new LocalizedComponentInstProfiles(currentComponent,
+                  localizedWAComponent, getLanguage());
+              SpaceInstLight space = adminCtrl.getSpaceInstLight(currentComponent.getSpaceId());
+              componentProfiles.setSpace(space);
+              allProfiles.add(componentProfiles);
+            }
+          }
+          if (componentProfiles != null) {
+            componentProfiles.addProfile(p);
+          }
+        });
     allProfiles.sort(new AbstractComplexComparator<>() {
       private static final long serialVersionUID = 6776408278128213038L;
 
@@ -2499,13 +2520,34 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   /**
+   * Generate a new synchronization token and register it in this controller. This token is to be
+   * used to enforce the security between the client and this controller. For doing, use the method
+   * {@link JobDomainPeasSessionController#securelyApply(String, AdminTask)} to execute securely
+   * some administrative tasks with side effects. Once the token generated, any invocation of the
+   * above method is valid only if the token passed by the client matches current one.
+   *
+   * @return the new current token value.
+   */
+  public String generateToken() {
+    var generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
+    this.token = generator.generate();
+    return token.getValue();
+  }
+
+  @FunctionalInterface
+  public interface AdminTask {
+    void run() throws Exception;
+  }
+
+  /**
    * In order to check the user granted access to domain services, the context of use MUST be set.
    * <p>
-   *   This context is an implementation of this abstraction.
+   * This context is an implementation of this abstraction.
    * </p>
+   *
    * @param <T>
    */
-  private static abstract class AccessContext<T> {
+  private abstract static class AccessContext<T> {
     private final AccessContextType type;
     private final T resource;
 

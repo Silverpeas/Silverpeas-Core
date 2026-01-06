@@ -100,15 +100,15 @@
 <script type="text/javascript">
 function SubmitWithVerif(verifParams)
 {
-    var namefld = stripInitialWhitespace(document.groupForm.groupName.value);
-    var errorMsg = "";
+  const namefld = stripInitialWhitespace(document.groupForm.groupName.value);
+  let errorMsg = "";
 
-    if (verifParams)
+  if (verifParams)
     {
          if (isWhitespace(namefld))
             errorMsg = "<% out.print(resource.getString("JDP.missingFieldStart")+resource.getString("GML.name")+resource.getString("JDP.missingFieldEnd")); %>";
     }
-    if (errorMsg == "")
+    if (errorMsg === "")
     {
         $.progressMessage();
         document.groupForm.submit();
@@ -154,6 +154,7 @@ out.println(window.printBefore());
 %>
 <view:frame>
 <form name="groupForm" action="<%=action%>" method="POST">
+    <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
 	<c:choose>
 		<c:when test="${not empty groupId}">
 			<c:set var="grId" value="${groupId}" />

@@ -25,7 +25,7 @@
 
 <%@ include file="check.jsp" %>
 
-<style type="text/css">
+<style>
   #sp-admin-layout-body-part-layout {
     width: 100%;
     flex: 1;
