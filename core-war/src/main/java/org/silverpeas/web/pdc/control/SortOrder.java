@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,31 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.web.pdc.control;
 
-import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import java.util.List;
-
 /**
- * This interface define services allowing to filter or sort a list of GlobalSilverResult object
- * @author David Derigent
+ * The sorting order of the search results rendering.
+ *
+ * @author mmoquillon
  */
-public interface SortResults {
+public enum SortOrder {
 
   /**
-   * realizes the sort or the sorting or filtering of a list of GlobalSilverResult
-   * @param results List of GlobalSilverResult object
-   * @param sortOrder order of sort
-   * @param sortValue type of sort to realize
-   * @param language the ISO 639-1 code of a supported language.
-   * @return a sorting and/or filtering list
+   * The rendering order of the search results is ascending.
    */
-  List<GlobalSilverResult> execute(List<GlobalSilverResult> results, SortOrder sortOrder,
-      String sortValue, String language);
-
+  ASC,
   /**
-   * Sets a PdcSearchSessionController in case this is needed by the sort
-   * @param controller the web controller for search.
+   * The rendering order of the search results is descending.
    */
-  void setPdcSearchSessionController(PdcSearchSessionController controller);
+  DESC
 }

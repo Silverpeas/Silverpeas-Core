@@ -145,7 +145,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // 1, 2, 3, 4 or 5
   private int sortValue = -1;
   // ASC || DESC
-  private String sortOrder = null;
+  private SortOrder sortOrder = SortOrder.DESC;
   private final boolean isRefreshEnabled;
   private int searchType = SEARCH_EXPERT;
   private String searchPage = null;
@@ -153,7 +153,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private String resultPage = null;
   private String resultPageId = null;
   // XML Search Session's objects
-  private PublicationTemplateImpl xmlTemplate = null;
+  private transient PublicationTemplateImpl xmlTemplate = null;
   private DataRecord xmlData = null;
   private PagesContext pageContext = null;
   // Field value of XML form used to sort results
@@ -301,15 +301,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     this.nbResToDisplay = nbResToDisplay;
   }
 
-  public String getSortOrder() {
-    if (sortOrder == null) {
-      sortOrder = PdcSearchSessionController.SORT_ORDER_DESC;
-    }
+  public SortOrder getSortOrder() {
     return sortOrder;
   }
 
   public void setSortOrder(String sortOrder) {
-    this.sortOrder = sortOrder;
+    this.sortOrder = SortOrder.valueOf(sortOrder);
   }
 
   public int getSortValue() {
@@ -682,7 +679,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (reallySortResults) {
       // Tri de tous les résultats
       // Gets a SortResult implementation to realize the sorting and/or filtering results
-      SortResults sortResults = SortResultsFactory.getSortResults(getSortImplemtor());
+      SortResults sortResults = SortResultsFactory.getSortResults(getSortImplementor());
       sortResults.setPdcSearchSessionController(this);
       String sortValString;
       // determines which value used for sort value
@@ -1765,7 +1762,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    *
    * @return the sortImplemtor
    */
-  public String getSortImplemtor() {
+  public String getSortImplementor() {
     if (sortImplementor == null) {
       return Keys.defaultImplementor.value();
     }
@@ -1775,7 +1772,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * @param sortImplementor the sortImplementor to set
    */
-  public void setSortImplemtor(String sortImplementor) {
+  public void setSortImplementor(String sortImplementor) {
     this.sortImplementor = sortImplementor;
   }
 

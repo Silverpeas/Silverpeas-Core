@@ -174,7 +174,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         pdcSC.setResultPage(request.getParameter(RESULT_PAGE));
         pdcSC.setResultPageId(request.getParameter(RESULT_PAGE_ID));
         pdcSC.setXmlFormSortValue(request.getParameter("SortResXForm"));
-        pdcSC.setSortImplemtor(request.getParameter("sortImp"));
+        pdcSC.setSortImplementor(request.getParameter("sortImp"));
 
         String searchType = request.getParameter("searchType");
         if (searchType != null && !searchType.isEmpty()) {
@@ -556,7 +556,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("ResultsDisplay", pdcSC.getCurrentResultsDisplay());
     request.setAttribute(RESULT_PAGE_ID, pdcSC.getResultPageId());
     request.setAttribute("XmlFormSortValue", pdcSC.getXmlFormSortValue());
-    request.setAttribute("sortImp", pdcSC.getSortImplemtor());
+    request.setAttribute("sortImp", pdcSC.getSortImplementor());
 
     setTabsInfoIntoRequest(pdcSC, request);
   }
@@ -633,9 +633,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         String sortImp = request.getParameter(Keys.RequestSortImplementor.value());
         if (StringUtil.isDefined(templateName)) {
-          pdcSC.setSortImplemtor(sortImp);
+          pdcSC.setSortImplementor(sortImp);
         } else {
-          pdcSC.setSortImplemtor(null);
+          pdcSC.setSortImplementor(null);
         }
         String sortResXForm = request.getParameter(Keys.RequestSortXformField.value());
         if (StringUtil.isDefined(templateName)) {

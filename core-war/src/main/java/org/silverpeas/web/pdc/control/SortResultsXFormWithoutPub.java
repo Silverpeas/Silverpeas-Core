@@ -24,19 +24,23 @@
 package org.silverpeas.web.pdc.control;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.index.search.model.IndexSearcher;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
 
 /**
- * This class sort the result using a form xml field and filter the results to display only the
+ * This class sort the result using an XML form field and filter the results to display only the
  * publication
  *
  * @author david derigent
  */
+@Technical
+@Bean
 @Named
 public class SortResultsXFormWithoutPub implements SortResults {
 
@@ -52,7 +56,7 @@ public class SortResultsXFormWithoutPub implements SortResults {
    * java.lang.String, java.lang.String)
    */
   @Override
-  public List<GlobalSilverResult> execute(List<GlobalSilverResult> originalResults, String sortOrder,
+  public List<GlobalSilverResult> execute(List<GlobalSilverResult> originalResults, SortOrder sortOrder,
       String sortValue, String language) {
 
     throw new NotImplementedException("No more implemented !");

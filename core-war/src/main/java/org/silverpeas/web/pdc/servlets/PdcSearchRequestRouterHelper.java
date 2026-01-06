@@ -155,9 +155,9 @@ public class PdcSearchRequestRouterHelper {
     }
     String sortImplementor = request.getParameter(Keys.RequestSortImplementor.value());
     if (StringUtil.isDefined(sortImplementor)) {
-      pdcSC.setSortImplemtor(sortImplementor);
+      pdcSC.setSortImplementor(sortImplementor);
     } else {
-      pdcSC.setSortImplemtor(null);
+      pdcSC.setSortImplementor(null);
     }
 
     // Set component search type
