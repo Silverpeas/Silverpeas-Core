@@ -174,7 +174,7 @@
     const $dialog = jQuery('#deletionFormDialog');
     $dialog.popup('confirmation', {
       callback : function() {
-        var $deletionForm = jQuery('#deletionForm');
+        const $deletionForm = jQuery('#deletionForm');
         if (jQuery('#definitiveDeletion')[0].checked) {
           $deletionForm.attr("action", "groupDelete");
         } else {
@@ -194,12 +194,12 @@
   }
 
   function clipboardPaste() {
-    document.location.href = 'groupPaste';
+    document.location.href = 'groupPaste?X-ATKN=${requestScope["X-ATKN"]}';
   }
 
   function doSynchronization() {
     $.progressMessage();
-    window.location.href = "groupSynchro?Idgroup=${groupData.id}";
+    window.location.href = "groupSynchro?Idgroup=${groupData.id}&X-ATKN=${requestScope['X-ATKN']}";
   }
 
   <c:if test="${reloadDomainNavigationFrame}">
@@ -283,7 +283,7 @@ $(document).ready(function() {
   });
 });
 
-var arrayBeforeAjaxRequest = function () {
+const arrayBeforeAjaxRequest = function () {
   if (${fn:length(subGroupList)} > 25) {
     spProgressMessage.show();
   }
@@ -484,6 +484,7 @@ if (showTabs) {
 
 </view:frame>
 <form id="deletionForm" action="groupDelete" method="post">
+    <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
   <input id="Idgroup" type="hidden" name="Idgroup" value="${groupData.id}"/>
 </form>
 
@@ -507,6 +508,7 @@ if (showTabs) {
 <div id="assignRightsDialog" title="<fmt:message key="JDP.rights.assign"/>">
   <form accept-charset="UTF-8" enctype="multipart/form-data;charset=utf-8" id="affected-profil"
         name="rightsForm" action="AssignSameRights" method="post">
+      <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
     <label class="label-ui-dialog" for="profil-from"><fmt:message key="JDP.rights.assign.as"/></label>
     <span class="champ-ui-dialog">
 		    <input type="text" id="sourceRightsName" name="sourceRightsName" value="" size="50" readonly="readonly"/>

@@ -47,6 +47,7 @@
     function validate() {
       let formRequest = sp.formRequest("disableDataSensitivity").byPostMethod();
       checkboxMonitor.prepareFormRequest(formRequest);
+      formRequest.addParam("X-ATKN", "${requestScope['X-ATKN']}");
       formRequest.submit();
     }
 

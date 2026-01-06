@@ -66,6 +66,9 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 import org.silverpeas.core.security.encryption.X509Factory;
+import org.silverpeas.core.security.token.Token;
+import org.silverpeas.core.security.token.TokenGeneratorProvider;
+import org.silverpeas.core.security.token.synchronizer.SynchronizerToken;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -149,6 +152,22 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   private static final String BR_ELEMENT = new br().toString();
 
   private final Map<String, LocalizedWAComponent> localizedComponents = new HashMap<>();
+  private Token token = SynchronizerToken.NoneToken;
+
+  /**
+   * Apply in a secure way the specified function. The function will be executed only if the
+   * specified token matches the current one. Otherwise a
+   *
+   * @param token a security token.
+   * @param function the function to apply.
+   * @throws Exception if the administrative task fails.
+   */
+  public void securelyApply(String token, AdminTask function) throws Exception {
+    if (token == null || !this.token.isDefined() || !token.equals(this.token.getValue())) {
+      throwForbiddenError();
+    }
+    function.run();
+  }
 
   /**
    * Standard Session Controller constructor.
@@ -249,7 +268,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   private <T> boolean isAccessGrantedOnNotFullAdminAccess(final String domainId,
-      final AccessContext<T> accessContext, final boolean readOnly) {
+      final AccessContext<T> accessContext,
+      final boolean readOnly) {
     final UserDetail ud = getUserDetail();
     final boolean equalsUserDomain = domainId.equals(ud.getDomainId());
     boolean granted = ud.isAccessDomainManager() && equalsUserDomain;
@@ -2108,7 +2128,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       PrintWriter pw = new PrintWriter(sw);
 
       errorOccurred.printStackTrace(pw);
-      return errorOccurred.toString() + "\n" + sw.getBuffer().toString();
+      return errorOccurred.toString() + "\n" + sw.getBuffer();
     }
     return synchroReport;
   }
@@ -2633,6 +2653,26 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         .map(Group::getName)
         .collect(Collectors.toSet());
     return !selectedGroups.isEmpty() && selectedGroups.stream().noneMatch(subgroups::contains);
+  }
+
+  /**
+   * Generate a new synchronization token and register it in this controller. This token is to be
+   * used to enforce the security between the client and this controller. For doing, use the method
+   * {@link JobDomainPeasSessionController#securelyApply(String, AdminTask)} to execute securely
+   * some administrative tasks with side effects. Once the token generated, any invocation of the
+   * above method is valid only if the token passed by the client matches current one.
+   *
+   * @return the new current token value.
+   */
+  public String generateToken() {
+    var generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
+    this.token = generator.generate();
+    return token.getValue();
+  }
+
+  @FunctionalInterface
+  public interface AdminTask {
+    void run() throws Exception;
   }
 
   /**

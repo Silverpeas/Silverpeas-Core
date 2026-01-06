@@ -219,7 +219,7 @@ function jumpToUser(selectionUserAPI) {
 }
 
 function clipboardPaste() {
-  document.location.href = 'groupPaste';
+  document.location.href = 'groupPaste?X-ATKN=${requestScope["X-ATKN"]}';
 }
 
 let arrayBeforeAjaxRequest = function () {
@@ -431,7 +431,7 @@ out.println(window.printBefore());
         </view:arrayLines>
       </view:arrayPane>
       <script type="text/javascript">
-        var arrayPaneAjaxControl;
+        let arrayPaneAjaxControl;
 
         function filterByUserState() {
           const state = $("#selectedState").val();
@@ -454,6 +454,7 @@ out.println(window.printBefore());
   </c:if>
 </view:frame>
 <form id="deletionForm" action="" method="post">
+    <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
 </form>
 <%
 	out.println(window.printAfter());

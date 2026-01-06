@@ -109,8 +109,8 @@
 
     <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
     $("input[name='userAccessLevel']").on("change", function() {
-      var selectedRightAccess = $("input[name='userAccessLevel']:checked").val();
-      var $manualNotificationBlock = $('#identity-manual-notification');
+      const selectedRightAccess = $("input[name='userAccessLevel']:checked").val();
+      const $manualNotificationBlock = $('#identity-manual-notification');
       if(selectedRightAccess === 'USER' || selectedRightAccess === 'GUEST') {
         $manualNotificationBlock.show();
       } else {
@@ -118,9 +118,9 @@
       }
     });
 
-    var $limitActivation = $('#userManualNotifReceiverLimitEnabled').on("change", function() {
-      var $me = $(this);
-      var $limitValue = $('#form-row-user-manual-notification-limitation-value');
+    const $limitActivation = $('#userManualNotifReceiverLimitEnabled').on("change", function() {
+      const $me = $(this);
+      const $limitValue = $('#form-row-user-manual-notification-limitation-value');
       if($me.is(':checked')) {
         $limitValue.show();
       } else {
@@ -145,8 +145,8 @@
   });
 
 function ifCorrectBasicFormExecute(callback) {
-  var verifyPromises = [sp.promise.resolveDirectlyWith()];
-  var userLastNameInput = $("#userLastName");
+  const verifyPromises = [sp.promise.resolveDirectlyWith()];
+  const userLastNameInput = $("#userLastName");
   SilverpeasError.reset();
 
   if (userLastNameInput.length > 0 && isWhitespace(userLastNameInput.val())) {
@@ -154,7 +154,7 @@ function ifCorrectBasicFormExecute(callback) {
   }
 
   <% if (userCreation) { %>
-  var loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
+  const loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
   if (isWhitespace(loginfld)) {
     SilverpeasError.add("<%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.missingFieldEnd")%>");
   } else if(loginfld.length < <%=minLengthLogin.intValue()%>) {
@@ -164,12 +164,12 @@ function ifCorrectBasicFormExecute(callback) {
 
   <% if (userObject.isPasswordAvailable()) { %>
   if ($('#userPasswordValid:checked').val()) {
-    var $pwdInput = $('#userPasswordId');
+    const $pwdInput = $('#userPasswordId');
     <% if (userCreation || "userUpdate".equals(action)) { %>
     <% if ("userUpdate".equals(action)) { %>
     if ($pwdInput.val()) {
       <% } %>
-      var passwordDeferred = sp.promise.deferred();
+      const passwordDeferred = sp.promise.deferred();
       verifyPromises.push(passwordDeferred.promise);
       $pwdInput.password('verify', {
         onSuccess : function() {
@@ -180,7 +180,7 @@ function ifCorrectBasicFormExecute(callback) {
           passwordDeferred.resolve();
         }
       });
-      if ($pwdInput.val() != $('#userPasswordAgainId').val()) {
+      if ($pwdInput.val() !== $('#userPasswordAgainId').val()) {
         SilverpeasError.add("<fmt:message key='JDP.confirmPwdError'/>");
       }
       <% if ("userUpdate".equals(action)) { %>
@@ -191,8 +191,8 @@ function ifCorrectBasicFormExecute(callback) {
   <% } %>
 
   <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
-  var rightAccess = $("input[name='userAccessLevel']:checked").val();
-  var limitValue = $.trim($(document.userForm.userManualNotifReceiverLimitValue).val());
+  const rightAccess = $("input[name='userAccessLevel']:checked").val();
+  const limitValue = $.trim($(document.userForm.userManualNotifReceiverLimitValue).val());
   if ((rightAccess === 'USER' || rightAccess === 'GUEST')
       && $(document.userForm.userManualNotifReceiverLimitEnabled).is(":checked")
       && (!isInteger(limitValue) || (limitValue.length > 0 && eval(limitValue) <= 0))) {
@@ -203,9 +203,9 @@ function ifCorrectBasicFormExecute(callback) {
   sp.promise.whenAllResolved(verifyPromises).then(function() {
     if (!SilverpeasError.show()) {
       <% if (userCreation && CollectionUtil.isNotEmpty(groups)) { %>
-      var firstName = $("#userFirstName").val();
-      var lastName = userLastNameInput.val();
-      var email = $("#userEMail").val();
+      const firstName = $("#userFirstName").val();
+      const lastName = userLastNameInput.val();
+      const email = $("#userEMail").val();
       $.post('<%=m_context%>/JobDomainPeasAJAXServlet',
         {FirstName : firstName, LastName : lastName, Email : email, Action : 'CheckUser'},
         function(data) {
@@ -224,7 +224,7 @@ function ifCorrectBasicFormExecute(callback) {
 
 function selectUnselect() {
 <% if (userObject.isPasswordAvailable()) { %>
-  var bSelected = document.userForm.userPasswordValid.checked;
+  const bSelected = document.userForm.userPasswordValid.checked;
   if (bSelected){
       document.userForm.userPassword.disabled = false;
       $("#sendEmailTRid").show();
@@ -256,6 +256,7 @@ out.println(window.printBefore());
 %>
 <view:frame>
   <form name="userForm" action="<%=action%>" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
     <input type="hidden" name="Iduser" value="<% if (userObject.getId() != null) {
         out.print(userObject.getId());
       } %>"/>

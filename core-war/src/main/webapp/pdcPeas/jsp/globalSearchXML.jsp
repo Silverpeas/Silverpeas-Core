@@ -23,204 +23,209 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.core.admin.component.model.SilverpeasComponentInstance"%>
-<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
-<%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
-<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
-<%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate"%>
-<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
-<%@ include file="checkAdvancedSearch.jsp"%>
-<%
-String sortOrder = request.getParameter("sortOrder");
-String sortImp = request.getParameter("sortImp");
-String SortResXForm = request.getParameter("SortResXForm");
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+<%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate" %>
 
-boolean				expertSearchVisible  = (Boolean) request.getAttribute("ExpertSearchVisible");
-List<PublicationTemplate> 	xmlForms 	= (List) request.getAttribute("XMLForms");
-PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
-DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
-PagesContext		context		= (PagesContext) request.getAttribute("context");
+<%@ include file="checkAdvancedSearch.jsp" %>
 
-Form form = null;
-String selectedTemplate = null;
-if (template != null) {
-	selectedTemplate 	= template.getFileName();
-	form 				= template.getSearchForm();
-}
+<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<fmt:message var="componentName" key="pdcPeas.SearchPage"/>
+<fmt:message var="resultsTab" key="pdcPeas.SearchResult"/>
+<fmt:message var="simpleSearchTab" key="pdcPeas.SearchSimple"/>
+<fmt:message var="advancedSearchTab" key="pdcPeas.SearchAdvanced"/>
+<fmt:message var="searchByFormTab" key="pdcPeas.SearchXml"/>
+<fmt:message var="searchPageTab" key="pdcPeas.SearchPage"/>
+<fmt:message var="searchAction" key="pdcPeas.search"/>
 
-List<SilverpeasComponentInstance>	allComponents		= (List) request.getAttribute("ComponentList");
-List<SpaceInstLight>	allSpaces	= (List) request.getAttribute("SpaceList");
-QueryParameters query	= (QueryParameters) request.getAttribute("QueryParameters");
-String			spaceSelected		= null;
-String			componentSelected	= null;
-String			title				= "";
-if (query != null) {
-	spaceSelected		= query.getSpaceId();
-	componentSelected	= query.getInstanceId();
-	title				= StringUtil.defaultStringIfNotDefined(query.getKeywords());
-}
+<c:set var="language" value="${sessionScope[sessionController].language}"/>
+<c:set var="templates" value="${requestScope.XMLForms}"/>
+<c:set var="actualTemplate" value="${requestScope.Template}"/>
+<c:set var="selectedTemplate"/>
+<c:set var="form" value="${null}"/>
+<c:if test="${actualTemplate != null}">
+  <c:set var="selectedTemplate" value="${actualTemplate.fileName}"/>
+  <c:set var="form" value="${actualTemplate.searchForm}"/>
+</c:if>
+<c:set var="spaces" value="${requestScope.SpaceList}"/>
+<c:set var="selectedSpace"/>
+<c:set var="selectedComponent"/>
+<c:set var="title" value=""/>
+<c:set var="query" value="${requestScope.QueryParameters}"/>
+<c:if test="${query != null}">
+  <c:set var="selectedSpace" value="${query.spaceId}"/>
+  <c:set var="selectedComponent" value="${query.instanceId}"/>
+  <c:set var="title" value="${silfn:defaultEmptyString(query.keywords)}"/>
+</c:if>
+<c:set var="components" value="${requestScope.ComponentList}"/>
+<c:set var="context" value="${requestScope.context}"/>
+<c:set var="data" value="${requestScope.Data}"/>
 
-String pageId = (String) request.getAttribute("PageId");
-if (!StringUtil.isDefined(pageId)) {
-  pageId = "globalSearchXML";
-}
-%>
+<view:sp-page>
+  <view:sp-head-part>
+    <view:includePlugin name="wysiwyg"/>
+    <script type="text/javascript">
+      function sendXMLRequest() {
+        if (document.XMLSearchForm != null) {
+          $.progressMessage();
+          applyPlainTextSearch();
+          document.XMLSearchForm.submit();
+        } else {
+          jQuery.popup.error('<fmt:message key="pdcPeas.choiceForm"/>');
+        }
+      }
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel/>
-<view:includePlugin name="wysiwyg"/>
-<script type="text/javascript">
-function sendXMLRequest() {
-	if(document.XMLSearchForm != null) {
-		$.progressMessage();
-		applyPlainTextSearch();
-		document.XMLSearchForm.submit();
-	} else {
-    jQuery.popup.error("<%=resource.getString("pdcPeas.choiceForm")%>");
-	}
-}
-function chooseTemplate() {
-	var valuePath = document.XMLRestrictForm.xmlSearchSelectedForm.value;
-	if (valuePath.length > 0) {
-		$.progressMessage();
-		applyPlainTextSearch();
-    document.XMLRestrictForm.action = "XMLSearchViewTemplate";
-		document.XMLRestrictForm.submit();
-	}
-}
-function applyPlainTextSearch() {
-	$("input[name='TitleNotInXMLForm']").val($("#plainText").val());
-}
-function viewXmlSearch(){
-	$.progressMessage();
-	document.XMLRestrictForm.submit();
-}
-</script>
-</head>
-<body class="yui-skin-sam" id="<%=pageId %>">
-<%
-	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
+      function chooseTemplate() {
+        const valuePath = document.XMLRestrictForm.xmlSearchSelectedForm.value;
+        if (valuePath.length > 0) {
+          $.progressMessage();
+          applyPlainTextSearch();
+          document.XMLRestrictForm.action = "XMLSearchViewTemplate";
+          document.XMLRestrictForm.submit();
+        }
+      }
 
-	Board board = gef.getBoard();
-	ButtonPane buttonPane = gef.getButtonPane();
+      function applyPlainTextSearch() {
+        $("input[name='TitleNotInXMLForm']").val($("#plainText").val());
+      }
 
-	out.println(window.printBefore());
+      function viewXmlSearch() {
+        $.progressMessage();
+        document.XMLRestrictForm.submit();
+      }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part cssClass="yui-skin-sam" id="globalSearchXML">
+    <view:browseBar componentId="componentName"/>
+    <view:window>
+      <view:tabs>
+        <view:tab label="${resultsTab}" action="LastResults" selected="false"/>
+        <c:choose>
+          <c:when test="${requestScope.ExpertSearchVisible}">
+            <view:tab label="${simpleSearchTab}" action="ChangeSearchTypeToAdvanced"
+                      selected="false"/>
+            <view:tab label="${advancedSearchTab}" action="ChangeSearchTypeToExpert"
+                      selected="false"/>
+          </c:when>
+          <c:otherwise>
+            <view:tab label="${searchPageTab}" action="ChangeSearchTypeToAdvanced"
+                      selected="false"/>
+          </c:otherwise>
+        </c:choose>
+        <view:tab label="${searchByFormTab}" action="#" selected="true"/>
+      </view:tabs>
+      <view:frame>
+        <div id="scope">
+          <view:board>
+            <form name="XMLRestrictForm" action="XMLRestrictSearch" method="post">
+              <table>
+                <tr>
+                  <th scope="row" class="txtlibform" style="width: 200px">
+                    <label for="searchSelection"><fmt:message key="pdcPeas.Template"/></label>
+                  </th>
+                  <td>
+                    <select id="searchSelection" name="xmlSearchSelectedForm" size="1"
+                            onchange="chooseTemplate();return;">
+                      <option value=""><fmt:message key="GML.select"/></option>
+                      <c:forEach var="template" items="${templates}">
+                        <c:set var="selected" value=""/>
+                        <c:if test="${template.fileName == selectedTemplate}">
+                          <c:set var="selected" value="selected"/>
+                        </c:if>
+                        <option value="${template.fileName}" ${selected}>${template.name}</option>
+                      </c:forEach>
+                    </select>
+                  </td>
+                </tr>
+                <tr></tr>
+                <tr id="spaceList">
+                  <th scope="row" class="txtlibform" style="width: 200px">
+                    <label for="spaces"><fmt:message key="pdcPeas.DomainSelect"/></label>
+                  </th>
+                  <td>
+                    <select id="spaces" name="spaces" size="1" onchange="viewXmlSearch()">
+                      <option value=""><fmt:message key="pdcPeas.AllAuthors"/></option>
+                      <c:forEach var="space" items="${spaces}">
+                        <c:set var="selected" value=""/>
+                        <c:if test="${space.id == selectedSpace}">
+                          <c:set var="selected" value="selected"/>
+                        </c:if>
+                        <c:set var="incr" value=""/>
+                        <c:if test="${space.level == 1}">
+                          <c:set var="incr" value="&nbsp;&nbsp;"/>
+                        </c:if>
+                        <option value="${space.id}"
+                          ${selected}>${incr}${silfn:escapeHtml(space.getName(language))}</option>
+                      </c:forEach>
+                    </select>
+                  </td>
+                </tr>
+                <tr></tr>
+                <c:if test="${components != null}">
+                  <tr>
+                    <th scope="row" class="txtlibform" style="width: 200px">
+                      <label for="components"><fmt:message key="pdcPeas.ComponentSelect"/></label>
+                    </th>
+                    <td>
+                      <select id="components" name="componentSearch" size="1"
+                              onchange="viewXmlSearch()">
+                        <option value=""><fmt:message key="pdcPeas.AllAuthors"/></option>
+                        <c:forEach var="component" items="${components}">
+                          <c:set var="selected" value=""/>
+                          <c:if test="${component.id == selectedComponent}">
+                            <c:set var="selected" value="selected"/>
+                          </c:if>
+                          <option
+                              value="${component.id}" ${selected}>${silfn:escapeHtml(component.getName(language))}</option>
+                        </c:forEach>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr></tr>
+                </c:if>
+                <tr>
+                  <th scope="row" style="width: 200px" class="txtlibform">
+                    <label for="plainText"><fmt:message key="GML.search"/></label>
+                  </th>
+                  <td><input type="text" id="plainText" size="50" value="${title}"/></td>
+                </tr>
+              </table>
+              <input type="hidden" name="sortOrder" value="<c:out value="${param.sortOrder}"/>"/>
+              <input type="hidden" name="TitleNotInXMLForm" value="${title}"/>
+            </form>
+          </view:board>
+        </div>
 
-	tabs = gef.getTabbedPane();
-	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "LastResults", false);
-	if (expertSearchVisible) {
-		tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
-		tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
-	} else {
-		tabs.addTab(resource.getString("pdcPeas.SearchPage"), "ChangeSearchTypeToAdvanced", false);
-	}
-	tabs.addTab(resource.getString("pdcPeas.SearchXml"), "#", true);
-
-	out.println("<div id=\"tabs\">" + tabs.print() + "</div>");
-	out.println(frame.printBefore());
-
-	%>
-<div id="scope">
-<view:board>
-    <form name="XMLRestrictForm" action="XMLRestrictSearch" method="post">
-      <table border="0" cellspacing="0" cellpadding="5" width="100%">
-        <tr>
-          <td class="txtlibform" width="200"><%=resource.getString("pdcPeas.Template")%></td>
-          <td>
-            <select name="xmlSearchSelectedForm" size="1" onchange="chooseTemplate();return;">
-              <option value=""><%=resource.getString("GML.select")%></option>
+        <c:if test="${form != null}">
+          <div id="template">
+            <form name="XMLSearchForm" method="post" action="XMLSearch"
+                  enctype="multipart/form-data">
+              <input type="hidden" name="TitleNotInXMLForm" value="${title}"/>
               <%
-                String selected = "";
-                for (PublicationTemplate oneTemplate : xmlForms) {
-                  selected	= "";
-                  if (oneTemplate.getFileName().equals(selectedTemplate)) {
-                    selected = " selected";
-                  }
-
-                  out.println("<option value=\""+oneTemplate.getFileName()+"\""+selected+">"+oneTemplate.getName()+"</option>");
-                }
+                PublicationTemplate template = (PublicationTemplate) request.getAttribute("Template");
+                DataRecord emptyData = (DataRecord) request.getAttribute("Data");
+                PagesContext context = (PagesContext) request.getAttribute("context");
+                Form form = template.getSearchForm();
+                form.display(out, context, emptyData);
               %>
-            </select>
-          </td>
-        </tr>
-        <tr id="spaceList">
-          <td class="txtlibform" width="200"><%=resource.getString("pdcPeas.DomainSelect")%></td>
-          <td><select name="spaces" size="1" onchange="javascript:viewXmlSearch()">
-            <%
-				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
-				String			incr	= "";
-				for (SpaceInstLight 	space : allSpaces) {
-						selected	= "";
-						incr		= "";
-						if (space.getLevel() == 1) {
-              incr = "&nbsp;&nbsp;";
-            }
-
-						if (space.getId().equals(spaceSelected)) {
-              selected = " selected";
-            }
-
-						out.println("<option value=\""+space.getId()+"\""+selected+">"+incr+WebEncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
-				}
-             %>
-             </select></td>
-	    </tr>
-    <% if (allComponents != null) {%>
-		<tr>
-			<td class="txtlibform" width="200"><%=resource.getString("pdcPeas.ComponentSelect")%></td>
-			<td>
-			<select name="componentSearch" size="1" onchange="javascript:viewXmlSearch()">
-			<option value=""><%=resource.getString("pdcPeas.AllAuthors")%></option>
-			<%
-				for(SilverpeasComponentInstance component : allComponents) {
-						selected	= "";
-						if (component.getId().equals(componentSelected)){
-							selected = " selected";
-						}
-						out.println("<option value=\""+component.getId()+"\""+selected+">"+WebEncodeHelper.javaStringToHtmlString(component.getLabel(language))+"</option>");
-				}
-			%>
-			</select>
-			</td>
-		</tr>
-    <% } %>
-        <tr>
-          <td width="200" class="txtlibform"><%=resource.getString("GML.search")%></td>
-          <td><input type="text" id="plainText" size="50" value="<%=title%>"/></td>
-        </tr>
-
-		<input type="hidden" name="SearchPageId" value="<%=pageId %>"/>
-		<input type="hidden" name="sortOrder" value="<%=sortOrder %>"/>
-		<input type="hidden" name="sortImp" value="<%=sortImp %>"/>
-		<input type="hidden" name="SortResXForm" value="<%=SortResXForm %>"/>
-		<input type="hidden" name="TitleNotInXMLForm" value="<%=title %>"/>
-		    </table>
-    </form>
-</view:board>
-</div>
-
-	<% if (form != null) { %>
-		<div id="template">
-      <form name="XMLSearchForm" method="post" action="XMLSearch" enctype="multipart/form-data">
-		  <input type="hidden" name="TitleNotInXMLForm" value="<%=title%>"/>
-      <%
-  		  form.display(out, context, emptyData);
- 	    %>
-		  </form>
-      </div>
-		  <br/>
-	<% } %>
-<%
-	buttonPane.addButton(gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:sendXMLRequest();", false));
-	out.println(buttonPane.print());
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-<view:progressMessage/>
-</body>
-</html>
+            </form>
+          </div>
+          <br/>
+        </c:if>
+        <view:buttonPane>
+          <view:button label="${searchAction}" action="javascript:sendXMLRequest();"
+                       disabled="false"/>
+        </view:buttonPane>
+      </view:frame>
+    </view:window>
+    <view:progressMessage/>
+  </view:sp-body-part>
+</view:sp-page>

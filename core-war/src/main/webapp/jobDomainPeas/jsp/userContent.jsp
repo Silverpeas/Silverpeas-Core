@@ -133,26 +133,27 @@
     if (isUserFull) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
-              "displayUserUpdate?Iduser=" + thisUserId);
+              "displayUserUpdate?Iduser=" + thisUserId + "&X-ATKN=" +
+                      request.getAttribute("X-ATKN"));
     }
     updatableUser = true;
     if (userObject.isBlockedState()) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUnblock"), resource.getString("JDP.userUnblock"),
-              "userUnblock?Iduser=" + thisUserId);
+              "userUnblock?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     } else {
       operationPane
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
-              "userBlock?Iduser=" + thisUserId);
+              "userBlock?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     }
     if (userObject.isDeactivatedState()) {
       operationPane
           .addOperation(resource.getIcon("JDP.userActivate"), resource.getString("JDP.userActivate"),
-              "userActivate?Iduser=" + thisUserId);
+              "userActivate?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     } else {
       operationPane
           .addOperation(resource.getIcon("JDP.userDeactivate"), resource.getString("JDP.userDeactivate"),
-              "userDeactivate?Iduser=" + thisUserId);
+              "userDeactivate?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     }
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.remove"),
         "javascript:removeUser()");
@@ -161,32 +162,33 @@
     if (isUserFull) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
-              "displayUserMS?Iduser=" + thisUserId);
+              "displayUserMS?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     }
     updatableUser = true;
     if (userObject.isBlockedState()) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUnblock"), resource.getString("JDP.userUnblock"),
-              "userUnblock?Iduser=" + thisUserId);
+              "userUnblock?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     } else {
       operationPane
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
-              "userBlock?Iduser=" + thisUserId);
+              "userBlock?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     }
     if (userObject.isDeactivatedState()) {
       operationPane
           .addOperation(resource.getIcon("JDP.userActivate"), resource.getString("JDP.userActivate"),
-              "userActivate?Iduser=" + thisUserId);
+              "userActivate?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     } else {
       operationPane
           .addOperation(resource.getIcon("JDP.userDeactivate"), resource.getString("JDP.userDeactivate"),
-              "userDeactivate?Iduser=" + thisUserId);
+              "userDeactivate?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
     }
     if (isDomainSync) {
       operationPane.addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),
-          "userSynchro?Iduser=" + thisUserId);
+          "userSynchro?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
       if (isDomainUnsync) {
-        operationPane.addOperation(resource.getIcon("JDP.userUnsynchro"), resource.getString("JDP.userUnsynchro"), "userUnSynchro?Iduser=" + thisUserId);
+        operationPane.addOperation(resource.getIcon("JDP.userUnsynchro"), resource.getString("JDP.userUnsynchro"),
+                "userUnSynchro?Iduser=" + thisUserId + "&X-ATKN=" + request.getAttribute("X-ATKN"));
       }
     } else {
       operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.remove"),
@@ -196,10 +198,12 @@
     if (isLdapDomain) {
       if (userInfos.hasSensitiveData()) {
         operationPane.addOperation("useless", resource.getString("JDP.disableDataSensitivity"),
-                "userSensitiveDataUnprotect?Iduser=" + thisUserId);
+                "userSensitiveDataUnprotect?Iduser=" + thisUserId + "&X-ATKN=" +
+                        request.getAttribute("X-ATKN"));
       } else {
         operationPane.addOperation("useless", resource.getString("JDP.enableDataSensitivity"),
-                "userSensitiveDataProtect?Iduser=" + thisUserId);
+                "userSensitiveDataProtect?Iduser=" + thisUserId + "&X-ATKN=" +
+                        request.getAttribute("X-ATKN"));
       }
     }
   }
@@ -243,10 +247,10 @@
   </style>
   <script type="text/javascript">
     function removeUser() {
-      var $dialog = jQuery('#deletionFormDialog');
+      const $dialog = jQuery('#deletionFormDialog');
       $dialog.popup('confirmation', {
         callback : function() {
-          var $deletionForm = jQuery('#deletionForm');
+          const $deletionForm = jQuery('#deletionForm');
           if (jQuery('#definitiveDeletion')[0].checked) {
             $deletionForm.attr("action", "userDelete");
           } else {
@@ -259,16 +263,17 @@
 
     function deleteAvatar() {
       jQuery.popup.confirm("${labelDeleteAvatar}", function() {
-        var $deletionForm = jQuery('#deletionForm');
+        const $deletionForm = jQuery('#deletionForm');
         $deletionForm.attr("action", "userAvatarDelete");
         $deletionForm.submit();
       });
     }
 
     function viewSubscriptions() {
-      chemin = webContext+'<%= URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION)%>showUserSubscriptions.jsp?userId=${userInfos.id}';
-      largeur = "600";
-      hauteur = "440";
+      const chemin = webContext+
+          '<%= URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION)%>showUserSubscriptions.jsp?userId=${userInfos.id}';
+      const largeur = "600";
+      const hauteur = "440";
       SP_openWindow(chemin, "pdcWindow", largeur, hauteur, "resizable=yes,scrollbars=yes");
     }
 
@@ -276,13 +281,14 @@
       sp.navRequest(webContext + '/RjobDomainPeas/jsp/groupOpen').withParam('groupId', groupId).go();
     }
 
-    var componentWindow = window;
+    let componentWindow = window;
+
     function openComponent(componentId) {
-      url = webContext + '/RjobStartPagePeas/jsp/OpenComponent?ComponentId=' + componentId;
-      windowName = "componentWindow";
-      larg = "800";
-      haut = "800";
-      windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+      const url = webContext + '/RjobStartPagePeas/jsp/OpenComponent?ComponentId=' + componentId;
+      const windowName = "componentWindow";
+      const larg = "800";
+      const haut = "800";
+      const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
       if (!componentWindow.closed && componentWindow.name === "componentWindow") {
         componentWindow.close();
       }
@@ -294,9 +300,9 @@
     }
 
     function ifCorrectFormExecute(callback) {
-      var errorMsg = "";
-      var errorNb = 0;
-      var sourceRightsId = document.rightsForm.sourceRightsId.value;
+      let errorMsg = "";
+      let errorNb = 0;
+      const sourceRightsId = document.rightsForm.sourceRightsId.value;
 
       if (isWhitespace(sourceRightsId)) {
         errorMsg+=" - '<fmt:message key="JDP.rights.assign.as"/>' <fmt:message key="GML.MustBeFilled"/>\n";
@@ -601,6 +607,7 @@ out.println(window.printBefore());
   </c:if>
 
   <form id="deletionForm" name="deletionForm" action="userDelete" method="post">
+      <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
     <input id="Iduser" type="hidden" name="Iduser" value="${userInfos.id}"/>
   </form>
 
@@ -627,6 +634,7 @@ out.println(window.printAfter());
   <div id="assignRightsDialog" title="<fmt:message key="JDP.rights.assign"/>">
     <form accept-charset="UTF-8" enctype="multipart/form-data" id="affected-profil"
           name="rightsForm" action="AssignSameRights" method="post">
+        <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
       <label class="label-ui-dialog"><fmt:message key="JDP.rights.assign.as"/></label>
       <span class="champ-ui-dialog">
 		    <input type="text" id="sourceRightsName" name="sourceRightsName" value="" size="50" readonly="readonly"/>

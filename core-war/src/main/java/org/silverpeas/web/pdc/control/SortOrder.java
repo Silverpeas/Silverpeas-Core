@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,31 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.web.pdc.control;
 
 /**
- * Enumerates the values that may be used by the search engine
- * @author jle
+ * The sorting order of the search results rendering.
+ *
+ * @author mmoquillon
  */
-public enum Keys {
-  // Stores the form field that will be used for the sort (form$$field)
-  RequestSortXformField("SortResXForm"),
-  // Stores the kind of sort that will be used (defaultSort, xmlFormSort, ...)
-  RequestSortImplementor("sortImp"),
-  // Stores the class that will make the default sort
-  defaultImplementor("defaultSort"),
-  // Stores the class that will sort the XML forms
-  xmlFormSortImplementor("xmlFormSort");
+public enum SortOrder {
 
-  private String keyword = null;
-
-  Keys(String key) {
-    this.keyword = key;
-  }
-
-  public String value() {
-    return keyword;
-
-  }
-
+  /**
+   * The rendering order of the search results is ascending.
+   */
+  ASC,
+  /**
+   * The rendering order of the search results is descending.
+   */
+  DESC
 }

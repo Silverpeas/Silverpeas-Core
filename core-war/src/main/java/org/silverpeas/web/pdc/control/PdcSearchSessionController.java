@@ -94,8 +94,6 @@ import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 public class PdcSearchSessionController extends AbstractComponentSessionController {
   private static final long serialVersionUID = 308264856139476541L;
 
-  public static final String SORT_ORDER_ASC = "ASC";
-  public static final String SORT_ORDER_DESC = "DESC";
   // only field query
   public static final int SEARCH_SIMPLE = 0;
   // Simple + filter
@@ -145,21 +143,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // 1, 2, 3, 4 or 5
   private int sortValue = -1;
   // ASC || DESC
-  private String sortOrder = null;
+  private SortOrder sortOrder = SortOrder.DESC;
   private final boolean isRefreshEnabled;
   private int searchType = SEARCH_EXPERT;
   private String searchPage = null;
-  private String searchPageId = null;
   private String resultPage = null;
-  private String resultPageId = null;
   // XML Search Session's objects
-  private PublicationTemplateImpl xmlTemplate = null;
+  private transient PublicationTemplateImpl xmlTemplate = null;
   private DataRecord xmlData = null;
   private PagesContext pageContext = null;
   // Field value of XML form used to sort results
-  private String xmlFormSortValue = null;
-  // Keyword used to retrieve the implementation to realize sorting or filtering
-  private String sortImplementor = null;
   private int currentResultsDisplay = SHOWRESULTS_ALL;
   // Spelling word
   private final List<String> spellingWords = Collections.emptyList();
@@ -301,25 +294,28 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     this.nbResToDisplay = nbResToDisplay;
   }
 
-  public String getSortOrder() {
-    if (sortOrder == null) {
-      sortOrder = PdcSearchSessionController.SORT_ORDER_DESC;
-    }
+  public SortOrder getSortOrder() {
     return sortOrder;
   }
 
   public void setSortOrder(String sortOrder) {
+    if (StringUtil.isDefined(sortOrder)) {
+      setSortOrder(SortOrder.valueOf(sortOrder));
+    }
+  }
+
+  public void setSortOrder(SortOrder sortOrder) {
     this.sortOrder = sortOrder;
   }
 
-  public int getSortValue() {
+  public int getSortType() {
     if (sortValue == -1) {
       sortValue = 1;
     }
     return sortValue;
   }
 
-  public void setSortValue(int sortValue) {
+  public void setSortType(int sortValue) {
     this.sortValue = sortValue;
   }
 
@@ -682,22 +678,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (reallySortResults) {
       // Tri de tous les résultats
       // Gets a SortResult implementation to realize the sorting and/or filtering results
-      SortResults sortResults = SortResultsFactory.getSortResults(getSortImplemtor());
+      SortResults sortResults = SortResultsFactory.getSortResults();
       sortResults.setPdcSearchSessionController(this);
-      String sortValString;
-      // determines which value used for sort value
-      if (StringUtil.isDefined(getXmlFormSortValue())) {
-        sortValString = getXmlFormSortValue();
-      } else {
-        sortValString = Integer.toString(getSortValue());
-      }
       // realizes the sort
-      if (getSortValue() == 7) {
+      if (getSortType() == 7) {
         setPopularityToResults();
-      } else if (getSortValue() == 6) {
+      } else if (getSortType() == 6) {
         setLocationToResults();
       }
-      sortedResults = sortResults.execute(sortedResults, getSortOrder(), sortValString, getLanguage());
+      sortedResults = sortResults.execute(sortedResults, getSortOrder(), getSortType(), getLanguage());
     }
 
     List<GlobalSilverResult> resultsToDisplay;
@@ -1635,22 +1624,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     searchPage = null;
   }
 
-  public String getSearchPageId() {
-    return searchPageId;
-  }
-
-  public void setSearchPageId(String searchPageId) {
-    if (StringUtil.isDefined(searchPageId)) {
-      this.searchPageId = searchPageId;
-    } else {
-      resetSearchPageId();
-    }
-  }
-
-  private void resetSearchPageId() {
-    searchPageId = null;
-  }
-
   public String getResultPage() {
     return resultPage;
   }
@@ -1665,22 +1638,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private void resetResultPage() {
     resultPage = null;
-  }
-
-  public String getResultPageId() {
-    return resultPageId;
-  }
-
-  public void setResultPageId(String resultPageId) {
-    if (StringUtil.isDefined(resultPageId)) {
-      this.resultPageId = resultPageId;
-    } else {
-      resetResultPageId();
-    }
-  }
-
-  private void resetResultPageId() {
-    resultPageId = null;
   }
 
   /**
@@ -1740,43 +1697,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       currentResultDisplay = Integer.parseInt(param);
     }
     setCurrentResultsDisplay(currentResultDisplay);
-  }
-
-  /**
-   * Gets the XML form field used to realize sorting
-   *
-   * @return the xmlFormSortValue
-   */
-  public String getXmlFormSortValue() {
-    return xmlFormSortValue;
-  }
-
-  /**
-   * Sets the XML form field used to realize sorting
-   *
-   * @param xmlFormSortValue the xmlFormSortValue to set
-   */
-  public void setXmlFormSortValue(String xmlFormSortValue) {
-    this.xmlFormSortValue = xmlFormSortValue;
-  }
-
-  /**
-   * Gets the keyword to retreive the implementation class name to realize sorting or filtering
-   *
-   * @return the sortImplemtor
-   */
-  public String getSortImplemtor() {
-    if (sortImplementor == null) {
-      return Keys.defaultImplementor.value();
-    }
-    return sortImplementor;
-  }
-
-  /**
-   * @param sortImplementor the sortImplementor to set
-   */
-  public void setSortImplemtor(String sortImplementor) {
-    this.sortImplementor = sortImplementor;
   }
 
   /**
@@ -1899,16 +1819,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       queryParameters.clear();
     }
     removeAllCriterias();
-    setSortOrder(PdcSearchSessionController.SORT_ORDER_DESC);
-    setSortValue(1);
+    setSortOrder(SortOrder.DESC);
+    setSortType(1);
     clearXmlTemplateAndData();
     setDataType(PdcSearchSessionController.ALL_DATA_TYPE);
     setSelectedFacetEntries(null);
     if (clearPages) {
       resetResultPage();
-      resetResultPageId();
       resetSearchPage();
-      resetSearchPageId();
     }
   }
 
@@ -1929,8 +1847,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (query.isEmpty()) {
         // case of PDC results : pertinence sort is not applicable
         // sort by updateDate desc
-        setSortValue(5);
-        setSortOrder(SORT_ORDER_DESC);
+        setSortType(5);
+        setSortOrder(SortOrder.DESC);
       }
     } else if (!query.isEmpty()) {
       setIndexOfFirstResultToDisplay(0);

@@ -23,19 +23,23 @@
  */
 package org.silverpeas.web.pdc.control;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.util.StringUtil;
+
+import javax.inject.Named;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.kernel.util.StringUtil;
-
-import javax.inject.Named;
-
 /**
  * @author David Derigent
  */
+@Technical
+@Bean
 @Named
 public class DefaultSortResults implements SortResults {
 
@@ -47,167 +51,143 @@ public class DefaultSortResults implements SortResults {
    * @see org.silverpeas.search.searchEngine.model.SortResults#execute(java.util.List)
    */
   @Override
-  public List<GlobalSilverResult> execute(List<GlobalSilverResult> results, String sortOrder,
-      String sortValue, final String language) {
+  public List<GlobalSilverResult> execute(List<GlobalSilverResult> results, SortOrder sortOrder,
+      int sortType, final String language) {
 
     // Title comparator
-    final Comparator<GlobalSilverResult> cTitreAsc = new Comparator<GlobalSilverResult>() {
+    Comparator<GlobalSilverResult> cTitreAsc = getAscComparatorByTitle(language);
+    Comparator<GlobalSilverResult> cPertAsc = getAscComparatorByScore(cTitreAsc);
+    Comparator<GlobalSilverResult> cAuteurAsc = getAscComparatorByAuthor(cTitreAsc);
+    Comparator<GlobalSilverResult> cDateAsc = getAscComparatorByCreationDate(cTitreAsc);
+    Comparator<GlobalSilverResult> cUpdateDateAsc = getAscComparatorByUpdateDate(cTitreAsc);
+    Comparator<GlobalSilverResult> cEmplAsc = getAscComparatorByLocation(cTitreAsc);
+    Comparator<GlobalSilverResult> cPopularityAsc = getAscComparatorByPopularity(cTitreAsc);
 
-      @Override
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = StringUtil.defaultStringIfNotDefined(o1.getName(language));
-        String string2 = StringUtil.defaultStringIfNotDefined(o2.getName(language));
-        final int result = string1.compareToIgnoreCase(string2);
-        return result != 0 ? result : Boolean.compare(o2.isAlias(), o1.isAlias());
-      }
-    };
-
-    Comparator<GlobalSilverResult> cPertAsc = new Comparator<GlobalSilverResult>() {
-
-      @Override
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        Float float1 = new Float(o1.getScore());
-        Float float2 = new Float(o2.getScore());
-
-        if (float1 != null && float2 != null) {
-          int result = float1.compareTo(float2);
-          // Add comparison on title if we have the same pertinence
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        }
-        return -1;
-      }
-    };
-
-    Comparator<GlobalSilverResult> cAuteurAsc = new Comparator<GlobalSilverResult>() {
-
-      @Override
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getCreatorName();
-        String string2 = o2.getCreatorName();
-
-        if (string1 != null && string2 != null) {
-          int result = string1.compareToIgnoreCase(string2);
-          // Add comparison on title if we have the same author
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        }
-        return -1;
-      }
-    };
-
-    Comparator<GlobalSilverResult> cDateAsc = new Comparator<GlobalSilverResult>() {
-
-      @Override
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        LocalDate date1 = o1.getCreationDate();
-        LocalDate date2 = o2.getCreationDate();
-
-        if (date1 != null && date2 != null) {
-          int result = date1.compareTo(date2);
-          // Add comparison on title if we have the same creation date
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        }
-        return -1;
-      }
-    };
-
-    Comparator<GlobalSilverResult> cUpdateDateAsc = new Comparator<GlobalSilverResult>() {
-
-      @Override
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        LocalDate date1 = o1.getLastUpdateDate();
-        LocalDate date2 = o2.getLastUpdateDate();
-
-        if (date1 != null && date2 != null) {
-          int result = date1.compareTo(date2);
-          // Add comparison on title if we have the same update date
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        }
-        return -1;
-      }
-    };
-
-    Comparator<GlobalSilverResult> cEmplAsc = new Comparator<GlobalSilverResult>() {
-
-      @Override
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = StringUtil.defaultStringIfNotDefined(o1.getLocation());
-        String string2 = StringUtil.defaultStringIfNotDefined(o2.getLocation());
-        int result = string1.compareToIgnoreCase(string2);
-        // Add comparison on title if we have the same emplacement
-        return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-      }
-    };
-
-    Comparator<GlobalSilverResult> cPopularityAsc = new Comparator<GlobalSilverResult>() {
-
-      @Override
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        Integer pop1 = Integer.valueOf(o1.getHits());
-        Integer pop2 = Integer.valueOf(o2.getHits());
-
-        if (pop1 != null && pop2 != null) {
-          int result = pop1.compareTo(pop2);
-          // Add comparison on title if we have the same popularity
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        }
-        return -1;
-      }
-    };
-
-    int sortValueInt = Integer.parseInt(sortValue);
-
-    if (sortValueInt == 1 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Pertinence ASC
-      Collections.sort(results, cPertAsc);
-    } else if (sortValueInt == 1 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Pertinence DESC
-      Collections.sort(results, cPertAsc);
-      Collections.reverse(results);
-    } else if (sortValueInt == 2 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Titre ASC
-      Collections.sort(results, cTitreAsc);
-    } else if (sortValueInt == 2 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Titre DESC
-      Collections.sort(results, cTitreAsc);
-      Collections.reverse(results);
-    } else if (sortValueInt == 3 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Auteur ASC
-      Collections.sort(results, cAuteurAsc);
-    } else if (sortValueInt == 3 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Auteur DESC
-      Collections.sort(results, cAuteurAsc);
-      Collections.reverse(results);
-    } else if (sortValueInt == 4 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Date ASC
-      Collections.sort(results, cDateAsc);
-    } else if (sortValueInt == 4 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Date DESC
-      Collections.sort(results, cDateAsc);
-      Collections.reverse(results);
-    } else if (sortValueInt == 5 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Date ASC
-      Collections.sort(results, cUpdateDateAsc);
-    } else if (sortValueInt == 5 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Date DESC
-      Collections.sort(results, cUpdateDateAsc);
-      Collections.reverse(results);
-    } else if (sortValueInt == 6 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Emplacement ASC
-      Collections.sort(results, cEmplAsc);
-    } else if (sortValueInt == 6 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Emplacement DESC
-      Collections.sort(results, cEmplAsc);
-      Collections.reverse(results);
-    } else if (sortValueInt == 7 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Popularity ASC
-      Collections.sort(results, cPopularityAsc);
-    } else if (sortValueInt == 7 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Popularity DESC
-      Collections.sort(results, cPopularityAsc);
-      Collections.reverse(results);
+    switch (sortType) {
+      case 1:
+        sortResults(results, cPertAsc, sortOrder);
+        break;
+      case 2:
+        sortResults(results, cTitreAsc, sortOrder);
+        break;
+      case 3:
+        sortResults(results, cAuteurAsc, sortOrder);
+        break;
+      case 4:
+        sortResults(results, cDateAsc, sortOrder);
+        break;
+      case 5:
+        sortResults(results, cUpdateDateAsc, sortOrder);
+        break;
+      case 6:
+        sortResults(results, cEmplAsc, sortOrder);
+        break;
+      case 7:
+        sortResults(results, cPopularityAsc, sortOrder);
+        break;
+      default:
+        break;
     }
 
     return results;
+  }
+
+  private void sortResults(List<GlobalSilverResult> results,
+      Comparator<GlobalSilverResult> comparator, SortOrder order) {
+    results.sort(comparator);
+    if (order == SortOrder.DESC) {
+      Collections.reverse(results);
+    }
+  }
+
+  @NonNull
+  private static Comparator<GlobalSilverResult> getAscComparatorByPopularity(Comparator<GlobalSilverResult> cTitreAsc) {
+    return (o1, o2) -> {
+      Integer pop1 = o1.getHits();
+      Integer pop2 = o2.getHits();
+
+      int result = pop1.compareTo(pop2);
+      // Add comparison on title if we have the same popularity
+      return (result != 0) ? result : cTitreAsc.compare(o1, o2);
+    };
+  }
+
+  @NonNull
+  private static Comparator<GlobalSilverResult> getAscComparatorByLocation(Comparator<GlobalSilverResult> cTitreAsc) {
+    return (o1, o2) -> {
+      String string1 = StringUtil.defaultStringIfNotDefined(o1.getLocation());
+      String string2 = StringUtil.defaultStringIfNotDefined(o2.getLocation());
+      int result = string1.compareToIgnoreCase(string2);
+      // Add comparison on title if we have the same emplacement
+      return (result != 0) ? result : cTitreAsc.compare(o1, o2);
+    };
+  }
+
+  @NonNull
+  private static Comparator<GlobalSilverResult> getAscComparatorByUpdateDate(Comparator<GlobalSilverResult> cTitreAsc) {
+    return (o1, o2) -> {
+      LocalDate date1 = o1.getLastUpdateDate();
+      LocalDate date2 = o2.getLastUpdateDate();
+
+      if (date1 != null && date2 != null) {
+        int result = date1.compareTo(date2);
+        // Add comparison on title if we have the same update date
+        return (result != 0) ? result : cTitreAsc.compare(o1, o2);
+      }
+      return -1;
+    };
+  }
+
+  @NonNull
+  private static Comparator<GlobalSilverResult> getAscComparatorByCreationDate(Comparator<GlobalSilverResult> cTitreAsc) {
+    return (o1, o2) -> {
+      LocalDate date1 = o1.getCreationDate();
+      LocalDate date2 = o2.getCreationDate();
+
+      if (date1 != null && date2 != null) {
+        int result = date1.compareTo(date2);
+        // Add comparison on title if we have the same creation date
+        return (result != 0) ? result : cTitreAsc.compare(o1, o2);
+      }
+      return -1;
+    };
+  }
+
+  @NonNull
+  private static Comparator<GlobalSilverResult> getAscComparatorByAuthor(Comparator<GlobalSilverResult> cTitreAsc) {
+    return (o1, o2) -> {
+      String string1 = o1.getCreatorName();
+      String string2 = o2.getCreatorName();
+
+      if (string1 != null && string2 != null) {
+        int result = string1.compareToIgnoreCase(string2);
+        // Add comparison on title if we have the same author
+        return (result != 0) ? result : cTitreAsc.compare(o1, o2);
+      }
+      return -1;
+    };
+  }
+
+  @NonNull
+  private static Comparator<GlobalSilverResult> getAscComparatorByScore(Comparator<GlobalSilverResult> cTitreAsc) {
+    return (o1, o2) -> {
+      Float float1 = o1.getScore();
+      Float float2 = o2.getScore();
+
+      int result = float1.compareTo(float2);
+      // Add comparison on title if we have the same pertinence
+      return (result != 0) ? result : cTitreAsc.compare(o1, o2);
+    };
+  }
+
+  @NonNull
+  private static Comparator<GlobalSilverResult> getAscComparatorByTitle(String language) {
+    return (o1, o2) -> {
+      String string1 = StringUtil.defaultStringIfNotDefined(o1.getName(language));
+      String string2 = StringUtil.defaultStringIfNotDefined(o2.getName(language));
+      final int result = string1.compareToIgnoreCase(string2);
+      return result != 0 ? result : Boolean.compare(o2.isAlias(), o1.isAlias());
+    };
   }
 
   @Override
