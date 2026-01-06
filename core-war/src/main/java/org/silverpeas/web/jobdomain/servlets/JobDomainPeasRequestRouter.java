@@ -32,7 +32,6 @@ import org.silverpeas.core.admin.domain.DomainType;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
@@ -44,6 +43,7 @@ import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -76,6 +76,7 @@ public class JobDomainPeasRequestRouter extends
 
   private static final long serialVersionUID = 1L;
 
+  private static final String ADMIN_TOKEN = "X-ATKN";
   private static final String DOMAIN_CREATE_FCT = "domainCreate";
   private static final String DOMAIN_SCIM_CREATE_FCT = "domainSCIMCreate";
   private static final String DOMAIN_GOOGLE_CREATE_FCT = "domainGoogleCreate";
@@ -180,20 +181,25 @@ public class JobDomainPeasRequestRouter extends
       }
 
       if ("blankUsers".equals(function) || "disableDataSensitivity".equals(function)) {
-        jobDomainSC.checkCurrentDomainAccessGranted(false);
-        final List<String> userIds = new ArrayList<>();
-        request.mergeSelectedItemsInto(userIds);
-        if (!userIds.isEmpty()) {
-          if (function.startsWith("blank")) {
-            jobDomainSC.blankDeletedUsers(userIds);
-          } else {
-            jobDomainSC.disableUsersSensitivityData(userIds);
+        final boolean isBlank = function.startsWith("blank");
+        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+          jobDomainSC.checkCurrentDomainAccessGranted(false);
+          final List<String> userIds = new ArrayList<>();
+          request.mergeSelectedItemsInto(userIds);
+          if (!userIds.isEmpty()) {
+            if (isBlank) {
+              jobDomainSC.blankDeletedUsers(userIds);
+            } else {
+              jobDomainSC.disableUsersSensitivityData(userIds);
+            }
           }
-        }
+        });
         function = DOMAIN_CONTENT_FCT;
       }
 
       if (function.startsWith("Main")) {
+        String token = jobDomainSC.generateToken();
+        request.setAttribute(ADMIN_TOKEN, token);
         jobDomainSC.returnIntoGroup(null);
         jobDomainSC.setDefaultTargetDomain();
         destination = "jobDomain.jsp";
@@ -206,117 +212,143 @@ public class JobDomainPeasRequestRouter extends
         jobDomainSC.setTargetUser(user.getId());
         destination = USER_CONTENT_DEST;
       } else if ("restoreUsers".equals(function)) {
-        jobDomainSC.checkCurrentDomainAccessGranted(false);
-        final List<String> userIds = new ArrayList<>();
-        request.mergeSelectedItemsInto(userIds);
-        for (final String u : userIds) {
-          jobDomainSC.restoreUser(u);
-        }
+        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+          jobDomainSC.checkCurrentDomainAccessGranted(false);
+          final List<String> userIds = new ArrayList<>();
+          request.mergeSelectedItemsInto(userIds);
+          for (final String u : userIds) {
+            jobDomainSC.restoreUser(u);
+          }
+        });
         destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
       } else if ("deleteUsers".equals(function)) {
-        jobDomainSC.checkCurrentDomainAccessGranted(false);
-        final List<String> userIds = new ArrayList<>();
-        request.mergeSelectedItemsInto(userIds);
-        for (final String u : userIds) {
-          jobDomainSC.deleteUser(u);
-        }
+        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+          jobDomainSC.checkCurrentDomainAccessGranted(false);
+          final List<String> userIds = new ArrayList<>();
+          request.mergeSelectedItemsInto(userIds);
+          for (final String u : userIds) {
+            jobDomainSC.deleteUser(u);
+          }
+        });
         destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
       } else if ("restoreGroups".equals(function)) {
-        jobDomainSC.checkCurrentDomainAccessGranted(false);
-        final List<String> groupIds = new ArrayList<>();
-        request.mergeSelectedItemsInto(groupIds);
-        boolean refreshDomainNav = false;
-        for (final String group : groupIds) {
-          refreshDomainNav |= jobDomainSC.restoreGroup(group);
-        }
-        if (refreshDomainNav) {
-          reloadDomainNavigation(request);
-        }
+        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+          jobDomainSC.checkCurrentDomainAccessGranted(false);
+          final List<String> groupIds = new ArrayList<>();
+          request.mergeSelectedItemsInto(groupIds);
+          boolean refreshDomainNav = false;
+          for (final String group : groupIds) {
+            refreshDomainNav |= jobDomainSC.restoreGroup(group);
+          }
+          if (refreshDomainNav) {
+            reloadDomainNavigation(request);
+          }
+        });
         destination = getDestination(DISPLAY_REMOVED_GROUPS_DEST, jobDomainSC, request);
       } else if ("deleteGroups".equals(function)) {
-        jobDomainSC.checkCurrentDomainAccessGranted(false);
-        final List<String> groupIds = new ArrayList<>();
-        request.mergeSelectedItemsInto(groupIds);
-        for (final String group : groupIds) {
-          jobDomainSC.deleteGroup(group);
-        }
+        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+          jobDomainSC.checkCurrentDomainAccessGranted(false);
+          final List<String> groupIds = new ArrayList<>();
+          request.mergeSelectedItemsInto(groupIds);
+          for (final String group : groupIds) {
+            jobDomainSC.deleteGroup(group);
+          }
+        });
         destination = getDestination(DISPLAY_REMOVED_GROUPS_DEST, jobDomainSC, request);
       } else if ("filterByUserState".equals(function)) {
         destination = DOMAIN_CONTENT_DEST;
       } else if (function.startsWith("user")) {
         // USER Actions --------------------------------------------
-        String userId = request.getParameter("Iduser");
+        final String userId = request.getParameter("Iduser");
         final boolean readOperation = !function.matches(WRITE_OPERATION_PARTS);
         if (isDefined(userId)) {
           jobDomainSC.checkUserAccessGranted(userId, readOperation);
         } else if (jobDomainSC.getTargetUserDetail() != null) {
-          jobDomainSC.checkUserAccessGranted(jobDomainSC.getTargetUserDetail().getId(), readOperation);
+          jobDomainSC.checkUserAccessGranted(jobDomainSC.getTargetUserDetail().getId(),
+              readOperation);
         } else {
           jobDomainSC.checkCurrentDomainAccessGranted(readOperation);
         }
         if (function.startsWith(USER_CONTENT_FCT)) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           if (isDefined(userId)) {
             jobDomainSC.setTargetUser(userId);
           }
         } else if ("userGetP12".equals(function)) {
           jobDomainSC.getP12(userId);
         } else if (function.startsWith("userCreate")) {
-          UserRequestData userRequestData =
-              RequestParameterDecoder.decode(request, UserRequestData.class);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            UserRequestData userRequestData =
+                RequestParameterDecoder.decode(request, UserRequestData.class);
 
-          // process extra properties
-          HashMap<String, String> properties = getExtraPropertyValues(request);
+            // process extra properties
+            HashMap<String, String> properties = getExtraPropertyValues(request);
 
-          jobDomainSC.createUser(userRequestData, properties, request);
-
+            jobDomainSC.createUser(userRequestData, properties, request);
+          });
         } else if (function.startsWith("usersCsvImport")) {
-          List<FileItem> fileItems = request.getFileItems();
-          UserRequestData userRequestData =
-              RequestParameterDecoder.decode(request, UserRequestData.class);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            List<FileItem> fileItems = request.getFileItems();
+            UserRequestData userRequestData =
+                RequestParameterDecoder.decode(request, UserRequestData.class);
 
-          FileItem fileItem = FileUploadUtil.getFile(fileItems, "file_upload");
+            FileItem fileItem = FileUploadUtil.getFile(fileItems, "file_upload");
 
-          if (fileItem != null) {
-            jobDomainSC.importCsvUsers(fileItem, userRequestData, request);
-          }
+            if (fileItem != null) {
+              jobDomainSC.importCsvUsers(fileItem, userRequestData, request);
+            }
+          });
 
           destination = DOMAIN_CONTENT_DEST;
         } else if (function.startsWith("userUpdate")) {
-          UserRequestData userRequestData =
-              RequestParameterDecoder.decode(request, UserRequestData.class);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            UserRequestData userRequestData =
+                RequestParameterDecoder.decode(request, UserRequestData.class);
 
-          // process extra properties
-          HashMap<String, String> properties = getExtraPropertyValues(request);
+            // process extra properties
+            HashMap<String, String> properties = getExtraPropertyValues(request);
 
-          jobDomainSC.modifyUser(userRequestData, properties, request);
+            jobDomainSC.modifyUser(userRequestData, properties, request);
+          });
         } else if (function.startsWith("userBlock")) {
-          jobDomainSC.blockUser(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.blockUser(userId));
         } else if (function.startsWith("userUnblock")) {
-          jobDomainSC.unblockUser(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () ->
+              jobDomainSC.unblockUser(userId));
         } else if (function.startsWith("userDeactivate")) {
-          jobDomainSC.deactivateUser(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () ->
+              jobDomainSC.deactivateUser(userId));
         } else if (function.startsWith("userActivate")) {
-          jobDomainSC.activateUser(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.activateUser(userId));
         } else if (function.startsWith("userDelete")) {
-          jobDomainSC.deleteUser(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.deleteUser(userId));
         } else if (function.startsWith("userRemove")) {
-          jobDomainSC.removeUser(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.removeUser(userId));
         } else if (function.startsWith("userAvatarDelete")) {
-          jobDomainSC.deleteUserAvatar(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () ->
+              jobDomainSC.deleteUserAvatar(userId));
         } else if (function.startsWith("userSensitiveDataProtect")) {
-          jobDomainSC.hideUserSensitiveData(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.hideUserSensitiveData(userId));
         } else if (function.startsWith("userSensitiveDataUnprotect")) {
-          jobDomainSC.showUserSensitiveData(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.showUserSensitiveData(userId));
         } else if ("userViewRights".equals(function)) {
           request.setAttribute("UserProfiles", jobDomainSC.getCurrentProfiles());
         } else if (function.startsWith("userMS")) {
-          UserRequestData userRequestData =
-              RequestParameterDecoder.decode(request, UserRequestData.class);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            UserRequestData userRequestData =
+                RequestParameterDecoder.decode(request, UserRequestData.class);
 
-          // process extra properties
-          HashMap<String, String> properties = getExtraPropertyValues(request);
+            // process extra properties
+            HashMap<String, String> properties = getExtraPropertyValues(request);
 
-          jobDomainSC.modifySynchronizedUser(userRequestData, properties, request);
+            jobDomainSC.modifySynchronizedUser(userRequestData, properties, request);
+          });
         } else if (function.startsWith("userSearchToImport")) {
           Map<String, String> query;
           List<UserDetail> users;
@@ -350,30 +382,34 @@ public class JobDomainPeasRequestRouter extends
 
           destination = getDestination(DISPLAY_USER_IMPORT_FCT, jobDomainSC, request);
         } else if ("userImport".equals(function)) {
-          String[] specificIds = request.getParameterValues("specificIds");
-          // Massive users import
-          if (specificIds != null) {
-            processSelection(request, jobDomainSC);
-            specificIds = new String[jobDomainSC.getListSelectedUsers().size()];
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            String[] specificIds = request.getParameterValues("specificIds");
+            // Massive users import
+            if (specificIds != null) {
+              processSelection(request, jobDomainSC);
+              specificIds = new String[jobDomainSC.getListSelectedUsers().size()];
+              jobDomainSC.getListSelectedUsers().toArray(specificIds);
+              jobDomainSC.importUsers(specificIds);
+            } else {
+              // Unitary user Import
+              String specificId = request.getParameter("specificIds");
+              if (isDefined(specificId)) {
+                jobDomainSC.importUser(specificId);
+              }
+            }
+          });
+        } else if ("userImportAll".equals(function)) {
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            Iterator<UserDetail> usersIt = jobDomainSC.getUsersToImport().iterator();
+            ArrayList<String> listSelectedUsersIds = new ArrayList<>();
+            while (usersIt.hasNext()) {
+              listSelectedUsersIds.add(usersIt.next().getSpecificId());
+            }
+            jobDomainSC.setListSelectedUsers(listSelectedUsersIds);
+            String[] specificIds = new String[jobDomainSC.getListSelectedUsers().size()];
             jobDomainSC.getListSelectedUsers().toArray(specificIds);
             jobDomainSC.importUsers(specificIds);
-          } else {
-            // Unitary user Import
-            String specificId = request.getParameter("specificIds");
-            if (isDefined(specificId)) {
-              jobDomainSC.importUser(specificId);
-            }
-          }
-        } else if ("userImportAll".equals(function)) {
-          Iterator<UserDetail> usersIt = jobDomainSC.getUsersToImport().iterator();
-          ArrayList<String> listSelectedUsersIds = new ArrayList<>();
-          while (usersIt.hasNext()) {
-            listSelectedUsersIds.add(usersIt.next().getSpecificId());
-          }
-          jobDomainSC.setListSelectedUsers(listSelectedUsersIds);
-          String[] specificIds = new String[jobDomainSC.getListSelectedUsers().size()];
-          jobDomainSC.getListSelectedUsers().toArray(specificIds);
-          jobDomainSC.importUsers(specificIds);
+          });
         } else if ("userView".equals(function)) {
           String specificId = request.getParameter("specificId");
 
@@ -383,13 +419,15 @@ public class JobDomainPeasRequestRouter extends
 
           destination = "userView.jsp";
         } else if (function.startsWith("userSynchro")) {
-          jobDomainSC.synchroUser(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.synchroUser(userId));
         } else if (function.startsWith("userUnSynchro")) {
-          jobDomainSC.unsynchroUser(userId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.unsynchroUser(userId));
         } else if ("userOpen".equals(function)) {
-          userId = request.getParameter("userId");
+          String uid = request.getParameter("userId");
 
-          UserDetail user = UserDetail.getById(userId);
+          UserDetail user = UserDetail.getById(uid);
           String domainId = user.getDomainId();
           if (domainId == null) {
             domainId = Domain.MIXED_DOMAIN_ID;
@@ -406,7 +444,7 @@ public class JobDomainPeasRequestRouter extends
 
           // groupe d'appartenance
           AdminController adminController = ServiceProvider.getService(AdminController.class);
-          List<GroupDetail> groups = adminController.getDirectGroupsOfUser(userId);
+          List<GroupDetail> groups = adminController.getDirectGroupsOfUser(uid);
           for (final Group group : groups) {
             String groupDomainId = group.getDomainId();
             if (groupDomainId == null) {
@@ -419,7 +457,7 @@ public class JobDomainPeasRequestRouter extends
           }
 
           // user
-          jobDomainSC.setTargetUser(userId);
+          jobDomainSC.setTargetUser(uid);
         }
         if (destination.isEmpty()) {
           if (jobDomainSC.getTargetUserDetail() != null) {
@@ -430,10 +468,10 @@ public class JobDomainPeasRequestRouter extends
         }
       } else if (function.startsWith("group")) {
         // GROUP Actions --------------------------------------------
-        boolean bHaveToRefreshDomain = false;
+        final Mutable<Boolean> bHaveToRefreshDomain = Mutable.of(false);
 
         jobDomainSC.setTargetUser(null);
-        String groupId = request.getParameter(IDGROUP_PARAM);
+        final String groupId = request.getParameter(IDGROUP_PARAM);
         final boolean readOperation = !function.matches(WRITE_OPERATION_PARTS);
         if (isDefined(groupId)) {
           jobDomainSC.checkGroupAccessGranted(groupId, readOperation);
@@ -446,6 +484,7 @@ public class JobDomainPeasRequestRouter extends
         // Browse functions
         // ----------------
         if (function.startsWith(GROUP_CONTENT_FCT)) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           if (isDefined(groupId)) {
             jobDomainSC.goIntoGroup(groupId);
           }
@@ -460,44 +499,60 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.returnIntoGroup(null);
           jobDomainSC.goIntoGroup(groupId);
         } else if (function.startsWith("groupCreate")) {
-          final String parentGroupId = request.getParameter("Idparent");
-          if (isDefined(parentGroupId)) {
-            jobDomainSC.checkGroupAccessGranted(parentGroupId, false);
-          }
-          bHaveToRefreshDomain = jobDomainSC.createGroup(parentGroupId,
-              Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)),
-              Encode.forHtml(request.getParameter("groupDescription")),
-              Encode.forHtml(request.getParameter("groupRule")));
-        } else if (function.startsWith("groupUpdate")) {
-          bHaveToRefreshDomain = jobDomainSC.modifyGroup(groupId,
-              Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)),
-              Encode.forHtml(request.getParameter("groupDescription")),
-              request.getParameter("groupRule"));
-        } else if (function.startsWith("groupAddRemoveUsers")) {
-          bHaveToRefreshDomain = jobDomainSC
-              .updateGroupSubUsers(jobDomainSC.getTargetGroup().getId(), jobDomainSC.getSelectedUsersIds());
-        } else if (function.startsWith("groupRemove")) {
-          bHaveToRefreshDomain = jobDomainSC.removeGroup(groupId);
-        } else if (function.startsWith("groupDelete")) {
-          bHaveToRefreshDomain = jobDomainSC.deleteGroup(groupId);
-        } else if (function.startsWith("groupSynchro")) {
-          final Optional<Group> synchronizedGroup = jobDomainSC.synchroGroup(groupId);
-          if (synchronizedGroup.isPresent()) {
-            final Group group = synchronizedGroup.get();
-            if (group.isRemovedState()) {
-              reloadDomainNavigation(request);
-            } else {
-              bHaveToRefreshDomain = true;
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            final String parentGroupId = request.getParameter("Idparent");
+            if (isDefined(parentGroupId)) {
+              jobDomainSC.checkGroupAccessGranted(parentGroupId, false);
             }
-          }
+            boolean refresh = jobDomainSC.createGroup(parentGroupId,
+                Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)),
+                Encode.forHtml(request.getParameter("groupDescription")),
+                Encode.forHtml(request.getParameter("groupRule")));
+            bHaveToRefreshDomain.set(refresh);
+          });
+        } else if (function.startsWith("groupUpdate")) {
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            boolean refresh = jobDomainSC.modifyGroup(groupId,
+                Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)),
+                Encode.forHtml(request.getParameter("groupDescription")),
+                request.getParameter("groupRule"));
+            bHaveToRefreshDomain.set(refresh);
+          });
+        } else if (function.startsWith("groupAddRemoveUsers")) {
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            boolean refresh = jobDomainSC
+                .updateGroupSubUsers(jobDomainSC.getTargetGroup().getId(),
+                    jobDomainSC.getSelectedUsersIds());
+            bHaveToRefreshDomain.set(refresh);
+          });
+        } else if (function.startsWith("groupRemove")) {
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () ->  bHaveToRefreshDomain.set(jobDomainSC.removeGroup(groupId)));
+        } else if (function.startsWith("groupDelete")) {
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> bHaveToRefreshDomain.set(jobDomainSC.deleteGroup(groupId)));
+        } else if (function.startsWith("groupSynchro")) {
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            final Optional<Group> synchronizedGroup = jobDomainSC.synchroGroup(groupId);
+            if (synchronizedGroup.isPresent()) {
+              final Group group = synchronizedGroup.get();
+              if (group.isRemovedState()) {
+                reloadDomainNavigation(request);
+              } else {
+                bHaveToRefreshDomain.set(true);
+              }
+            }
+          });
         } else if (function.startsWith("groupUnSynchro")) {
-          bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(groupId);
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> bHaveToRefreshDomain.set(jobDomainSC.unsynchroGroup(groupId)));
         } else if (function.startsWith("groupImport")) {
-          bHaveToRefreshDomain =
-              jobDomainSC.importGroup(Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)));
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () ->
+                  bHaveToRefreshDomain.set(jobDomainSC.importGroup(
+                      Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)))));
         } else if ("groupManagersView".equals(function)) {
           List<List<?>> groupManagers = jobDomainSC.getGroupManagers();
-
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(USERS_ATTR, groupManagers.get(0));
           request.setAttribute("Groups", groupManagers.get(1));
 
@@ -510,19 +565,20 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.initUserPanelForGroupManagers(userIds, groupIds);
           destination = Selection.getSelectionURL();
         } else if ("groupManagersUpdate".equals(function)) {
-          List<String> userIds = (List<String>) StringUtil
-              .splitString(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');
-          List<String> groupIds = (List<String>) StringUtil
-              .splitString(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
-          jobDomainSC.updateGroupProfile(userIds, groupIds);
-
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+            List<String> userIds = (List<String>) StringUtil
+                .splitString(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');
+            List<String> groupIds = (List<String>) StringUtil
+                .splitString(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
+            jobDomainSC.updateGroupProfile(userIds, groupIds);
+          });
           destination = getDestination("groupManagersView", jobDomainSC, request);
         } else if ("groupOpen".equals(function)) {
-          groupId = request.getParameter("groupId");
+          String gId = request.getParameter("groupId");
 
-          if (jobDomainSC.isAccessGranted() || jobDomainSC.isGroupManagerOnGroup(groupId)) {
+          if (jobDomainSC.isAccessGranted() || jobDomainSC.isGroupManagerOnGroup(gId)) {
             OrganizationController orgaController = jobDomainSC.getOrganisationController();
-            Group group = orgaController.getGroup(groupId);
+            Group group = orgaController.getGroup(gId);
             String domainId = group.getDomainId();
             if (domainId == null) {
               domainId = "-1";
@@ -536,13 +592,13 @@ public class JobDomainPeasRequestRouter extends
             jobDomainSC.returnIntoGroup(null);
 
             // groupe(s) père(s)
-            List<String> groupList = orgaController.getPathToGroup(groupId);
+            List<String> groupList = orgaController.getPathToGroup(gId);
             for (String elementGroupId : groupList) {
               jobDomainSC.goIntoGroup(elementGroupId);
             }
 
             // groupe
-            jobDomainSC.goIntoGroup(groupId);
+            jobDomainSC.goIntoGroup(gId);
 
             destination = GROUP_CONTENT_DEST;
           } else {
@@ -553,12 +609,13 @@ public class JobDomainPeasRequestRouter extends
         }
 
         if (destination.isEmpty()) {
+          boolean refreshDomain = bHaveToRefreshDomain.get();
           if (jobDomainSC.getTargetGroup() != null) {
-            if (bHaveToRefreshDomain) {
+            if (refreshDomain) {
               reloadDomainNavigation(request);
             }
             destination = GROUP_CONTENT_DEST;
-          } else if (bHaveToRefreshDomain) {
+          } else if (refreshDomain) {
             destination = getDestination("domainRefresh", jobDomainSC, request);
           } else {
             destination = getDestination(DOMAIN_CONTENT_FCT, jobDomainSC, request);
@@ -590,10 +647,11 @@ public class JobDomainPeasRequestRouter extends
           destination = DOMAIN_NAVIGATION_DEST;
         } else {
           if (function.startsWith(DOMAIN_CONTENT_FCT)) {
+            request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
             jobDomainSC.returnIntoGroup(null);
           } else if (function.startsWith(DOMAIN_CREATE_FCT)
-                    || function.startsWith(DOMAIN_SCIM_CREATE_FCT)
-                    || function.startsWith(DOMAIN_GOOGLE_CREATE_FCT)) {
+              || function.startsWith(DOMAIN_SCIM_CREATE_FCT)
+              || function.startsWith(DOMAIN_GOOGLE_CREATE_FCT)) {
             final DomainType domainType;
             if (function.startsWith(DOMAIN_CREATE_FCT)) {
               domainType = DomainType.LDAP;
@@ -602,8 +660,10 @@ public class JobDomainPeasRequestRouter extends
             } else {
               domainType = DomainType.GOOGLE;
             }
-            String newDomainId = jobDomainSC.createDomain(request2Domain(request), domainType);
-            request.setAttribute(IDDOMAIN_PARAM, newDomainId);
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+              String newDomainId = jobDomainSC.createDomain(request2Domain(request), domainType);
+              request.setAttribute(IDDOMAIN_PARAM, newDomainId);
+            });
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_SQL_CREATE_FCT)) {
             String newDomainId = jobDomainSC.createSQLDomain(
@@ -614,29 +674,37 @@ public class JobDomainPeasRequestRouter extends
             request.setAttribute(IDDOMAIN_PARAM, newDomainId);
             destination = GO_BACK_DEST;
           } else if (function.startsWith("domainModify")) {
-            String modifiedDomainId = jobDomainSC.modifyDomain(request2Domain(request),
-                    request.getParameter(USER_DOMAIN_QUOTA_MAX_COUNT_PARAM));
-            request.setAttribute(IDDOMAIN_PARAM, modifiedDomainId);
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+              String modifiedDomainId = jobDomainSC.modifyDomain(request2Domain(request),
+                  request.getParameter(USER_DOMAIN_QUOTA_MAX_COUNT_PARAM));
+              request.setAttribute(IDDOMAIN_PARAM, modifiedDomainId);
+            });
             destination = GO_BACK_DEST;
           } else if (function.startsWith("domainSQLModify")) {
-            String modifiedDomainId = jobDomainSC.modifySQLDomain(
-                Encode.forHtml(request.getParameter(DOMAIN_NAME_PARAM)),
-                Encode.forHtml(request.getParameter(DOMAIN_DESCRIPTION_PARAM)),
-                Encode.forHtml(request.getParameter(SILVERPEAS_SERVER_URL_PARAM)),
-                request.getParameter(USER_DOMAIN_QUOTA_MAX_COUNT_PARAM));
-            request.setAttribute(IDDOMAIN_PARAM, modifiedDomainId);
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+              String modifiedDomainId = jobDomainSC.modifySQLDomain(
+                  Encode.forHtml(request.getParameter(DOMAIN_NAME_PARAM)),
+                  Encode.forHtml(request.getParameter(DOMAIN_DESCRIPTION_PARAM)),
+                  Encode.forHtml(request.getParameter(SILVERPEAS_SERVER_URL_PARAM)),
+                  request.getParameter(USER_DOMAIN_QUOTA_MAX_COUNT_PARAM));
+              request.setAttribute(IDDOMAIN_PARAM, modifiedDomainId);
+            });
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_DELETE_FCT)) {
-            jobDomainSC.deleteDomain(DomainType.LDAP);
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+                () -> jobDomainSC.deleteDomain(DomainType.LDAP));
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_SCIM_DELETE_FCT)) {
-            jobDomainSC.deleteDomain(DomainType.SCIM);
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+                () -> jobDomainSC.deleteDomain(DomainType.SCIM));
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_GOOGLE_DELETE_FCT)) {
-            jobDomainSC.deleteDomain(DomainType.GOOGLE);
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+                () -> jobDomainSC.deleteDomain(DomainType.GOOGLE));
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_SQL_DELETE_FCT)) {
-            jobDomainSC.deleteSQLDomain();
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+                jobDomainSC::deleteSQLDomain);
             destination = GO_BACK_DEST;
           } else if (function.startsWith("domainPingSynchro")) {
             if (jobDomainSC.isEnCours()) {
@@ -650,10 +718,12 @@ public class JobDomainPeasRequestRouter extends
               destination = "domainSynchroReport.jsp";
             }
           } else if (function.startsWith("domainSynchro")) {
-            jobDomainSC.synchroDomain(Level.valueOf(request.getParameter("IdTraceLevel")));
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+                () -> jobDomainSC.synchroDomain(Level.valueOf(request.getParameter("IdTraceLevel"))));
             destination = DOMAIN_SYNCHRO_PING_DEST;
           } else if (function.startsWith("domainSQLSynchro")) {
-            jobDomainSC.synchroSQLDomain();
+            jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+                jobDomainSC::synchroSQLDomain);
             destination = DOMAIN_SYNCHRO_PING_DEST;
           } else if (function.startsWith("domainRefresh")) {
             request.setAttribute(IDDOMAIN_PARAM, jobDomainSC.getTargetDomain().getId());
@@ -673,6 +743,7 @@ public class JobDomainPeasRequestRouter extends
           GroupDetail newGroup = new GroupDetail();
 
           newGroup.setSuperGroupId(request.getParameter(IDGROUP_PARAM));
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(GROUP_OBJECT_ATTR, newGroup);
           request.setAttribute(ACTION_ATTR, "groupCreate");
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
@@ -680,6 +751,7 @@ public class JobDomainPeasRequestRouter extends
                   jobDomainSC.getString("JDP.groupAdd") + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupUpdate")) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(GROUP_OBJECT_ATTR, jobDomainSC.getTargetGroup());
           request.setAttribute(ACTION_ATTR, "groupUpdate");
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
@@ -687,6 +759,7 @@ public class JobDomainPeasRequestRouter extends
                   jobDomainSC.getString("JDP.groupUpdate") + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupImport")) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
               .getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR),
                   jobDomainSC.getString("JDP.groupImport") + "..."));
@@ -695,6 +768,7 @@ public class JobDomainPeasRequestRouter extends
           destination = jobDomainSC.initSelectionPeasForOneGroupOrUser((String) request.
               getAttribute(MY_COMPONENT_URL_ATTR));
         } else if (function.startsWith("displayAddRemoveUsers")) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           destination = jobDomainSC
               .initSelectionPeasForGroups((String) request.getAttribute(MY_COMPONENT_URL_ATTR));
         } else if (function.startsWith("displayUserCreate")) {
@@ -705,26 +779,30 @@ public class JobDomainPeasRequestRouter extends
           UserFull newUser = new UserFull(domainDriver);
           newUser.setPasswordAvailable(true);
 
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(USER_OBJECT_ATTR, newUser);
           request.setAttribute(ACTION_ATTR, "userCreate");
           request.setAttribute(GROUPS_PATH_ATTR,
               jobDomainSC.getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR),
-              jobDomainSC.getString("JDP.userAdd") + "..."));
+                  jobDomainSC.getString("JDP.userAdd") + "..."));
           request.setAttribute(MIN_LENGTH_LOGIN_ATTR, jobDomainSC.getMinLengthLogin());
           request.setAttribute(CURRENT_USER_ATTR, jobDomainSC.getUserDetail());
           // if community management is activated, add groups on this user is manager
           if (JobDomainSettings.m_UseCommunityManagement) {
-            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC.getUserManageableGroups());
+            request.setAttribute("GroupsManagedByCurrentUser",
+                jobDomainSC.getUserManageableGroups());
           }
 
           destination = USER_CREATE_DEST;
         } else if (function.startsWith("displayUsersCsvImport")) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
               .getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR),
                   jobDomainSC.getString("JDP.csvImport") + "..."));
           request.setAttribute("FieldLabelsToImport", jobDomainSC.getFieldLabelsOfCSVToImport());
           destination = "usersCsvImport.jsp";
         } else if (function.startsWith("displayUserUpdate")) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());
           request.setAttribute(ACTION_ATTR, "userUpdate");
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
@@ -735,6 +813,7 @@ public class JobDomainPeasRequestRouter extends
 
           destination = USER_CREATE_DEST;
         } else if (function.startsWith("displayUserMS")) {
+          request.setAttribute(ADMIN_TOKEN,  jobDomainSC.generateToken());
           request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());
           request.setAttribute(ACTION_ATTR, "userMS");
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
@@ -745,6 +824,7 @@ public class JobDomainPeasRequestRouter extends
 
           destination = USER_CREATE_DEST;
         } else if (function.startsWith(DISPLAY_USER_IMPORT_FCT)) {
+          request.setAttribute(ADMIN_TOKEN,  jobDomainSC.generateToken());
           request.setAttribute("SelectedIds", jobDomainSC.getListSelectedUsers());
           request.setAttribute("FirstUserIndex", jobDomainSC.
               getIndexOfFirstItemToDisplay());
@@ -755,69 +835,83 @@ public class JobDomainPeasRequestRouter extends
           destination = "userImport.jsp";
         } else if (function.startsWith("displayDomainCreate")) {
           Domain theNewDomain = new Domain();
-          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver");
+          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.ldapdriver" +
+              ".LDAPDriver");
           theNewDomain.setPropFileName("org.silverpeas.domains.domain");
           theNewDomain.setAuthenticationServer("autDomain");
           theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_CREATE_FCT);
           destination = DOMAIN_CREATE_DEST;
         } else if (function.startsWith("displayDomainSCIMCreate")) {
           Domain theNewDomain = new Domain();
-          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.scimdriver.SCIMDriver");
+          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.scimdriver" +
+              ".SCIMDriver");
           theNewDomain.setPropFileName("org.silverpeas.domains.domainSCIM");
           theNewDomain.setAuthenticationServer("autDomainSCIM");
           theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_SCIM_CREATE_FCT);
           destination = DOMAIN_CREATE_DEST;
         } else if (function.startsWith("displayDomainGoogleCreate")) {
           Domain theNewDomain = new Domain();
-          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.googledriver.GoogleDriver");
+          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.googledriver" +
+              ".GoogleDriver");
           theNewDomain.setPropFileName("org.silverpeas.domains.domainGoogle");
           theNewDomain.setAuthenticationServer("autDomainGoogle");
           theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_GOOGLE_CREATE_FCT);
           destination = DOMAIN_CREATE_DEST;
         } else if (function.startsWith("displayDomainSQLCreate")) {
           Domain theNewDomain = new Domain();
           theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_SQL_CREATE_FCT);
           destination = "domainSQLCreate.jsp";
         } else if (function.startsWith("displayDomainModify")) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(ACTION_ATTR, "domainModify");
           destination = DOMAIN_CREATE_DEST;
         } else if (function.startsWith("displayDomainSQLModify")) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(ACTION_ATTR, "domainSQLModify");
           destination = "domainSQLCreate.jsp";
         } else if (function.startsWith("displayDomainSynchro")) {
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           destination = "domainSynchro.jsp";
         } else if (function.startsWith("displayDynamicSynchroReport")) {
           SynchroDomainReport.setReportLevel(Level.valueOf(request.getParameter("IdTraceLevel")));
           destination = "dynamicSynchroReport.jsp";
         } else if (function.startsWith(DISPLAY_REMOVED_USERS_DEST)) {
-          final SilverpeasList<UserDetail> removedUsers = SilverpeasList.wrap(jobDomainSC.getRemovedUsers());
+          final SilverpeasList<UserDetail> removedUsers =
+              SilverpeasList.wrap(jobDomainSC.getRemovedUsers());
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute("removedUsers", convertRemovedUserList(removedUsers, emptySet()));
           request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
           request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
           destination = "removedUsers.jsp";
         } else if (function.startsWith("displayDeletedUsers")) {
           final List<UserDetail> deletedUsers = jobDomainSC.getDeletedUsers();
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute("deletedUsers", deletedUsers);
           request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
           request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
           destination = "deletedUsers.jsp";
         } else if (function.startsWith("displayUsersWithSensitiveData")) {
-            final List<UserDetail> users = jobDomainSC.getUsersWithSensitiveData();
-            request.setAttribute("usersWithSensitiveData", users);
-            request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
-            request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
-            destination = "usersWithSensitiveData.jsp";
+          final List<UserDetail> users = jobDomainSC.getUsersWithSensitiveData();
+          request.setAttribute("usersWithSensitiveData", users);
+          request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
+          request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
+          destination = "usersWithSensitiveData.jsp";
         } else if (function.startsWith(DISPLAY_REMOVED_GROUPS_DEST)) {
           final List<GroupDetail> allRemovedGroups = jobDomainSC.getRemovedGroups();
           final SilverpeasList<GroupDetail> removedGroups = SilverpeasList.wrap(allRemovedGroups);
+          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute("removedGroups", convertRemovedGroupList(removedGroups, emptySet()));
           request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
           request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
@@ -827,12 +921,15 @@ public class JobDomainPeasRequestRouter extends
         jobDomainSC.returnIntoGroup(null);
         request.setAttribute("DisplayOperations", jobDomainSC.getUserDetail().isAccessAdmin());
 
-        SettingBundle rs = getSettingBundle("org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
+        SettingBundle rs = getSettingBundle("org.silverpeas.jobDomainPeas.settings" +
+            ".jobDomainPeasSettings");
         Properties configuration = new Properties();
         configuration
             .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
-        configuration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
-        SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+        configuration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
+            "customersTemplatePath"));
+        SilverpeasTemplate template =
+            SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
 
         // setting domains to welcome template
         List<Domain> allDomains = jobDomainSC.getAllDomains();
@@ -875,7 +972,7 @@ public class JobDomainPeasRequestRouter extends
         boolean nodeAssignRights = request.getParameterAsBoolean("nodeAssignRights");
 
         jobDomainSC
-              .assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
+            .assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
 
         if (jobDomainSC.getTargetUserDetail() != null) {
           destination = USER_CONTENT_DEST;
@@ -892,6 +989,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute(DOMAIN_OBJECT_ATTR, jobDomainSC.getTargetDomain());
       }
       if (DOMAIN_CONTENT_DEST.equals(destination)) {
+        request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
         if (StringUtil.isDefined(filterOnUserState)) {
           jobDomainSC.setFilterOnUserState(filterOnUserState);
         } else {
@@ -908,6 +1006,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("isUserAddingAllowedForGroupManager", jobDomainSC.
             isUserAddingAllowedForGroupManager());
       } else if (GROUP_CONTENT_DEST.equals(destination) || "exportgroup.jsp".equals(destination)) {
+        request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
         long domainRight = jobDomainSC.getDomainActions();
 
         request.setAttribute(GROUP_OBJECT_ATTR, jobDomainSC.getTargetGroup());
@@ -928,6 +1027,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("IsRightCopyReplaceEnabled",
             jobDomainSC.isRightCopyReplaceEnabled());
       } else if (USER_CONTENT_DEST.equals(destination)) {
+        request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
         request.setAttribute(GROUPS_PATH_ATTR,
             jobDomainSC.getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR), null));
 
@@ -940,11 +1040,7 @@ public class JobDomainPeasRequestRouter extends
               isUserInAtLeastOneGroupManageableByCurrentUser());
           request.setAttribute(IS_ONLY_SPACE_MANAGER_ATTR, jobDomainSC.isOnlySpaceManager());
         }
-        try {
-          request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());
-        } catch (JobDomainPeasException e) {
-          request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserDetail());
-        }
+        setTargetUser(jobDomainSC, request);
         request.setAttribute("Index", jobDomainSC.getIndex());
         request.setAttribute("UserGroups", jobDomainSC.getCurrentUserGroups());
         request.setAttribute("UserManageableSpaces", jobDomainSC.getManageablesSpaces());
@@ -961,6 +1057,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("allRootGroups", jobDomainSC.getAllRootGroups());
         request.setAttribute("CurrentDomain", jobDomainSC.getTargetDomain());
       } else if ("groupManagers.jsp".equals(destination)) {
+        request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
         request.setAttribute(GROUP_OBJECT_ATTR, jobDomainSC.getTargetGroup());
         request.setAttribute(GROUPS_PATH_ATTR,
             jobDomainSC.getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR), null));
@@ -979,21 +1076,35 @@ public class JobDomainPeasRequestRouter extends
     return destination;
   }
 
+  private static void setTargetUser(JobDomainPeasSessionController jobDomainSC, HttpRequest request) throws JobDomainPeasException {
+    try {
+      request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());
+    } catch (JobDomainPeasException e) {
+      request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserDetail());
+    }
+  }
+
   private String handleUserFilterModification(final JobDomainPeasSessionController jobDomainSC,
-      final HttpRequest request) throws AdminException {
-    jobDomainSC.getUserFilterManager().ifPresent(m -> request.setAttribute("domainUserFilterManager", m));
+      final HttpRequest request) throws Exception {
+    jobDomainSC.getUserFilterManager().ifPresent(m -> request.setAttribute(
+        "domainUserFilterManager", m));
     final String action = request.getParameter(ACTION_ATTR);
     try {
-      final String newRule = defaultStringIfNotDefined(request.getParameter(DOMAIN_USER_FILTER_RULE_PARAM));
+      final String newRule =
+          defaultStringIfNotDefined(request.getParameter(DOMAIN_USER_FILTER_RULE_PARAM));
       if ("verify".equals(action)) {
         final User[] arrayToConvert = jobDomainSC.verifyUserFilterRule(newRule);
         final SilverpeasList<User> users = SilverpeasList.as(arrayToConvert);
         request.setAttribute("users", UserUIEntity.convertList(users, emptySet()));
       } else if ("validate".equals(action)) {
-        jobDomainSC.saveUserFilterRule(newRule);
+        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+            () -> jobDomainSC.saveUserFilterRule(newRule));
+      } else {
+        request.setAttribute(ADMIN_TOKEN,  jobDomainSC.generateToken());
       }
     } catch (Exception e) {
-      request.setAttribute("technicalError", defaultStringIfNotDefined(e.getMessage(), "unknown error"));
+      request.setAttribute("technicalError", defaultStringIfNotDefined(e.getMessage(), "unknown " +
+          "error"));
     }
     return DOMAIN_USER_FILTER_MANAGEMENT_DEST;
   }
@@ -1013,6 +1124,7 @@ public class JobDomainPeasRequestRouter extends
   /**
    * Marks into the request an attribute that indicates the domain navigation frame has to be
    * reloaded.
+   *
    * @param request the request to mark.
    */
   private void reloadDomainNavigation(final HttpRequest request) {

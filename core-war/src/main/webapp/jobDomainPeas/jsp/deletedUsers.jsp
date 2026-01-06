@@ -37,17 +37,15 @@
 
 <c:url var="displayDeletedUsers" value="/RjobDomainPeas/jsp/displayDeletedUsers"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-  <view:looknfeel withFieldsetStyle="true"/>
+<view:sp-page>
+<view:sp-head-part withFieldsetStyle="true">
   <script type="application/javascript">
-    var checkboxMonitor = sp.selection.newCheckboxMonitor('#dynamic-container input[name=selection]');
+    const checkboxMonitor = sp.selection.newCheckboxMonitor('#dynamic-container input[name=selection]');
 
     function validate() {
-      var formRequest = sp.formRequest("blankUsers").byPostMethod();
+      const formRequest = sp.formRequest("blankUsers").byPostMethod();
       checkboxMonitor.prepareFormRequest(formRequest);
+      formRequest.addParam('X-ATKN', '${requestScope["X-ATKN"]}');
       formRequest.submit();
     }
 
@@ -55,7 +53,7 @@
       sp.navRequest('domainContent').go();
     }
   </script>
-</head>
+</view:sp-head-part>
 <c:set var="domain"       value="${requestScope.domain}"/>
 <c:set var="deletedUsers" value="${requestScope.deletedUsers}"/>
 <c:set var="currentUser"  value="${requestScope.theUser}"/>
@@ -65,7 +63,7 @@
              type="java.util.List<org.silverpeas.core.admin.user.model.UserDetail>"/>
 <jsp:useBean id="currentUser"
              type="org.silverpeas.core.admin.user.model.UserDetail"/>
-<body id="domainContent" class="page_content_admin">
+<view:sp-body-part id="domainContent" cssClass="page_content_admin">
 <fmt:message var="domainTitle" key="JDP.domains"/>
 <view:browseBar componentId="${domainTitle}">
   <view:browseBarElt label="${domain.name}" link="domainContent?Iddomain=${domain.id}"/>
@@ -120,5 +118,5 @@
     </div>
   </view:frame>
 </view:window>
-</body>
-
+</view:sp-body-part>
+</view:sp-page>

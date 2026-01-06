@@ -240,6 +240,7 @@
           </c:if>
 
           <form action="${validationURL}" id="selection" method="POST">
+            <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
             <input type="hidden" name="UserOrGroupSelection" value="true"/>
             <input id="group-selection" type="hidden" name="GroupSelection" value=""/>
             <input id="user-selection" type="hidden" name="UserSelection" value=""/>

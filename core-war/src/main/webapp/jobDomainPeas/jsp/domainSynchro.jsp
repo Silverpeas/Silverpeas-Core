@@ -52,12 +52,13 @@ out.println(frame.printBefore());
 <view:frame>
 <view:board>
 <form name="domainForm" action="domainSynchro" method="post">
-  <table cellpadding="5" cellspacing="0" border="0" width="100%">
+  <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
+  <table>
     <tr>
         <td class="txtlibform">
             <%=resource.getString("GML.name")%> :
         </td>
-        <td width="80%">
+        <td>
             <%=WebEncodeHelper.javaStringToHtmlString(domObject.getName())%>
         </td>
     </tr>

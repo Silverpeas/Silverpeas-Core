@@ -24,6 +24,8 @@
 
 --%>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="java.util.*" %>
+<%@ page import="org.apache.ecs.wml.U" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
@@ -34,20 +36,18 @@
 	Domain 		domObject 	= (Domain)request.getAttribute("domainObject");
     String 		action 		= (String) request.getAttribute("action");
     String 		groupsPath 	= (String) request.getAttribute("groupsPath");
-    Iterator 	properties	= (Iterator) request.getAttribute("properties");
-    Hashtable	query		= (Hashtable) request.getAttribute("Query");
-	List		users		= (List) request.getAttribute("Users");
+    Iterator<DomainProperty> 	properties	= (Iterator<DomainProperty>) request.getAttribute("properties");
+    Map<String, String>	query		= (Map<String, String>) request.getAttribute("Query");
+	List<UserDetail>		users		= (List<UserDetail>) request.getAttribute("Users");
 	int 		nbUsersPerPage = 15;
 
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath(groupsPath);
 
-	boolean selectedAll = false;
-    if (users != null && users.size()>0)
-	{
-	operationPane.addOperation(resource.getIcon("JDP.importSelectedUsers"), resource.getString("JDP.importSelected"), "javaScript:importUsers();");
-	operationPane.addLine();
-	operationPane.addOperation(resource.getIcon("JDP.importAllUsers"), resource.getString("JDP.importAll"), "javaScript:importAll();");
+    if (users != null && !users.isEmpty()) {
+	  operationPane.addOperation(resource.getIcon("JDP.importSelectedUsers"), resource.getString("JDP.importSelected"), "javaScript:importUsers();");
+	  operationPane.addLine();
+	  operationPane.addOperation(resource.getIcon("JDP.importAllUsers"), resource.getString("JDP.importAll"), "javaScript:importAll();");
 	}
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -58,15 +58,15 @@
 <script language="JavaScript">
 function SubmitWithVerif(verifParams)
 {
-    var errorMsg = "";
+  let errorMsg = "";
 
-    if (verifParams)
+  if (verifParams)
     {
-	var loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
-         if (isWhitespace(loginfld))
+      const loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
+      if (isWhitespace(loginfld))
             errorMsg = "<% out.print(resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.missingFieldEnd")); %>";
     }
-    if (errorMsg == "")
+    if (errorMsg === "")
     {
 	$.progressMessage();
 	setTimeout("document.userForm.submit();", 500);
@@ -84,14 +84,14 @@ function viewUser(specificId)
 
 function selectAll()
 {
-	myForm = document.userForm;
+	const myForm = document.userForm;
 	if (myForm.specificIds.length == null)
 	{
 		myForm.specificIds.click();
 	}
 	else
 	{
-		for (i=0; i<myForm.specificIds.length; i++)
+		for (let i=0; i<myForm.specificIds.length; i++)
 		{
 			myForm.specificIds[i].click();
 		}
@@ -109,18 +109,18 @@ function doPagination(index)
 
 function getObjects(selected)
 {
-	var  items = "";
-	var boxItems = document.userForm.specificIds;
-	if (boxItems != null){
+  let items = "";
+  const boxItems = document.userForm.specificIds;
+  if (boxItems != null){
 		// au moins une checkbox exist
-		var nbBox = boxItems.length;
-		if ( (nbBox == null) && (boxItems.checked == selected) ){
+    const nbBox = boxItems.length;
+    if ( (nbBox == null) && (boxItems.checked === selected) ){
 			// il n'y a qu'une checkbox non selectionn�e
 			items += boxItems.value+",";
 		} else{
 			// search not checked boxes
-			for (i=0;i<boxItems.length ;i++ ){
-				if (boxItems[i].checked == selected){
+			for (let i=0;i<boxItems.length ;i++ ){
+				if (boxItems[i].checked === selected){
 					items += boxItems[i].value+",";
 				}
 			}
@@ -145,8 +145,8 @@ function importUsers()
 
 function checkSubmitToSearch(ev)
 {
-	var touche = ev.keyCode;
-	if (touche == 13)
+  const touche = ev.keyCode;
+  if (touche === 13)
 		SubmitWithVerif(false);
 }
 </script>
@@ -156,30 +156,24 @@ function checkSubmitToSearch(ev)
 out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
-<center>
 <%
 out.println(board.printBefore());
 %>
 <form name="userForm" action="userSearchToImport" method="POST" onSubmit="SubmitWithVerif(false);">
-		<input type="hidden" name="Pagination_Index">
-		<input type="hidden" name="Pagination_SelectedIds">
-		<input type="hidden" name="Pagination_NotSelectedIds">
-    <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+    <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
+	<input type="hidden" name="Pagination_Index">
+	<input type="hidden" name="Pagination_SelectedIds">
+	<input type="hidden" name="Pagination_NotSelectedIds">
+    <table>
     <%
-	DomainProperty property = null;
-	String label = null;
-	String name	= null;
-	String value = "";
-	String ldapAttribute = null;
-	String description = null;
 	while (properties.hasNext())
 	{
-		property = (DomainProperty) properties.next();
-		label = property.getLabel();
-		ldapAttribute = property.getMapParameter();
-		value = "";
-		name = property.getName();
-		description = property.getDescription();
+        DomainProperty property = properties.next();
+		String label = property.getLabel();
+		String ldapAttribute = property.getMapParameter();
+		String value = "";
+		String name = property.getName();
+		String description = property.getDescription();
 
 		if ("lastName".equalsIgnoreCase(name))
 			label = resource.getString("GML.lastName");
@@ -189,8 +183,8 @@ out.println(board.printBefore());
 			label = resource.getString("GML.eMail");
 		else if ("login".equalsIgnoreCase(name))
 			label = resource.getString("GML.login");
-		if (query != null && StringUtil.isDefined((String) query.get(ldapAttribute)))
-			value = (String) query.get(ldapAttribute);
+		if (query != null && StringUtil.isDefined(query.get(ldapAttribute)))
+			value = query.get(ldapAttribute);
 		%>
 		<tr>
 		<td class="txtlibform"><%=label%> :</td>
@@ -221,12 +215,13 @@ out.println(board.printBefore());
 	{
 		int	firstUserIndex = 0;
 		if (request.getAttribute("FirstUserIndex") != null)
-			firstUserIndex = ((Integer) request.getAttribute("FirstUserIndex")).intValue();
+			firstUserIndex = (Integer) request.getAttribute("FirstUserIndex");
 
-		Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
+		Collection<String> selectedIds = (Collection<String>) request.getAttribute("SelectedIds");
 		// initialisation de la pagination
 		Pagination 	pagination 	= gef.getPagination(users.size(), nbUsersPerPage, firstUserIndex);
-		List 		affUsers 	= users.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+		List<UserDetail> 		affUsers 	= users.subList(pagination.getFirstItemIndex(),
+                pagination.getLastItemIndex());
 		out.println("<BR/>");
 
 		ArrayPane arrayPane = gef.getArrayPane("usersList", "userSearchToImport?FromArray=1", request, session);
@@ -240,28 +235,25 @@ out.println(board.printBefore());
         arrayPane.setTitle(users.size()+"&nbsp;"+resource.getString("JDP.usersFound"));
         arrayPane.setVisibleLineNumber(nbUsersPerPage);
 
-        UserDetail user = null;
-        ArrayLine line = null;
-        for (int i=0; i<affUsers.size(); i++)
-        {
-		user = (UserDetail) affUsers.get(i);
-		line = arrayPane.addArrayLine();
-			String usedCheck = "";
-			if (selectedIds != null && selectedIds.contains(user.getSpecificId()))
-				usedCheck = "checked";
+        for (UserDetail user : affUsers) {
+            ArrayLine line = arrayPane.addArrayLine();
+            String usedCheck = "";
+            if (selectedIds != null && selectedIds.contains(user.getSpecificId())) {
+                usedCheck = "checked";
+            }
 
-		ArrayCellLink cell = line.addArrayCellLink(user.getLastName(), "javaScript:viewUser('"+user.getSpecificId()+"');");
-		line.addArrayCellText(user.getFirstName());
-		line.addArrayCellText(user.getEmailAddress());
-		line.addArrayCellText(user.getLogin());
-		line.addArrayCellText("<input type=\"checkbox\" "+usedCheck+" name=\"specificIds\" value=\""+user.getSpecificId()+"\"/>");
+            line.addArrayCellLink(user.getLastName(), "javaScript:viewUser('" + user.getSpecificId() + "');");
+            line.addArrayCellText(user.getFirstName());
+            line.addArrayCellText(user.getEmailAddress());
+            line.addArrayCellText(user.getLogin());
+            line.addArrayCellText("<input type=\"checkbox\" " + usedCheck + " name=\"specificIds\" value=\"" + user.getSpecificId() + "\"/>");
         }
 
         out.println(arrayPane.print());
 			if (users.size() > nbUsersPerPage)
 				{
 				%>
-					<table border=0 width="98%">
+					<table>
 						<tr class=intfdcolor4><td colspan=5><%=pagination.printIndex("doPagination")%></td></tr>
 					</table>
 					<%
@@ -269,7 +261,6 @@ out.println(board.printBefore());
 	}
 %>
 </form>
-</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
@@ -280,13 +271,13 @@ out.println(window.printAfter());
 	myForm = document.userForm;
 	if (myForm.specificIds != null)
 	{
-		var nbChecked = 0;
-		for (i=0; i<myForm.specificIds.length; i++)
+      let nbChecked = 0;
+      for (let i=0; i<myForm.specificIds.length; i++)
 		{
-			if (myForm.specificIds[i].checked==true)
+			if (myForm.specificIds[i].checked)
 				nbChecked++;
 		}
-		if (nbChecked==myForm.specificIds.length)
+		if (nbChecked === myForm.specificIds.length)
 			myForm.checkAll.checked = true;
 	}
 </script>

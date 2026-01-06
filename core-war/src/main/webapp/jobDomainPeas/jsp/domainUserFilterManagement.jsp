@@ -96,7 +96,7 @@
     }
   </style>
   <script language="JavaScript" type="text/javascript">
-    var arrayPaneAjaxControl;
+    let arrayPaneAjaxControl;
     function verify() {
       performAction('verify');
     }
@@ -109,10 +109,11 @@
     }
     function performAction(action) {
       spProgressMessage.show();
-      var value = sp.element.querySelector('#domainUserFilterRule').value;
+      const value = sp.element.querySelector('#domainUserFilterRule').value;
       return sp.ajaxRequest('domainModifyUserFilter')
           .withParam('domainUserFilterRule', encodeURIComponent(value))
           .withParam('action', action)
+          .withParam('X-ATKN', '${requestScope["X-ATKN"]}')
           .send()
           .then(function(request) {
             spProgressMessage.hide();
@@ -169,7 +170,7 @@
         });
         function handleValidateResponse(value) {
           <c:if test="${empty technicalError}">
-          var message = '${silfn:escapeJs(successMessage)}'.replace('###', value);
+          const message = '${silfn:escapeJs(successMessage)}'.replace('###', value);
           jQuery.popup.info(message, function() {
             sp.navRequest('${back}').go();
           });

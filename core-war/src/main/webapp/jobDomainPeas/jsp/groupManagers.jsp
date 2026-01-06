@@ -66,6 +66,7 @@ out.println(tabbedPane.print());
 %>
 <view:frame>
 <form name="roleList" action="groupManagersUpdate" method="post">
+  <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
   <fmt:message var="fieldsetLabel" key="JDP.roleManager"/>
   <viewTags:displayListOfUsersAndGroups users="<%=users%>" groups="<%=groups%>"
                                         id="roleItems" updateCallback="groupManagersChoose" label="${fieldsetLabel}"

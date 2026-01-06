@@ -46,11 +46,11 @@
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
 function SubmitWithVerif() {
-    var namefld = stripInitialWhitespace(document.domainForm.domainName.value);
-    var urlfld = stripInitialWhitespace(document.domainForm.silverpeasServerURL.value);
-    var errorMsg = "";
+  const namefld = stripInitialWhitespace(document.domainForm.domainName.value);
+  const urlfld = stripInitialWhitespace(document.domainForm.silverpeasServerURL.value);
+  let errorMsg = "";
 
-    if (isWhitespace(namefld)) {
+  if (isWhitespace(namefld)) {
        errorMsg = "<% out.print(resource.getString("JDP.name")); %>";
     } else if (isWhitespace(urlfld)) {
        errorMsg = "<% out.print(resource.getString("JDP.silverpeasServerURL")); %>";
@@ -63,7 +63,7 @@ function SubmitWithVerif() {
 	   <% } %>
     }
 
-    if (errorMsg == "") {
+    if (errorMsg === "") {
         document.domainForm.submit();
     } else {
       jQuery.popup.error("<% out.print(resource.getString("JDP.missingFieldStart")); %>"
@@ -80,10 +80,12 @@ out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
 <form name="domainForm" action="<%=action%>" method="post">
+    <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
 <%
 out.println(board.printBefore());
 %>
-    <table cellpadding="5" cellspacing="0" width="100%">
+    <table>
+        <tr><th></th></tr>
                     <tr>
                         <td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
                         <td>

@@ -43,15 +43,15 @@
 <script language="JavaScript">
 function SubmitWithVerif(verifParams)
 {
-    var namefld = stripInitialWhitespace(document.groupForm.groupName.value);
-    var errorMsg = "";
+  const namefld = stripInitialWhitespace(document.groupForm.groupName.value);
+  let errorMsg = "";
 
-    if (verifParams)
+  if (verifParams)
     {
          if (isWhitespace(namefld))
             errorMsg = "<% out.print(resource.getString("JDP.missingFieldStart")+resource.getString("GML.name")+resource.getString("JDP.missingFieldEnd")); %>";
     }
-    if (errorMsg == "")
+    if (errorMsg === "")
     {
         document.groupForm.submit();
     }
@@ -68,12 +68,12 @@ function SubmitWithVerif(verifParams)
 out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
-<center>
 <%
 out.println(board.printBefore());
 %>
 <form name="groupForm" action="groupImport" method="POST">
-    <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+    <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
+    <table>
                     <tr>
                         <td valign="baseline" align=left  class="txtlibform">
                              <%=resource.getString("GML.name")%> :
@@ -83,7 +83,7 @@ out.println(board.printBefore());
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
+                        <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5" alt="<%=resource.getString("GML.requiredField")%>">
                   : <%=resource.getString("GML.requiredField")%>)
               </td>
 			</tr>
@@ -99,7 +99,6 @@ out.println(board.printAfter());
           bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "groupContent", false));
 		  out.println(bouton.print());
 		%>
-</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());

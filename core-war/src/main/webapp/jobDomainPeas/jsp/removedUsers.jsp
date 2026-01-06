@@ -62,22 +62,24 @@
 <view:sp-head-part withFieldsetStyle="true">
   <view:includePlugin name="qtip"/>
   <script type="application/javascript">
-    var arrayPaneAjaxControl;
-    var checkboxMonitor = sp.selection.newCheckboxMonitor('#dynamic-container input[name=selection]');
+    let arrayPaneAjaxControl;
+    const checkboxMonitor = sp.selection.newCheckboxMonitor('#dynamic-container input[name=selection]');
 
     function restoreSelection() {
       jQuery.popup.confirm('${silfn:escapeJs(restoreSelectionConfirm)}', function() {
-        var ajaxRequest = sp.ajaxRequest("restoreUsers").byPostMethod();
+        const ajaxRequest = sp.ajaxRequest("restoreUsers").byPostMethod();
         checkboxMonitor.prepareAjaxRequest(ajaxRequest);
-        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        ajaxRequest.addParam("X-ATKN", "${requestScope['X-ATKN']}")
+            .send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
     function deleteSelection() {
       jQuery.popup.confirm('${silfn:escapeJs(deleteSelectionConfirm)}', function() {
-        var ajaxRequest = sp.ajaxRequest("deleteUsers").byPostMethod();
+        const ajaxRequest = sp.ajaxRequest("deleteUsers").byPostMethod();
         checkboxMonitor.prepareAjaxRequest(ajaxRequest);
-        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        ajaxRequest.addParam("X-ATKN", "${requestScope['X-ATKN']}")
+            .send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
