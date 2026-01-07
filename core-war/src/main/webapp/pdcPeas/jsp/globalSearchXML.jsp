@@ -35,8 +35,6 @@
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%
 String sortOrder = request.getParameter("sortOrder");
-String sortImp = request.getParameter("sortImp");
-String SortResXForm = request.getParameter("SortResXForm");
 
 boolean				expertSearchVisible  = (Boolean) request.getAttribute("ExpertSearchVisible");
 List<PublicationTemplate> 	xmlForms 	= (List) request.getAttribute("XMLForms");
@@ -61,11 +59,6 @@ if (query != null) {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
 	title				= StringUtil.defaultStringIfNotDefined(query.getKeywords());
-}
-
-String pageId = (String) request.getAttribute("PageId");
-if (!StringUtil.isDefined(pageId)) {
-  pageId = "globalSearchXML";
 }
 %>
 
@@ -102,11 +95,10 @@ function viewXmlSearch(){
 }
 </script>
 </head>
-<body class="yui-skin-sam" id="<%=pageId %>">
+<body class="yui-skin-sam" id="globalSearchXML">
 <%
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
 
-	Board board = gef.getBoard();
 	ButtonPane buttonPane = gef.getButtonPane();
 
 	out.println(window.printBefore());
@@ -128,9 +120,10 @@ function viewXmlSearch(){
 <div id="scope">
 <view:board>
     <form name="XMLRestrictForm" action="XMLRestrictSearch" method="post">
-      <table border="0" cellspacing="0" cellpadding="5" width="100%">
+      <table>
         <tr>
-          <td class="txtlibform" width="200"><%=resource.getString("pdcPeas.Template")%></td>
+          <td class="txtlibform"
+              style="width: 200px"><%=resource.getString("pdcPeas.Template")%></td>
           <td>
             <select name="xmlSearchSelectedForm" size="1" onchange="chooseTemplate();return;">
               <option value=""><%=resource.getString("GML.select")%></option>
@@ -149,8 +142,8 @@ function viewXmlSearch(){
           </td>
         </tr>
         <tr id="spaceList">
-          <td class="txtlibform" width="200"><%=resource.getString("pdcPeas.DomainSelect")%></td>
-          <td><select name="spaces" size="1" onchange="javascript:viewXmlSearch()">
+          <td class="txtlibform" style="width: 200px"><%=resource.getString("pdcPeas.DomainSelect")%></td>
+          <td><select name="spaces" size="1" onchange="viewXmlSearch()">
             <%
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
 				String			incr	= "";
@@ -172,9 +165,9 @@ function viewXmlSearch(){
 	    </tr>
     <% if (allComponents != null) {%>
 		<tr>
-			<td class="txtlibform" width="200"><%=resource.getString("pdcPeas.ComponentSelect")%></td>
+			<td class="txtlibform" style="width: 200px"><%=resource.getString("pdcPeas.ComponentSelect")%></td>
 			<td>
-			<select name="componentSearch" size="1" onchange="javascript:viewXmlSearch()">
+			<select name="componentSearch" size="1" onchange="viewXmlSearch()">
 			<option value=""><%=resource.getString("pdcPeas.AllAuthors")%></option>
 			<%
 				for(SilverpeasComponentInstance component : allComponents) {
@@ -190,14 +183,11 @@ function viewXmlSearch(){
 		</tr>
     <% } %>
         <tr>
-          <td width="200" class="txtlibform"><%=resource.getString("GML.search")%></td>
+          <td style="width: 200px" class="txtlibform"><%=resource.getString("GML.search")%></td>
           <td><input type="text" id="plainText" size="50" value="<%=title%>"/></td>
         </tr>
 
-		<input type="hidden" name="SearchPageId" value="<%=pageId %>"/>
 		<input type="hidden" name="sortOrder" value="<%=sortOrder %>"/>
-		<input type="hidden" name="sortImp" value="<%=sortImp %>"/>
-		<input type="hidden" name="SortResXForm" value="<%=SortResXForm %>"/>
 		<input type="hidden" name="TitleNotInXMLForm" value="<%=title %>"/>
 		    </table>
     </form>

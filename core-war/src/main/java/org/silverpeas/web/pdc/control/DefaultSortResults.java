@@ -52,7 +52,7 @@ public class DefaultSortResults implements SortResults {
    */
   @Override
   public List<GlobalSilverResult> execute(List<GlobalSilverResult> results, SortOrder sortOrder,
-      String sortValue, final String language) {
+      int sortType, final String language) {
 
     // Title comparator
     Comparator<GlobalSilverResult> cTitreAsc = getAscComparatorByTitle(language);
@@ -63,8 +63,7 @@ public class DefaultSortResults implements SortResults {
     Comparator<GlobalSilverResult> cEmplAsc = getAscComparatorByLocation(cTitreAsc);
     Comparator<GlobalSilverResult> cPopularityAsc = getAscComparatorByPopularity(cTitreAsc);
 
-    int sortValueInt = Integer.parseInt(sortValue);
-    switch (sortValueInt) {
+    switch (sortType) {
       case 1:
         sortResults(results, cPertAsc, sortOrder);
         break;

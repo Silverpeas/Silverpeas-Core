@@ -41,22 +41,10 @@ public class SortResultsFactory {
   }
 
   /**
-   * returns an implementation of SortResults interface according to the given keyword
-   * @param implementor keyword corresponding to a key in searchEngineSettings.properties. this key
-   * allows to gets a class name corresponding to a SortResults implementation
-   * @return a SortResults implementation
+   * returns an instance of {@link SortResults}
+   * @return a SortResults instance
    */
-  public static SortResults getSortResults(String implementor) {
-    SettingBundle settings =
-        ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
-    String qualifier = settings.getString(implementor, "defaultSortResults");
-    if (StringUtil.isDefined(qualifier)) {
-      try {
-        return (SortResults) ServiceProvider.getService(qualifier);
-      } catch (Exception e) {
-        SilverLogger.getLogger(SortResultsFactory.class).error("Sort result error", e);
-      }
-    }
+  public static SortResults getSortResults() {
     return ServiceProvider.getService("defaultSortResults");
   }
 }

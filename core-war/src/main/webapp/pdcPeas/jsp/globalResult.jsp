@@ -123,7 +123,6 @@ Integer nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
 Integer sortValue		= (Integer) request.getAttribute("SortValue");
 String sortOrder		= (String) request.getAttribute("SortOrder");
 String sortResXForm = (String) request.getAttribute("XmlFormSortValue");
-String sortImplementor = (String) request.getAttribute("sortImp");
 
 // spelling words
 List<String> spellingWords = (List<String>) request.getAttribute("spellingWords");
@@ -154,10 +153,6 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 QueryParser.Operator defaultOperand = IndexSearcher.get().getDefaultOperator();
 
 int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue();
-String pageId = (String) request.getAttribute("ResultPageId");
-if (!StringUtil.isDefined(pageId)) {
-  pageId = "globalResult";
-}
 
 String facetToggleShow = resource.getString("pdcPeas.facet.toggle.show");
 String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
@@ -423,7 +418,7 @@ function viewFile(target, attachmentId, versioned) {
 }
 </script>
 </head>
-<body class="searchEngine" id="<%=pageId %>">
+<body class="searchEngine" id="globalResult">
 <form name="AdvancedSearch" action="javascript:sendQuery()" method="get">
 <fmt:message var="resultLabel" key="pdcPeas.ResultPage" />
 <view:browseBar extraInformations="${resultLabel}" />
@@ -630,15 +625,12 @@ function viewFile(target, attachmentId, versioned) {
 	<input type="hidden" name="selectedIds"/>
 	<input type="hidden" name="notSelectedIds"/>
 	<input type="hidden" name="Index"/>
-  <input type="hidden" name="NbItemsPerPage"/>
+    <input type="hidden" name="NbItemsPerPage"/>
 	<input type="hidden" name="contentURL"/>
 	<input type="hidden" name="componentId"/>
 	<input type="hidden" name="sortOrder" value="<%=sortOrder%>"/>
 	<input type="hidden" name="ShowResults" value="<%=resultsDisplayMode%>"/>
-	<input type="hidden" name="ResultPageId" value="<%=pageId %>"/>
 	<input type="hidden" name="SortResXForm" value="<%=sortResXForm %>"/>
-	<input type="hidden" name="sortImp" value="<%=sortImplementor%>"/>
-
 </form>
 <div id="externalSearchErrorDivId" style="display:none" title="<fmt:message key="pdcPeas.error"/>">
   <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 0 0;"></span>

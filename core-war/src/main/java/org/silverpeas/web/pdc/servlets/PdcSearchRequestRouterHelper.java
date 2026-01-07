@@ -32,7 +32,6 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.pdc.QueryParameters;
-import org.silverpeas.web.pdc.control.Keys;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -134,30 +133,18 @@ public class PdcSearchRequestRouterHelper {
     }
 
     String paramNbResToDisplay = request.getParameter("nbRes");
-    if (paramNbResToDisplay != null) {
+    if (StringUtil.isDefined(paramNbResToDisplay)) {
       int nbResToDisplay = Integer.parseInt(paramNbResToDisplay);
       pdcSC.setNbResToDisplay(nbResToDisplay);
     }
     String paramSortRes = request.getParameter("sortRes");
-    if (paramSortRes != null) {
+    if (StringUtil.isDefined(paramSortRes)) {
       int sortRes = Integer.parseInt(paramSortRes);
-      pdcSC.setSortValue(sortRes);
+      pdcSC.setSortType(sortRes);
     }
     String paramSortOrder = request.getParameter("sortOrder");
-    if (paramSortOrder != null) {
+    if (StringUtil.isDefined(paramSortOrder)) {
       pdcSC.setSortOrder(paramSortOrder);
-    }
-    String paramSortResFieldXForm = request.getParameter(Keys.RequestSortXformField.value());
-    if (StringUtil.isDefined(paramSortResFieldXForm)) {
-      pdcSC.setXmlFormSortValue(paramSortResFieldXForm);
-    } else {
-      pdcSC.setXmlFormSortValue(null);
-    }
-    String sortImplementor = request.getParameter(Keys.RequestSortImplementor.value());
-    if (StringUtil.isDefined(sortImplementor)) {
-      pdcSC.setSortImplementor(sortImplementor);
-    } else {
-      pdcSC.setSortImplementor(null);
     }
 
     // Set component search type
@@ -185,8 +172,8 @@ public class PdcSearchRequestRouterHelper {
     }
     request.setAttribute("DisplayParamChoices", pdcSC.getDisplayParamChoices());
     request.setAttribute("NbResToDisplay", pdcSC.getNbResToDisplay());
-    request.setAttribute("SortValue", pdcSC.getSortValue());
-    request.setAttribute("SortOrder", pdcSC.getSortOrder());
+    request.setAttribute("SortValue", pdcSC.getSortType());
+    request.setAttribute("SortOrder", pdcSC.getSortOrder().name());
     request.setAttribute("ItemType", pdcSC.getDataType());
 
     // List of user favorite requests
