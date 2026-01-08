@@ -187,7 +187,7 @@ out.println(board.printBefore());
 			value = query.get(ldapAttribute);
 		%>
 		<tr>
-		<td class="txtlibform"><%=label%> :</td>
+		<th scope="row" class="txtlibform"><%=label%></th>
 		<td>
 			<input type="text" name="<%=ldapAttribute%>" size="50" maxlength="50" value="<%=value%>" onkeydown="checkSubmitToSearch(event)">
 			&nbsp;
@@ -198,9 +198,9 @@ out.println(board.printBefore());
 	}
     %>
     <tr>
-		<td><%=resource.getString("JDP.searchSyntax")%>
+		<th scope="row"><%=resource.getString("JDP.searchSyntax")%>
 		<img src="<%=resource.getIcon("JDP.info")%>" border=0 onmouseover="return overlib('<%=WebEncodeHelper.javaStringToJsString(resource.getString("JDP.fieldSyntaxContent"))%>', CAPTION, '<%=WebEncodeHelper.javaStringToJsString(resource.getString("JDP.fieldSyntax"))%>')" onmouseout="return nd();" align="absmiddle">
-		</td>
+		</th>
 	</tr>
     </table>
 <%
@@ -254,7 +254,7 @@ out.println(board.printBefore());
 				{
 				%>
 					<table>
-						<tr class=intfdcolor4><td colspan=5><%=pagination.printIndex("doPagination")%></td></tr>
+						<tr class=intfdcolor4><th></th><td colspan=5><%=pagination.printIndex("doPagination")%></td></tr>
 					</table>
 					<%
 				}

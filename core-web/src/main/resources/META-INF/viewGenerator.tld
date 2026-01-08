@@ -900,14 +900,14 @@
       </deferred-value>
     </attribute>
     <attribute>
-      <description>Forces spaceId (usefull in portlets page and space homepage)</description>
+      <description>Forces spaceId (useful in portlets page and space homepage)</description>
       <name>spaceId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Forces componentId (usefull in portlets case)</description>
+      <description>Forces componentId (useful in portlets case)</description>
       <name>componentId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
