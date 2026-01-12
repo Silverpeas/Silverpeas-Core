@@ -93,7 +93,7 @@ function editStatus() {
 					notyWarning("<fmt:message key="myProfile.status.timeout" />");
 				} else {
 					$( "#myProfileFiche .statut").html(data.status.escapeHTML());
-					$("#newStatus").html(data.status);
+					$("#newStatus").html(data.status.escapeHTML());
 				}
 			});
 		}
