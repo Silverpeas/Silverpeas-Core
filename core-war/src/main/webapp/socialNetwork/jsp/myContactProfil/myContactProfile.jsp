@@ -76,7 +76,7 @@
     <% } %>
     </p>
 	  <p class="statut">
-			<%=userFull.getStatus() %>
+			<c:out value="<%=userFull.getStatus()%>"/>
     </p>
     <!-- action  -->
     <div class="action">
