@@ -65,6 +65,24 @@ CREATE TABLE ST_ComponentInstance
     CONSTRAINT UN_ComponentInstance_1 UNIQUE(spaceId, name)
 );
 
+CREATE TABLE sb_reminder
+(
+    id                   VARCHAR(41)  NOT NULL,
+    reminderType         VARCHAR(40)  NOT NULL,
+    contrib_id           VARCHAR(40)  NOT NULL,
+    contrib_instanceId   VARCHAR(30)  NOT NULL,
+    contrib_type         VARCHAR(40)  NOT NULL,
+    userId               VARCHAR(40)  NOT NULL,
+    text                 VARCHAR(255),
+    triggered            BOOLEAN      NOT NULL DEFAULT FALSE,
+    trigger_datetime     TIMESTAMP,
+    trigger_durationTime INTEGER,
+    trigger_durationUnit VARCHAR(12),
+    trigger_prop         VARCHAR(30),
+    process_name         VARCHAR(200) NOT NULL,
+    CONSTRAINT PK_REMINDER PRIMARY KEY (id)
+);
+
 CREATE TABLE SB_Node_Node
 (
     nodeId           INT              NOT NULL,
@@ -200,3 +218,15 @@ CREATE TABLE SB_Publication_Validation
 
 CREATE INDEX IN_Publi_Father
     ON SB_Publication_PubliFather (nodeId);
+
+CREATE TABLE SB_Contribution_Tracking
+(
+    id                 VARCHAR(40) NOT NULL,
+    context            VARCHAR(255) DEFAULT '',
+    contrib_id         VARCHAR(40) NOT NULL,
+    contrib_type       VARCHAR(40) NOT NULL,
+    contrib_instanceId VARCHAR(50) NOT NULL,
+    action_type        VARCHAR(20) NOT NULL,
+    action_date        TIMESTAMP   NOT NULL,
+    action_by          VARCHAR(50) NOT NULL
+);

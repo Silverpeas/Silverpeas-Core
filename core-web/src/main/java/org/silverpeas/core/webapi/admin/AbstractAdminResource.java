@@ -38,11 +38,11 @@ import org.silverpeas.core.webapi.admin.delegate.AdminPersonalWebDelegate;
 import org.silverpeas.core.webapi.admin.tools.AbstractTool;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
-import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -312,10 +312,6 @@ public abstract class AbstractAdminResource extends RESTWebService {
     throw new WebApplicationException(Status.NOT_FOUND);
   }
 
-  /**
-   * Centralization
-   * @param object
-   */
   private void checkNotFoundStatus(final Object object) {
     if (object == null) {
       throw new WebApplicationException(Status.NOT_FOUND);

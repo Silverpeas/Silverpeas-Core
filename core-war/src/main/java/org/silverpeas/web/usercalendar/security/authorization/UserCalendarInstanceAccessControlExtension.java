@@ -35,7 +35,7 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.security.authorization.DefaultInstanceAccessControlExtension;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;

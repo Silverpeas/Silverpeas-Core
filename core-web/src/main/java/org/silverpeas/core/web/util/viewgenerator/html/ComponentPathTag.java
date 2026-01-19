@@ -35,9 +35,9 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -166,7 +166,8 @@ public class ComponentPathTag extends SimpleTagSupport {
       span nodePath = new span();
       nodePath.setClass("sp-path-nodes");
 
-      List<NodeDetail> nodes = (List) NodeService.get().getPath(new NodePK(getNodeId(), componentId));
+      List<NodeDetail> nodes = NodeService.get().getPath(new NodePK(getNodeId(),
+          componentId));
       Collections.reverse(nodes);
       Iterator<NodeDetail> nodesIt = nodes.iterator();
       while (nodesIt.hasNext()) {

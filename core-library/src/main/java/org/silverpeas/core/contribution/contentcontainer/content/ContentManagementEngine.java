@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
+import jakarta.annotation.PostConstruct;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
@@ -33,20 +34,12 @@ import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
@@ -56,7 +49,6 @@ import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
  * content management (documentation, ....)
  */
 @Service
-@Singleton
 public class ContentManagementEngine implements Serializable {
 
   private static final String INSTANCE_TABLE = "SB_ContentManager_Instance";
@@ -71,10 +63,6 @@ public class ContentManagementEngine implements Serializable {
   // Association SilverContentId (the key) internalContentId (the value) (cache)
   private final Map<String, String> mapBetweenSilverContentIdAndInternalComponentId =
       new HashMap<>();
-
-  private ContentManagementEngine() {
-
-  }
 
   @PostConstruct
   private void loadContentPeas() {
@@ -101,7 +89,7 @@ public class ContentManagementEngine implements Serializable {
     acContentPeas.add(new ContentPeas("blog"));
 
     try {
-      mapBetweenComponentIdAndInstanceId.putAll(loadMapping(null));
+      mapBetweenComponentIdAndInstanceId.putAll(loadMapping());
     } catch (ContentManagerException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -130,14 +118,14 @@ public class ContentManagementEngine implements Serializable {
   }
 
   /**
-   * When a generic component is instanciate, this function is called to register the association
+   * When a generic component is instantiated, this function is called to register the association
    * between container and content
-   * @param connection
-   * @param sComponentId
-   * @param sContainerType
-   * @param sContentType
-   * @return
-   * @throws ContentManagerException
+   * @param connection connection to the database
+   * @param sComponentId the unique identifier of the component instance
+   * @param sContainerType the concrete type of the content container.
+   * @param sContentType the concrete type of the content
+   * @return the identifier of the registered content instance.
+   * @throws ContentManagerException if an error occurs while registering the content.
    */
   public int registerNewContentInstance(Connection connection, String sComponentId,
       String sContainerType, String sContentType) throws ContentManagerException {
@@ -238,20 +226,18 @@ public class ContentManagementEngine implements Serializable {
 
   /**
    * Return the ContentPeas corresponding to the given componentId
-   * @param sComponentId
-   * @return
-   * @throws ContentManagerException
+   * @param sComponentId the unique identifier of the component instance.
+   * @return the content instance.
    */
   public ContentPeas getContentPeas(String sComponentId) {
     return getContentPeasByComponentName(
-        SilverpeasComponentInstance.getComponentName(sComponentId));
+        SilverpeasComponentInstance.getIdentity(sComponentId).getComponentName());
   }
 
   /**
    * Return the ContentPeas corresponding to the given component
-   * @param componentName
-   * @return
-   * @throws ContentManagerException
+   * @param componentName the name of a component.
+   * @return the content instance.
    */
   public ContentPeas getContentPeasByComponentName(String componentName) {
     // Get the ContentPeas from the ContentType
@@ -263,10 +249,6 @@ public class ContentManagementEngine implements Serializable {
     return null;
   }
 
-  /**
-   * Add a silver content Called when a content add a document and register it to get its
-   * SilverContentId in return
-   */
   public int addSilverContent(Connection connection, String sInternalContentId, String sComponentId,
       String sAuthorId, SilverContentVisibility scv) throws ContentManagerException {
     //
@@ -403,7 +385,7 @@ public class ContentManagementEngine implements Serializable {
       throws ContentManagerException {
     SortedSet<Integer> alSilverContentId = new TreeSet<>();
     String sInternalContentId = "";
-    String sComponentId = "";
+    String sComponentId;
     int silverContentId;
     try (final Connection connection = DBUtil.openConnection()) {
       // main loop to build sql queries
@@ -483,7 +465,7 @@ public class ContentManagementEngine implements Serializable {
    * Return the content instance Id corresponding to the componentId
    */
   public int getContentInstanceId(String sComponentId) throws ContentManagerException {
-    int contentInstanceId = -1;
+    int contentInstanceId;
 
     String sContentInstanceId = getInstanceId(sComponentId);
     if (sContentInstanceId != null) {
@@ -513,12 +495,12 @@ public class ContentManagementEngine implements Serializable {
     joinStatement.setJoinKeys(alGivenKeys);
 
     // works on the author
-    if (authorId != null && !"".equals(authorId)) {
+    if (authorId != null && !authorId.isEmpty()) {
       sSQLStatement.append(" CMC.authorId = ").append(authorId);
     }
 
     // works on the beforeDate
-    if (beforeDate != null && beforeDate.length() > 0) {
+    if (beforeDate != null && !beforeDate.isEmpty()) {
       if (sSQLStatement.length() > 0) {
         sSQLStatement.append(" AND ");
       }
@@ -526,7 +508,7 @@ public class ContentManagementEngine implements Serializable {
     }
 
     // works on the afterDate
-    if (afterDate != null && afterDate.length() > 0) {
+    if (afterDate != null && !afterDate.isEmpty()) {
       if (sSQLStatement.length() > 0) {
         sSQLStatement.append(" AND ");
       }
@@ -683,18 +665,16 @@ public class ContentManagementEngine implements Serializable {
   }
 
   // Load the cache instanceId-componentId
-  private Map<String, String> loadMapping(Connection connection) throws ContentManagerException {
+  private Map<String, String> loadMapping() throws ContentManagerException {
     boolean bCloseConnection = false;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
     Map<String, String> tempAsso = new HashMap<>();
-    Connection conn = connection;
+    Connection conn = null;
     try {
-      if (conn == null) {
-        // Open connection
-        conn = DBUtil.openConnection();
-        bCloseConnection = true;
-      }
+      // Open connection
+      conn = DBUtil.openConnection();
+      bCloseConnection = true;
 
       // Get the instanceId
       String sSQLStatement = "SELECT instanceId, componentId FROM " + INSTANCE_TABLE;

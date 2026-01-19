@@ -30,7 +30,7 @@ import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;
 import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
 import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import java.util.Optional;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;

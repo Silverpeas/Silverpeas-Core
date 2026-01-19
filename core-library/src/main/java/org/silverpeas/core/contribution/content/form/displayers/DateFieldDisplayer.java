@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;

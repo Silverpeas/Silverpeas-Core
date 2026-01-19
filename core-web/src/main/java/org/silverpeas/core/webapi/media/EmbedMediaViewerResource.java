@@ -38,14 +38,14 @@ import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 import org.silverpeas.core.webapi.viewer.ResourceView;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import java.nio.file.Paths;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
@@ -88,7 +88,7 @@ public class EmbedMediaViewerResource extends RESTWebService {
       getHttpServletRequest().setAttribute("contentUrl", getUri().getRequestUriBuilder().path("content").build());
       setCommonRequestViewerAttributes(resource);
       final String cacheKey = PDF_VIEWER_CACHE_PREFIX + documentId + "@" + language;
-      ((Cache) getApplicationCacheAccessor().getCache()).put(cacheKey, true, 10, 0);
+      getApplicationCacheAccessor().getCache().put(cacheKey, true, 10, 0);
       return new View("/media/jsp/pdf/viewer.jsp");
     } catch (final WebApplicationException ex) {
       throw ex;

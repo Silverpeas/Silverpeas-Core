@@ -29,8 +29,8 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.silverpeas.cmis.security.CmisRequest;
 import org.silverpeas.core.web.rs.SilverpeasRequestContext;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.math.BigInteger;
 

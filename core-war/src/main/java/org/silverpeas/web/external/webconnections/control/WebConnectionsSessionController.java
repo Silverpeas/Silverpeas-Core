@@ -23,17 +23,15 @@
  */
 package org.silverpeas.web.external.webconnections.control;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.kernel.util.StringUtil;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +55,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * @return connection : ConnectionDetail
    */
   public ConnectionDetail getConnection(String componentId) {
-    ConnectionDetail connection = null;
+    ConnectionDetail connection;
     connection = getWebConnectionsInterface().getWebConnection(componentId, getUserId());
     if (connection != null) {
       addParamToConnection(connection);
@@ -88,7 +86,6 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
     connection.setUserId(getUserId());
     connection.setUrl(url);
     connection.setComponentName(componentName);
-    connection.setNewWindow(StringUtil.getBooleanValue(inst.getParameterValue("openNewWindow")));
     connection.setMethod(inst.getParameterValue("method"));
   }
 
@@ -135,19 +132,16 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
   /**
    * get all the connections for the current user
    * @return a list of ConnectionDetail
-   * @throws RemoteException
    */
-  public List<ConnectionDetail> getConnectionsByUser() throws RemoteException {
+  public List<ConnectionDetail> getConnectionsByUser()  {
     List<ConnectionDetail> connections =
         getWebConnectionsInterface().listWebConnectionsOfUser(getUserId());
-    List<ConnectionDetail> newConnections = new ArrayList<ConnectionDetail>();
-    Iterator<ConnectionDetail> it = connections.iterator();
-    while (it.hasNext()) {
-      ConnectionDetail connection = it.next();
+    List<ConnectionDetail> newConnections = new ArrayList<>();
+    for (ConnectionDetail connection : connections) {
       addParamToConnection(connection);
       newConnections.add(connection);
     }
-    return connections;
+    return newConnections;
   }
 
   /**

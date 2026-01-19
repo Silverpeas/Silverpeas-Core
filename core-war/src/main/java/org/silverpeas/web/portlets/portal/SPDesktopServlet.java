@@ -34,18 +34,21 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.SafeContentRedirect;
 import org.silverpeas.core.web.look.proxy.SpaceHomepageProxy;
 import org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager;
@@ -54,16 +57,13 @@ import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServl
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
@@ -88,7 +88,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
    * Reads the DriverConfig.properties file. Initializes the Portlet Registry files.
    *
    * @param config the ServletConfig Object
-   * @throws javax.servlet.ServletException
+   * @throws jakarta.servlet.ServletException if there is an error
    */
   @Override
   public void init(ServletConfig config)
@@ -228,6 +228,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
       String portletWindowName) {
     HttpSession session = request.getSession(true);
     PortletWindowData portletWindowDataToFind = null;
+    //noinspection unchecked
     Map<String, SortedSet<PortletWindowData>> portletWindowContents =
         (Map<String, SortedSet<PortletWindowData>>) session.getAttribute(
         DesktopConstants.PORTLET_WINDOWS);
@@ -270,7 +271,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
    * @param request the HttpServletRequest Object
    * @param portletContent the PortletContent Object
    * @param portletRegistryContext the PortletRegistryContext Object
-   * @return a Map of portlet data and title for all portlet windows.
+   * @return a Set of portlet data and title for all portlet windows.
    */
   private Set<PortletContent> getAllPortletContents(HttpServletRequest request,
       HttpServletResponse response,
@@ -281,7 +282,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
     Set<PortletContent> portletContents;
     if (portletWindowState.equals(ChannelState.MAXIMIZED)) {
       portletContent.setPortletWindowState(ChannelState.MAXIMIZED);
-      portletContents = new HashSet<PortletContent>();
+      portletContents = new HashSet<>();
       portletContents.add(initPortletContent(portletContent, request));
     } else {
       List<String> visiblePortletWindows = getVisiblePortletWindows(portletRegistryContext);
@@ -312,17 +313,17 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
    * @param request the HttpServletRequest Object
    * @param response the HttpServletResponse object
    * @param portletList the List of portlet windows
-   * @return a Map of portlet data and title for the portlet windows specified in the portletList
+   * @return a Set of portlet data and title for the portlet windows specified in the portletList
    */
   private Set<PortletContent> getPortletContents(final HttpServletRequest request,
       final HttpServletResponse response,
       final List<String> portletList) throws InvokerException {
-    Set<PortletContent> portletContents = new HashSet<PortletContent>();
+    Set<PortletContent> portletContents = new HashSet<>();
     for (String portletWindowName : portletList) {
       PortletContent portletContent =
           getPortletContentObject(portletWindowName, context, request, response);
-      portletContent = initPortletContent(portletContent, request);
-      portletContents.add(portletContent);
+      PortletContent initializedPortletContent = initPortletContent(portletContent, request);
+      portletContents.add(initializedPortletContent);
     }
     return portletContents;
   }
@@ -338,8 +339,10 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
   private Map<String, SortedSet<PortletWindowData>> getPortletWindowContents(
       final HttpServletRequest request, final Set<PortletContent> portletContents,
       final PortletRegistryContext portletRegistryContext, String spContext) {
-    SortedSet<PortletWindowData> portletWindowContentsThin = new TreeSet<PortletWindowData>();
-    SortedSet<PortletWindowData> portletWindowContentsThick = new TreeSet<PortletWindowData>();
+    SortedSet<PortletWindowData> portletWindowContentsThin =
+        new TreeSet<>(Comparator.comparing(PortletWindowData::getRowNumber));
+    SortedSet<PortletWindowData> portletWindowContentsThick =
+        new TreeSet<>(Comparator.comparing(PortletWindowData::getRowNumber));
     for (PortletContent portletContent : portletContents) {
       String portletWindowName = portletContent.getPortletWindowName();
       try {
@@ -357,8 +360,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
         logger.log(Level.SEVERE, pre.getMessage(), pre);
       }
     }
-    Map<String, SortedSet<PortletWindowData>> portletWindowContents =
-        new HashMap<String, SortedSet<PortletWindowData>>();
+    Map<String, SortedSet<PortletWindowData>> portletWindowContents = new HashMap<>();
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THICK, portletWindowContentsThick);
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THIN, portletWindowContentsThin);
     logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[]{
@@ -378,8 +380,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
     portletContent.setPortletWindowName(portletWindowName);
     portletContent.setPortletWindowMode(portletWindowMode);
     portletContent.setPortletWindowState(portletWindowState);
-    URL url = portletContent.executeAction();
-    return url;
+    return portletContent.executeAction();
   }
 
   /**
@@ -390,11 +391,10 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
    */
   protected List<String> getVisiblePortletWindows(
       final PortletRegistryContext portletRegistryContext) throws InvokerException {
-    List<String> visiblePortletWindows = null;
+    List<String> visiblePortletWindows;
     try {
       visiblePortletWindows = portletRegistryContext.getVisiblePortletWindows(PortletType.LOCAL);
     } catch (PortletRegistryException pre) {
-      visiblePortletWindows = Collections.EMPTY_LIST;
       throw new InvokerException("Cannot get Portlet List", pre);
     }
     return visiblePortletWindows;
@@ -569,7 +569,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
 
   /**
    * Gets the identifier of the selected space from the request. If the space is the user personal
-   * one or it is not of type portlet, then null is returned (no specific space)
+   * one, or it is not of type portlet, then null is returned (no specific space)
    *
    * @param request the HTTP request.
    * @return the space identifier or null if the space hasn't to be taken into account in the
@@ -633,8 +633,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
             .anyMatch(prefixSpaceId(spaceId)::equals));
   }
 
-  private String getSpaceHomepageURL(String spaceId, final HttpServletRequest request)
-      throws UnsupportedEncodingException {
+  private String getSpaceHomepageURL(String spaceId, final HttpServletRequest request) {
     OrganizationController organizationCtrl = getOrganizationController();
     SpaceHomepageProxy spaceStruct = ofNullable(organizationCtrl.getSpaceInstById(spaceId))
         .map(SpaceHomepageProxyManager.get()::getProxyOf)
@@ -702,24 +701,24 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
         destination =
             getParsedDestination(destination, s_sUserFullName,
             URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName(),
-            "UTF-8"));
+                Charsets.UTF_8));
         destination =
             getParsedDestination(destination, s_sUserId, URLEncoder.encode(m_MainSessionCtrl.
-            getUserId(), "UTF-8"));
+            getUserId(), Charsets.UTF_8));
         destination =
             getParsedDestination(destination, s_sSessionId,
             URLEncoder.encode(request.getSession().
-            getId(), "UTF-8"));
+            getId(), Charsets.UTF_8));
         destination =
             getParsedDestination(destination, s_sUserEmail, m_MainSessionCtrl.
             getCurrentUserDetail().
                 getEmailAddress());
         destination =
             getParsedDestination(destination, s_sUserFirstName,
-            URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getFirstName(), "UTF-8"));
+            URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getFirstName(), Charsets.UTF_8));
         destination =
             getParsedDestination(destination, s_sUserLastName,
-            URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getLastName(), "UTF-8"));
+            URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getLastName(), Charsets.UTF_8));
 
         // !!!! Add the password : this is an uggly patch that use a session variable set in the
         // "AuthenticationServlet" servlet
@@ -745,27 +744,20 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
       String sParsed = sDestination.substring(0, nLoginIndex);
       sParsed += sValue;
       if (sDestination.length() > nLoginIndex + sKeyword.length()) {
-        sParsed += sDestination.substring(
-            nLoginIndex + sKeyword.length(),
-            sDestination.length());
+        sParsed += sDestination.substring(nLoginIndex + sKeyword.length());
       }
       sDestination = sParsed;
     }
     return sDestination;
   }
 
-
-  /**
-   * Set the existing portletNames in session
-   * @param request
-   * @param language
-   * @param portletNames
-   */
   private void setPortletNames(final HttpServletRequest request, final String language,
       final List<String> portletNames) {
     HttpSession session = request.getSession(true);
     LocalizationBundle resource = ResourceLocator.getLocalizationBundle("org.silverpeas.portlet.multilang.portletBundle", language);
-    Collection<Map> listPortlet = new ArrayList<>();//list of HashMap key=portletName, value=title of the portlet
+    Collection<Map<String, String>> listPortlet = new ArrayList<>();//list of HashMap
+    // key=portletName,
+    // value=title of the portlet
     for(String portletName : portletNames) {
       String shortName = portletName.substring(11); //portletName = silverpeas.LastPublicationsPortlet
       String defaultTitle;
@@ -776,7 +768,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
       } catch (MissingResourceException ex) {
         defaultTitle = "";
       }
-      Map<String, String> hashPortlet = new HashMap<String, String>();//key=portletName, value=title of the portlet
+      Map<String, String> hashPortlet = new HashMap<>();//key=portletName, value=title of the portlet
       hashPortlet.put(portletName, defaultTitle);
       listPortlet.add(hashPortlet);
     }

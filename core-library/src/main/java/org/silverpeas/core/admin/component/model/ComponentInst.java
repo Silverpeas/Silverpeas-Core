@@ -23,31 +23,23 @@
  */
 package org.silverpeas.core.admin.component.model;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.silverpeas.core.BasicIdentifier;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.synchronizedList;
@@ -60,8 +52,6 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     implements SilverpeasSharedComponentInstance, WithPermanentLink {
 
   private static final long serialVersionUID = 1L;
-  private static final Pattern COMPONENT_INSTANCE_IDENTIFIER =
-      Pattern.compile("^([a-zA-Z-_]+)(\\d+)$");
 
   public static final String STATUS_REMOVED = "R";
   @XmlAttribute
@@ -74,11 +64,11 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   private Date removeDate = null;
   private String status = null;
   private String creatorUserId;
-  private UserDetail creator;
+  private User creator;
   private String updaterUserId;
-  private UserDetail updater;
+  private User updater;
   private String removerUserId;
-  private UserDetail remover;
+  private User remover;
   private boolean isPublic;
   private boolean isHidden;
   private boolean isInheritanceBlocked = false;
@@ -135,46 +125,6 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     setTranslations(ci.getClonedTranslations());
   }
 
-  /**
-   * Gets the name of the multi-user component from which the specified instance was spawn. By
-   * convention, the identifiers of the component instances are made up of the name of the component
-   * followed by a number. This method is a way to get directly the component name from an instance
-   * identifier.
-   *
-   * @param componentInstanceId the unique identifier of a component instance.
-   * @return the name of the multi-user component or null if the specified identifier doesn't match
-   * the rule of a shared component instance identifier.
-   */
-  public static String getComponentName(final String componentInstanceId) {
-    String componentName = null;
-    Matcher matcher = COMPONENT_INSTANCE_IDENTIFIER.matcher(componentInstanceId);
-    if (matcher.matches()) {
-      componentName = matcher.group(1);
-    }
-    return componentName;
-  }
-
-  /**
-   * Gets the local identifier of the multi-user component from which the specified instance was
-   * spawn. By convention, the identifiers of the component instances are made up of the name of the
-   * component followed by a number, the local identifier. This method is a way to get directly the
-   * component local identifier from an instance identifier.
-   *
-   * @param componentInstanceId the unique identifier of a component instance.
-   * @return the local identifier of the multi-user component or -1 if the specified identifier
-   * doesn't match the rule of a shared component instance identifier.
-   */
-  public static int getComponentLocalId(final String componentInstanceId) {
-    int componentId = -1;
-    if (StringUtil.isDefined(componentInstanceId)) {
-      Matcher matcher = COMPONENT_INSTANCE_IDENTIFIER.matcher(componentInstanceId);
-      if (matcher.matches()) {
-        componentId = Integer.parseInt(matcher.group(2));
-      }
-    }
-    return componentId;
-  }
-
   @Override
   public BasicIdentifier getIdentifier() {
     return new BasicIdentifier(getLocalId(), getId());
@@ -182,7 +132,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public String getId() {
-    return name + id;
+    return new ComponentInstanceIdentityFactory().create(name, id).toString();
   }
 
   public void setLocalId(int id) {
@@ -421,14 +371,14 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public User getCreator() {
     if (creator == null && isDefined(creatorUserId)) {
-      creator = UserDetail.getById(creatorUserId);
+      creator = User.getById(creatorUserId);
     }
     return creator;
   }
 
   public User getLastUpdater() {
     if (updater == null && isDefined(updaterUserId)) {
-      updater = UserDetail.getById(updaterUserId);
+      updater = User.getById(updaterUserId);
     }
     return updater;
   }

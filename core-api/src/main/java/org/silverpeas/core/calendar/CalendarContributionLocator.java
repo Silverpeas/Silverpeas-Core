@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.ContributionLocatorByLocalIdAndType;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

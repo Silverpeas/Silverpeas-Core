@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.converter.DocumentFormatException;
 import org.silverpeas.core.contribution.converter.option.FilterOption;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;

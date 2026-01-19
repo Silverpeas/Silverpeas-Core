@@ -23,21 +23,17 @@
  */
 package org.silverpeas.core.i18n;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 import org.silverpeas.core.Nameable;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @XmlAccessorType(XmlAccessType.NONE)
@@ -53,7 +49,8 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   @XmlElement(namespace = "http://www.silverpeas.org/exchange")
   private String description = "";
 
-  private String language = I18NHelper.DEFAULT_LANGUAGE;
+  private transient I18n i18n;
+  private String language;
   private String translationId = null;
   private transient Map<String, T> translations = new HashMap<>(3);
   private boolean removeTranslation = false;
@@ -167,7 +164,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   }
 
   private T selectTranslation(String language) {
-    final String lang = StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
+    final String lang = getI18n().checkLanguage(language);
     T translation = getTranslations().get(lang);
     if (translation == null) {
       translation = getNextTranslation();
@@ -176,15 +173,15 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   }
 
   public String getLanguage() {
-    if (I18NHelper.isI18nContentActivated && StringUtil.isNotDefined(language)) {
-      return I18NHelper.DEFAULT_LANGUAGE;
+    if (getI18n().isEnabled() && StringUtil.isNotDefined(language)) {
+      return getI18n().getDefaultLanguage();
     }
     return language;
   }
 
   @Override
   public void setLanguage(String language) {
-    this.language = StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
+    this.language = StringUtil.isDefined(language) ? language : getI18n().getDefaultLanguage();
   }
 
   public boolean isRemoveTranslation() {
@@ -253,7 +250,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   public void addTranslation(T translation) {
     String lang = translation.getLanguage();
     if (!StringUtil.isDefined(lang)) {
-      lang = I18NHelper.DEFAULT_LANGUAGE;
+      lang = getI18n().getDefaultLanguage();
       translation.setLanguage(lang);
     }
     translations.put(lang, translation);
@@ -262,7 +259,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   @Override
   public T getNextTranslation() {
     Map<String, T> l10n = getTranslations();
-    return I18NHelper.getLanguages()
+    return getI18n().getSupportedLanguageCodes()
         .stream()
         .map(l10n::get)
         .filter(Objects::nonNull)
@@ -282,5 +279,12 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     }
 
     return languageToDisplay;
+  }
+
+  private I18n getI18n() {
+    if (i18n == null) {
+      i18n = I18n.get();
+    }
+    return i18n;
   }
 }

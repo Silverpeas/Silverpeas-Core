@@ -32,7 +32,7 @@ public interface CompositeEntityIdentifier extends ExternalEntityIdentifier {
   String COMPOSITE_SEPARATOR = ":";
 
   @Override
-  default EntityIdentifier fromString(String id) {
+  default EntityIdentifier setFromString(String id) {
     String[] values = id.split(COMPOSITE_SEPARATOR);
     return fromString(values);
   }

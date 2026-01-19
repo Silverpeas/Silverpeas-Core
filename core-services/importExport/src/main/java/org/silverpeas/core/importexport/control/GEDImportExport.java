@@ -30,15 +30,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.TypeManager;
-import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -51,7 +43,7 @@ import org.silverpeas.core.contribution.template.form.service.FormTemplateServic
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.importexport.model.ImportExportException;
@@ -69,24 +61,20 @@ import org.silverpeas.core.node.importexport.NodePositionType;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.text.MessageFormat.format;
 
@@ -103,7 +91,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   // Variables
   private PublicationService publicationService = null;
   private FormTemplateService formTemplateService = null;
-  private NodeService nodeService = NodeService.get();
+  private final NodeService nodeService = NodeService.get();
+  private final I18n i18n = I18n.get();
 
   /**
    * Constructeur public de la classe
@@ -171,10 +160,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       return null;
     } else {
       PublicationDetail pubDetTemp = null;
-      boolean pubAlreadyExist = true;
-      if (isKmax()) {
-        pubAlreadyExist = false;
-      }
+      boolean pubAlreadyExist = !isKmax();
       String pubId = null;
 
       // check if publication with same name exists into first topic
@@ -295,15 +281,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
     return getCurrentComponentId().startsWith("kmax");
   }
 
-  /**
-   * Method which creates publication content from imported publication
-   * @param unitReport
-   * @param pubId - publication identifier of imported content
-   * @param pubContent - content to import
-   * @param userId the user identifier
-   * @param language
-   * @throws ImportExportException
-   */
   public void createPublicationContent(ImportReportManager reportManager, UnitReport unitReport,
       int pubId, PublicationContentType pubContent, String userId, String language)
       throws ImportExportException {
@@ -378,7 +355,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
             } else {
               fieldValue = xmlFieldValue;
             }
-            //noinspection unchecked
             fieldDisplayer.update(fieldValue, field, fieldTemplate, formContext);
           }
         }
@@ -432,9 +408,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       try {
         WysiwygController.deleteWysiwygAttachmentsOnly(getCurrentComponentId(),
             String.valueOf(pubId));
-      } catch (WysiwygException ignored) {
-        SilverLogger.getLogger(this)
-            .warn(ignored);
+      } catch (WysiwygException e) {
+        SilverLogger.getLogger(this).warn(e);
       }
     }
     // Creation du fichier de contenu wysiwyg sur les serveur
@@ -540,11 +515,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
       newWysiwygText.append(wysiwygText);
     } else {
       while ((debut = wysiwygText.indexOf("<a name=", fin)) != -1) {
-        newWysiwygText.append(wysiwygText.substring(fin, debut));
+        newWysiwygText.append(wysiwygText, fin, debut);
         debut += 8;
         fin = wysiwygText.indexOf('>', debut);
         debut = wysiwygText.indexOf("</a>", fin);
-        newWysiwygText.append(wysiwygText.substring(fin + 1, debut));
+        newWysiwygText.append(wysiwygText, fin + 1, debut);
         fin = debut + 4;
       }
       newWysiwygText.append(wysiwygText.substring(fin));
@@ -552,15 +527,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
     return newWysiwygText.toString();
   }
 
-  /**
-   * Methode copiant les images contenues dans le dossier d'exportation de la publication. Cette
-   * methode met a  jour le fichier wysiwyg avec les nouveaux chemins d'images avant de le copier
-   * dans l'exportation
-   * @param pubId - id de la publication a  exporter
-   * @param componentId - id du composant contenant la publication a  exporter
-   * @param exportPublicationPath - dossier d'exportation de la publication
-   * @return le contenu du fichier wysiwyg
-   */
   public void copyWysiwygImageForExport(String pubId, String componentId,
       String exportPublicationPath) {
     ResourceReference foreignKey = new ResourceReference(pubId, componentId);
@@ -653,16 +619,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       UnitReport unitReport) throws ImportExportException;
 
-  /**
-   * Methode ajoutant un theme a  un theme deja existant. Si le theme a  ajouter existe lui aussi
-   * (par exemple avec un meme ID), il n'est pas modifie et la methode ne fait rien et ne leve
-   * aucune exception.
-   * @param nodeDetail l'objet node correspondant au theme a  creer.
-   * @param topicId l'ID du theme dans lequel creer le nouveau theme.
-   * @param massiveReport
-   * @return un objet cle primaire du nouveau theme cree.
-   * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
-   */
   protected abstract NodeDetail addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException;
 
@@ -692,29 +648,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
   }
 
-  /**
-   * Methode de creation d'une publication dans le cas d'une importation unitaire avec meta-donnees
-   * definies dans le fichier xml d'importation.
-   * @param unitReport
-   * @param settings
-   * @param pubDetail
-   * @param listNodeType
-   * @return
-   */
   public PublicationDetail createPublicationForUnitImport(UnitReport unitReport,
       ImportSettings settings, PublicationDetail pubDetail, List<NodePositionType> listNodeType) {
     unitReport.setItemName(pubDetail.getName());
     return processPublicationDetail(unitReport, settings, pubDetail, listNodeType);
   }
 
-  /**
-   * Methode de creation d'une publication dans le cas d'une importation massive
-   * @param unitReport
-   * @param pubDetail
-   * @param settings
-   * @return
-   * @throws ImportExportException
-   */
   public PublicationDetail createPublicationForMassiveImport(UnitReport unitReport,
       PublicationDetail pubDetail, ImportSettings settings) {
     unitReport.setItemName(pubDetail.getName());
@@ -758,7 +697,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Methode de recuperation de la publication complete utilisee pour l'exportation
    * @param pubId the publication identifier
    * @param componentId the component instance identifier
-   * @return
+   * @return la publication
    */
   public PublicationType getPublicationCompleteById(String pubId, String componentId) {
     PublicationType publicationType = new PublicationType();
@@ -781,11 +720,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
       } else if (WysiwygController.haveGotWysiwyg(publicationDetail.getPK()
-          .getInstanceId(), pubId, I18NHelper.checkLanguage(publicationDetail.getLanguage()))) {
+          .getInstanceId(), pubId, i18n.checkLanguage(publicationDetail.getLanguage()))) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
         String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId,
-            I18NHelper.checkLanguage(publicationDetail.getLanguage()));
+            i18n.checkLanguage(publicationDetail.getLanguage()));
         wysiwygContentType.setPath(wysiwygFileName);
         pubContent.setWysiwygContentType(wysiwygContentType);
       }
@@ -840,8 +779,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Specific Kmax: Create publication with no nodeFather
-   * @param pubDetail
-   * @return pubDetail
+   * @param pubDetail the publication to create
+   * @return pubDetail the created publication
    */
   protected abstract PublicationDetail createPublication(PublicationDetail pubDetail);
 
@@ -860,7 +799,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     String logicalName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
     String type = FileRepositoryManager.getFileExtension(logicalName);
     String mimeType = FileUtil.getMimeType(logicalName);
-    String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
+    String physicalName = System.currentTimeMillis() + "." + type;
     if (FileUtil.isImage(logicalName)) {
       String dest = FileRepositoryManager.getAbsolutePath(pubDetail.getPK()
           .getInstanceId()) + "images" + File.separator + physicalName;
@@ -871,7 +810,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             .error(e);
       }
       ThumbnailDetail thumbnailDetail = new ThumbnailDetail(pubDetail.getPK()
-          .getComponentName(), Integer.valueOf(pubDetail.getPK()
+          .getComponentName(), Integer.parseInt(pubDetail.getPK()
           .getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       thumbnailDetail.setOriginalFileName(physicalName);
       thumbnailDetail.setOriginalFileName(mimeType);

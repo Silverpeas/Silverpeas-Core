@@ -30,6 +30,7 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.SimpleBookmark;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
@@ -73,13 +74,13 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.xml.sax.SAXException;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
@@ -126,6 +127,8 @@ public class ImportExport extends AbstractExportProcess {
   private PdcImportExport pdcImportExport;
   @Inject
   private RepositoriesTypeManager repositoriesTypeManager;
+  @Inject
+  private AdminController adminController;
 
   private JAXBContext jaxbContext = null;
 
@@ -142,12 +145,6 @@ public class ImportExport extends AbstractExportProcess {
     }
   }
 
-  /**
-   * Méthode créant le fichier xml corespondant à l'arbre des objets.
-   * @param silverPeasExchangeType - arbre des objets à mapper sur le fichier xml
-   * @param xmlToExportPath - chemin et nom du fichier xml à créer
-   * @throws ImportExportException
-   */
   void saveToSilverpeasExchangeFile(SilverPeasExchangeType silverPeasExchangeType,
       String xmlToExportPath) throws ImportExportException {
     try {
@@ -167,12 +164,6 @@ public class ImportExport extends AbstractExportProcess {
     }
   }
 
-  /**
-   * Méthode retournant l'arbre des objets mappés sur le fichier xml passé en paramètre.
-   * @param xmlFileName le fichier xml interprêté par JAXB
-   * @return Un objet SilverPeasExchangeType contenant le mapping d'un fichier XML
-   * @throws ImportExportException
-   */
   private SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName) throws ImportExportException {
     try {
       File xmlInputSource = new File(xmlFileName);
@@ -185,19 +176,13 @@ public class ImportExport extends AbstractExportProcess {
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
       unmarshaller.setSchema(schema);
       unmarshaller.setEventHandler(new ImportExportErrorHandler());
-      SilverPeasExchangeType silverpeasExchange =
-          (SilverPeasExchangeType) unmarshaller.unmarshal(xmlInputSource);
 
-      return silverpeasExchange;
+      return (SilverPeasExchangeType) unmarshaller.unmarshal(xmlInputSource);
 
-    } catch (JAXBException me) {
+    } catch (JAXBException | MalformedURLException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_UNMARSHALLING_FAILED",
           "XML Filename " + xmlFileName + ": " + me.getLocalizedMessage(), me);
-    } catch (MalformedURLException ue) {
-      throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_UNMARSHALLING_FAILED",
-          "XML Filename " + xmlFileName + ": " + ue.getLocalizedMessage(), ue);
     } catch (SAXException ve) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED",
@@ -205,15 +190,6 @@ public class ImportExport extends AbstractExportProcess {
     }
   }
 
-  /**
-   * Méthode faisant appel au moteur d'importExport de silver peas, des publications définie dans
-   * le
-   * fichier xml passé en paramètre sont générées grace à JAXB.
-   * @param userDetail - information sur l'utilisateur utilisant le moteur importExport
-   * @param xmlFileName - fichier xml définissant les import et/ou export à effectuer
-   * @return un rapport détaillé sur l'execution de l'import/export
-   * @throws ImportExportException
-   */
   public ImportReport processImport(UserDetail userDetail, String xmlFileName)
       throws ImportExportException {
 
@@ -264,7 +240,7 @@ public class ImportExport extends AbstractExportProcess {
   public ExportReport processExport(UserDetail userDetail, String language,
       List<WAAttributeValuePair> listItemsToExport, NodePK rootPK, int mode, boolean useNameForFolders)
       throws ImportExportException {
-    ExportReport report = null;
+    ExportReport report;
     switch (mode) {
       case ImportExport.EXPORT_FULL:
         report = processExport(userDetail, language, listItemsToExport, rootPK, useNameForFolders);
@@ -284,7 +260,7 @@ public class ImportExport extends AbstractExportProcess {
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.importExport.multilang.importExportBundle", language);
     PublicationsTypeManager pubTypMgr = getPublicationsTypeManager();
-    AdminImportExport adminIE = new AdminImportExport();
+    AdminImportExport adminIE = new AdminImportExport(adminController);
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
     ExportReport exportReport = new ExportReport();
 
@@ -498,14 +474,6 @@ public class ImportExport extends AbstractExportProcess {
     }
   }
 
-  /**
-   * Merge selected PDF into one PDF document
-   * @param userDetail User who exports
-   * @param itemsToExport List of PDF document
-   * @param rootPK
-   * @return ExportPDFReport
-   * @throws ImportExportException
-   */
   public ExportPDFReport processExportPDF(UserDetail userDetail,
       List<WAAttributeValuePair> itemsToExport, NodePK rootPK) throws ImportExportException {
     ExportPDFReport report = new ExportPDFReport();
@@ -623,16 +591,6 @@ public class ImportExport extends AbstractExportProcess {
     return false;
   }
 
-  /**
-   * Export Kmax Publications
-   * @param userDetail
-   * @param language
-   * @param itemsToExport
-   * @param combination
-   * @param timeCriteria
-   * @return
-   * @throws ImportExportException
-   */
   public ExportReport processExportKmax(UserDetail userDetail, String language,
       List<WAAttributeValuePair> itemsToExport, List<String> combination, String timeCriteria, boolean useNameForFolders)
       throws ImportExportException {
@@ -640,7 +598,7 @@ public class ImportExport extends AbstractExportProcess {
         "org.silverpeas.importExport.multilang.importExportBundle", language);
 
     PublicationsTypeManager pubTypMgr = getPublicationsTypeManager();
-    AdminImportExport adminIE = new AdminImportExport();
+    AdminImportExport adminIE = new AdminImportExport(adminController);
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
     ExportReport exportReport = new ExportReport();
     GEDImportExport gedIE;
@@ -948,12 +906,6 @@ public class ImportExport extends AbstractExportProcess {
     }
   }
 
-  /**
-   * Add father of nodeDetail to List
-   * @param nodesIds
-   * @param nodeDetail
-   * @return
-   */
   private List<String> addNodeToList(List<String> nodesIds, NodeDetail nodeDetail) {
     // Add father
     nodesIds.add(String.valueOf(nodeDetail.getFatherPK().getId()));

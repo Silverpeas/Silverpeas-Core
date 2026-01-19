@@ -36,35 +36,35 @@ public interface InterestsService {
    * @param userID the user identifier
    * @return a list of <code>Interests</code>s by user id provided
    */
-  public List<Interests> getInterestsByUserId(int userID);
+  List<Interests> getInterestsByUserId(int userID);
 
   /**
    * @param id <code>Interests</code> identifier
    * @return Interests by its id
    */
-  public Interests getInterestsById(int id);
+  Interests getInterestsById(int id);
 
   /**
    * @param interests interest center to create
    * @return id of <code>Interests</code> created
    */
-  public int createInterests(Interests interests);
+  int createInterests(Interests interests);
 
   /**
    * perform updates of provided Interests
    * @param interests interest center to update
    */
-  public void updateInterests(Interests interests);
+  void updateInterests(Interests interests);
 
   /**
    * @param ids ArrayList of <code>java.lang.Integer</code> - id's of <code>Interests</code>s
    * to be deleted
    * @param userId - current user Id
    */
-  public void removeInterestsById(List<Integer> ids, String userId);
+  void removeInterestsById(List<Integer> ids, String userId);
 
   /**
    * @param id an id of <code>Interests</code> to be deleted
    */
-  public void removeInterestsById(int id);
+  void removeInterestsById(int id);
 }

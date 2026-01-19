@@ -23,8 +23,10 @@
  */
 package org.silverpeas.core.notification.user.client;
 
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
@@ -35,22 +37,13 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
-import org.silverpeas.core.notification.user.client.model.NotifAddressRow;
-import org.silverpeas.core.notification.user.client.model.NotifAddressTable;
-import org.silverpeas.core.notification.user.client.model.NotifChannelRow;
-import org.silverpeas.core.notification.user.client.model.NotifChannelTable;
-import org.silverpeas.core.notification.user.client.model.NotifDefaultAddressRow;
-import org.silverpeas.core.notification.user.client.model.NotifDefaultAddressTable;
-import org.silverpeas.core.notification.user.client.model.NotifPreferenceRow;
-import org.silverpeas.core.notification.user.client.model.NotifPreferenceTable;
-import org.silverpeas.core.notification.user.client.model.NotificationSchema;
+import org.silverpeas.core.notification.user.client.model.*;
 import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -58,22 +51,15 @@ import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServer;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.util.EmailAddress;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Cacheable;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,6 +77,7 @@ import static org.silverpeas.core.util.URLUtil.getCurrentServerURL;
  */
 @Service
 @Transactional
+@Cacheable
 public class DefaultNotificationManager
     implements NotificationURLProvider, ComponentInstanceDeletion, NotificationManager {
 
@@ -119,7 +106,7 @@ public class DefaultNotificationManager
 
   @Override
   public DefaultNotificationManager forLanguage(final String language) {
-    final String lang = StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
+    final String lang = I18n.get().checkLanguage(language);
     multilang = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationManager.multilang.notificationManagerBundle", lang);
     return this;
@@ -496,9 +483,9 @@ public class DefaultNotificationManager
   @Override
   public Collection<UserRecipient> getUsersFromGroup(String groupId) throws NotificationException {
     try {
-      UserDetail[] users = AdministrationServiceProvider.getAdminService().getAllUsersOfGroup(groupId);
+      User[] users = AdministrationServiceProvider.getAdminService().getAllUsersOfGroup(groupId);
       List<UserRecipient> recipients = new ArrayList<>(users.length);
-      for (UserDetail user : users) {
+      for (User user : users) {
         if (user.isActivatedState()) {
           recipients.add(new UserRecipient(user));
         }

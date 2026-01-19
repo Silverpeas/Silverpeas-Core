@@ -54,8 +54,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneOffset;

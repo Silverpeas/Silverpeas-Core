@@ -30,9 +30,10 @@ import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.SearchCriteria;
 import org.silverpeas.core.admin.user.model.SearchCriteriaVisitor;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,6 +43,7 @@ import java.util.Set;
  *
  * @author mmoquillon
  */
+@Bean
 public class SearchCriteriaOnSubGroups implements SearchCriteriaVisitor {
 
   private final GroupManager groupManager;

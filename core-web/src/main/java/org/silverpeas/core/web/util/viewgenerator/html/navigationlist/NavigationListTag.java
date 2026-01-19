@@ -25,8 +25,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.navigationlist;
 
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 
 public class NavigationListTag extends TagSupport {

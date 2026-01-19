@@ -37,7 +37,7 @@ public interface WebResourceTesting {
 
   /**
    * Gets the URI of an invalid or an unexisting web resource. It should be an invalid URI (for
-   * example a resource refered in an unexisting component instance), and not necessary an invalid
+   * example a resource referred in an unexisting component instance), and not necessary an invalid
    * resource in a correct URI.
    * @return the URI of an invalid or unexisting web resource.
    */
@@ -52,7 +52,7 @@ public interface WebResourceTesting {
 
   /**
    * Gets the valid API token value to use in tests.
-   * To be authorize to consume the REST API in the tests, the user must pass its API token
+   * To be authorized to consume the REST API in the tests, the user must pass its API token
    * through a bearer authorization scheme.
    * @return a valid API user token key.
    */

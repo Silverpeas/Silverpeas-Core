@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.admin.component.model;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -31,24 +32,48 @@ import org.silverpeas.core.admin.user.model.User;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
+ * A Silverpeas component instance that can be accessed only by one user. This component instance is
+ * owned by the user.
+ *
  * @author Yohann Chastagnier
  */
 public interface SilverpeasPersonalComponentInstance extends SilverpeasComponentInstance {
 
   /**
    * Gets a personal silverpeas component instance from the specified identifier.
+   *
    * @param personalComponentInstanceId a personal component instance identifier as string.
-   * @return an optional silverpeas personal component instance of {@link
-   * SilverpeasPersonalComponentInstance}.
+   * @return an optional silverpeas personal component instance of
+   * {@link SilverpeasPersonalComponentInstance}.
    */
   static Optional<SilverpeasPersonalComponentInstance> getById(String personalComponentInstanceId) {
     return SilverpeasComponentInstanceProvider.get().getPersonalById(personalComponentInstanceId);
   }
 
   /**
+   * Gets the identity of the personal component instance referred by the specified unique global
+   * identifier. The identity of a personal component instance is serialized in its unique
+   * identifier.
+   *
+   * @param componentInstanceId the unique global identifier of a personal component instance. It
+   * must be non-null and well-formed.
+   * @return a non-null Identity.
+   * @throws IllegalArgumentException if the argument isn't a correct personal component instance
+   * identifier.
+   * @throws NullPointerException if the argument is null.
+   */
+  @NonNull
+  static Identity getIdentity(@NonNull final String componentInstanceId) {
+    return new Identity(componentInstanceId);
+  }
+
+  /**
    * Gets the user associated to the personal component instance.
+   *
    * @return a {@link User} instance.
    */
   User getUser();
@@ -69,5 +94,50 @@ public interface SilverpeasPersonalComponentInstance extends SilverpeasComponent
       roles = EnumSet.noneOf(SilverpeasRole.class);
     }
     return roles;
+  }
+
+  class Identity extends SilverpeasComponentInstance.Identity {
+
+    private static final String INSTANCE_SUFFIX = "_PCI";
+    private static final Pattern COMPONENT_INSTANCE_IDENTIFIER =
+        Pattern.compile("^([a-zA-Z]+)(\\d+)" + INSTANCE_SUFFIX + "$");
+
+    protected Identity(String componentInstanceId) {
+      super(componentInstanceId);
+    }
+
+    protected Identity(String name, int localId) {
+      super(name, localId);
+    }
+
+    @Override
+    protected void decode(@NonNull String componentInstanceId) {
+      Matcher matcher = COMPONENT_INSTANCE_IDENTIFIER.matcher(componentInstanceId);
+      if (matcher.matches()) {
+        setComponentName(matcher.group(1));
+        setInstanceLocalId(Integer.parseInt(matcher.group(2)));
+      } else {
+        throw new IllegalArgumentException(
+            "The argument doesn't represent a personal component instance identifier!");
+      }
+    }
+
+    /**
+     * Gets the unique identifier of the user owning this component instance.
+     * @return a user unique identifier.
+     */
+    public String getUserId() {
+      return String.valueOf(getInstanceLocalId());
+    }
+
+    @Override
+    public String toString() {
+      return getComponentName() + getUserId() + INSTANCE_SUFFIX;
+    }
+
+    public static boolean isValid(String componentInstanceId) {
+      Matcher matcher = COMPONENT_INSTANCE_IDENTIFIER.matcher(componentInstanceId);
+      return matcher.matches();
+    }
   }
 }

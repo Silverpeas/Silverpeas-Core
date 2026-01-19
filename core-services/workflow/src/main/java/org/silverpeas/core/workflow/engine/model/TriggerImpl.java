@@ -27,7 +27,7 @@ import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.api.model.Trigger;
 import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.List;
 import java.util.Vector;
 

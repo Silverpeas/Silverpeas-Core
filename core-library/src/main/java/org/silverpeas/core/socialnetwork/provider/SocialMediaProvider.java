@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Provider of medias to share among users (like video, pictures, ...)
  * @author Bensalrm Nabil
  */
-public interface SocialMediaProvider extends SocialInformationProvider {
+public interface SocialMediaProvider<T extends SocialInformation> extends SocialInformationProvider<T> {
 
-  static SocialMediaProvider get() {
+  static SocialMediaProvider<?> get() {
     return ServiceProvider.getService(SocialMediaProvider.class);
   }
 }

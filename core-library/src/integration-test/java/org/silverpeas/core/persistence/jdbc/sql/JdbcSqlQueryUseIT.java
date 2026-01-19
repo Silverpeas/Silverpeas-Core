@@ -9,8 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.SQLDateTimeConstants;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.sql.SQLException;
@@ -22,7 +21,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Integration tests on the use of the {@link JdbcSqlQuery} class in the persistence of business
@@ -79,9 +78,7 @@ public class JdbcSqlQueryUseIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(JdbcSqlQueryIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
+    return LibCoreWarBuilder.onWarForTestClass(JdbcSqlQueryUseIT.class)
         .addAsResource("org/silverpeas/core/persistence/datasource/create_table.sql")
         .build();
   }
@@ -104,20 +101,21 @@ public class JdbcSqlQueryUseIT {
 
   @Test
   public void saveNewPerson() throws SQLException {
-    final String id = "person_666";
-    final Date now = new Date();
+    final String id = "person_42";
+    final Timestamp now = new Timestamp(new Date().getTime());
+    final java.sql.Date birthday = java.sql.Date.valueOf("1971-11-30");
 
     // save new person
     Transaction.performInOne(() -> {
       long insertCount = JdbcSqlQuery.insertInto("test_persons")
           .withInsertParam("id", id)
-          .withInsertParam("firstName", "Lucifer")
-          .withInsertParam("lastName", "Satan")
-          .withInsertParam("birthday", SQLDateTimeConstants.MIN_DATE)
-          .withInsertParam("createDate", new Timestamp(now.getTime()))
-          .withInsertParam("lastUpdateDate", new Timestamp(now.getTime()))
-          .withInsertParam("createdBy", "666")
-          .withInsertParam("lastUpdatedBy", "666")
+          .withInsertParam("firstName", "Miguel")
+          .withInsertParam("lastName", "Moquillon")
+          .withInsertParam("birthday", birthday)
+          .withInsertParam("createDate", now)
+          .withInsertParam("lastUpdateDate", now)
+          .withInsertParam("createdBy", "42")
+          .withInsertParam("lastUpdatedBy", "42")
           .withInsertParam("version", 0L)
           .execute();
       assertThat(insertCount, is(1L));
@@ -127,13 +125,13 @@ public class JdbcSqlQueryUseIT {
     // check the new person was correctly saved
     assertPersistedPerson(id, p -> {
       assertThat(p.get("id"), is(id));
-      assertThat(p.get("firstName"), is("Lucifer"));
-      assertThat(p.get("lastName"), is("Satan"));
-      assertThat(p.get("birthday"), is(SQLDateTimeConstants.MIN_DATE));
-      assertThat(p.get("createDate"), is(new Timestamp(now.getTime())));
-      assertThat(p.get("lastUpdateDate"), is(new Timestamp(now.getTime())));
-      assertThat(p.get("createdBy"), is("666"));
-      assertThat(p.get("lastUpdatedBy"), is("666"));
+      assertThat(p.get("firstName"), is("Miguel"));
+      assertThat(p.get("lastName"), is("Moquillon"));
+      assertThat(p.get("birthday"), is(birthday));
+      assertThat(p.get("createDate"), is(now));
+      assertThat(p.get("lastUpdateDate"), is(now));
+      assertThat(p.get("createdBy"), is("42"));
+      assertThat(p.get("lastUpdatedBy"), is("42"));
       assertThat(p.get("version"), is(0L));
     });
   }

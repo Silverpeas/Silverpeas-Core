@@ -23,16 +23,17 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.model;
 
+import jakarta.inject.Inject;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
-import javax.inject.Inject;
 import java.sql.Connection;
 
 import static org.junit.Assert.*;
@@ -53,9 +54,8 @@ public class ThumbnailDAOIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(ThumbnailDAOIT.class)
-        .addDatabaseToolFeatures()
-        .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.io.media.image.thumbnail"))
+    return LibCoreWarBuilder.onWarForTestClass(ThumbnailDAOIT.class)
+        .addPackages(true, "org.silverpeas.core.io.media.image.thumbnail")
         .addAsResource("org/silverpeas/core/io/media/image/thumbnail/create-database.sql")
         .build();
   }
@@ -64,8 +64,7 @@ public class ThumbnailDAOIT {
   private ThumbnailDAO thumbnailDAO;
 
   /**
-   * Test of insertRow method, of class ThumbnailDAO.
-   * insert, test by select, delete row
+   * Test of insertRow method, of class ThumbnailDAO. insert, test by select, delete row
    */
   @Test
   public void testInsertThumbnail() throws Exception {
@@ -73,22 +72,7 @@ public class ThumbnailDAOIT {
       String instanceId = "kmelia57";
       int objectId = 999999;
       int objectType = ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
-      String mimeType = "image/jpeg";
-      String originalFileName = "55555555.jpg";
-      String cropFileName = "7777777.jpg";
-      int x_start = 25;
-      int y_start = 27;
-      int x_length = 99;
-      int y_length = 111;
-
-      ThumbnailDetail detail = new ThumbnailDetail(instanceId, objectId, objectType);
-      detail.setOriginalFileName(originalFileName);
-      detail.setMimeType(mimeType);
-      detail.setCropFileName(cropFileName);
-      detail.setXStart(x_start);
-      detail.setYStart(y_start);
-      detail.setXLength(x_length);
-      detail.setYLength(y_length);
+      ThumbnailDetail detail = getThumbnailDetail(instanceId, objectId, objectType);
 
       thumbnailDAO.insertThumbnail(con, detail);
       ThumbnailDetail result = thumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
@@ -106,6 +90,27 @@ public class ThumbnailDAOIT {
 
       thumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
     }
+  }
+
+  private static @NonNull ThumbnailDetail getThumbnailDetail(String instanceId, int objectId,
+      int objectType) {
+    String mimeType = "image/jpeg";
+    String originalFileName = "55555555.jpg";
+    String cropFileName = "7777777.jpg";
+    int x_start = 25;
+    int y_start = 27;
+    int x_length = 99;
+    int y_length = 111;
+
+    ThumbnailDetail detail = new ThumbnailDetail(instanceId, objectId, objectType);
+    detail.setOriginalFileName(originalFileName);
+    detail.setMimeType(mimeType);
+    detail.setCropFileName(cropFileName);
+    detail.setXStart(x_start);
+    detail.setYStart(y_start);
+    detail.setXLength(x_length);
+    detail.setYLength(y_length);
+    return detail;
   }
 
   /**
@@ -130,8 +135,7 @@ public class ThumbnailDAOIT {
   }
 
   /**
-   * Test of delete method, of class ThumbnailDAO.
-   * insert row, delete row, test by select
+   * Test of delete method, of class ThumbnailDAO. insert row, delete row, test by select
    */
   @Test
   public void testDeleteThumbnail() throws Exception {
@@ -140,22 +144,7 @@ public class ThumbnailDAOIT {
       String instanceId = "kmelia57";
       int objectId = 999999;
       int objectType = ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
-      String mimeType = "image/jpeg";
-      String originalFileName = "55555555.jpg";
-      String cropFileName = "7777777.jpg";
-      int x_start = 25;
-      int y_start = 27;
-      int x_length = 99;
-      int y_length = 111;
-
-      ThumbnailDetail detail = new ThumbnailDetail(instanceId, objectId, objectType);
-      detail.setOriginalFileName(originalFileName);
-      detail.setMimeType(mimeType);
-      detail.setCropFileName(cropFileName);
-      detail.setXStart(x_start);
-      detail.setYStart(y_start);
-      detail.setXLength(x_length);
-      detail.setYLength(y_length);
+      ThumbnailDetail detail = getThumbnailDetail(instanceId, objectId, objectType);
 
       thumbnailDAO.insertThumbnail(con, detail);
 
@@ -167,8 +156,7 @@ public class ThumbnailDAOIT {
   }
 
   /**
-   * Test of delete method, of class ThumbnailDAO.
-   * insert row, delete row, test by select
+   * Test of delete method, of class ThumbnailDAO. insert row, delete row, test by select
    */
   @Test
   public void testDeleteAllThumbnails() throws Exception {
@@ -177,22 +165,7 @@ public class ThumbnailDAOIT {
       String instanceId = "kmelia58";
       int objectId = 999999;
       int objectType = ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
-      String mimeType = "image/jpeg";
-      String originalFileName = "55555555.jpg";
-      String cropFileName = "7777777.jpg";
-      int x_start = 25;
-      int y_start = 27;
-      int x_length = 99;
-      int y_length = 111;
-
-      ThumbnailDetail detail = new ThumbnailDetail(instanceId, objectId, objectType);
-      detail.setOriginalFileName(originalFileName);
-      detail.setMimeType(mimeType);
-      detail.setCropFileName(cropFileName);
-      detail.setXStart(x_start);
-      detail.setYStart(y_start);
-      detail.setXLength(x_length);
-      detail.setYLength(y_length);
+      ThumbnailDetail detail = getThumbnailDetail(instanceId, objectId, objectType);
 
       thumbnailDAO.insertThumbnail(con, detail);
 
@@ -211,8 +184,8 @@ public class ThumbnailDAOIT {
   }
 
   /**
-   * Test of update method, of class ThumbnailDAO.
-   * insert row, test by select, update row, test by select, delete row
+   * Test of update method, of class ThumbnailDAO. insert row, test by select, update row, test by
+   * select, delete row
    */
   @Test
   public void testUpdateRow() throws Exception {
@@ -242,11 +215,11 @@ public class ThumbnailDAOIT {
 
       ThumbnailDetail result = thumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
       assertNotNull(result);
-      assertEquals(detail.getCropFileName(), "");
-      assertEquals(detail.getXStart(), 0);
-      assertEquals(detail.getXLength(), 0);
-      assertEquals(detail.getYStart(), 0);
-      assertEquals(detail.getYLength(), 0);
+      assertEquals("", detail.getCropFileName());
+      assertEquals(0, detail.getXStart());
+      assertEquals(0, detail.getXLength());
+      assertEquals(0, detail.getYStart());
+      assertEquals(0, detail.getYLength());
 
       detail.setCropFileName(cropFileName);
       detail.setXStart(x_start);

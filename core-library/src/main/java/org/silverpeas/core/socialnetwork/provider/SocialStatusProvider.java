@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Provider of user social status.
  */
-public interface SocialStatusProvider extends SocialInformationProvider {
+public interface SocialStatusProvider<T extends SocialInformation> extends SocialInformationProvider<T> {
 
-  static SocialStatusProvider get() {
+  static SocialStatusProvider<?> get() {
     return ServiceProvider.getService(SocialStatusProvider.class);
   }
 }

@@ -24,19 +24,21 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import edu.psu.swe.scim.server.exception.UnableToCreateResourceException;
-import edu.psu.swe.scim.server.exception.UnableToDeleteResourceException;
-import edu.psu.swe.scim.server.exception.UnableToRetrieveResourceException;
-import edu.psu.swe.scim.server.exception.UnableToUpdateResourceException;
-import edu.psu.swe.scim.server.provider.Provider;
-import edu.psu.swe.scim.server.provider.UpdateRequest;
-import edu.psu.swe.scim.spec.extension.EnterpriseExtension;
-import edu.psu.swe.scim.spec.protocol.filter.FilterResponse;
-import edu.psu.swe.scim.spec.protocol.search.Filter;
-import edu.psu.swe.scim.spec.protocol.search.PageRequest;
-import edu.psu.swe.scim.spec.protocol.search.SortRequest;
-import edu.psu.swe.scim.spec.resources.ScimExtension;
-import edu.psu.swe.scim.spec.resources.ScimUser;
+import org.apache.directory.scim.core.repository.Repository;
+import org.apache.directory.scim.server.exception.UnableToCreateResourceException;
+import org.apache.directory.scim.server.exception.UnableToDeleteResourceException;
+import org.apache.directory.scim.server.exception.UnableToRetrieveResourceException;
+import org.apache.directory.scim.server.exception.UnableToUpdateResourceException;
+import org.apache.directory.scim.spec.exception.ResourceException;
+import org.apache.directory.scim.spec.extension.EnterpriseExtension;
+import org.apache.directory.scim.spec.filter.Filter;
+import org.apache.directory.scim.spec.filter.FilterResponse;
+import org.apache.directory.scim.spec.filter.PageRequest;
+import org.apache.directory.scim.spec.filter.SortRequest;
+import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
+import org.apache.directory.scim.spec.patch.PatchOperation;
+import org.apache.directory.scim.spec.resources.ScimExtension;
+import org.apache.directory.scim.spec.resources.ScimUser;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
@@ -51,13 +53,14 @@ import org.silverpeas.core.webapi.profile.UserProfilesSearchCriteriaBuilder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static javax.ws.rs.core.Response.Status.*;
+import static jakarta.ws.rs.core.Response.Status.*;
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.USER;
-import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
 import static org.silverpeas.core.webapi.admin.scim.SilverpeasScimServerConverter.*;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * <p>
@@ -67,10 +70,16 @@ import static org.silverpeas.core.webapi.admin.scim.SilverpeasScimServerConverte
  * <p>
  * All provider methods are called by WEB services which are decoding the HTTP requests in front.
  * </p>
+ *
  * @author silveryocha
  */
 @Service
-public class ScimUserAdminService extends AbstractScimAdminService implements Provider<ScimUser> {
+public class ScimUserAdminService extends AbstractScimAdminService implements Repository<ScimUser> {
+
+  @Override
+  public Class<ScimUser> getResourceClass() {
+    return ScimUser.class;
+  }
 
   @Override
   public ScimUser create(final ScimUser resource) throws UnableToCreateResourceException {
@@ -100,40 +109,39 @@ public class ScimUserAdminService extends AbstractScimAdminService implements Pr
   }
 
   @Override
-  public ScimUser update(final UpdateRequest<ScimUser> updateRequest)
+  public ScimUser update(String id, String version, ScimUser resource,
+      Set<AttributeReference> includedAttributeReferences,
+      Set<AttributeReference> excludedAttributeReferences)
       throws UnableToUpdateResourceException {
-    ScimUser resource;
+    logger().debug(() -> "updating user " + id);
+    validateDomainExists();
     try {
-      resource = updateRequest.getResource();
-    } catch (final UnsupportedOperationException e) {
-      resource = null;
+      final UserFull user = getUserById(id);
+      applyTo(resource, user);
+      return update(user);
+    } catch (Exception e) {
+      throw new UnableToUpdateResourceException(NOT_FOUND, e.getMessage());
     }
-    if (resource != null) {
-      logger().debug(() -> "updating user " + updateRequest.getOriginal());
-      validateDomainExists();
-      try {
-        final UserFull user = getUserById(updateRequest.getId());
-        applyTo(resource, user);
-        return update(user);
-      } catch (Exception e) {
-        throw new UnableToUpdateResourceException(NOT_FOUND, e.getMessage());
-      }
-    } else {
-      logger().debug(() -> "patching user " + updateRequest.getOriginal());
-      validateDomainExists();
-      if (CollectionUtil.isEmpty(updateRequest.getPatchOperations())) {
-        throw new UnableToUpdateResourceException(BAD_REQUEST, "no attribute to patch");
-      }
-      try {
-        final ScimUser scimUser = updateRequest.getOriginal();
-        final PatchOperationApplier operationApplier = new PatchOperationApplier(scimUser);
-        updateRequest.getPatchOperations().forEach(operationApplier::apply);
-        final UserFull user = getUserById(updateRequest.getId());
-        applyTo(scimUser, user);
-        return update(user);
-      } catch (Exception e) {
-        throw new UnableToUpdateResourceException(NOT_FOUND, e.getMessage());
-      }
+  }
+
+  @Override
+  public ScimUser patch(String id, String version, List<PatchOperation> patchOperations,
+      Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes)
+      throws ResourceException {
+    logger().debug(() -> "patching user " + id);
+    validateDomainExists();
+    if (CollectionUtil.isEmpty(patchOperations)) {
+      throw new UnableToUpdateResourceException(BAD_REQUEST, "no attribute to patch");
+    }
+    try {
+      final ScimUser scimUser = get(id);
+      final PatchOperationApplier operationApplier = new PatchOperationApplier(scimUser);
+      patchOperations.forEach(operationApplier::apply);
+      final UserFull user = getUserById(id);
+      applyTo(scimUser, user);
+      return update(user);
+    } catch (Exception e) {
+      throw new UnableToUpdateResourceException(NOT_FOUND, e.getMessage());
     }
   }
 

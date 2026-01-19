@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.admin.service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.Group;
@@ -34,9 +36,6 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.ejb.Singleton;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -50,8 +49,6 @@ import static java.util.function.Predicate.not;
  * @author mmoquillon
  */
 @Service
-@Singleton
-@Transactional(Transactional.TxType.MANDATORY)
 public class CommunityMembershipService {
 
   @Inject
@@ -101,6 +98,7 @@ public class CommunityMembershipService {
    * @param group the user group.
    * @throws AdminException if the update fails.
    */
+  @Transactional(Transactional.TxType.MANDATORY)
   public void updateGroup(CommunityMembersGroup group) throws AdminException {
     admin.updateGroup(group, true);
   }
@@ -115,6 +113,7 @@ public class CommunityMembershipService {
    * @throws AdminException if an error occurs while putting the user as a member of the community
    * space.
    */
+  @Transactional(Transactional.TxType.MANDATORY)
   public void addMember(User user, CommunityMembersGroup group, SilverpeasRole role)
       throws AdminException {
     User currentUser = User.getCurrentRequester();
@@ -138,6 +137,7 @@ public class CommunityMembershipService {
    * @param group the group of members of the community.
    * @throws AdminException if an error occurs while removing the user from the community.
    */
+  @Transactional(Transactional.TxType.MANDATORY)
   public void removeMember(User user, CommunityMembersGroup group) throws AdminException {
     var space = admin.getSpaceInstById(group.getSpaceId());
     removeUserFromAllSpaceProfiles(user, space);
@@ -157,6 +157,7 @@ public class CommunityMembershipService {
    * @return the group with which the community members can be handled.
    * @throws AdminException if the creation fails.
    */
+  @Transactional(Transactional.TxType.MANDATORY)
   public CommunityMembersGroup setUpCommunity(String spaceId, String symbol) throws AdminException {
     var currentUser = User.getCurrentRequester();
     var space = getCommunity(spaceId);
@@ -172,13 +173,14 @@ public class CommunityMembershipService {
    * Deletes the community in Silverpeas related by the specified members group. The community
    * space related by the group is identified with the {@link CommunityMembersGroup#getSpaceId()}
    * property. The Silverpeas space that backed the community will be then a regular
-   * collaborative space the and the group of the community members will be deleted.
+   * collaborative space and the group of the community members will be deleted.
    *
    * @param spaceId the unique identifier of a community space
    * @param groupId the unique identifier of the group with the members of the community.
    * @throws AdminException if the community attached to the underlying Silverpeas space cannot
    * be deleted.
    */
+  @Transactional(Transactional.TxType.MANDATORY)
   public void deleteCommunity(String spaceId, String groupId) throws AdminException {
     if (spaceId != null) {
       var space = admin.getSpaceInstById(spaceId);

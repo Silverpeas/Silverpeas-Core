@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.space;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
@@ -34,15 +36,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.*;
@@ -50,7 +45,6 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.*;
 
 @Service
-@Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class SpaceProfileInstManager {
 

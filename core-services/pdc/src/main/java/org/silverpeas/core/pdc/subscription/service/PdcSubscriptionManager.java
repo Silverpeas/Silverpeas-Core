@@ -28,7 +28,7 @@ import org.silverpeas.core.pdc.classification.Value;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 /**

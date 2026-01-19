@@ -77,55 +77,36 @@ class PublicationAccessControllerFilterTest {
   private static final String USER_ID = "bart";
   // NO RIGHT ON TOPIC
   private static final String KMELIA_38 = "kmelia38";
-  private static final TestNodeDetail NODE_38_26 = new TestNodeDetail("3826", KMELIA_38);
-  private static final TestNodeDetail NODE_38_62 = new TestNodeDetail("3862", KMELIA_38);
-
   // RIGHTS ON TOPIC
   private static final String KMELIA_83 = "kmelia83";
-  // INHERITED RIGHTS
-  private static final TestNodeDetail NODE_83_260 = new TestNodeDetail("83260", KMELIA_83);
-  // SPECIFIC RIGHTS
-  private static final TestNodeDetail NODE_83_620 = new TestNodeDetail("83620", KMELIA_83, true);
-
   // OTHER ALIAS GED, RIGHTS ON TOPIC
   private static final String KMELIA_ALIAS_OTHER = "kmelia100";
 
+  private TestNodeDetail node_38_26;
+  private TestNodeDetail node_38_62;
+  // INHERITED RIGHTS
+  private TestNodeDetail node_83_260;
   // SPECIFIC RIGHTS
-  private static final TestNodeDetail
-      NODE_ALIAS_OTHER_SPE = new TestNodeDetail("10010", KMELIA_ALIAS_OTHER, true);
+  private TestNodeDetail node_83_620;
+  // SPECIFIC RIGHTS AND WITH ALIASES
+  private TestNodeDetail nodeAliasOtherSpe;
 
-  private static final List<TestNodeDetail> ALL_NODES = asList(NODE_38_26, NODE_38_62, NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE);
+  private List<TestNodeDetail> ALL_NODES;
 
-  private static final PublicationDetail4Test PUB_1_NODE_38_26_SAME_GED_ALIAS = new PublicationDetail4Test("1", NODE_38_26);
-  private static final PublicationDetail4Test PUB_2_NODE_38_62 = new PublicationDetail4Test("2", NODE_38_62);
-  private static final PublicationDetail4Test PUB_3_NODE_83_260 = new PublicationDetail4Test("3", NODE_83_260);
-  private static final PublicationDetail4Test PUB_4_NODE_83_620_OTHER_GED_ALIAS_SPE = new PublicationDetail4Test("4", NODE_83_620);
-  private static final PublicationDetail4Test PUB_26_NODE_38_62_HAS_CLONE = new PublicationDetail4Test("26", NODE_38_62, "27");
-  private static final PublicationDetail4Test PUB_27_NODE_38_62_IS_CLONE = new PublicationDetail4Test("27", NODE_38_62, "26", true);
+  private PublicationDetail4Test pub1Node3826SameGedAlias;
+  private PublicationDetail4Test pub2Node3862;
+  private PublicationDetail4Test pub3Node83260;
+  private PublicationDetail4Test pub4Node83620OtherGedAliasSpe;
+  private PublicationDetail4Test pub26Node3862HasClone;
+  private PublicationDetail4Test pub27Node3862IsClone;
 
-  private static final List<PublicationDetail4Test> ALL_PUBLICATIONS = asList(
-      PUB_1_NODE_38_26_SAME_GED_ALIAS,
-      PUB_2_NODE_38_62,
-      PUB_3_NODE_83_260,
-      PUB_4_NODE_83_620_OTHER_GED_ALIAS_SPE,
-      PUB_26_NODE_38_62_HAS_CLONE,
-      PUB_27_NODE_38_62_IS_CLONE);
+  private List<PublicationDetail4Test> ALL_PUBLICATIONS;
 
-  private static final List<PublicationDetail4Test> ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE =  asList(
-      PUB_1_NODE_38_26_SAME_GED_ALIAS,
-      PUB_2_NODE_38_62,
-      PUB_3_NODE_83_260,
-      PUB_4_NODE_83_620_OTHER_GED_ALIAS_SPE,
-      PUB_27_NODE_38_62_IS_CLONE);
+  private List<PublicationDetail4Test> ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE ;
 
-  private static final List<PublicationDetail4Test> ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE = asList(
-      PUB_1_NODE_38_26_SAME_GED_ALIAS,
-      PUB_2_NODE_38_62,
-      PUB_27_NODE_38_62_IS_CLONE);
+  private List<PublicationDetail4Test> ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE;
 
-  private static final List<PublicationDetail4Test> ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS = asList(
-      PUB_3_NODE_83_260,
-      PUB_4_NODE_83_620_OTHER_GED_ALIAS_SPE);
+  private List<PublicationDetail4Test> ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS;
 
   @TestManagedMock
   private PublicationService publicationService;
@@ -140,14 +121,58 @@ class PublicationAccessControllerFilterTest {
   private User user;
 
   @BeforeEach
-  void setup() {
+  void createNodeDetails() {
+    node_38_26 = new TestNodeDetail("3826", KMELIA_38);
+    node_38_62 = new TestNodeDetail("3862", KMELIA_38);
+    node_83_260 = new TestNodeDetail("83260", KMELIA_83);
+    node_83_620 = new TestNodeDetail("83620", KMELIA_83, true);
+    nodeAliasOtherSpe = new TestNodeDetail("10010", KMELIA_ALIAS_OTHER, true);
+    ALL_NODES = asList(node_38_26, node_38_62, node_83_260, node_83_620, nodeAliasOtherSpe);
+  }
+
+  @BeforeEach
+  void createPublicationDetails() {
+    pub1Node3826SameGedAlias = new PublicationDetail4Test("1", node_38_26);
+    pub2Node3862 = new PublicationDetail4Test("2", node_38_62);
+    pub3Node83260 = new PublicationDetail4Test("3", node_83_260);
+    pub4Node83620OtherGedAliasSpe = new PublicationDetail4Test("4", node_83_620);
+    pub26Node3862HasClone = new PublicationDetail4Test("26", node_38_62, "27");
+    pub27Node3862IsClone = new PublicationDetail4Test("27", node_38_62, "26", true);
+
+    ALL_PUBLICATIONS = asList(
+        pub1Node3826SameGedAlias,
+        pub2Node3862,
+        pub3Node83260,
+        pub4Node83620OtherGedAliasSpe,
+        pub26Node3862HasClone,
+        pub27Node3862IsClone);
+
+    ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE =  asList(
+        pub1Node3826SameGedAlias,
+        pub2Node3862,
+        pub3Node83260,
+        pub4Node83620OtherGedAliasSpe,
+        pub27Node3862IsClone);
+
+    ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE = asList(
+        pub1Node3826SameGedAlias,
+        pub2Node3862,
+        pub27Node3862IsClone);
+
+    ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS = asList(
+        pub3Node83260,
+        pub4Node83620OtherGedAliasSpe);
+  }
+
+  @BeforeEach
+  void setupMock() {
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(user.getDisplayedName()).thenReturn(USER_ID);
     when(UserProvider.get().getUser(anyString())).thenReturn(user);
     testContext = new TestContext();
-    PUB_1_NODE_38_26_SAME_GED_ALIAS.clearAliases().addAliasLocation(NODE_38_62);
-    PUB_4_NODE_83_620_OTHER_GED_ALIAS_SPE.clearAliases().addAliasLocation(NODE_ALIAS_OTHER_SPE);
+    pub1Node3826SameGedAlias.clearAliases().addAliasLocation(node_38_62);
+    pub4Node83620OtherGedAliasSpe.clearAliases().addAliasLocation(nodeAliasOtherSpe);
   }
 
   @Test
@@ -214,9 +239,9 @@ class PublicationAccessControllerFilterTest {
     assertAvailableComponentCache(componentDataManager, true);
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
-    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId()),
-        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getId())));
+    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(node_83_260, node_83_620, nodeAliasOtherSpe));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, node_83_620.getId()),
+        Pair.of(KMELIA_ALIAS_OTHER, nodeAliasOtherSpe.getId())));
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.size() + 1;
@@ -307,9 +332,9 @@ class PublicationAccessControllerFilterTest {
     assertAvailableComponentCache(componentDataManager, true);
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_83, KMELIA_ALIAS_OTHER));
-    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId()),
-        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getId())));
+    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(node_83_260, node_83_620, nodeAliasOtherSpe));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, node_83_620.getId()),
+        Pair.of(KMELIA_ALIAS_OTHER, nodeAliasOtherSpe.getId())));
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestWithoutAnyClone = ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS.size();
@@ -357,9 +382,9 @@ class PublicationAccessControllerFilterTest {
     assertAvailableComponentCache(componentDataManager, true);
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
-    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId()),
-        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getId())));
+    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(node_83_260, node_83_620, nodeAliasOtherSpe));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, node_83_620.getId()),
+        Pair.of(KMELIA_ALIAS_OTHER, nodeAliasOtherSpe.getId())));
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     assertThat(publicationDataManager.publicationCache.size(), is(0));
@@ -401,9 +426,9 @@ class PublicationAccessControllerFilterTest {
     assertAvailableComponentCache(componentDataManager, true);
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
-    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId()),
-        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getId())));
+    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(node_83_260, node_83_620, nodeAliasOtherSpe));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, node_83_620.getId()),
+        Pair.of(KMELIA_ALIAS_OTHER, nodeAliasOtherSpe.getId())));
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.size() + 1;

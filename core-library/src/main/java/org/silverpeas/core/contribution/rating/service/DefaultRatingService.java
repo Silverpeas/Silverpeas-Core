@@ -23,22 +23,20 @@
  */
 package org.silverpeas.core.contribution.rating.service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.contribution.rating.model.Rating;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
+import org.silverpeas.core.contribution.rating.model.Rating;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
 @Transactional
-@Singleton
 @Service
 public class DefaultRatingService implements RatingService, ComponentInstanceDeletion {
 

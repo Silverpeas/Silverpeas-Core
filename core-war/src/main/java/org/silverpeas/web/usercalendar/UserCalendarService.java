@@ -30,7 +30,7 @@ import org.silverpeas.core.calendar.AbstractCalendarService;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * Implementation of the calendar service to serv the calendar of the current user.

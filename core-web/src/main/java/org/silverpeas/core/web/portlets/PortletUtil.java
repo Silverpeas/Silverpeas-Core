@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.portlets;
 
 import javax.portlet.RenderRequest;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author Yohann Chastagnier

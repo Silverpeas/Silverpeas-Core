@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
+import jakarta.annotation.Nonnull;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -31,14 +32,13 @@ import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -86,7 +86,7 @@ public class ExplorerField extends AbstractField {
 
   @Override
   public String getValue() {
-    return getValue(I18NHelper.DEFAULT_LANGUAGE);
+    return getValue(I18n.get().getDefaultLanguage());
   }
 
   @Override

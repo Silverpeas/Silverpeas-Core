@@ -38,7 +38,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
 import org.silverpeas.web.pdcsubscription.control.SubscriptionCategory;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 

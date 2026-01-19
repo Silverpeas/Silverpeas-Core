@@ -57,9 +57,9 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -73,6 +73,7 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
   @Override
   public List<String> update(List<FileItem> items, T field, FieldTemplate template,
           PagesContext pageContext) throws FormException {
+
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     String value = FileUploadUtil.getParameter(items, fieldName, null, pageContext.getEncoding());
     return applyUpdate(field, value, template, pageContext);

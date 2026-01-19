@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
@@ -62,21 +62,21 @@ public class ODTConverterIT extends AbstractConverterIntegrationTest {
   }
 
   @Test
-  public void convertAnODTDocumentToPDF() throws Exception {
+  public void convertAnODTDocumentToPDF() {
     File convertedDocument = converter.convert(document, inFormat(pdf));
     assertThat(convertedDocument.exists(), is(true));
     //assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(143312l));
   }
 
   @Test
-  public void convertAnODTDocumentToDoc() throws Exception {
+  public void convertAnODTDocumentToDoc() {
     File convertedDocument = converter.convert(document, inFormat(doc));
     assertThat(convertedDocument.exists(), is(true));
     //assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(155000l));
   }
 
   @Test
-  public void convertAnODTDocumentToRTF() throws Exception {
+  public void convertAnODTDocumentToRTF() {
     File convertedDocument = converter.convert(document, inFormat(rtf));
     assertThat(convertedDocument.exists(), is(true));
     //assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(1333739l));
@@ -90,7 +90,7 @@ public class ODTConverterIT extends AbstractConverterIntegrationTest {
   }
 
   @Test(expected=DocumentFormatException.class)
-  public void convertAnODTDocumentIntoANonSupportedFormat() throws Exception {
+  public void convertAnODTDocumentIntoANonSupportedFormat() {
     converter.convert(document, inFormat(odt));
   }
 

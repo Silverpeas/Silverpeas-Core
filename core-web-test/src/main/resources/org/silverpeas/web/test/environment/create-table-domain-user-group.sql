@@ -54,8 +54,7 @@ CREATE TABLE DomainSP_Group (
   id           INT          NOT NULL,
   supergroupid INT,
   name         VARCHAR(100) NOT NULL,
-  description  VARCHAR(400),
-  FOREIGN KEY (supergroupid) REFERENCES DomainSP_Group (id)
+  description  VARCHAR(400)
 );
 ALTER TABLE DomainSP_Group ADD CONSTRAINT PK_DomainSP_Group PRIMARY KEY (id);
 ALTER TABLE DomainSP_Group ADD CONSTRAINT UN_DomainSP_Group_1 UNIQUE (superGroupId, name);

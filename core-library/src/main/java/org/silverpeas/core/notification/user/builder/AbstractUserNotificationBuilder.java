@@ -24,26 +24,18 @@
 package org.silverpeas.core.notification.user.builder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.notification.user.NullUserNotification;
-import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
-import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-import org.silverpeas.core.notification.user.client.ExternalRecipient;
-import org.silverpeas.core.notification.user.client.GroupRecipient;
-import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.notification.user.*;
+import org.silverpeas.core.notification.user.client.*;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -335,7 +327,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * {@link #getLocalizationBundlePath()} method.
    */
   protected final LocalizationBundle getBundle() {
-    return getBundle(I18NHelper.DEFAULT_LANGUAGE);
+    return getBundle(I18n.get().getDefaultLanguage());
   }
 
   /**

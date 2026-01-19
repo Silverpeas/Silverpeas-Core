@@ -25,7 +25,7 @@ package org.silverpeas.core.scheduler;
 
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 /**
  * The factory of Scheduler objects. The <code>SchedulerFactory</code> class wraps the actual
@@ -42,7 +42,7 @@ public class SchedulerProvider {
   /**
    * Gets a volatile scheduler from the underlying scheduling backend. A volatile schedule is a
    * scheduler that stores all the scheduled jobs in memory meaning they will be lost at each
-   * runtime restart. Such jobs requires then to be scheduled again. Such scheduler is useful for
+   * runtime restart. Such jobs require then to be scheduled again. Such scheduler is useful for
    * occasional jobs.
    * @return an instance of the actual scheduler implementation.
    */

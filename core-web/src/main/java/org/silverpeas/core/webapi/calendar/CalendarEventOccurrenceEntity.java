@@ -33,17 +33,17 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.WebApplicationException;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.time.ZoneId;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
 

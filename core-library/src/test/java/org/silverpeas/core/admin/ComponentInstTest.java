@@ -40,7 +40,7 @@ class ComponentInstTest {
   }
 
   @Test
-  void testGetLocalId() throws Exception {
+  void testGetLocalId() {
     ComponentInst componentInst = new ComponentInst();
     MatcherAssert.assertThat(componentInst.getLocalId(), is(-1));
   }

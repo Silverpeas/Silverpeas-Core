@@ -32,7 +32,7 @@ package org.silverpeas.core.web.calendar.ical;
 
 import org.silverpeas.core.util.Charsets;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;

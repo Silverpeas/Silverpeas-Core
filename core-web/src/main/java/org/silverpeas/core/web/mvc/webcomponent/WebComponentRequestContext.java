@@ -39,8 +39,8 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -56,23 +56,23 @@ import java.util.regex.Pattern;
  * @author Yohann Chastagnier
  */
 public abstract class WebComponentRequestContext<T extends WebComponentController> {
-  private static final Pattern REDIRECT_VARIABLE_MATCHER = Pattern.compile("(\\{[\\w_]+\\})+");
+  private static final Pattern REDIRECT_VARIABLE_MATCHER = Pattern.compile("(\\{[\\w_]+})+");
 
   private Class<? extends Annotation> httpMethodClass;
   private HttpRequest request;
   private HttpServletResponse response;
   private T controller = null;
   private boolean comingFromRedirect = false;
-  private NavigationContext navigationContext;
+  private NavigationContext<?> navigationContext;
   private boolean navigationStepContextPerformed = false;
 
-  private Map<String, String> pathVariables = new LinkedHashMap<>();
-  private Map<String, String> redirectVariables = new LinkedHashMap<>();
+  private final Map<String, String> pathVariables = new LinkedHashMap<>();
+  private final Map<String, String> redirectVariables = new LinkedHashMap<>();
   private Collection<SilverpeasRole> userRoles;
   private SilverpeasRole highestUserRole;
 
   /**
-   * This methods permits to perform initializations before the HTTP method (and associated
+   * This method permits to perform initializations before the HTTP method (and associated
    * method invocation) aimed is performed.
    */
   public void beforeRequestProcessing() {
@@ -109,7 +109,7 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
 
   /**
    * @see NavigationContext
-   * @return the navigation context associated to the current instancied component.
+   * @return the navigation context associated to the current instantiated component.
    */
   public NavigationContext getNavigationContext() {
     if (navigationContext == null) {
@@ -245,7 +245,7 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
   }
 
   private Navigation redirectToNavigationStep(String navigationStepIdentifier) {
-    NavigationContext.NavigationStep navigationStep = null;
+    NavigationContext<?>.NavigationStep navigationStep = null;
     if (!"previous".equals(navigationStepIdentifier)) {
       navigationStep = getNavigationContext().findNavigationStepFrom(navigationStepIdentifier);
     }
@@ -301,16 +301,12 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
     return uriBuilder;
   }
 
-  /**
-   * @param redirectPath
-   * @return
-   */
   private String replaceRedirectVariables(String redirectPath) {
     String newPath = redirectPath;
 
     Matcher variableMatcher = REDIRECT_VARIABLE_MATCHER.matcher(redirectPath);
     while (variableMatcher.find()) {
-      String variableName = variableMatcher.group(1).replaceAll("[\\{\\}]", "");
+      String variableName = variableMatcher.group(1).replaceAll("[{}]", "");
       String variableValue =
           pathVariables.containsKey(variableName) ? pathVariables.get(variableName) :
               redirectVariables.get(variableName);
@@ -323,7 +319,7 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
   }
 
   /**
-   * Handles the navigation to the html editor.
+   * Handles the navigation to the HTML editor.
    */
   public Navigation redirectToHtmlEditor(String objectId, final String objectType,
       String returnPath, boolean indexIt) {
@@ -331,14 +327,14 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
   }
 
   /**
-   * Handles the navigation to the html editor.
+   * Handles the navigation to the HTML editor.
    */
   public Navigation redirectToHtmlEditor(WysiwygRouting.WysiwygRoutingContext wysiwygContext) {
     return redirectToHtmlEditor(null, wysiwygContext);
   }
 
   /**
-   * Handles the navigation to the html editor.
+   * Handles the navigation to the HTML editor.
    */
   public Navigation redirectToHtmlEditor(
       ContributionManagementContext contributionManagementContext, String objectId,
@@ -356,7 +352,7 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
   }
 
   /**
-   * Handles the navigation to the html editor.
+   * Handles the navigation to the HTML editor.
    */
   public Navigation redirectToHtmlEditor(
       ContributionManagementContext contributionManagementContext,

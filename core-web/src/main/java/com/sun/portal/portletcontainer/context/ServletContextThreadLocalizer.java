@@ -23,26 +23,22 @@
  */
 package com.sun.portal.portletcontainer.context;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * This class provides access to the ServletContext using ThreadLocal class It is required by WSRP
- * caching implementaion.
+ * caching implementation.
  */
 public class ServletContextThreadLocalizer {
 
-  private static ThreadLocal servletContextThreadLocal = new ThreadLocal();
+  private static final ThreadLocal<ServletContext> servletContextThreadLocal = new ThreadLocal<>();
 
   private ServletContextThreadLocalizer() {
     // nothing, cannot be called
   }
 
-  /**
-   * Returns ServletContext
-   * @return
-   */
   public static ServletContext get() {
-    ServletContext sc = (ServletContext) servletContextThreadLocal.get();
+    ServletContext sc = servletContextThreadLocal.get();
     if (sc == null) {
       throw new Error(
           "ServletContextThreadLocalizer.get(): no thread localResourceLocator set for this thread");
@@ -63,7 +59,7 @@ public class ServletContextThreadLocalizer {
    * Checks whether ServletContext is set in the ThreadLocal variable
    */
   public static synchronized boolean exists() {
-    ServletContext sc = (ServletContext) servletContextThreadLocal.get();
+    ServletContext sc = servletContextThreadLocal.get();
     return sc != null;
   }
 }

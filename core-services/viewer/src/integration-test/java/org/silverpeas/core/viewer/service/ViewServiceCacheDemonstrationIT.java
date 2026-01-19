@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.SerializationUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 

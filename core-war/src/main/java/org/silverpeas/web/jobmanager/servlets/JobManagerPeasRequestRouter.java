@@ -30,15 +30,11 @@ import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.web.jobmanager.JobManagerService;
 import org.silverpeas.web.jobmanager.control.JobManagerPeasSessionController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.UriBuilder;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
-/**
- * Class declaration
- * @author
- */
 public class JobManagerPeasRequestRouter extends
     AdminComponentRequestRouter<JobManagerPeasSessionController> {
 
@@ -47,13 +43,6 @@ public class JobManagerPeasRequestRouter extends
   private static final String SERVICE_ACTION = "Service";
   private static final String ID_PARAMETER = "Id";
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   public JobManagerPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new JobManagerPeasSessionController(mainSessionCtrl,
@@ -73,8 +62,8 @@ public class JobManagerPeasRequestRouter extends
    * destination page
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param jobManagerSC The component Session Control, build and initialised.
-   * @param request
+   * @param jobManagerSC The component Session Control, build and initialized.
+   * @param request the HTTP request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -157,7 +146,7 @@ public class JobManagerPeasRequestRouter extends
     request.setAttribute(OPERATION_ACTION, jmpSC.getSubServices(jmpSC
         .getIdServiceActif()));
 
-    // l'objet URL est un string representatnt l'operation active pour le service actif
+    // l'objet URL est un String représentant l'opération active pour le service actif
     final UriBuilder url = UriBuilder
         .fromUri(jmpSC.getService(jmpSC.getIdOperationActif()).getUrl());
     if (isDefined(jmpSC.getDirectAccessToSpaceId())) {

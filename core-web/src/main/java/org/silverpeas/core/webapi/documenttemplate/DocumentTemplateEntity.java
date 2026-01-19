@@ -29,7 +29,7 @@ import org.silverpeas.core.viewer.service.PreviewService;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.viewer.PreviewEntity;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 
 /**

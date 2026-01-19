@@ -23,27 +23,21 @@
  */
 package org.silverpeas.core.web.external.webconnections.dao;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 
-/**
- * @author
- */
 @Service
-@Singleton
 public class WebConnectionService implements WebConnectionsInterface, ComponentInstanceDeletion {
   private ConnectionDAO dao;
 
@@ -130,7 +124,7 @@ public class WebConnectionService implements WebConnectionsInterface, ComponentI
     }
   }
 
-  public List<ConnectionDetail> listWebConnectionsOfUser(String userId) throws RemoteException {
+  public List<ConnectionDetail> listWebConnectionsOfUser(String userId) {
     try (Connection con = openConnection()) {
       return dao.getConnectionsByUser(con, userId);
     } catch (Exception e) {

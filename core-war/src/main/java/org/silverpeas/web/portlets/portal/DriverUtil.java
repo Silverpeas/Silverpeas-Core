@@ -36,8 +36,8 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import com.sun.portal.container.ChannelMode;
@@ -58,9 +58,9 @@ public class DriverUtil {
 
   private static final Logger logger = Logger.getLogger("org.silverpeas.web.portlets.portal",
       "org.silverpeas.portlets.PCDLogMessages");
-  private static int renderParameterPrefixLength =
+  private static final int renderParameterPrefixLength =
       PortletContainerConstants.RENDER_PARAM_PREFIX.length();
-  private static int scopedAttributesPrefixLength =
+  private static final int scopedAttributesPrefixLength =
       PortletContainerConstants.SCOPED_ATTRIBUTES_PREFIX.length();
 
   public static void init(HttpServletRequest request) {
@@ -69,51 +69,23 @@ public class DriverUtil {
   }
 
   public static String getAdminURL(HttpServletRequest request) {
-    StringBuilder urlBuilder = new StringBuilder();
-    urlBuilder.append(request.getScheme());
-    urlBuilder.append("://");
-    urlBuilder.append(request.getServerName());
-    urlBuilder.append(":");
-    urlBuilder.append(request.getServerPort());
-    urlBuilder.append(request.getContextPath());
-    urlBuilder.append("/portletAdmin");
-    return urlBuilder.toString();
+    return request.getScheme() + "://" + request.getServerName() +
+        ":" + request.getServerPort() + request.getContextPath() + "/portletAdmin";
   }
 
   public static String getDeployerURL(HttpServletRequest request) {
-    StringBuilder urlBuilder = new StringBuilder();
-    urlBuilder.append(request.getScheme());
-    urlBuilder.append("://");
-    urlBuilder.append(request.getServerName());
-    urlBuilder.append(":");
-    urlBuilder.append(request.getServerPort());
-    urlBuilder.append(request.getContextPath());
-    urlBuilder.append("/portletDeployer");
-    return urlBuilder.toString();
+    return request.getScheme() + "://" + request.getServerName() +
+        ":" + request.getServerPort() + request.getContextPath() + "/portletDeployer";
   }
 
   public static String getPortletsURL(HttpServletRequest request) {
-    StringBuilder urlBuilder = new StringBuilder();
-    urlBuilder.append(request.getScheme());
-    urlBuilder.append("://");
-    urlBuilder.append(request.getServerName());
-    urlBuilder.append(":");
-    urlBuilder.append(request.getServerPort());
-    urlBuilder.append(request.getContextPath());
-    urlBuilder.append("/dt");
-    return urlBuilder.toString();
+    return request.getScheme() + "://" + request.getServerName() +
+        ":" + request.getServerPort() + request.getContextPath() + "/dt";
   }
 
   public static String getWSRPURL(HttpServletRequest request) {
-    StringBuilder urlBuilder = new StringBuilder();
-    urlBuilder.append(request.getScheme());
-    urlBuilder.append("://");
-    urlBuilder.append(request.getServerName());
-    urlBuilder.append(":");
-    urlBuilder.append(request.getServerPort());
-    urlBuilder.append(request.getContextPath());
-    urlBuilder.append("/rdt");
-    return urlBuilder.toString();
+    return request.getScheme() + "://" + request.getServerName() +
+        ":" + request.getServerPort() + request.getContextPath() + "/rdt";
   }
 
   public static String getWSRPTabName() {
@@ -176,7 +148,7 @@ public class DriverUtil {
    * Remove the driver params and retains rest of the params
    */
   private static void initParamMap(HttpServletRequest request) {
-    Map<String, String[]> parsedMap = new HashMap<String, String[]>();
+    Map<String, String[]> parsedMap = new HashMap<>();
     Map<String, String[]> parameterMap = request.getParameterMap();
 
     Set<Map.Entry<String, String[]>> entries = parameterMap.entrySet();
@@ -200,7 +172,7 @@ public class DriverUtil {
             String value = equalTokens.nextToken();
             String[] values = parsedMap.get(key);
             if (values != null) {
-              List<String> list = new ArrayList(Arrays.asList(values));
+              List<String> list = new ArrayList<>(Arrays.asList(values));
               list.add(value);
               values = list.toArray(new String[0]);
             } else {
@@ -238,62 +210,53 @@ public class DriverUtil {
     }
     if (undeployedPortlets != null && !undeployedPortlets.isEmpty()) {
       // Remove the render parameters for the undeployed portlets from the session
-      Enumeration attrNames = session.getAttributeNames();
-      String attrName, entityId, warName;
+      Enumeration<String> attrNames = session.getAttributeNames();
+      String attrName;
       while (attrNames.hasMoreElements()) {
-        attrName = (String) attrNames.nextElement();
+        attrName = attrNames.nextElement();
         int index = attrName.indexOf(PortletContainerConstants.RENDER_PARAM_PREFIX);
-        if (index != -1) {
-          entityId = attrName.substring(renderParameterPrefixLength);
-          try {
-            int delimiter = entityId.indexOf("|");
-            if (delimiter != -1) {
-              warName = entityId.substring(0, delimiter);
-              if (undeployedPortlets.contains(warName)) {
-                session.removeAttribute(attrName);
-              }
-            }
-          } catch (Exception e) {
-            // If the war name is not present, exception is thrown, ignore it
-            // as some entity ids may not contain warname, for example WSRP portlet windows
-          }
-        }
+        removeAttribute(session, undeployedPortlets, attrName, index, renderParameterPrefixLength);
         index = attrName.indexOf(PortletContainerConstants.SCOPED_ATTRIBUTES_PREFIX);
-        if (index != -1) {
-          entityId = attrName.substring(scopedAttributesPrefixLength);
-          try {
-            int delimiter = entityId.indexOf("|");
-            if (delimiter != -1) {
-              warName = entityId.substring(0, delimiter);
-              if (undeployedPortlets.contains(warName)) {
-                session.removeAttribute(attrName);
-              }
-            }
-          } catch (Exception e) {
-            // If the war name is not present, exception is thrown, ignore it
-            // as some entity ids may not contain warname, for example WSRP portlet windows
-          }
-        }
+        removeAttribute(session, undeployedPortlets, attrName, index, scopedAttributesPrefixLength);
       }
       // Remove PortletWindowData Object for the undeployed portlets from the session
       removePortletWindowData(session, undeployedPortlets);
     }
   }
 
+  private static void removeAttribute(HttpSession session, List<String> undeployedPortlets, String attrName, int index, int renderParameterPrefixLength) {
+    String entityId;
+    String warName;
+    if (index != -1) {
+      entityId = attrName.substring(renderParameterPrefixLength);
+      try {
+        int delimiter = entityId.indexOf("|");
+        if (delimiter != -1) {
+          warName = entityId.substring(0, delimiter);
+          if (undeployedPortlets.contains(warName)) {
+            session.removeAttribute(attrName);
+          }
+        }
+      } catch (Exception e) {
+        // If the war name is not present, exception is thrown, ignore it
+        // as some entity ids may not contain warname, for example WSRP portlet windows
+      }
+    }
+  }
+
   // If the session contains a PortletWindowData object corresponding to the war that was
   // deployed, remove it
   private static void removePortletWindowData(HttpSession session, List<String> undeployedPortlets) {
-    PortletWindowData portletWindowData = null;
+    PortletWindowData portletWindowData;
+    //noinspection unchecked
     Map<String, SortedSet<PortletWindowData>> portletWindowContents =
-        (Map) session.getAttribute(DesktopConstants.PORTLET_WINDOWS);
-    boolean found = false;
+        (Map<String, SortedSet<PortletWindowData>>)
+            session.getAttribute(DesktopConstants.PORTLET_WINDOWS);
     if (portletWindowContents != null) {
-      Set set = portletWindowContents.entrySet();
-      Iterator<Map.Entry> setItr = set.iterator();
-      while (setItr.hasNext()) {
-        Map.Entry<String, SortedSet<PortletWindowData>> mapEntry = setItr.next();
+      var set = portletWindowContents.entrySet();
+      for (Map.Entry<String, SortedSet<PortletWindowData>> mapEntry : set) {
         SortedSet<PortletWindowData> portletWindowDataSet = mapEntry.getValue();
-        for (Iterator<PortletWindowData> itr = portletWindowDataSet.iterator(); itr.hasNext();) {
+        for (Iterator<PortletWindowData> itr = portletWindowDataSet.iterator(); itr.hasNext(); ) {
           portletWindowData = itr.next();
           String portletName = portletWindowData.getPortletName();
           int delimiter = portletName.indexOf(".");
@@ -312,7 +275,7 @@ public class DriverUtil {
    * decode the request parameters using the character set
    */
   private static Map<String, String[]> decodeParams(String charset, Map<String, String[]> parsedMap) {
-    Map<String, String[]> decodedMap = new HashMap<String, String[]>();
+    Map<String, String[]> decodedMap = new HashMap<>();
     if (parsedMap != null) {
       Set<Map.Entry<String, String[]>> entries = parsedMap.entrySet();
       for (Map.Entry<String, String[]> mapEntry : entries) {

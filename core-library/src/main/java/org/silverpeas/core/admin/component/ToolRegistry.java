@@ -26,11 +26,10 @@ package org.silverpeas.core.admin.component;
 import org.silverpeas.core.admin.component.model.Tool;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +43,6 @@ import java.util.stream.Stream;
  * @author silveryocha
  */
 @Service
-@Singleton
 public class ToolRegistry implements Initialization {
 
   private final Map<String, Tool> toolsById = new HashMap<>();

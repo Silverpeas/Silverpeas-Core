@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -81,9 +82,10 @@ public class MailSettings {
 
   public static synchronized boolean isDomainAuthorized(String email) {
     if (StringUtil.isDefined(email)) {
-      String emailAddress = email.toLowerCase(I18NHelper.defaultLocale);
+      Locale defaultLocale = new Locale(I18n.get().getDefaultLanguage());
+      String emailAddress = email.toLowerCase(defaultLocale);
       return domains.isEmpty() || domains.stream()
-          .map(d -> d.toLowerCase(I18NHelper.defaultLocale))
+          .map(d -> d.toLowerCase(defaultLocale))
           .anyMatch(emailAddress::endsWith);
     }
     return false;

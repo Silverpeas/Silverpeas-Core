@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.space.quota.process.check;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset;
@@ -31,7 +32,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.process.annotation.SimulationActionProcessProcessor;
@@ -39,13 +40,12 @@ import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.AbstractFileProcessCheck;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
 import java.util.*;
 
 import static org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset.from;
@@ -55,7 +55,7 @@ import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadC
 /**
  * @author Yohann Chastagnier
  */
-@Service
+@Bean
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   private static final boolean DATA_STORAGE_IN_SPACE_QUOTA_ACTIVATED;
 

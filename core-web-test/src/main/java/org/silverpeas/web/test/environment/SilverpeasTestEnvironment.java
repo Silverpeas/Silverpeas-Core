@@ -23,6 +23,8 @@
  */
 package org.silverpeas.web.test.environment;
 
+import jakarta.inject.Inject;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
@@ -39,7 +41,7 @@ import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * This class allows to load easily a Silverpeas environment dedicated to the tests:
@@ -56,6 +58,9 @@ import javax.inject.Singleton;
 public class SilverpeasTestEnvironment {
 
   public static final String DEFAULT_DOMAIN = "0";
+
+  @Inject
+  private Administration administration;
 
   /**
    * Gets the Silverpeas environment.
@@ -86,7 +91,7 @@ public class SilverpeasTestEnvironment {
    */
   public void addUser(UserDetail userDetail) {
     try {
-      Administration.get().addUser(userDetail);
+      administration.addUser(userDetail);
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);
     }
@@ -113,7 +118,7 @@ public class SilverpeasTestEnvironment {
    */
   public ComponentInst getDummyPublicComponent() {
     try {
-      return Administration.get().getComponentInst("dummyComponent0");
+      return administration.getComponentInst("dummyComponent1");
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);
     }
@@ -125,7 +130,7 @@ public class SilverpeasTestEnvironment {
    */
   public void updateComponent(ComponentInst componentInst) {
     try {
-      Administration.get().updateComponentInst(componentInst);
+      administration.updateComponentInst(componentInst);
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);
     }
@@ -138,10 +143,9 @@ public class SilverpeasTestEnvironment {
    */
   public void removeAllProfiles(ComponentInst componentInst) {
     try {
-      Administration admin = Administration.get();
       var profiles = componentInst.getAllProfilesInst();
       for (var profile: profiles) {
-        admin.deleteProfileInst(profile.getId(), "0");
+        administration.deleteProfileInst(profile.getId(), "0");
       }
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);
@@ -155,10 +159,9 @@ public class SilverpeasTestEnvironment {
    */
   public void removeAllProfiles(SpaceInst spaceInst) {
     try {
-      Administration admin = Administration.get();
       var profiles = spaceInst.getAllSpaceProfilesInst();
       for (var profile: profiles) {
-        admin.deleteSpaceProfileInst(profile.getId(), "0");
+        administration.deleteSpaceProfileInst(profile.getId(), "0");
       }
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);

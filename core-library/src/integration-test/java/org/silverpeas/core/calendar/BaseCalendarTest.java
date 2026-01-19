@@ -26,11 +26,11 @@ package org.silverpeas.core.calendar;
 import org.junit.After;
 import org.junit.Before;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.integration.DataSetTest;
 import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
+import org.silverpeas.core.test.stub.UserImpl;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -63,11 +63,11 @@ public abstract class BaseCalendarTest extends DataSetTest {
     return INITIALIZATION_SCRIPT;
   }
 
-  private final UserDetail user = new UserDetail();
+  private User user;
 
   @Before
   public void setUp() {
-    user.setId("26");
+    user = new UserImpl("26");
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     CacheAccessorProvider.getSessionCacheAccessor()
         .newSessionCache(user);

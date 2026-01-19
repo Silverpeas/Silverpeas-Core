@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.text.ParseException;
 
 /**

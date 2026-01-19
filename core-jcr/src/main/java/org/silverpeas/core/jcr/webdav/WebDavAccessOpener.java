@@ -27,7 +27,7 @@ package org.silverpeas.core.jcr.webdav;
 
 import org.silverpeas.core.admin.user.model.User;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**

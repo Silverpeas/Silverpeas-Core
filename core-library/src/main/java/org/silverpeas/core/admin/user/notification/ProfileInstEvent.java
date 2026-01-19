@@ -27,7 +27,7 @@ package org.silverpeas.core.admin.user.notification;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Event to notify the creation, the modification or the deletion of an existing profile instance

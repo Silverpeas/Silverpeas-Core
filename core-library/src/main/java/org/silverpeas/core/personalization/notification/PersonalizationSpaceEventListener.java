@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.notification.SpaceEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author mmoquillon

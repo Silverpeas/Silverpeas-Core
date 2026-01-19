@@ -23,31 +23,25 @@
  */
 package org.silverpeas.core.tagcloud.service;
 
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.tagcloud.model.TagCloud;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.tagcloud.dao.TagCloudDAO;
 import org.silverpeas.core.tagcloud.dao.TagCloudPK;
+import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.model.TagCloudUtil;
 import org.silverpeas.core.tagcloud.model.comparator.TagCloudByCountComparator;
 import org.silverpeas.core.tagcloud.model.comparator.TagCloudByNameComparator;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultTagCloudService implements TagCloudService, ComponentInstanceDeletion {
 
@@ -116,7 +110,7 @@ public class DefaultTagCloudService implements TagCloudService, ComponentInstanc
     Connection con = openConnection();
     try {
       Collection<TagCloud> tagClouds = TagCloudDAO.getInstanceTagClouds(con, instanceId);
-      List<TagCloud> tagList = new ArrayList<TagCloud>(tagClouds.size());
+      List<TagCloud> tagList = new ArrayList<>(tagClouds.size());
       if (!tagClouds.isEmpty()) {
         Iterator<TagCloud> iter = tagClouds.iterator();
         tagList.add(iter.next());
@@ -140,9 +134,9 @@ public class DefaultTagCloudService implements TagCloudService, ComponentInstanc
         }
 
         if (maxCount > 0 && tagList.size() > maxCount) {
-          Collections.sort(tagList, new TagCloudByCountComparator());
+          tagList.sort(new TagCloudByCountComparator());
           tagList = tagList.subList(0, maxCount);
-          Collections.sort(tagList, new TagCloudByNameComparator());
+          tagList.sort(new TagCloudByNameComparator());
         }
       }
       return tagList;

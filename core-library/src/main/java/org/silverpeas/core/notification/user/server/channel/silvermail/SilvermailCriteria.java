@@ -62,7 +62,7 @@ public class SilvermailCriteria {
     }
   }
 
-  private List<Long> ids = new ArrayList<>();
+  private final List<Long> ids = new ArrayList<>();
   private Long userId;
   private Long folderId;
   private Integer readState;

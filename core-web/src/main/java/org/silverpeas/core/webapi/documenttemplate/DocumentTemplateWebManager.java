@@ -39,8 +39,8 @@ import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
-import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static javax.ws.rs.core.Response.Status.*;
+import static jakarta.ws.rs.core.Response.Status.*;
 import static org.apache.commons.io.FileUtils.openInputStream;
 import static org.silverpeas.core.documenttemplate.DocumentTemplateSettings.isEnabled;
 import static org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle;

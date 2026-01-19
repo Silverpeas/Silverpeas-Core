@@ -37,7 +37,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -57,11 +57,10 @@ public class ComponentRequestRouterTest {
   @TestedBean
   private SilverpeasWebUtil util;
 
-  private ComponentRequestRouter router;
-
   @BeforeEach
   public void setup() {
-    router = new ComponentRequestRouter() {
+    //noinspection unused
+    ComponentRequestRouter<?> router = new ComponentRequestRouter<>() {
 
       private static final long serialVersionUID = 2578618196722321170L;
 

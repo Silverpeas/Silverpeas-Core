@@ -56,8 +56,8 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
@@ -245,7 +245,7 @@ public class SilverpeasSessionOpener {
    */
   private void registerSuccessfulConnexion(SessionInfo sessionInfo) {
     // Last login date + nb successful login (reloading user data explicitly)
-    UserDetail user = sessionInfo.getUserDetail();
+    UserDetail user = (UserDetail) sessionInfo.getUser();
     user.setLastLoginDate(DateUtil.getNow());
     user.setNbSuccessfulLoginAttempts(user.getNbSuccessfulLoginAttempts() + 1);
     AdminController adminController = ServiceProvider.getService(AdminController.class);

@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.user.notification.role.test;
 
 import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  * Composite identifier of a validator. A validator refers user playing the role of validator for a
@@ -69,6 +69,11 @@ public class ValidatorID implements CompositeEntityIdentifier {
   @Override
   public String asString() {
     return validatorId + COMPOSITE_SEPARATOR + resourceId;
+  }
+
+  @Override
+  public boolean isNull() {
+    return this.resourceId == null || this.validatorId == null;
   }
 }
   

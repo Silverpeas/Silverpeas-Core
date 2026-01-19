@@ -26,7 +26,7 @@ package org.silverpeas.core.documenttemplate;
 
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;

@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.backgroundprocess;
 
-import org.silverpeas.core.annotation.Service;
+import jakarta.inject.Inject;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -32,14 +33,12 @@ import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.inject.Inject;
-
 import static java.text.MessageFormat.format;
 
 /**
  * This JOB is in charge of cleanup the background process contexts if necessary.
  */
-@Service
+@Bean
 class BackgroundProcessJobInitializer extends SchedulingInitializer {
 
   private static final String JOB_NAME = "BackgroundProcessJob";

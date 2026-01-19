@@ -61,6 +61,7 @@ public class JPQLQueryBuilder implements SilvermailCriteriaProcessor {
     done = true;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public QueryCriteria result() {
     return this.jpqlCriteria;
@@ -68,7 +69,7 @@ public class JPQLQueryBuilder implements SilvermailCriteriaProcessor {
 
   @Override
   public SilvermailCriteriaProcessor then() {
-    if (!done && jpqlCriteria.clause().text().length() > 0) {
+    if (!done && !jpqlCriteria.clause().text().isEmpty()) {
       conjonction = "and";
     }
     return this;
@@ -78,7 +79,7 @@ public class JPQLQueryBuilder implements SilvermailCriteriaProcessor {
   public SilvermailCriteriaProcessor processByIds(final List<Long> ids) {
     if (!done) {
       List<UniqueLongIdentifier> convertedIds =
-          ids.stream().map(i -> new UniqueLongIdentifier().fromString(String.valueOf(i)))
+          ids.stream().map(i -> new UniqueLongIdentifier().setFromString(String.valueOf(i)))
               .collect(Collectors.toList());
       jpqlCriteria.clause().add(conjonction).add("id = :ids").parameters().add("ids", convertedIds);
       conjonction = null;

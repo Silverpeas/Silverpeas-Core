@@ -44,8 +44,8 @@ import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 import org.silverpeas.web.pdc.vo.ResultFilterVO;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;

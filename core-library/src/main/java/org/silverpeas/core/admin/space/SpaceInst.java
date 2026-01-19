@@ -37,7 +37,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
@@ -748,9 +748,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
       template.setAttribute("fromSpaceId", space.getLocalId());
       template.setAttribute("fromSpaceName", space.getName());
     }
-    if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.DEFAULT_LANGUAGE;
-    }
+    language = I18n.get().checkLanguage(language);
     return template.applyFileTemplate(stringTemplateFile + "_" + language);
   }
 

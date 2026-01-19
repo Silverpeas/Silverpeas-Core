@@ -27,8 +27,8 @@ package org.silverpeas.core.jcr.webdav;
 
 import org.apache.jackrabbit.webdav.DavConstants;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;

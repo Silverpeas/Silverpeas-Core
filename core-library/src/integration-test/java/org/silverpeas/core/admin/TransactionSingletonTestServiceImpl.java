@@ -23,11 +23,15 @@
  */
 package org.silverpeas.core.admin;
 
+import jakarta.inject.Singleton;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Singleton;
-
 /**
+ * Implementation of the service used for tests and that is a singleton. Singletons behave
+ * differently than other @{@link jakarta.enterprise.context.ApplicationScoped} services. Because
+ * first are'nt proxified, only unchecked exceptions thrown within a transaction rollbacks any
+ * change performed within that transaction.
+ *
  * @author silveryocha
  */
 @Service

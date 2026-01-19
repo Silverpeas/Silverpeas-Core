@@ -28,7 +28,7 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * This task is in charge of processing indexation requests.

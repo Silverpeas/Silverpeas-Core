@@ -34,19 +34,19 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.List;
 
@@ -57,16 +57,18 @@ import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
 /**
  * A REST Web resource that represents the classification of a Silverpeas's resource on the
  * classification plan (named PdC).
- *
+ * <p>
  * A classification on the PdC is defined by the different positions of the classified resource on
  * the axis of the PdC. A position is then a set of one or more values in the different axis of the
  * PdC. A classification on the PdC can be or not modifiable; by default a predefined classification
  * used to classify new published contents isn't modifiable whereas the classification of a content
  * can be modified.
- *
+ * </p>
+ * <p>
  * The positions of a given classification can be accessed with this Web resource by the URI of the
  * position; classifications and positions are exposed in the Web by Silverpeas and are thus
- * uniquely identified by an URI in the Web.
+ * uniquely identified by a URI in the Web.
+ * </p>
  */
 @WebService
 @Path(PdcClassificationResource.PATH + "/{componentId:[a-zA-Z]+[0-9]+}/{contentId}")

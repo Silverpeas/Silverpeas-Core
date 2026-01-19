@@ -28,14 +28,14 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 
 /**
  * This request router is an extension of the historical one. It provides a new way to perform the
@@ -63,7 +63,7 @@ public final class WebComponentRequestRouter<T extends WebComponentController<R>
     String webComponentClassName =
         servletConfig.getInitParameter(WEB_COMPONENT_CONTROLLER_CLASS_NAME_PARAM);
     try {
-      webComponentControllerClass = (Class) Class.forName(webComponentClassName);
+      webComponentControllerClass = (Class<T>) Class.forName(webComponentClassName);
       org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController
           webComponentControllerAnnotation = webComponentControllerClass.getAnnotation(
           org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController.class);
@@ -126,7 +126,7 @@ public final class WebComponentRequestRouter<T extends WebComponentController<R>
   }
 
   @Override
-  public final String getDestination(final String path, final T componentSC,
+  public String getDestination(final String path, final T componentSC,
       final HttpRequest request) {
     String destination;
     try {

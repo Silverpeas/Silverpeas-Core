@@ -63,6 +63,7 @@ public class SQLRequester {
   public static Map<String, Object> findOne(final String query, final Object... parameters)
       throws SQLException {
     Map<String, Object> results = new HashMap<>();
+    //noinspection SqlSourceToSinkFlow
     try (Connection connection = DataSourceProvider.getDataSource().getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
       for(int i = 1; i <= parameters.length; i++) {
@@ -139,7 +140,7 @@ public class SQLRequester {
    * </p>
    */
   public static class ResultLine {
-    private Map<String, Object> values = new LinkedHashMap<>();
+    private final Map<String, Object> values = new LinkedHashMap<>();
 
     public void set(final String columnName, final Object value) {
       values.put(columnName.toLowerCase(), value);

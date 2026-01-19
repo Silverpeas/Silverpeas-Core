@@ -28,7 +28,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.kernel.test.UnitTest;
 import org.silverpeas.core.util.CollectionUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;

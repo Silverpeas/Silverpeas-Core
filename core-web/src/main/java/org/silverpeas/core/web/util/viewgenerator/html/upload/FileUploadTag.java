@@ -37,9 +37,9 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.jstl.core.Config;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import java.util.Locale;
 
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.script;
@@ -139,11 +139,6 @@ public class FileUploadTag extends TagSupport {
     }
   }
 
-  @Override
-  public int doEndTag() throws JspException {
-    return EVAL_PAGE;
-  }
-
   /**
    * Create bloc
    */
@@ -169,59 +164,50 @@ public class FileUploadTag extends TagSupport {
       final Element jsPlugin = script(
           URLUtil.getApplicationURL() + "/util/javaScript/silverpeas-fileUpload.js");
       xhtmlcontainer.addElement(jsPlugin);
-      StringBuilder jQueryStart = new StringBuilder();
-      jQueryStart.append("jQuery(document).ready(function(){jQuery('.fileUpload-tag').fileUpload({");
-      jQueryStart.append("multiple:");
-      jQueryStart.append(isMultiple());
-      jQueryStart.append(",infoInputs:");
-      jQueryStart.append(isInfoInputs());
-      jQueryStart.append(",dragAndDropDisplay:");
-      jQueryStart.append(isDragAndDropDisplay());
-      jQueryStart.append(",jqueryFormSelector:\"");
-      jQueryStart.append(getJqueryFormSelector());
-      jQueryStart.append("\",nbFileLimit:");
-      jQueryStart.append(getNbFileLimit());
-      jQueryStart.append(",labels:{");
-      jQueryStart.append("browse:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.upload.choose.browse"));
-      jQueryStart.append("\",chooseFile:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.upload.choose.file"));
-      jQueryStart.append("\",chooseFiles:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.upload.choose.files"));
-      jQueryStart.append("\",dragAndDropFile:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.file"));
-      jQueryStart.append("\",dragAndDropFiles:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.files"));
-      jQueryStart.append("\",sendingFile:\"");
-      jQueryStart.append(
-          fileUploadContext.generalBundle.getStringWithParams("GML.upload.sending.file", "@name@"));
-      jQueryStart.append("\",sendingFiles:\"");
-      jQueryStart.append(fileUploadContext.generalBundle
-          .getStringWithParams("GML.upload.sending.files", "@number@"));
-      jQueryStart.append("\",sendingWaitingWarning:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.upload.warning"));
-      jQueryStart.append("\",limitFileWarning:\"");
-      jQueryStart
-          .append(fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit"));
-      jQueryStart.append("\",limitFilesWarning:\"");
-      jQueryStart.append(fileUploadContext.generalBundle
-          .getStringWithParams("GML.upload.warning.files.limit", "@number@"));
-      jQueryStart.append("\",limitFileReached:\"");
-      jQueryStart.append(
-          fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit.reached"));
-      jQueryStart.append("\",limitFilesReached:\"");
-      jQueryStart.append(fileUploadContext.generalBundle
-          .getStringWithParams("GML.upload.warning.files.limit.reached", "@number@"));
-      jQueryStart.append("\",title:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.title"));
-      jQueryStart.append("\",description:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.description"));
-      jQueryStart.append("\",deleteFile:\"");
-      jQueryStart.append(fileUploadContext.generalBundle.getString("GML.delete"));
-      jQueryStart.append("\"}");
-      jQueryStart.append("});});");
+      String jQueryStart = "jQuery(document).ready(function(){jQuery('.fileUpload-tag').fileUpload({" +
+          "multiple:" + isMultiple() +
+          ",infoInputs:" + isInfoInputs() +
+          ",dragAndDropDisplay:" + isDragAndDropDisplay() +
+          ",jqueryFormSelector:\"" + getJqueryFormSelector() +
+          "\",nbFileLimit:" + getNbFileLimit() +
+          ",labels:{" +
+          "browse:\"" +
+          fileUploadContext.generalBundle.getString("GML.upload.choose.browse") +
+          "\",chooseFile:\"" +
+          fileUploadContext.generalBundle.getString("GML.upload.choose.file") +
+          "\",chooseFiles:\"" +
+          fileUploadContext.generalBundle.getString("GML.upload.choose.files") +
+          "\",dragAndDropFile:\"" +
+          fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.file") +
+          "\",dragAndDropFiles:\"" +
+          fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.files") +
+          "\",sendingFile:\"" +
+          fileUploadContext.generalBundle.getStringWithParams("GML.upload.sending.file", "@name@") +
+          "\",sendingFiles:\"" +
+          fileUploadContext.generalBundle
+              .getStringWithParams("GML.upload.sending.files", "@number@") +
+          "\",sendingWaitingWarning:\"" +
+          fileUploadContext.generalBundle.getString("GML.upload.warning") +
+          "\",limitFileWarning:\"" +
+          fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit") +
+          "\",limitFilesWarning:\"" +
+          fileUploadContext.generalBundle
+              .getStringWithParams("GML.upload.warning.files.limit", "@number@") +
+          "\",limitFileReached:\"" +
+          fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit.reached") +
+          "\",limitFilesReached:\"" +
+          fileUploadContext.generalBundle
+              .getStringWithParams("GML.upload.warning.files.limit.reached", "@number@") +
+          "\",title:\"" +
+          fileUploadContext.generalBundle.getString("GML.title") +
+          "\",description:\"" +
+          fileUploadContext.generalBundle.getString("GML.description") +
+          "\",deleteFile:\"" +
+          fileUploadContext.generalBundle.getString("GML.delete") +
+          "\"}" +
+          "});});";
       script startJsPlugin =
-          new script().setType("text/javascript").addElement(jQueryStart.toString());
+          new script().setType("text/javascript").addElement(jQueryStart);
       xhtmlcontainer.addElement(startJsPlugin);
     }
   }
@@ -242,7 +228,7 @@ public class FileUploadTag extends TagSupport {
         language = locale.getLanguage();
       }
       fileUploadContext.language =
-          StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
+          StringUtil.isDefined(language) ? language : I18NHelper.getDefaultLanguage();
       fileUploadContext.generalBundle =
           ResourceLocator.getGeneralLocalizationBundle(fileUploadContext.language);
     }
@@ -252,7 +238,7 @@ public class FileUploadTag extends TagSupport {
   /**
    * File upload context.
    */
-  private class FileUploadContext {
+  private static class FileUploadContext {
     public boolean jsPluginLoaded = false;
     public String language = null;
     public LocalizationBundle generalBundle = null;

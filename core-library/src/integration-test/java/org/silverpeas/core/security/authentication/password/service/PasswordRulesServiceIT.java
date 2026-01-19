@@ -31,8 +31,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
-import org.silverpeas.core.security.authentication.password.rule.*;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.security.authentication.password.rule.AbstractPasswordRule;
+import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.util.ArrayList;
@@ -45,8 +46,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
 /**
- * User: Yohann Chastagnier
- * Date: 08/01/13
+ * User: Yohann Chastagnier Date: 08/01/13
  */
 @RunWith(Arquillian.class)
 public class PasswordRulesServiceIT {
@@ -69,24 +69,14 @@ public class PasswordRulesServiceIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(PasswordRulesServiceIT.class)
-        .addSilverpeasExceptionBases()
-        .addCommonBasicUtilities()
-        .addStringTemplateFeatures()
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.security.authentication.password.constant");
-          warBuilder.addPackages(true, "org.silverpeas.core.security.authentication.password.service");
-          warBuilder.addClasses(AbstractPasswordRule.class, AtLeastXDigitPasswordRule.class,
-              AtLeastXLowercasePasswordRule.class, AtLeastXSpecialCharPasswordRule.class,
-              AtLeastXUppercasePasswordRule.class, BlankForbiddenPasswordRule.class,
-              MaxLengthPasswordRule.class, MinLengthPasswordRule.class, PasswordRule.class,
-              SequentialForbiddenPasswordRule.class);
-          warBuilder.addAsResource("org/silverpeas/password/settings/password.properties");
-          warBuilder
-              .addAsResource("org/silverpeas/password/settings/passwordNotDefined.properties");
-          warBuilder.addAsResource(
-              "org/silverpeas/password/settings/passwordCombinationDefined.properties");
-        }).build();
+    return LibCoreWarBuilder.onWarForTestClass(PasswordRulesServiceIT.class)
+        .addPackages(true, "org.silverpeas.core.security.authentication.password.constant")
+        .addPackages(true, "org.silverpeas.core.security.authentication.password.service")
+        .addPackages(true, "org.silverpeas.core.security.authentication.password.rule")
+        .addAsResource("org/silverpeas/password/settings/password.properties")
+        .addAsResource("org/silverpeas/password/settings/passwordNotDefined.properties")
+        .addAsResource("org/silverpeas/password/settings/passwordCombinationDefined.properties")
+        .build();
   }
 
 
@@ -106,7 +96,8 @@ public class PasswordRulesServiceIT {
 
   @Test
   public void getRequiredRules() {
-    assertThat(passwordRulesService.getRequiredRules().size(), is(PasswordRuleType.values().length));
+    assertThat(passwordRulesService.getRequiredRules().size(),
+        is(PasswordRuleType.values().length));
   }
 
   @Test

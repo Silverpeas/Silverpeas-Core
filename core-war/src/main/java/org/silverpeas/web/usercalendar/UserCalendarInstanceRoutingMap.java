@@ -32,7 +32,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.web.calendar.AbstractCalendarInstanceRoutingMap;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * @author silveryocha

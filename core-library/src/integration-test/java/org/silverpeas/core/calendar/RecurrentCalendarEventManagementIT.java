@@ -29,11 +29,13 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.SQLRequester;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -54,7 +56,7 @@ import static org.silverpeas.core.date.TimeUnit.*;
  * recurrent events in a given calendar.
  * <p>
  * We first check the getting of an existing recurrent event works fine so that we can use
- * afterwards the getting method to get the previously saved event in order to check its persisted
+ * afterward the getting method to get the previously saved event in order to check its persisted
  * properties.
  * @author Yohann Chastagnier
  */
@@ -72,18 +74,22 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(
-        RecurrentCalendarEventManagementIT.class)
+    return LibCoreWarBuilder.onWarForTestClass(RecurrentCalendarEventManagementIT.class)
+        .addStubbedUserAPI()
+        .addCalendarEngine()
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
   }
 
   @Before
-  public void verifyInitialData() throws Exception {
+  public void setUpInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarEventTableLines(), hasSize(6));
-    OperationContext.fromUser("0");
+    User user = StubbedUserProvider.addUser("0");
+    OperationContext.fromUser(user);
+    StubbedUserProvider.addUser("1");
+    StubbedUserProvider.addUser("2") ;
   }
 
   @Test

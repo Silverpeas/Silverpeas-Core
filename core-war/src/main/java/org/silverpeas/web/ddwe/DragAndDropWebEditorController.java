@@ -54,10 +54,10 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-import javax.xml.bind.annotation.*;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.xml.bind.annotation.*;
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;

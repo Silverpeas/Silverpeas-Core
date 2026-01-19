@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
@@ -36,16 +38,10 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.MemoizedSupplier;
-import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,7 +63,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
 
   private static final String DATA_MANAGER_CONTEXT_KEY = "NodeAccessControllerDataManager";
 
-  private ComponentAccessControl componentAccessController;
+  private final ComponentAccessControl componentAccessController;
 
   @Inject
   NodeAccessController(final ComponentAccessControl componentAccessController) {
@@ -159,7 +155,6 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
           }
         } catch (Exception e) {
           SilverLogger.getLogger(this).warn(e);
-          authorized = false;
         }
       }
     }
@@ -221,8 +216,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   static class DataManager {
 
     private final AccessControlContext context;
-    private OrganizationController controller;
-    private NodeService nodeService;
+    private final OrganizationController controller;
+    private final NodeService nodeService;
     Map<String, NodeDetail> nodeDetailCache = null;
     Map<Pair<String, String>, Set<String>> userProfiles = null;
 
@@ -267,8 +262,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
       } else {
         final Pair<Map<String, NodeDetail>, Map<Pair<String, String>, Set<String>>> caches =
             loadNodesAndUserProfiles(userId, instanceIdsWithRightsOnTopic);
-        caches.getFirst().forEach((k, v) -> nodeDetailCache.put(k, v));
-        caches.getSecond().forEach((k, v) -> userProfiles.put(k, v));
+        nodeDetailCache.putAll(caches.getFirst());
+        userProfiles.putAll(caches.getSecond());
       }
     }
 

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.index.search;
 
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -38,9 +40,6 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -59,7 +58,6 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  * entries.
  */
 @Service
-@Singleton
 public class SimpleSearchEngine implements SearchEngine {
 
   private static final List<String> EXTERNAL_CONTRIBUTION_TYPE = List.of("Versioning",

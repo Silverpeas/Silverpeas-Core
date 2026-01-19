@@ -31,13 +31,13 @@
   <parent>
     <groupId>org.silverpeas.core</groupId>
     <artifactId>services</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
   <artifactId>silverpeas-core-workflow</artifactId>
   <packaging>jar</packaging>
-  <name>Silverpeas Workflow Engine Service ${project.version}</name>
+  <name>Silverpeas Workflow Engine ${project.version}</name>
 
   <dependencies>
     <dependency>
@@ -54,8 +54,7 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
-      <scope>test</scope>
+      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
     </dependency>
   </dependencies>
 

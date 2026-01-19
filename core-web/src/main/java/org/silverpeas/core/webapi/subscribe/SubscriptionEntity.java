@@ -28,8 +28,8 @@ import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBean;
 import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**

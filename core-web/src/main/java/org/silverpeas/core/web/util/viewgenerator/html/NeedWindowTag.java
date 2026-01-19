@@ -25,8 +25,8 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 public class NeedWindowTag extends TagSupport {
 

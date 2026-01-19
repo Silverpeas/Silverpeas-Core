@@ -28,6 +28,8 @@ import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
+import jakarta.annotation.Resource;
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -38,10 +40,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.ZoneId;
@@ -90,10 +90,9 @@ public class PersonalizationRepositoryIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(PersonalizationRepositoryIT.class)
-        .addAdministrationFeatures()
-        .testFocusedOn(
-            warBuilder -> warBuilder.addPackages(true, "org.silverpeas.core.personalization"))
+    return LibCoreWarBuilder.onWarForTestClass(PersonalizationRepositoryIT.class)
+        .addStubbedUserAPI()
+        .addPackages(true, "org.silverpeas.core.personalization")
         .build();
   }
 

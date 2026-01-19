@@ -32,7 +32,7 @@ import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.web.personalization.control.PersonalizationSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Properties;
 
@@ -65,14 +65,14 @@ public class PersoPeasRequestRouter extends
    * destination page
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param personalizationScc The component Session Control, build and initialised.
+   * @param personalizationScc The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex : "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
   public String getDestination(final String function,
       final PersonalizationSessionController personalizationScc, final HttpRequest request) {
-    String destination = "";
+    String destination;
     try {
       if (function.startsWith("SaveChannels")) {
         saveChannels(personalizationScc, request);
@@ -94,27 +94,23 @@ public class PersoPeasRequestRouter extends
 
   private void addChannel(final PersonalizationSessionController personalizationScc,
       final HttpServletRequest request) throws PeasCoreException {
+    setChannel(request, personalizationScc, VALIDATION_ADD_KEY);
+    request.setAttribute("Action","AddChannel");
+  }
 
+  private void setChannel(HttpServletRequest request, PersonalizationSessionController personalizationScc, String validationAddKey) throws PeasCoreException {
     String id = request.getParameter("id");
     final String notifName = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtNotifName"));
     final String channelId = request.getParameter("channelId");
     final String address = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtAddress")) ;
     personalizationScc.saveNotifAddress(id, notifName, channelId, address, null) ;
     request.setAttribute(VALIDATION_MESSAGE,
-        personalizationScc.getMultilang().getString(VALIDATION_ADD_KEY));
-    request.setAttribute("Action","AddChannel");
+        personalizationScc.getMultilang().getString(validationAddKey));
   }
 
   private void updateChannel(final PersonalizationSessionController personalizationScc,
       final HttpServletRequest request) throws PeasCoreException {
-
-    String id = request.getParameter("id");
-    final String notifName = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtNotifName"));
-    final String channelId = request.getParameter("channelId");
-    final String address = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtAddress")) ;
-    personalizationScc.saveNotifAddress(id, notifName, channelId, address, null) ;
-    request.setAttribute(VALIDATION_MESSAGE,
-        personalizationScc.getMultilang().getString(VALIDATION_UPDATE_KEY));
+    setChannel(request, personalizationScc, VALIDATION_UPDATE_KEY);
     request.setAttribute("Action","UpdateChannel");
   }
 

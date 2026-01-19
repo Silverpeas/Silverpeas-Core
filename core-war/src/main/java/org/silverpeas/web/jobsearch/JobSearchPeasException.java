@@ -43,71 +43,30 @@ package org.silverpeas.web.jobsearch;
 
 import org.silverpeas.core.exception.SilverpeasException;
 
-/**
- * Class declaration
- * @author Cécile Bonin
- */
 public class JobSearchPeasException extends SilverpeasException {
 
   private static final long serialVersionUID = 1L;
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   *
-   */
   public JobSearchPeasException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
   public JobSearchPeasException(String callingClass, int errorLevel,
       String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
   public JobSearchPeasException(String callingClass, int errorLevel,
       String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
   public JobSearchPeasException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getModule() {
     return "jobSearchPeas";
   }

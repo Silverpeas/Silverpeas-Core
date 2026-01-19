@@ -28,8 +28,8 @@ import org.silverpeas.core.security.authentication.password.service.PasswordChec
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
  * @author Yohann Chastagnier

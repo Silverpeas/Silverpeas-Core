@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.lang.reflect.Field;
 
 /**

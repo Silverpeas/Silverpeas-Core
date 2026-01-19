@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -31,18 +32,15 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
 @Service
-@Singleton
 public class RightRecover {
 
   @Inject
   private Administration admin;
 
-  private RightRecover() {
+  RightRecover() {
     // Hidden constructor
   }
 

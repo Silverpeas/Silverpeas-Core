@@ -30,7 +30,7 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;

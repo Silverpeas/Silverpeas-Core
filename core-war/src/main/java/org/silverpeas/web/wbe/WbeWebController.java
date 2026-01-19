@@ -36,9 +36,9 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

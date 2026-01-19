@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.user.server.channel.popup;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,14 +34,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(Arquillian.class)
 public class POPUPMessageBeanRepositoryIT {
@@ -67,11 +67,8 @@ public class POPUPMessageBeanRepositoryIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(POPUPMessageBeanRepositoryIT.class)
-        .addAdministrationFeatures()
-        .addClasses(POPUPMessageBeanFinder.class)
-        .testFocusedOn(
-            war -> war.addClasses(POPUPMessageBean.class, POPUPMessageBeanRepository.class))
+    return LibCoreWarBuilder.onFullWarForTestClass(POPUPMessageBeanRepositoryIT.class)
+        .addPackages(false, "org.silverpeas.core.notification.user.server.channel.popup")
         .build();
   }
 
@@ -150,7 +147,7 @@ public class POPUPMessageBeanRepositoryIT {
     expected.setMsgTime("11:10");
     Transaction.performInOne(() -> repository.save(expected));
 
-    POPUPMessageBean actual = POPUPMessageBeanFinder.getById(Long.valueOf(expected.getId()));
+    POPUPMessageBean actual = POPUPMessageBeanFinder.getById(Long.parseLong(expected.getId()));
     assertThat(actual, notNullValue());
     assertThat(actual, is(expected));
   }

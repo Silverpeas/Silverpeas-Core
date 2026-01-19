@@ -27,7 +27,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIde
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -99,6 +99,7 @@ public class NotificationResourceData
    *
    * @param notificationResourceData the {@link NotificationResourceData} instance to copy.
    */
+  @SuppressWarnings("CopyConstructorMissesField")
   public NotificationResourceData(final NotificationResourceData notificationResourceData) {
     fillFrom(notificationResourceData);
   }

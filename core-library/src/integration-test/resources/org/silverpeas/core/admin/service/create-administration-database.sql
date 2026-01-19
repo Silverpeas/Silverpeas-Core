@@ -12,27 +12,27 @@ CREATE TABLE ST_AccessLevel
 
 CREATE TABLE ST_User
 (
-    id                            INT                 NOT NULL,
-    domainId                      INT                 NOT NULL,
-    specificId                    VARCHAR(500)        NOT NULL,
+    id                            INT                   NOT NULL,
+    domainId                      INT                   NOT NULL,
+    specificId                    VARCHAR(500)          NOT NULL,
     firstName                     VARCHAR(100),
-    lastName                      VARCHAR(100)        NOT NULL,
+    lastName                      VARCHAR(100)          NOT NULL,
     email                         VARCHAR(100),
-    login                         VARCHAR(50)         NOT NULL,
+    login                         VARCHAR(50)           NOT NULL,
     loginMail                     VARCHAR(100),
-    accessLevel                   CHAR(1) DEFAULT 'U' NOT NULL,
+    accessLevel                   CHAR(1) DEFAULT 'U'   NOT NULL,
     loginquestion                 VARCHAR(200),
     loginanswer                   VARCHAR(200),
     creationDate                  TIMESTAMP,
     saveDate                      TIMESTAMP,
-    version                       INT     DEFAULT 0   NOT NULL,
+    version                       INT     DEFAULT 0     NOT NULL,
     tosAcceptanceDate             TIMESTAMP,
     lastLoginDate                 TIMESTAMP,
-    nbSuccessfulLoginAttempts     INT     DEFAULT 0   NOT NULL,
+    nbSuccessfulLoginAttempts     INT     DEFAULT 0     NOT NULL,
     lastLoginCredentialUpdateDate TIMESTAMP,
     expirationDate                TIMESTAMP,
-    state                         VARCHAR(30)         NOT NULL,
-    stateSaveDate                 TIMESTAMP           NOT NULL,
+    state                         VARCHAR(30)           NOT NULL,
+    stateSaveDate                 TIMESTAMP             NOT NULL,
     notifManualReceiverLimit      INT,
     sensitiveData                 BOOLEAN DEFAULT FALSE NOT NULL,
     CONSTRAINT PK_User PRIMARY KEY (id),
@@ -159,7 +159,7 @@ CREATE TABLE ST_Instance_Data
     componentId INT          NOT NULL,
     name        VARCHAR(100) NOT NULL,
     label       VARCHAR(100) NOT NULL,
-    value       VARCHAR(400),
+    val         VARCHAR(400),
     CONSTRAINT PK_Instance_Data PRIMARY KEY (id),
     CONSTRAINT UN_Instance_Data_1 UNIQUE (componentId, name),
     CONSTRAINT FK_Instance_Data_1 FOREIGN KEY (componentId) REFERENCES ST_ComponentInstance (id)
@@ -190,8 +190,8 @@ CREATE TABLE SB_Node_Node
     orderNumber      INT DEFAULT (0)  NULL,
     lang             CHAR(2),
     rightsDependsOn  INT DEFAULT (-1) NOT NULL,
-    nodeRemovalDate  VARCHAR (10)     NULL,
-    nodeRemoverId    VARCHAR (100)    NULL
+    nodeRemovalDate  VARCHAR(10)      NULL,
+    nodeRemoverId    VARCHAR(100)     NULL
 );
 
 /*

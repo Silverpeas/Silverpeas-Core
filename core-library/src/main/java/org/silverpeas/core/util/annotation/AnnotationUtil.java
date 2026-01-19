@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.util.MapUtil;
 
-import javax.interceptor.InvocationContext;
+import jakarta.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;

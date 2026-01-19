@@ -35,7 +35,7 @@ import org.silverpeas.kernel.cache.model.ExternalCache;
 import org.silverpeas.kernel.cache.service.ApplicationCacheAccessor;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * Supplier of volatile tokens used to secure some sensible functions. Such tokens must be generated
@@ -53,7 +53,7 @@ import javax.inject.Singleton;
 public class VolatileSecurityTokenSupplier {
 
   // 10mn
-  private final static int TIME_TO_LIVE = 600;
+  private static final int TIME_TO_LIVE = 600;
   private final ExternalCache cache = ApplicationCacheAccessor.getInstance().getCache();
 
   /**

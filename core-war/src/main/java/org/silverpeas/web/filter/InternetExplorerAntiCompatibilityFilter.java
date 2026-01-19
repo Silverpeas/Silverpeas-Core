@@ -23,13 +23,9 @@
  */
 package org.silverpeas.web.filter;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 /**
@@ -38,10 +34,6 @@ import java.io.IOException;
  * @author mmoquillon
  */
 public class InternetExplorerAntiCompatibilityFilter implements Filter {
-  @Override
-  public void init(final FilterConfig filterConfig) throws ServletException {
-
-  }
 
   @Override
   public void doFilter(final ServletRequest request, final ServletResponse response,
@@ -50,8 +42,4 @@ public class InternetExplorerAntiCompatibilityFilter implements Filter {
     chain.doFilter(request, response);
   }
 
-  @Override
-  public void destroy() {
-
-  }
 }

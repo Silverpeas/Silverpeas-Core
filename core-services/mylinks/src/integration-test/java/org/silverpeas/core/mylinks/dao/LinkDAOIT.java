@@ -35,7 +35,7 @@ import org.silverpeas.core.mylinks.test.WarBuilder4MyLinks;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,9 @@ public class LinkDAOIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4MyLinks.onWarForTestClass(LinkDAOIT.class).build();
+    return WarBuilder4MyLinks.onWarForTestClass(LinkDAOIT.class)
+        .addAsResource("org/silverpeas/core/mylinks/dao/" + DATASET_XML_SCRIPT)
+        .build();
   }
 
   @Test

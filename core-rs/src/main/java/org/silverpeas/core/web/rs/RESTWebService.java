@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.rs;
 
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -40,16 +41,17 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.rs.aspect.ComponentInstMustExistIfSpecified;
 import org.silverpeas.core.web.rs.aspect.WebEntityMustBeValid;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
+
 import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -112,10 +114,10 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * behavior.
    * </p>
    * <p>
-   * In any case, the {@link WebResourceUri} is computed one time (and only one) per request and
-   * the
+   * In any case, the {@link WebResourceUri} is computed one time (and only one) per request and the
    * result of computation is provided by {@link #getUri()} method.
    * </p>
+   *
    * @return a {@link WebResourceUri} instance.
    */
   protected WebResourceUri initWebResourceUri() {
@@ -132,8 +134,9 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
   /**
    * Creates a {@link WebResourceUri} instance from the specified relative path of a web resource.
-   * It is dedicated to be used by {@link RESTWebService#initWebResourceUri()} but it can be used
-   * to create a custom {@link WebResourceUri} object to craft custom URIs.
+   * It is dedicated to be used by {@link RESTWebService#initWebResourceUri()} but it can be used to
+   * create a custom {@link WebResourceUri} object to craft custom URIs.
+   *
    * @param webResourcePath the relative base path of a web resource.
    * @return a {@link WebResourceUri} instance.
    */
@@ -142,8 +145,9 @@ public abstract class RESTWebService implements ProtectedWebResource {
   }
 
   /**
-   * Gets the base path of the web resource relative to the root path of all the web resources
-   * in Silverpeas as given by {@link SilverpeasWebResource#getBasePath()}.
+   * Gets the base path of the web resource relative to the root path of all the web resources in
+   * Silverpeas as given by {@link SilverpeasWebResource#getBasePath()}.
+   *
    * @return the relative path that identifies this REST web service among all other REST web
    * services.
    */
@@ -160,6 +164,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
   /**
    * Gets the HTTP request mapped with the execution context of this web service.
+   *
    * @return the HTTP request.
    */
   @Override
@@ -183,9 +188,10 @@ public abstract class RESTWebService implements ProtectedWebResource {
   }
 
   /**
-   * Is the user behind the request is well-defined in Silverpeas? In the case of an anonymous
-   * or public request, the user isn't identified in Silverpeas and therefore this method returns
+   * Is the user behind the request is well-defined in Silverpeas? In the case of an anonymous or
+   * public request, the user isn't identified in Silverpeas and therefore this method returns
    * false.
+   *
    * @return true if the user behind the request is well identified, false otherwise.
    */
   protected boolean isUserDefined() {
@@ -207,8 +213,8 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * user isn't already identified by this web service, then an identification is performed before
    * through an authentication operation followed by an authorization validation. If the
    * identification or the authorization fails, then a WebApplicationException is thrown with
-   * respectively an HTTP status code UNAUTHORIZED (401) or FORBIDDEN (403). If the preferences can be
-   * retrieved, then null is returned.
+   * respectively an HTTP status code UNAUTHORIZED (401) or FORBIDDEN (403). If the preferences can
+   * be retrieved, then null is returned.
    *
    * @return the user preference or null if its preferences can be retrieved.
    */
@@ -266,6 +272,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
   /**
    * Gets the highest role of the user behind the service call.
+   *
    * @return the highest role the current authenticated and then identified user can play for this
    * Web service.
    */
@@ -278,6 +285,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
   /**
    * This method permits to start the setting of a {@link RESTWebService.WebTreatment}.
+   *
    * @param webTreatment a treatment to process in the behalf of a Web service.
    * @param <R> the concrete type of the type the treatment will return.
    * @return a process wrapping the treatment it will take in charge.
@@ -294,9 +302,10 @@ public abstract class RESTWebService implements ProtectedWebResource {
   }
 
   /**
-   * This class handles the execution of a {@link RESTWebService.WebTreatment}.
-   * It provides the centralization of exception catches and handles the lowest role access that
-   * must the user verify.
+   * This class handles the execution of a {@link RESTWebService.WebTreatment}. It provides the
+   * centralization of exception catches and handles the lowest role access that must the user
+   * verify.
+   *
    * @param <R> the type of the value returned by the web treatment.
    */
   protected final class WebProcess<R> {
@@ -305,6 +314,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
     /**
      * Default constructor.
+     *
      * @param webTreatment a treatment to process.
      */
     WebProcess(final WebTreatment<R> webTreatment) {
@@ -313,6 +323,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
     /**
      * Sets the lowest role access that the user behind the service call must verify.
+     *
      * @param lowestRoleAccess the lowest role allowed to process a given web treatment.
      * @return itself.
      */
@@ -322,13 +333,12 @@ public abstract class RESTWebService implements ProtectedWebResource {
     }
 
     /**
-     * This method calls the execute method of a {@link RESTWebService
-     * .WebTreatment} instance.
-     * One of the aim of this mechanism is to centralize the exception catching and also to avoid
-     * redundant coding around web exceptions.
-     * If the lowest role access is defined, the user must verify it.
-     * If the user isn't authenticated, a 401 HTTP code is returned.
-     * If a problem occurs when processing the request, a 503 HTTP code is returned.
+     * This method calls the execute method of a {@link RESTWebService .WebTreatment} instance. One
+     * of the aim of this mechanism is to centralize the exception catching and also to avoid
+     * redundant coding around web exceptions. If the lowest role access is defined, the user must
+     * verify it. If the user isn't authenticated, a 401 HTTP code is returned. If a problem occurs
+     * when processing the request, a 503 HTTP code is returned.
+     *
      * @return the value computed by the specified web treatment.
      */
     public R execute() {
@@ -352,6 +362,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
   /**
    * Inner class handled by
+   *
    * @param <R>
    */
   @FunctionalInterface
@@ -361,8 +372,9 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
   /**
    * Convenient method to build a URI from the request's absolute path and the specified
-   * identifiers. Each identifier will be added to the absolute path as a path node in the
-   * returned URI.
+   * identifiers. Each identifier will be added to the absolute path as a path node in the returned
+   * URI.
+   *
    * @param id one or more identifiers identifying uniquely the current requested web resource.
    * @return a URI identifying uniquely in the Web the current requested resource.
    */
@@ -374,8 +386,9 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * Convenient method to build a URI from the base URI represented by the specified
    * {@link UriBuilder} and from the specified identifiers. Each identifier will be added to the
    * base URI as a path node in the returned URI.
-   * @param base a {@link UriBuilder} instance representing the base URI from which the resulted
-   * URI will be computed.
+   *
+   * @param base a {@link UriBuilder} instance representing the base URI from which the resulted URI
+   * will be computed.
    * @param id one or more identifiers identifying uniquely the current requested web resource.
    * @return a URI identifying uniquely in the Web the current requested resource.
    */
@@ -393,6 +406,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    *   <li>Right value represents the number of data per page.</li>
    * </ul>
    * </p>
+   *
    * @param page the page information.
    * @return the initialized {@link PaginationPage}.
    */
@@ -412,5 +426,23 @@ public abstract class RESTWebService implements ProtectedWebResource {
       }
     }
     return paginationPage;
+  }
+
+  /**
+   * Gets the language of the current user or, if there is no user behind the incoming HTTP request,
+   * either the language set in the request or the default language in Silverpeas.
+   *
+   * @return the language code
+   */
+  protected String getLanguage() {
+    String language;
+    if (getUser() != null) {
+      language = getUserPreferences().getLanguage();
+    } else if (getHttpRequest().getLocale() != null) {
+      language = DisplayI18NHelper.verifyLanguage(getHttpRequest().getLocale().getLanguage());
+    } else {
+      language = DisplayI18NHelper.getDefaultLanguage();
+    }
+    return language;
   }
 }

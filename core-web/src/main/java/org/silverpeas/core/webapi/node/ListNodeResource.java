@@ -30,13 +30,13 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,7 +99,7 @@ public class ListNodeResource extends RESTWebService {
     // Verif that the current user has the Admin role to execute this REST service
     if (isUserAdmin()) {
       //Update list Node
-      List<NodePK> nodePKs = new ArrayList<NodePK>();
+      List<NodePK> nodePKs = new ArrayList<>();
       for (NodeEntity nodeEntity : newListNode) {
         nodePKs.add(nodeEntity.toNodePK());
       }

@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import java.text.ParseException;
 

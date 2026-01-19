@@ -28,12 +28,12 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 import java.net.http.HttpResponse;
 
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.silverpeas.core.util.HttpUtil.httpClient;
 import static org.silverpeas.core.util.HttpUtil.toUrl;
 import static org.silverpeas.kernel.util.StringUtil.EMPTY;

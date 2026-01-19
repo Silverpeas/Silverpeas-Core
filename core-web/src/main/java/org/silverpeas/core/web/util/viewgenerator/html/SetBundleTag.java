@@ -29,11 +29,11 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.bundle.SilverpeasBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.jstl.fmt.LocalizationContext;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.jstl.core.Config;
+import jakarta.servlet.jsp.jstl.fmt.LocalizationContext;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;

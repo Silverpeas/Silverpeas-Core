@@ -30,14 +30,13 @@ import org.hibernate.LazyInitializationException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
@@ -45,8 +44,10 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalType;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOIT;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Timestamp;
@@ -67,9 +68,9 @@ import static org.junit.Assert.assertThrows;
  * - Service and transactions
  * <p>
  * Entities :
- * - Person (Uuid identifier, has a bag of animal without cascade behaviour)
- * - Animal (Unique Id identifier, attached to a person and has a bag of equipment with {@link
- * javax.persistence.CascadeType#ALL} behaviour)
+ * - Person (Uuid identifier, has a bag of animal without cascade behavior)
+ * - Animal (Unique identifier, attached to a person and has a bag of equipment with {@link
+ * jakarta.persistence.CascadeType#ALL} behaviour)
  * - Equipment (Uuid identifier, attached to an animal)
  * <p>
  * User: Yohann Chastagnier
@@ -126,21 +127,30 @@ public class SilverpeasJpaEntityRepositoryIT {
 
   @Before
   public void setup() {
-    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     jpaEntityServiceTest = ServiceProvider.getService(JpaEntityServiceTest.class);
-    OperationContext.fromUser("0");
+
+    StubbedUserProvider.addUser("0");
+    StubbedUserProvider.addUser("1");
+    StubbedUserProvider.addUser("2");
+    StubbedUserProvider.addUser("10");
+    StubbedUserProvider.addUser("26");
+    StubbedUserProvider.addUser("200");
+    StubbedUserProvider.addUser("400");
+    StubbedUserProvider.addUser("500");
+  }
+
+  @After
+  public void cleanUp() {
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    StubbedUserProvider.removeAllUsers();
   }
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SilverpeasJpaEntityRepositoryIT.class)
-        .addDatabaseToolFeatures()
-        .addJpaPersistenceFeatures()
-        .addStubbedOrganizationController()
-        .addPublicationTemplateFeatures()
+    return LibCoreWarBuilder.onWarForTestClass(SilverpeasBeanDAOIT.class)
+        .addStubbedUserAPI()
+        .addPackages(true, "org.silverpeas.core.persistence.datasource.repository")
         .addAsResource("org/silverpeas/core/persistence/datasource/create_table.sql")
-        .testFocusedOn((warBuilder) -> warBuilder.addPackages(true,
-            "org.silverpeas.core.persistence.datasource.repository.jpa"))
         .build();
   }
 
@@ -303,6 +313,7 @@ public class SilverpeasJpaEntityRepositoryIT {
 
   @Test
   public void saveEquipment() {
+    OperationContext.fromUser("0");
     Animal updatedDog = Transaction.performInOne(() -> {
       Animal dog = jpaEntityServiceTest.getAnimalById("2");
       Equipment bone = new Equipment().setName("bone").setAnimal(dog).rentOver(Period.indefinite());
@@ -338,6 +349,7 @@ public class SilverpeasJpaEntityRepositoryIT {
         OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).minusDays(1);
     OffsetDateTime tomorrow =
         OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).plusDays(1);
+    OperationContext.fromUser("0");
     Animal updatedDog = Transaction.performInOne(() -> {
       Animal dog = jpaEntityServiceTest.getAnimalById("2");
       Equipment bone = new Equipment().setName("doghouse")
@@ -414,6 +426,7 @@ public class SilverpeasJpaEntityRepositoryIT {
   @Test
   public void entityGetUpdateCloneBehaviour() {
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(5));
+    OperationContext.fromUser("26");
 
     // Get
     Person person = jpaEntityServiceTest.getPersonById("person_1");
@@ -469,6 +482,7 @@ public class SilverpeasJpaEntityRepositoryIT {
 
   @Test
   public void savePerson() {
+    OperationContext.fromUser("200");
     Date createdAndLastUpdateDate = new Date();
     Person newPerson = new Person().setFirstName("Aurore")
         .setLastName("Allibe")
@@ -512,6 +526,8 @@ public class SilverpeasJpaEntityRepositoryIT {
   @Test
   public void saveAsUsualAPersonWithIdSetManually() {
     final String manualId = "id_that_will_be_changed";
+    OperationContext.fromUser("400");
+
     Person newPerson = new Person().setId(manualId)
         .setFirstName("Aurore")
         .setLastName("Allibe")
@@ -559,12 +575,7 @@ public class SilverpeasJpaEntityRepositoryIT {
     assertThat(person1.getVersion(), is(0L));
     assertThat(person1.hasBeenModified(), is(false));
 
-    // Putting a current requester for the next actions of this test.
-    UserDetail user = new UserDetail();
-    user.setId("400");
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
-        .newSessionCache(user);
-    OperationContext.fromUser(user);
+    OperationContext.fromUser("400");
 
     // No changes
     Person personSaveResult = jpaEntityServiceTest.save(person1);
@@ -588,6 +599,7 @@ public class SilverpeasJpaEntityRepositoryIT {
   @Test
   public void saveAnimal() {
     Person person = jpaEntityServiceTest.getPersonById("person_3");
+    OperationContext.fromUser("500");
 
     Animal newAnimal =
         new Animal().setType(AnimalType.cat).setName("Pilou").createdBy("400").setPerson(person)

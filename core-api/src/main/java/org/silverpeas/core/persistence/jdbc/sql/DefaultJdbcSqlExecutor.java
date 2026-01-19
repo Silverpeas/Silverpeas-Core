@@ -31,9 +31,9 @@ import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,6 +46,7 @@ import java.util.List;
 /**
  * @author Yohann Chastagnier
  */
+@SuppressWarnings("SqlSourceToSinkFlow")
 @Technical
 @Bean
 @Singleton
@@ -279,7 +280,7 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
     if (statementParameters instanceof Object[]) {
       parameters = Arrays.asList((Object[]) statementParameters);
     } else if (statementParameters instanceof Collection) {
-      parameters = (Collection) statementParameters;
+      parameters = (Collection<Object>) statementParameters;
     } else if (statementParameters != null) {
       parameters = Collections.singletonList(statementParameters);
     } else {

@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.index.indexing;
 
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * @author silveryocha
  */
-@Service
+@Bean
 public class IndexingLogger implements Initialization {
 
   private static SilverLogger silverLogger;

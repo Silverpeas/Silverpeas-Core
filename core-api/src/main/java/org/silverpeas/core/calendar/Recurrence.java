@@ -29,7 +29,7 @@ import org.silverpeas.core.date.TemporalConverter.Conversion;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
@@ -162,14 +162,15 @@ public class Recurrence implements Serializable {
    * Excludes from this recurrence rule the occurrences originally starting at the specified date
    * or datetime. In the case the argument is one or more {@link OffsetDateTime}, their time is set
    * with the time of the start datetime of the calendar component concerned by this recurrence.
-   *
+   * <p>
    * If the calendar component from which the occurrences come is on all day, the specified
    * temporal instance is then converted into a {@link LocalDate} instance. Otherwise, if the
-   * the temporal instance is a {@link LocalDate} it is then converted into a {@link OffsetDateTime}
+   * temporal instance is a {@link LocalDate} it is then converted into a {@link OffsetDateTime}
    * with the time the one of the calendar component's start datetime; you have to ensure then the
    * {@link LocalDate} you pass comes from a value in UTC. If the temporal instance is already
    * an {@link OffsetDateTime}, then it is converted in UTC and its time set with the one
    * of the calendar component's start datetime.
+   * </p>
    * @param temporal a list of either {@link LocalDate} or {@link OffsetDateTime} at which
    * originally start the occurrences to exclude.
    * @return itself.
@@ -281,12 +282,14 @@ public class Recurrence implements Serializable {
 
   /**
    * Sets a termination to this recurrence by specifying an inclusive date or datetime.
-   *
+   * <p>
    * If a datetime is passed, it is set in UTC/Greenwich and then the time is overridden by the one
    * of the start date time of the calendar component concerned by this recurrence. In the case
    * the calendar component is on all day(s), then the specified datetime is converted into a date.
-   *
+   * </p>
+   * <p>
    * Settings this termination unset the number of time a {@link PlannableOnCalendar} should occur.
+   * </p>
    * @param endDate the inclusive date or datetime at which the recurrence ends.
    * @return itself.
    */
@@ -327,7 +330,7 @@ public class Recurrence implements Serializable {
    */
   @SuppressWarnings("WeakerAccess")
   public boolean isEndless() {
-    return !getRecurrenceEndDate().isPresent() && getRecurrenceCount() == NO_RECURRENCE_COUNT;
+    return getRecurrenceEndDate().isEmpty() && getRecurrenceCount() == NO_RECURRENCE_COUNT;
   }
 
   /**
@@ -370,9 +373,10 @@ public class Recurrence implements Serializable {
    * {@link PlannableOnCalendar} for a finite recurrence without an end date explicitly set. It can be also
    * a date after the last occurrence. The exception dates in the recurrence rule aren't taken
    * into account.
-   *
+   * <p>
    * If this recurrence isn't yet applied to any recurrence calendar component, then an
    * {@link IllegalStateException} exception is thrown.
+   * </p>
    * @return an optional recurrence actual end date. The optional is empty if the recurrence is
    * endless.
    */
@@ -410,9 +414,10 @@ public class Recurrence implements Serializable {
 
   /**
    * Gets the datetime exceptions to this recurrence rule.
-   *
+   * <p>
    * The returned datetime are the start datetime of the occurrences that are excluded
    * from this recurrence rule. They are the exception in the application of the recurrence rule.
+   * </p>
    * @return a set of either {@link LocalDate} or {@link OffsetDateTime} instances, or an empty set
    * if there is no exception dates to this recurrence.
    */
@@ -610,8 +615,7 @@ public class Recurrence implements Serializable {
     if (getRecurrenceCount() == 1) {
       return date;
     }
-    final long interval = (long)getRecurrenceCount() *
-        (getFrequency().getInterval() >= 1 ? getFrequency().getInterval() : 1);
+    final long interval = (long)getRecurrenceCount() * Math.max(getFrequency().getInterval(), 1);
     date = date.plus(interval, getFrequency().getUnit().toChronoUnit());
     boolean firstDayOfWeekSet = false;
     for (DayOfWeekOccurrence dayOfWeek : daysOfWeek) {

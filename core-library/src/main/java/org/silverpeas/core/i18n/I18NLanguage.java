@@ -27,11 +27,7 @@ public class I18NLanguage {
 
   private String translationId = "-1";
   private final String code;
-  private String label = null;
-
-  public I18NLanguage(String code) {
-    this.code = code;
-  }
+  private final String label;
 
   public I18NLanguage(String code, String label) {
     this.code = code;

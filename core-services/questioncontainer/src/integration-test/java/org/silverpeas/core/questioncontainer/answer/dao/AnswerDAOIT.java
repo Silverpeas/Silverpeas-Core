@@ -89,7 +89,8 @@ public class AnswerDAOIT extends DataSetTest {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(AnswerDAOIT.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
+        .addAsResource("org/silverpeas/util/logging")
+        .addAsResource("org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties")
         .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.questioncontainer.answer"))
         .build();
   }
@@ -109,48 +110,6 @@ public class AnswerDAOIT extends DataSetTest {
     } finally {
       DBUtil.close(con);
     }
-  }
-
-  /**
-   * Test of recordThisAnswerAsVote method, of class AnswerDAO.
-   */
-  @Test
-  @Ignore
-  public void testRecordThisAnswerAsVote() throws Exception {
-    Connection con = null;
-    ResourceReference questionPK = null;
-    AnswerPK answerPK = null;
-    //AnswerDAO.recordThisAnswerAsVote(con, questionPK, answerPK);
-    // TODO review the generated test code and remove the default call to fail.
-    //fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of addAnswersToAQuestion method, of class AnswerDAO.
-   */
-  @Test
-  @Ignore
-  public void testAddAnswersToAQuestion() throws Exception {
-    Connection con = null;
-    Collection<Answer> answers = null;
-    ResourceReference questionPK = null;
-    AnswerDAO.addAnswersToAQuestion(con, answers, questionPK);
-    // TODO review the generated test code and remove the default call to fail.
-    //fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of addAnswerToAQuestion method, of class AnswerDAO.
-   */
-  @Test
-  @Ignore
-  public void testAddAnswerToAQuestion() throws Exception {
-    Connection con = null;
-    Answer answer = null;
-    ResourceReference questionPK = null;
-    //AnswerDAO.addAnswerToAQuestion(con, answer, questionPK);
-    // TODO review the generated test code and remove the default call to fail.
-    //fail("The test case is a prototype.");
   }
 
   /**
@@ -184,19 +143,5 @@ public class AnswerDAOIT extends DataSetTest {
     } finally {
       DBUtil.close(con);
     }
-  }
-
-  /**
-   * Test of updateAnswerToAQuestion method, of class AnswerDAO.
-   */
-  @Test
-  @Ignore
-  public void testUpdateAnswerToAQuestion() throws Exception {
-    Connection con = getConnection();
-    ResourceReference questionPK = null;
-    Answer answer = null;
-    //AnswerDAO.updateAnswerToAQuestion(con, questionPK, answer);
-    // TODO review the generated test code and remove the default call to fail.
-    //fail("The test case is a prototype.");
   }
 }

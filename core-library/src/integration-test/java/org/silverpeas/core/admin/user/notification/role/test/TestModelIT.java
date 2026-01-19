@@ -34,10 +34,10 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.cache.service.SessionCacheAccessor;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,15 +65,8 @@ public class TestModelIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(TestModelIT.class)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addDatabaseToolFeatures()
-        .addJpaPersistenceFeatures()
-        .addPublicationTemplateFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(TestModelIT.class)
         .addAsResource("org/silverpeas/core/admin/user/notification/role")
-        .testFocusedOn(warBuilder ->
-            warBuilder.addPackages(true, TestModelIT.class.getPackageName()))
         .build();
   }
 

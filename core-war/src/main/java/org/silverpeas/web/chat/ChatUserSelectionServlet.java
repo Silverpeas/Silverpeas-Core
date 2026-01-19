@@ -29,12 +29,12 @@ import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
-import javax.inject.Inject;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.inject.Inject;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 import static org.silverpeas.core.web.mvc.controller.MainSessionController
@@ -69,7 +69,7 @@ public class ChatUserSelectionServlet extends SilverpeasHttpServlet {
       request.setAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
 
       RequestDispatcher requestDispatcher =
-          getServletConfig().getServletContext().getRequestDispatcher(selection.getSelectionURL());
+          getServletConfig().getServletContext().getRequestDispatcher(Selection.getSelectionURL());
       requestDispatcher.forward(request, response);
     } else {
       response.sendError(HttpServletResponse.SC_FORBIDDEN);

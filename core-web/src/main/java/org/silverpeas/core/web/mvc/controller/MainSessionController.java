@@ -49,8 +49,8 @@ import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.kernel.SilverpeasException;
 
-import javax.enterprise.util.AnnotationLiteral;
-import javax.servlet.http.HttpSession;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.ArrayList;

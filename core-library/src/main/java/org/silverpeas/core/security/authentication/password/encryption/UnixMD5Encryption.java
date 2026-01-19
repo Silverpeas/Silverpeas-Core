@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.security.authentication.password.encryption;
 
-/****************************************************************************
- * Java-based implementation of the unix encrypt(3) command
+/*
+ * Java-based implementation of the UNIX encrypt(3) command
  *
  * Based upon C source code written by Eric Young, eay@psych.uq.oz.au
  * Java conversion by John F. Dumas, jdumas@zgs.com
@@ -36,11 +36,11 @@ package org.silverpeas.core.security.authentication.password.encryption;
  * derivative, the same license applies.
  *
  * Note: Crypt.class is much smaller when compiled with javac -O
- ****************************************************************************/
+ */
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 
-import javax.inject.Singleton;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
@@ -62,7 +62,7 @@ import java.util.Random;
  * This class implements the popular MD5Crypt function as used by BSD and most modern Un*x systems.
  * It was basically converted from the C code write by Poul-Henning Kamp.
  */
-@Singleton
+@Bean
 public class UnixMD5Encryption implements PasswordEncryption {
 
   private static final Random random = new Random();
@@ -107,7 +107,7 @@ public class UnixMD5Encryption implements PasswordEncryption {
       byte[] abyFinal = md2.digest();
 
       for (int n = abyPassword.length; n > 0; n -= 16) {
-        md.update(abyFinal, 0, n > 16 ? 16 : n);
+        md.update(abyFinal, 0, Math.min(n, 16));
       }
 
       abyFinal = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

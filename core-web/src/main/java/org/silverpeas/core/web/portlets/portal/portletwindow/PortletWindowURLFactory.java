@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.web.portlets.portal.portletwindow;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.sun.portal.container.ChannelURL;
 import com.sun.portal.container.ChannelURLFactory;
 
 public class PortletWindowURLFactory implements ChannelURLFactory {
 
-  private String desktopURL;
+  private final String desktopURL;
 
   public PortletWindowURLFactory(String desktopURL) {
     this.desktopURL = desktopURL;

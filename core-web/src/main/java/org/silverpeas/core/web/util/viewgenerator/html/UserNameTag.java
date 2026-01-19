@@ -28,9 +28,9 @@ import org.apache.ecs.xhtml.span;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import jakarta.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.SimpleTagSupport;
 import java.util.Optional;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -38,12 +38,14 @@ import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_
 
 /**
  * This tag prints out the full name of a given user.
- *
- * Yet, it prints the user name and uses the Silverpeas userzoom javascript plugin to render its
+ * <p>
+ * Yet, it prints the user name and uses the Silverpeas userzoom JavaScript plugin to render its
  * status and to provide a way for interacting with him.
- *
+ * </p>
+ * <p>
  * If the user is the current one behind the HTTP session, then by default the user zoom isn't
  * activated.
+ * </p>
  *
  * @author mmoquillon
  */

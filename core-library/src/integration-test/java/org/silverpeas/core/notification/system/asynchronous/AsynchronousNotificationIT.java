@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,16 +32,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.notification.system.GenericTestResource;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.notification.system.TestResource;
-import org.silverpeas.core.notification.system.TestResourceEvent;
-import org.silverpeas.core.notification.system.TestResourceEventBucket;
+import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
+import org.silverpeas.core.notification.system.*;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import java.time.Instant;
 import java.util.Date;
 
@@ -73,19 +70,16 @@ public class AsynchronousNotificationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AsynchronousNotificationIT.class)
-        .addSubscriptionFeatures()
-        .testFocusedOn((war) -> {
-          WarBuilder4LibCore warBuilder = ((WarBuilder4LibCore) war);
-          warBuilder.addSynchAndAsynchResourceEventFeatures();
-          warBuilder.addClasses(TestResource.class, TestResourceEvent.class,
-              GenericTestResource.class,
-              TestResourceEventBucket.class, JMSQueueTestResourceEventNotifier.class,
-              JMSQueueTestResourceEventListener.class, JMSTopicTestResourceEventNotifier.class,
-              JMSTopicTestResourceEventListener.class, JMSTopicTestResourceEventListener2.class,
-              UserSubscriptionNotificationSendingHandler.class);
-          warBuilder.addAsWebInfResource("test-jms.xml", "test-jms.xml");
-        }).build();
+    return LibCoreWarBuilder.onWarForTestClass(AsynchronousNotificationIT.class)
+        .addClasses(TestResource.class, TestResourceEvent.class,
+            GenericTestResource.class,
+            TestResourceEventBucket.class,
+            UserSubscriptionNotificationSendingHandler.class,
+            ContributionOperationContextPropertyHandler.class)
+        .addAsResource(
+            "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties")
+        .addAsWebInfResource("test-jms.xml", "test-jms.xml")
+        .build();
   }
 
   @Before

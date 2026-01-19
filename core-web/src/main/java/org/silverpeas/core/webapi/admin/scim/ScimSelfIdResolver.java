@@ -24,15 +24,15 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import edu.psu.swe.scim.server.exception.UnableToResolveIdException;
-import edu.psu.swe.scim.server.provider.SelfIdResolver;
+import org.apache.directory.scim.core.repository.SelfIdResolver;
+import org.apache.directory.scim.server.exception.UnableToResolveIdResourceException;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.security.Principal;
 
-import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
+import static jakarta.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
 
 /**
  * @author silveryocha
@@ -42,8 +42,8 @@ import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
 public class ScimSelfIdResolver implements SelfIdResolver {
 
   @Override
-  public String resolveToInternalId(final Principal principal) throws UnableToResolveIdException {
+  public String resolveToInternalId(final Principal principal) throws UnableToResolveIdResourceException {
     SilverLogger.getLogger(this).warn("resolveToInternalId with {0}", principal.getName());
-    throw new UnableToResolveIdException(NOT_IMPLEMENTED, "Caller Principal not available");
+    throw new UnableToResolveIdResourceException(NOT_IMPLEMENTED, "Caller Principal not available");
   }
 }

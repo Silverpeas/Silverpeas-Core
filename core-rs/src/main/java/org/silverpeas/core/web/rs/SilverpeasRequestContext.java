@@ -28,8 +28,8 @@ package org.silverpeas.core.web.rs;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author silveryocha

@@ -3,36 +3,37 @@ VALUES
   (3, 'st_user'),
   (3, 'domainsp_user');
 
-INSERT INTO st_componentinstance
-(id, spaceid, name, componentname, description, createdby, ordernum, createtime, updatetime, removetime, componentstatus, updatedby, removedby, ispublic, ishidden, lang, isinheritanceblocked)
-VALUES
-  (24, 0, 'Workflow 24', 'workflow', '', 0, 1,
-      '1433237280246', '1443424995948', null, null, 1, null, 1, 0, 'fr', 0),
-  (42, 0, 'Workflow 42', 'workflow', '', 0, 1,
-       '1433237280246', '1443424995948', null, null, 1, null, 1, 0, 'fr', 0);
-
-INSERT INTO ST_UserRole(id, instanceId, rolename, name, description, isInherited)
-VALUES
-  (1, 24, 'supervisor', '', '', 1),
-  (2, 42, 'supervisor', '', '', 1);
-
-INSERT INTO ST_UserRole_User_Rel(userroleid, userId)
-VALUES
-  (1, 0),
-  (2, 0);
-
 INSERT INTO DomainSP_User (id, firstName, lastName, login)
 VALUES
-  (1, 'John', 'Anderton', 'john'),
-  (2, 'Gustave', 'Eiffel', 'gustave'),
-  (3, 'Bart', 'Simpson', 'bart');
+    (1, 'John', 'Anderton', 'john'),
+    (2, 'Gustave', 'Eiffel', 'gustave'),
+    (3, 'Bart', 'Simpson', 'bart');
 
 INSERT INTO ST_User
 (id, domainId, specificId, firstName, lastName, login, accessLevel, state, stateSaveDate, notifManualReceiverLimit)
 VALUES
-  (1, 0, '1', 'John', 'Anderton', 'john', 'U', 'VALID', '2012-01-01 00:00:00.000', 0),
-  (2, 0, '2', 'Gustave', 'Eiffel', 'gustave', 'U', 'VALID', '2012-01-01 00:00:00.000', 0),
-  (3, 0, '3', 'Bart', 'Simpson', 'bart', 'U', 'VALID', '2012-01-01 00:00:00.000', 0);
+    (1, 0, '1', 'John', 'Anderton', 'john', 'U', 'VALID', '2012-01-01 00:00:00.000', 0),
+    (2, 0, '2', 'Gustave', 'Eiffel', 'gustave', 'U', 'VALID', '2012-01-01 00:00:00.000', 0),
+    (3, 0, '3', 'Bart', 'Simpson', 'bart', 'U', 'VALID', '2012-01-01 00:00:00.000', 0);
+
+INSERT INTO st_componentinstance
+(id, spaceid, name, componentname, description, createdby, ordernum, createtime, updatetime, removetime, componentstatus, updatedby, removedby, ispublic, ishidden, lang, isinheritanceblocked)
+VALUES
+  (24, 1, 'Workflow 24', 'workflow', '', 0, 1,
+      '1433237280246', '1443424995948', null, null, 1, null, 1, 0, 'fr', 0),
+  (42, 1, 'Workflow 42', 'workflow', '', 0, 1,
+       '1433237280246', '1443424995948', null, null, 1, null, 1, 0, 'fr', 0);
+
+INSERT INTO ST_UserRole(id, instanceId, rolename, name, description, isInherited)
+VALUES
+  (1, 24, 'supervisor', '', '', 0),
+  (2, 42, 'supervisor', '', '', 0),
+  (3, 24, 'requester', '', '', 0);
+
+INSERT INTO ST_UserRole_User_Rel(userroleid, userId)
+VALUES
+  (1, 0), (1, 2), (3, 3),
+  (2, 0);
 
 INSERT INTO SB_Workflow_Replacements
 (id, incumbentId, substituteId, workflowId, startDate, endDate, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)

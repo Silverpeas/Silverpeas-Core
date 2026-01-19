@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.temp;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -32,19 +33,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.io.temp.TemporaryDataCleanerSchedulerInitializer.TemporaryDataCleanerJob;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerInitializer;
-import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.kernel.test.extension.SettingBundleStub;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.test.extension.SettingBundleStub;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,11 +52,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -95,14 +91,12 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
 
   @Deployment
   public static Archive<?> createTestArchive() throws IOException {
-    return WarBuilder4LibCore.onWarForTestClass(TemporaryDataCleanerSchedulerInitializerIT.class)
-        .addSilverpeasExceptionBases()
-        .addCommonBasicUtilities()
-        .addSchedulerFeatures()
-        .addFileRepositoryFeatures()
-        .testFocusedOn((warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.core.io.temp")
-            .addAsResource("org/silverpeas/util/data")
-            .addAsResource("org/silverpeas/core/io/temp/")).build();
+    return LibCoreWarBuilder.onWarForTestClass(TemporaryDataCleanerSchedulerInitializerIT.class)
+        .addSchedulingEngine()
+        .addPackages(true, "org.silverpeas.core.io.temp")
+        .addAsResource("org/silverpeas/util/data")
+        .addAsResource("org/silverpeas/core/io/temp/")
+        .build();
   }
 
   @Before

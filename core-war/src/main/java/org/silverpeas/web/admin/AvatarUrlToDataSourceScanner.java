@@ -24,10 +24,13 @@
 
 package org.silverpeas.web.admin;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.content.AbstractLocalhostLinkUrlDataSourceScanner;
 import org.silverpeas.core.util.StringDataExtractor;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
+import org.silverpeas.kernel.annotation.Technical;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,6 +40,8 @@ import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirectiv
 /**
  * @author silveryocha
  */
+@Technical
+@Bean
 @Singleton
 public class AvatarUrlToDataSourceScanner
     extends AbstractLocalhostLinkUrlDataSourceScanner {

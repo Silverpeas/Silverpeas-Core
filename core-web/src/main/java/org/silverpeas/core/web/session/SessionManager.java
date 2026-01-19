@@ -58,12 +58,11 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.annotation.Nonnull;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.*;
@@ -82,7 +81,6 @@ import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
  * @author Nicolas Eysseric
  */
 @Service
-@Singleton
 public class SessionManager implements SessionManagement, Initialization {
 
   // Object on which to synchronize (the instance indeed)

@@ -46,7 +46,6 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -58,7 +57,6 @@ import java.util.stream.Stream;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
 
   protected TreeWalkerForComponentInst() {

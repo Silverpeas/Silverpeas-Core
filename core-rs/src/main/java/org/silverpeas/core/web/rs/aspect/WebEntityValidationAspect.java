@@ -26,23 +26,23 @@ package org.silverpeas.core.web.rs.aspect;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.util.annotation.AnnotationUtil;
 
-import javax.annotation.Priority;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.Priority;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * An aspect to insert component existence checking in the web services so that it is performed
@@ -64,11 +64,12 @@ public class WebEntityValidationAspect {
       for (Object parameterValue : context.getParameters()) {
         if (parameterValue instanceof WebEntity) {
           T webEntity = (T) parameterValue;
-          ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-          Validator validator = factory.getValidator();
-          Set<ConstraintViolation<T>> violations = validator.validate(webEntity);
-          if (!violations.isEmpty()) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+          try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<T>> violations = validator.validate(webEntity);
+            if (!violations.isEmpty()) {
+              throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
           }
         }
       }

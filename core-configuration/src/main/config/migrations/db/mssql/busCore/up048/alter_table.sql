@@ -1,0 +1,1 @@
+EXEC sp_rename 'st_instance_data.value', 'val', 'COLUMN';

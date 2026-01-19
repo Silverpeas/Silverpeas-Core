@@ -23,16 +23,15 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.core.annotation.Service;
+import jakarta.inject.Inject;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.logging.SilverLogger;
-
-import javax.inject.Inject;
 
 /**
  * Initializes the Administration layer of Silverpeas. It sets up the administration service.
  */
-@Service
+@Bean
 public class AdminInitialize implements Initialization {
 
   @Inject

@@ -27,24 +27,24 @@ package org.silverpeas.core.web;
 
 import org.silverpeas.core.util.URLUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The representation of a resource managed by Silverpeas in the Web. A resource accessible by the
- * Web provides an access to the instances of the resource and defines a set of operations that
- * be performed on those instances. A resource is always identified by an URI by which it can be
+ * Web provides access to the instances of the resource and defines a set of operations that
+ * be performed on those instances. A resource is always identified by a URI by which it can be
  * accessed in the Web; all instances of such a resource are then identified from this URI that is
  * used as the base one for the resource instances and operations.
  * <p>
  * A Web resource represents an entity in Silverpeas that is accessible through the Web. This
- * entity can a be contribution, a contribution's content, or a any business entities used in
+ * entity can a be contribution, a contribution's content, or an any business entities used in
  * Silverpeas (like the user profiles for example).
  * </p>
  * <p>
- * Named as <code>Target</code> in the JAX-RS jargon, as being the endpoint of an URI-based HTTP
+ * Named as <code>Target</code> in the JAX-RS jargon, as being the endpoint of a URI-based HTTP
  * communication, the Web resource acts in fact, for the Web clients, as a proxy of the entities it
- * is intended to represent and, as such it is uniquely identified by a base URI at which the
+ * is intended to represent. As such it is uniquely identified by a base URI at which the
  * entities are meant to be exposed on the Web. As a proxy, it plays the role of a translator, as it
  * translates the expected HTTP requests in business methods implying the entity(ies) targeted by
  * the requested URI, and then it translates the answer of those methods in an HTTP response that
@@ -107,7 +107,7 @@ public interface SilverpeasWebResource {
 
   /**
    * Gets the base URI of all the web resources. All the web resources are defined
-   * from this base URI. The URI includes everything preceding the path (host, port, etc).
+   * from this base URI. The URI includes everything preceding the path (host, port, etc.).
    * The URI in its full form is dedicated to be used to expose the resource out
    * of the Web context of Silverpeas.
    * @param request the HTTP servlet request that is received from the Web client and from which

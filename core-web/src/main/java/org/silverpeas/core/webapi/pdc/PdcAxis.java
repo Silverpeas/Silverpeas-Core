@@ -31,8 +31,8 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
@@ -280,13 +280,13 @@ public class PdcAxis {
     }
     return "PdcAxis{id=" + getId() + ", name=" + getName() + ", mandatory=" + isMandatory()
         + ", originValue=" + getOriginValue() + ", invariantValue=" + getInvariantValue()
-        + ", values=" + axisValuesArray.toString() + '}';
+        + ", values=" + axisValuesArray + '}';
   }
 
   private static List<PdcAxisValueEntity> fromValues(final List<Value> values,
       String originValueId,
       String inLanguage, final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
-    List<PdcAxisValueEntity> axisValues = new ArrayList<PdcAxisValueEntity>();
+    List<PdcAxisValueEntity> axisValues = new ArrayList<>();
     for (Value value : values) {
       PdcAxisValueEntity axisValue = PdcAxisValueEntity.fromValue(value, inLanguage);
       if (isFather(axisValue.getId(), originValueId)) {
@@ -329,7 +329,7 @@ public class PdcAxis {
   }
 
   private PdcAxis(String axisId, String axisName) {
-    this.id = Integer.valueOf(axisId);
+    this.id = Integer.parseInt(axisId);
     this.name = axisName;
   }
 

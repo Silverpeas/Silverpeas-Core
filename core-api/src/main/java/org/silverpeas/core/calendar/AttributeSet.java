@@ -23,14 +23,16 @@
  */
 package org.silverpeas.core.calendar;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.MapsId;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.MapsId;
+import org.silverpeas.kernel.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,8 +56,8 @@ public class AttributeSet implements Serializable, Iterable<Map.Entry<String, St
   @ElementCollection(fetch = FetchType.EAGER)
   @MapsId
   @CollectionTable(name = "sb_cal_attributes", joinColumns = {@JoinColumn(name = "id")})
-  @MapKeyColumn(name = "name")
-  @Column(name = "value")
+  @MapKeyColumn(name = "attrName")
+  @Column(name = "attrValue")
   private Map<String, String> attributes = new HashMap<>();
 
   /**
@@ -66,6 +68,7 @@ public class AttributeSet implements Serializable, Iterable<Map.Entry<String, St
   }
 
   @Override
+  @NonNull
   public Iterator<Map.Entry<String, String>> iterator() {
     return attributes.entrySet().iterator();
   }
@@ -159,7 +162,7 @@ public class AttributeSet implements Serializable, Iterable<Map.Entry<String, St
   }
 
   /**
-   * Sets to this attributes all those from the specified ones.
+   * Sets this attributes with all those from the specified ones.
    * @param attributes the attributes to add.
    */
   public void setAllFrom(final AttributeSet attributes) {

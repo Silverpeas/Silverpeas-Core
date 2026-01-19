@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * This class manage the information needed for groups navigation and browsing.
  * REQUIREMENT: the Group passed in the constructor MUST BE A {@link GroupState#VALID} GROUP
- * (with Id, etc...)
+ * (with id, etc...)
  * @author t.leroi
  */
 public class NavigationStock {

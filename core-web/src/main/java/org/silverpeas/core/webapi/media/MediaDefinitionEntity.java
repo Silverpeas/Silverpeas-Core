@@ -25,10 +25,10 @@ package org.silverpeas.core.webapi.media;
 
 import org.silverpeas.core.io.media.Definition;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
@@ -46,7 +46,7 @@ public class MediaDefinitionEntity implements Serializable {
 
   /**
    * Creates a new media definition entity from the specified definition.
-   * @param definition
+   * @param definition definition of a media
    * @return the entity representing the specified definition.
    */
   public static MediaDefinitionEntity createFrom(final Definition definition) {

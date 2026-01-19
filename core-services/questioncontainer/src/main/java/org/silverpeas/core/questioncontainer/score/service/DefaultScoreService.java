@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.score.service;
 
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.score.dao.ScoreDAO;
@@ -30,16 +31,14 @@ import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
 import org.silverpeas.core.questioncontainer.score.model.ScoreRuntimeException;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Default implementation of Score service
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultScoreService implements ScoreService {
 
@@ -69,10 +68,6 @@ public class DefaultScoreService implements ScoreService {
     }
   }
 
-  /**
-   * @see com.stratelia.webactiv.score.control
-   * .ScoreService#getUserPositionByFatherIdAndParticipationId
-   */
   private int getUserPositionByFatherIdAndParticipationId(ScorePK scorePK, String fatherId,
       String userId, int participationId) {
     Connection con = getConnection();
@@ -326,7 +321,7 @@ public class DefaultScoreService implements ScoreService {
       ScoreDetail scoreDetail = ScoreDAO
           .getUserScoreByFatherIdAndParticipationId(con, scorePK, fatherId, userId,
               participationId);
-      setNbParticipation(scoreDetail);
+      setNbParticipation(Objects.requireNonNull(scoreDetail));
       setPosition(scoreDetail);
       return scoreDetail;
     } catch (Exception e) {

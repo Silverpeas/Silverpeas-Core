@@ -37,7 +37,7 @@ import java.util.List;
  * the CMIS objects tree. Each application that has to expose some of its contributions must
  * implements this interface by a CDI managed bean. The bean will be then discovered by the CMIS
  * system in order to get some contributions managed by the application. For doing, the bean has to
- * be annotated with the @{@link javax.inject.Named} qualifier with as value the name of the
+ * be annotated with the @{@link jakarta.inject.Named} qualifier with as value the name of the
  * application following by the suffix {@code ContributionsProvider}. The way the contributions are
  * handled in the application or the concrete type of the contribution is left to the implementation
  * details of the bean implementing this interface.

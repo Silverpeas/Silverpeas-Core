@@ -47,7 +47,7 @@ import org.silverpeas.core.test.integration.rule.TestStatisticRule;
 import org.silverpeas.core.test.integration.SQLRequester;
 import org.silverpeas.kernel.util.SystemWrapper;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

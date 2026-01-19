@@ -37,8 +37,8 @@ import org.silverpeas.core.admin.component.service.SilverpeasComponentInstancePr
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.*;
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -54,7 +54,6 @@ import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
@@ -150,8 +149,8 @@ class CalendarEventUserNotificationReminderTest {
     when(componentInstance.getName()).thenReturn(COMPONENT_NAME);
     when(silverpeasComponentInstanceProvider.getById(INSTANCE_ID)).thenReturn(
         Optional.of(componentInstance));
-    when(silverpeasComponentInstanceProvider.getComponentName(INSTANCE_ID)).thenReturn(
-        "componentNameTest");
+    /*when(silverpeasComponentInstanceProvider.getComponentName(INSTANCE_ID)).thenReturn(
+        "componentNameTest");*/
 
     when(componentInstanceRoutingMapProviderByInstance.getByInstanceId(INSTANCE_ID)).thenReturn(
         componentInstanceRoutingMapProvider);
@@ -163,8 +162,6 @@ class CalendarEventUserNotificationReminderTest {
     when(receiver.getUserPreferences()).thenReturn(userPreferences);
 
     when(userProvider.getUser(receiver.getId())).thenReturn(receiver);
-    reflectionRule.setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(),
-        "defaultLanguage");
 
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     when(componentAccessControl.isGroupAuthorized(anyString(), anyString())).thenReturn(true);

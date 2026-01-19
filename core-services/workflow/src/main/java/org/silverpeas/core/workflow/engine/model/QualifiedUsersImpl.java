@@ -28,10 +28,10 @@ import org.silverpeas.core.workflow.api.model.RelatedGroup;
 import org.silverpeas.core.workflow.api.model.RelatedUser;
 import org.silverpeas.core.workflow.api.model.UserInRole;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;

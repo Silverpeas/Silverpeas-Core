@@ -42,7 +42,7 @@ import org.silverpeas.core.test.unit.extention.RequesterProvider;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 import java.time.ZoneId;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.writeDeclaredField;

@@ -29,8 +29,8 @@ import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.SilverpeasWebResource;
 
-import javax.inject.Singleton;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static java.lang.String.valueOf;

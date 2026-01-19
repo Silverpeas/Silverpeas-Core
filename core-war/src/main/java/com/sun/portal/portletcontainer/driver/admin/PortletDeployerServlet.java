@@ -32,13 +32,13 @@ import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServl
 import org.silverpeas.web.portlets.portal.DesktopMessages;
 import org.silverpeas.web.portlets.portal.PropertiesContext;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
@@ -136,7 +136,7 @@ public class PortletDeployerServlet extends SilverpeasAuthenticatedHttpServlet {
       throwHttpForbiddenError();
     }
 
-    String language = getLanguage(request);
+    String language = getLanguage();
 
     DesktopMessages.init(language);
     response.setContentType("text/html;charset=UTF-8");
@@ -150,7 +150,7 @@ public class PortletDeployerServlet extends SilverpeasAuthenticatedHttpServlet {
     AdminUtils.setAttributes(session, portletAdminData, "useless", "useless",
         "useless", language);
 
-    if (isParameterPresent(request, AdminConstants.UNDEPLOY_PORTLET_SUBMIT)) {
+    if (isParameterPresent(request)) {
       String[] portletsToUndeploy = request
           .getParameterValues(AdminConstants.PORTLETS_TO_UNDEPLOY);
       if (portletsToUndeploy == null) {
@@ -197,12 +197,11 @@ public class PortletDeployerServlet extends SilverpeasAuthenticatedHttpServlet {
       try {
         AdminUtils.setPortletWindowAttributes(session, portletAdminData, null);
       } catch (Exception ex) {
-        StringBuilder messageBuffer = new StringBuilder(DesktopMessages
-            .getLocalizedString(AdminConstants.NO_WINDOW_DATA));
-        messageBuffer.append(".");
-        messageBuffer.append(ex.getMessage());
+        String messageBuffer = DesktopMessages
+            .getLocalizedString(AdminConstants.NO_WINDOW_DATA) + "." +
+            ex.getMessage();
         session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE,
-            messageBuffer.toString());
+            messageBuffer);
       }
     }
 
@@ -211,13 +210,12 @@ public class PortletDeployerServlet extends SilverpeasAuthenticatedHttpServlet {
     reqd.forward(request, response);
   }
 
-  private boolean isParameterPresent(HttpServletRequest request,
-      String parameter) {
-    String name = request.getParameter(parameter);
+  private boolean isParameterPresent(HttpServletRequest request) {
+    String name = request.getParameter(AdminConstants.UNDEPLOY_PORTLET_SUBMIT);
     return (name != null);
   }
 
-  private String getLanguage(HttpServletRequest request) {
+  private String getLanguage() {
     return UserDetail.getCurrentRequester().getUserPreferences().getLanguage();
   }
 }

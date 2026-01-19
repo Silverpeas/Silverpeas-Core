@@ -29,7 +29,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
 
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.Produces;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -45,13 +45,13 @@ import java.util.regex.Pattern;
 /**
  * Class that represents a web route.
  * It contains the associated method to call and can verify if the call is authorized.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 class Path {
   private final static String REGEXP_SEPARATOR = "@#@#@";
-  private final static Pattern VARIABLE_MATCHER = Pattern.compile("(\\{[^/\\?]+\\})");
+  private final static Pattern VARIABLE_MATCHER = Pattern.compile("(\\{[^/?]+})");
   private final static Pattern VARIABLE_NAME = Pattern.compile("\\{\\s*([\\w_]+)");
-  private final static Pattern VARIABLE_REGEXP_CHECK = Pattern.compile(":\\s*(.+)\\s*\\}");
+  private final static Pattern VARIABLE_REGEXP_CHECK = Pattern.compile(":\\s*(.+)\\s*}");
 
   private final String path;
   private List<String> pathVariables = null;
@@ -95,13 +95,13 @@ class Path {
   private String parsePath(String aPath) {
     StringBuilder newPath = new StringBuilder();
     StringTokenizer aPathTokenizer = new StringTokenizer(aPath, "/");
-    for (; aPathTokenizer.hasMoreTokens(); ) {
+    while (aPathTokenizer.hasMoreTokens()) {
       StringBuilder newPathPart = new StringBuilder();
       String pathPart = aPathTokenizer.nextToken();
 
       Matcher variableMatcher = VARIABLE_MATCHER.matcher(pathPart);
       if (variableMatcher.find()) {
-        newPathPart.append(pathPart.substring(0, variableMatcher.start()));
+        newPathPart.append(pathPart, 0, variableMatcher.start());
         String variableDefinition = variableMatcher.group(1);
         Matcher variableName = VARIABLE_NAME.matcher(variableDefinition);
         if (!variableName.find()) {
@@ -143,26 +143,26 @@ class Path {
    * with name/value of variables.
    */
   public boolean matches(String path, final boolean skipPathsWithVariables,
-      WebComponentRequestContext requestContext) {
+      WebComponentRequestContext<?> requestContext) {
     StringTokenizer pathTokenizer = new StringTokenizer(path, "/");
-    StringTokenizer registredPathTokenizer = new StringTokenizer(this.path, "/");
+    StringTokenizer registeredPathTokenizer = new StringTokenizer(this.path, "/");
     Iterator<String> pathVariablesIt = pathVariables != null ? pathVariables.iterator() : null;
 
-    if (pathTokenizer.countTokens() != registredPathTokenizer.countTokens()) {
+    if (pathTokenizer.countTokens() != registeredPathTokenizer.countTokens()) {
       return false;
     }
 
     Map<String, Set<String>> matchedPathVariables = new LinkedHashMap<>();
-    for (; pathTokenizer.hasMoreTokens(); ) {
+    while (pathTokenizer.hasMoreTokens()) {
       String pathPart = pathTokenizer.nextToken();
-      String registredPathPart = registredPathTokenizer.nextToken();
-      if (!pathPart.equals(registredPathPart)) {
+      String registeredPathPart = registeredPathTokenizer.nextToken();
+      if (!pathPart.equals(registeredPathPart)) {
         if (pathVariablesIt == null || skipPathsWithVariables ||
-            !registredPathPart.contains(REGEXP_SEPARATOR)) {
+            !registeredPathPart.contains(REGEXP_SEPARATOR)) {
           return false;
         }
         Matcher matcher =
-            Pattern.compile(registredPathPart.replaceFirst(REGEXP_SEPARATOR, "")).matcher(pathPart);
+            Pattern.compile(registeredPathPart.replaceFirst(REGEXP_SEPARATOR, "")).matcher(pathPart);
         if (!matcher.find()) {
           return false;
         }
@@ -210,25 +210,17 @@ class Path {
     return navigationStep;
   }
 
-  /**
-   * Gets the redirection.
-   * @return
-   */
   public Annotation getRedirectTo() {
     return redirectTo;
   }
 
-  /**
-   * Gets the production directive.
-   * @return
-   */
   public Produces getProduces() {
     return produces;
   }
 
   /**
    * Gets the list of identifiers of methods to invoke before the treatment of HTTP method.
-   * @return
+   * @return an array of method identifiers.
    */
   public String[] getInvokeBeforeIdentifiers() {
     return invokeBeforeIdentifiers;
@@ -236,7 +228,7 @@ class Path {
 
   /**
    * Gets the list of identifiers of methods to invoke after the treatment of HTTP method.
-   * @return
+   * @return an array of method identifiers
    */
   public String[] getInvokeAfterIdentifiers() {
     return invokeAfterIdentifiers;

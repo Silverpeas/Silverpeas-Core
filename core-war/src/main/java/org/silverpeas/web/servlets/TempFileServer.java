@@ -23,25 +23,23 @@
  */
 package org.silverpeas.web.servlets;
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import static org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation
-    .startWithTranslationDescriptorPrefix;
+import static org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation.startWithTranslationDescriptorPrefix;
 
 /**
  * To get files from temp directory
@@ -66,12 +64,7 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
       IOException {
     final String encodedFileName = req.getPathInfo();
 
-    String fileName = StringUtil.EMPTY;
-    try {
-      fileName = URLDecoder.decode(encodedFileName, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      throwHttpForbiddenError();
-    }
+    String fileName = URLDecoder.decode(encodedFileName, Charsets.UTF_8);
 
     // Verifying that the path is a valid one (security)
     if (!isValid(fileName)) {

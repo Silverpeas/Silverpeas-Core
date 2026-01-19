@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.notification.user.delayed.delegate;
 
+import jakarta.annotation.Nonnull;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.service.UserFactory;
 import org.silverpeas.core.notification.user.AttachmentLink;
 import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -50,13 +51,12 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_BASE_SERVER_URL;
@@ -77,7 +77,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
    * User details cache
    */
   private static final int MAX_USER_DETAIL_ITEMS = 100;
-  private final Map<Integer, UserDetail> userDetailCache =
+  private final Map<Integer, User> userDetailCache =
       new LinkedHashMap<>(MAX_USER_DETAIL_ITEMS);
 
   /**
@@ -104,6 +104,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Deleting all delayed notification data of a user
+   *
    * @param userId the identifier of a user in Silverpeas.
    * @throws NotificationServerException if an error occurs
    */
@@ -130,6 +131,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
   /**
    * When user settings change, if the new frequency is NONE then the delayed notifications saved
    * have to be sent
+   *
    * @param userId the unique identifier of a user
    * @param channel the channel through which the notifications will be sent.
    * @param frequency the frequency of the notification sending.
@@ -150,7 +152,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
           .saveDelayedNotificationUserSetting(userId, channel, frequency);
     } else if (oldSettings != null) {
       // User settings are deleted from persistence system. Default Silverpeas's frequency will be
-      // use for the given user.
+      // used for the given user.
       getDelayedNotification()
           .deleteDelayedNotificationUserSetting(oldSettings);
     }
@@ -166,6 +168,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Easy call of new notification process
+   *
    * @param delayedNotificationData the data about the notification to send.
    * @throws NotificationServerException if an error occurs.
    */
@@ -176,6 +179,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Handling a new notification
+   *
    * @param delayedNotificationData the data about the notification to send.
    * @throws NotificationServerException if an error occurs.
    */
@@ -191,6 +195,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Checks if the notification has to be delayed or not
+   *
    * @param delayedNotificationData the data about the notification to send.
    * @return true if the notification can be delayed in the time.
    */
@@ -231,6 +236,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Easy call of delayed notifications process
+   *
    * @param date the date at which the sending of the notification will be delayed.
    * @throws NotificationServerException if an error occurs
    */
@@ -242,8 +248,8 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
-   * saved for a given
-   * user
+   * saved for a given user
+   *
    * @param userId the unique identifier of a user targeted by the notification.
    * @param channels the channels through which the notifications will be sent.
    * @throws NotificationServerException if an error occurs
@@ -255,8 +261,8 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
-   * saved for given
-   * users and channels
+   * saved for given users and channels
+   *
    * @param userIds the identifiers of the users targeted by the notifications.
    * @param channels the channels through which the notifications will be sent.
    * @throws NotificationServerException if an error occurs
@@ -268,6 +274,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Forces the sending of all the delayed notifications saved for all users
+   *
    * @throws NotificationServerException if an error occurs
    */
   protected void forceDelayedNotificationsSending()
@@ -285,6 +292,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Forces the sending of all the delayed notifications saved for given users and channels
+   *
    * @param userIds the unique identifier of the users targeted by the notifications.
    * @param channels the channels through which the notifications will be sent.
    * @throws NotificationServerException if an error occurs
@@ -297,10 +305,10 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
   void performDelayedNotificationsSending(final Date date,
       final Set<NotifChannel> channels) throws NotificationServerException {
 
-    // Searching all the users that have to be notify from a given date and given channels
+    // Searching all the users that have to be notified from a given date and given channels
     final List<Integer> usersToBeNotified = getDelayedNotification()
         .findUsersToBeNotified(date, channels, getDelayedNotification()
-                .getDefaultDelayedNotificationFrequency());
+            .getDefaultDelayedNotificationFrequency());
 
     // Performing all users to notify
     performUsersDelayedNotifications(usersToBeNotified, channels);
@@ -327,7 +335,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
         // Browse channel notifications
         for (final Map.Entry<NotifChannel, List<DelayedNotificationData>> mapEntry :
             delayedNotifications
-            .entrySet()) {
+                .entrySet()) {
           delayedNotificationIdsToDelete.addAll(
               performUserDelayedNotificationsOnChannel(mapEntry.getKey(), mapEntry.getValue()));
         }
@@ -517,6 +525,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Initializing common data of the notification synthesis from the first delayed notification
+   *
    * @param delayedNotifications a list of data about the notifications to send
    */
   private DelayedNotificationSyntheseData initializeSynthese(
@@ -533,8 +542,8 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Creating the notification data from a given channel, a given delayed notification and with the
-   * final message.
-   * Currently, only the SMTP channel is managed
+   * final message. Currently, only the SMTP channel is managed
+   *
    * @param channel the channel through which the notification will be sent.
    * @param syntheses a synthesis on the notifications to send.
    * @return a data about the delayed notification to send.
@@ -544,16 +553,17 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
     final NotificationData notificationData = new NotificationData();
 
     // Receiver user
-    final UserDetail receiver = getUserDetail(syntheses.getUserId());
+    final User receiver = getUserDetail(syntheses.getUserId());
 
     // Sender (administrator)
-    final UserDetail sender = getUserDetail(-1);
+    final User sender = getUserDetail(-1);
 
     // Set the channel
     notificationData.setTargetChannel(channel.name());
 
     // Set the destination address
-    notificationData.setTargetReceipt(NotifChannel.SMTP.equals(channel) ? receiver.getEmailAddress() :
+    notificationData.setTargetReceipt(NotifChannel.SMTP.equals(channel) ?
+        receiver.getEmailAddress() :
         Integer.toString(syntheses.getUserId()));
 
     // Set the sender name
@@ -601,7 +611,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
   private String getStringTranslation(final String key, final String language) {
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationManager.multilang.notificationManagerBundle",
-          language);
+        language);
     return messages.getString(key);
   }
 
@@ -634,20 +644,23 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Centralizes the searches of user details with cache feature
+   *
    * @param userId the unique identifier of a user in Silverpeas
    * @return the user with the specified identifier.
    */
-  protected UserDetail getUserDetail(final Integer userId) {
-    UserDetail userDetail = userDetailCache.get(userId);
+  protected User getUserDetail(final Integer userId) {
+    User userDetail = userDetailCache.get(userId);
     if (userDetail == null) {
       if ((userId >= 0)) {
         userDetail = getUserDetail(Integer.toString(userId));
       } else {
         Administration admin = AdministrationServiceProvider.getAdminService();
-        userDetail = new UserDetail();
-        userDetail.setId(Integer.toString(userId));
-        userDetail.setLastName(admin.getSilverpeasName());
-        userDetail.setEmailAddress(admin.getSilverpeasEmail());
+        UserFactory factory = UserFactory.get();
+        userDetail = factory.builder()
+            .setId(Integer.toString(userId))
+            .setLastName(admin.getSilverpeasName())
+            .setEmailAddress(admin.getSilverpeasEmail())
+            .build();
       }
       if (userDetailCache.size() >= MAX_USER_DETAIL_ITEMS) {
         userDetailCache.remove(userDetailCache.keySet().iterator().next());
@@ -657,7 +670,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
     return userDetail;
   }
 
-  private UserDetail getUserDetail(final String userId) {
+  private User getUserDetail(final String userId) {
     // we use the Administration service to get all the user personal data, even those sensitive
     // like the email address.
     try {
@@ -670,6 +683,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   /**
    * Centralizes notification sending
+   *
    * @param notificationData data about the notification to send.
    * @throws NotificationServerException if an error occurs.
    */
@@ -688,6 +702,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
   /**
    * Converts in the specified HTML content any line-feeds and tabulations by their counterpart in
    * HTML.
+   *
    * @param content a content in HTML.
    * @return the converted content.
    */

@@ -31,46 +31,26 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author frageade
- * @version
  */
-
 public class FormPassword extends FormLine {
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   *
-   */
   public FormPassword(String nam, String val) {
     super(nam, val);
     setLabel(nam);
     setType("password");
   }
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   * @param lab
-   *
-   */
   public FormPassword(String nam, String val, String lab) {
     super(nam, val);
     setLabel(lab);
     setType("password");
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String print() {
     String retour = "\n<td>" + label + "</td>";
 
@@ -79,14 +59,6 @@ public class FormPassword extends FormLine {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @param nam
-   * @param url
-   * @param pc
-   * @return
-   *
-   */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
 
@@ -97,20 +69,10 @@ public class FormPassword extends FormLine {
     return fpw;
   }
 
-  /**
-   * Method declaration
-   * @param req
-   *
-   */
   public void getConfigurationByRequest(HttpServletRequest req) {
     setLabel(req.getParameter("configuratorLabelValue"));
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String printDemo() {
     String retour = "\n<td>" + label + "</td>";
 
@@ -118,11 +80,6 @@ public class FormPassword extends FormLine {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"label\">";
 

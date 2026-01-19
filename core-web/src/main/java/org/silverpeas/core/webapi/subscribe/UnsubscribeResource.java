@@ -34,10 +34,10 @@ import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.Collections;
 
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;

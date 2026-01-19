@@ -91,7 +91,6 @@ public class NextEventsPortlet extends SilverpeasEditablePortlet {
   @Override
   protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
       throws PortletException {
-
     String nbItems = request.getParameter(TEXTBOX_NB_ITEMS);
 
     // Check if it is a number

@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.contribution.publication.dao;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria.QUERY_ORDER_BY;
@@ -45,8 +46,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import java.sql.*;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.*;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -66,13 +67,13 @@ import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve", "SqlSourceToSinkFlow"})
 @Repository
 public class PublicationDAO extends AbstractDAO {
-  // if beginDate is null, it will be replace in database with it
+  // if beginDate is null, it will be replaced in database with it
   private static final String NULL_BEGIN_DATE = "0000/00/00";
-  // if endDate is null, it will be replace in database with it
+  // if endDate is null, it will be replaced in database with it
   private static final String NULL_END_DATE = "9999/99/99";
-  // if beginHour is null, it will be replace in database with it
+  // if beginHour is null, it will be replaced in database with it
   private static final String NULL_BEGIN_HOUR = "00:00";
-  // if endDate is null, it will be replace in database with it
+  // if endDate is null, it will be replaced in database with it
   private static final String NULL_END_HOUR = "23:59";
 
   private static final String UNDEFINED_ID = "unknown";
@@ -113,8 +114,8 @@ public class PublicationDAO extends AbstractDAO {
   private static final String PUB_REMOVAL_DATE = "pubRemovalDate";
   private static final String PUB_REMOVER_ID = "pubRemoverId";
 
-  private PublicationDAO() {
-  }
+  @Inject
+  private PublicationFatherDAO fatherDAO;
 
   /**
    * Deletes all publications linked to the component instance represented by the given identifier.
@@ -357,7 +358,7 @@ public class PublicationDAO extends AbstractDAO {
 
   public void deleteRow(Connection con, PublicationPK pk)
       throws SQLException {
-    PublicationFatherDAO.removeAllFathers(con, pk); // Delete associations
+    fatherDAO.removeAllFathers(con, pk); // Delete associations
     // between pub and nodes
     StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(pk.getTableName()).append(
@@ -851,7 +852,8 @@ public class PublicationDAO extends AbstractDAO {
   private void configureClausesByCriteria(final JdbcSqlQuery query,
       final PublicationCriteria criteria) {
     final List<Integer> componentIds = criteria.getComponentInstanceIds().stream()
-        .map(ComponentInst::getComponentLocalId)
+        .map(SilverpeasComponentInstance::getIdentity)
+        .map(SilverpeasComponentInstance.Identity::getInstanceLocalId)
         .collect(Collectors.toList());
     final Set<Integer> includedNodeIds = criteria.getIncludedNodeIds();
     final Set<Integer> excludedNodeIds = criteria.getExcludedNodeIds();

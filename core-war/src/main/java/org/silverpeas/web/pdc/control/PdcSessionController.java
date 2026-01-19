@@ -23,37 +23,27 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.pdc.PdcServiceProvider;
-import org.silverpeas.core.pdc.pdc.model.Axis;
-import org.silverpeas.core.pdc.pdc.model.AxisHeader;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.model.*;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class PdcSessionController extends AbstractAdminComponentSessionController {
   private static final long serialVersionUID = -7993993070048344281L;
@@ -62,15 +52,8 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
   private Axis currentAxis = null;
   private Value currentValue = null;
   private String values = "";
-  private String currentLanguage = null;
+  private String currentLanguage;
 
-  /**
-   * Constructor declaration
-   *
-   * @param mainSessionCtrl
-   * @param componentContext
-   *
-   */
   public PdcSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
@@ -81,13 +64,13 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
   @Override
   public boolean isAccessGranted() {
     try {
-      return isPDCAdmin() || getPdcBm().isUserManager(getUserId());
+      return isPDCAdmin() || getPdcManager().isUserManager(getUserId());
     } catch (PdcException e) {
       throw new SilverpeasRuntimeException(e);
     }
   }
 
-  private PdcManager getPdcBm() {
+  private PdcManager getPdcManager() {
     return PdcServiceProvider.getPdcManager();
   }
 
@@ -96,11 +79,9 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
   }
 
   public ArrayList<String> getComponentList() {
-    ArrayList<String> componentList = new ArrayList<String>();
+    ArrayList<String> componentList = new ArrayList<>();
     String[] allowedComponentIds = getUserAvailComponentIds();
-    for (int i = 0; i < allowedComponentIds.length; i++) {
-      componentList.add(allowedComponentIds[i]);
-    }
+    Collections.addAll(componentList, allowedComponentIds);
     return componentList;
   }
 
@@ -146,34 +127,34 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
   }
 
   public int getNbMaxAxis() throws PdcException {
-    return getPdcBm().getNbMaxAxis();
+    return getPdcManager().getNbMaxAxis();
   }
 
   public List<AxisHeader> getPrimaryAxis() throws PdcException {
-    return getPdcBm().getAxisByType("P");
+    return getPdcManager().getAxisByType("P");
   }
 
   public List<AxisHeader> getSecondaryAxis() throws PdcException {
-    return getPdcBm().getAxisByType("S");
+    return getPdcManager().getAxisByType("S");
   }
 
   public List<AxisHeader> getAxis() throws PdcException {
-    return getPdcBm().getAxisByType(getCurrentView());
+    return getPdcManager().getAxisByType(getCurrentView());
   }
 
   public boolean isCreationAllowed() throws PdcException {
-    int nbAxis = getPdcBm().getNbAxis();
+    int nbAxis = getPdcManager().getNbAxis();
     return nbAxis < getNbMaxAxis();
   }
 
   public int createAxis(AxisHeader axisHeader) throws PdcException {
     axisHeader.setCreatorId(getUserId());
     axisHeader.setCreationDate(DateUtil.formatDate(new Date()));
-    return getPdcBm().createAxis(axisHeader);
+    return getPdcManager().createAxis(axisHeader);
   }
 
   public int updateAxis(AxisHeader axisHeader) throws PdcException {
-    return getPdcBm().updateAxis(axisHeader);
+    return getPdcManager().updateAxis(axisHeader);
   }
 
   public void deleteAxis(String axisId) throws PdcException {
@@ -181,11 +162,11 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
 
     try {
       // on recherche le treeId de l'axe à supprimer
-      Axis axis = getPdcBm().getAxisDetail(axisId);
+      Axis axis = getPdcManager().getAxisDetail(axisId);
       long treeId = axis.getAxisHeader().getRootId();
 
       // supprime l'axe
-      getPdcBm().deleteAxis(con, axisId);
+      getPdcManager().deleteAxis(con, axisId);
       setCurrentAxis(null);
 
       // supprime les synonymes
@@ -202,7 +183,7 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
   }
 
   public Axis getAxisDetail(String axisId) throws PdcException {
-    Axis axis = getPdcBm().getAxisDetail(axisId);
+    Axis axis = getPdcManager().getAxisDetail(axisId);
     setCurrentAxis(axis);
     return axis;
   }
@@ -213,8 +194,8 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
 
   public Value getAxisValue(String valueId, boolean setAsCurrentValue)
       throws PdcException {
-    Value value = getPdcBm().getAxisValue(valueId,
-        new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
+    Value value = getPdcManager().getAxisValue(valueId,
+        Integer.toString(getCurrentAxis().getAxisHeader().getRootId()));
     value.setAxisId(Integer.parseInt(getCurrentAxis().getAxisHeader().getPK()
         .getId()));
     if (setAsCurrentValue) {
@@ -236,23 +217,22 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
     String currentAxisId = getCurrentAxis().getAxisHeader().getPK().getId();
     value.setCreatorId(getUserId());
     value.setCreationDate(DateUtil.formatDate(new Date()));
-    int motherId = getPdcBm().insertMotherValue(value, currentValueId, currentAxisId);
+    int motherId = getPdcManager().insertMotherValue(value, currentValueId, currentAxisId);
     refreshCurrentAxis(getAxisDetail(getCurrentAxis().getAxisHeader().getPK().getId()));
     return motherId;
   }
 
   public int moveCurrentValueToNewFatherId(String newFatherId, int orderNumber)
       throws PdcException {
-    int status = getPdcBm().moveValueToNewFatherId(getCurrentAxis(),
+    return getPdcManager().moveValueToNewFatherId(getCurrentAxis(),
         getCurrentValue(), newFatherId, orderNumber);
-    return status;
   }
 
   public int createDaughterValue(Value value) throws PdcException {
     String currentValueId = getCurrentValue().getPK().getId();
     value.setCreatorId(getUserId());
     value.setCreationDate(DateUtil.formatDate(new Date()));
-    int status = getPdcBm().createDaughterValue(value, currentValueId,
+    int status = getPdcManager().createDaughterValue(value, currentValueId,
         String.valueOf(getCurrentAxis().getAxisHeader().getRootId()));
     refreshCurrentAxis(getAxisDetail(getCurrentAxis().getAxisHeader().getPK().getId()));
 
@@ -260,8 +240,8 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
   }
 
   public int updateValue(Value value) throws PdcException {
-    int status = getPdcBm().updateValue(value,
-        new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
+    int status = getPdcManager().updateValue(value,
+        Integer.toString(getCurrentAxis().getAxisHeader().getRootId()));
     refreshCurrentValueAndCurrentAxis(value, getAxisDetail(getCurrentAxis()
         .getAxisHeader().getPK().getId()));
     return status;
@@ -273,15 +253,15 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
     try {
       long treeId = getCurrentAxis().getAxisHeader().getRootId();
       // recupere les valueId des fils de valueId
-      List<String> values = getPdcBm().getDaughterValues(Long.toString(treeId), valueId);
+      List<String> values = getPdcManager().getDaughterValues(Long.toString(treeId), valueId);
       // ajoute le valueId
       values.add(valueId);
 
       con = getConnection();
 
-      getPdcBm().deleteValueAndSubtree(con, valueId,
+      getPdcManager().deleteValueAndSubtree(con, valueId,
           getCurrentAxis().getAxisHeader().getPK().getId(),
-          new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
+          Integer.toString(getCurrentAxis().getAxisHeader().getRootId()));
 
       getThBm().deleteSynonymsTerms(con, treeId, values);
       // dans le PdcBmImpl : on efface les droits liées aux valeurs du subtree
@@ -301,17 +281,17 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
 
   public String deleteValue(String valueId) throws PdcException {
     Connection con = null;
-    String daughterValueName = null;
+    String daughterValueName;
     try {
       con = getConnection();
 
-      daughterValueName = getPdcBm().deleteValue(con, valueId,
+      daughterValueName = getPdcManager().deleteValue(con, valueId,
           getCurrentAxis().getAxisHeader().getPK().getId(), String.valueOf(
           getCurrentAxis().getAxisHeader().getRootId()));
       if (daughterValueName == null) {
         long treeId = getCurrentAxis().getAxisHeader().getRootId();
 
-        List<String> theValues = new ArrayList<String>();
+        List<String> theValues = new ArrayList<>();
         theValues.add(valueId);
         getThBm().deleteSynonymsTerms(con, treeId, theValues);
 
@@ -335,8 +315,8 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
    * @param valueId - the id of the selected value (valueId is not empty)
    * @return the complet path
    */
-  public List getFullPath(String valueId) throws PdcException {
-    return getPdcBm().getFullPath(valueId,
+  public List<Value> getFullPath(String valueId) throws PdcException {
+    return getPdcManager().getFullPath(valueId,
         Integer.toString(getCurrentAxis().getAxisHeader().getRootId()));
   }
 
@@ -396,17 +376,9 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
     }
   }
 
-  /**
-   * Initialise le UserPanel avec les permissions déjà existantes pour la valeur courante
-   *
-   * @return l'URL du panel
-   * @throws RemoteException
-   * @throws PdcException
-   * @throws SQLException
-   */
-  public String initUserPanelForPdcManager() throws RemoteException,
-      PdcException, SQLException {
+  public String initUserPanelForPdcManager() throws PdcException {
     String m_context = URLUtil.getApplicationURL();
+    //noinspection unchecked
     Pair<String, String>[] hostPath = new Pair[1];
 
     String name = getCurrentAxis().getAxisHeader()
@@ -429,18 +401,10 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
-    // Contraintes
-    // sel.setMultiSelect(false);
-    // sel.setPopupMode(true);
-    // sel.setSetSelectable(false);
-
-    SelectionUsersGroups sug = new SelectionUsersGroups();
-    sug.setComponentId(getComponentId());
-
     // On récupère la liste des utilisateurs et groupes ayant droits
-    List managers = getManagers();
-    List<UserDetail> users = (List<UserDetail>) managers.get(0);
-    List<Group> groups = (List<Group>) managers.get(1);
+    Pair<List<User>, List<Group>> managers = getManagers();
+    List<User> users = managers.getFirst();
+    List<Group> groups = managers.getSecond();
     String[] selectedUsers = new String[users.size()];
     String[] selectedGroups = new String[groups.size()];
 
@@ -459,22 +423,9 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
     return Selection.getSelectionURL();
   }
 
-  /**
-   * récupère le résultat du UserPanel
-   *
-   * @throws PdcException
-   * @throws SQLException
-   */
-  public void updateManager() throws PdcException, SQLException {
-    List<String> usersId = new ArrayList<String>();
-    ArrayList<String> groupsId = new ArrayList<String>();
-
-    for (int i = 0; i < getSelection().getSelectedElements().length; i++) {
-      usersId.add(getSelection().getSelectedElements()[i]);
-    }
-    for (int i = 0; i < getSelection().getSelectedSets().length; i++) {
-      groupsId.add(getSelection().getSelectedSets()[i]);
-    }
+  public void updateManager() throws PdcException {
+    List<String> usersId = Arrays.asList(getSelection().getSelectedElements());
+    List<String> groupsId = Arrays.asList(getSelection().getSelectedSets());
     setManagers(usersId, groupsId);
   }
 
@@ -482,13 +433,13 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
 
     SearchContext searchContext = new SearchContext(this.getUserId());
 
-    List<Value> values = getPdcBm().getPertinentDaughterValuesByInstanceIds(
+    List<Value> values = getPdcManager().getPertinentDaughterValuesByInstanceIds(
         searchContext, axisId, valueId, getComponentList());
 
     Value value = null;
     if (values != null) {
       Iterator<Value> i = values.iterator();
-      Value theValue = null;
+      Value theValue;
       while (i.hasNext()) {
         theValue = i.next();
         if (theValue.getPK().getId().equals(valueId)) {
@@ -503,97 +454,79 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
   }
 
   /**
-   * get the managers for the current value
+   * Get the managers for the current value
    *
-   * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
-   * @throws PdcException
+   * @return pair of list: the first one with the users and the second one with the groups.
+   * @throws PdcException if an error occurs while getting the managers.
    */
-  public List getManagers() throws PdcException, SQLException {
-    List usersAndGroups = new ArrayList();
-
+  public Pair<List<User>, List<Group>> getManagers() throws PdcException {
     String valueId = "-1";
     if (getCurrentValue() != null) {
       valueId = getCurrentValue().getPK().getId();
     }
 
-    List<List<String>> managers = getPdcBm().getManagers(getCurrentAxis().getAxisHeader().getPK()
+    List<List<String>> managers = getPdcManager().getManagers(getCurrentAxis().getAxisHeader().getPK()
         .getId(), valueId);
 
     List<String> usersId = managers.get(0);
     List<String> groupsId = managers.get(1);
-    usersAndGroups.add(userIds2Users(usersId));
-    usersAndGroups.add(groupIds2Groups(groupsId));
-    return usersAndGroups;
+    List<User> users = userIds2Users(usersId);
+    List<Group> groups = groupIds2Groups(groupsId);
+    return Pair.of(users, groups);
   }
 
   /**
    * get the managers of the specified value
    *
-   * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
-   * @throws PdcException
+   * @return a pair of lists: the first one with the users and the last one with the groups
+   * @throws PdcException if the managers fails to be fetched
    */
-  public List getManagers(String axisId, String valueId) throws PdcException,
-      SQLException {
-    List usersAndGroups = new ArrayList();
-
-    List<List<String>> managers = getPdcBm().getManagers(axisId, valueId);
+  public Pair<List<User>, List<Group>> getManagers(String axisId, String valueId) throws PdcException {
+    List<List<String>> managers = getPdcManager().getManagers(axisId, valueId);
 
     List<String> usersId = managers.get(0);
     List<String> groupsId = managers.get(1);
-    usersAndGroups.add(userIds2Users(usersId));
-    usersAndGroups.add(groupIds2Groups(groupsId));
-    return usersAndGroups;
+    return Pair.of(userIds2Users(usersId), groupIds2Groups(groupsId));
   }
 
   /**
-   * get the inherited managers of the specified value
+   * Get the inherited managers of the specified value
    *
-   * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
-   * @throws PdcException , SQLException
+   * @return a pair of lists: the first one with the users and the last one with the groups
+   * @throws PdcException if the managers cannot be fetched.
    */
-  public List getInheritedManagers(Value value) throws PdcException,
-      SQLException {
-    List usersAndGroups = new ArrayList();
+  public Pair<List<User>, List<Group>> getInheritedManagers(Value value) throws PdcException {
+    List<List<String>> managers = getPdcManager().getInheritedManagers(value);
 
-    List managers = getPdcBm().getInheritedManagers(value);
-
-    List<String> usersId = (List) managers.get(0);
-    List<String> groupsId = (List) managers.get(1);
-    usersAndGroups.add(userIds2Users(usersId));
-    usersAndGroups.add(groupIds2Groups(groupsId));
-    return usersAndGroups;
+    List<String> usersId = managers.get(0);
+    List<String> groupsId = managers.get(1);
+    return Pair.of(userIds2Users(usersId), groupIds2Groups(groupsId));
   }
 
   /**
-   * retourne un tableau des valeurs où l'utilisateur courant possède des droits
+   * Retourne un tableau des valeurs où l'utilisateur courant possède des droits
    *
    * @return ArrayList ( valueid )
    * @throws PdcException , SQLException
    */
-  public List<String> getRights() throws PdcException, SQLException {
-    String valueId = "";
+  public List<String> getRights() throws PdcException {
     String currentUserId = getUserId();
-    List<String> rights = new ArrayList<String>();
-    Value value = new Value();
+    List<String> rights = new ArrayList<>();
     List<Value> axisValues = getCurrentAxis().getValues();
-    List usersAndGroups = new ArrayList();
-    for (int i = 0; i < axisValues.size(); i++) {
-      value = axisValues.get(i);
-      valueId = value.getPK().getId();
-      usersAndGroups = getManagers(getCurrentAxis().getAxisHeader().getPK()
-          .getId(), valueId);
-      List<UserDetail> users = (List<UserDetail>) usersAndGroups.get(0);
-      List<Group> groups = (List<Group>) usersAndGroups.get(1);
-      for (int j = 0; j < groups.size(); j++) {
-        Group groupe = groups.get(j);
+    for (Value value : axisValues) {
+      String valueId = value.getPK().getId();
+      var usersAndGroups = getManagers(
+          getCurrentAxis().getAxisHeader().getPK().getId(), valueId);
+      List<User> users = usersAndGroups.getFirst();
+      List<Group> groups = usersAndGroups.getSecond();
+      for (Group groupe : groups) {
         for (int k = 0; k < groupe.getUserIds().length; k++) {
           if (groupe.getUserIds()[k].equals(currentUserId)) {
             rights.add(valueId);
           }
         }
       }
-      for (int j = 0; j < users.size(); j++) {
-        UserDetail user = users.get(j);
+      for (User user : users) {
         if (user.getId().equals(currentUserId)) {
           rights.add(valueId);
         }
@@ -602,132 +535,86 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
     return rights;
   }
 
-  public boolean isValueManager() throws PdcException, SQLException {
+  public boolean isValueManager() throws PdcException {
     return isValueManager(getCurrentAxis().getAxisHeader().getPK().getId(),
         getCurrentValue().getPK().getId());
   }
 
-  public boolean isAxisManager() throws PdcException, SQLException {
+  public boolean isAxisManager() throws PdcException {
     return isManager(getCurrentAxis().getAxisHeader().getPK().getId(), "-1");
   }
 
-  public boolean isAxisManager(String axisId) throws PdcException, SQLException {
+  public boolean isAxisManager(String axisId) throws PdcException {
     return isManager(axisId, "-1");
   }
 
   public boolean isValueManager(String axisId, String valueId)
-      throws PdcException, SQLException {
+      throws PdcException {
     return isManager(axisId, valueId);
   }
 
-  public boolean isManager(String axisId, String valueId) throws PdcException,
-      SQLException {
+  public boolean isManager(String axisId, String valueId) throws PdcException {
     if (getUserDetail().isAccessPdcManager() || getUserDetail().isAccessAdmin()) {
       return true;
     }
+    var usersAndGroups = getManagers(axisId, valueId);
+    return isThereAManager(usersAndGroups);
+  }
 
-    boolean userAllowed = false;
+  public boolean isInheritedManager() throws PdcException {
+    var usersAndGroups = getInheritedManagers(getCurrentValue());
+    return isThereAManager(usersAndGroups);
+  }
 
-    List usersAndGroups = getManagers(axisId, valueId);
-
-    List<UserDetail> users = (List<UserDetail>) usersAndGroups.get(0);
-    for (int j = 0; !userAllowed && j < users.size(); j++) {
-      UserDetail user = users.get(j);
+  private boolean isThereAManager(Pair<List<User>, List<Group>> usersAndGroups) {
+    List<User> users = usersAndGroups.getFirst();
+    for (User user : users) {
       if (user.getId().equals(getUserId())) {
         return true;
       }
     }
 
-    if (!userAllowed) {
-      List<Group> groups = (List<Group>) usersAndGroups.get(1);
-      for (int j = 0; !userAllowed && j < groups.size(); j++) {
-        Group groupe = groups.get(j);
-        for (int k = 0; !userAllowed && k < groupe.getUserIds().length; k++) {
-          if (groupe.getUserIds()[k].equals(getUserId())) {
-            return true;
-          }
+    List<Group> groups = usersAndGroups.getSecond();
+    for (Group groupe : groups) {
+      for (int k = 0; k < groupe.getUserIds().length; k++) {
+        if (groupe.getUserIds()[k].equals(getUserId())) {
+          return true;
         }
       }
     }
     return false;
   }
 
-  public boolean isInheritedManager() throws PdcException, SQLException {
-    boolean userAllowed = false;
-
-    List usersAndGroups = getInheritedManagers(getCurrentValue());
-
-    List<UserDetail> users = (List<UserDetail>) usersAndGroups.get(0);
-    for (int j = 0; !userAllowed && j < users.size(); j++) {
-      UserDetail user = users.get(j);
-      if (user.getId().equals(getUserId())) {
-        return true;
-      }
-    }
-
-    if (!userAllowed) {
-      List<Group> groups = (List<Group>) usersAndGroups.get(1);
-      for (int j = 0; !userAllowed && j < groups.size(); j++) {
-        Group groupe = groups.get(j);
-        for (int k = 0; !userAllowed && k < groupe.getUserIds().length; k++) {
-          if (groupe.getUserIds()[k].equals(getUserId())) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  public List<String> getAxisManageables() throws PdcException, SQLException {
-    List<String> axisManageables = new ArrayList<String>();
+  public List<String> getAxisManageables() throws PdcException {
+    List<String> axisManageables = new ArrayList<>();
 
     List<AxisHeader> axisList = getAxis();
 
-    AxisHeader axis = null;
-    for (int a = 0; a < axisList.size(); a++) {
-      axis = axisList.get(a);
-
-      if (isAxisManager(axis.getPK().getId())) {
-        axisManageables.add(axis.getPK().getId());
+    for (AxisHeader axisHeader : axisList) {
+      if (isAxisManager(axisHeader.getPK().getId())) {
+        axisManageables.add(axisHeader.getPK().getId());
       }
     }
 
     return axisManageables;
   }
 
-  /**
-   * update permissions on current value
-   *
-   * @param userIds
-   * @param groupIds
-   * @throws PdcException
-   * @throws SQLException
-   */
-  public void setManagers(List userIds, List groupIds) throws PdcException,
-      SQLException {
+  public void setManagers(List<String> userIds, List<String> groupIds) throws PdcException {
     String valueId = "-1";
     if (getCurrentValue() != null) {
       valueId = getCurrentValue().getPK().getId();
     }
 
-    getPdcBm().setManagers(userIds, groupIds, getCurrentAxis().getAxisHeader()
+    getPdcManager().setManagers(userIds, groupIds, getCurrentAxis().getAxisHeader()
         .getPK().getId(), valueId);
   }
 
-  /**
-   * delete permissions on current value
-   *
-   * @throws PdcException
-   * @throws SQLException
-   */
-  public void eraseManagers() throws PdcException, SQLException {
+  public void eraseManagers() throws PdcException {
     String valueId = "-1";
     if (getCurrentValue() != null) {
       valueId = getCurrentValue().getPK().getId();
     }
-
-    getPdcBm().razManagers(getCurrentAxis().getAxisHeader().getPK().getId(), valueId);
+    getPdcManager().razManagers(getCurrentAxis().getAxisHeader().getPK().getId(), valueId);
   }
 
   private AdminController getAdmin() {
@@ -735,8 +622,8 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
   }
 
   public List<Group> groupIds2Groups(List<String> groupIds) {
-    List<Group> res = new ArrayList<Group>();
-    Group theGroup = null;
+    List<Group> res = new ArrayList<>();
+    Group theGroup;
 
     for (int nI = 0; groupIds != null && nI < groupIds.size(); nI++) {
       theGroup = getAdmin().getGroupById(groupIds.get(nI));
@@ -748,12 +635,10 @@ public class PdcSessionController extends AbstractAdminComponentSessionControlle
     return res;
   }
 
-  public List<UserDetail> userIds2Users(List<String> userIds) {
-    List<UserDetail> res = new ArrayList<UserDetail>();
-    UserDetail user = null;
-
+  public List<User> userIds2Users(List<String> userIds) {
+    List<User> res = new ArrayList<>();
     for (int nI = 0; userIds != null && nI < userIds.size(); nI++) {
-      user = getUserDetail(userIds.get(nI));
+      User user = getUserDetail(userIds.get(nI));
       if (user != null) {
         res.add(user);
       }

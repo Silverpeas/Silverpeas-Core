@@ -23,15 +23,14 @@
  */
 package org.silverpeas.core.util;
 
+import jakarta.enterprise.util.AnnotationLiteral;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
-
-import javax.enterprise.util.AnnotationLiteral;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -47,16 +46,7 @@ public class ServiceProviderIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(ServiceProviderIT.class)
-        .addPackages(true, "org.silverpeas.core.cache")
-        .addClasses(TestQualifier.class)
-        .addClasses(org.silverpeas.core.util.Test.class)
-        .addClasses(TestManagedBean.class)
-        .addClasses(TestManagedAndQualifiedBean.class)
-        .addClasses(TestApplicationScopedBean.class)
-        .addClasses(TestNamedAndScopedManagedBean.class, TestFirstNamedAndScopedManagedBean.class,
-            TestSecondNamedAndScopedManagedBean.class)
-        .addClasses(AnotherTest.class, TestAnotherManagedBean1.class, TestAnotherManagedBean2.class)
+    return LibCoreWarBuilder.onWarForTestClass(ServiceProviderIT.class)
         .build();
   }
 

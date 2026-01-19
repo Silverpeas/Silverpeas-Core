@@ -23,22 +23,23 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.io.File;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -50,7 +51,7 @@ import static org.mockito.Mockito.when;
 @EnableSilverTestEnv(context = JEETestContext.class)
 public class RequestParameterDecoderTest {
 
-  private Date TODAY = DateUtil.getNow();
+  private final Date TODAY = DateUtil.getNow();
   private HttpRequest httpRequestMock;
 
   @BeforeEach
@@ -92,7 +93,7 @@ public class RequestParameterDecoderTest {
       if (StringUtil.isDefined(parameterName)) {
         if (parameterName.equals("aRequestFile")) {
           FileItem fileItem = mock(FileItem.class);
-          when(fileItem.getName()).thenReturn("fileName");
+          when(fileItem.getFileName()).thenReturn("fileName");
           when(fileItem.getSize()).thenReturn(26L);
           when(fileItem.getContentType()).thenReturn(MediaType.TEXT_PLAIN);
           when(fileItem.getInputStream()).thenReturn(FileUtils.openInputStream(getImageResource()));
@@ -125,7 +126,8 @@ public class RequestParameterDecoderTest {
 
   private File getImageResource() throws Exception {
     return new File(
-        RequestParameterDecoderTest.class.getClassLoader().getResource("image.gif").toURI());
+        Objects.requireNonNull(
+            RequestParameterDecoderTest.class.getClassLoader().getResource("image.gif")).toURI());
   }
 
   @Test
@@ -139,7 +141,7 @@ public class RequestParameterDecoderTest {
     }
     assertThat(result.getaStringNotInParameter(), nullValue());
     assertThat(result.getaString(), is("&lt;a&gt;aStringValue&lt;/a&gt;"));
-    assertThat(result.getaStringNotInParameterToUnescape(), isEmptyString());
+    assertThat(result.getaStringNotInParameterToUnescape(), is(emptyString()));
     assertThat(result.getaStringToUnescape(), is("<a>aStringValueToUnescape</a>"));
     assertThat(result.getAnIntegerNotInParameter(), nullValue());
     assertThat(result.getAnInteger(), is(1));

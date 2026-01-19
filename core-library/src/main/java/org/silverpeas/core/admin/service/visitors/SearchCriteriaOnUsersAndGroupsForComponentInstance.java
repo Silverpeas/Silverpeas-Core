@@ -32,13 +32,14 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,6 +59,7 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
  *
  * @author mmoquillon
  */
+@Bean
 public class SearchCriteriaOnUsersAndGroupsForComponentInstance implements SearchCriteriaVisitor {
 
   private final Administration admin;

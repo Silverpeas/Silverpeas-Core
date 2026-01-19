@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.mylinks.test.WarBuilder4MyLinks;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -57,7 +57,9 @@ public class MyLinksUserEventDeletionIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4MyLinks
-        .onWarForTestClass(MyLinksUserEventDeletionIT.class).build();
+        .onWarForTestClass(MyLinksUserEventDeletionIT.class)
+        .addAsResource("org/silverpeas/core/mylinks/service/" + DATASET_SCRIPT)
+        .build();
   }
 
   @Test

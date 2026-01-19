@@ -43,8 +43,8 @@ import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeExcepti
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
+import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;

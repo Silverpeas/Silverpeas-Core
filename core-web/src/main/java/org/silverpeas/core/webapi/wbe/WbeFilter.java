@@ -31,18 +31,18 @@ import org.silverpeas.core.wbe.DefaultWbeUser;
 import org.silverpeas.core.wbe.WbeHostManager;
 import org.silverpeas.core.wbe.WbeUser;
 
-import javax.enterprise.event.Observes;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.enterprise.event.Observes;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import static javax.ws.rs.core.Response.Status.fromStatusCode;
+import static jakarta.ws.rs.core.Response.Status.fromStatusCode;
 import static org.silverpeas.core.wbe.WbeLogger.logger;
 
 /**

@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A template from which a Javascript script is generated for setting the synchronizer tokens in the
+ * A template from which a JavaScript script is generated for setting the synchronizer tokens in the
  * context of a web page.
  *
  * @author mmoquillon
@@ -38,7 +38,7 @@ import java.util.List;
 public class TokenSettingTemplate {
 
   /**
-   * Silverpeas template from which is generated the Javascript script for setting the session token
+   * Silverpeas template from which is generated the JavaScript script for setting the session token
    * for each form in a web page.
    */
   private static final String TEMPLATE_NAME = "tokenSetting_js";

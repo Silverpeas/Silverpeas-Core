@@ -26,8 +26,8 @@ package org.silverpeas.core.admin.user.notification.role;
 
 import org.silverpeas.core.annotation.Bean;
 
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 
 /**
  * Bean in charge to notify a user or a user group doesn't play anymore a role in one or several

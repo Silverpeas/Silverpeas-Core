@@ -26,16 +26,16 @@ package org.silverpeas.core.webapi.node;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * The type of a node.
  * @author mmoquillon
  */
 @XmlType
-@XmlEnum(String.class)
+@XmlEnum
 public enum NodeType {
 
   @XmlEnumValue("root")

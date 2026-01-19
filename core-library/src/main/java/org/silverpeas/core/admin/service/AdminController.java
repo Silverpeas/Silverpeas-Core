@@ -37,12 +37,15 @@ import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.kernel.annotation.Cacheable;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
+import java.io.Serializable;
 import java.util.*;
 
 import static java.util.Collections.emptyList;
@@ -54,7 +57,8 @@ import static java.util.Collections.emptyList;
  */
 @Service
 @Transactional
-public class AdminController implements java.io.Serializable {
+@Cacheable
+public class AdminController implements Serializable {
 
   private static final long serialVersionUID = -1605341557688427460L;
 

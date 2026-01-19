@@ -26,7 +26,7 @@ package org.silverpeas.core.web.authentication.credentials;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author ehugonnet

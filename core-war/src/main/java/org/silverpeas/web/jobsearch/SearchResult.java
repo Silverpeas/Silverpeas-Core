@@ -70,7 +70,7 @@ public class SearchResult {
     return creaName;
   }
 
-  public void setCreaorName(String creaName) {
+  public void setCreatorName(String creaName) {
     this.creaName = creaName;
   }
 

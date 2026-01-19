@@ -27,7 +27,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * An event about the life-cycle change of an attachment in Silverpeas.

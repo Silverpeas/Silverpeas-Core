@@ -23,8 +23,10 @@
  */
 package org.silverpeas.core.pdc.tree.service;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -38,8 +40,6 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -56,6 +56,8 @@ public class DefaultTreeService implements TreeService {
   private static final String ORDER_NUMBER = "orderNumber";
   @Inject
   private TreeI18NDAO treeI18NDAO;
+  @Inject
+  private I18n i18n;
 
   protected DefaultTreeService() {
 
@@ -192,7 +194,7 @@ public class DefaultTreeService implements TreeService {
   private void setDefaultLanguage(final TreeNode oldRoot) {
     if (oldRoot.getLanguage() == null) {
       // translation for the first time
-      oldRoot.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
+      oldRoot.setLanguage(i18n.getDefaultLanguage());
     }
   }
 
@@ -344,7 +346,7 @@ public class DefaultTreeService implements TreeService {
     TreeNodeI18N translation = new TreeNodeI18N(node.getPK().getId(), node.getLanguage(),
         node.getName(), node.getDescription());
     node.addTranslation(translation);
-    if (I18NHelper.isI18nContentActivated) {
+    if (i18n.isEnabled()) {
       // ajout des autres traductions
       List<TreeNodeI18N> translations;
       try {

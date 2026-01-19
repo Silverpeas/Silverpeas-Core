@@ -82,16 +82,16 @@ public class VersioningSessionController extends AbstractComponentSessionControl
         versions.add(document);
       }
     } else {
-      versions = getDocumentVersions(document.getPk());
+      //noinspection unchecked
+      versions = (List<SimpleDocument>) getDocumentVersions(document.getPk());
       versions.add(document);
     }
     HistoryDocumentSorter.sortHistory(versions);
     return versions;
   }
 
-  @SuppressWarnings("unchecked")
-  private List<SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
-    return (List)((HistorisedDocument) AttachmentServiceProvider.getAttachmentService()
+  private List<? extends SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
+    return ((HistorisedDocument) AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(documentPK, getContentLanguage())).getFunctionalHistory();
   }
 

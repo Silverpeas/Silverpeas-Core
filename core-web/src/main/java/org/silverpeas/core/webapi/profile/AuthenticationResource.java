@@ -28,11 +28,11 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
-import javax.inject.Inject;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * A REST-based Web service to authenticate a user in Silverpeas.
@@ -66,7 +66,7 @@ public class AuthenticationResource extends RESTWebService {
   /**
    * Authenticates the user from his credentials passed through the {@code Authorization}
    * HTTP header, opens a new HTTP session in Silverpeas in the case of a Basic authentication
-   * scheme, or throws a {@link javax.ws.rs.WebApplicationException} exception. If the user has
+   * scheme, or throws a {@link jakarta.ws.rs.WebApplicationException} exception. If the user has
    * already opened a session in Silverpeas and the request carries the session identifier, then
    * nothing is done.
    * @return The profile of the user once authenticated.

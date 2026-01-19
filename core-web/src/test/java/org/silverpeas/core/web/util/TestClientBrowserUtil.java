@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.kernel.test.UnitTest;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

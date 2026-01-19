@@ -24,11 +24,13 @@
 
 package org.silverpeas.core.util;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.core.annotation.Bean;
 
 /**
  * @author mmoquillon
  */
+@Bean
 @Named("first" + TestNamedAndScopedManagedBean.NAME_SUFFIX)
 public class TestFirstNamedAndScopedManagedBean extends TestNamedAndScopedManagedBean {
 }

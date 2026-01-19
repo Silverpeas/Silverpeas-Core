@@ -23,8 +23,11 @@
  */
 package org.silverpeas.core.notification.sse;
 
+import org.silverpeas.core.annotation.Bean;
+
 /**
  * @author Yohann Chastagnier
  */
+@Bean
 public class TestServerEventNotifier extends CDIServerEventNotifier<AbstractServerEventTest> {
 }

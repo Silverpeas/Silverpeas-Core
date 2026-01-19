@@ -27,8 +27,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.text.MessageFormat;
 import java.util.UUID;
 
@@ -47,7 +47,7 @@ public class ReminderIdentifier implements EntityIdentifier {
   private String id;
 
   @Override
-  public ReminderIdentifier fromString(final String id) {
+  public ReminderIdentifier setFromString(final String id) {
     if (!id.startsWith(ID_PREFIX) && id.length() != 41) {
       throw new IllegalArgumentException("The specified id " + id + " isn't of a reminder's one");
     }
@@ -56,10 +56,15 @@ public class ReminderIdentifier implements EntityIdentifier {
   }
 
   @Override
-  public ReminderIdentifier generateNewId(final String... parameters) {
+  public ReminderIdentifier generateNewValue(final String... parameters) {
     this.id =
         SCHEDULED_JOB_NAME.format(new Object[]{UUID.randomUUID().toString().replaceAll("-", "")});
     return this;
+  }
+
+  @Override
+  public boolean isNull() {
+    return this.id == null;
   }
 
   @Override

@@ -72,23 +72,16 @@ class NodeAccessControllerFilterTest {
   private static final String USER_ID = "bart";
   // NO RIGHT ON TOPIC
   private static final String KMELIA_38 = "kmelia38";
-  private static final TestNodeDetail NODE_38_26 = new TestNodeDetail("3826", KMELIA_38);
-  private static final TestNodeDetail NODE_38_62 = new TestNodeDetail("3862", KMELIA_38);
   // RIGHTS ON TOPIC
   private static final String KMELIA_83 = "kmelia83";
+
   // INHERITED RIGHTS
-  private static final TestNodeDetail NODE_83_260 = new TestNodeDetail("83260", KMELIA_83);
+  private TestNodeDetail node_83_260;
   // SPECIFIC RIGHTS
-  private static final TestNodeDetail NODE_83_620 = new TestNodeDetail("83620", KMELIA_83, true);
-
-  private static final List<TestNodeDetail> ALL_NODES = Arrays
-      .asList(NODE_38_26, NODE_38_62, NODE_83_260, NODE_83_620);
-
-  private static final List<TestNodeDetail> NODES_WITH_INHERITED_RIGHTS = Arrays
-      .asList(NODE_38_26, NODE_38_62);
-
-  private static final List<TestNodeDetail> NODES_WITH_SPECIFIC_RIGHTS = Arrays
-      .asList(NODE_83_260, NODE_83_620);
+  private TestNodeDetail node_83_620;
+  private List<TestNodeDetail> allNodes;
+  private List<TestNodeDetail> nodesWithInheritedRights;
+  private List<TestNodeDetail> nodesWithSpecificRights;
 
   @TestManagedMock
   private NodeService nodeService;
@@ -101,7 +94,22 @@ class NodeAccessControllerFilterTest {
   private User user;
 
   @BeforeEach
-  void setup() {
+  void createNodeDetails() {
+    TestNodeDetail node3826 = new TestNodeDetail("3826", KMELIA_38);
+    TestNodeDetail node3862 = new TestNodeDetail("3862", KMELIA_38);
+    node_83_260 = new TestNodeDetail("83260", KMELIA_83);
+    node_83_620 = new TestNodeDetail("83620", KMELIA_83, true);
+
+    allNodes = Arrays
+        .asList(node3826, node3862, node_83_260, node_83_620);
+    nodesWithInheritedRights = Arrays
+        .asList(node3826, node3862);
+    nodesWithSpecificRights = Arrays
+        .asList(node_83_260, node_83_620);
+  }
+
+  @BeforeEach
+  void setupMock() {
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
@@ -110,7 +118,7 @@ class NodeAccessControllerFilterTest {
 
   @Test
   void filterAuthorizedByUserShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithNodePks(toNodePks(ALL_NODES));
+    executeFilterAuthorizedByUserWithNodePks(toNodePks(allNodes));
     assertFilterAuthorizedByUserShouldLoadCaches();
   }
 
@@ -121,9 +129,9 @@ class NodeAccessControllerFilterTest {
     assertAvailableComponentCache(componentDataManager);
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83));
-    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620));
+    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(node_83_260, node_83_620));
     assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(
-        Pair.of(KMELIA_83, NODE_83_620.getId())));
+        Pair.of(KMELIA_83, node_83_620.getId())));
     // Node level
     verify(nodeService, times(1)).getMinimalDataByInstances(anyCollection());
     final ArgumentCaptor<ProfiledObjectIds> nodeIds = ArgumentCaptor.forClass(ProfiledObjectIds.class);
@@ -136,7 +144,7 @@ class NodeAccessControllerFilterTest {
 
   @Test
   void filterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithNodePks(toNodePks(NODES_WITH_INHERITED_RIGHTS));
+    executeFilterAuthorizedByUserWithNodePks(toNodePks(nodesWithInheritedRights));
     assertFilterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches();
   }
 
@@ -157,7 +165,7 @@ class NodeAccessControllerFilterTest {
 
   @Test
   void filterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithNodePks(toNodePks(NODES_WITH_SPECIFIC_RIGHTS));
+    executeFilterAuthorizedByUserWithNodePks(toNodePks(nodesWithSpecificRights));
     assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches();
   }
 
@@ -168,8 +176,8 @@ class NodeAccessControllerFilterTest {
     assertAvailableComponentCache(componentDataManager);
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_83));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_83));
-    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId())));
+    assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(node_83_260, node_83_620));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, node_83_620.getId())));
     // Node level
     verify(nodeService, times(1)).getMinimalDataByInstances(anyCollection());
     final ArgumentCaptor<ProfiledObjectIds> nodeIds = ArgumentCaptor.forClass(ProfiledObjectIds.class);
@@ -182,7 +190,7 @@ class NodeAccessControllerFilterTest {
 
   @Test
   void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithNodePks(toNodePks(ALL_NODES), SEARCH);
+    executeFilterAuthorizedByUserWithNodePks(toNodePks(allNodes), SEARCH);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
   }
 
@@ -192,7 +200,7 @@ class NodeAccessControllerFilterTest {
 
   @Test
   void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithNodePks(toNodePks(ALL_NODES), MODIFICATION);
+    executeFilterAuthorizedByUserWithNodePks(toNodePks(allNodes), MODIFICATION);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches();
   }
 
@@ -276,7 +284,7 @@ class NodeAccessControllerFilterTest {
         final Collection<String> instanceIds = a.getArgument(1);
         final ProfiledObjectIds profiledObjectIds = a.getArgument(2);
         final Map<Pair<String, String>, Set<String>> result = new HashMap<>();
-        ALL_NODES.stream()
+        allNodes.stream()
             .filter(n -> instanceIds.contains(n.getNodePK().getInstanceId()))
             .filter(n -> profiledObjectIds.contains(n.getId()))
             .map(NodeDetail::getNodePK)
@@ -288,7 +296,7 @@ class NodeAccessControllerFilterTest {
           .thenAnswer(a -> Arrays.asList(KMELIA_38, KMELIA_83));
       when(nodeService.getMinimalDataByInstances(anyCollection())).then(
           a -> ((Collection<String>) a.getArgument(0)).stream()
-              .flatMap(i -> ALL_NODES.stream().filter(l -> l.getNodePK().getInstanceId().equals(i)))
+              .flatMap(i -> allNodes.stream().filter(l -> l.getNodePK().getInstanceId().equals(i)))
               .collect(Collectors.toList()));
       CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     }

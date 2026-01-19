@@ -91,7 +91,7 @@ public abstract class AbstractViewerIT {
 
   private static File tempPath;
   private static File resourceTestDir;
-  private final static List<Class<? extends Initialization>> services =
+  private static final List<Class<? extends Initialization>> services =
       Arrays.asList(Im4javaManager.class, SwfToolManager.class, JsonPdfToolManager.class,
           OpenOfficeService.class);
 

@@ -28,10 +28,10 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,7 +96,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   @Override
   public FieldTemplate[] getFieldTemplates() {
-    FieldTemplate[] fieldsArray = new FieldTemplate[getFields().keySet().size()];
+    FieldTemplate[] fieldsArray = new FieldTemplate[getFields().size()];
     for (IndexedFieldTemplate field : getFields().values()) {
       fieldsArray[field.index] = field.fieldTemplate;
     }

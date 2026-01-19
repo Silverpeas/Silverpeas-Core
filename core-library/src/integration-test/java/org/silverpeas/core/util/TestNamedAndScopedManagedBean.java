@@ -26,8 +26,8 @@ package org.silverpeas.core.util;
 
 import org.silverpeas.kernel.annotation.Base;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 import static org.silverpeas.core.util.TestNamedAndScopedManagedBean.NAME_SUFFIX;
 

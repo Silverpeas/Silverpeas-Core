@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Provider of relationships between two users.
  * @author Bensalem Nabil
  */
-public interface SocialRelationShipProvider extends SocialInformationProvider {
+public interface SocialRelationShipProvider<T extends SocialInformation> extends SocialInformationProvider<T> {
 
-  static SocialRelationShipProvider get() {
+  static SocialRelationShipProvider<?> get() {
     return ServiceProvider.getService(SocialRelationShipProvider.class);
   }
 }

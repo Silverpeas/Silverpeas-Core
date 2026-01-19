@@ -24,16 +24,15 @@
 
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.kernel.annotation.Base;
-
-import javax.inject.Singleton;
 
 /**
  * @author silveryocha
  */
 @Base
-@Singleton
+@Bean
 public class DefaultInstanceSimpleDocumentAccessControlExtension
     implements ComponentInstanceSimpleDocumentAccessControlExtension {
 

@@ -26,7 +26,7 @@ package org.silverpeas.core.io.upload;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

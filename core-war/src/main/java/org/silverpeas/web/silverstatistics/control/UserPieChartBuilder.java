@@ -24,13 +24,11 @@
 package org.silverpeas.web.silverstatistics.control;
 
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -41,12 +39,12 @@ import java.util.Map;
  * @author BERTINL
  */
 public class UserPieChartBuilder extends AbstractPieChartBuilder {
-  private String dateStat;
-  private String dateFormate;
-  private String filterIdGroup;
-  private String filterIdUser;
-  private String spaceId;
-  private LocalizationBundle message;
+  private final String dateStat;
+  private final String dateFormate;
+  private final String filterIdGroup;
+  private final String filterIdUser;
+  private final String spaceId;
+  private final LocalizationBundle message;
 
   public UserPieChartBuilder(String dateStat, String dateFormate, String filterIdGroup,
       String filterIdUser, String spaceId, LocalizationBundle message) {
@@ -64,23 +62,15 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
    * #getChartTitle()
    */
   public String getChartTitle() {
-    OrganizationController organizationController =
-        OrganizationControllerProvider.getOrganisationController();
     String title = message.getString("silverStatisticsPeas.AccessNumber") + " ";
 
-    if (StringUtil.isDefined(this.filterIdGroup) && !StringUtil.isDefined(this.filterIdUser)) {
-      title += message.getString("silverStatisticsPeas.EvolutionAccessGroup")
-          + " " + organizationController.getGroup(this.filterIdGroup).getName() + " ";
-    }
-    if (StringUtil.isDefined(this.filterIdUser)) {
-      title += message.getString("silverStatisticsPeas.EvolutionAccessUser")
-          + " " + organizationController.getUserDetail(this.filterIdUser)
-          .getDisplayedName() + " ";
-    }
+    title = PubliPieChartBuilder.computeTitle(title, this.filterIdGroup, this.filterIdUser,
+        message);
 
     try {
       if (StringUtil.isDefined(this.spaceId) && (!this.spaceId.equals("WA0"))) {
-        SpaceInstLight space = AdministrationServiceProvider.getAdminService().getSpaceInstLightById(this.spaceId);
+        SpaceInstLight space =
+            AdministrationServiceProvider.getAdminService().getSpaceInstLightById(this.spaceId);
         title += message.getString("silverStatisticsPeas.ToSpace") + " \""
             + space.getName() + "\" ";
       }

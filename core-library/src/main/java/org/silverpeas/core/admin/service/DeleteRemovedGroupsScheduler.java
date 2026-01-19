@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.SchedulingInitializer;
@@ -44,7 +44,7 @@ import static org.silverpeas.core.util.DateUtil.toLocalDate;
  * Batch in charge of the deletion of removed groups.
  * @author silveryocha
  */
-@Service
+@Bean
 public class DeleteRemovedGroupsScheduler extends SchedulingInitializer {
 
   protected static final String JOB_NAME = "DeleteRemovedGroupsJob";

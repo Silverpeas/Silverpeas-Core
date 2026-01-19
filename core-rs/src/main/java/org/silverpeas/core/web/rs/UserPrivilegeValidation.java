@@ -30,15 +30,15 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.WebApplicationException;
 
 /**
  * The behavior to validate the privilege of a user to access a resource or a contribution in
  * Silverpeas through an HTTP connexion. For doing, a user can first to be authenticated in order
  * to identify him behind an incoming HTTP request, then its access rights to targeted resource or
- * contribution are checked. All implementors of such behaviour have to satisfy this
+ * contribution are checked. All implementors of such behavior have to satisfy this
  * interface.
  * @author mmoquillon
  */
@@ -46,7 +46,7 @@ public interface UserPrivilegeValidation {
 
   /**
    * The HTTP header parameter in an incoming request that carries the user session key. By the user
-   * session key could be passed a user token to perform a HTTP request without opening a session.
+   * session key could be passed a user token to perform an HTTP request without opening a session.
    * This parameter isn't mandatory as the session key can be found from an active HTTP session. If
    * neither HTTP session nor session key is available for the incoming request, user credentials
    * must be passed in the standard HTTP header parameter Authorization.
@@ -135,5 +135,5 @@ public interface UserPrivilegeValidation {
    * @throws WebApplicationException exception if the validation failed.
    */
   void validateUserAuthorizationOnPublication(final HttpServletRequest request, final User user,
-      PublicationDetail publi);
+      PublicationDetail publication);
 }

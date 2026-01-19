@@ -23,11 +23,11 @@
  */
 package org.silverpeas.web.agenda.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -43,7 +43,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,11 +52,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
-/**
- * Class declaration
- *
- * @author
- */
 public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionController> {
 
   private static final long serialVersionUID = -3636409715447616873L;
@@ -69,14 +64,6 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
   public AgendaRequestRouter() {
   }
 
-  /**
-   * Method declaration
-   *
-   * @param mainSessionCtrl
-   * @param context
-   * @return
-   *
-   */
   public AgendaSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
     return new AgendaSessionController(mainSessionCtrl, context);
@@ -96,7 +83,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
    *
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param scc The component Session Controller, build and initialised.
+   * @param scc The component Session Controller, build and initialized.
    * @param request The entering request. The request router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
@@ -104,7 +91,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
   public String getDestination(String function,
       AgendaSessionController scc, HttpRequest request) {
 
-    String destination = "";
+    String destination;
 
     try {
       if (function.startsWith("Main") || function.startsWith(("agenda.jsp"))) {
@@ -243,7 +230,10 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
         File fileUploaded = processFormUpload(scc, request);
         if (fileUploaded != null) {
           returnCode = scc.importIcalAgenda(fileUploaded);
-          fileUploaded.delete();
+          if (!fileUploaded.delete()) {
+            SilverLogger.getLogger(this).warn(
+                "Fail to delete uploaded file " + fileUploaded.getName() + " once its imported");
+          }
         }
         request.setAttribute("ImportReturnCode", returnCode);
         destination = getDestination("ToImportIcal", scc, request);
@@ -344,13 +334,11 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
         String selectedCategories = request.getParameter("selectedCategories");
         StringTokenizer st = new StringTokenizer(selectedCategories, ",");
         String[] categoryIds = new String[st.countTokens()];
-        Collection<Integer> selectedCategoryIds = new ArrayList<Integer>();
-        Collection<Category> categories = new ArrayList<Category>();
+        Collection<Category> categories = new ArrayList<>();
         int i = 0;
         while (st.hasMoreTokens()) {
           String categIcal = st.nextToken();
           categoryIds[i] = categIcal;
-          selectedCategoryIds.add(Integer.valueOf(categoryIds[i]));
           Category categ = scc.getCategory(categoryIds[i]);
           categories.add(categ);
           i++;
@@ -377,28 +365,22 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
 
   private File processFormUpload(AgendaSessionController agendaSc,
       HttpServletRequest request) {
-    String logicalName = "";
-    String tempFolderName = "";
-    String tempFolderPath = "";
-    String fileType = "";
-    long fileSize = 0;
+    String logicalName;
+    String tempFolderName;
+    String tempFolderPath;
     File fileUploaded = null;
     try {
       List<FileItem> items = HttpRequest.decorate(request).getFileItems();
       FileItem fileItem = FileUploadUtil.getFile(items, "fileCalendar");
       if (fileItem != null) {
-        logicalName = fileItem.getName();
+        logicalName = fileItem.getFileName();
         if (logicalName != null) {
           logicalName = logicalName.substring(logicalName
-              .lastIndexOf(File.separator) + 1, logicalName.length());
+              .lastIndexOf(File.separator) + 1);
 
           // Name of temp folder: timestamp and userId
-          tempFolderName = new Long(new Date().getTime()).toString() + "_"
+          tempFolderName = new Date().getTime() + "_"
               + agendaSc.getUserId();
-
-          // Mime type of the file
-          fileType = fileItem.getContentType();
-          fileSize = fileItem.getSize();
 
           // Directory Temp for the uploaded file
           tempFolderPath = FileRepositoryManager.getAbsolutePath(agendaSc
@@ -418,7 +400,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
               ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp") +
               File.separator
               + tempFolderName + File.separator + logicalName);
-          fileItem.write(fileUploaded);
+          fileItem.saveTo(fileUploaded);
         }
       }
     } catch (Exception e) {

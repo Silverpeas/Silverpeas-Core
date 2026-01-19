@@ -24,13 +24,14 @@
 
 package org.silverpeas.core.media.streaming;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  * </p>
  * @author silveryocha
  */
+@Bean
 @Singleton
 public class StreamingProvidersRegistry {
 

@@ -1,0 +1,1 @@
+EXEC sp_rename 'SB_Workflow_UserInfo.value', 'val', 'COLUMN';

@@ -29,18 +29,18 @@
   <parent>
     <groupId>org.silverpeas.core</groupId>
     <artifactId>services</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
   <artifactId>silverpeas-core-document-template</artifactId>
   <packaging>jar</packaging>
-  <name>Silverpeas Document Template Service ${project.version}</name>
+  <name>Silverpeas Document Templating Engine ${project.version}</name>
 
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
+      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

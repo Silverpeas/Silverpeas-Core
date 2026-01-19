@@ -26,8 +26,8 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 import org.silverpeas.core.persistence.datasource.repository.Parameters;
 import org.silverpeas.core.util.CollectionUtil;
 
-import javax.persistence.Query;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Query;
+import jakarta.persistence.TemporalType;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -108,8 +108,7 @@ public class NamedParameters implements Parameters {
       );
     } else if (value instanceof Date && temporalType != null) {
       parametersPerName.put(name, new DateNamedParameter(name, (Date) value, temporalType));
-    } else if (value instanceof Object[] && ((Object[]) value).length > 0 &&
-        ((Object[]) value)[0] instanceof Enum) {
+    } else if (value instanceof Object[] && ((Object[]) value)[0] instanceof Enum) {
       parametersPerName
           .put(name, new EnumCollectionNamedParameter(name, CollectionUtil.asSet((Enum<?>[]) value)));
     } else if (value instanceof Collection && !((Collection<?>) value).isEmpty() &&

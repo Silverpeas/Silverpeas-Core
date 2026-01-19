@@ -23,9 +23,9 @@
  */
 package org.silverpeas.web.workflowdesigner.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -42,9 +42,9 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionController;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -121,7 +121,7 @@ public class WorkflowDesignerRequestRouter extends
   }
 
   /**
-   * Initialise the map of the function handlers
+   * Initialize the map of the function handlers
    */
   private synchronized void initHandlers() {
     if (mapHandler != null) {
@@ -1063,7 +1063,7 @@ public class WorkflowDesignerRequestRouter extends
    * Handles the "RemoveForm" function
    */
   private static final FunctionHandler hndlRemoveForm = (function, workflowDesignerSC, request) -> {
-    String context = URLDecoder.decode(request.getParameter(CONTEXT));
+    String context = URLDecoder.decode(request.getParameter(CONTEXT), Charsets.UTF_8);
     workflowDesignerSC.removeForm(context);
 
     request.setAttribute(REDIRECT_TO, "ViewForms");

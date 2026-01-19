@@ -38,8 +38,8 @@ import org.silverpeas.core.web.util.ClientBrowserUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.core.webapi.viewer.DocumentViewEntity;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 import static java.text.MessageFormat.format;

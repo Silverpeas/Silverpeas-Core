@@ -31,67 +31,44 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.PageContext;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author frageade
- * @version
  */
-
 public class FormSelect extends FormLine {
 
-  private int size;
+  private final int size;
   private int nbItems;
-  private List<String> itemsLabels;
-  private List<String> itemValues;
-  private List<Boolean> itemsSelected;
+  private final List<String> itemsLabels;
+  private final List<String> itemValues;
+  private final List<Boolean> itemsSelected;
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   * @see
-   */
   public FormSelect(String nam, String val) {
     super(nam, val);
     setLabel(nam);
     size = 1;
-    itemsLabels = new ArrayList<String>();
-    itemValues = new ArrayList<String>();
-    itemsSelected = new ArrayList<Boolean>();
+    itemsLabels = new ArrayList<>();
+    itemValues = new ArrayList<>();
+    itemsSelected = new ArrayList<>();
     nbItems = 0;
     setType("select");
   }
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   * @param lab
-   * @param siz
-   * @see
-   */
   public FormSelect(String nam, String val, String lab, int siz) {
     super(nam, val);
     setLabel(lab);
     size = siz;
-    itemsLabels = new ArrayList<String>();
-    itemValues = new ArrayList<String>();
-    itemsSelected = new ArrayList<Boolean>();
+    itemsLabels = new ArrayList<>();
+    itemValues = new ArrayList<>();
+    itemsSelected = new ArrayList<>();
     nbItems = 0;
     setType("select");
   }
 
-  /**
-   * Method declaration
-   * @param itemsLabel
-   * @param itemValue
-   * @param selected
-   * @see
-   */
   public void addItem(String itemsLabel, String itemValue, boolean selected) {
     itemsLabels.add(itemsLabel);
     itemValues.add(itemValue);
@@ -99,12 +76,6 @@ public class FormSelect extends FormLine {
     nbItems++;
   }
 
-  /**
-   * Method declaration
-   * @param itemsLabel
-   * @param itemValue
-   * @see
-   */
   public void addItem(String itemsLabel, String itemValue) {
     itemsLabels.add(itemsLabel);
     itemValues.add(itemValue);
@@ -112,18 +83,13 @@ public class FormSelect extends FormLine {
     nbItems++;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String print() {
     StringBuilder retour = new StringBuilder("\n<td>").append(label).append("</td>");
 
     retour.append("\n<td><select name=\"")
         .append(name)
         .append("\" size=\"")
-        .append(String.valueOf(size))
+        .append(size)
         .append("\">");
     for (int i = 0; i < nbItems; i++) {
       retour.append("\n<option value=\"").append(itemValues.get(i)).append("\"");
@@ -136,14 +102,6 @@ public class FormSelect extends FormLine {
     return retour.toString();
   }
 
-  /**
-   * Method declaration
-   * @param nam
-   * @param url
-   * @param pc
-   * @return
-   * @see
-   */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
 
@@ -154,20 +112,10 @@ public class FormSelect extends FormLine {
     return fpw;
   }
 
-  /**
-   * Method declaration
-   * @param req
-   * @see
-   */
   public void getConfigurationByRequest(HttpServletRequest req) {
     setLabel(req.getParameter("configuratorLabelValue"));
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String printDemo() {
     String retour = "\n<td>" + label + "</td>";
 
@@ -175,11 +123,6 @@ public class FormSelect extends FormLine {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"label\">";
 

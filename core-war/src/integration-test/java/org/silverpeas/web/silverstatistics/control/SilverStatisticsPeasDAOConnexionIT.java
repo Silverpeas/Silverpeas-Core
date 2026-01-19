@@ -35,6 +35,7 @@ import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -53,15 +54,14 @@ public class SilverStatisticsPeasDAOConnexionIT {
       .loadInitialDataSetFrom("test-stats-connections-dataset.sql");
 
   @Before
-  public void generalSetUp() throws Exception {
+  public void generalSetUp() {
   }
 
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4WarCore.onWarForTestClass(SilverStatisticsPeasDAOConnexionIT.class)
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "org.silverpeas.web.silverstatistics");
-        }).build();
+        .testFocusedOn(warBuilder ->
+            warBuilder.addPackages(true, "org.silverpeas.web.silverstatistics")).build();
   }
 
   public SilverStatisticsPeasDAOConnexionIT() {
@@ -87,20 +87,18 @@ public class SilverStatisticsPeasDAOConnexionIT {
    * Test of getStatsUser method, of class SilverStatisticsPeasDAOConnexion.
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testGetStatsUser() throws Exception {
-    Collection[] result = SilverStatisticsPeasDAOConnexion.getStatsUser(dateBegin, dateEnd);
+    var result = SilverStatisticsPeasDAOConnexion.getStatsUser(dateBegin, dateEnd);
     assertThat(result, is(notNullValue()));
-    assertThat(result.length, is(2));
-    Collection<String> dates = (Collection<String>) result[0];
+    List<String> dates = result.getFirst();
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
     assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
         "2011-05-01", "2011-06-01", "2011-07-01"));
-    Collection<String> counts = (Collection<String>) result[1];
+    List<Long> counts = result.getSecond();
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains("0", "5", "5", "5", "5", "5", "5", "0"));
+    assertThat(counts, contains(0L, 5L, 5L, 5L, 5L, 5L, 5L, 0L));
   }
 
   /**
@@ -108,18 +106,17 @@ public class SilverStatisticsPeasDAOConnexionIT {
    */
   @Test
   public void testGetStatsConnexion() throws Exception {
-    Collection[] result = SilverStatisticsPeasDAOConnexion.getStatsConnexion(dateBegin, dateEnd);
+    var result = SilverStatisticsPeasDAOConnexion.getStatsConnexion(dateBegin, dateEnd);
     assertThat(result, is(notNullValue()));
-    assertThat(result.length, is(2));
-    @SuppressWarnings("unchecked") Collection<String> dates = (Collection<String>) result[0];
+    List<String> dates = result.getFirst();
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
     assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
         "2011-05-01", "2011-06-01", "2011-07-01"));
-    Collection<String> counts = (Collection<String>) result[1];
+    List<Long> counts = result.getSecond();
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains("0", "223", "129", "289", "394", "115", "115", "0"));
+    assertThat(counts, contains(0L, 223L, 129L, 289L, 394L, 115L, 115L, 0L));
   }
 
   /**
@@ -128,19 +125,18 @@ public class SilverStatisticsPeasDAOConnexionIT {
   @Test
   public void testGetStatsUserConnexion() throws Exception {
     String idUser = "2";
-    Collection[] result =
+    var result =
         SilverStatisticsPeasDAOConnexion.getStatsUserConnexion(dateBegin, dateEnd, idUser);
     assertThat(result, is(notNullValue()));
-    assertThat(result.length, is(2));
-    Collection<String> dates = (Collection<String>) result[0];
+    var dates = result.getFirst();
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
     assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
         "2011-05-01", "2011-06-01", "2011-07-01"));
-    Collection<String> counts = (Collection<String>) result[1];
+    var counts = result.getSecond();
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains("0", "5", "8", "64", "2", "51", "17", "0"));
+    assertThat(counts, contains(0L, 5L, 8L, 64L, 2L, 51L, 17L, 0L));
   }
 
   /**
@@ -165,33 +161,31 @@ public class SilverStatisticsPeasDAOConnexionIT {
   @Test
   public void testGetStatsGroupConnexion() throws Exception {
     String idGroup = "2";
-    Collection[] result =
+    var result =
         SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion(dateBegin, dateEnd, idGroup);
     assertThat(result, is(notNullValue()));
-    assertThat(result.length, is(2));
-    Collection<String> dates = (Collection<String>) result[0];
+    List<String> dates = result.getFirst();
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
     assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
         "2011-05-01", "2011-06-01", "2011-07-01"));
-    Collection<String> counts = (Collection<String>) result[1];
+    List<Long> counts = result.getSecond();
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains("0", "110", "67", "149", "58", "64", "97", "0"));
+    assertThat(counts, contains(0L, 110L, 67L, 149L, 58L, 64L, 97L, 0L));
 
     idGroup = "1";
     result = SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion(dateBegin, dateEnd, idGroup);
     assertThat(result, is(notNullValue()));
-    assertThat(result.length, is(2));
-    dates = (Collection<String>) result[0];
+    dates = result.getFirst();
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
     assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
         "2011-05-01", "2011-06-01", "2011-07-01"));
-    counts = (Collection<String>) result[1];
+    counts = result.getSecond();
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains("0", "223", "129", "289", "394", "115", "115", "0"));
+    assertThat(counts, contains(0L, 223L, 129L, 289L, 394L, 115L, 115L, 0L));
   }
 
   /**
@@ -316,19 +310,18 @@ public class SilverStatisticsPeasDAOConnexionIT {
   public void testGetStatsUserFq() throws Exception {
     int min = 50;
     int max = 100;
-    Collection[] result =
+   var result =
         SilverStatisticsPeasDAOConnexion.getStatsUserFq(dateBegin, dateEnd, min, max);
     assertThat(result, is(notNullValue()));
-    assertThat(result.length, is(2));
-    Collection<String> dates = (Collection<String>) result[0];
+    var dates = result.getFirst();
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
     assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
         "2011-05-01", "2011-06-01", "2011-07-01"));
-    Collection<String> counts = (Collection<String>) result[1];
+    var counts = result.getSecond();
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains("0", "2", "1", "1", "1", "1", "1", "0"));
+    assertThat(counts, contains(0L, 2L, 1L, 1L, 1L, 1L, 1L, 0L));
   }
 
 }

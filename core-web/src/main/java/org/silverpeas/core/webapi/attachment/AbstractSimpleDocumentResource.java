@@ -31,9 +31,9 @@ import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.text.MessageFormat;
 

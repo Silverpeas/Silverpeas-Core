@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.converter.ToPDFConverter;
 import org.silverpeas.core.util.MimeTypes.MimeTypeRegistry;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.io.File;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.pdf;
@@ -47,7 +47,7 @@ public class OpenOfficeToPDFConverter extends OpenOfficeConverter implements ToP
 
   private final SettingBundle settings = getSettingBundle("org.silverpeas.converter.openoffice");
 
-  private MimeTypeRegistry compatibleDocumentMimeTypes = new MimeTypeRegistry(
+  private final MimeTypeRegistry compatibleDocumentMimeTypes = new MimeTypeRegistry(
       () -> settings.getString("openoffice.compatible.document.extensions", ""),
       OPEN_OFFICE_MIME_TYPES);
 

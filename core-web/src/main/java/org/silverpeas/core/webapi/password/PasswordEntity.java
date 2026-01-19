@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.password;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Yohann Chastagnier
@@ -40,7 +40,7 @@ public class PasswordEntity {
 
   /**
    * Creates a new password entity from the specified password.
-   * @param value
+   * @param value a password
    * @return the entity representing the specified password.
    */
   public static PasswordEntity createFrom(final String value) {

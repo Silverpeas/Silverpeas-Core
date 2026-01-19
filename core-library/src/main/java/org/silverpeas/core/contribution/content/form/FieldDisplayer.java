@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.file.FileItem;
 
 import java.io.IOException;
 import java.io.PrintWriter;

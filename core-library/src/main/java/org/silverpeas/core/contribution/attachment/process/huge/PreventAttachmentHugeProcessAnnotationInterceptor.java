@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.contribution.attachment.process.huge;
 
-import javax.annotation.Priority;
-import javax.interceptor.Interceptor;
+import jakarta.annotation.Priority;
+import jakarta.interceptor.Interceptor;
 import java.util.Set;
 
 /**

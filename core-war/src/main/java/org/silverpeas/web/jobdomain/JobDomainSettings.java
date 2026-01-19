@@ -33,7 +33,7 @@ import java.util.Arrays;
 
 /**
  * This class manage the information needed for groups navigation and browse PRE-REQUIRED : the
- * Group passed in the constructor MUST BE A {@link GroupState#VALID} GROUP (with Id, etc...)
+ * Group passed in the constructor MUST BE A {@link GroupState#VALID} GROUP (with id, etc...)
  * @author t.leroi
  */
 public class JobDomainSettings {

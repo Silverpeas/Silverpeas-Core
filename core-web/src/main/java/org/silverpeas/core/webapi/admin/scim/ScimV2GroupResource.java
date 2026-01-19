@@ -24,29 +24,32 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import edu.psu.swe.scim.server.rest.GroupResourceImpl;
-import edu.psu.swe.scim.spec.adapter.FilterWrapper;
-import edu.psu.swe.scim.spec.protocol.Constants;
-import edu.psu.swe.scim.spec.protocol.attribute.AttributeReference;
-import edu.psu.swe.scim.spec.protocol.attribute.AttributeReferenceListWrapper;
-import edu.psu.swe.scim.spec.protocol.data.PatchRequest;
-import edu.psu.swe.scim.spec.protocol.data.SearchRequest;
-import edu.psu.swe.scim.spec.protocol.search.SortOrder;
-import edu.psu.swe.scim.spec.resources.ScimGroup;
+import org.apache.directory.scim.protocol.Constants;
+import org.apache.directory.scim.protocol.adapter.FilterWrapper;
+import org.apache.directory.scim.protocol.data.PatchRequest;
+import org.apache.directory.scim.protocol.data.SearchRequest;
+import org.apache.directory.scim.protocol.exception.ScimException;
+import org.apache.directory.scim.server.rest.GroupResourceImpl;
+import org.apache.directory.scim.spec.exception.ResourceException;
+import org.apache.directory.scim.spec.filter.SortOrder;
+import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
+import org.apache.directory.scim.spec.filter.attribute.AttributeReferenceListWrapper;
+import org.apache.directory.scim.spec.resources.ScimGroup;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import jakarta.ws.rs.core.Response;
+
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE_URI;
 
 /**
@@ -56,6 +59,7 @@ import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE
  * <li><a href="https://tools.ietf.org/html/rfc7643">https://tools.ietf.org/html/rfc7644</a></li>
  * </ul>
  * Implementation of a Client using SCIM 2.0 protocol.
+ *
  * @author silveryocha
  */
 @WebService
@@ -92,7 +96,8 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @Override
   public Response getById(@PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
-      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes) {
+      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
+      throws ScimException, ResourceException {
     return super.getById(id, attributes, excludedAttributes);
   }
 
@@ -109,7 +114,7 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
       @QueryParam("sortBy") final AttributeReference sortBy,
       @QueryParam("sortOrder") final SortOrder sortOrder,
       @QueryParam("startIndex") final Integer startIndex,
-      @QueryParam("count") final Integer count) {
+      @QueryParam("count") final Integer count) throws ScimException, ResourceException {
     return super
         .query(attributes, excludedAttributes, filter, sortBy, sortOrder, startIndex, count);
   }
@@ -124,7 +129,8 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @Override
   public Response create(final ScimGroup resource,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
-      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes) {
+      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
+      throws ScimException, ResourceException {
     return super.create(resource, attributes, excludedAttributes);
   }
 
@@ -136,7 +142,7 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @Path("/.search")
   @Produces(Constants.SCIM_CONTENT_TYPE)
   @Override
-  public Response find(final SearchRequest request) {
+  public Response find(final SearchRequest request) throws ScimException, ResourceException {
     return super.find(request);
   }
 
@@ -151,7 +157,8 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @Override
   public Response update(final ScimGroup resource, @PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
-      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes) {
+      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
+      throws ScimException, ResourceException {
     return super.update(resource, id, attributes, excludedAttributes);
   }
 
@@ -162,14 +169,15 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @Override
   public Response patch(final PatchRequest patchRequest, @PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
-      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes) {
+      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
+      throws ScimException, ResourceException {
     return super.patch(patchRequest, id, attributes, excludedAttributes);
   }
 
   @DELETE
   @Path("{id}")
   @Override
-  public Response delete(@PathParam("id") final String id) {
+  public Response delete(@PathParam("id") final String id) throws ScimException, ResourceException {
     return super.delete(id);
   }
 

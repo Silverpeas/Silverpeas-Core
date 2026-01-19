@@ -36,14 +36,14 @@ import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
 import org.silverpeas.web.portlets.portal.DesktopMessages;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,7 +73,7 @@ public class AdminServlet extends HttpServlet {
   protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    String elementId = getUserIdOrSpaceId(request, false);
+    String elementId = getUserIdOrSpaceId(request);
     String spaceId = getSpaceId(request);
     UserDetail user = getCurrentUser();
     String userId = user.getId();
@@ -101,7 +101,7 @@ public class AdminServlet extends HttpServlet {
     } else if (isParameterPresent(request, AdminConstants.MODIFY_PORTLET_WINDOW_SUBMIT)) {
       updatePortletWindow(request, portletAdminData, session);
     } else if (isParameterPresent(request, AdminConstants.MOVE_PORTLET_WINDOW)) {
-      movePortletWindow(request, portletAdminData, session);
+      movePortletWindow(request, portletAdminData);
       portletsRenderer = getPresentationURI(request);
     } else if (isParameterPresent(request, AdminConstants.PORTLET_WINDOW_LIST)) {
       selectPortletWindow(request, portletAdminData, session);
@@ -109,11 +109,9 @@ public class AdminServlet extends HttpServlet {
       try {
         AdminUtils.setPortletWindowAttributes(session, portletAdminData, null);
       } catch (Exception ex) {
-        StringBuilder messageBuilder =
-            new StringBuilder(DesktopMessages.getLocalizedString(AdminConstants.NO_WINDOW_DATA));
-        messageBuilder.append(".");
-        messageBuilder.append(ex.getMessage());
-        session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, messageBuilder.toString());
+        String messageBuilder = DesktopMessages.getLocalizedString(AdminConstants.NO_WINDOW_DATA) + "." +
+            ex.getMessage();
+        session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, messageBuilder);
       }
     }
 
@@ -145,13 +143,8 @@ public class AdminServlet extends HttpServlet {
     }
   }
 
-  private String getUserIdOrSpaceId(HttpServletRequest request, boolean getSpaceIdOnly) {
+  private String getUserIdOrSpaceId(HttpServletRequest request) {
     String spaceId = getSpaceId(request);
-
-    if (getSpaceIdOnly) {
-      return spaceId;
-    }
-
     if (!isDefined(spaceId)) {
       return getCurrentUser().getId();
     }
@@ -258,7 +251,7 @@ public class AdminServlet extends HttpServlet {
           }
           if (success) {
             UserDetail user = getCurrentUser();
-            String elementId = getUserIdOrSpaceId(request, false);
+            String elementId = getUserIdOrSpaceId(request);
             String spaceId = getSpaceId(request);
             String userId = user.getId();
             String language = user.getUserPreferences().getLanguage();
@@ -308,8 +301,7 @@ public class AdminServlet extends HttpServlet {
     }
   }
 
-  private void movePortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
-      HttpSession session) {
+  private void movePortletWindow(HttpServletRequest request, PortletAdminData portletAdminData) {
     // setSelectedPortletWindow(session, portletWindowName);
     String column1 = request.getParameter("column1");
     String column2 = request.getParameter("column2");
@@ -318,12 +310,11 @@ public class AdminServlet extends HttpServlet {
     List<String> portletWindowNames = portletAdminData.getPortletWindowNames();
 
     StringTokenizer tokenizer = new StringTokenizer(column1, ",");
-    PortletWindowDataImpl window = new PortletWindowDataImpl();
     String token = null;
     int i = 0;
     while (tokenizer.hasMoreTokens()) {
       token = tokenizer.nextToken();
-      window = new PortletWindowDataImpl();
+      PortletWindowDataImpl window = new PortletWindowDataImpl();
       window.setPortletWindowName(token);
       window.setWidth("thick");
       window.setRowNumber(i);
@@ -338,7 +329,7 @@ public class AdminServlet extends HttpServlet {
           if ("thick".equals(portletAdminData.getWidth(portletWindowName))) {
             // movePortletWindow(portletWindowName, "thick", Integer.toString(i), false, session,
             // portletAdminData);
-            window = new PortletWindowDataImpl();
+            PortletWindowDataImpl window = new PortletWindowDataImpl();
             window.setPortletWindowName(token);
             window.setWidth("thick");
             window.setRowNumber(i);
@@ -353,7 +344,7 @@ public class AdminServlet extends HttpServlet {
       while (tokenizer.hasMoreTokens()) {
         token = tokenizer.nextToken();
         // movePortletWindow(token, "thin", Integer.toString(i), true, session, portletAdminData);
-        window = new PortletWindowDataImpl();
+        PortletWindowDataImpl window = new PortletWindowDataImpl();
         window.setPortletWindowName(token);
         window.setWidth("thin");
         window.setRowNumber(i);
@@ -366,7 +357,7 @@ public class AdminServlet extends HttpServlet {
           if ("thin".equals(portletAdminData.getWidth(portletWindowName))) {
             // movePortletWindow(portletWindowName, "thin", Integer.toString(i), false, session,
             // portletAdminData);
-            window = new PortletWindowDataImpl();
+            PortletWindowDataImpl window = new PortletWindowDataImpl();
             window.setPortletWindowName(token);
             window.setWidth("thin");
             window.setRowNumber(i);

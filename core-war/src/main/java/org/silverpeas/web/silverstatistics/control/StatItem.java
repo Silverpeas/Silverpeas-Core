@@ -34,15 +34,9 @@ package org.silverpeas.web.silverstatistics.control;
  */
 public class StatItem {
   private final long[] countValues;
-  private String cmpId;
-  private String name;
+  private final String cmpId;
+  private final String name;
 
-  /**
-   * Default constructor
-   * @param cmpId the component identifier
-   * @param name
-   * @param count
-   */
   public StatItem(String cmpId, String name, long[] count) {
     this.cmpId = cmpId;
     this.name = name;

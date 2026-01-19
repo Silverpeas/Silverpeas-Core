@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
-import javax.persistence.TemporalType;
+import jakarta.persistence.TemporalType;
 
 /**
  * The parameter to pass to a JPA query is a temporal one.

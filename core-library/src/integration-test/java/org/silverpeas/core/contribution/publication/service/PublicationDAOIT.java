@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,18 +36,18 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
-import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.DateUtil;
 
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.*;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -70,7 +71,9 @@ public class PublicationDAOIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4Publication.onWarForTestClass(PublicationDAOIT.class)
+    return LibCoreWarBuilder.onFullWarForTestClass(PublicationDAOIT.class)
+        .addAsResource("org/silverpeas/core/contribution/publication/service")
+        .addAsResource("org/silverpeas/publication/publicationSettings.properties")
         .build();
   }
 

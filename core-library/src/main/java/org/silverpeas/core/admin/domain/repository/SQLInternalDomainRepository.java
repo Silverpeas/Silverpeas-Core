@@ -29,16 +29,14 @@ import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-@Singleton
 @Repository
 public class SQLInternalDomainRepository implements SQLDomainRepository {
 
@@ -100,10 +98,10 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     String specificColumnType;
     int specificColumnMaxLength;
     for (int i = 1; i <= numberOfColumns; i++) {
-      specificColumnType = props.getProperty(PROPERTY + String.valueOf(i) + ".Type");
-      specificColumnName = props.getProperty(PROPERTY + String.valueOf(i) + ".MapParameter");
+      specificColumnType = props.getProperty(PROPERTY + i + ".Type");
+      specificColumnName = props.getProperty(PROPERTY + i + ".MapParameter");
       String maxLengthPropertyValue =
-          props.getProperty(PROPERTY + String.valueOf(i) + ".MaxLength");
+          props.getProperty(PROPERTY + i + ".MaxLength");
       if (StringUtil.isInteger(maxLengthPropertyValue)) {
         specificColumnMaxLength = Integer.parseInt(maxLengthPropertyValue);
       } else {

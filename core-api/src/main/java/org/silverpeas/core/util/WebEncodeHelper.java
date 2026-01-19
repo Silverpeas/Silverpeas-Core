@@ -26,7 +26,7 @@ package org.silverpeas.core.util;
 
 import org.apache.commons.text.StringEscapeUtils;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * Utility class to encode special string or characters to be compliant with the web (HTML and

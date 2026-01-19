@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.process.management.interceptor;
 
-import javax.ejb.Local;
+import jakarta.ejb.Local;
 
 /**
  * @author Yohann Chastagnier

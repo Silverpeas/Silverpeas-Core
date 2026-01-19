@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.system;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author mmoquillon

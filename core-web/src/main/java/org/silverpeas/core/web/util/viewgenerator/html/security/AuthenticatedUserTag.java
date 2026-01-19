@@ -26,8 +26,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.security;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 /**
  * Tag that checks the user is currently authenticated and that he is not an anonymous user.

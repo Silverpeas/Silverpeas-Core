@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.web.look;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -41,33 +43,24 @@ import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.look.proxy.SpaceHomepageProxy;
 import org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static org.silverpeas.core.admin.space.SpaceInst.PERSONAL_SPACE_ID;
 import static org.silverpeas.kernel.util.StringUtil.*;
@@ -754,17 +747,17 @@ public class LookSilverpeasV5Helper extends LookHelper {
     if (spaceStruct != null
         && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE)
         && (spaceStruct.getFirstPageExtraParam() != null)
-        && (spaceStruct.getFirstPageExtraParam().length() > 0)) {
+        && (!spaceStruct.getFirstPageExtraParam().isEmpty())) {
       String destination = spaceStruct.getFirstPageExtraParam();
       destination = getParsedDestination(destination, "%ST_USER_LOGIN%",
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
           URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
-              Charsets.UTF_8.name()));
+              Charsets.UTF_8));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
-          URLEncoder.encode(getMainSessionController().getUserId(), Charsets.UTF_8.name()));
+          URLEncoder.encode(getMainSessionController().getUserId(), Charsets.UTF_8));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
-          URLEncoder.encode(request.getSession().getId(), Charsets.UTF_8.name()));
+          URLEncoder.encode(request.getSession().getId(), Charsets.UTF_8));
 
       // !!!! Add the password : this is an uggly patch that use a session
       // variable set in the "AuthenticationServlet" servlet
@@ -779,7 +772,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return spaceStruct != null &&
         (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST) &&
         spaceStruct.getFirstPageExtraParam() != null &&
-        spaceStruct.getFirstPageExtraParam().length() > 0;
+        !spaceStruct.getFirstPageExtraParam().isEmpty();
   }
 
   private String getParsedDestination(String sDestination, String sKeyword, String sValue) {

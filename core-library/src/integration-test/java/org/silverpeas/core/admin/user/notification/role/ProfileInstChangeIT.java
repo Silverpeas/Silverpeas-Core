@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.admin.user.notification.role;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,7 +34,6 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.notification.role.test.ResourceValidators;
 import org.silverpeas.core.admin.user.notification.role.test.Validator;
 
-import javax.inject.Inject;
 import java.util.List;
 
 /**

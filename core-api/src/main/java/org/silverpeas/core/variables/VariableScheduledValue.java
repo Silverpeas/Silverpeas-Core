@@ -30,12 +30,12 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +57,7 @@ import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
 public class VariableScheduledValue
     extends SilverpeasJpaEntity<VariableScheduledValue, UuidIdentifier> {
 
-  @Column(nullable = false)
+  @Column(name = "variableValue", nullable = false)
   private String value;
 
   @Column(columnDefinition = "DATE", nullable = false)

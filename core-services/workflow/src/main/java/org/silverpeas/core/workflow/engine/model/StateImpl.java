@@ -25,7 +25,7 @@ package org.silverpeas.core.workflow.engine.model;
 
 import org.silverpeas.core.workflow.api.model.*;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

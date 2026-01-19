@@ -24,24 +24,14 @@
 package org.silverpeas.core.contribution.attachment.repository;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocumentVersion;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
+import javax.jcr.*;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
@@ -57,21 +47,33 @@ import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfEditableSimultaneously;
-import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * A converter of node representing documents to {@link SimpleDocument} or
  * {@link HistorisedDocument} objects in Silverpeas.
+ *
  * @author ehugonnet
  */
 class DocumentConverter extends AbstractJcrConverter {
 
   private final SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
+  private final I18n i18n;
+
+  /**
+   * Constructs a new converter of documents.
+   *
+   * @param i18n the I18n bean to use to handle content in several languages in documents.
+   */
+  DocumentConverter(I18n i18n) {
+    this.i18n = i18n;
+  }
 
   /**
    * Builds from the root version node and from a language the object representation of a versioned
    * document and its history.
+   *
    * @param rootVersionNode the root version node (master).
    * @param lang the aimed content language.
    * @return the instance of a versioned document.
@@ -157,6 +159,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Browses the nodes with the specified iterator and converts each of them into to a document.
+   *
    * @param iter th NodeIterator to convert.
    * @param language the language of the wanted document.
    * @return a collection of SimpleDocument.
@@ -179,11 +182,11 @@ class DocumentConverter extends AbstractJcrConverter {
     pk.setOldSilverpeasId(oldSilverpeasId);
     String language = lang;
     if (language == null) {
-      language = I18NHelper.DEFAULT_LANGUAGE;
+      language = i18n.getDefaultLanguage();
     }
     SimpleAttachment file = getAttachment(node, language);
     if (file == null) {
-      Iterator<String> iter = I18NHelper.getLanguages().iterator();
+      Iterator<String> iter = i18n.getSupportedLanguageCodes().iterator();
       while (iter.hasNext() && file == null) {
         file = getAttachment(node, iter.next());
       }
@@ -275,6 +278,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:forbiddenDownloadForRoles] optional property.
+   *
    * @param document the document for which download has to be enabled or disabled
    * @param documentNode the node representation of the document in the JCR
    * @throws RepositoryException if an error occurs in the JCR
@@ -297,6 +301,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:displayableAsContent] optional property.
+   *
    * @param document the document for which the rendering of its content has to be enabled or
    * disabled.
    * @param documentNode the node representation of the document in the JCR
@@ -319,6 +324,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:editableSimultaneously] optional property.
+   *
    * @param document the document for which the simultaneous edition has to be enabled or disabled.
    * @param documentNode the node representation of the document in the JCR
    * @throws RepositoryException if an error occurs in the JCR
@@ -361,7 +367,7 @@ class DocumentConverter extends AbstractJcrConverter {
   public void removeAttachment(Node documentNode, String language) throws RepositoryException {
     String lang = language;
     if (lang == null) {
-      lang = I18NHelper.DEFAULT_LANGUAGE;
+      lang = i18n.getDefaultLanguage();
     }
     if (documentNode.hasNode(SimpleDocument.FILE_PREFIX + lang)) {
       Node attachmentNode = documentNode.getNode(SimpleDocument.FILE_PREFIX + lang);
@@ -398,7 +404,7 @@ class DocumentConverter extends AbstractJcrConverter {
   public void releaseDocumentNode(Node documentNode, String lang) throws RepositoryException {
     String language = lang;
     if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.DEFAULT_LANGUAGE;
+      language = i18n.getDefaultLanguage();
     }
     final String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
     if (documentNode.hasNode(attachmentNodeName)) {

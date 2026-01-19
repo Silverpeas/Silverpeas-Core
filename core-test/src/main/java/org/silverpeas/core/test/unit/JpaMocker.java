@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.test.unit;
 
+import jakarta.persistence.EntityManager;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
@@ -33,7 +34,6 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.AbstractJpaEnti
 import org.silverpeas.kernel.TestManagedBeanFeeder;
 import org.silverpeas.kernel.util.Mutable;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.ParameterizedType;
 
 import static org.mockito.ArgumentMatchers.any;

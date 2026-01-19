@@ -28,8 +28,8 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.system.TestResourceEvent;
 import org.silverpeas.core.notification.system.TestResourceEventBucket;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * @author mmoquillon

@@ -32,8 +32,8 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -236,7 +236,6 @@ public class NodeEntity implements WebEntity {
    * @return a node PK.
    */
   public NodePK toNodePK() {
-    NodePK nodePk = new NodePK(this.attr.getId(), this.attr.getComponentId());
-    return nodePk;
+    return new NodePK(this.attr.getId(), this.attr.getComponentId());
   }
 }

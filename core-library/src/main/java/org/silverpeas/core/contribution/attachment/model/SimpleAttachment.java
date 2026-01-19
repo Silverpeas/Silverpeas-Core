@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.I18n;
 
 import java.io.Serializable;
@@ -40,7 +39,7 @@ public class SimpleAttachment implements Serializable {
   private static final long serialVersionUID = -6153003608158238503L;
 
   private String filename;
-  private String language = I18NHelper.DEFAULT_LANGUAGE;
+  private String language;
   private String title;
   private String description;
   private long size;
@@ -104,7 +103,7 @@ public class SimpleAttachment implements Serializable {
   }
 
   public void setLanguage(String language) {
-    this.language = I18NHelper.checkLanguage(language);
+    this.language = I18n.get().checkLanguage(language);
   }
 
   public String getTitle() {
@@ -200,7 +199,7 @@ public class SimpleAttachment implements Serializable {
     hash = 61 * hash + (this.language != null ? this.language.hashCode() : 0);
     hash = 61 * hash + (this.title != null ? this.title.hashCode() : 0);
     hash = 61 * hash + (this.description != null ? this.description.hashCode() : 0);
-    hash = 61 * hash + (int) (this.size ^ (this.size >>> 32));
+    hash = 61 * hash + Long.hashCode(this.size);
     hash = 61 * hash + (this.contentType != null ? this.contentType.hashCode() : 0);
     hash = 61 * hash + (this.createdBy != null ? this.createdBy.hashCode() : 0);
     hash = 61 * hash + (this.created != null ? this.created.hashCode() : 0);

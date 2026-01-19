@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,10 +34,8 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
-
-import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -55,10 +54,8 @@ public class DomainIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(DomainIT.class)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addPublicationTemplateFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(DomainIT.class)
+        .addAsResource("org/silverpeas/core/admin/domain/driver")
         .build();
   }
 

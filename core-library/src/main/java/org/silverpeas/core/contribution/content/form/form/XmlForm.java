@@ -37,11 +37,12 @@ import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnRendering;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
@@ -131,9 +132,7 @@ public class XmlForm extends AbstractForm {
 
       PagesContext pc = new PagesContext(pageContext);
       pc.setNbFields(listFields.size());
-      if (record != null) {
-        pc.incCurrentFieldIndex(1);
-      }
+      pc.incCurrentFieldIndex(1);
 
       // calcul lastFieldIndex
       pc.setLastFieldIndex(getLastFieldIndex(pageContext, record, listFields));
@@ -162,12 +161,10 @@ public class XmlForm extends AbstractForm {
         }
 
         Field field = null;
-        if (record != null) {
-          try {
-            field = record.getField(fieldName);
-          } catch (FormException fe) {
-            SilverLogger.getLogger(this).error(unknown("fieldName", fieldName), fe);
-          }
+        try {
+          field = record.getField(fieldName);
+        } catch (FormException fe) {
+          SilverLogger.getLogger(this).error(unknown("fieldName", fieldName), fe);
         }
 
         boolean displayField = true;
@@ -176,6 +173,7 @@ public class XmlForm extends AbstractForm {
         if (!pageContext.isDesignMode() && fieldTemplate.isHidden()) {
           displayField = false;
         } else if (isViewForm() && !Util.isEmptyFieldsDisplayed()) {
+          Objects.requireNonNull(field);
           displayField = (StringUtil.isDefined(field.getStringValue()));
           if (displayField && field.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
             // special case about WYSIWYG field
@@ -185,8 +183,8 @@ public class XmlForm extends AbstractForm {
           }
         }
 
-        if (displayField && record != null && field != null) {
-          FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
+        if (displayField && field != null) {
+          FieldDisplayer<Field> fieldDisplayer = getFieldDisplayer(fieldTemplate);
           if (fieldDisplayer != null) {
             String aClass = "class=\"txtlibform\"";
             if (StringUtil.isDefined(fieldClass)) {
@@ -267,12 +265,14 @@ public class XmlForm extends AbstractForm {
             out.println("</li>");
           }
 
-          if (isMandatory && !isDisabled && !isHidden && fieldDisplayer.isDisplayedMandatory() &&
+          if (isMandatory && !isDisabled && !isHidden &&
+              Objects.requireNonNull(fieldDisplayer).isDisplayedMandatory() &&
               !isReadOnly) {
             mandatory = true;
           }
           out.flush();
-          pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
+          pc.incCurrentFieldIndex(
+              Objects.requireNonNull(fieldDisplayer).getNbHtmlObjectsDisplayed(fieldTemplate, pc));
         }
       }
     }
@@ -309,7 +309,7 @@ public class XmlForm extends AbstractForm {
         }
 
         if (record == null || field != null) {
-          FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
+          FieldDisplayer<Field> fieldDisplayer = getFieldDisplayer(fieldTemplate);
           if (fieldDisplayer != null) {
             lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
           }

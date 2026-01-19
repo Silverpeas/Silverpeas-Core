@@ -31,8 +31,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.http.HttpClient;
@@ -46,8 +46,8 @@ import java.util.stream.Stream;
 import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
 import static java.text.MessageFormat.format;
 import static java.util.Optional.ofNullable;
-import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.UriBuilder.fromUri;
+import static jakarta.ws.rs.core.MediaType.WILDCARD;
+import static jakarta.ws.rs.core.UriBuilder.fromUri;
 import static org.silverpeas.core.util.HttpUtil.*;
 import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 

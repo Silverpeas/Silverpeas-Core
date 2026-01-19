@@ -31,6 +31,8 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.util.Arrays;
@@ -58,6 +60,8 @@ import static org.silverpeas.kernel.util.StringUtil.likeIgnoreCase;
  * remove an user. However, it is possible to update an user...
  * @author tleroi
  */
+@Technical
+@Bean
 public class GoogleDriver extends AbstractDomainDriver {
 
   private static final String ATTRIBUTE_PATH_MSG_ERROR = "Verify the attribute path to access " +

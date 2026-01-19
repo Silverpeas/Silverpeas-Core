@@ -35,7 +35,7 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.date.TemporalConverter;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;

@@ -23,24 +23,23 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
-import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
-import org.silverpeas.web.pdc.control.PdcClassifySessionController;
-import org.silverpeas.web.pdc.control.PdcFieldPositionsManager;
-import org.silverpeas.web.pdc.control.PdcSearchSessionController;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.pdc.control.PdcClassifySessionController;
+import org.silverpeas.web.pdc.control.PdcFieldPositionsManager;
+import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -86,7 +85,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
   @Override
   public String getDestination(String function, PdcClassifySessionController pdcSC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
 
     // get the session controller to inform the request
     PdcFieldPositionsManager pdcFPM = pdcSC.getPdcFieldPositionsManager();
@@ -118,7 +117,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
 
         setBrowseContextInRequest(pdcSC, request);
 
-        request.setAttribute("ListValues", new ArrayList());
+        request.setAttribute("ListValues", new ArrayList<String>());
 
         // !!! workaround to get the searchContext
         HttpSession session = request.getSession(true);
@@ -139,7 +138,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
         setUpPdcSession(pdcSC, request);
 
         // the user wants to update a position to the object
-        int positionId = new Integer(request.getParameter("Id")).intValue();
+        int positionId = Integer.parseInt(request.getParameter("Id"));
 
         request.setAttribute("UsedAxis", pdcSC.getUsedAxisToClassify());
 
@@ -155,7 +154,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
 
         setBrowseContextInRequest(pdcSC, request);
 
-        request.setAttribute("ListValues", new ArrayList());
+        request.setAttribute("ListValues", new ArrayList<String>());
         Jargon jargon = pdcSC.getJargon();
         request.setAttribute("Jargon", jargon);
         request.setAttribute("ActiveThesaurus", pdcSC.getActiveThesaurus());
@@ -168,7 +167,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
         String positionIds = request.getParameter("Ids");
 
         StringTokenizer st = new StringTokenizer(positionIds, ",");
-        for (; st.hasMoreTokens();) {
+        while (st.hasMoreTokens()) {
           pdcSC.deletePosition(st.nextToken());
         }
         if (pdcFPM.isEnabled()) {
@@ -176,7 +175,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
               request, pdcFPM, pdcSC.getString("pdcPeas.deletedPosition"));
         } else {
           String toURL = request.getParameter("ToURL");
-          if (toURL != null && toURL.length() > 0) {
+          if (toURL != null && !toURL.isEmpty()) {
             request.setAttribute("ToURL", toURL);
             destination = "/pdcPeas/jsp/redirectToComponent.jsp";
           } else {
@@ -190,21 +189,19 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
         ClassifyPosition position = buildPosition(null, selectedValues);
         int status = pdcSC.addPosition(position);
 
-        switch (status) {
-          case 1:
-            request.setAttribute("Position", position);
-            request.setAttribute("ErrorVariant", "1");
-            request.setAttribute("UsedAxis", pdcSC.getUsedAxis());
-            setBrowseContextInRequest(pdcSC, request);
-            request.setAttribute("ListValues", new ArrayList());
-            destination = "/pdcPeas/jsp/positionAdd.jsp";
-            break;
-          default:
-            if (pdcFPM.isEnabled()) {
-              destination = getPdcFieldModeReturnDestination(request, pdcFPM, null);
-            } else {
-              destination = "/pdcPeas/jsp/reload.jsp";
-            }
+        if (status == 1) {
+          request.setAttribute("Position", position);
+          request.setAttribute("ErrorVariant", "1");
+          request.setAttribute("UsedAxis", pdcSC.getUsedAxis());
+          setBrowseContextInRequest(pdcSC, request);
+          request.setAttribute("ListValues", new ArrayList<String>());
+          destination = "/pdcPeas/jsp/positionAdd.jsp";
+        } else {
+          if (pdcFPM.isEnabled()) {
+            destination = getPdcFieldModeReturnDestination(request, pdcFPM, null);
+          } else {
+            destination = "/pdcPeas/jsp/reload.jsp";
+          }
         }
       } else if (function.startsWith("ReloadPosition")) {
 
@@ -230,26 +227,24 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
         // il faut tenir compte de la variance de la nouvelle position
         int status = pdcSC.updatePosition(position);
 
-        switch (status) {
-          case 1:
-            request.setAttribute("Position", position);
-            request.setAttribute("ErrorVariant", "1");
-            request.setAttribute("UsedAxis", pdcSC.getUsedAxis());
-            setBrowseContextInRequest(pdcSC, request);
-            request.setAttribute("ListValues", new ArrayList());
-            destination = "/pdcPeas/jsp/positionEdit.jsp";
-            break;
-          default:
-            if (pdcFPM.isEnabled()) {
-              destination = getPdcFieldModeReturnDestination(request, pdcFPM, null);
-            } else {
-              destination = "/pdcPeas/jsp/reload.jsp";
-            }
+        if (status == 1) {
+          request.setAttribute("Position", position);
+          request.setAttribute("ErrorVariant", "1");
+          request.setAttribute("UsedAxis", pdcSC.getUsedAxis());
+          setBrowseContextInRequest(pdcSC, request);
+          request.setAttribute("ListValues", new ArrayList<String>());
+          destination = "/pdcPeas/jsp/positionEdit.jsp";
+        } else {
+          if (pdcFPM.isEnabled()) {
+            destination = getPdcFieldModeReturnDestination(request, pdcFPM, null);
+          } else {
+            destination = "/pdcPeas/jsp/reload.jsp";
+          }
         }
 
       } else if (function.startsWith("ReloadUpdatePosition")) {
 
-        int positionId = new Integer(request.getParameter("Id")).intValue();
+        int positionId = Integer.parseInt(request.getParameter("Id"));
 
         request.setAttribute("UsedAxis", pdcSC.getUsedAxisToClassify());
 
@@ -257,8 +252,8 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
 
         // Extract position from list
         ClassifyPosition position = null;
-        for (int i = 0; i < positions.size(); i++) {
-          position = positions.get(i);
+        for (ClassifyPosition classifyPosition : positions) {
+          position = classifyPosition;
           if (position.getPositionId() == positionId) {
             break;
           }
@@ -279,6 +274,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
 
       } else if (function.equals("ToAddPositions")) {
         String objectIds = request.getParameter("ObjectIds"); // silverObjectIds
+        //noinspection unchecked
         List<String> lObjectIds = (List<String>) request.getAttribute("ObjectIds");
 
         String componentId = request.getParameter("ComponentId");
@@ -300,9 +296,8 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
             pdcSC.addCurrentSilverObjectId(st.nextToken());
           }
         } else if (lObjectIds != null) {
-          Iterator<String> it = lObjectIds.iterator();
-          while (it.hasNext()) {
-            pdcSC.addCurrentSilverObjectId(it.next());
+          for (String lObjectId : lObjectIds) {
+            pdcSC.addCurrentSilverObjectId(lObjectId);
           }
         }
 
@@ -346,16 +341,16 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
     // valuesFromJsp looks like 12|/0/1/2/,14|/15/34/
     // [axisId|valuePath+valueId]*
     StringTokenizer st = new StringTokenizer(valuesFromJsp, ",");
-    String valueInfo = "";
-    String axisId = "";
-    String valuePath = "";
-    ClassifyValue value = null;
-    List<ClassifyValue> values = new ArrayList<ClassifyValue>();
-    for (; st.hasMoreTokens();) {
+    String valueInfo;
+    String axisId;
+    String valuePath;
+    ClassifyValue value;
+    List<ClassifyValue> values = new ArrayList<>();
+    while (st.hasMoreTokens()) {
       valueInfo = st.nextToken();
       if (valueInfo.length() >= 3) {
         axisId = valueInfo.substring(0, valueInfo.indexOf("|"));
-        valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1, valueInfo.length());
+        valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1);
         if (valuePath.startsWith("/")) {
           value = new ClassifyValue(Integer.parseInt(axisId), valuePath);
           values.add(value);
@@ -375,13 +370,11 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
   private Collection<String> buildListPosition(String valuesFromJsp) {
     // valuesFromJsp looks like 12|/0/1/2/,14|/15/34/
     // [axisId|valuePath+valueId]*
-
     StringTokenizer st = new StringTokenizer(valuesFromJsp, ",");
-    String valueInfo = "";
-    List<String> values = new ArrayList<String>();
+    List<String> values = new ArrayList<>();
 
-    for (; st.hasMoreTokens();) {
-      valueInfo = st.nextToken();
+    while (st.hasMoreTokens()) {
+      String valueInfo = st.nextToken();
       values.add(valueInfo);
     }
 

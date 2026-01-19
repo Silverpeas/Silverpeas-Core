@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS ST_Instance_Data
   componentId INT          NOT NULL,
   name        VARCHAR(100) NOT NULL,
   label       VARCHAR(100) NOT NULL,
-  value       VARCHAR(400),
+  val         VARCHAR(400),
   CONSTRAINT PK_Instance_Data PRIMARY KEY (id),
   CONSTRAINT UN_Instance_Data_1 UNIQUE(componentId, name),
   CONSTRAINT FK_Instance_Data_1 FOREIGN KEY (componentId) REFERENCES ST_ComponentInstance(id)
@@ -401,7 +401,7 @@ CREATE TABLE IF NOT EXISTS st_notificationresource (
   CONSTRAINT const_st_nr_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE st_delayednotification (
+CREATE TABLE IF NOT EXISTS st_delayednotification (
   id int8 NOT NULL ,
   userId int NOT NULL ,
   fromUserId int NOT NULL ,
@@ -414,4 +414,62 @@ CREATE TABLE st_delayednotification (
   CONSTRAINT const_st_dn_pk PRIMARY KEY (id),
   CONSTRAINT const_st_dn_fk_nrId FOREIGN KEY (notificationResourceId) REFERENCES st_notificationresource(id),
   CONSTRAINT const_st_dn_fk_userId FOREIGN KEY (userId) REFERENCES ST_User(id)
+);
+
+CREATE TABLE IF NOT EXISTS sb_sn_invitation
+(
+    id             int       not null,
+    senderid       int       not null,
+    receiverid     int       not null,
+    message        varchar(1000),
+    invitationdate timestamp not null
+);
+
+CREATE TABLE IF NOT EXISTS sb_sn_relationship
+(
+    id                 int       not null,
+    user1id            int       not null,
+    user2id            int       not null,
+    typerelationshipid int,
+    acceptancedate     timestamp not null,
+    inviterid          int       not null
+);
+
+CREATE TABLE IF NOT EXISTS sb_sn_typerelationship
+(
+    id          int not null,
+    designation varchar(10)
+);
+
+CREATE TABLE IF NOT EXISTS sb_sn_status
+(
+    id           int           not null,
+    userid       int           not null,
+    creationdate timestamp     not null,
+    description  varchar(1000) not null
+);
+
+CREATE TABLE IF NOT EXISTS sb_sn_externalaccount
+(
+    profileId        varchar(100) NOT NULL,
+    networkId        varchar(10)  not NULL,
+    silverpeasUserId varchar(50) NULL
+);
+
+CREATE TABLE IF NOT EXISTS sb_reminder
+(
+    id                   VARCHAR(41)  NOT NULL,
+    reminderType         VARCHAR(40)  NOT NULL,
+    contrib_id           VARCHAR(40)  NOT NULL,
+    contrib_instanceId   VARCHAR(30)  NOT NULL,
+    contrib_type         VARCHAR(40)  NOT NULL,
+    userId               VARCHAR(40)  NOT NULL,
+    text                 VARCHAR(255),
+    triggered            BOOLEAN      NOT NULL DEFAULT FALSE,
+    trigger_datetime     TIMESTAMP,
+    trigger_durationTime INTEGER,
+    trigger_durationUnit VARCHAR(12),
+    trigger_prop         VARCHAR(30),
+    process_name         VARCHAR(200) NOT NULL,
+    CONSTRAINT PK_REMINDER PRIMARY KEY (id)
 );

@@ -25,10 +25,10 @@ package org.silverpeas.web.test;
 
 import org.junit.Test;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 
 /**
  * Unit tests on the deletion of a resource in Silverpeas through a REST web service.
- * This class is an abstract one and it implements some tests that are redondant over all
+ * This class is an abstract one, and it implements some tests that are redondant over all
  * web resources in Silverpeas (about authorization failure, authentication failure, ...)
  */
 public abstract class ResourceDeletionTest extends RESTWebServiceTest
@@ -84,10 +84,10 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
   @Test
   public void deletionOfAResourceByANonAuthenticatedUser() {
     final int Unauthorized = Status.UNAUTHORIZED.getStatusCode();
-    Response response = resource().path(aResourceURI()).
-        request(MediaType.APPLICATION_JSON).
-        delete();
-    assertThat(response.getStatus(), is(Unauthorized));
+    try (Response response =
+             resource().path(aResourceURI()).request(MediaType.APPLICATION_JSON).delete()) {
+      assertThat(response.getStatus(), is(Unauthorized));
+    }
   }
 
   @Test
@@ -97,22 +97,25 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
     Invocation.Builder resourceDeleter = resource().path(aResourceURI()).
         request(MediaType.APPLICATION_JSON);
     resourceDeleter = setUserIdent(authId, resourceDeleter);
-    Response response = resourceDeleter.delete();
-    assertThat(response.getStatus(), is(Unauthorized));
+    try (Response response = resourceDeleter.delete()) {
+      assertThat(response.getStatus(), is(Unauthorized));
+    }
   }
 
   @Test
   public void deletionOfAResourceByANonAuthorizedUser() {
     denyAuthorizationToUsers();
     final int Forbidden = Status.FORBIDDEN.getStatusCode();
-    Response response = deleteAt(aResourceURI());
-    assertThat(response.getStatus(), is(Forbidden));
+    try (Response response = deleteAt(aResourceURI())) {
+      assertThat(response.getStatus(), is(Forbidden));
+    }
   }
 
   @Test
   public void deletionOfAnUnexistingResource() {
     final int NotFound = Status.NOT_FOUND.getStatusCode();
-    Response response = deleteAt(anUnexistingResourceURI());
-    assertThat(response.getStatus(), is(NotFound));
+    try (Response response = deleteAt(anUnexistingResourceURI())) {
+      assertThat(response.getStatus(), is(NotFound));
+    }
   }
 }

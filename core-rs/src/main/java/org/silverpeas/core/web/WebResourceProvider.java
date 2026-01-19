@@ -24,8 +24,8 @@
  */
 package org.silverpeas.core.web;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 /**
  * A provider of Silverpeas Web resources for the JAX-RS framework. It defines at which base URI

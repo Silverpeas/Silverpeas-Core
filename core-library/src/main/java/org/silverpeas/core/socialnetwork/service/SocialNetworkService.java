@@ -23,19 +23,21 @@
  */
 package org.silverpeas.core.socialnetwork.service;
 
+import jakarta.enterprise.inject.Instance;
+import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.socialnetwork.connectors.AccessToken;
 import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
 import org.silverpeas.core.socialnetwork.dao.ExternalAccountRepository;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.ExternalAccountIdentifier;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
-import org.silverpeas.core.socialnetwork.qualifiers.Facebook;
-import org.silverpeas.core.socialnetwork.qualifiers.LinkedIn;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import org.silverpeas.kernel.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,12 +49,7 @@ public class SocialNetworkService {
   private static final String SOCIALNETWORK_ID_SESSION_ATTR = "socialnetwork_id";
 
   @Inject
-  @Facebook
-  private SocialNetworkConnector facebook;
-
-  @Inject
-  @LinkedIn
-  private SocialNetworkConnector linkedIn;
+  private Instance<SocialNetworkConnector> connectors;
 
   @Inject
   private ExternalAccountRepository dao;
@@ -66,32 +63,16 @@ public class SocialNetworkService {
 
   /**
    * Get social network service implementation specific to given social network
+   *
    * @param networkId enum representing network id
    * @return a connector to the specified social network or null if no such social network is
    * supported.
    */
-  public SocialNetworkConnector getSocialNetworkConnector(SocialNetworkID networkId) {
-    switch (networkId) {
-      case FACEBOOK:
-        return facebook;
-
-      case LINKEDIN:
-        return linkedIn;
-
-      default:
-        return null;
-    }
-  }
-
-  /**
-   * Get social network service implementation specific to given social network
-   * @param networkIdAsString network id as String
-   * @return a connector to the specified social network or null if no such social network is
-   * supported.
-   */
-  public SocialNetworkConnector getSocialNetworkConnector(String networkIdAsString) {
-    SocialNetworkID networkId = SocialNetworkID.valueOf(networkIdAsString);
-    return getSocialNetworkConnector(networkId);
+  public SocialNetworkConnector getSocialNetworkConnector(@NonNull SocialNetworkID networkId) {
+    return connectors.stream()
+        .filter(c -> SocialNetworkID.from(c.getID().toUpperCase()).equals(networkId))
+        .findFirst()
+        .orElse(null);
   }
 
   public ExternalAccount getExternalAccount(SocialNetworkID networkId, String profileId) {
@@ -154,17 +135,6 @@ public class SocialNetworkService {
         }
       }
     }
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public void removeAllExternalAccount(String userId) {
-    List<ExternalAccount> accounts = dao.findBySilverpeasUserId(userId);
-    if (accounts != null) {
-      for (ExternalAccount account : accounts) {
-        dao.delete(account);
-      }
-    }
-
   }
 
 }

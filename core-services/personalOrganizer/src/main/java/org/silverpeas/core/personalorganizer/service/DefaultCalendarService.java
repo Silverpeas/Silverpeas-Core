@@ -44,8 +44,8 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -87,11 +87,6 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     }
   }
 
-  /**
-   * methods for unresponded messages
-   * @param userId the user identifier
-   * @return
-   */
   @Override
   public boolean hasTentativeSchedulablesForUser(String userId) {
 
@@ -119,10 +114,6 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     }
   }
 
-  /**
-   * @param userId the user identifier
-   * @return
-   */
   @Override
   public SilverpeasList<ToDoHeader> getNotCompletedToDosForUser(String userId) {
     try {
@@ -317,13 +308,6 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     }
   }
 
-  /**
-   * @param day
-   * @param userId the user identifier
-   * @param categoryId the category identifier
-   * @param participation
-   * @return
-   */
   @Override
   public Collection<JournalHeader> getDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation) {
@@ -948,15 +932,6 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     return indexEntry;
   }
 
-  /**
-   * Method for getting the next events of userId ,the result is limited
-   * @param day
-   * @param userId the user identifier
-   * @param classification
-   * @param begin the begin date
-   * @param end the end date
-   * @return List<JournalHeader>
-   */
   @Override
   public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
       Date begin, Date end) {
@@ -970,15 +945,6 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     }
   }
 
-  /**
-   * get Next Social Events for a given list of my Contacts . This includes all kinds of events
-   * @param day
-   * @param myId
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List<SocialInformationEvent>
-   */
   @Override
   public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
       List<String> myContactsIds, Date begin, Date end) {
@@ -992,15 +958,6 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     }
   }
 
-  /**
-   * get Last Social Events for a given list of my Contacts . This includes all kinds of events
-   * @param day
-   * @param myId
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List<SocialInformationEvent>
-   */
   @Override
   public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
       List<String> myContactsIds, Date begin, Date end) {
@@ -1014,14 +971,6 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     }
   }
 
-  /**
-   * get the my last Events of information and number of Item and the first Index
-   * @param day
-   * @param myId
-   * @param begin
-   * @param end
-   * @return List<SocialInformationEvent>
-   */
   @Override
   public List<SocialInformationEvent> getMyLastEvents(String day, String myId, Date begin,
       Date end) {

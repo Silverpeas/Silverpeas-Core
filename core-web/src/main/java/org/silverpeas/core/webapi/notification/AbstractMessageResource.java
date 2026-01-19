@@ -59,6 +59,6 @@ public abstract class AbstractMessageResource extends RESTWebService {
     if (getUser() != null) {
       return getUserPreferences().getLanguage();
     }
-    return I18NHelper.DEFAULT_LANGUAGE;
+    return I18NHelper.getDefaultLanguage();
   }
 }

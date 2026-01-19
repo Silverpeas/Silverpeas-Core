@@ -35,7 +35,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.web.test.stub.TestHttpResponse;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -247,108 +247,120 @@ public class MassiveWebSecurityFilterIT {
         }
     }
 
-    @Test
+  /**
+   * The roles table is a system one in H2
+   */
+  @Test
     public void secureAgainstSqlSELECT() {
         assertSQL(skippedParam("SELECT * FROM catalogs"), false);
         assertSQL(param("SELECT ; FRoM catalog"), false);
-        assertSQL(param("SELECT ; FRoM catalogs SELECT 1 FROM supliers"), true);
+        assertSQL(param("SELECT ; FRoM roles SELECT 1 FROM supliers"), true);
         assertSQL(param("SELECT supliers; FRoM supliers SELECT 1 FROM supliers"), false);
-        assertSQL(param("SELECT catalogs; FRoM supliers SELECT 1 FROM supliers"), true);
-        assertSQL(param("SELECT sddcatalogs; FRoM supliers SELECT 1 FROM supliers"), false);
-        assertSQL(param("SELECT sddcatalogs; FRoM supliers SELECT 1 FROM catalogs"), true);
-        assertSQL(param("SELECT sddcatalogs; FRoM supliers SELECT 1 FROM scatalogs"), false);
-        assertSQL(param("SELECT ; FRoM catalogs"), true);
-        assertSQL(param("miSELECT * FRoM catalogs"), false);
-        assertSQL(param("SSELECT * FRoM catalogs"), false);
-        assertSQL(param("2SELECT * FRoM catalogs"), false);
-        assertSQL(param("intéSELECT * FRoM catalogs"), false);
-        assertSQL(param("ÂSELECT * FRoM catalogs"), false);
-        assertSQL(param("s \t\f\nSELECT * FRoM catalogs"), true);
-        assertSQL(param("SELECT * FRoM catalogs"), true);
-        assertSQL(param("SELECT/* */FRoM catalogs"), true);
-        assertSQL(param("SELECT/* */ FRoM catalogs"), true);
-        assertSQL(param("SELECT /* */FRoM catalogs"), true);
-        assertSQL(param("SELECT * FRoMcatalogs"), false);
+        assertSQL(param("SELECT roles; FRoM supliers SELECT 1 FROM supliers"), true);
+        assertSQL(param("SELECT sddroles; FRoM supliers SELECT 1 FROM supliers"), false);
+        assertSQL(param("SELECT sddroles; FRoM supliers SELECT 1 FROM roles"), true);
+        assertSQL(param("SELECT sddroles; FRoM supliers SELECT 1 FROM sroles"), false);
+        assertSQL(param("SELECT ; FRoM roles"), true);
+        assertSQL(param("miSELECT * FRoM roles"), false);
+        assertSQL(param("SSELECT * FRoM roles"), false);
+        assertSQL(param("2SELECT * FRoM roles"), false);
+        assertSQL(param("intéSELECT * FRoM roles"), false);
+        assertSQL(param("ÂSELECT * FRoM roles"), false);
+        assertSQL(param("s \t\f\nSELECT * FRoM roles"), true);
+        assertSQL(param("SELECT * FRoM roles"), true);
+        assertSQL(param("SELECT/* */FRoM roles"), true);
+        assertSQL(param("SELECT/* */ FRoM roles"), true);
+        assertSQL(param("SELECT /* */FRoM roles"), true);
+        assertSQL(param("SELECT * FRoMroles"), false);
         assertSQL(param("seLect * from st_space_space"), true);
         assertSQL(param("seLect * from zz_st_space_space"), true);
         assertSQL(param("seLect * from st_space_space_i18n"), true);
         assertSQL(param("seLect * from zz_st_space_space_i18n"), false);
-        assertSQL(param("SELECT * * FRoM catalogs"), true);
-        assertSQL(param("SELECT *,* FRoMs catalogs"), false);
-        assertSQL(param("SELECT supl.*,* FRoM zdzefze catalogs supl"), true);
-        assertSQL(param("SELECT supl.* * FRoM sdecatalogs supl"), false);
-        assertSQL(param("SELECT supl.* toto FRoM catalogs supl"), true);
-        assertSQL(param("SELECT supl.* toto FRoM catalogsÄ supl"), false);
-        assertSQL(param("SELECT su1pl.k-l_m.* \t\f\n , \t\f\n _su1pl_z-ed_.da_t-a010 FRoM catalogs"),
+        assertSQL(param("SELECT * * FRoM roles"), true);
+        assertSQL(param("SELECT *,* FRoMs roles"), false);
+        assertSQL(param("SELECT supl.*,* FRoM zdzefze roles supl"), true);
+        assertSQL(param("SELECT supl.* * FRoM sderoles supl"), false);
+        assertSQL(param("SELECT supl.* toto FRoM roles supl"), true);
+        assertSQL(param("SELECT supl.* toto FRoM rolesÄ supl"), false);
+        assertSQL(param("SELECT su1pl.k-l_m.* \t\f\n , \t\f\n _su1pl_z-ed_.da_t-a010 FRoM roles"),
                 true);
-        assertSQL(param("SELECT su1pl.k-l_m.* , ,  _su1pl_z-ed_.da_t-a010 FRoM catalOGs"), true);
-        assertSQL(param("SELECT su1pl.k-l_m.* , ,  _su1pl_z-ed_.da_t-a010 FRoM catalogss"), false);
+        assertSQL(param("SELECT su1pl.k-l_m.* , ,  _su1pl_z-ed_.da_t-a010 FRoM rOLes"), true);
+        assertSQL(param("SELECT su1pl.k-l_m.* , ,  _su1pl_z-ed_.da_t-a010 FRoM roless"), false);
         assertSQL(param(
                 "SELECT * FRoM (select toto from (select * from suppliers supl where supl in (select id " +
-                        "from catalogs))"), true);
+                        "from roles))"), true);
         assertSQL(param(
                 "SELECT * FRoM (select toto from (select * from suppliers supl where supl in (select id " +
                         "from tata))"), false);
         assertSQL(param(
-                "SELECT *, 'catalogs' FRoM (select toto from (select * from suppliers supl where supl in " +
+                "SELECT *, 'roles' FRoM (select toto from (select * from suppliers supl where supl in " +
                         "(select id from tata))"), true);
     }
 
+  /**
+   * The roles table is a system one in H2
+   */
     @Test
     public void secureAgainstSqlINSERT() {
-        assertSQL(skippedParam("INSERT inTo catalogs (id) values"), false);
-        assertSQL(param("INSERT inTo catalogs (id) valuess"), false);
-        assertSQL(param("INSERT inTo catalogs (id) values"), true);
-        assertSQL(param("INSERT inTo catalogs (id) values \t\n"), true);
-        assertSQL(param("INSERT inTo/* */catalogs (id) values"), true);
-        assertSQL(param("INSERT inTo /* */catalogs (id) values"), true);
-        assertSQL(param("INSERT inTo/* */ catalogs (id) values"), true);
-        assertSQL(param("INSERT/* */inTo catalogs (id) values"), true);
-        assertSQL(param("INSERT/* */ inTo catalogs (id) values"), true);
-        assertSQL(param("INSERT /* */inTo catalogs (id) values"), true);
-        assertSQL(param("INSERT inTo catalogs (id)/* */values"), true);
-        assertSQL(param("INSERT inTo catalogs (id) /* */values"), true);
-        assertSQL(param("INSERT inTo catalogs (id)/* */ values"), true);
-        assertSQL(param("INSERT inTo catalogs/* */values"), true);
-        assertSQL(param("INSERT inTo catalogs /* */values"), true);
-        assertSQL(param("INSERT inTo catalogs/* */ values"), true);
-        assertSQL(param("INSERT inTo catalos/* */ values"), false);
-        assertSQL(param("sINSERT inTo catalogs (id) values"), false);
-        assertSQL(param("INSERT inTo catalogs (id) value"), false);
-        assertSQL(param("INSERT inTo catalogss (id) values"), false);
-        assertSQL(param("INsERT inTo catalogsô (id) values"), false);
-        assertSQL(param("INSERT inTo catalogs\t\f\n (id) values"), true);
-        assertSQL(param("INSERT ino catalogs\t\f\n (id) values"), false);
+        assertSQL(skippedParam("INSERT inTo roles (id) values"), false);
+        assertSQL(param("INSERT inTo roles (id) valuess"), false);
+        assertSQL(param("INSERT inTo roles (id) values"), true);
+        assertSQL(param("INSERT inTo roles (id) values \t\n"), true);
+        assertSQL(param("INSERT inTo/* */roles (id) values"), true);
+        assertSQL(param("INSERT inTo /* */roles (id) values"), true);
+        assertSQL(param("INSERT inTo/* */ roles (id) values"), true);
+        assertSQL(param("INSERT/* */inTo roles (id) values"), true);
+        assertSQL(param("INSERT/* */ inTo roles (id) values"), true);
+        assertSQL(param("INSERT /* */inTo roles (id) values"), true);
+        assertSQL(param("INSERT inTo roles (id)/* */values"), true);
+        assertSQL(param("INSERT inTo roles (id) /* */values"), true);
+        assertSQL(param("INSERT inTo roles (id)/* */ values"), true);
+        assertSQL(param("INSERT inTo roles/* */values"), true);
+        assertSQL(param("INSERT inTo roles /* */values"), true);
+        assertSQL(param("INSERT inTo roles/* */ values"), true);
+        assertSQL(param("INSERT inTo rols/* */ values"), false);
+        assertSQL(param("sINSERT inTo roles (id) values"), false);
+        assertSQL(param("INSERT inTo roles (id) value"), false);
+        assertSQL(param("INSERT inTo roless (id) values"), false);
+        assertSQL(param("INsERT inTo rolesô (id) values"), false);
+        assertSQL(param("INSERT inTo roles\t\f\n (id) values"), true);
+        assertSQL(param("INSERT ino roles\t\f\n (id) values"), false);
     }
 
+  /**
+   * The roles table is a system one in H2
+   */
     @Test
     public void secureAgainstSqlUPDATE() {
-        assertSQL(skippedParam("uPdaTe catalogs set"), false);
-        assertSQL(param("uPdaTe catalogs sets"), false);
-        assertSQL(param("uPdaTe catalogs set"), true);
+        assertSQL(skippedParam("uPdaTe roles set"), false);
+        assertSQL(param("uPdaTe roles sets"), false);
+        assertSQL(param("uPdaTe roles set"), true);
         assertSQL(param("uPdaTe st_space_space set"), true);
         assertSQL(param("uPdaTe zz_st_space_space set"), true);
         assertSQL(param("uPdaTe st_space_space_i18n set"), true);
         assertSQL(param("uPdaTe zz_st_space_space_i18n set"), false);
-        assertSQL(param("uPdaTe/* */catalogs/* */set"), true);
-        assertSQL(param("uPdaTe /* */catalogs/* */set"), true);
-        assertSQL(param("uPdaTe/* */ catalogs /* */set"), true);
-        assertSQL(param("uPdaTe/* */catalogs /* */set"), true);
-        assertSQL(param("uPdaTe/* */catalogs/* */ set"), true);
-        assertSQL(param("suPdaTe catalogs set"), false);
-        assertSQL(param("uPdaTe\t\f\ncatalogs\t\f\nset"), true);
-        assertSQL(param("uPdaTe\r\ncatalogs\r\nset"), true);
-        assertSQL(param("uPdaTe\r\nscatalogs\r\nset"), false);
-        assertSQL(param("uPdaTe\r\ncatalogss\r\nset"), false);
-        assertSQL(param("uPdaTe\r\ncatalogsë\r\nset"), false);
-        assertSQL(param("uPdaTe\r\ncatalogs^y\r\nset"), true);
-        assertSQL(param("uPdaTe\r\nµcatalogs\r\nset"), false);
+        assertSQL(param("uPdaTe/* */roles/* */set"), true);
+        assertSQL(param("uPdaTe /* */roles/* */set"), true);
+        assertSQL(param("uPdaTe/* */ roles /* */set"), true);
+        assertSQL(param("uPdaTe/* */roles /* */set"), true);
+        assertSQL(param("uPdaTe/* */roles/* */ set"), true);
+        assertSQL(param("suPdaTe roles set"), false);
+        assertSQL(param("uPdaTe\t\f\nroles\t\f\nset"), true);
+        assertSQL(param("uPdaTe\r\nroles\r\nset"), true);
+        assertSQL(param("uPdaTe\r\nsroles\r\nset"), false);
+        assertSQL(param("uPdaTe\r\nroless\r\nset"), false);
+        assertSQL(param("uPdaTe\r\nrolesë\r\nset"), false);
+        assertSQL(param("uPdaTe\r\nroles^y\r\nset"), true);
+        assertSQL(param("uPdaTe\r\nµroles\r\nset"), false);
     }
 
+  /**
+   * The roles table is a system one in H2
+   */
     @Test
     public void secureAgainstSqlDELETE() {
-        assertSQL(skippedParam("DeleTe from catalogs"), false);
-        assertSQL(param("DeleTe from catalogs"), true);
+        assertSQL(skippedParam("DeleTe from roles"), false);
+        assertSQL(param("DeleTe from roles"), true);
     }
 
     private void assertSQL(URLConfigTest urlConfigTest, boolean expected) {

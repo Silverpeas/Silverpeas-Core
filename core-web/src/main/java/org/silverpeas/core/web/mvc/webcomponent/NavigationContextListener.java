@@ -29,50 +29,49 @@ import java.util.EventListener;
  * A listener of events on the navigation context of a user. By implementing this interface, the
  * bean will be informed about change on the user's Web navigation so that is can be able to
  * perform some specific tasks relative to the navigation change.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
-public interface NavigationContextListener<WEB_COMPONENT_REQUEST_CONTEXT extends
-    WebComponentRequestContext>
+public interface NavigationContextListener<T extends WebComponentRequestContext<?>>
     extends EventListener {
 
   /**
    * Method called after navigation context is cleared.
    */
-  void navigationContextCleared(NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext);
+  void navigationContextCleared(NavigationContext<T> navigationContext);
 
   /**
    * Method called after a new navigation step is created.
    */
-  void navigationStepCreated(NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext);
+  void navigationStepCreated(NavigationContext<T> navigationContext);
 
   /**
    * Method called after an existing navigation step is reset.
    */
-  void navigationStepReset(NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext);
+  void navigationStepReset(NavigationContext<T> navigationContext);
 
   /**
    * Method called after that no navigation step has been performed (created or reset).
    */
   void noNavigationStepPerformed(
-      NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext);
+      NavigationContext<T> navigationContext);
 
   /**
    * Method called for each navigation state trashed after an existing navigation step is reset.
    */
   void navigationStepTrashed(
-      NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>.NavigationStep trashedNavigationStep);
+      NavigationContext<T>.NavigationStep trashedNavigationStep);
 
   /**
    * Method called after an identifier of the context of a navigation step is set.
    */
   void navigationStepContextIdentifierSet(
-      NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>.NavigationStep navigationStep,
+      NavigationContext<T>.NavigationStep navigationStep,
       String oldContextIdentifier);
 
   /**
    * Method called after a label of a navigation step is set.
    */
   void navigationStepLabelSet(
-      NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>.NavigationStep navigationStep,
+      NavigationContext<T>.NavigationStep navigationStep,
       String oldLabel);
 }

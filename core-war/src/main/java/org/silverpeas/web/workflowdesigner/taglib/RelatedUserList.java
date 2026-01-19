@@ -33,7 +33,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
 import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
 import org.silverpeas.core.workflow.api.model.RelatedUser;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;

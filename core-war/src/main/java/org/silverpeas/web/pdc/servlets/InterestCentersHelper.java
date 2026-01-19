@@ -23,18 +23,16 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
-import javax.servlet.http.HttpServletRequest;
-
 public class InterestCentersHelper {
 
-  public static String putSelectedInterestCenterId(HttpServletRequest request)
-      throws Exception {
+  public static String putSelectedInterestCenterId(HttpServletRequest request) {
     String icId = request.getParameter("iCenterId");
     if (icId != null) {
       request.setAttribute("RequestSelected", icId);
@@ -42,8 +40,7 @@ public class InterestCentersHelper {
     return icId;
   }
 
-  public static void loadICenter(PdcSearchSessionController pdcSC, String icId)
-      throws Exception {
+  public static void loadICenter(PdcSearchSessionController pdcSC, String icId) {
     pdcSC.loadICenter(icId);
   }
 

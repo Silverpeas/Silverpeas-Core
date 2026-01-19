@@ -24,16 +24,15 @@
 
 package org.silverpeas.core.security.html;
 
+import jakarta.enterprise.inject.Default;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
-
-import javax.enterprise.inject.Default;
-import javax.inject.Singleton;
 
 /**
  * @author silveryocha
  */
 @Default
-@Singleton
+@Bean
 public class DefaultHtmlSanitizer implements HtmlSanitizer {
 
   @Override

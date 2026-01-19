@@ -27,7 +27,7 @@ import java.util.Date;
 
 /**
  * An item in a directory of persons. An item in a directory identifies a given person with his
- * communication data (email, phone, and so one).
+ * communication data (email, phone, and so on).
  */
 public interface DirectoryItem extends Comparable<DirectoryItem> {
 

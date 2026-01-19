@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.Objects;
 
 /**

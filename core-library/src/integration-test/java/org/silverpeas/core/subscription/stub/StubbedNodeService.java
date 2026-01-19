@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.subscription.stub;
 
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.DefaultNodeService;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
-
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * Stubbed node service implementation in order to simulate treatment behavior without setting all
@@ -41,7 +39,6 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 @Alternative
 @Priority(APPLICATION + 10)
 public class StubbedNodeService extends DefaultNodeService {

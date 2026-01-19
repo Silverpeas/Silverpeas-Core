@@ -32,7 +32,6 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ServiceRegistry;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -65,7 +64,6 @@ import java.util.List;
  */
 @Technical
 @Bean
-@Singleton
 public class IIOProviderInitializer implements Initialization {
 
   @Override

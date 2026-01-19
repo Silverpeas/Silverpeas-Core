@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentBehavior;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
@@ -62,6 +61,7 @@ import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeExcepti
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -79,7 +79,7 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.vo.*;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -676,7 +676,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     List<GlobalSilverResult> sortedResults = getGlobalSR();
 
     if (reallySortResults) {
-      // Tri de tous les résultats
+      // Sort all the results
       // Gets a SortResult implementation to realize the sorting and/or filtering results
       SortResults sortResults = SortResultsFactory.getSortResults();
       sortResults.setPdcSearchSessionController(this);
@@ -1036,7 +1036,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    *
    * @see URLUtil#getSimpleURL
    * @param resultType the result type
-   * @param markAsReadJS javascript string to mark this result as read
+   * @param markAsReadJS JavaScript string to mark this result as read
    * @param result the current result
    * @param serverName the server name string
    * @return a string which represents an external server URL

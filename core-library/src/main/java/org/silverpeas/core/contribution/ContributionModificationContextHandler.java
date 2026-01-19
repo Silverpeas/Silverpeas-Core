@@ -30,11 +30,11 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,7 +47,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  * This class permits to handle a contribution modification context.
  * <p>
  * A such context can give additional information to adopt different kind of behaviors. For example,
- * it can indicates if the user modification is a minor one which permits the contribution services
+ * it can indicate if the user modification is a minor one which permits the contribution services
  * to adopt a different behavior against a normal one.
  * </p>
  * @author silveryocha

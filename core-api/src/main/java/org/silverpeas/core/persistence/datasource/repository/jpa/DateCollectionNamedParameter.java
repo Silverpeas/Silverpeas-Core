@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
-import javax.persistence.TemporalType;
+import jakarta.persistence.TemporalType;
 import java.util.Date;
 import java.util.Set;
 

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.jobstartpage.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.ParameterList;
@@ -39,6 +38,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -50,7 +50,7 @@ import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 import org.silverpeas.web.jobstartpage.NavBarJsonEncoder;
 import org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;

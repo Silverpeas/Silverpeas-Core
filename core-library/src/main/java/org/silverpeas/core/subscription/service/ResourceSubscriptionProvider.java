@@ -125,7 +125,7 @@ public class ResourceSubscriptionProvider {
   private static ResourceSubscriptionService getService(String componentInstanceId) {
     final Optional<SilverpeasComponentInstance> componentInstance = OrganizationController.get()
         .getComponentInstance(componentInstanceId);
-    if (!componentInstance.isPresent()) {
+    if (componentInstance.isEmpty()) {
       throw new IllegalStateException(
           "Component instance " + componentInstanceId + " is not valid.");
     }

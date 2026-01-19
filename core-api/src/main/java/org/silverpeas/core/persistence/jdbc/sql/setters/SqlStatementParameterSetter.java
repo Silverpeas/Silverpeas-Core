@@ -28,8 +28,8 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Singleton;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
@@ -48,10 +48,10 @@ import java.util.Set;
 @Singleton
 public class SqlStatementParameterSetter {
 
-  private Map<Class<?>, SqlTypedParameterSetter> settersByType = new HashMap<>();
+  private final Map<Class<?>, SqlTypedParameterSetter> settersByType = new HashMap<>();
 
   /**
-   * Registers all of the SQL parameter setters available in Silverpeas for later use.
+   * Registers all SQL parameter setters available in Silverpeas for later use.
    */
   @PostConstruct
   void registerAll() {

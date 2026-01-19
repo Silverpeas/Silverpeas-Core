@@ -30,7 +30,7 @@ import org.silverpeas.core.calendar.notification.CalendarLifeCycleEvent;
 import org.silverpeas.core.subscription.AbstractProfiledResourceSubscriptionListener;
 import org.silverpeas.core.subscription.SubscriptionResource;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * Listener of events on the deletion of a node in a component instance to delete all subscriptions

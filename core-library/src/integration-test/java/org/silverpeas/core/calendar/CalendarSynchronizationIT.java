@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FilenameUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -36,11 +37,11 @@ import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.SQLRequester;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.stub.UserImpl;
 
-import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -102,8 +103,9 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(CalendarSynchronizationIT.class)
-        .addCalendarSynchronizationFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(CalendarSynchronizationIT.class)
+        .addMavenDependencies("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer")
+        .addClasses(UserImpl.class)
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .addAsResource("org/silverpeas/util/logging")
@@ -119,8 +121,7 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
 
     emptyExternalUrl = getFilePath(EMPTY_EXTERNAL_URL);
     externalUrl = getFilePath(EXTERNAL_URL);
-
-    OperationContext.fromUser("0");
+    OperationContext.fromUser(getUser());
   }
 
   @Test

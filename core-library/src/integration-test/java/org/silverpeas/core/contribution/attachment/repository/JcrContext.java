@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.util.Charsets;
@@ -102,8 +103,6 @@ public class JcrContext implements TestRule {
    */
 
   private final Date testStartDate = new Date();
-
-  private final DocumentConverter converter = new DocumentConverter();
 
   private DocumentRepository getDocumentRepository() {
     return ServiceProvider.getService(DocumentRepository.class);
@@ -290,6 +289,7 @@ public class JcrContext implements TestRule {
     assertThat(document.getInstanceId(), not(emptyString()));
     assertThat(document.getOldSilverpeasId(), greaterThan(0L));
     try (JCRSession session = JCRSession.openSystemSession()) {
+      DocumentConverter converter = new DocumentConverter(I18n.get());
       Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
       converter.fillNode(document, documentNode);
       session.save();

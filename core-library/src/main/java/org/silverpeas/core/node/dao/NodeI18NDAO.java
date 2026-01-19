@@ -54,15 +54,12 @@ public class NodeI18NDAO {
   private static final String INSERT_TRANSLATION = "INSERT INTO " + TABLENAME + " VALUES (?, ?, ?, ?, ?)";
   private static final String UPDATE_TRANSLATION = "UPDATE " + TABLENAME + " SET lang = ?, nodeName =  ?, nodeDescription = ?  WHERE id = ?";
 
-  private NodeI18NDAO() {
-  }
-
   /**
    * Deletes all translations of publications linked to the component instance represented by the
    * given identifier.
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
-   * @throws SQLException
+   * @throws SQLException if an SQL error is thrown.
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
     JdbcSqlQuery.deleteFrom(TABLENAME).where("nodeId in (" +
@@ -71,15 +68,12 @@ public class NodeI18NDAO {
   }
 
   /**
-   * ********************* Database Routines ***********************
-   */
-  /**
    * Create a NodeI18N from a ResultSet
    *
    * @param rs the ResultSet which contains data
    * @return the NodeI18NDetail
    * @see NodeI18NDetail
-   * @exception java.sql.SQLException
+   * @exception java.sql.SQLException if the mapping to the business object fails.
    * @since 1.0
    */
   private static NodeI18NDetail resultSet2NodeDetail(ResultSet rs) throws SQLException {
@@ -99,7 +93,7 @@ public class NodeI18NDAO {
    * @return a NodeI18NPK which contains the new row id
    * @param nd the NodeI18NDetail which contains data
    * @see NodeI18NDetail
-   * @exception java.sql.SQLException
+   * @exception java.sql.SQLException if the translation savin fails
    * @since 1.0
    */
   public static NodeI18NPK saveTranslation(Connection con, NodeI18NDetail nd) throws SQLException {
@@ -129,7 +123,7 @@ public class NodeI18NDAO {
    * @return a NodeI18NPK which contains the new row id
    * @param nd the NodeI18NDetail which contains data
    * @see NodeI18NDetail
-   * @exception java.sql.SQLException
+   * @exception java.sql.SQLException if the translation update fails.
    * @since 1.0
    */
   public static NodeI18NPK updateTranslation(Connection con, NodeI18NDetail nd)
@@ -156,7 +150,7 @@ public class NodeI18NDAO {
    *
    * @param id node identifier about which the translation is
    * @see NodeI18NDetail
-   * @exception java.sql.SQLException
+   * @exception java.sql.SQLException if the translation deletion fails.
    * @since 1.0
    */
   public static void removeTranslation(Connection con, String id) throws SQLException {
@@ -177,7 +171,7 @@ public class NodeI18NDAO {
    *
    * @param nodeId id of the node to delete
    * @param con the JDBC Connection
-   * @exception java.sql.SQLException
+   * @exception java.sql.SQLException if the translations deletion fails.
    * @since 1.0
    */
   public static void removeTranslations(Connection con, int nodeId) throws SQLException {
@@ -196,10 +190,10 @@ public class NodeI18NDAO {
   /**
    * Returns the rows described by the given query with one id parameter.
    *
-   * @param con
-   * @param nodeId
-   * @return
-   * @throws SQLException
+   * @param con the connection to the database.
+   * @param nodeId the unique identifier of a node.
+   * @return the list of all the node's translations.
+   * @throws SQLException if the translations cannot be fetched.
    */
   public static List<NodeI18NDetail> getTranslations(Connection con, String nodeId) throws SQLException {
     try (PreparedStatement prepStmt = con.prepareStatement(SELECT_TRANSLATIONS)) {

@@ -31,15 +31,14 @@ import org.silverpeas.core.contribution.model.ContributionContent;
  * {@link ContributionContentRendererProvider}.
  * @author silveryocha
  */
-public abstract class AbstractContributionRenderer<T extends ContributionContent>
+public abstract class AbstractContributionRenderer<T extends ContributionContent<?>>
     implements ContributionContentRenderer {
   private static final long serialVersionUID = -6884150454054720613L;
 
   private T content;
 
-  @SuppressWarnings("unchecked")
-  void setContent(ContributionContent content) {
-    this.content = (T) content;
+  void setContent(T content) {
+    this.content = content;
   }
 
   protected T getContent() {

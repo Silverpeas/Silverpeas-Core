@@ -23,15 +23,11 @@
  */
 package org.silverpeas.core.annotation;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Stereotype;
 import org.silverpeas.kernel.annotation.Managed;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Stereotype;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * This annotation is to tag an object as being a business service. A business service is an object
@@ -39,11 +35,14 @@ import java.lang.annotation.Target;
  * of business objects.
  * <p>
  * Beans annotated with this annotation are marked to be managed by the underlying IoC container and
- * to be bound to the scope of the application execution. If the bean declare another
- * life-cycle scope, then the new scope overrides the default one.
+ * to be bound to the scope of the application runtime. Such annotated beans will be proxified,
+ * meaning they cannot have final methods (otherwise the proxification will fail). This will ensure
+ * for transactional services the raising of both unchecked and checked exceptions will rollback the
+ * current transaction. If the bean declare another life-cycle scope, then the new scope overrides
+ * the default one.
  * </p>
  * <p>
- * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
+ * The annotation is an abstraction above the IoC container used by Silverpeas. It is then
  * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
  * annotation to those specific at this IoC implementation without impacting the annotated IoC
  * managed beans.

@@ -26,7 +26,7 @@ package org.silverpeas.core;
 
 import org.silverpeas.core.admin.user.UserManager;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author mmoquillon

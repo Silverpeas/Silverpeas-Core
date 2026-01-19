@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.user.notification.UserEvent;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * A listener of events about a given user account in Silverpeas.

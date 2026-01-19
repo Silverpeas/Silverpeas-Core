@@ -23,18 +23,17 @@
  */
 package org.silverpeas.core.admin.service;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 
-import javax.inject.Inject;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Arquillian.class)
 public class AdministrationServiceProviderIT {
@@ -47,12 +46,8 @@ public class AdministrationServiceProviderIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AdministrationServiceProviderIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn(warBuilder ->
-            ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures()).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(AdministrationServiceProviderIT.class)
+        .build();
   }
 
   @Test

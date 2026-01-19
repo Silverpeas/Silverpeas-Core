@@ -36,9 +36,9 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentControlle
 import org.silverpeas.core.webapi.mylinks.CategoryEntity;
 import org.silverpeas.core.webapi.mylinks.MyLinksWebManager;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -51,8 +51,8 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.*;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.util.URLUtil.getURL;

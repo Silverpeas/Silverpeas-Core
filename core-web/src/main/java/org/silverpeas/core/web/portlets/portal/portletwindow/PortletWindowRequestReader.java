@@ -25,7 +25,7 @@ package org.silverpeas.core.web.portlets.portal.portletwindow;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
@@ -62,9 +62,7 @@ public class PortletWindowRequestReader implements WindowRequestReader {
 
   @Override
   public Map<String, String[]> readParameterMap(HttpServletRequest request) {
-    Map<String, String[]> params =
-        (Map) request.getAttribute(WindowInvokerConstants.PORTLET_PARAM_MAP);
-    return params;
+    return (Map<String, String[]>) request.getAttribute(WindowInvokerConstants.PORTLET_PARAM_MAP);
   }
 
   @Override

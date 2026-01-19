@@ -24,24 +24,23 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import edu.psu.swe.scim.server.exception.UnableToRetrieveResourceException;
-import edu.psu.swe.scim.spec.protocol.filter.AttributeComparisonExpression;
-import edu.psu.swe.scim.spec.protocol.filter.FilterExpression;
-import edu.psu.swe.scim.spec.protocol.filter.LogicalExpression;
-import edu.psu.swe.scim.spec.protocol.filter.LogicalOperator;
+import jakarta.ws.rs.core.Response;
+import org.apache.directory.scim.server.exception.UnableToRetrieveResourceException;
+import org.apache.directory.scim.spec.filter.*;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.SearchCriteria;
 
-import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 import java.text.MessageFormat;
 
-import static javax.ws.rs.core.Response.Status.*;
+import static jakarta.ws.rs.core.Response.Status.*;
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
- * Base of all SCIM services which handles the resources between a SCIM client and Silverpeas
- * SCIM server.
+ * Base of all SCIM services which handles the resources between an SCIM client and Silverpeas SCIM
+ * server.
+ *
  * @author silveryocha
  */
 abstract class AbstractScimAdminService {
@@ -59,13 +58,14 @@ abstract class AbstractScimAdminService {
   }
 
   /**
-   * Centralizing the {@link SearchCriteria} instance creation from {@link FilterExpression}
-   * given by SCIM client.
+   * Centralizing the {@link SearchCriteria} instance creation from
+   * {@link org.apache.directory.scim.spec.filter.FilterExpression} given by SCIM client.
+   *
    * @param expression the filters given by the SCIM client.
-   * @param searchCriteria the silverpeas {@link SearchCriteria} instance.
+   * @param searchCriteria the Silverpeas {@link SearchCriteria} instance.
    * @param <T> the type of {@link SearchCriteria}
    * @return the completed {@link SearchCriteria} instance.
-   * @throws UnableToRetrieveResourceException
+   * @throws UnableToRetrieveResourceException if the resource cannot be retrieved.
    */
   protected <T extends SearchCriteria> T processExpression(FilterExpression expression,
       T searchCriteria) throws UnableToRetrieveResourceException {
@@ -75,14 +75,14 @@ abstract class AbstractScimAdminService {
       processExpression(le.getRight(), searchCriteria);
 
       if (le.getOperator().equals(LogicalOperator.OR)) {
-        throw new UnableToRetrieveResourceException(NOT_IMPLEMENTED,
+        throw new UnableToRetrieveResourceException(Response.Status.NOT_IMPLEMENTED,
             "impossible to perform OR logical operation");
       }
     } else if (expression instanceof AttributeComparisonExpression) {
       final AttributeComparisonExpression ace = (AttributeComparisonExpression) expression;
       final String attributeBase = ace.getAttributePath().getFullAttributeName();
 
-      if (ace.getOperation() == edu.psu.swe.scim.spec.protocol.filter.CompareOperator.EQ) {
+      if (ace.getOperation() == CompareOperator.EQ) {
         if ("id".equals(attributeBase)) {
           searchCriteria.onUserIds((String) ace.getCompareValue());
           return searchCriteria;
@@ -91,7 +91,7 @@ abstract class AbstractScimAdminService {
           return searchCriteria;
         }
       }
-      throw new UnableToRetrieveResourceException(BAD_REQUEST, MessageFormat
+      throw new UnableToRetrieveResourceException(Response.Status.BAD_REQUEST, MessageFormat
           .format("Unable to apply operator {0} on attribute {1}", ace.getOperation(),
               ace.getAttributePath().getFullAttributeName()));
     }

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contact.model;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -41,6 +40,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -61,7 +61,7 @@ import java.util.Map;
 public class CompleteContact implements Contact, Serializable {
   private static final long serialVersionUID = 6098500884583430615L;
 
-  private ContactDetail contactDetail;
+  private final ContactDetail contactDetail;
   private String modelId;
   private List<FileItem> formItems;
   private List<String> formValues;
@@ -310,7 +310,7 @@ public class CompleteContact implements Contact, Serializable {
   }
 
   public Map<String, String> getFormValues(String language, boolean onlyDefinedValues) {
-    HashMap<String, String> formValues = new HashMap<String, String>();
+    HashMap<String, String> formValues = new HashMap<>();
     if (isFormDefined()) {
       DataRecord data = null;
       PublicationTemplate pub = null;
@@ -323,7 +323,7 @@ public class CompleteContact implements Contact, Serializable {
       }
 
       if (data != null) {
-        String fieldNames[] = data.getFieldNames();
+        String[] fieldNames = data.getFieldNames();
         PagesContext pageContext = new PagesContext();
         pageContext.setLanguage(language);
         for (String fieldName : fieldNames) {
@@ -331,13 +331,14 @@ public class CompleteContact implements Contact, Serializable {
             Field field = data.getField(fieldName);
             GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) pub.getRecordTemplate()
                 .getFieldTemplate(fieldName);
-            FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate
+            FieldDisplayer<Field> fieldDisplayer =
+                TypeManager.getInstance().getDisplayer(fieldTemplate
                 .getTypeName(), "simpletext");
             StringWriter sw = new StringWriter();
             PrintWriter out = new PrintWriter(sw);
             fieldDisplayer.display(out, field, fieldTemplate, pageContext);
             String value = sw.toString();
-            if (!onlyDefinedValues || (onlyDefinedValues && StringUtil.isDefined(value))) {
+            if (!onlyDefinedValues || StringUtil.isDefined(value)) {
               formValues.put(fieldName, sw.toString());
             }
           } catch (Exception e) {

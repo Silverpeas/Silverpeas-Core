@@ -48,14 +48,14 @@ public class PersistenceIdentifierSetter {
     }
   }
 
-  public static <T extends AbstractJpaEntity> T setIdTo(final T entity,
+  public static <T extends AbstractJpaEntity<T, ?>> T setIdTo(final T entity,
       final Class<? extends EntityIdentifier> idType) {
     PersistenceIdentifierSetter setter = new PersistenceIdentifierSetter(idType);
     return setter.setIdTo(entity);
   }
 
-  public <T extends AbstractJpaEntity> T setIdTo(final T entity) {
-    entity.setId(this.generator.generateNewId().asString());
+  public <T extends AbstractJpaEntity<T, ?>> T setIdTo(final T entity) {
+    entity.setId(this.generator.generateNewValue().asString());
     return entity;
   }
 }

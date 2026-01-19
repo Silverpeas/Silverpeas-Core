@@ -24,37 +24,40 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import edu.psu.swe.scim.server.rest.UserResourceImpl;
-import edu.psu.swe.scim.spec.adapter.FilterWrapper;
-import edu.psu.swe.scim.spec.protocol.Constants;
-import edu.psu.swe.scim.spec.protocol.attribute.AttributeReference;
-import edu.psu.swe.scim.spec.protocol.attribute.AttributeReferenceListWrapper;
-import edu.psu.swe.scim.spec.protocol.data.PatchRequest;
-import edu.psu.swe.scim.spec.protocol.data.SearchRequest;
-import edu.psu.swe.scim.spec.protocol.search.SortOrder;
-import edu.psu.swe.scim.spec.resources.ScimUser;
 import org.apache.commons.io.IOUtils;
+import org.apache.directory.scim.protocol.Constants;
+import org.apache.directory.scim.protocol.adapter.FilterWrapper;
+import org.apache.directory.scim.protocol.data.PatchRequest;
+import org.apache.directory.scim.protocol.data.SearchRequest;
+import org.apache.directory.scim.protocol.exception.ScimException;
+import org.apache.directory.scim.server.rest.UserResourceImpl;
+import org.apache.directory.scim.spec.exception.ResourceException;
+import org.apache.directory.scim.spec.filter.SortOrder;
+import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
+import org.apache.directory.scim.spec.filter.attribute.AttributeReferenceListWrapper;
+import org.apache.directory.scim.spec.resources.ScimUser;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.webapi.admin.scim.adaptation.SilverpeasPatchRequest;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
 import java.io.IOException;
 import java.io.StringWriter;
 
 import static java.text.MessageFormat.format;
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
 import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE_URI;
@@ -102,7 +105,8 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
   @Override
   public Response getById(@PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
-      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes) {
+      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
+      throws ScimException, ResourceException {
     return super.getById(id, attributes, excludedAttributes);
   }
 
@@ -119,7 +123,7 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
       @QueryParam("sortBy") final AttributeReference sortBy,
       @QueryParam("sortOrder") final SortOrder sortOrder,
       @QueryParam("startIndex") final Integer startIndex,
-      @QueryParam("count") final Integer count) {
+      @QueryParam("count") final Integer count) throws ScimException, ResourceException {
     return super
         .query(attributes, excludedAttributes, filter, sortBy, sortOrder, startIndex, count);
   }
@@ -134,7 +138,8 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
   @Override
   public Response create(final ScimUser resource,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
-      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes) {
+      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
+      throws ScimException, ResourceException {
     return super.create(resource, attributes, excludedAttributes);
   }
 
@@ -146,7 +151,7 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
   @Path("/.search")
   @Produces(Constants.SCIM_CONTENT_TYPE)
   @Override
-  public Response find(final SearchRequest request) {
+  public Response find(final SearchRequest request) throws ScimException, ResourceException {
     return super.find(request);
   }
 
@@ -161,7 +166,8 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
   @Override
   public Response update(final ScimUser resource, @PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
-      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes) {
+      @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
+      throws ScimException, ResourceException {
     return super.update(resource, id, attributes, excludedAttributes);
   }
 
@@ -172,7 +178,7 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
   public Response patch(@PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
       @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
-      throws IOException {
+      throws IOException, ScimException, ResourceException {
     final StringWriter writer = new StringWriter();
     final String charset = isDefined(httpRequest.getCharacterEncoding())
         ? httpRequest.getCharacterEncoding()
@@ -188,8 +194,8 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
         .replaceAll("(?i)\"op\":\"Replace\",", "\"op\":\"replace\",")
         .replaceAll("(?i)\"op\":\"Remove\",", "\"op\":\"remove\",");
     logger().debug(() -> format("patching data: {0}", scimJson));
-    final SilverpeasPatchRequest silverpeasPatchRequest = JSONCodec
-        .decode(adaptedScimJson, SilverpeasPatchRequest.class);
+    final SilverpeasPatchRequest silverpeasPatchRequest =
+        JSONCodec.decode(adaptedScimJson, SilverpeasPatchRequest.class);
     silverpeasPatchRequest.afterDecode();
     return super.patch(silverpeasPatchRequest, id, attributes, excludedAttributes);
   }
@@ -208,7 +214,7 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
   @DELETE
   @Path("{id}")
   @Override
-  public Response delete(@PathParam("id") final String id) {
+  public Response delete(@PathParam("id") final String id) throws ScimException, ResourceException {
     return super.delete(id);
   }
 

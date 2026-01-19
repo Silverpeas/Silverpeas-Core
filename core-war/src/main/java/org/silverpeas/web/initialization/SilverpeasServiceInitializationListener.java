@@ -25,8 +25,8 @@ package org.silverpeas.web.initialization;
 
 import org.silverpeas.core.initialization.SilverpeasServiceInitialization;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 /**
  * A listener of servlet context to initialize all the services that implement the

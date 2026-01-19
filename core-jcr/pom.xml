@@ -31,7 +31,7 @@
   <parent>
     <artifactId>core</artifactId>
     <groupId>org.silverpeas</groupId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core</groupId>
@@ -48,8 +48,9 @@
   <dependencies>
     <!-- JEE API -->
     <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
+      <groupId>jakarta.platform</groupId>
+      <artifactId>jakarta.jakartaee-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Silverpeas Core API -->
@@ -64,6 +65,7 @@
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Apache Jackrabbit Oak implementation of the JCR -->
@@ -88,7 +90,7 @@
     <!-- MongoDB to be used as a document-base datasource for Oak -->
     <dependency>
       <groupId>org.mongodb</groupId>
-      <artifactId>mongo-java-driver</artifactId>
+      <artifactId>mongodb-driver-sync</artifactId>
     </dependency>
 
     <!-- Netty required by Oak (an asynchronous event-driven network application framework) -->
@@ -123,6 +125,7 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-server</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
 
     <!-- Dependencies required by Apache Jackrabbit Oak and by Apache Jackrabbit 2 -->
@@ -135,8 +138,8 @@
       <artifactId>httpcore</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-fileupload2-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>

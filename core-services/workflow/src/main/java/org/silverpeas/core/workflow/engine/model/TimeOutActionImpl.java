@@ -27,7 +27,7 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.TimeOutAction;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 /**
  * Representation of the &lt;timeoutAction&gt; element of a Process Model.

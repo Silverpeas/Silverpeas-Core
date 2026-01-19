@@ -36,16 +36,17 @@ public class WarBuilder4Viewer extends BasicWarBuilder {
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
-   * @param test the class of the test for which a war archive will be build.
+   * @param test the class of the test for which a war archive will be built.
    */
   protected <T> WarBuilder4Viewer(final Class<T> test) {
     super(test);
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     addPackages(true, "org.silverpeas.core.viewer");
     addAsResource("org/silverpeas/viewer");
+    addAsResource("org/silverpeas/util/logging");
     addAsResource("org/silverpeas/converter/openoffice.properties");
     addAsResource("org/silverpeas/util/data/temporaryDataManagementSettings.properties");
+    addAsResource("org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
   }
 
   /**

@@ -24,9 +24,9 @@
  */
 package org.silverpeas.web.test.stub;
 
-import javax.annotation.Nonnull;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.BufferedReader;
 import java.security.Principal;
 import java.util.*;
@@ -44,6 +44,7 @@ public class TestHttpRequest implements HttpServletRequest {
     private final Map<String, Object> attributes = new HashMap<>();
     private final String uri;
     private final String method;
+    private final UUID uuid = UUID.randomUUID();
 
     public TestHttpRequest(@Nonnull final String method, @Nonnull final String uri) {
         this.method = method;
@@ -194,11 +195,6 @@ public class TestHttpRequest implements HttpServletRequest {
 
     @Override
     public boolean isRequestedSessionIdFromURL() {
-        return false;
-    }
-
-    @Override
-    public boolean isRequestedSessionIdFromUrl() {
         return false;
     }
 
@@ -362,11 +358,6 @@ public class TestHttpRequest implements HttpServletRequest {
     }
 
     @Override
-    public String getRealPath(String path) {
-        return null;
-    }
-
-    @Override
     public int getRemotePort() {
         return 0;
     }
@@ -421,7 +412,22 @@ public class TestHttpRequest implements HttpServletRequest {
         return null;
     }
 
-    private static class StringEnumeration implements Enumeration<String> {
+  @Override
+  public String getRequestId() {
+    return uuid.toString();
+  }
+
+  @Override
+  public String getProtocolRequestId() {
+    return uuid.toString();
+  }
+
+  @Override
+  public ServletConnection getServletConnection() {
+    return null;
+  }
+
+  private static class StringEnumeration implements Enumeration<String> {
 
         private final ArrayList<String> items;
 

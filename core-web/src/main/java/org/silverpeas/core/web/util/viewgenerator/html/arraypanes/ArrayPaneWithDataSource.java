@@ -28,8 +28,8 @@ import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WAD
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WADataPaginator;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WAItem;
 
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.jsp.PageContext;
 import java.util.Collections;
 
 /**
@@ -56,59 +56,29 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     if (pageContext != null) {
       init(name, null, pageContext.getRequest(), pageContext.getSession());
     } else {
-      init(name, null, null, null);
+      throw new IllegalArgumentException("PageContext cannot be null");
     }
   }
 
-  /**
-   * Constructor declaration
-   * @param name
-   * @param request
-   * @param session
-   *
-   */
   public ArrayPaneWithDataSource(String name,
-      javax.servlet.ServletRequest request, HttpSession session) {
+      jakarta.servlet.ServletRequest request, HttpSession session) {
     init(name, null, request, session);
   }
 
-  /**
-   * Method declaration
-   * @param p
-   *
-   */
   public void setDataSource(WADataPaginator p) {
     m_DataSource = p;
     m_ArrayLine = new ArrayLine(this);
   }
 
-  /**
-   * Constructor declaration
-   * @param name
-   * @param url
-   * @param request
-   * @param session
-   *
-   */
   public ArrayPaneWithDataSource(String name, String url,
-      javax.servlet.ServletRequest request, HttpSession session) {
+      jakarta.servlet.ServletRequest request, HttpSession session) {
     init(name, url, request, session);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   private String printPseudoColumn() {
     return "<td>&nbsp;</td>";
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String print() {
     if (m_DataSource == null) {
       return standardPrint();
@@ -117,11 +87,6 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   private String dataSourcePrint() {
     int columnsCount = 0;
     int sortCol = 0;
@@ -174,23 +139,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     int itemCount = m_DataSource.getItemCount();
     int pageItemCount = page.getItemCount();
 
-    StringBuilder result = new StringBuilder();
-
-    result.append("<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 " +
-        "border=0><tr><td>\n");
-    result.append("<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\"")
-        .append(getCellSpacing())
-        .append("\" cellpadding=\"")
-        .append(getCellPadding())
-        .append("\">");
-    if (getTitle() != null) {
-      result.append("<tr>");
-      result.append("<td class=\"txttitrecol\" colspan=\"").append(columnsCount).append("\">");
-      result.append(getTitle());
-      result.append("</td>");
-      result.append("</tr>\n");
-    }
-    result.append("<tr>");
+    StringBuilder result = generateHTML(columnsCount);
     for (int i = 0; i < columnsCount; i++) {
       ArrayColumn ac = new ArrayColumn(m_DataSource.getHeader()
           .getFieldDisplayName(i), i + 1, this);
@@ -200,7 +149,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         ac.setRoutingAddress(getUrl());
       } else {
         ac.setRoutingAddress(fra);
-        if ("".equals(fra)) {
+        if (fra.isEmpty()) {
           ac.setSortable(false);
         }
       }
@@ -220,8 +169,8 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
       } else {
         item = page.getNextItem();
       }
-      result.append("<tr id=\"" + i + "\">\n");
-      result.append(result + "<!-- column count is + " + columnsCount + " -->\n");
+      result.append("<tr id=\"").append(i).append("\">\n");
+      result.append(result).append("<!-- column count is + ").append(columnsCount).append(" -->\n");
       for (int j = 0; j < columnsCount; j++) {
         String name = m_DataSource.getHeader().getFieldName(j);
         String value = item.getFieldByName(name);
@@ -316,6 +265,27 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     return result.toString();
   }
 
+  private StringBuilder generateHTML(int columnsCount) {
+    StringBuilder result = new StringBuilder();
+
+    result.append("<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 " +
+        "border=0><tr><td>\n");
+    result.append("<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\"")
+        .append(getCellSpacing())
+        .append("\" cellpadding=\"")
+        .append(getCellPadding())
+        .append("\">");
+    if (getTitle() != null) {
+      result.append("<tr>");
+      result.append("<td class=\"txttitrecol\" colspan=\"").append(columnsCount).append("\">");
+      result.append(getTitle());
+      result.append("</td>");
+      result.append("</tr>\n");
+    }
+    result.append("<tr>");
+    return result;
+  }
+
   /**
    * Default print mode entirely identical to ArrayPaneWA, used when the data source wasn't
    * specified
@@ -334,24 +304,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     if (getCellSpacing() == 0) {
       columnsCount *= 2;
     }
-    StringBuilder result = new StringBuilder();
-
-    result.append(
-        "<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 " +
-            "border=0><tr><td>\n");
-    result.append("<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\"")
-        .append(getCellSpacing())
-        .append("\" cellpadding=\"")
-        .append(getCellPadding())
-        .append("\">");
-    if (getTitle() != null) {
-      result.append("<tr>");
-      result.append("<td class=\"txttitrecol\" colspan=\"").append(columnsCount).append("\">");
-      result.append(getTitle());
-      result.append("</td>");
-      result.append("</tr>\n");
-    }
-    result.append("<tr>");
+    StringBuilder result = generateHTML(columnsCount);
     for (ArrayColumn column : getColumns()) {
       result.append(column.print());
       if (getCellSpacing() == 0) {

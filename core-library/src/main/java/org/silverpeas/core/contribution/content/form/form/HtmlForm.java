@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -61,8 +61,8 @@ public class HtmlForm extends AbstractForm {
   private BufferedReader m_HtmlFile;
   private String currentLine = "";
 
-  private static String TAG_BEGIN = "<%=";
-  private static String TAG_END = "%>";
+  private static final String TAG_BEGIN = "<%=";
+  private static final String TAG_END = "%>";
 
   /**
    * Creates a new HTML form from the specified template of records.
@@ -153,7 +153,7 @@ public class HtmlForm extends AbstractForm {
     } else {
       // tag found in the read line
       out.print(currentLine.substring(0, pos));
-      currentLine = currentLine.substring(pos, currentLine.length());
+      currentLine = currentLine.substring(pos);
       return false;
     }
   }
@@ -181,15 +181,17 @@ public class HtmlForm extends AbstractForm {
     }
     // Search for end tag
     int endPos = currentLine.indexOf(TAG_END);
+    StringBuilder tagContent = new StringBuilder();
     while (endPos == -1) {
       String newLine = m_HtmlFile.readLine();
       if (newLine == null) {
         SilverLogger.getLogger(this).error("end of file");
         return;
       }
-      currentLine += newLine;
-      endPos = currentLine.indexOf(TAG_END);
+      tagContent.append(newLine);
+      endPos = tagContent.indexOf(TAG_END);
     }
+    currentLine = tagContent.toString();
 
     String fieldName = currentLine.substring(beginPos + TAG_BEGIN.length(), endPos);
     if (fieldName.endsWith(".label")) {
@@ -198,7 +200,7 @@ public class HtmlForm extends AbstractForm {
     } else {
       printField(out, fieldName, pc);
     }
-    currentLine = currentLine.substring(endPos + TAG_END.length(), currentLine.length());
+    currentLine = currentLine.substring(endPos + TAG_END.length());
   }
 
   /**
@@ -224,7 +226,7 @@ public class HtmlForm extends AbstractForm {
             ((GenericFieldTemplate) fieldTemplate).setDisplayerName("simpletext");
             ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
           }
-          FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
+          FieldDisplayer<Field> fieldDisplayer = getFieldDisplayer(fieldTemplate);
           if (fieldDisplayer != null) {
             if (!fieldTemplate.isRepeatable()) {
               Field field = getSureField(fieldTemplate, record, 0);
@@ -271,7 +273,7 @@ public class HtmlForm extends AbstractForm {
    */
   private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc) {
     // fieldName can be as 'folder.nature' (case of workflow printForm)
-    fieldName = fieldName.substring(fieldName.indexOf('.') + 1, fieldName.length());
+    fieldName = fieldName.substring(fieldName.indexOf('.') + 1);
     for (FieldTemplate fieldTemplate : getFieldTemplates()) {
       if (fieldTemplate != null && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
         out.print(fieldTemplate.getLabel(pc.getLanguage()));
@@ -326,7 +328,7 @@ public class HtmlForm extends AbstractForm {
     } catch (IOException fe) {
       SilverLogger.getLogger(this).error(failureOnRendering("record data for HTML layer", ""), fe);
     }
-    return new String(buffer.toByteArray(), Charsets.UTF_8);
+    return buffer.toString(Charsets.UTF_8);
   }
 
   /**

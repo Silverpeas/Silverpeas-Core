@@ -29,9 +29,9 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.BodyTagSupport;
 
 import static org.silverpeas.core.web.token.SynchronizerTokenService.NAVIGATION_TOKEN_KEY;
 import static org.silverpeas.core.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;

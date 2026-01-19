@@ -28,8 +28,8 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 /**
  * A provider of the JPA entity manager with which the persistence of entities can be managed.

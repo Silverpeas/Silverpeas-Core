@@ -78,6 +78,15 @@ public interface CommonArchive<T extends CommonArchive<T>> {
   T addPackages(boolean recursive, String... packages) throws IllegalArgumentException;
 
   /**
+   * Deletes all the classes in the specified {@link Package} in the {@link Archive}.
+   * @param recursive Should the sub packages be added
+   * @param packages the packages to delete in the archive.
+   * @return this archive.
+   * @throws IllegalArgumentException If no packages were specified
+   */
+  T deletePackages(boolean recursive, String... packages);
+
+  /**
    * Adds the resource as a resource to the container, returning the container itself. <br>
    * The resource will be placed into the Container Resource path under the same context from which
    * it was retrieved. <br>

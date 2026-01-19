@@ -5,7 +5,7 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.web.calendar.AbstractCalendarInstanceRoutingMap;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * Required by the tests as they use {@link org.silverpeas.core.calendar.CalendarEvent} to compute
@@ -15,6 +15,6 @@ import javax.inject.Named;
  */
 @Technical
 @Bean
-@Named
+@Named("calendar" + AbstractCalendarInstanceRoutingMap.NAME_SUFFIX)
 public class CalendarInstanceRoutingMap extends AbstractCalendarInstanceRoutingMap {
 }

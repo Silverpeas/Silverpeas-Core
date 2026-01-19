@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
@@ -86,11 +87,7 @@ public abstract class AbstractPieChartBuilder {
 
   private void addStateItemForComponentInstance(final String[] tabValue,
       final SilverpeasComponentInstance cmp) {
-    long[] countValues = new long[3];
-    countValues[0] = 0;
-    countValues[1] = 0;
-    countValues[2] = 0;
-
+    long[] countValues = new long[] {0, 0, 0};
     if (tabValue[0] != null) {
       countValues[0] = Long.parseLong(tabValue[0]);
     }
@@ -145,7 +142,7 @@ public abstract class AbstractPieChartBuilder {
 
       // build data
       List<String> legend = new ArrayList<>();
-      List<String> counts = new ArrayList<>();
+      List<Long> counts = new ArrayList<>();
       currentStats.clear();
 
       // first manage subspaces
@@ -163,7 +160,7 @@ public abstract class AbstractPieChartBuilder {
   }
 
   private void buildStatsForComponents(final List<String[]> currentStats,
-      final List<String> componentIds, final List<String> legend, final List<String> counts) {
+      final List<String> componentIds, final List<String> legend, final List<Long> counts) {
     for (String componentId : componentIds) {
       StatItem item = statsByInstance.get(componentId);
       if (item != null) {
@@ -180,7 +177,7 @@ public abstract class AbstractPieChartBuilder {
   }
 
   private void buildStatsForSubspaces(final List<String[]> currentStats,
-      final List<String> tabSpaceIds, final List<String> legend, final List<String> counts)
+      final List<String> tabSpaceIds, final List<String> legend, final List<Long> counts)
       throws AdminException {
     for (String tabSpaceId : tabSpaceIds) {
       long count1 = 0L;
@@ -209,14 +206,14 @@ public abstract class AbstractPieChartBuilder {
     }
   }
 
-  private void updateCountByFinesse(final List<String> counts, final long count1, final long count2,
+  private void updateCountByFinesse(final List<Long> counts, final long count1, final long count2,
       final long count3) {
     if (FINESSE_TOUS.equals(niveauFinesse)) {
-      counts.add(String.valueOf(count1));
+      counts.add(count1);
     } else if (FINESSE_GROUPE.equals(niveauFinesse)) {
-      counts.add(String.valueOf(count2));
+      counts.add(count2);
     } else if (FINESSE_USER.equals(niveauFinesse)) {
-      counts.add(String.valueOf(count3));
+      counts.add(count3);
     }
   }
 
@@ -265,13 +262,17 @@ public abstract class AbstractPieChartBuilder {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  protected PieChart getPieChartFrom(List<String> labels, List values) {
+  protected PieChart getPieChartFrom(List<String> labels, List<Long> values) {
+    return buildPieChart(labels, values);
+  }
+
+  @NonNull
+  static PieChart buildPieChart(List<String> labels, List<Long> values) {
     PieChart chart = PieChart.withoutTitle();
     Iterator<String> itLabels = labels.iterator();
-    Iterator<Object> itValues = values.iterator();
+    Iterator<Long> itValues = values.iterator();
     while (itLabels.hasNext()) {
-      chart.add(itLabels.next(), Long.valueOf(String.valueOf(itValues.next())));
+      chart.add(itLabels.next(), itValues.next());
     }
     return chart;
   }

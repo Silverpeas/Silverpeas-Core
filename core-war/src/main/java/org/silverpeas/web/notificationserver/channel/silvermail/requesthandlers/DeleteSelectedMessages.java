@@ -26,18 +26,17 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-
-@Singleton
+@Bean
 @Named("DeleteSelectedMessages")
 public class DeleteSelectedMessages implements SILVERMAILRequestHandler {
 

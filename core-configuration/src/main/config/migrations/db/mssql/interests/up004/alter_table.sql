@@ -1,0 +1,1 @@
+EXEC sp_rename 'SB_Interests_Axis.value', 'val', 'COLUMN';

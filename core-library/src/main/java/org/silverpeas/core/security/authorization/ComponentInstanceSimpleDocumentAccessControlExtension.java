@@ -32,7 +32,7 @@ import org.silverpeas.kernel.annotation.Base;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.kernel.util.Mutable;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 /**
  * This interface extends access controller extension for a SimpleDocument resource.
@@ -46,7 +46,7 @@ import javax.enterprise.util.AnnotationLiteral;
  * </p>
  * <p>
  * Any application that requires to implement this interface MUST qualify with the
- * {@link javax.inject.Named} annotation by a name satisfying the following convention
+ * {@link jakarta.inject.Named} annotation by a name satisfying the following convention
  * <code>[COMPONENT NAME]InstanceSimpleDocumentAccessControlExtension</code>. For example, for an
  * application Kmelia, the implementation must be qualified with <code>@Named
  * ("kmeliaInstanceSimpleDocumentAccessControlExtension")
@@ -83,7 +83,6 @@ public interface ComponentInstanceSimpleDocumentAccessControlExtension {
    * implementation will be extracted.
    * @return a {@link ComponentInstanceSimpleDocumentAccessControlExtension} implementation.
    */
-  @SuppressWarnings("serial")
   static ComponentInstanceSimpleDocumentAccessControlExtension getByInstanceId(final String instanceId) {
     final SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     final String cacheKey = ComponentInstanceSimpleDocumentAccessControlExtension.class.getName() + "###" + instanceId;

@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.search;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.util.Map;
 
 /**

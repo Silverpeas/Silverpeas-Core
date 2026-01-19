@@ -25,7 +25,7 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-import javax.persistence.TemporalType;
+import jakarta.persistence.TemporalType;
 
 /**
  * This class permits to indicate empty parameters to JPA repository framework methods that

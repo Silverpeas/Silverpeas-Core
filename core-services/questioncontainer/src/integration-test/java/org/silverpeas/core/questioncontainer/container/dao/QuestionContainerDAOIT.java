@@ -38,7 +38,7 @@ import org.silverpeas.core.test.BasicWarBuilder;
 
 import java.sql.Connection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author ebonnet
@@ -95,121 +95,12 @@ public class QuestionContainerDAOIT extends DataSetTest {
     return BasicWarBuilder.onWarForTestClass(QuestionContainerDAOIT.class)
         .addMavenDependencies("org.silverpeas.core:silverpeas-core-api")
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .testFocusedOn(war -> {
-          war.addPackages(true, "org.silverpeas.core.questioncontainer.container")
-              .addPackages(true, "org.silverpeas.core.questioncontainer.question");
-        })
+        .addAsResource("org/silverpeas/util/logging")
+        .addAsResource("org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties")
+        .testFocusedOn(war ->
+            war.addPackages(true, "org.silverpeas.core.questioncontainer.container")
+            .addPackages(true, "org.silverpeas.core.questioncontainer.question"))
         .build();
-  }
-
-  /**
-   * Test of getQuestionContainerHeaderFromResultSet method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testGetQuestionContainerHeaderFromResultSet() throws Exception {
-//    ResultSet rs = null;
-//    QuestionContainerPK questionContainerPK = null;
-//    QuestionContainerHeader expResult = null;
-    //    QuestionContainerHeader result =
-    //        QuestionContainerDAO.getQuestionContainerHeaderFromResultSet(rs, questionContainerPK);
-    //assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of getQuestionContainers method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testGetQuestionContainers_Connection_QuestionContainerPK() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK questionContainerPK = null;
-//    Collection expResult = null;
-//    Collection result = QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
-//    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of getQuestionContainers method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testGetQuestionContainers_Connection_List() throws Exception {
-//    Connection con = null;
-//    List<QuestionContainerPK> pks = null;
-//    Collection expResult = null;
-//    Collection result = QuestionContainerDAO.getQuestionContainers(con, pks);
-//    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of getOpenedQuestionContainers method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testGetOpenedQuestionContainers() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK questionContainerPK = null;
-//    Collection expResult = null;
-//    Collection result = QuestionContainerDAO.getOpenedQuestionContainers(con,
-// questionContainerPK);
-//    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of getNotClosedQuestionContainers method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testGetNotClosedQuestionContainers() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK questionContainerPK = null;
-//    Collection expResult = null;
-//    Collection result =
-//        QuestionContainerDAO.getNotClosedQuestionContainers(con, questionContainerPK);
-//    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of getClosedQuestionContainers method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testGetClosedQuestionContainers() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK questionContainerPK = null;
-//    Collection expResult = null;
-//    Collection result = QuestionContainerDAO.getClosedQuestionContainers(con,
-// questionContainerPK);
-//    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of getInWaitQuestionContainers method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testGetInWaitQuestionContainers() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK qcPK = null;
-//    Collection expResult = null;
-//    Collection result = QuestionContainerDAO.getInWaitQuestionContainers(con, qcPK);
-//    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
   }
 
   /**
@@ -254,7 +145,7 @@ public class QuestionContainerDAOIT extends DataSetTest {
       QuestionContainerDAO.closeQuestionContainer(con, questionContainerPK);
       curQC = QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
     }
-    assertEquals(curQC.isClosed(), true);
+    assertTrue(curQC.isClosed());
   }
 
   /**
@@ -270,102 +161,7 @@ public class QuestionContainerDAOIT extends DataSetTest {
       QuestionContainerDAO.openQuestionContainer(con, questionContainerPK);
       curQC = QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
     }
-    assertEquals(curQC.isClosed(), false);
+    assertFalse(curQC.isClosed());
   }
 
-  /**
-   * Test of createQuestionContainerHeader method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testCreateQuestionContainerHeader() throws Exception {
-//    Connection con = null;
-//    QuestionContainerHeader questionContainerHeader = null;
-//    QuestionContainerPK expResult = null;
-//    QuestionContainerPK result =
-//        QuestionContainerDAO.createQuestionContainerHeader(con, questionContainerHeader);
-//    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of updateQuestionContainerHeader method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testUpdateQuestionContainerHeader() throws Exception {
-//    Connection con = null;
-//    QuestionContainerHeader questionContainerHeader = null;
-//    QuestionContainerDAO.updateQuestionContainerHeader(con, questionContainerHeader);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of deleteQuestionContainerHeader method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testDeleteQuestionContainerHeader() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK questionContainerPK = null;
-//    QuestionContainerDAO.deleteQuestionContainerHeader(con, questionContainerPK);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of addAVoter method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testAddAVoter() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK questionContainerPK = null;
-//    QuestionContainerDAO.addAVoter(con, questionContainerPK);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of addComment method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testAddComment() throws Exception {
-//    Connection con = null;
-//    Comment comment = null;
-//    QuestionContainerDAO.addComment(con, comment);
-    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of getComments method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testGetComments() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK qcPK = null;
-//    Collection expResult = null;
-//    Collection result = QuestionContainerDAO.getComments(con, qcPK);
-//    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of deleteComments method, of class QuestionContainerDAO.
-   */
-  @Test
-  @Ignore
-  public void testDeleteComments() throws Exception {
-//    Connection con = null;
-//    QuestionContainerPK qcPK = null;
-//    QuestionContainerDAO.deleteComments(con, qcPK);
-    // TODO review the generated test code and remove the default call to fail.
-    // fail("The test case is a prototype.");
-  }
 }

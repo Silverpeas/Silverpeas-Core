@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
@@ -39,17 +38,14 @@ import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailServiceProvider;
 import org.silverpeas.core.util.ImageUtil;
+import org.silverpeas.core.util.file.*;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.imageio.ImageIO;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -105,7 +101,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     String physicalName = null;
     FileItem uploadedFile = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
     if (uploadedFile != null) {
-      String logicalName = uploadedFile.getName().replace('\\', '/');
+      String logicalName = uploadedFile.getFieldName().replace('\\', '/');
       if (StringUtil.isDefined(logicalName)) {
         logicalName = FilenameUtils.getName(logicalName);
         mimeType = FileUtil.getMimeType(logicalName);

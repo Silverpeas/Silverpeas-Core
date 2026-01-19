@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import java.io.Serializable;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;

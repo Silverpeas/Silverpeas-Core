@@ -27,9 +27,9 @@ import org.silverpeas.core.admin.quota.QuotaKey;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 import org.silverpeas.core.admin.quota.model.Quota;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * @author Yohann Chastagnier
@@ -40,17 +40,17 @@ public class UserDomainQuotaKey implements QuotaKey {
 
   /**
    * Initializing a quota key from a given user
-   * @param userDetail
-   * @return
+   * @param user the user
+   * @return a domain quota key.
    */
-  public static UserDomainQuotaKey from(final UserDetail userDetail) {
-    return new UserDomainQuotaKey(userDetail);
+  public static UserDomainQuotaKey from(final User user) {
+    return new UserDomainQuotaKey(user);
   }
 
   /**
    * Initializing a quota key from a given quota
-   * @param quota
-   * @return
+   * @param quota the quota
+   * @return the domain quota key
    */
   public static UserDomainQuotaKey from(final Quota quota) {
     return new UserDomainQuotaKey(quota);
@@ -58,8 +58,8 @@ public class UserDomainQuotaKey implements QuotaKey {
 
   /**
    * Initializing a quota key from a given domain
-   * @param domain
-   * @return
+   * @param domain the user domain
+   * @return the domain quota key
    */
   public static UserDomainQuotaKey from(final Domain domain) {
     return new UserDomainQuotaKey(domain);
@@ -67,15 +67,15 @@ public class UserDomainQuotaKey implements QuotaKey {
 
   /**
    * Builds the user domain quota key from a given UserDetail
-   * @param userDetail
+   * @param user the user
    */
-  private UserDomainQuotaKey(final UserDetail userDetail) {
-    resourceId = userDetail.getDomainId();
+  private UserDomainQuotaKey(final User user) {
+    resourceId = user.getDomainId();
   }
 
   /**
    * Builds the user domain quota key from a given Quota
-   * @param quota
+   * @param quota the quota
    */
   private UserDomainQuotaKey(final Quota quota) {
     resourceId = quota.getResourceId();
@@ -83,7 +83,7 @@ public class UserDomainQuotaKey implements QuotaKey {
 
   /**
    * Builds the user domain quota key from a given Domain
-   * @param domain
+   * @param domain the user domain
    */
   private UserDomainQuotaKey(final Domain domain) {
     resourceId = domain.getId();

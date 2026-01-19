@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.personalization.UserMenuDisplay;
@@ -34,6 +33,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
@@ -50,7 +50,7 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.servlets.ImageProfile;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZoneId;
@@ -199,9 +199,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     String removeImageFile = FileUploadUtil.getParameter(parameters, "removeImageFile");
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
     ImageProfile img = new ImageProfile(nameAvatar);
-    if (file != null && StringUtil.isDefined(file.getName())) {// Create or Update
+    if (file != null && StringUtil.isDefined(file.getFileName())) {// Create or Update
       // extension
-      String extension = FileRepositoryManager.getFileExtension(file.getName());
+      String extension = FileRepositoryManager.getFileExtension(file.getFileName());
       if (extension != null && extension.equalsIgnoreCase("jpeg")) {
         extension = "jpg";
       }

@@ -159,8 +159,7 @@ public interface PublicationService {
    * @param detail the detail of the publication from which it has to be updated.
    * @param forceUpdateDate a boolean indicating if the update date has to be set with date of this
    * update.
-   * @param eventType permit to precise to listener of publication modification the type of the
-   * update.
+   * @param eventType the type of the publication modification event
    */
   void setDetail(PublicationDetail detail, boolean forceUpdateDate, ResourceEvent.Type eventType);
 

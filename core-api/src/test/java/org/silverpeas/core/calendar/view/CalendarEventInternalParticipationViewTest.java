@@ -14,7 +14,7 @@ import org.silverpeas.core.test.TestUserProvider;
 import org.silverpeas.kernel.TestManagedBeanFeeder;
 import org.silverpeas.kernel.test.UnitTest;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

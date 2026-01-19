@@ -8,8 +8,8 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.util.UserEntity;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.net.URI;
 import java.util.Date;
 

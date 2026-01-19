@@ -29,8 +29,6 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
@@ -41,12 +39,6 @@ import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 public class PersonalComponentInstance implements SilverpeasPersonalComponentInstance {
   private static final long serialVersionUID = -2622307102886492318L;
 
-  private static final String INSTANCE_SUFFIX = "_PCI";
-  private static final Pattern INSTANCE_IDENTIFIER_PATTERN =
-      Pattern.compile("^([a-zA-Z]+)(\\d+)" + INSTANCE_SUFFIX + "$");
-  private static final int USER_ID_INDEX = 2;
-  private static final int COMPONENT_NAME_INDEX = 1;
-
   private final User user;
   private final transient PersonalComponent personalComponent;
 
@@ -56,24 +48,6 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
   private PersonalComponentInstance(final User user, final PersonalComponent personalComponent) {
     this.user = user;
     this.personalComponent = personalComponent;
-  }
-
-  /**
-   * Gets the name of the personal component from which the specified instance was spawn. By
-   * convention, the identifiers of the component instances are made up of the name of the
-   * component followed by a number (the user identifier) plus additional stuff. This method is a
-   * way to get directly the component name from an instance identifier.
-   * @param componentInstanceId the unique identifier of a component instance.
-   * @return the name of the personal component or null if the specified identifier doesn't match
-   * the rule of a personal component instance identifier.
-   */
-  public static String getComponentName(final String componentInstanceId) {
-    String componentName = null;
-    Matcher matcher = INSTANCE_IDENTIFIER_PATTERN.matcher(componentInstanceId);
-    if (matcher.matches()) {
-      componentName = matcher.group(COMPONENT_NAME_INDEX);
-    }
-    return componentName;
   }
 
   /**
@@ -88,11 +62,12 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
       throw new IllegalArgumentException(message);
     }
     PersonalComponentInstance instance = null;
-    Matcher matcher = INSTANCE_IDENTIFIER_PATTERN.matcher(personalComponentInstanceId);
-    if (matcher.find()) {
+    if (SilverpeasPersonalComponentInstance.Identity.isValid(personalComponentInstanceId)) {
+      var identity =
+          SilverpeasPersonalComponentInstance.getIdentity(personalComponentInstanceId);
       Optional<PersonalComponent> personalComponent =
-          PersonalComponent.getByName(matcher.group(COMPONENT_NAME_INDEX));
-      User user = User.getById(matcher.group(USER_ID_INDEX));
+          PersonalComponent.getByName(identity.getComponentName());
+      User user = User.getById(identity.getUserId());
       if (personalComponent.isPresent() && user != null) {
         instance = from(user, personalComponent.orElse(null));
       }
@@ -126,7 +101,7 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
 
   @Override
   public String getId() {
-    return getName() + getUser().getId() + INSTANCE_SUFFIX;
+    return new ComponentInstanceIdentityFactory().create(getName(), user).toString();
   }
 
   @Override

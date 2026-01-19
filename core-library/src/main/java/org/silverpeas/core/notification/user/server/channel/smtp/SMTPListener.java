@@ -23,10 +23,18 @@
  */
 package org.silverpeas.core.notification.user.server.channel.smtp;
 
+import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.MessageDriven;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.jms.MessageListener;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import org.apache.commons.text.StringEscapeUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.notification.user.AttachmentLink;
@@ -40,17 +48,9 @@ import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.jms.MessageListener;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
@@ -61,13 +61,15 @@ import static org.silverpeas.core.mail.MailAddress.eMail;
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.*;
 import static org.silverpeas.core.util.MailSettings.isForceReplyToSenderField;
 
-
 @MessageDriven(activationConfig = {
-  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='SMTP'"),
-  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue
-      = "jms/queue/notificationsQueue")},
+    @ActivationConfigProperty(propertyName = "destinationType",
+        propertyValue = "jakarta.jms.Queue"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode",
+        propertyValue = "Auto-acknowledge"),
+    @ActivationConfigProperty(propertyName = "messageSelector",
+        propertyValue = "CHANNEL='SMTP'"),
+    @ActivationConfigProperty(propertyName = "destinationLookup",
+        propertyValue = "jms/queue/notificationsQueue")},
     description = "Message driven bean to send notifications by email")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SMTPListener extends AbstractListener implements MessageListener {
@@ -77,14 +79,16 @@ public class SMTPListener extends AbstractListener implements MessageListener {
 
   /**
    * listener of NotificationServer JMS message
+   *
    * @param msg the message received
    */
   @Override
-  public void onMessage(javax.jms.Message msg) {
+  public void onMessage(jakarta.jms.Message msg) {
     try {
       processMessage(msg);
     } catch (NotificationServerException e) {
-      SilverLogger.getLogger(this).error("JMS message processing error: message = {0}, Payload = {1}",
+      SilverLogger.getLogger(this).error("JMS message processing error: message = {0}, Payload = " +
+              "{1}",
           new String[]{msg.toString(), payLoad}, e);
     }
   }
@@ -113,9 +117,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       tmpSubjectString = tmpSourceString + " : " + tmpSubjectString;
     }
 
-    if (tmpLanguageString == null) {
-      tmpLanguageString = I18NHelper.DEFAULT_LANGUAGE;
-    }
+    tmpLanguageString = I18n.get().checkLanguage(tmpLanguageString);
 
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationserver.channel.smtp.multilang.smtpBundle", tmpLanguageString);
@@ -215,6 +217,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
   /**
    * send email to destination using SMTP protocol and JavaMail 1.3 API (compliant with MIME
    * format).
+   *
    * @param from : from field that will appear in the email header.
    * @param fromName :
    * @param to : the email target destination.

@@ -24,10 +24,10 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import edu.psu.swe.scim.spec.protocol.data.PatchOperation;
-import edu.psu.swe.scim.spec.resources.Email;
-import edu.psu.swe.scim.spec.resources.Name;
-import edu.psu.swe.scim.spec.resources.ScimUser;
+import org.apache.directory.scim.spec.patch.PatchOperation;
+import org.apache.directory.scim.spec.resources.Email;
+import org.apache.directory.scim.spec.resources.Name;
+import org.apache.directory.scim.spec.resources.ScimUser;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.Mutable;
 
@@ -41,12 +41,14 @@ import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
 
 /**
  * <p>
- * This tool is able to update an {@link ScimUser} from a {@link PatchOperation}.
+ * This tool is able to update an {@link ScimUser} from a
+ * {@link org.apache.directory.scim.spec.patch.PatchOperation}.
  * </p>
  * <p>
  * The {@link ScimUser} instance must have been built from Silverpeas's data and must not come from
  * an external SCIM client.
  * </p>
+ *
  * @author silveryocha
  */
 public class PatchOperationApplier {
@@ -61,6 +63,7 @@ public class PatchOperationApplier {
 
   /**
    * Applies the patch operation on the current {@link ScimUser} (built with silverpeas's data).
+   *
    * @param operation the operation to perform.
    */
   void apply(PatchOperation operation) {

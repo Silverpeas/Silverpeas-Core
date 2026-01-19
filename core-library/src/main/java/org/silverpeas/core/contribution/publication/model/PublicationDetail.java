@@ -52,7 +52,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.tracking.ModificationTracked;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
@@ -68,11 +67,11 @@ import org.silverpeas.core.xml.DateAdapter;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -340,7 +339,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getKeywords(String lang) {
-    if (!I18NHelper.isI18nContentActivated) {
+    if (!I18n.get().isEnabled()) {
       return getKeywords();
     }
     PublicationI18N p = getTranslations().get(lang);

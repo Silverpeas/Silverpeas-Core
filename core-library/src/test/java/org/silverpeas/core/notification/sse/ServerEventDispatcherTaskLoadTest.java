@@ -23,9 +23,7 @@
  */
 package org.silverpeas.core.notification.sse;
 
-import org.jboss.weld.junit5.auto.AddBeanClasses;
-import org.jboss.weld.junit5.auto.AddPackages;
-import org.jboss.weld.junit5.auto.EnableAutoWeld;
+import jakarta.enterprise.context.Dependent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -71,10 +69,7 @@ import static org.hamcrest.Matchers.*;
  * Built for development purpose.
  * @author Yohann Chastagnier
  */
-@EnableAutoWeld
-@AddBeanClasses({DefaultServerEventNotifier.class})
-@AddPackages({AbstractServerEventDispatcherTaskTest.class, RequestTaskManager.class})
-class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTaskTest {
+public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTaskTest {
 
   private final static int NB_REG_THREAD = 10;
   private final static int NB_REG_BY_THREAD = 100;
@@ -95,7 +90,8 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
   @BeforeEach
   @AfterEach
   // parameters injected by weld
-  public void bucketSetup(TestServerEventBucket bucket, DefaultServerEventNotifier sseNotifier) {
+  public void bucketSetup(@TestManagedBean TestServerEventBucket bucket,
+      @TestManagedBean DefaultServerEventNotifier sseNotifier) {
     this.defaultServerEventNotifier = sseNotifier;
     this.bucket = bucket;
     this.bucket.empty();
@@ -364,7 +360,8 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
     }
   }
 
-  private static class VolatileScheduler4Test implements Scheduler {
+  @Dependent
+  public static class VolatileScheduler4Test implements Scheduler {
 
     private ScheduledExecutorService scheduledExecutor;
 

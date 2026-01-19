@@ -25,10 +25,9 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.kernel.annotation.Base;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-
-import javax.inject.Singleton;
+import org.silverpeas.kernel.annotation.Base;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
 
@@ -36,7 +35,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
  * @author silveryocha
  */
 @Base
-@Singleton
+@Bean
 public class DefaultInstancePublicationAccessControlExtension
     implements ComponentInstancePublicationAccessControlExtension {
 

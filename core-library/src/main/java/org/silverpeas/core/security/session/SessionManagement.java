@@ -25,8 +25,8 @@ package org.silverpeas.core.security.session;
 
 import org.silverpeas.core.admin.user.model.User;
 
-import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**

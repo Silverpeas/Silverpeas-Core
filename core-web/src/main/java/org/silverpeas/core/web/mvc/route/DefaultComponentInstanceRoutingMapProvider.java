@@ -26,6 +26,7 @@ package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
@@ -47,9 +48,9 @@ class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRou
   private AbstractComponentInstanceRoutingMap relativeToSilverpeasRoutingMap;
   private AbstractComponentInstanceRoutingMap absoluteRoutingMap;
 
-  DefaultComponentInstanceRoutingMapProvider(final String instanceId) {
+  DefaultComponentInstanceRoutingMapProvider(@NonNull final String instanceId) {
     this.instanceId = instanceId;
-    this.componentName = SilverpeasComponentInstance.getComponentName(instanceId);
+    this.componentName = SilverpeasComponentInstance.getIdentity(instanceId).getComponentName();
   }
 
   @Override

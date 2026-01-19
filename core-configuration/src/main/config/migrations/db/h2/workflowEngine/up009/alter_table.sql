@@ -1,0 +1,1 @@
+ALTER TABLE SB_Workflow_UserInfo ALTER COLUMN "value" RENAME TO val;

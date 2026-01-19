@@ -32,7 +32,7 @@ import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileFolderManager;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Service
 public class MassiveDocumentImport {
@@ -49,12 +49,6 @@ public class MassiveDocumentImport {
   protected MassiveDocumentImport() {
   }
 
-  /**
-   * @param importSettings
-   * @param massiveReport
-   * @return a report of the import
-   * @throws ImportExportException
-   */
   public ImportReport importDocuments(ImportSettings importSettings,
       MassiveReport massiveReport) throws ImportExportException {
     ImportReportManager reportManager = new ImportReportManager();

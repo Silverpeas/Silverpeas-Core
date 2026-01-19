@@ -23,16 +23,20 @@
  */
 package org.silverpeas.core.admin.component.notification;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.BaseRightProfile;
+import org.silverpeas.core.admin.RightProfile;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.notification.system.ResourceEventNotifier;
-import org.silverpeas.core.test.WarBuilder4LibCore;
-
-import javax.inject.Inject;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.BeanTranslation;
+import org.silverpeas.core.i18n.I18NBean;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -50,20 +54,17 @@ public class ComponentInstanceEventNotificationIT {
   private TestComponentInstanceEventObserver observer;
 
   @Inject
-  private ResourceEventNotifier<ComponentInst, ComponentInstanceEvent> notifier;
+  private ComponentInstanceEventNotifier notifier;
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(ComponentInstanceEventNotificationIT.class)
-        .addAdministrationFeatures()
-        .addClasses(TestComponentInstanceEventObserver.class)
+    return LibCoreWarBuilder.onWarForTestClass(ComponentInstanceEventNotificationIT.class)
+        .addStubbedUserAPI()
+        .addClasses(RightProfile.class, BaseRightProfile.class, ProfileInst.class)
+        .addClasses(AbstractI18NBean.class, I18NBean.class, BeanTranslation.class)
+        .addClasses(ComponentInst.class, ComponentInstanceEventNotifier.class,
+            ComponentInstanceEvent.class)
         .build();
-  }
-
-  @Test
-  public void emptyTest() {
-    // just to test the deployment into wildfly works fine.
-    assertThat(true, is(true));
   }
 
   @Test

@@ -26,7 +26,7 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 /**
  * It represents the repositories taken in charge the persistence of the business entities in
@@ -61,7 +61,7 @@ public class BasicJpaEntityRepository<E extends BasicJpaEntity<E, ?>>
   @Override
   public long deleteByComponentInstanceId(final String instanceId) {
     Query deleteQuery = getEntityManager().createQuery(
-        "delete from " + getEntityClass().getName() + " a where a.instanceId = :instanceId");
+        "delete from " + getEntityClass().getSimpleName() + " a where a.instanceId = :instanceId");
     return newNamedParameters().add("instanceId", instanceId).applyTo(deleteQuery).executeUpdate();
   }
 

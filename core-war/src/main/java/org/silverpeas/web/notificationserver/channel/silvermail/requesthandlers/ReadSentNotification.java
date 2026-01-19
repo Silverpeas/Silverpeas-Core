@@ -26,17 +26,16 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-
-@Singleton
+@Bean
 @Named("ReadSentNotification")
 public class ReadSentNotification implements SILVERMAILRequestHandler {
 

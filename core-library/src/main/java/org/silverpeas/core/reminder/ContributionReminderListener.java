@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.reminder;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.ContributionModification;
 import org.silverpeas.core.contribution.ContributionMove;
@@ -39,6 +40,7 @@ import static java.util.Collections.emptyList;
  * Deleter of reminders relative to a contribution that has been deleted.
  * @author silveryocha
  */
+@Bean
 public class ContributionReminderListener
     implements ContributionModification, ContributionMove, ContributionDeletion {
 

@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.user.model;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 
 public class ComponentInstanceIntroTag extends TagSupport {

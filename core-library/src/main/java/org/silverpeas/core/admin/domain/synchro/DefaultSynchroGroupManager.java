@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 

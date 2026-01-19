@@ -25,9 +25,9 @@ package org.silverpeas.web.portlets.portal;
 
 import java.net.URL;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.silverpeas.core.web.portlets.portal.portletwindow.PortletWindowInvoker;
 import com.sun.portal.container.ChannelMode;
@@ -45,9 +45,9 @@ import java.util.logging.Logger;
  */
 public class PortletContent {
 
-  private HttpServletRequest request;
-  private HttpServletResponse response;
-  private WindowInvoker windowInvoker;
+  private final HttpServletRequest request;
+  private final HttpServletResponse response;
+  private final WindowInvoker windowInvoker;
 
   public PortletContent(ServletContext context, HttpServletRequest request,
       HttpServletResponse response) throws InvokerException {

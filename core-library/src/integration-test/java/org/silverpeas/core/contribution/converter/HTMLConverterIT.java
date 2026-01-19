@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 
 import static org.hamcrest.Matchers.is;
@@ -57,7 +57,7 @@ public class HTMLConverterIT extends AbstractConverterIntegrationTest {
   }
 
   @Test
-  public void convertAnHTMLDocumentToODT() throws Exception {
+  public void convertAnHTMLDocumentToODT() {
     File convertedDocument = converter.convert(document, inFormat(odt));
     assertThat(convertedDocument.exists(), is(true));
     //assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(12378l));
@@ -71,7 +71,7 @@ public class HTMLConverterIT extends AbstractConverterIntegrationTest {
   }
 
   @Test(expected=DocumentFormatException.class)
-  public void convertAnHTMLDocumentIntoANonSupportedFormat() throws Exception {
+  public void convertAnHTMLDocumentIntoANonSupportedFormat() {
     converter.convert(document, inFormat(pdf));
   }
 

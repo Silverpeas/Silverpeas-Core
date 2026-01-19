@@ -28,8 +28,8 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Nonnull;
-import javax.inject.Singleton;
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Singleton;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashMap;

@@ -23,22 +23,23 @@
  */
 package org.silverpeas.core.admin.space;
 
+import jakarta.enterprise.inject.Default;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.persistence.jdbc.bean.*;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.enterprise.inject.Default;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Service
-@Singleton
 @Default
 @SuppressWarnings("deprecation")
 public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {

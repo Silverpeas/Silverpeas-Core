@@ -23,24 +23,21 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
+import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.MessageDriven;
+import jakarta.inject.Inject;
 import org.silverpeas.core.notification.system.JMSResourceEventListener;
 import org.silverpeas.core.notification.system.TestResourceEvent;
 import org.silverpeas.core.notification.system.TestResourceEventBucket;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.ejb.Singleton;
-import javax.inject.Inject;
-
-/**
- * @author mmoquillon
- */
-@MessageDriven(name="EventNotificationListener", activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/queue/notification"),
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
-@Singleton
+@MessageDriven(name = "EventNotificationListener", activationConfig = {
+    @ActivationConfigProperty(propertyName = "destinationLookup",
+        propertyValue = "jms/queue/notification"),
+    @ActivationConfigProperty(propertyName = "destinationType",
+        propertyValue = "jakarta.jms.Queue"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode",
+        propertyValue = "Auto-acknowledge")})
 public class JMSQueueTestResourceEventListener extends JMSResourceEventListener<TestResourceEvent> {
 
   @Inject

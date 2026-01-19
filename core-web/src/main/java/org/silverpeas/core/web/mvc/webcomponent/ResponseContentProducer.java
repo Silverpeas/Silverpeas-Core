@@ -27,10 +27,10 @@ package org.silverpeas.core.web.mvc.webcomponent;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
@@ -45,7 +45,7 @@ public class ResponseContentProducer {
   private ResponseContentProducer(){
   }
 
-  static void produce(WebComponentRequestContext context, Path pathToPerform) {
+  static void produce(WebComponentRequestContext<?> context, Path pathToPerform) {
     final String contentType = pathToPerform.getProduces().value()[0];
     final HttpServletResponse response = context.getResponse();
     response.setHeader("Content-Type", contentType + "; charset=UTF-8");
@@ -59,7 +59,7 @@ public class ResponseContentProducer {
     }
   }
 
-  private static void handleJson(final WebComponentRequestContext context,
+  private static void handleJson(final WebComponentRequestContext<?> context,
       final Path pathToPerform) {
     Object content = invoke(context, pathToPerform);
     String responseContent = "";
@@ -77,7 +77,8 @@ public class ResponseContentProducer {
     }
   }
 
-  private static Object invoke(final WebComponentRequestContext context, final Path pathToPerform) {
+  private static Object invoke(final WebComponentRequestContext<?> context,
+      final Path pathToPerform) {
     try {
       return pathToPerform.getResourceMethod().invoke(context.getController(), context);
     } catch (IllegalAccessException | InvocationTargetException e) {

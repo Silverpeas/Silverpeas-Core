@@ -38,7 +38,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -71,7 +71,7 @@ public class PdcUtilizationRequestRouter extends
    * destination page
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param pdcSC The component Session Control, build and initialised.
+   * @param pdcSC The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
@@ -79,7 +79,7 @@ public class PdcUtilizationRequestRouter extends
   @Override
   public String getDestination(String function, PdcUtilizationSessionController pdcSC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
     // get the session controller to inform the request
     PdcFieldTemplateManager pdcFTM = pdcSC.getPdcFieldTemplateManager();
 
@@ -146,15 +146,13 @@ public class PdcUtilizationRequestRouter extends
 
         // Is this axis already used ?
         List<UsedAxis> list = pdcSC.getUsedAxisList();
-        UsedAxis usedAxis = null;
         Integer isMandatory = null;
         Integer isVariant = null;
-        for (int i = 0; i < list.size(); i++) {
-          usedAxis = list.get(i);
-          if (usedAxis.getAxisId() == Integer.parseInt(axisId)) {
+        for (UsedAxis value : list) {
+          if (value.getAxisId() == Integer.parseInt(axisId)) {
             // The axis is already used. Its parameters are taken.
-            isMandatory = Integer.valueOf(usedAxis.getMandatory());
-            isVariant = Integer.valueOf(usedAxis.getVariant());
+            isMandatory = value.getMandatory();
+            isVariant = value.getVariant();
             break;
           }
         }
@@ -183,40 +181,36 @@ public class PdcUtilizationRequestRouter extends
           variant = 0;
         }
 
-        UsedAxis usedAxis = new UsedAxis(-1, "unknown", -1, new Integer(
-            baseValue).intValue(), mandatory, variant);
+        UsedAxis usedAxis = new UsedAxis(-1, "unknown", -1, Integer.parseInt(baseValue),
+            mandatory, variant);
 
         int status = pdcSC.addUsedAxis(usedAxis);
+        if (status == 1) {
+          request.setAttribute("UsedAxis", usedAxis);
+          request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
 
-        switch (status) {
-          case 1:
-            request.setAttribute("UsedAxis", usedAxis);
-            request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
+          String axisId = request.getParameter("Id");
 
-            String axisId = request.getParameter("Id");
-
-            // Is this axis already used ?
-            List<UsedAxis> list = pdcSC.getUsedAxisList();
-            Integer isMandatory = null;
-            Integer isVariant = null;
-            for (int i = 0; i < list.size(); i++) {
-              usedAxis = list.get(i);
-              if (usedAxis.getAxisId() == Integer.parseInt(axisId)) {
-                // The axis is already used. Its parameters are taken.
-                isMandatory = Integer.valueOf(usedAxis.getMandatory());
-                isVariant = Integer.valueOf(usedAxis.getVariant());
-                break;
-              }
+          // Is this axis already used ?
+          List<UsedAxis> list = pdcSC.getUsedAxisList();
+          Integer isMandatory = null;
+          Integer isVariant = null;
+          for (UsedAxis axis : list) {
+            if (axis.getAxisId() == Integer.parseInt(axisId)) {
+              // The axis is already used. Its parameters are taken.
+              isMandatory = axis.getMandatory();
+              isVariant = axis.getVariant();
+              break;
             }
+          }
 
-            request.setAttribute("IsMandatory", isMandatory);
-            request.setAttribute("IsVariant", isVariant);
-            request.setAttribute("ComponentId", pdcSC.getComponentId());
+          request.setAttribute("IsMandatory", isMandatory);
+          request.setAttribute("IsVariant", isVariant);
+          request.setAttribute("ComponentId", pdcSC.getComponentId());
 
-            destination = "/pdcPeas/jsp/utilizationAdd.jsp";
-            break;
-          default:
-            destination = getDestination("Main", pdcSC, request);
+          destination = "/pdcPeas/jsp/utilizationAdd.jsp";
+        } else {
+          destination = getDestination("Main", pdcSC, request);
         }
 
       } else if (function.startsWith("UtilizationEditAxis")) {

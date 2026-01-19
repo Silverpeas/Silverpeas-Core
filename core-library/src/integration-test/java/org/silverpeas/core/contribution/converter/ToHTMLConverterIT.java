@@ -67,7 +67,7 @@ public class ToHTMLConverterIT extends AbstractConverterIntegrationTest {
   }
 
   @Test
-  public void convertAnODTDocumentToHTML() throws Exception {
+  public void convertAnODTDocumentToHTML() {
     final File convertedDocument = converter.convert(document, inFormat(html));
     assertThat(convertedDocument.exists(), is(true));
   }
@@ -88,7 +88,7 @@ public class ToHTMLConverterIT extends AbstractConverterIntegrationTest {
 
   @Test
   public void convertAnRtfInputStreamToHTMLOutputStream() throws Exception {
-    try(InputStream rtfDocument = openDocumentNamedInputStream(RTF_DOCUMENT_NAME)) {
+    try(InputStream rtfDocument = openDocumentNamedInputStream()) {
       ByteArrayOutputStream htmlDocument = new ByteArrayOutputStream();
       converter.convert(rtfDocument, inFormat(rtf), htmlDocument, inFormat(html));
       assertThat(htmlDocument.size(), greaterThan(0));
@@ -117,24 +117,24 @@ public class ToHTMLConverterIT extends AbstractConverterIntegrationTest {
   }
 
   @Test(expected = DocumentFormatException.class)
-  public void convertAnODTDocumentToDoc() throws Exception {
+  public void convertAnODTDocumentToDoc() {
     final File convertedDocument = converter.convert(document, inFormat(doc));
     assertThat(convertedDocument.exists(), is(true));
   }
 
   @Test(expected = DocumentFormatException.class)
-  public void convertAnODTDocumentToRTF() throws Exception {
+  public void convertAnODTDocumentToRTF() {
     final File convertedDocument = converter.convert(document, inFormat(rtf));
     assertThat(convertedDocument.exists(), is(true));
   }
 
   @Test(expected = DocumentFormatException.class)
-  public void convertAnODTDocumentIntoANonSupportedFormat() throws Exception {
+  public void convertAnODTDocumentIntoANonSupportedFormat() {
     converter.convert(document, inFormat(odt));
   }
 
-  private InputStream openDocumentNamedInputStream(final String name) throws Exception {
-    File document = getDocumentNamed(name);
+  private InputStream openDocumentNamedInputStream() throws Exception {
+    File document = getDocumentNamed(ToHTMLConverterIT.RTF_DOCUMENT_NAME);
     return new FileInputStream(document);
   }
 }

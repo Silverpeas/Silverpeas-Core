@@ -24,11 +24,11 @@
 package org.silverpeas.core.contribution.attachment.process;
 
 import org.silverpeas.core.ActionType;
-import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
+import org.silverpeas.kernel.exception.NotSupportedException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.List;
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
-@Service
+@Bean
 public class SimpleDocumentDummyHandledFileConverter
     extends AbstractDummyHandledFileConverter<SimpleDocumentSimulationElement> {
 

@@ -28,7 +28,7 @@ import org.silverpeas.core.util.ServiceProvider;
 /**
  * A factory of SharingTicketService instances.
  * This factory wraps the concrete implementation of the SharingTicketService and the way the
- * life-cycle of theses instances are managed.
+ * life-cycle of these instances are managed.
  */
 public class SharingServiceProvider {
 

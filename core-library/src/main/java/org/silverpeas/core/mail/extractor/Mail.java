@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.mail.extractor;
 
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.Address;
+import jakarta.mail.internet.InternetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -107,6 +107,6 @@ public class Mail {
     if (getCc() != null && getCc().length > 0) {
       recipients.addAll(Arrays.asList(getCc()));
     }
-    return recipients.toArray(new Address[recipients.size()]);
+    return recipients.toArray(new Address[0]);
   }
 }

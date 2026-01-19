@@ -49,7 +49,7 @@ import org.silverpeas.core.cmis.model.Publication;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -187,7 +187,7 @@ public class SilverpeasCmisTypeManager {
 
   /**
    * Removes the queryable and sortable flags from the property definitions
-   * of a type definition because this implementations does neither support
+   * of a type definition because this implementation does neither support
    * queries nor can order objects.
    */
   private void removeQueryableAndOrderableFlags(MutableTypeDefinition type) {
@@ -200,7 +200,7 @@ public class SilverpeasCmisTypeManager {
 
   /**
    * Gets the definition of the subtypes of the specified type. If the specified type is null
-   * then gets the definition of all of the base types managed by Silverpeas.
+   * then gets the definition of all the base types managed by Silverpeas.
    * @param typeId the unique identifier of a type.
    * @param includePropertyDefinitions a boolean indicating if the types' properties have to be
    * included.
@@ -230,7 +230,7 @@ public class SilverpeasCmisTypeManager {
   }
 
   /**
-   * Gets the types that are allowed for the objects to be a child of the objects whose the type is
+   * Gets the types that are allowed for the objects to be a child of the objects whose type is
    * given.
    * @param typeId the unique identifier of a type.
    * @return a list of types identifiers or an empty list if either the specified type isn't a

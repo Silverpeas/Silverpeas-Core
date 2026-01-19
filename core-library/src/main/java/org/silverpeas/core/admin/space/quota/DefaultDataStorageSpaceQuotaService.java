@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.admin.space.quota;
 
+import jakarta.inject.Singleton;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryUnit;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Singleton;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;

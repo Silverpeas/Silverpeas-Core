@@ -45,24 +45,25 @@ import java.util.Map;
  */
 public class SocialNetworkService {
 
-  private String myId;
+  private final String userId;
 
-  public SocialNetworkService(String myId) {
-    this.myId = myId;
+  public SocialNetworkService(String userId) {
+    this.userId = userId;
   }
 
   /**
-   * get my wall : the List of my social information according to the type of social information
-   * @param type
-   * @param period
-   * @return: Map<Date, List<SocialInformation>
+   * get the social information wall of the underlying user.
+   *
+   * @param type the type of information to get.
+   * @param period the period in time the information were published/
+   * @return a collection of social information mapped by datetime.
    */
   public Map<Date, List<SocialInformation>> getSocialInformation(SocialInformationType type,
       Period period) {
 
-    List<SocialInformation> socialInformationsFull =
-        socialInformationService().getSocialInformationsList(type, myId,
-        null, period);
+    List<? extends SocialInformation> socialInformationsFull =
+        socialInformationService().getSocialInformationsList(type, userId,
+            null, period);
 
     Collections.sort(socialInformationsFull);
 
@@ -70,7 +71,7 @@ public class SocialNetworkService {
   }
 
   private Map<Date, List<SocialInformation>> processResults(
-      List<SocialInformation> socialInformationsFull) {
+      List<? extends SocialInformation> socialInformationsFull) {
     String date = null;
     LinkedHashMap<Date, List<SocialInformation>> hashtable = new LinkedHashMap<>();
     List<SocialInformation> lsi = new ArrayList<>();
@@ -105,21 +106,23 @@ public class SocialNetworkService {
   }
 
   /**
-   * get my feed : the List of my social information and those of my contacts, according to the type of social information
-   * @param type
-   * @param period
-   * @return: Map<Date, List<SocialInformation>
+   * Gets the feed in social information of the underlying user. The feed is made up of the social
+   * information both published by the underlying user and by his contacts.
+   *
+   * @param type the type of social information to get.
+   * @param period the period in time the information were published.
+   * @return a collection of social information mapped by datetime.
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContacts(
       SocialInformationType type, Period period) {
 
     List<String> myContactIds = getMyContactsIds();
     // add myself
-    myContactIds.add(myId);
+    myContactIds.add(userId);
 
-    List<SocialInformation> socialInformationsFull =
-        socialInformationService().getSocialInformationsListOfMyContact(type, myId,
-        myContactIds, period);
+    var socialInformationsFull =
+        socialInformationService().getSocialInformationsListOfMyContact(type, userId,
+            myContactIds, period);
 
     Collections.sort(socialInformationsFull);
 
@@ -127,20 +130,21 @@ public class SocialNetworkService {
   }
 
   /**
-   * get my contact wall : the List of social information of the contacts of user in parameter, according to the type of social information
-   * @param myContactId
-   * @param type
-   * @param period
-   * @return: Map<Date, List<SocialInformation>
+   * Gets the social information wall of the specified contact of the underlying user.
+   *
+   * @param myContactId the unique identifier of a user
+   * @param type the type of social information to get.
+   * @param period the period in time the information were published.
+   * @return a collection of social information mapped by datetime.
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContact(String myContactId,
       SocialInformationType type, Period period) {
 
     List<String> myContactIds = Collections.singletonList(myContactId);
 
-    List<SocialInformation> socialInformationsFull =
-        socialInformationService().getSocialInformationsListOfMyContact(type, myId,
-        myContactIds, period);
+    var socialInformationsFull =
+        socialInformationService().getSocialInformationsListOfMyContact(type, userId,
+            myContactIds, period);
 
     Collections.sort(socialInformationsFull);
 
@@ -148,22 +152,24 @@ public class SocialNetworkService {
   }
 
   /**
-   * update my status
-   * @param textStatus
-   * @return String
+   * Updates the status of the underlying user.
+   *
+   * @param textStatus the new status
+   * @return the updated status or null if the update failed.
    */
   public String changeStatus(String textStatus) {
-    Status status = new Status(Integer.parseInt(myId), new Date(), textStatus);
+    Status status = new Status(Integer.parseInt(userId), new Date(), textStatus);
     return getStatusService().changeStatus(status);
 
   }
 
   /**
-   * get my last status
-   * @return String
+   * Gets the current status of the underlying user.
+   *
+   * @return the user social status
    */
   public String getLastStatus() {
-    Status status = getStatusService().getLastStatus(Integer.parseInt(myId));
+    Status status = getStatusService().getLastStatus(Integer.parseInt(userId));
     if (StringUtil.isDefined(status.getDescription())) {
       return status.getDescription();
     }
@@ -171,11 +177,7 @@ public class SocialNetworkService {
   }
 
   public List<String> getMyContactsIds() {
-    return getRelationShipService().getMyContactsIds(Integer.parseInt(myId));
-  }
-
-  public List<String> getTheContactsIds(String myContactId) {
-    return getRelationShipService().getMyContactsIds(Integer.parseInt(myContactId));
+    return getRelationShipService().getMyContactsIds(Integer.parseInt(userId));
   }
 
   private SocialInformationService socialInformationService() {

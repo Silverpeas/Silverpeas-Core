@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalTypeBasicEntity;
+import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.EquipmentBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.PersonBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.repository.AnimalBasicEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.repository.EquipmentBasicEntityRepository;
-import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.EquipmentBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.repository.PersonBasicEntityRepository;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -43,7 +42,6 @@ import java.util.List;
  * Date: 20/11/13
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class BasicJpaEntityServiceTest {
 

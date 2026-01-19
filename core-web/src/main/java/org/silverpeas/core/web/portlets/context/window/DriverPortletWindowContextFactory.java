@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.portlets.context.window;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.silverpeas.core.web.portlets.context.window.impl.PortletWindowContextImpl;
 import com.sun.portal.container.PortletWindowContext;

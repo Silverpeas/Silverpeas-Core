@@ -34,7 +34,7 @@ import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -65,7 +65,7 @@ public class PdcImportExport {
    * @param positions the positions on the PdC.
    * @return the status of the content classification: true meaning the content is correctly
    * classified on the PdC, false meaning the content cannot be classified.
-   * @throws PdcException
+   * @throws PdcException if the positions cannot be added.
    */
   public boolean addPositions(int silverObjectId, String componentId,
       List<ClassifyPosition> positions)
@@ -76,15 +76,13 @@ public class PdcImportExport {
     if (positions.size() != validPositions.size()) {
       result = false;
     }
-    if (validPositions != null) {
-      for (ClassifyPosition classifyPos : validPositions) {
-        try {
-          getPdcManager().addPosition(silverObjectId, classifyPos, componentId);
-        } catch (PdcException ex) {
-          result = false;
-          SilverLogger.getLogger(this)
-              .error("Failed to add new positions on the PdC for content {0} in {1}", ex);
-        }
+    for (ClassifyPosition classifyPos : validPositions) {
+      try {
+        getPdcManager().addPosition(silverObjectId, classifyPos, componentId);
+      } catch (PdcException ex) {
+        result = false;
+        SilverLogger.getLogger(this)
+            .error("Failed to add new positions on the PdC for content {0} in {1}", ex);
       }
     }
     return result;
@@ -95,7 +93,7 @@ public class PdcImportExport {
    * node of the specified component instance should be classified.
    * @param nodeId the unique identifier of the node in which the content is registered.
    * @param componentId the unique identifier of the component instance that owns the node.
-   * @return the prefined classification.
+   * @return the predefined classification.
    */
   public PdcClassification getPredefinedClassification(String nodeId, String componentId) {
     PdcClassification classification;
@@ -110,7 +108,7 @@ public class PdcImportExport {
 
   public List<ClassifyPosition> getValidPositions(int silverObjectId, String componentId,
       List<ClassifyPosition> positions) throws PdcException {
-    List<ClassifyPosition> validPositions = new ArrayList<ClassifyPosition>();
+    List<ClassifyPosition> validPositions = new ArrayList<>();
     // récupération des axes à utiliser pour le classement
     List<UsedAxis> usedAxis = getPdcManager().getUsedAxisToClassify(componentId, silverObjectId);
     if (usedAxis != null && !usedAxis.isEmpty() && positions != null) {
@@ -186,13 +184,6 @@ public class PdcImportExport {
     return path.substring(path.lastIndexOf("/") + 1);
   }
 
-  /**
-   * Méthode de récupération des position pdc pour un objet silverpeas donné.
-   * @param silverObjectId
-   * @param sComponentId
-   * @return - liste de ClassifyPosition
-   * @throws PdcException
-   */
   public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId)
       throws PdcException {
     List<ClassifyPosition> list = getPdcManager().getPositions(silverObjectId, sComponentId);
@@ -206,16 +197,10 @@ public class PdcImportExport {
     return getPdcManager().isClassifyingMandatory(componentId);
   }
 
-  /**
-   * Méthodes récupérant la totalité des axes utilisés par les positions de la liste en paramètre
-   * @param listClassifyPosition - liste des positions dont on veut les axes
-   * @return un objet PdcType contenant les axes recherchés
-   * @throws PdcException
-   */
   public List<AxisType> getPdc(List<ClassifyPosition> listClassifyPosition) throws PdcException {
 
     // On construit une liste des axes à exporter
-    Set<Integer> set = new HashSet<Integer>();
+    Set<Integer> set = new HashSet<>();
     for (ClassifyPosition classPos : listClassifyPosition) {
       List<ClassifyValue> listClassVal = classPos.getListClassifyValue();
       for (ClassifyValue classVal : listClassVal) {
@@ -223,7 +208,7 @@ public class PdcImportExport {
       }
     }
 
-    // On parcours la liste des axes à exporter
+    // On parcourt la liste des axes à exporter
     List<AxisType> listAxisType = new ArrayList<>();
     for (Integer axis : set) {
       // Récupération de la "value" root de l'axe
@@ -240,21 +225,13 @@ public class PdcImportExport {
     return listAxisType;
   }
 
-  /**
-   * Méthode récursive utilisée par la méthode getPdc de récupération d'axes.
-   * @param axisId - id de l'axe que l'on veut récupéré
-   * @param fatherValueId - id de la "value" dont on veut les fils
-   * @return - liste des values, fils du value d id fatherValueId, null si le père est une feuille
-   * de l'arbre
-   * @throws PdcException
-   */
   private List<PdcValueType> getValueTree(int axisId, String fatherValueId) throws PdcException {
-    List<PdcValueType> listChildrenPdcValue = new ArrayList<PdcValueType>();
-    // Récupération des ids des valeurs filles directes du value père
+    List<PdcValueType> listChildrenPdcValue = new ArrayList<>();
+    // Récupération des ids des valeurs filles directes de la valeur père
     List<String> listValueId =
         getPdcManager().getDaughterValues(Integer.toString(axisId), fatherValueId);
     if (listValueId != null) {
-      // L'exception oject non trouvé n'est pas gérée
+      // L'exception objet non trouvé n'est pas gérée
       // dans la méthode DAO!!!
       for (String valueId : listValueId) {
         // Récupération de l'objet value et remplissage de l'objet de mapping

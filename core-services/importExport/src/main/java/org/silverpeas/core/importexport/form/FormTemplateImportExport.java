@@ -29,21 +29,13 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.TypeManager;
-import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +46,7 @@ public class FormTemplateImportExport {
 
   public void importXMLModelContentType(ResourceReference pk, String objectType,
       XMLModelContentType xmlModel, String userId)
-      throws PublicationTemplateException, FormException, IOException {
+      throws PublicationTemplateException, FormException {
     String externalId = pk.getInstanceId() + ":" + xmlModel.getName();
     if (StringUtil.isDefined(objectType)) {
       externalId = pk.getInstanceId() + ":" + objectType + ":" + xmlModel.getName();
@@ -94,14 +86,13 @@ public class FormTemplateImportExport {
     set.save(data);
   }
 
-  public String manageFileField(ResourceReference pk, String userId, String xmlFieldValue)
-      throws IOException {
+  public String manageFileField(ResourceReference pk, String userId, String xmlFieldValue) {
     String fieldValue = null;
     DocumentType type = DocumentType.form;
     File image = new File(xmlFieldValue);
     if (image.length() > 0L) {
       String fileName = FileUtil.getFilename(xmlFieldValue);
-      SimpleAttachment attachment = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+      SimpleAttachment attachment = SimpleAttachment.builder(I18n.get().getDefaultLanguage())
           .setFilename(fileName)
           .setTitle(fileName)
           .setDescription("")

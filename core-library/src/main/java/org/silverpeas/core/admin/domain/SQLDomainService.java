@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.admin.domain;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
-import org.silverpeas.core.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
-import org.silverpeas.core.admin.domain.exception.DomainConflictException;
-import org.silverpeas.core.admin.domain.exception.DomainCreationException;
-import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
-import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsException;
+import org.silverpeas.core.admin.domain.exception.*;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.repository.SQLDomainRepository;
 import org.silverpeas.core.admin.service.AdminException;
@@ -40,14 +40,9 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -57,7 +52,6 @@ import java.nio.file.Paths;
 import java.text.Normalizer;
 
 @Service
-@Singleton
 @Named("sqlDomainService")
 public class SQLDomainService extends AbstractDomainService {
   SettingBundle templateSettings;

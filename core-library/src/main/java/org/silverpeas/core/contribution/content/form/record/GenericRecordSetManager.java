@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.content.form.dummy.DummyRecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
@@ -69,6 +69,7 @@ public class GenericRecordSetManager {
   private static final String FIELD_VALUE = "fieldValue";
 
   private final Map<String, GenericRecordSet> cache = new HashMap<>();
+  private final I18n i18n = I18n.get();
 
   private GenericRecordSetManager() {
 
@@ -262,8 +263,8 @@ public class GenericRecordSetManager {
       GenericDataRecord record = selectRecordRow(con, template, objectId, language);
       if (record != null) {
         record.setLanguage(language);
-      } else if (I18NHelper.isI18nContentEnabled()) {
-        List<String> languages = new ArrayList<>(I18NHelper.getAllSupportedLanguages());
+      } else if (i18n.isEnabled()) {
+        List<String> languages = new ArrayList<>(i18n.getSupportedLanguageCodes());
         languages.remove(language);
         for (String lang : languages) {
           record = selectRecordRow(con, template, objectId, lang);
@@ -744,8 +745,7 @@ public class GenericRecordSetManager {
       insert.setInt(1, internalId);
       insert.setInt(2, templateId);
       insert.setString(3, externalId);
-      if (!I18NHelper.isI18nContentActivated
-          || I18NHelper.isDefaultLanguage(record.getLanguage())) {
+      if (!i18n.isEnabled() || i18n.isDefaultLanguage(record.getLanguage())) {
         insert.setNull(4, Types.VARCHAR);
       } else {
         insert.setString(4, record.getLanguage());
@@ -788,7 +788,7 @@ public class GenericRecordSetManager {
    */
   private GenericDataRecord selectRecordRow(Connection con, IdentifiedRecordTemplate template,
       String externalId, String language) throws SQLException, FormException {
-    if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
+    if (!i18n.isEnabled() || i18n.isDefaultLanguage(language)) {
       language = null;
     }
 
@@ -892,7 +892,7 @@ public class GenericRecordSetManager {
         while (rs.next()) {
           String language = rs.getString("lang");
           if (!StringUtil.isDefined(language)) {
-            language = I18NHelper.DEFAULT_LANGUAGE;
+            language = i18n.getDefaultLanguage();
           }
           languages.add(language);
         }

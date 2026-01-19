@@ -25,8 +25,8 @@ package org.silverpeas.core.web.jstl.util;
 
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 /**
  * Abstract tag support class for implementing SimpleTag custom actions that specify

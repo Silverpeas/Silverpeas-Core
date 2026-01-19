@@ -34,14 +34,14 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 
 /**
  * @author Yohann Chastagnier
@@ -193,7 +193,7 @@ public class MailContent {
 
   /**
    * Gets the content value.
-   * @return the content value as string or as {@link javax.mail.Multipart}.
+   * @return the content value as string or as {@link jakarta.mail.Multipart}.
    */
   Object getValue() {
     return content;

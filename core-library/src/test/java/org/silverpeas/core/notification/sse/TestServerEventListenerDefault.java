@@ -25,8 +25,8 @@ package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.annotation.Bean;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier

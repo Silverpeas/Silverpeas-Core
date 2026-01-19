@@ -25,7 +25,7 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.annotation.Service;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user must accept terms of service.

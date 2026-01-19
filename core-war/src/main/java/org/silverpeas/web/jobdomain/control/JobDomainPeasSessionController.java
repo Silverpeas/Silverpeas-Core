@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.jobdomain.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.xhtml.br;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
@@ -76,6 +75,7 @@ import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.authentication.LoginServlet;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
@@ -96,8 +96,9 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.servlets.ImageProfile;
 import org.silverpeas.web.jobdomain.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.UriBuilder;
+
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -377,7 +378,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     // Registering the preferred user language if any and if it is different from the default one
     saveUserSettings(userRequestData, theNewUser);
 
-    // Send an email to alert this user
+    // Send email to alert this user
     notifyUserAccount(userRequestData, theNewUser, req, true);
 
     // Update UserFull informations
@@ -429,8 +430,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   /**
-   * notifyUserAccount send an email to the user only if userPasswordValid, sendEmail are true, and
-   * if userEMail and userPassword are defined
+   * notifyUserAccount send email to the user only if userPasswordValid, sendEmail are true, and if
+   * userEMail and userPassword are defined
    *
    * @param userRequestData the data of the user from the request.
    * @param user the userDetail
@@ -2010,9 +2011,6 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     }
   }
 
-  /*
-   * Appel UserPannel pour récup du user sélectionné :
-   */
   public String[] getSelectedUsersIds() {
     return getSelection().getSelectedElements();
   }
@@ -2078,7 +2076,6 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     SynchroUserWebServiceItf synchroUserWebService = null;
     try {
       sReport.append("Démarrage de la synchronisation...\n\n");
-      // Démarrage de la synchro avec la Popup d'affichage
       SynchroDomainReport.startSynchro();
       Domain theDomain = getTargetDomain();
 
@@ -2141,7 +2138,6 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
           "Problème lors de la synchronisation : " + e.getMessage(), null);
       sReport.append("Erreurs lors de la synchronisation : \n").append(e.getMessage());
     } finally {
-      // Fin de synchro avec la Popup d'affichage
       SynchroDomainReport.stopSynchro();
       if (synchroUserWebService != null) {
         synchroUserWebService.endConnection();
@@ -2600,10 +2596,10 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   /**
    * Pastes the selected groups of users in the clipboard into the current group of as a root group
    * of the current domain if there is no current group. The group to paste has to belong to the
-   * same current domain and there shouldn't be any group having the same name in the current group
-   * or among the root groups of the domain (in the case there is no current group). Any selected
-   * group which don't belong to the same domain will be ignored whereas an exception will be thrown
-   * if there is already a group with the same name.
+   * same current domain. Plus, there shouldn't be any group having the same name in the current
+   * group or among the root groups of the domain (in the case there is no current group). Any
+   * selected group which don't belong to the same domain will be ignored whereas an exception will
+   * be thrown if there is already a group with the same name.
    *
    * @throws AdminException if an error occurs while pasting the given group of users.
    */
@@ -2644,11 +2640,11 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   /**
-   * Is there at least one selected group in the clipboard belonging to the same domain as the
-   * current one and for which there is no actual groups with the same name in the domain (for root
-   * groups) or in the current group of the domain.
+   * Is there at least one selected group in the clipboard belonging to the current domain.It should
+   * be no actual groups with the same name in the domain (for root groups) or in the current group
+   * of the domain.
    *
-   * @return true if there is at least one selected group matching the expected constrains of group
+   * @return true if there is at least one selected group matching the expected constraints of group
    * pasting.
    * @throws ClipboardException if an error occurs while accessing the clipboard.
    * @throws JobDomainPeasException if an error occurs while accessing the root groups of the domain

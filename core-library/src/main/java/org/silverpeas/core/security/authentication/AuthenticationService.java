@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.security.authentication;
 
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
 import org.silverpeas.core.SilverpeasExceptionMessages;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
@@ -37,25 +38,15 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
-import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountBlockedException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountDeactivatedException;
+import org.silverpeas.core.security.authentication.exception.*;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -78,7 +69,6 @@ import static java.util.Arrays.stream;
  * doing an authentication server that is mapped with the user domain.
  */
 @Service
-@Singleton
 public class AuthenticationService implements Authentication {
 
   private static final String DATA_SOURCE_JNDI_NAME;

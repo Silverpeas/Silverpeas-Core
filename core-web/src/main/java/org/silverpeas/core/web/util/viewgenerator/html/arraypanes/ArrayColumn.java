@@ -25,7 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.function.BiFunction;
 
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.*;

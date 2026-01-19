@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.SchedulerException;
@@ -37,11 +39,9 @@ import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -134,7 +134,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
     if (isActivated && (getUser() == null || !getUser().isAnonymous())) {
       return getString("authentication.attempts.remaining",
           (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
-              getUser().getUserPreferences().getLanguage() : I18NHelper.DEFAULT_LANGUAGE,
+              getUser().getUserPreferences().getLanguage() : I18n.get().getDefaultLanguage(),
           String.valueOf(nbMaxAttempts - nbAttempts));
     }
 

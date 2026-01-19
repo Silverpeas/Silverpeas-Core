@@ -25,8 +25,6 @@ package org.silverpeas.core.admin;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,7 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceImpl;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.util.List;
@@ -83,14 +81,8 @@ public class UserFavoriteSpaceServiceIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(UserFavoriteSpaceServiceIT.class)
-        .addDatabaseToolFeatures()
-        .addSilverpeasExceptionBases()
-        .addOrganisationFeatures()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addClasses(AdminException.class, PersistenceException.class);
-        }).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(UserFavoriteSpaceServiceIT.class)
+        .build();
   }
 
   @Test

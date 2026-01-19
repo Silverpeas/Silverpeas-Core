@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.admin;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.kernel.util.Pair;
 
 import java.io.Serializable;
 import java.util.List;
@@ -99,13 +99,12 @@ public class PaginationPage implements Serializable {
    * @param list the list to paginate.
    * @return the paginated list.
    */
-  @SuppressWarnings("unchecked")
   public <T> SilverpeasList<T> getPaginatedListFrom(List<T> list) {
     final Pair<Integer, Integer> indexes = getStartLastIndexesFor(list);
-    if (list instanceof SilverpeasList && ((SilverpeasList) list).isSlice()) {
-      return (SilverpeasList) list;
+    if (list instanceof SilverpeasList && ((SilverpeasList<?>) list).isSlice()) {
+      return (SilverpeasList<T>) list;
     }
-    final List lightList = list.subList(indexes.getLeft(), indexes.getRight());
+    final List<T> lightList = list.subList(indexes.getFirst(), indexes.getSecond());
     return PaginationList.from(lightList, list.size());
   }
 

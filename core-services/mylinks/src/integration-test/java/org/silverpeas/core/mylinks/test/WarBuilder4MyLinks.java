@@ -35,7 +35,7 @@ public class WarBuilder4MyLinks extends BasicWarBuilder {
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
-   * @param classOfTest the class of the test for which a war archive will be build.
+   * @param classOfTest the class of the test for which a war archive will be built.
    */
   protected <CLASS_TEST> WarBuilder4MyLinks(final Class<CLASS_TEST> classOfTest) {
     super(classOfTest);
@@ -48,11 +48,12 @@ public class WarBuilder4MyLinks extends BasicWarBuilder {
    */
   public static <T> WarBuilder4MyLinks onWarForTestClass(Class<T> test) {
     WarBuilder4MyLinks warBuilder = new WarBuilder4MyLinks(test);
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-    warBuilder.testFocusedOn(war -> war
-        .addPackages(true, "org.silverpeas.core.mylinks")
-        .addAsResource("create-database.sql"));
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
+        .addAsResource("org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties")
+        .addAsResource("org/silverpeas/util/logging")
+        .testFocusedOn(war -> war
+            .addPackages(true, "org.silverpeas.core.mylinks")
+            .addAsResource("create-database.sql"));
     return warBuilder;
   }
 }

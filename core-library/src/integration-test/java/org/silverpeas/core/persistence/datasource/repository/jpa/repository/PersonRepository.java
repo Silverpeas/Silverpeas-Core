@@ -28,7 +28,6 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEn
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -36,7 +35,6 @@ import java.util.List;
  * Date: 20/11/13
  */
 @Repository
-@Singleton
 public class PersonRepository extends SilverpeasJpaEntityRepository<Person> {
 
   public Person getByFirstName(String firstName) {

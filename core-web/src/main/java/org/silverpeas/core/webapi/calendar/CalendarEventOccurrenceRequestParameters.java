@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Set;

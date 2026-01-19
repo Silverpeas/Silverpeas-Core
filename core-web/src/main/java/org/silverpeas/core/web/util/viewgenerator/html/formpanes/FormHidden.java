@@ -31,47 +31,24 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author frageade
- * @version
  */
-
 public class FormHidden extends FormLine {
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   * @see
-   */
   public FormHidden(String nam, String val) {
     super(nam, val);
     setType("hidden");
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String print() {
-    String retour = "\n<input type=\"hidden\" name=\"" + name + "\" value=\""
+    return "\n<input type=\"hidden\" name=\"" + name + "\" value=\""
         + value + "\">";
-
-    return retour;
   }
 
-  /**
-   * Method declaration
-   * @param nam
-   * @param url
-   * @param pc
-   * @return
-   * @see
-   */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
 
@@ -82,30 +59,13 @@ public class FormHidden extends FormLine {
     return fpw;
   }
 
-  /**
-   * Method declaration
-   * @param req
-   * @see
-   */
   public void getConfigurationByRequest(HttpServletRequest req) {
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String printDemo() {
-    String retour = "";
-
-    return retour;
+    return "";
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"label\">";
 

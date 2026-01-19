@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.personalization.control;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -31,39 +31,25 @@ import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationAddress;
 import org.silverpeas.core.notification.user.client.NotificationManager;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.personalization.bean.DelayedNotificationBean;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
-/**
- * Class declaration
- * @author
- */
 public class PersonalizationSessionController extends AbstractComponentSessionController {
 
   private static final String PROPERTY_FULL_NAME = "fullName";
   private static final String CANT_SET_DEFAULT_ADDRESS =
       "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS";
   private static final String A_NOTIF_ADDRESS_ID = "aNotifAddressId=";
-  private NotificationManager notificationManager = null;
+  private final NotificationManager notificationManager;
 
-  /**
-   * Constructor declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   *
-   */
   public PersonalizationSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
@@ -82,12 +68,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     return notificationManager.isMultiChannelNotification();
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @throws PeasCoreException
-   *
-   */
   public List<Properties> getNotificationAddresses() throws PeasCoreException {
     try {
       return notificationManager.getNotifAddressProperties(getUserId());
@@ -97,13 +77,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Method declaration
-   * @param aNotificationAddressId
-   * @return
-   * @throws PeasCoreException
-   *
-   */
   public Properties getNotificationAddressProperties(String aNotificationAddressId)
       throws PeasCoreException {
     try {
@@ -116,12 +89,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @throws PeasCoreException
-   *
-   */
   public List<Properties> getNotifChannels() throws PeasCoreException {
     try {
       return notificationManager.getNotifChannels();
@@ -131,13 +98,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Method declaration
-   * @param aPreferenceId
-   * @return
-   * @throws PeasCoreException
-   *
-   */
   public Properties getNotifPreference(String aPreferenceId)
       throws PeasCoreException {
     try {
@@ -149,12 +109,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @throws PeasCoreException
-   *
-   */
   public List<Properties> getNotifPreferences() throws PeasCoreException {
     try {
       return notificationManager.getNotifPreferences(getUserId());
@@ -164,16 +118,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Method declaration
-   * @param aNotifAddressId
-   * @param aNotifName
-   * @param aChannelId
-   * @param aAddress
-   * @param aUsage
-   * @throws PeasCoreException
-   *
-   */
   public void saveNotifAddress(String aNotifAddressId, String aNotifName, String aChannelId,
       String aAddress, String aUsage) throws PeasCoreException {
     final String notifAddressId;
@@ -199,12 +143,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Method declaration
-   * @param aNotifAddressId
-   * @throws PeasCoreException
-   *
-   */
   public void deleteNotifAddress(String aNotifAddressId)
       throws PeasCoreException {
     try {
@@ -218,12 +156,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Method declaration
-   * @param aPreferenceId
-   * @throws PeasCoreException
-   *
-   */
   public void deletePreference(String aPreferenceId) throws PeasCoreException {
     try {
       notificationManager.deletePreference(aPreferenceId);
@@ -237,9 +169,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   }
 
   /**
-   * Send a test message to the given notification address Id
+   * Send a test message to the given notification address identifier
    * @param aNotifAddressId id of the table ST_NotifAddress row to send notification to.
-   * @throws PeasCoreException
+   * @throws PeasCoreException if an error occurs
    */
   public void testNotifAddress(String aNotifAddressId) throws PeasCoreException {
     try {
@@ -253,11 +185,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Get the default Notification address
-   * @return
-   * @throws PeasCoreException
-   */
   public Properties getDefaultAddressProperties() throws PeasCoreException {
     try {
       return notificationManager.getNotifAddressProperties(
@@ -270,9 +197,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   }
 
   /**
-   * Set the default Notification address Id
+   * Set the default Notification address identifier
    * @param aNotifAddressId of the table ST_NotifAddress row to send notification to.
-   * @throws PeasCoreException
+   * @throws PeasCoreException if an error occurs
    */
   public void setDefaultAddress(String aNotifAddressId) throws PeasCoreException {
     try {
@@ -285,14 +212,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  /**
-   * Method declaration
-   * @param componentId
-   * @param priorityId
-   * @param notificationId
-   * @throws PeasCoreException
-   *
-   */
   public void addPreference(String componentId, String priorityId, String notificationId) throws
       PeasCoreException {
     try {
@@ -311,16 +230,10 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    */
   private ArrayList<String> getDistinctInstanceIds(String[] givenInstancesIds) {
     ArrayList<String> instancesIds = new ArrayList<>();
-    String instanceId = null;
-    ArrayList<String> intermed = new ArrayList<>();
 
+    List<String> intermed = Arrays.asList(givenInstancesIds);
     for (int i = 0; i < givenInstancesIds.length; i++) {
-      instanceId = givenInstancesIds[i];
-      intermed.add(instanceId);
-    }
-
-    for (int i = 0; i < givenInstancesIds.length; i++) {
-      instanceId = givenInstancesIds[i];
+      String instanceId = givenInstancesIds[i];
       if (intermed.lastIndexOf(instanceId) == i) {
         instancesIds.add(instanceId);
       }
@@ -329,13 +242,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     return instancesIds;
   }
 
-  /**
-   * Retourne la liste des composants
-   * @return
-   */
   public List<Properties> getInstanceList() throws PeasCoreException {
 
-    // Liste des instances triés par nom de composants
+    // Liste des instances triées par nom de composants
     ArrayList<Properties> sortedComponentList;
     // Get the id list of all available Instances for this user
     String[] instancesIds = getUserAvailComponentIds();
@@ -347,28 +256,26 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       // supprime les doublons
       ArrayList<String> arrayInstancesIds = getDistinctInstanceIds(instancesIds);
 
-      String instanceId = null;
-      Properties p = null;
       // for each instanceId
-      for (int i = 0; i < arrayInstancesIds.size(); i++) {
-        instanceId = arrayInstancesIds.get(i);
-
-        p = new Properties();
-
-        p.setProperty("instanceId", String.valueOf(ComponentInst.getComponentLocalId(instanceId)));
-        p.setProperty(PROPERTY_FULL_NAME, notificationManager.getComponentFullName(instanceId));
+      for (String arrayInstancesId : arrayInstancesIds) {
+        Properties p = new Properties();
+        int instLocalid = SilverpeasComponentInstance.getIdentity(arrayInstancesId)
+            .getInstanceLocalId();
+        p.setProperty("instanceId", String.valueOf(instLocalid));
+        p.setProperty(PROPERTY_FULL_NAME,
+            notificationManager.getComponentFullName(arrayInstancesId));
         ar.add(p);
       }
-      Properties[] componentList = ar.toArray(new Properties[ar.size()]);
+      Properties[] componentList = ar.toArray(new Properties[0]);
 
       Arrays.sort(componentList, Comparator.comparing(o -> o.getProperty(PROPERTY_FULL_NAME)));
       sortedComponentList = new ArrayList<>(componentList.length);
 
-      for (int i = 0; i < componentList.length; i++) {
+      for (Properties properties : componentList) {
         Properties pp = new Properties();
 
-        pp.setProperty("name", componentList[i].getProperty(PROPERTY_FULL_NAME));
-        pp.setProperty("id", componentList[i].getProperty("instanceId"));
+        pp.setProperty("name", properties.getProperty(PROPERTY_FULL_NAME));
+        pp.setProperty("id", properties.getProperty("instanceId"));
         sortedComponentList.add(pp);
       }
       return sortedComponentList;
@@ -389,13 +296,13 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       String selectText,
       boolean bSorted) {
     StringBuilder valret = new StringBuilder();
-    Properties elmt = null;
+    Properties elmt;
     String selected;
     List<Properties> arToDisplay = ar;
     int i;
 
     if (selectText != null) {
-      if ((selectValue == null) || (selectValue.length() <= 0)) {
+      if ((selectValue == null) || selectValue.isEmpty()) {
         selected = "SELECTED";
       } else {
         selected = "";
@@ -404,7 +311,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           WebEncodeHelper.javaStringToHtmlString(selectText)).append("</option>");
     }
     if (bSorted) {
-      Properties[] theList = ar.toArray(new Properties[ar.size()]);
+      Properties[] theList = ar.toArray(new Properties[0]);
       Arrays.sort(theList, Comparator.comparing(o -> o.getProperty("name").toUpperCase()));
       arToDisplay = new ArrayList<>(theList.length);
       for (i = 0; i < theList.length; i++) {

@@ -23,19 +23,14 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 /**
  * A file embedded into the body of an HTTP request.
@@ -49,7 +44,7 @@ public class RequestFile {
   }
 
   public String getName() {
-    return StringUtil.normalize(FilenameUtils.getName(fileItem.getName()));
+    return StringUtil.normalize(FilenameUtils.getName(fileItem.getFileName()));
   }
 
   public long getSize() {
@@ -69,21 +64,6 @@ public class RequestFile {
   }
 
   public String getString() {
-    try {
-      return fileItem.getString(Charsets.UTF_8.toString());
-    } catch (UnsupportedEncodingException e) {
-      SilverLogger.getLogger(this).error(e);
-      return fileItem.getString();
-    }
-  }
-
-  public void writeTo(File file) throws Exception {
-    fileItem.write(file);
-  }
-
-  public void writeTo(OutputStream outputStream) throws IOException {
-    try(InputStream input = getInputStream()) {
-      IOUtils.copy(input, outputStream);
-    }
+    return fileItem.getContent(Charsets.UTF_8);
   }
 }

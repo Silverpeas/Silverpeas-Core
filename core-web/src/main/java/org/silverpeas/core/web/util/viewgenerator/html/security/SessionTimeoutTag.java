@@ -26,9 +26,9 @@ package org.silverpeas.core.web.util.viewgenerator.html.security;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 
-import javax.servlet.ServletException;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 
 /**
@@ -46,10 +46,8 @@ public class SessionTimeoutTag extends TagSupport {
       String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
       try {
         pageContext.forward(sessionTimeout);
-      } catch (IOException ioex) {
+      } catch (IOException | ServletException ioex) {
         throw new JspException(ioex);
-      } catch (ServletException sex) {
-        throw new JspException(sex);
       }
       return SKIP_PAGE;
     }

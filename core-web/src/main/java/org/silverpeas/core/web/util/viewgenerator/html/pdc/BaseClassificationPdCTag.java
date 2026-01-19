@@ -36,11 +36,11 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.SimpleTagSupport;
 import java.text.MessageFormat;
 
 import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
@@ -175,7 +175,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    *
    * @param operation the operation to invoke.
    * @return the HTML elements container with the code to render.
-   * @throws JspException
+   * @throws JspException if an error occurs
    */
   public ElementContainer invoke(final PdcClassificationTagOperation operation) throws JspException {
     ElementContainer container;
@@ -326,10 +326,12 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     return pdcUsed;
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> T getRequestAttribute(String name) {
     return (T) getJspContext().getAttribute(name, PageContext.REQUEST_SCOPE);
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> T getSessionAttribute(String name) {
     return (T) getJspContext().getAttribute(name, PageContext.SESSION_SCOPE);
   }

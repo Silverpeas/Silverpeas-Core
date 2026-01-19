@@ -28,7 +28,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
 
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.Produces;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ class HttpMethodPaths {
 
   private final Class<? extends Annotation> httpMethodClass;
 
-  private Map<String, Path> pathRoutes = new HashMap<>();
+  private final Map<String, Path> pathRoutes = new HashMap<>();
 
   /**
    * Default and unique constructor.
@@ -78,7 +78,7 @@ class HttpMethodPaths {
    * method.
    * @return registred paths.
    */
-  List<Path> addPaths(Set<javax.ws.rs.Path> paths, LowestRoleAccess lowestRoleAccess,
+  List<Path> addPaths(Set<jakarta.ws.rs.Path> paths, LowestRoleAccess lowestRoleAccess,
       Method resourceMethod, final NavigationStep navigationStep, final Annotation redirectTo,
       final Produces produces, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     List<Path> registredPaths = new ArrayList<>();
@@ -88,7 +88,7 @@ class HttpMethodPaths {
               invokeBefore, invokeAfter)
       );
     } else {
-      for (javax.ws.rs.Path path : paths) {
+      for (jakarta.ws.rs.Path path : paths) {
         registredPaths.add(
             addPath(path.value(), lowestRoleAccess, resourceMethod, navigationStep, redirectTo,
                 produces, invokeBefore, invokeAfter)
@@ -129,15 +129,15 @@ class HttpMethodPaths {
   }
 
   /**
-   * Finds the right paths
-   * @param path
-   * @param skipPathsWithVariables indicates if registred paths containing variables must be
+   * Finds the right path.
+   * @param path the original path
+   * @param skipPathsWithVariables indicates if registered paths containing variables must be
    * skipped from the matching.
-   * @param requestContext
-   * @return
+   * @param requestContext the request context.
+   * @return the right path.
    */
   public Path findPath(String path, final boolean skipPathsWithVariables,
-      final WebComponentRequestContext requestContext) {
+      final WebComponentRequestContext<?> requestContext) {
     Path foundPath = null;
     for (Map.Entry<String, Path> entry : pathRoutes.entrySet()) {
       if (entry.getValue().matches(path, skipPathsWithVariables, requestContext)) {

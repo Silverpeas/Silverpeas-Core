@@ -26,6 +26,14 @@ package org.silverpeas.core.admin;
 import org.silverpeas.core.annotation.Service;
 
 /**
+ * Implementation of the service used for tests. The lifecycle of the beans of this implementation
+ * is scoped by using one of the Jakarta EE prefefined lifecycle scope. With these lifecycle scopes,
+ * the managed beans are in fact proxified and one of the peculiar characteristic of these proxies
+ * is to take into account both checked and unchecked exceptions thrown within a transaction,
+ * meaning than any exception thrown within a transaction rollbacks the changes operated within that
+ * transaction. This is why, by default, the services in Silverpeas should be defined as non
+ * singleton.
+ *
  * @author silveryocha
  */
 @Service

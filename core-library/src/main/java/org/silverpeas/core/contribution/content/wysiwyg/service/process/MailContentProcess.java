@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -42,13 +43,13 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.StringDataExtractor;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.inject.Singleton;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
+import jakarta.inject.Singleton;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -124,6 +125,7 @@ public class MailContentProcess
     return cid;
   }
 
+  @Bean
   @Singleton
   public static class WysiwygCkeditorMediaLinkUrlToDataSourceScanner
       extends AbstractLocalhostLinkUrlDataSourceScanner {
@@ -213,7 +215,7 @@ public class MailContentProcess
      * </p>
      * @param email the mail of sender.
      * @return a {@link MailSending} instance.
-     * @throw MailContentProcessException when it is not possible to create mail sending.
+     * @throws MailContentProcessException when it is not possible to create mail sending.
      */
     public MailSending prepareMailSendingFrom(final MailAddress email)
         throws MailContentProcessException {
@@ -270,7 +272,7 @@ public class MailContentProcess
    * @param wysiwygContent the content in which some parts will be replaced
    * @param link the link to replace by cid.
    * @param cid the cid to put instead of the link.
-   * @return
+   * @return the new link
    */
   private String replaceLinkByCid(String wysiwygContent, String link, String cid) {
     return wysiwygContent.replace("=\"" + link + "\"", "=\"cid:" + cid + "\"");

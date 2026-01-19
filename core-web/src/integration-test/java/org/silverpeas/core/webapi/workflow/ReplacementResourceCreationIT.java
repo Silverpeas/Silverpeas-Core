@@ -39,8 +39,8 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.web.test.ResourceCreationTest;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 
@@ -69,7 +69,8 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
   private String authToken;
   private User user;
   private ReplacementEntity resource;
-  private Period period = Period.between(LocalDate.now().plusDays(1), LocalDate.now().plusWeeks(3));
+  private final Period period = Period.between(LocalDate.now().plusDays(1),
+      LocalDate.now().plusWeeks(3));
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -80,7 +81,8 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
         .addMavenDependenciesWithPersistence(
             "org.silverpeas.core.services:silverpeas-core-workflow",
             "org.silverpeas.core.services:silverpeas-core-personalorganizer")
-        .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.webapi.workflow")
+        .testFocusedOn(w ->
+            w.addPackages(true, "org.silverpeas.core.webapi.workflow")
             .addAsResource("org/silverpeas/workflow/multilang"))
         .build();
   }
@@ -101,18 +103,19 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
     final Pattern uriPattern = Pattern.compile(
         "^http://localhost:8080/silverpeas/services/" + aResourceURI() + "/[a-z0-9\\-]+$");
     final ReplacementEntity expected = aResource();
-    Response response = post(expected, aResourceURI());
-    assertThat(response.getStatus(), is(STATUS_CREATED));
+    try (Response response = post(expected, aResourceURI())) {
+      assertThat(response.getStatus(), is(STATUS_CREATED));
 
-    ReplacementEntity createdEntity = response.readEntity(ReplacementEntity.class);
-    assertThat(createdEntity, notNullValue());
-    assertThat(createdEntity.getURI(), is(response.getLocation()));
-    assertThat(uriPattern.matcher(createdEntity.getURI().toString()).matches(), is(true));
-    assertThat(createdEntity.getIncumbent().getId(), is(expected.getIncumbent().getId()));
-    assertThat(createdEntity.getSubstitute().getId(), is(expected.getSubstitute().getId()));
-    assertThat(createdEntity.getWorkflowInstanceId(), is(expected.getWorkflowInstanceId()));
-    assertThat(createdEntity.getStartDate(), is(expected.getStartDate()));
-    assertThat(createdEntity.getEndDate(), is(expected.getEndDate()));
+      ReplacementEntity createdEntity = response.readEntity(ReplacementEntity.class);
+      assertThat(createdEntity, notNullValue());
+      assertThat(createdEntity.getURI(), is(response.getLocation()));
+      assertThat(uriPattern.matcher(createdEntity.getURI().toString()).matches(), is(true));
+      assertThat(createdEntity.getIncumbent().getId(), is(expected.getIncumbent().getId()));
+      assertThat(createdEntity.getSubstitute().getId(), is(expected.getSubstitute().getId()));
+      assertThat(createdEntity.getWorkflowInstanceId(), is(expected.getWorkflowInstanceId()));
+      assertThat(createdEntity.getStartDate(), is(expected.getStartDate()));
+      assertThat(createdEntity.getEndDate(), is(expected.getEndDate()));
+    }
   }
 
   @Test
@@ -122,17 +125,18 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
     final Pattern uriPattern = Pattern.compile(
         "^http://localhost:8080/silverpeas/services/" + aResourceURI() + "/[a-z0-9\\-]+$");
     final ReplacementEntity expected = aResource();
-    Response response = post(expected, aResourceURI());
-    assertThat(response.getStatus(), is(STATUS_CREATED));
-    ReplacementEntity createdEntity = response.readEntity(ReplacementEntity.class);
-    assertThat(createdEntity, notNullValue());
-    assertThat(createdEntity.getURI(), is(response.getLocation()));
-    assertThat(uriPattern.matcher(createdEntity.getURI().toString()).matches(), is(true));
-    assertThat(createdEntity.getIncumbent().getId(), is(expected.getIncumbent().getId()));
-    assertThat(createdEntity.getSubstitute().getId(), is(expected.getSubstitute().getId()));
-    assertThat(createdEntity.getWorkflowInstanceId(), is(expected.getWorkflowInstanceId()));
-    assertThat(createdEntity.getStartDate(), is(expected.getStartDate()));
-    assertThat(createdEntity.getEndDate(), is(expected.getEndDate()));
+    try (Response response = post(expected, aResourceURI())) {
+      assertThat(response.getStatus(), is(STATUS_CREATED));
+      ReplacementEntity createdEntity = response.readEntity(ReplacementEntity.class);
+      assertThat(createdEntity, notNullValue());
+      assertThat(createdEntity.getURI(), is(response.getLocation()));
+      assertThat(uriPattern.matcher(createdEntity.getURI().toString()).matches(), is(true));
+      assertThat(createdEntity.getIncumbent().getId(), is(expected.getIncumbent().getId()));
+      assertThat(createdEntity.getSubstitute().getId(), is(expected.getSubstitute().getId()));
+      assertThat(createdEntity.getWorkflowInstanceId(), is(expected.getWorkflowInstanceId()));
+      assertThat(createdEntity.getStartDate(), is(expected.getStartDate()));
+      assertThat(createdEntity.getEndDate(), is(expected.getEndDate()));
+    }
   }
 
   @Test
@@ -140,8 +144,9 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
     user = User.getById("3");
     authToken = getTokenKeyOf(user);
     final ReplacementEntity expected = aResource();
-    Response response = post(expected, aResourceURI());
-    assertThat(response.getStatus(), is(STATUS_FORBIDDEN));
+    try (Response response = post(expected, aResourceURI())) {
+      assertThat(response.getStatus(), is(STATUS_FORBIDDEN));
+    }
   }
 
   @Override

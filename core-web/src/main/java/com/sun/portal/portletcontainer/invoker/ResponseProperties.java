@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.w3c.dom.Element;
 
@@ -40,14 +40,14 @@ import org.w3c.dom.Element;
  */
 public class ResponseProperties {
 
-  private Map<String, List<String>> responseHeaders;
-  private Map<String, List<Element>> markupHeaders;
-  private List<Cookie> cookies;
+  private final Map<String, List<String>> responseHeaders;
+  private final Map<String, List<Element>> markupHeaders;
+  private final List<Cookie> cookies;
 
   public ResponseProperties() {
-    responseHeaders = new HashMap<String, List<String>>();
-    markupHeaders = new HashMap<String, List<Element>>();
-    cookies = new ArrayList<Cookie>();
+    responseHeaders = new HashMap<>();
+    markupHeaders = new HashMap<>();
+    cookies = new ArrayList<>();
   }
 
   /**
@@ -56,7 +56,7 @@ public class ResponseProperties {
    * @return the Map of the response headers that set by the portlet
    */
   public Map<String, List<String>> getResponseHeaders() {
-    return responseHeaders == null ? Collections.EMPTY_MAP : responseHeaders;
+    return responseHeaders;
   }
 
   /**
@@ -66,11 +66,9 @@ public class ResponseProperties {
    * @return the list of the DOM Elements that set by the portlet
    */
   public List<Element> getMarkupHeadElements() {
-    List<Element> markupHeadElements = null;
-    if (markupHeaders != null) {
-      markupHeadElements = markupHeaders.get("javax.portlet.markup.head.element");
-    }
-    return markupHeadElements == null ? Collections.EMPTY_LIST : markupHeadElements;
+    List<Element> markupHeadElements;
+    markupHeadElements = markupHeaders.get("javax.portlet.markup.head.element");
+    return markupHeadElements == null ? Collections.emptyList() : markupHeadElements;
   }
 
   /**
@@ -79,7 +77,7 @@ public class ResponseProperties {
    * @return the list of the DOM Elements that set by the portlet
    */
   public List<Cookie> getCookies() {
-    return cookies == null ? Collections.EMPTY_LIST : cookies;
+    return cookies;
   }
 
   /**

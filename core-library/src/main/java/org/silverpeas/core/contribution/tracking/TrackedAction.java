@@ -26,10 +26,10 @@ package org.silverpeas.core.contribution.tracking;
 
 import org.silverpeas.core.admin.user.model.User;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.OffsetDateTime;

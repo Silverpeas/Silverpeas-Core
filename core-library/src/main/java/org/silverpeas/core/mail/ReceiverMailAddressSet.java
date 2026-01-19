@@ -25,7 +25,7 @@ package org.silverpeas.core.mail;
 
 import org.silverpeas.core.util.CollectionUtil;
 
-import javax.mail.Message;
+import jakarta.mail.Message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

@@ -33,12 +33,14 @@ import java.util.Optional;
 
 /**
  * In charge of providing silverpeas component instance.
+ *
  * @author Yohann Chastagnier
  */
 public interface SilverpeasComponentInstanceProvider {
 
   /**
    * Gets the instance of the implementation of the interface.
+   *
    * @return an implementation of {@link SilverpeasComponentInstanceProvider}.
    */
   static SilverpeasComponentInstanceProvider get() {
@@ -47,6 +49,7 @@ public interface SilverpeasComponentInstanceProvider {
 
   /**
    * Gets a any silverpeas component instance from the specified identifier.
+   *
    * @param componentInstanceId a component instance identifier as string.
    * @return an optional silverpeas component instance of {@link SilverpeasComponentInstance}.
    */
@@ -54,27 +57,19 @@ public interface SilverpeasComponentInstanceProvider {
 
   /**
    * Gets a shared silverpeas component instance from the specified identifier.
+   *
    * @param sharedComponentInstanceId a shared component instance identifier as string.
-   * @return an optional silverpeas shared component instance of {@link
-   * SilverpeasPersonalComponentInstance}.
+   * @return an optional silverpeas shared component instance of
+   * {@link SilverpeasPersonalComponentInstance}.
    */
   Optional<SilverpeasSharedComponentInstance> getSharedById(String sharedComponentInstanceId);
 
   /**
    * Gets a personal silverpeas component instance from the specified identifier.
+   *
    * @param personalComponentInstanceId a personal component instance identifier as string.
-   * @return an optional silverpeas personal component instance of {@link
-   * SilverpeasPersonalComponentInstance}.
+   * @return an optional silverpeas personal component instance of
+   * {@link SilverpeasPersonalComponentInstance}.
    */
   Optional<SilverpeasPersonalComponentInstance> getPersonalById(String personalComponentInstanceId);
-
-  /**
-   * Gets the name of the component from which the specified instance was spawn. The component
-   * instance identifier is made up of the name of the component with a local identifier that
-   * is peculiar to the type of the component. This method is a centralized way to get the component
-   * name from a component instance identifier.
-   * @param componentInstanceId the unique identifier of the component instance.
-   * @return
-   */
-  String getComponentName(String componentInstanceId);
 }

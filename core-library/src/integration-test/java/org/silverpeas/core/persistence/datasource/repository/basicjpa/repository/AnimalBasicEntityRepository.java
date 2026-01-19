@@ -29,7 +29,6 @@ import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.Anim
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.PersonBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -37,7 +36,6 @@ import java.util.List;
  * Date: 20/11/13
  */
 @Repository
-@Singleton
 public class AnimalBasicEntityRepository
     extends BasicJpaEntityRepository<AnimalBasicEntity> {
 

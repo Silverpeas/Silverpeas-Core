@@ -24,29 +24,29 @@
 
 package org.silverpeas.core.wbe;
 
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.session.SilverpeasUserSession;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static java.util.Collections.emptyList;
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * @author silveryocha
  */
-@Singleton
+@Service
 @Alternative
 @Priority(APPLICATION + 10)
 public class StubbedWbeHostManager implements WbeHostManager {
 
-  public boolean handled = true;
+  private boolean handled = true;
 
   @Override
   public void clear() {
@@ -86,6 +86,10 @@ public class StubbedWbeHostManager implements WbeHostManager {
   @Override
   public boolean isHandled(final WbeFile file) {
     return handled;
+  }
+
+  public void setHandled(final boolean handled) {
+    this.handled = handled;
   }
 
   @Override

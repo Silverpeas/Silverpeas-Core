@@ -25,7 +25,7 @@ package org.silverpeas.core.index.indexing.model;
 
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
@@ -67,7 +67,6 @@ public class DidYouMeanIndexer {
     if (!StringUtil.isDefined(field) || !StringUtil.isDefined(originalIndexDirectory) ||
         !StringUtil.isDefined(spellIndexDirectory)) {
       indexingLogger().error("Invalid argument passed to create a spell index");
-      return;
     }
   }
 
@@ -136,7 +135,7 @@ public class DidYouMeanIndexer {
    */
   public static void createSpellIndexForAllLanguage(String field, String originalIndexDirectory) {
     StringBuilder localizedField = new StringBuilder(field);
-    for (String language : I18NHelper.getAllSupportedLanguages()) {
+    for (String language : I18n.get().getSupportedLanguageCodes()) {
       if (!language.equalsIgnoreCase(DEFAULT_LANGUAGE)) {
         localizedField.append("_").append(language);
       }

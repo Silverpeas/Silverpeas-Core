@@ -25,7 +25,7 @@ package org.silverpeas.core.web.treemenu.model;
 
 import org.silverpeas.core.annotation.Bean;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 

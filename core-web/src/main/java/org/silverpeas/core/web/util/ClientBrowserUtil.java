@@ -24,12 +24,11 @@
 package org.silverpeas.core.web.util;
 
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ClientBrowserUtil {
 
@@ -47,11 +46,11 @@ public class ClientBrowserUtil {
   public static final Pattern WINDOWS = Pattern.compile(".*[W,w][I,ia][N,n].*");
   public static final Pattern MAC = Pattern.compile(".*[M,m][A,a][C,c].*");
   public static final Pattern FREEBSD = Pattern.compile(".*[F,f][R,r][E,e][E,e][B,b][S,s][D,d].*");
-  public static final Pattern UNIX = Pattern.compile(".*[X,x][11].*");
+  public static final Pattern UNIX = Pattern.compile(".*[X,x]1.*");
 
   /**
    * Returns true if the user-agent indicates Windows.
-   * @param request
+   * @param request incoming request
    * @return true if the user-agent indicates Windows.
    */
   public static boolean isWindows(HttpServletRequest request) {
@@ -69,9 +68,9 @@ public class ClientBrowserUtil {
   }
 
   /**
-   * Returns true if the user-agent indicates MacOSX.
-   * @param request
-   * @return true if the user-agent indicates MacOSX.
+   * Returns true if the user-agent indicates MacOS X.
+   * @param request the incoming request
+   * @return true if the user-agent indicates MacOS X.
    */
   public static boolean isMacintosh(HttpServletRequest request) {
     return isMacintosh(getUserAgent(request));
@@ -89,7 +88,7 @@ public class ClientBrowserUtil {
 
   /**
    * Returns true if the user-agent indicates Unix.
-   * @param request
+   * @param request incoming request
    * @return true if the user-agent indicates Unix.
    */
   public static boolean isUnix(HttpServletRequest request) {
@@ -110,8 +109,8 @@ public class ClientBrowserUtil {
 
   /**
    * Returns true if the user-agent indicates a Firefox browser.
-   * @param request
-   * @return true if the user-agent indicates a Firefox browser..
+   * @param request incoming request
+   * @return true if the user-agent indicates a Firefox browser.
    */
   public static boolean isFirefox(HttpServletRequest request) {
     return isFirefox(getUserAgent(request));
@@ -120,7 +119,7 @@ public class ClientBrowserUtil {
   /**
    * Returns true if the user-agent indicates a Firefox browser.
    * @param userAgent the request User-Agent header.
-   * @return true if the user-agent indicates a Firefox browser..
+   * @return true if the user-agent indicates a Firefox browser.
    */
   public static boolean isFirefox(String userAgent) {
     Matcher matchMoz = MOZILLA.matcher(userAgent);
@@ -131,8 +130,8 @@ public class ClientBrowserUtil {
 
   /**
    * Returns true if the user-agent indicates a Safari browser.
-   * @param request
-   * @return true if the user-agent indicates a Safari browser..
+   * @param request the incoming request
+   * @return true if the user-agent indicates a Safari browser.
    */
   public static boolean isSafari(HttpServletRequest request) {
     return isSafari(getUserAgent(request));
@@ -141,7 +140,7 @@ public class ClientBrowserUtil {
   /**
    * Returns true if the user-agent indicates a Safari browser.
    * @param userAgent the request User-Agent header.
-   * @return true if the user-agent indicates a Safari browser..
+   * @return true if the user-agent indicates a Safari browser.
    */
   public static boolean isSafari(String userAgent) {
     Matcher matchSafari = SAFARI.matcher(userAgent);
@@ -150,16 +149,18 @@ public class ClientBrowserUtil {
   }
 
   /**
-   * @param request
-   * @return
+   * Returns true if the user-agent indicates a Chrome browser.
+   * @param request the incoming request
+   * @return true if the user-agent indicates a Chrome browser.
    */
   public static boolean isChrome(HttpServletRequest request) {
     return isChrome(getUserAgent(request));
   }
 
   /**
-   * @param userAgent
-   * @return
+   * Returns true if the user-agent indicates a Chrome browser.
+   * @param userAgent the request User-Agent header.
+   * @return true if the user-agent indicates a Chrome browser.
    */
   public static boolean isChrome(String userAgent) {
     Matcher matchChrome = CHROME.matcher(userAgent);
@@ -167,16 +168,18 @@ public class ClientBrowserUtil {
   }
 
   /**
-   * @param request
-   * @return
+   * Returns true if the user-agent indicates the Opera browser.
+   * @param request the incoming request
+   * @return true if the user-agent indicates a Opera browser.
    */
   public static boolean isOpera(HttpServletRequest request) {
     return isOpera(getUserAgent(request));
   }
 
   /**
-   * @param userAgent
-   * @return
+   * Returns true if the user-agent indicates the Opera browser.
+   * @param userAgent the request User-Agent header.
+   * @return true if the user-agent indicates the Opera browser.
    */
   public static boolean isOpera(String userAgent) {
     Matcher match = OPERA.matcher(userAgent);
@@ -184,16 +187,18 @@ public class ClientBrowserUtil {
   }
 
   /**
-   * @param request
-   * @return
+   * Returns true if the user-agent indicates the Internet Explorer browser.
+   * @param request the incoming request.
+   * @return true if the user-agent indicates the Internet Explorer browser.
    */
   public static boolean isInternetExplorer(HttpServletRequest request) {
     return isInternetExplorer(getUserAgent(request));
   }
 
   /**
-   * @param userAgent
-   * @return
+   * Returns true if the user-agent indicates the Internet Explorer browser.
+   * @param userAgent the request User-Agent header.
+   * @return true if the user-agent indicates the Internet Explorer browser.
    */
   public static boolean isInternetExplorer(String userAgent) {
     Matcher matchIe = MSIE.matcher(userAgent);
@@ -201,50 +206,12 @@ public class ClientBrowserUtil {
     return matchIe.matches() || matchMs.matches();
   }
 
-  /**
-   * @param request
-   * @return
-   */
-  public static boolean isKonqueror(HttpServletRequest request) {
-    return isKonqueror(getUserAgent(request));
-  }
-
-  /**
-   * @param userAgent
-   * @return
-   */
-  public static boolean isKonqueror(String userAgent) {
-    Matcher match = KONQUEROR.matcher(userAgent);
-    return match.matches();
-  }
-
-  /**
-   * @param request
-   * @return
-   */
   public static String getUserAgent(HttpServletRequest request) {
     return request.getHeader("User-Agent");
   }
 
-  /**
-   * @param request
-   * @param filename
-   * @return
-   */
   public static String rfc2047EncodeFilename(HttpServletRequest request, String filename) {
     if (isFirefox(request) || isChrome(request) || isSafari(request)) {
-      return WebEncodeHelper.encodeFilename(filename);
-    }
-    return filename;
-  }
-
-  /**
-   * @param userAgent
-   * @param filename
-   * @return
-   */
-  public static String rfc2047EncodeFilename(String userAgent, String filename) {
-    if (isFirefox(userAgent) || isChrome(userAgent) || isSafari(userAgent)) {
       return WebEncodeHelper.encodeFilename(filename);
     }
     return filename;

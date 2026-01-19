@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.Produces;
 import java.util.Optional;
 
 /**

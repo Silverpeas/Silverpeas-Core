@@ -33,10 +33,10 @@ import java.util.List;
 
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author tleroi
@@ -51,16 +51,10 @@ public class PdcValueType extends TreeNode {
   @XmlElement(name = "pdcValue")
   private List<PdcValueType> listPdcValueType;// liste de PdcValueType
 
-  /**
-   * @return
-   */
   public List<PdcValueType> getListPdcValueType() {
     return listPdcValueType;
   }
 
-  /**
-   * @param list
-   */
   public void setListPdcValueType(List<PdcValueType> list) {
     listPdcValueType = list;
   }

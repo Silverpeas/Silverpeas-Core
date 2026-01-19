@@ -30,10 +30,9 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 /**
@@ -44,8 +43,6 @@ import java.util.List;
 @Service
 public class SocialNetworkUserListener extends CDIResourceEventListener<UserEvent> {
 
-  @Inject
-  private SocialNetworkService socialNetworkService;
   @Inject
   private InvitationService invitationService;
   @Inject
@@ -64,6 +61,5 @@ public class SocialNetworkUserListener extends CDIResourceEventListener<UserEven
             relationShip.getUser2Id()));
 
     invitationService.deleteAllMyInvitations(user.getId());
-    socialNetworkService.removeAllExternalAccount(user.getId());
   }
 }

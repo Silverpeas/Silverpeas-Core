@@ -34,7 +34,7 @@ ALTER TABLE ST_Space ADD CONSTRAINT FK_Space_2 FOREIGN KEY (domainFatherId) REFE
 
 INSERT INTO st_space
 (id,domainfatherid,name                             ,description                                              ,createdby,firstpagetype,firstpageextraparam,ordernum,createtime     ,updatetime     ,removetime,spacestatus,updatedby,removedby,lang,isinheritanceblocked,look,displayspacefirst,ispersonal) VALUES
-(0 ,null          ,'Space for Web Integration Tests','This is a space created automatically at test starting' ,0        ,0            ,''                 ,0       ,'1433237260318','1443423990640',null      ,null       ,0        ,null     ,'fr',0                   ,null,1                ,null      );
+(1 ,null          ,'Space for Web Integration Tests','This is a space created automatically at test starting' ,0        ,0            ,''                 ,0       ,'1433237260318','1443423990640',null      ,null       ,0        ,null     ,'fr',0                   ,null,1                ,null      );
 
 CREATE TABLE ST_SpaceI18N (
   id          INT          NOT NULL,
@@ -63,12 +63,14 @@ CREATE TABLE ST_ComponentInstance (
   isPublic             INT DEFAULT (0)  NOT NULL,
   isHidden             INT DEFAULT (0)  NOT NULL,
   lang                 CHAR(2),
-  isInheritanceBlocked INT DEFAULT (0)  NOT NULL
+  isInheritanceBlocked INT DEFAULT (0)  NOT NULL,
+  CONSTRAINT PK_ComponentInstance PRIMARY KEY (id)
 );
 
 INSERT INTO st_componentinstance
-(id,spaceid,name                                              ,componentname    ,description,createdby,ordernum,createtime     ,updatetime     ,removetime,componentstatus,updatedby,removedby,ispublic,ishidden,lang,isinheritanceblocked) VALUES
-(0 ,0      ,'Dummy public component for Web Integration Tests','dummyComponent' ,''         ,1        ,0       ,'1433237280246','1443424995948',null      ,null           ,1        ,null     ,1       ,0       ,'fr',0                   );
+(id,spaceid,name,componentname,description,createdby,ordernum,createtime,updatetime ,removetime,componentstatus,updatedby,removedby,ispublic,ishidden,lang,isinheritanceblocked) VALUES
+(1 ,1      ,'Dummy public component for Web Integration Tests','dummyComponent' ,''         ,1
+,0       ,'1433237280246','1443424995948',null      ,null           ,1        ,null     ,1       ,0       ,'fr',0                   );
 
 CREATE TABLE ST_ComponentInstanceI18N (
   id          INT          NOT NULL,
@@ -83,7 +85,7 @@ CREATE TABLE ST_Instance_Data (
   componentId INT          NOT NULL,
   name        VARCHAR(100) NOT NULL,
   label       VARCHAR(100) NOT NULL,
-  value       VARCHAR(400)
+  val         VARCHAR(400)
 );
 
 CREATE TABLE SB_ContentManager_Instance (

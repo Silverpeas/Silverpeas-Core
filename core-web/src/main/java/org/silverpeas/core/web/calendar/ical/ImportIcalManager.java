@@ -46,7 +46,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -63,7 +63,7 @@ public class ImportIcalManager {
 
   private static final long YEAR = 1000L * 60 * 60 * 24 * 365;
   private static String charset = null;
-  private AgendaSessionController agendaSessionController;
+  private final AgendaSessionController agendaSessionController;
   private SilverpeasCalendar calendarService;
 
   public ImportIcalManager(AgendaSessionController agendaSessionController) {
@@ -79,11 +79,6 @@ public class ImportIcalManager {
     return charset;
   }
 
-  /**
-   * IMPORT SilverpeasCalendar in Ical format
-   * @param file
-   * @return
-   */
   public String importIcalAgenda(File file) {
     String returnCode;
     String charsetUsed = getCharsetForImport();
@@ -222,22 +217,10 @@ public class ImportIcalManager {
     return charsetUsed;
   }
 
-  /**
-   * Verify if the event already exists
-   * @param eventIcal
-   * @return id or null
-   * @throws Exception
-   */
   private String isExist(Component eventIcal) throws ParseException {
     return isExist(eventIcal, null, null, null);
   }
 
-  /**
-   * Verify if the event already exists
-   * @param eventIcal
-   * @return id or null
-   * @throws ParseException
-   */
   private String isExist(Component eventIcal, Date startDateReccurent, Date endDateReccurent,
       String startHourReccurent) throws ParseException {
     String description = getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION));
@@ -291,12 +274,6 @@ public class ImportIcalManager {
     return name;
   }
 
-  /**
-   * Add or update categories of the event
-   * @param eventIcal
-   * @param idEvent the event identifier
-   * @throws Exception
-   */
   private void processCategories(Component eventIcal, String idEvent) throws AgendaException {
     if (eventIcal.getProperty(Property.CATEGORIES) != null) {
       String categories = eventIcal.getProperty(Property.CATEGORIES).getValue();
@@ -329,12 +306,6 @@ public class ImportIcalManager {
     }
   }
 
-  /**
-   * getDay from a givent string date parameter
-   * @param dateTime
-   * @return Date from a datetime string
-   * @throws ParseException
-   */
   private Date getDay(String dateTime) throws ParseException {
     Objects.requireNonNull(dateTime);
     final Date day;
@@ -346,12 +317,6 @@ public class ImportIcalManager {
     return day;
   }
 
-  /**
-   * Extract hour from a date string
-   * @param dateTime
-   * @return an extract hour from a date string
-   * @throws ParseException
-   */
   private String getHour(String dateTime) throws ParseException {
     Objects.requireNonNull(dateTime);
     String hour = null;
@@ -361,11 +326,6 @@ public class ImportIcalManager {
     return hour;
   }
 
-  /**
-   * Get value of the Ical property
-   * @param property an icalendar property
-   * @return String
-   */
   private String getFieldEvent(Property property) {
     String fieldValue = null;
     if (property != null) {
@@ -375,11 +335,6 @@ public class ImportIcalManager {
     return fieldValue;
   }
 
-  /**
-   * Get start dates of a recurrent Event
-   * @param event
-   * @return Collection of DateTime
-   */
   private static Collection<Date> getRecurrenceDates(VEvent event) {
     RRule rule = event.getProperty(Property.RRULE);
     if (rule != null) {
@@ -396,9 +351,9 @@ public class ImportIcalManager {
   }
 
   /**
-   * This method transforms a string to replace the 'special' caracters to store them correctly in
+   * This method transforms a string to replace the 'special' characters to store them correctly in
    * the database
-   * @param sText a single text which may contains 'special' caracters
+   * @param sText a single text which may contains 'special' characters
    * @return Returns the transformed text without specific codes.
    */
   public static String transformStringForBD(String sText) {
@@ -412,10 +367,10 @@ public class ImportIcalManager {
     for (int i = 0; i < nStringLength; i++) {
       switch (sText.charAt(i)) {
         case '€':
-          resSB.append('\u20ac'); // Euro Symbol
+          resSB.append('€'); // Euro Symbol
           break;
         // case '’':
-        case '\u2019':
+        case '’':
           resSB.append('\''); // ’ quote word
           break;
         default:

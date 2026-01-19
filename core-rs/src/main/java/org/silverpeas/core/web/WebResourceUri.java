@@ -25,17 +25,17 @@
 
 package org.silverpeas.core.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 
 /**
  * URI of the current web resource, that is the web resource being in execution and whose execution
  * was triggered by an incoming HTTP request; the request URI. It is defined
- * to replace the use of {@link UriInfo} as it takes care of the Silverpeas settings in regard to
- * the URL, host and web context definitions and as it is dedicated to compute more easily the URI
+ * to replace the use of {@link UriInfo}. It takes care of the Silverpeas settings in regard to
+ * the URL, host and web context definitions, and it is dedicated to compute more easily the URI
  * of the Web entities involved by the incoming HTTP requests.
  * <p>
  * The different properties of such a running web resource URI are explained by an example here.
@@ -50,8 +50,8 @@ import java.net.URI;
  *   <li>The absolute path is {@code http://localhost:8000/silverpeas/services/toto/kmelia32/content/bidule}</li>
  *   <li>The path is {@code /silverpeas/services/toto/kmelia32/content/bidule}</li>
  *   <li>The query parameters are taken from the parsing of {@code ?p=3&u=10}</li>
- *   <li>The path parameters are all nodes in the URI that matches with an parameter in the
- *  {@link javax.ws.rs.Path} annotations of the web resource</li>
+ *   <li>The path parameters are all nodes in the URI that matches with a parameter in the
+ *  {@link jakarta.ws.rs.Path} annotations of the web resource</li>
  * </ul>
  * @author mmoquillon
  */
@@ -110,7 +110,7 @@ public class WebResourceUri {
 
   /**
    * Gets the absolute base path of the current web resource. This includes everything preceding the
-   * path (host, port, etc).
+   * path (host, port, etc.).
    * If the web resource targeted by the current request is related to a given component instance,
    * then the identifier of the component instance is also referred in the returned path.
    * All sequences of escaped octets are decoded.
@@ -122,7 +122,7 @@ public class WebResourceUri {
 
   /**
    * Gets the absolute path of the current web resource in the form of a {@link UriBuilder}.
-   * This includes everything preceding the path (host, port, etc). If the web resource targeted by
+   * This includes everything preceding the path (host, port, etc.). If the web resource targeted by
    * the current request is related to a given component instance, then the identifier of the
    * component instance is also referred in the returned path.
    * <p>

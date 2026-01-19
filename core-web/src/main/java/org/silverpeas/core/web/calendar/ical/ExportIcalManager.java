@@ -48,7 +48,7 @@ import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.FileWriter;
 import java.text.ParseException;
 import java.time.OffsetDateTime;

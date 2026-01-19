@@ -27,7 +27,7 @@ import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of document format converters available in Silverpeas. This factory is dedicated to
- * objects whose the life-cycle isn't managed by the IoC container.
+ * objects whose life-cycle isn't managed by the IoC container.
  */
 public class DocumentFormatConverterProvider {
 

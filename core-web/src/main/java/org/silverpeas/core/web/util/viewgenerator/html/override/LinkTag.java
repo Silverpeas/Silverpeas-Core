@@ -27,8 +27,8 @@ import org.apache.ecs.ElementContainer;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 public class LinkTag extends TagSupport {
   private static final long serialVersionUID = -302801539118908018L;

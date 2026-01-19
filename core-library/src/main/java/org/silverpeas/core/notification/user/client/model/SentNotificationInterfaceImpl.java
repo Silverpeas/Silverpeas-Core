@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.notification.user.client.model;
 
-import org.silverpeas.kernel.exception.NotFoundException;
+import jakarta.transaction.Transactional;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
+import org.silverpeas.kernel.exception.NotFoundException;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.Set;
 
 import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 
-@Singleton
+@Bean
 public class SentNotificationInterfaceImpl implements SentNotificationInterface {
 
   protected SentNotificationInterfaceImpl() {

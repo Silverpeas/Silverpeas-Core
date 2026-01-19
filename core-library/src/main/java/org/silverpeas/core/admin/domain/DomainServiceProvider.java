@@ -24,13 +24,14 @@
 package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.core.admin.domain.quota.UserDomainQuotaService;
 import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * A provider of DomainService objects. Its aim is to manage the life-cycle of such objects and so
@@ -48,7 +49,7 @@ public class DomainServiceProvider {
   private DomainService sqlDomainService;
 
   @Inject
-  private QuotaService<UserDomainQuotaKey> userDomainQuotaService;
+  private UserDomainQuotaService userDomainQuotaService;
 
   /**
    * Gets an instance of this DomainServiceFactory class.

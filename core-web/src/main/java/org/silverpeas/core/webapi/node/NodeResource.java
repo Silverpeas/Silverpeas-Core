@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 /**
  * A REST Web resource providing access to a node through private mode.

@@ -24,7 +24,6 @@
 package org.silverpeas.web.directory.control;
 
 import net.htmlparser.jericho.Source;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.PaginationPage;
@@ -70,6 +69,7 @@ import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.util.StringUtil;
@@ -182,7 +182,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private boolean doNotUseContactsComponents = false;
   private boolean useQuickUserSelection = true;
 
-  // used when directory is set up through an hyperlink application
+  // used when directory is set up through a hyperlink application
   private String referer;
 
   private static final String EXPORT_PROPERTY_PREFIX = "export.";
@@ -342,8 +342,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * get all User of the Group who has Id="groupId"
-   * @param groupId:the ID of group
+   * get all the users belonging to the group with the specified identifier.
+   * @param groupId the ID of group
    *
    */
   public DirectoryItemList getAllUsersByGroup(String groupId) {
@@ -358,8 +358,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * get all Users of the Groups which Id is in "groupIds"
-   * @param groupIds:a list of groups' ids
+   * get all the users belonging to the specified groups.
+   * @param groupIds a list of groups' identifiers
    *
    */
   public DirectoryItemList getAllUsersByGroups(List<String> groupIds, String componentId) {
@@ -1311,7 +1311,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   /**
    * Returns domain(s) and form(s) of current users and/or contacts
    * To prevent multiple identical sources, a domain or a form is returned only once because some
-   * exported users and contacts can used the same form
+   * exported users and contacts can use the same form
    * @return a List containing domain and forms of current users and forms of current contacts
    */
   private List<String> getCurrentSourcesToExport() {

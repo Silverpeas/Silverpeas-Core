@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -37,22 +41,17 @@ import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatistics;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.kernel.test.annotations.TestManagedMocks;
-import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.session.SessionManager;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.UUID;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -162,7 +161,6 @@ class SilverpeasSessionOpenerTest {
   }
 
   @Service
-  @Singleton
   @Alternative
   @Priority(APPLICATION + 10)
   public static class SessionManagerStub extends SessionManager {

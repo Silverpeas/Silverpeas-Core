@@ -26,11 +26,11 @@ package org.silverpeas.core.workflow.engine.instance;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.Date;
 
 @Entity
@@ -48,7 +48,7 @@ public class LockingUser extends BasicJpaEntity<LockingUser, UniqueIntegerIdenti
   private String state = null;
 
   @Column
-  private Date lockDate = null;
+  private Date lockDate;
 
   /**
    * Default Constructor

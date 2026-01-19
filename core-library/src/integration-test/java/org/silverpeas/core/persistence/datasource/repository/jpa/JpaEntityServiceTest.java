@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalType;
@@ -32,10 +35,6 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.repository.Anim
 import org.silverpeas.core.persistence.datasource.repository.jpa.repository.EquipmentRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.repository.PersonRepository;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -43,7 +42,6 @@ import java.util.List;
  * Date: 20/11/13
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class JpaEntityServiceTest {
 

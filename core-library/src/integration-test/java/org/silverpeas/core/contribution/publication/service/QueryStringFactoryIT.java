@@ -31,8 +31,10 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
+import org.silverpeas.core.contribution.publication.dao.QueryStringFactory;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.util.Charsets;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,6 +42,7 @@ import java.sql.ResultSet;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.silverpeas.core.contribution.publication.dao.QueryStringFactory.*;
 import static org.silverpeas.core.test.integration.rule.DbSetupRule.getSafeConnection;
 
@@ -62,7 +65,10 @@ public class QueryStringFactoryIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4Publication.onWarForTestClass(QueryStringFactoryIT.class)
+    return LibCoreWarBuilder.onWarForTestClass(QueryStringFactoryIT.class)
+        .addClasses(QueryStringFactory.class)
+        .deleteClasses(PublicationDAOIT.class, PublicationUpdateIT.class,
+            LastPublicationDAOIT.class, ComponentInstancePublicationDeletionIT.class)
         .build();
   }
 
@@ -142,13 +148,16 @@ public class QueryStringFactoryIT {
 
   private void assertQueryStructure(final String query,
       final String fileNameContainingExpectedQueryResult) throws Exception {
-    assertThat(
-        query.trim().replaceAll("[ ]{2,}", " "), is(IOUtils.toString(this.getClass()
-            .getClassLoader()
-            .getResourceAsStream("org/silverpeas/core/contribution/publication/service/" +
-                fileNameContainingExpectedQueryResult + ".txt"), "UTF-8")
-            .trim()
-            .replaceAll("[\r\n]", "")));
+    try (var input = this.getClass()
+        .getClassLoader()
+        .getResourceAsStream("org/silverpeas/core/contribution/publication/service/" +
+            fileNameContainingExpectedQueryResult + ".txt")) {
+      assertThat(input, notNullValue());
+      assertThat(
+          query.trim().replaceAll(" {2,}", " "), is(IOUtils.toString(input, Charsets.UTF_8)
+              .trim()
+              .replaceAll("[\r\n]", "")));
+    }
   }
 
   private void assertQueryExecution(final String query) throws Exception {
@@ -158,7 +167,7 @@ public class QueryStringFactoryIT {
       int paramCount = 1;
       final String dummyString = "dummyString";
       for (final String queryPart : query.split(" ")) {
-        if (queryPart.replaceAll("[\\.a-zA-Z]", "").length() == 0) {
+        if (queryPart.replaceAll("[.a-zA-Z]", "").isEmpty()) {
           lastQueryPart = queryPart;
         } else if (queryPart.equals("?")) {
           if (lastQueryPart.toLowerCase().endsWith("nodeid") || lastQueryPart.toLowerCase().

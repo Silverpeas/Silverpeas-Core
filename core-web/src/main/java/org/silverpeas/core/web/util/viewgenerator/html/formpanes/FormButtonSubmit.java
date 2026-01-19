@@ -31,47 +31,24 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author frageade
- * @version
  */
-
 public class FormButtonSubmit extends FormButton {
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   *
-   */
   public FormButtonSubmit(String nam, String val) {
     super(nam, val);
     setType("button");
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String print() {
-    String retour = "\n<td><input type=\"submit\" name=\"" + name
+    return "\n<td><input type=\"submit\" name=\"" + name
         + "\" value=\"" + value + "\"></td>";
-
-    return retour;
   }
 
-  /**
-   * Method declaration
-   * @param nam
-   * @param url
-   * @param pc
-   * @return
-   *
-   */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
 
@@ -82,31 +59,14 @@ public class FormButtonSubmit extends FormButton {
     return fpw;
   }
 
-  /**
-   * Method declaration
-   * @param req
-   *
-   */
   public void getConfigurationByRequest(HttpServletRequest req) {
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String printDemo() {
-    String retour = "\n<td><input type=\"submit\" name=\"" + name
+    return "\n<td><input type=\"submit\" name=\"" + name
         + "\" value=\"" + value + "\"></td>";
-
-    return retour;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"label\">";
 
@@ -114,15 +74,8 @@ public class FormButtonSubmit extends FormButton {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String toLineXML() {
-    String retour = "\n<action id=\"" + id + "\" value=\"" + value + "\"/>";
-
-    return retour;
+    return "\n<action id=\"" + id + "\" value=\"" + value + "\"/>";
   }
 
 }

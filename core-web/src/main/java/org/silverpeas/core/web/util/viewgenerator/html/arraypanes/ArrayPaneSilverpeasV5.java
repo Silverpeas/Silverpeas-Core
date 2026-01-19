@@ -29,7 +29,7 @@ import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 import java.util.Collections;
 
 import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;

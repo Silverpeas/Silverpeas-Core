@@ -39,7 +39,7 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -206,7 +206,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
       throws FormException {
-    if (!I18NHelper.isI18nContentActivated) {
+    if (!I18n.get().isEnabled()) {
       indexRecord(recordId, formName, indexEntry, null);
     } else {
       List<String> languages =
@@ -226,7 +226,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
           recordTemplate.getInstanceId());
 
       // remove files managed by WYSIWYG fields
-      WysiwygFCKFieldDisplayer.removeContents(resourceReference, getWYSIWYGFieldNames(record),
+      new WysiwygFCKFieldDisplayer().removeContents(resourceReference, getWYSIWYGFieldNames(record),
           language);
 
       // remove form documents registered into record but stored into JCR

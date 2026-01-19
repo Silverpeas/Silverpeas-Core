@@ -39,8 +39,8 @@ import java.util.logging.Logger;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.silverpeas.kernel.util.StringUtil;
 import com.sun.portal.container.ContainerLogger;
@@ -69,11 +69,11 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   private HttpServletRequest request;
   private static final String ENC = "UTF-8";
   private static final String PORTLET_HANDLE_PREF_NAME = "portletHandle";
-  private static String AUTHLESS_USER_ID = "NONE";
+  private static final String AUTHLESS_USER_ID = "NONE";
   private static final String IS_WSRP_REQ = "is.wsrp.request";
   private static final Logger logger = ContainerLogger.getLogger(PortletWindowContextImpl.class,
       "org.silverpeas.portlets.PCCTXLogMessages");
-  private static List<String> roles = Arrays.asList("role1", "role2", "role3",
+  private static final List<String> roles = Arrays.asList("role1", "role2", "role3",
       "role4", "role5", "role6",
       "role7", "role8", "role9");
   private String elementId = null;
@@ -112,7 +112,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   @Override
   public String getDesktopURL(HttpServletRequest request, String query, boolean escape) {
     StringBuilder urlBuffer = new StringBuilder(getDesktopURL(request));
-    if (query != null && query.length() != 0) {
+    if (query != null && !query.isEmpty()) {
       urlBuffer.append("?").append(query);
     }
     String url = urlBuffer.toString();
@@ -178,9 +178,9 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   }
 
   @Override
-  public List getRoles() {
+  public List<String> getRoles() {
     // Check if any in the roles is in role
-    List<String> currentRoles = new ArrayList<String>();
+    List<String> currentRoles = new ArrayList<>();
     for (String role : roles) {
       if (this.request.isUserInRole(role)) {
         currentRoles.add(role);
@@ -192,11 +192,11 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   @Override
   public Map<String, String> getUserInfo() {
     // TODO
-    return Collections.EMPTY_MAP;
+    return Collections.emptyMap();
   }
 
   @Override
-  public List getMarkupTypes(String portletName) throws PortletWindowContextException {
+  public List<String> getMarkupTypes(String portletName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getMarkupTypes(portletName);
     } catch (PortletRegistryException pre) {
@@ -235,7 +235,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   }
 
   @Override
-  public List getKeywords(String portletName, String desiredLocale)
+  public List<String> getKeywords(String portletName, String desiredLocale)
       throws PortletWindowContextException {
     try {
       return portletRegistryContext.getKeywords(portletName, desiredLocale);
@@ -264,9 +264,8 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   }
 
   @Override
-  public List<EntityID> getPortletWindows(PortletType portletType, DistributionType distributionType)
-      throws PortletWindowContextException {
-    List<EntityID> portletList = new ArrayList<EntityID>();
+  public List<EntityID> getPortletWindows(PortletType portletType, DistributionType distributionType) {
+    List<EntityID> portletList = new ArrayList<>();
     try {
       List<String> portlets = null;
       if (DistributionType.ALL_PORTLETS.equals(distributionType)) {
@@ -287,7 +286,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return portletList;
   }
 
-  private List getVisiblePortletWindows(PortletType portletType)
+  private List<String> getVisiblePortletWindows(PortletType portletType)
       throws PortletWindowContextException {
     try {
       return portletRegistryContext.getVisiblePortletWindows(portletType);
@@ -296,7 +295,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
-  private List getAvailablePortletWindows(PortletType portletType)
+  private List<String> getAvailablePortletWindows(PortletType portletType)
       throws PortletWindowContextException {
     try {
       return portletRegistryContext.getAllPortletWindows(portletType);
@@ -305,7 +304,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
-  private List getAllPortletWindows(PortletType portletType) throws PortletWindowContextException {
+  private List<String> getAllPortletWindows(PortletType portletType) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getAllPortletWindows(portletType);
     } catch (PortletRegistryException pre) {

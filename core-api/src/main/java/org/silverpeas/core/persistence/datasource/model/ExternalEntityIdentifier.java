@@ -36,7 +36,7 @@ public interface ExternalEntityIdentifier extends EntityIdentifier {
    * No identifier value is generated and returning null explicitly in order to get an
    * NullPointerException in case of wrong code development.
    */
-  default ExternalEntityIdentifier generateNewId(String ... parameters) {
+  default ExternalEntityIdentifier generateNewValue(String ... parameters) {
     return null;
   }
 }

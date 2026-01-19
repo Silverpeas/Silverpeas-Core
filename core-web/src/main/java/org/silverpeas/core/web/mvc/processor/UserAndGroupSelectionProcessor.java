@@ -27,7 +27,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.web.selection.Selection;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;

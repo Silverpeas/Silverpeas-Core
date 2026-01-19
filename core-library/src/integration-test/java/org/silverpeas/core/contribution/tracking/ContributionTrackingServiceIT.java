@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.contribution.tracking;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,14 +36,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
+import org.silverpeas.core.contribution.ContributionModificationContextHandler;
+import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
+import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.contribution.tracking.Publication.PublicationID;
 import org.silverpeas.core.contribution.tracking.TestContext.TrackingEventRecord;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,6 +53,7 @@ import static org.hamcrest.Matchers.notNullValue;
 /**
  * Integration tests on the operations provided by the {@link ContributionTrackingService} object in
  * order to check the tracking event are correctly saved in the database.
+ *
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
@@ -67,8 +70,13 @@ public class ContributionTrackingServiceIT {
 
   @Deployment
   public static Archive<WebArchive> createDeployment() {
-    return WarBuilder4Publication.onWarForTestClass(ContributionTrackingServiceIT.class)
+    return LibCoreWarBuilder.onWarForTestClass(ContributionTrackingServiceIT.class)
+        .addStubbedUserAPI()
+        .addStubbedAppAPI()
         .addPackages(true, "org.silverpeas.core.contribution.tracking")
+        .addClasses(PublicationRuntimeException.class,
+            ContributionModificationContextHandler.class,
+            ContributionOperationContextPropertyHandler.class)
         .addAsResource("org/silverpeas/contribution")
         .build();
   }
@@ -89,14 +97,14 @@ public class ContributionTrackingServiceIT {
     context.setUpModificationType(false);
 
     Date now = new Date();
-    PublicationDetail publication = context.getPublication("100");
-    PublicationDetail updated = publication.copy();
-    updated.setUpdateDate(now);
-    updated.setUpdaterId("1");
+    var publication = context.getPublication("100");
+    var updated = publication.copy();
+    publication.setLastUpdate(now, "1");
 
     withinTransaction(() -> trackingService.update(publication, updated));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.MAJOR_UPDATE, updated);
   }
 
@@ -106,14 +114,14 @@ public class ContributionTrackingServiceIT {
     context.setUpModificationType(true);
 
     Date now = new Date();
-    PublicationDetail publication = context.getPublication("100");
-    PublicationDetail updated = publication.copy();
-    updated.setUpdateDate(now);
-    updated.setUpdaterId(User.getCurrentRequester().getId());
+    var publication = context.getPublication("100");
+    var updated = publication.copy();
+    updated.setLastUpdate(now, User.getCurrentRequester().getId());
 
     withinTransaction(() -> trackingService.update(publication, updated));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.MINOR_UPDATE, updated);
   }
 
@@ -122,14 +130,14 @@ public class ContributionTrackingServiceIT {
     context.setUpUserRequester();
 
     Date now = new Date();
-    PublicationDetail publication = context.getPublication("100");
-    PublicationDetail updated = publication.copy();
-    updated.setUpdateDate(now);
-    updated.setUpdaterId(User.getCurrentRequester().getId());
+    var publication = context.getPublication("100");
+    var updated = publication.copy();
+    updated.setLastUpdate(now, User.getCurrentRequester().getId());
 
     withinTransaction(() -> trackingService.update(publication, updated));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.UPDATE, updated);
   }
 
@@ -138,14 +146,14 @@ public class ContributionTrackingServiceIT {
     // no requester in a batch process
 
     Date now = new Date();
-    PublicationDetail publication = context.getPublication("100");
-    PublicationDetail updated = publication.copy();
-    updated.setUpdateDate(now);
-    updated.setUpdaterId("3");
+    var publication = context.getPublication("100");
+    var updated = publication.copy();
+    updated.setLastUpdate(now, "3");
 
     withinTransaction(() -> trackingService.update(publication, updated));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.UPDATE, updated);
   }
 
@@ -154,14 +162,14 @@ public class ContributionTrackingServiceIT {
     // no requester in a batch process
 
     Date now = new Date();
-    PublicationDetail publication = context.getPublication("100");
-    PublicationDetail updated = publication.copy();
-    updated.setUpdateDate(now);
-    updated.setUpdaterId(null);
+    var publication = context.getPublication("100");
+    var updated = publication.copy();
+    updated.setLastUpdate(now, null);
 
     withinTransaction(() -> trackingService.update(publication, updated));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.UPDATE, updated);
   }
 
@@ -169,11 +177,12 @@ public class ContributionTrackingServiceIT {
   public void saveADeletion() {
     context.setUpUserRequester();
 
-    PublicationDetail publication = context.getPublication("100");
+    var publication = context.getPublication("100");
 
     withinTransaction(() -> trackingService.delete(publication));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.DELETION, publication);
   }
 
@@ -181,11 +190,12 @@ public class ContributionTrackingServiceIT {
   public void saveADeletionInABatchProcess() {
     // no requester in a batch process
 
-    PublicationDetail publication = context.getPublication("100");
+    var publication = context.getPublication("100");
 
     withinTransaction(() -> trackingService.delete(publication));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.DELETION, publication);
   }
 
@@ -193,11 +203,12 @@ public class ContributionTrackingServiceIT {
   public void saveACreation() {
     context.setUpUserRequester();
 
-    PublicationDetail publication = context.getPublication("100");
+    var publication = context.getPublication("100");
 
     withinTransaction(() -> trackingService.create(publication));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.CREATION, publication);
   }
 
@@ -205,11 +216,12 @@ public class ContributionTrackingServiceIT {
   public void saveACreationInABatchProcess() {
     // no requester in a batch process
 
-    PublicationDetail publication = context.getPublication("100");
+    var publication = context.getPublication("100");
 
     withinTransaction(() -> trackingService.create(publication));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.CREATION, publication);
   }
 
@@ -217,12 +229,13 @@ public class ContributionTrackingServiceIT {
   public void saveACreationWithoutAnyCreatorInABatchProcess() {
     // no requester in a batch process
 
-    PublicationDetail publication = context.getPublication("100");
+    var publication = context.getPublication("100");
     publication.setCreatorId(null);
 
     withinTransaction(() -> trackingService.create(publication));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.CREATION, publication);
   }
 
@@ -230,11 +243,12 @@ public class ContributionTrackingServiceIT {
   public void saveAnInnerMove() {
     context.setUpUserRequester();
 
-    PublicationDetail publication = context.getPublication("100");
+    var publication = context.getPublication("100");
 
     withinTransaction(() -> trackingService.move(publication, publication));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.INNER_MOVE, publication);
   }
 
@@ -242,13 +256,14 @@ public class ContributionTrackingServiceIT {
   public void saveAnOuterMove() {
     context.setUpUserRequester();
 
-    PublicationDetail publication = context.getPublication("100");
-    PublicationDetail moved = publication.copy();
-    moved.setPk(new PublicationPK(publication.getId(), "kmelia100"));
+    var publication = context.getPublication("100");
+    var moved = publication.copy();
+    moved.setIdentifier(new PublicationID(publication.getIdentifier().getLocalId(), "kmelia100"));
 
     withinTransaction(() -> trackingService.move(publication, moved));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.OUTER_MOVE, publication);
   }
 
@@ -256,11 +271,12 @@ public class ContributionTrackingServiceIT {
   public void saveAnInnerMoveInABatchProcess() {
     // no requester in a batch process
 
-    PublicationDetail publication = context.getPublication("100");
+    var publication = context.getPublication("100");
 
     withinTransaction(() -> trackingService.move(publication, publication));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.INNER_MOVE, publication);
   }
 
@@ -268,13 +284,14 @@ public class ContributionTrackingServiceIT {
   public void saveAnOuterMoveInABatchProcess() {
     // no requester in a batch process
 
-    PublicationDetail publication = context.getPublication("100");
-    PublicationDetail moved = publication.copy();
-    moved.setPk(new PublicationPK(publication.getId(), "kmelia100"));
+    var publication = context.getPublication("100");
+    var moved = publication.copy();
+    moved.setIdentifier(new PublicationID(publication.getIdentifier().getLocalId(), "kmelia100"));
 
     withinTransaction(() -> trackingService.move(publication, moved));
 
-    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    TrackingEventRecord event =
+        context.getLastTrackingEventOn(publication.getIdentifier().getLocalId());
     context.assertThatRecordMatches(event, TrackedActionType.OUTER_MOVE, publication);
   }
 

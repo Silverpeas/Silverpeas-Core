@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -42,30 +43,21 @@ import org.silverpeas.core.admin.service.cache.TreeCache;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.calendar.subscription.SubscriptionCalendarEventListener;
+import org.silverpeas.core.contribution.publication.subscription.SubscriptionPublicationEventListener;
 import org.silverpeas.core.index.indexing.IndexingLogger;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.util.SystemWrapper;
-import org.silverpeas.core.util.memory.MemoryData;
-import org.silverpeas.core.util.memory.MemoryUnit;
 
-import javax.inject.Inject;
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,7 +82,6 @@ public class SpacesAndComponentsIT {
   @Inject
   private TreeCache treeCache;
   private final String userId = "1";
-  private final String otherUserId = "2";
 
   @Rule
   public DbSetupRule dbSetupRule =
@@ -102,25 +93,23 @@ public class SpacesAndComponentsIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SpacesAndComponentsIT.class)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addSynchAndAsynchResourceEventFeatures()
-        .addIndexEngineFeatures()
-        .addSilverpeasUrlFeatures()
-        .addAsResource("org/silverpeas/publication")
+    return LibCoreWarBuilder.onFullWarForTestClass(SpacesAndComponentsIT.class)
+        // remove all code about user subscriptions and those non-required by the test (but which is
+        // in interaction with the tested code by CDI)
+        .deletePackages(true, "org.silverpeas.core.subscription",
+            "org.silverpeas.core.io.media", "org.silverpeas.core.contribution.publication",
+            "org.silverpeas.core.node", "org.silverpeas.core.contribution.attachment",
+            "org.silverpeas.core.calendar", "org.silverpeas.core.importexport",
+            "org.silverpeas.core.contribution.rating")
+        .deleteClasses(SubscriptionCalendarEventListener.class,
+            SubscriptionPublicationEventListener.class)
+        .addAsResource("org/silverpeas/admin")
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
-        .addPackages(false, "org.silverpeas.core.admin.space.quota")
-        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
-        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
-        .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
-            MemoryData.class, SpaceServiceProvider.class, AttachmentServiceProvider.class,
-            PublicationTemplateManager.class)
         .build();
   }
 
   @Before
-  public void reloadCache() throws Exception {
+  public void reloadCache() {
     File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
     SystemWrapper.getInstance().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     admin.reloadCache();
@@ -432,13 +421,8 @@ public class SpacesAndComponentsIT {
   }
 
   /**
-   * Space Tree with 'x' = blocked inheritance and 'o' not:
-   * Root space
-   *    x Sub 1
-   *      x Sub 1 1
-   *    o Sub 2
-   *      x Sub 2 1
-   *      o Sub 2 2
+   * Space Tree with 'x' = blocked inheritance and 'o' not: Root space x Sub 1 x Sub 1 1 o Sub 2 x
+   * Sub 2 1 o Sub 2 2
    */
   @Test
   public void getSpaceUserProfilesBySpaceId() throws AdminException {
@@ -525,6 +509,7 @@ public class SpacesAndComponentsIT {
         Pair.of(sub21Id, List.of()),
         Pair.of(sub22Id, List.of()));
     assertUserSpaceProfiles(userId, noSpaceProfiles);
+    String otherUserId = "2";
     assertUserSpaceProfiles(otherUserId, noSpaceProfiles);
 
     addSpaceUserRole(rootSpaceId, ADMIN, userId);
@@ -623,7 +608,8 @@ public class SpacesAndComponentsIT {
       adminController.updateSpaceProfileInst(spaceProfileInst, userId);
       return spaceProfileInst;
     } else {
-      final String newSpaceProfileId = adminController.addSpaceProfileInst(spaceProfileInst, userId);
+      final String newSpaceProfileId = adminController.addSpaceProfileInst(spaceProfileInst,
+          userId);
       return adminController.getSpaceProfileInst(newSpaceProfileId);
     }
   }
@@ -633,7 +619,8 @@ public class SpacesAndComponentsIT {
     space.getProfiles().forEach(p -> adminController.deleteSpaceProfileInst(p.getId(), userId));
   }
 
-  void assertUserSpaceProfiles(String aUserId, List<Pair<String, List<SilverpeasRole>>> expectedSpaceAndProfiles) {
+  void assertUserSpaceProfiles(String aUserId,
+      List<Pair<String, List<SilverpeasRole>>> expectedSpaceAndProfiles) {
     expectedSpaceAndProfiles.forEach(p -> {
       var spaceId = p.getFirst();
       var expectedRoles = p.getSecond().stream().map(SilverpeasRole::getName).toArray();
@@ -711,10 +698,9 @@ public class SpacesAndComponentsIT {
   public void testCopyAndPasteRootSpace() throws AdminException, QuotaException {
     String[] rootSpaceIds = adminController.getAllRootSpaceIds();
     assertThat(rootSpaceIds.length, is(4));
-    String targetSpaceId = null;
     PasteDetail pasteDetail = new PasteDetail(userId);
     pasteDetail.setFromSpaceId("WA1");
-    pasteDetail.setToSpaceId(targetSpaceId);
+    pasteDetail.setToSpaceId(null);
     String newSpaceId = adminController.copyAndPasteSpace(pasteDetail);
     String expectedSpaceId = "WA200";
     assertThat(newSpaceId, is(expectedSpaceId));
@@ -873,9 +859,9 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(3));
     assertThat(fullSpace.getProfiles(), hasSize(2));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(1));
-    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(), is(1));
-    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.READER.getName()).getNumUser(), is(1));
-    assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
+    assertThat(Objects.requireNonNull(fullSpace.getDirectSpaceProfileInst(PUBLISHER.getName())).getNumUser(), is(1));
+    assertThat(Objects.requireNonNull(fullSpace.getDirectSpaceProfileInst(READER.getName())).getNumUser(), is(1));
+    assertThat(Objects.requireNonNull(fullSpace.getInheritedSpaceProfileInst(PUBLISHER.getName())).getNumUser(),
         is(1));
 
     // check GED rights
@@ -909,7 +895,8 @@ public class SpacesAndComponentsIT {
     String componentId = "kmelia210";
     ComponentInst component = adminController.getComponentInst(componentId);
     assertThat(component.getAllProfilesInst(), hasSize(0));
-    assertThat(component.getInheritedProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
+    assertThat(component.getInheritedProfileInst(SilverpeasRole.PUBLISHER.getName()),
+        is(nullValue()));
     assertThat(adminController.isComponentAvailable(componentId, "2"), is(false));
     assertThat(adminController.isComponentAvailable(componentId, "1"), is(false));
     String[] roles = organizationController.getUserProfiles("1", componentId);
@@ -935,9 +922,11 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(1));
     assertThat(fullSpace.getProfiles(), hasSize(0));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(1));
-    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
-    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.READER.getName()), is(nullValue()));
-    assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()),
+        is(nullValue()));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.READER.getName()),
+        is(nullValue()));
+    assertThat(Objects.requireNonNull(fullSpace.getInheritedSpaceProfileInst(PUBLISHER.getName())).getNumUser(),
         is(1));
     // check GED rights
     component = adminController.getComponentInst(componentId);
@@ -963,8 +952,10 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(0));
     assertThat(fullSpace.getProfiles(), hasSize(0));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(0));
-    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
-    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.READER.getName()), is(nullValue()));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()),
+        is(nullValue()));
+    assertThat(fullSpace.getDirectSpaceProfileInst(SilverpeasRole.READER.getName()),
+        is(nullValue()));
     assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()),
         is(nullValue()));
 
@@ -990,7 +981,7 @@ public class SpacesAndComponentsIT {
     SpaceInst dest = admin.getSpaceInstById(destId);
     List<ComponentInst> components = dest.getAllComponentsInst();
     admin.moveComponentInst(destId, componentId, "",
-        components.toArray(new ComponentInst[components.size()]));
+        components.toArray(new ComponentInst[0]));
     SpaceInst source = admin.getSpaceInstById(sourceId);
     assertThat(source.getAllComponentsInst().size(), is(1));
     dest = admin.getSpaceInstById(destId);

@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.scheduler;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.scheduler.quartz.PersistentQuartzScheduler;
 import org.silverpeas.core.scheduler.quartz.VolatileQuartScheduler;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /***
  * Initializer of all the scheduler implementations for the integration tests.
@@ -39,6 +40,7 @@ import javax.inject.Singleton;
  * explicitly release them.
  * @author mmoquillon
  */
+@Bean
 @Singleton
 public class SchedulerInitializer {
 

@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Deleting links associated to a user.

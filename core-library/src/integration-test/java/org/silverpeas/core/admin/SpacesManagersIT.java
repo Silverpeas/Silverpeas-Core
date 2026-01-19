@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,17 +34,8 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.space.SpaceServiceProvider;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.memory.MemoryData;
-import org.silverpeas.core.util.memory.MemoryUnit;
-
-import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -62,19 +54,9 @@ public class SpacesManagersIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SpacesManagersIT.class)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addSynchAndAsynchResourceEventFeatures()
-        .addIndexEngineFeatures()
-        .addSilverpeasUrlFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(SpacesManagersIT.class)
+        .addAsResource("org/silverpeas/admin")
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
-        .addPackages(false, "org.silverpeas.core.admin.space.quota")
-        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
-        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
-        .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
-            MemoryData.class, SpaceServiceProvider.class,
-            AttachmentServiceProvider.class, PublicationTemplateManager.class)
         .build();
   }
 

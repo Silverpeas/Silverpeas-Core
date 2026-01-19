@@ -27,12 +27,12 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueInteger
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.workflow.engine.ReferrableObjectIntf;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.Date;
 
 @Entity
@@ -128,10 +128,6 @@ public class ActiveState extends BasicJpaEntity<ActiveState, UniqueIntegerIdenti
     this.processInstance = processInstance;
   }
 
-  /**
-   * Get the timeout status of this active state
-   * @return true if this an active state is there for a long long time
-   */
   public int getTimeoutStatus() {
     return timeoutStatus;
   }

@@ -38,18 +38,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- * <p>
+ * Builder of a Pie chart from statistics.
+ *
  * @author CBONIN
  */
 public class PubliPieChartBuilder extends AbstractPieChartBuilder {
 
-  private String dateStat;
-  private String dateFormate;
-  private String filterIdGroup;
-  private String filterIdUser;
-  private String spaceId;
-  private LocalizationBundle message;
+  private final String dateStat;
+  private final String dateFormate;
+  private final String filterIdGroup;
+  private final String filterIdUser;
+  private final String spaceId;
+  private final LocalizationBundle message;
 
   public PubliPieChartBuilder(String dateStat, String dateFormate,
       String filterIdGroup, String filterIdUser, String spaceId, LocalizationBundle message) {
@@ -68,21 +68,13 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
    */
   @Override
   public String getChartTitle() {
-    OrganizationController organizationController =
-        OrganizationControllerProvider.getOrganisationController();
     String title = message.getString("silverStatisticsPeas.VolumeNumber") + " ";
-    if (StringUtil.isDefined(this.filterIdGroup) && !StringUtil.isDefined(this.filterIdUser)) {
-      title += message.getString("silverStatisticsPeas.EvolutionAccessGroup") + " " +
-          organizationController.getGroup(this.filterIdGroup).getName() + " ";
-    }
-    if (StringUtil.isDefined(this.filterIdUser)) {
-      title += message.getString("silverStatisticsPeas.EvolutionAccessUser") + " " +
-          organizationController.getUserDetail(this.filterIdUser).getDisplayedName() + " ";
-    }
+    title = computeTitle(title, this.filterIdGroup, this.filterIdUser, message);
 
     try {
       if (StringUtil.isDefined(this.spaceId) && (!"WA0".equals(this.spaceId))) {
-        SpaceInstLight space = AdministrationServiceProvider.getAdminService().getSpaceInstLightById(this.spaceId);
+        SpaceInstLight space =
+            AdministrationServiceProvider.getAdminService().getSpaceInstLightById(this.spaceId);
         title += message.getString("silverStatisticsPeas.FromSpace") + " \""
             + space.getName() + "\" ";
       }
@@ -90,6 +82,21 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
       SilverLogger.getLogger(this).error(e);
     }
     title += message.getString("silverStatisticsPeas.Until") + " " + this.dateFormate;
+    return title;
+  }
+
+  static String computeTitle(String title, String filterIdGroup, String filterIdUser,
+      LocalizationBundle message) {
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
+    if (StringUtil.isDefined(filterIdGroup) && !StringUtil.isDefined(filterIdUser)) {
+      title += message.getString("silverStatisticsPeas.EvolutionAccessGroup") + " " +
+          organizationController.getGroup(filterIdGroup).getName() + " ";
+    }
+    if (StringUtil.isDefined(filterIdUser)) {
+      title += message.getString("silverStatisticsPeas.EvolutionAccessUser") + " " +
+          organizationController.getUserDetail(filterIdUser).getDisplayedName() + " ";
+    }
     return title;
   }
 

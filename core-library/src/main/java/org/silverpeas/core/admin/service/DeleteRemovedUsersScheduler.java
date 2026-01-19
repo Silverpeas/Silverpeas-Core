@@ -25,19 +25,16 @@ package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.scheduler.*;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.SchedulingInitializer;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 
 import static org.silverpeas.core.admin.AdminSettings.*;
-import static org.silverpeas.core.admin.AdminSettings.getDeletionOfRemovedUsersCron;
-import static org.silverpeas.core.admin.AdminSettings.isAutomaticDeletionOfRemovedUsersEnabled;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.util.DateUtil.toLocalDate;
 
@@ -45,7 +42,7 @@ import static org.silverpeas.core.util.DateUtil.toLocalDate;
  * Batch in charge of the deletion of removed users.
  * @author silveryocha
  */
-@Service
+@Bean
 public class DeleteRemovedUsersScheduler extends SchedulingInitializer {
 
   protected static final String JOB_NAME = "DeleteRemovedUsersJob";

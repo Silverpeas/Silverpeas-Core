@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.process.huge;
 
-import javax.interceptor.InterceptorBinding;
+import jakarta.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

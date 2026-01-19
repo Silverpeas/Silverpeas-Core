@@ -25,9 +25,9 @@ package org.silverpeas.core.silverstatistics.volume.dao;
 
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.volume.model.*;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
 import java.sql.*;
 import java.util.*;
 
@@ -162,7 +162,7 @@ public class SilverStatisticsManagerDAO extends AbstractSilverStatisticsDAO {
     }
   }
 
-  @Nonnull
+  @NonNull
   private static String getValueKey(final ResultSet rs, final String keyNameCurrent,
                                     final StatDataType currentType) throws SQLException {
     final String valueKey;

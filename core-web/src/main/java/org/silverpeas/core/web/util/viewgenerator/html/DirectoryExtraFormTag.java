@@ -12,9 +12,9 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import jakarta.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.SimpleTagSupport;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
@@ -103,7 +103,7 @@ public class DirectoryExtraFormTag extends SimpleTagSupport {
       final String userLanguage = ofNullable(getJspContext().getAttribute("userLanguage", PageContext.REQUEST_SCOPE))
           .filter(String.class::isInstance)
           .map(String.class::cast)
-          .orElse(I18NHelper.DEFAULT_LANGUAGE);
+          .orElse(I18NHelper.getDefaultLanguage());
       pageContext = PagesContext.getDirectoryContext(null, null, userLanguage);
       RegistrationSettings registrationSettings = RegistrationSettings.getSettings();
       pageContext.setDomainId(registrationSettings.userSelfRegistrationDomainId());

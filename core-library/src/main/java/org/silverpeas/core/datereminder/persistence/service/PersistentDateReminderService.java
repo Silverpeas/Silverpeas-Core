@@ -43,40 +43,42 @@ public interface PersistentDateReminderService {
   /**
    * Gets the DateReminder of the resource referred by the specified {@link EntityReference}.
    * If no date reminder exists for the resource, then
-   * {@link PersistentResourceDateReminder#NoneDateReminder} is returned.
+   * {@link PersistentResourceDateReminder#NONEDATEREMINDER} is returned.
    *
    * @param resource a reference to the resource for which a date reminder will be initialized.
    * @return either the date reminder associated with the specified resource
    * or NoneDateReminder if no such date reminder exists.
    */
-  PersistentResourceDateReminder get(final EntityReference resource);
+  PersistentResourceDateReminder get(final EntityReference<?> resource);
 
   /**
    * Create the DateReminder of the resource referred by the specified {@link EntityReference}.
    *
    * @param resource a reference to the resource for which a dateReminder will be set.
-   * @param dateReminderDetail
+   * @param dateReminderDetail detail about the date reminder
    * @return the new date reminder created, associated with the specified resource
    * @throws DateReminderException if an unexpected error occurs while initializing a dateReminder.
    */
-  PersistentResourceDateReminder create(EntityReference resource, DateReminderDetail dateReminderDetail) throws DateReminderException;
+  PersistentResourceDateReminder create(EntityReference<?> resource,
+      DateReminderDetail dateReminderDetail) throws DateReminderException;
 
   /**
    * Set the DateReminder of the resource referred by the specified {@link EntityReference}.
    *
    * @param resource a reference to the resource for which a dateReminder will be set.
-   * @param dateReminderDetail
+   * @param dateReminderDetail detail about the date reminder
    * @return the date reminder updated, associated with the specified resource
    * @throws DateReminderException if an unexpected error occurs while initializing a dateReminder.
    */
-  PersistentResourceDateReminder set(EntityReference resource, DateReminderDetail dateReminderDetail) throws DateReminderException;
+  PersistentResourceDateReminder set(EntityReference<?> resource,
+      DateReminderDetail dateReminderDetail) throws DateReminderException;
 
   /**
    * Removes quietly the DateReminder of the resource referred by the specified entity reference.
    *
    * @param resource the resource for which the dateReminder has to be removed.
    */
-  void remove(final EntityReference resource);
+  void remove(final EntityReference<?> resource);
 
   /**
    * Gets the DateReminder of the resource that mature.

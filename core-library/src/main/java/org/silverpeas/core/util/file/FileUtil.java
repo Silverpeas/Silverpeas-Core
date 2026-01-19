@@ -38,9 +38,9 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.activation.MimetypesFileTypeMap;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.activation.MimetypesFileTypeMap;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;

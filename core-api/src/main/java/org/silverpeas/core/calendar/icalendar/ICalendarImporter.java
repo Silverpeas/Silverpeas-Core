@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.calendar.icalendar;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.importexport.Importer;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.util.Pair;
 
 import java.util.List;
 import java.util.function.Consumer;

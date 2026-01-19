@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.importexport.coordinates;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author dlesimple
@@ -47,23 +47,14 @@ public class CoordinatePointType {
     return axisId;
   }
 
-  /**
-   * @param axisId
-   */
   public void setAxisId(int axisId) {
     this.axisId = axisId;
   }
 
-  /**
-   * @return value
-   */
   public String getValue() {
     return value;
   }
 
-  /**
-   * @param value
-   */
   public void setValue(String value) {
     this.value = value;
   }

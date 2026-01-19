@@ -28,7 +28,6 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,7 +48,6 @@ import static java.util.Optional.ofNullable;
  * @author silveryocha
  */
 @Service
-@Singleton
 public class AttachmentHugeProcessManager {
 
   private final Set<String> allInstanceIds = Collections.synchronizedSet(new HashSet<>());

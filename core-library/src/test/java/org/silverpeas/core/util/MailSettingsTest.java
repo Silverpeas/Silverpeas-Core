@@ -23,14 +23,20 @@
  */
 package org.silverpeas.core.util;
 
+import jakarta.mail.internet.InternetAddress;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.kernel.TestManagedBeanFeeder;
 import org.silverpeas.kernel.test.UnitTest;
 
-import javax.mail.internet.InternetAddress;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author ehugonnet
@@ -38,9 +44,20 @@ import static org.hamcrest.Matchers.is;
 @UnitTest
 class MailSettingsTest {
 
+  private final TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+
+  @BeforeEach
+  void setUpI18n() {
+    I18n i18n = mock(I18n.class);
+    when(i18n.getDefaultLanguage()).thenReturn("fr");
+    when(i18n.getSupportedLanguageCodes()).thenReturn(List.of("fr", "en", "de"));
+    feeder.manageBean(i18n, I18n.class);
+  }
+
   @AfterEach
   void tearDown() {
     MailSettings.reloadConfiguration(null);
+    feeder.removeAllManagedBeans();
   }
 
   /**

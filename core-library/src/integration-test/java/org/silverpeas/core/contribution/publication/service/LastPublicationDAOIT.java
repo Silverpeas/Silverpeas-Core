@@ -27,6 +27,7 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
+import jakarta.inject.Inject;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -39,10 +40,9 @@ import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -76,7 +76,9 @@ public class LastPublicationDAOIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4Publication.onWarForTestClass(LastPublicationDAOIT.class)
+    return LibCoreWarBuilder.onFullWarForTestClass(LastPublicationDAOIT.class)
+        .addAsResource("org/silverpeas/core/contribution/publication/service")
+        .addAsResource("org/silverpeas/publication/publicationSettings.properties")
         .build();
   }
 

@@ -29,7 +29,7 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core</groupId>
@@ -52,6 +52,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.cache</groupId>
       <artifactId>cache-api</artifactId>
     </dependency>
@@ -66,7 +71,7 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
+      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -105,8 +110,8 @@
       <artifactId>bcmail-jdk18on</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -214,14 +219,6 @@
       <groupId>com.drewnoakes</groupId>
       <artifactId>metadata-extractor</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.social</groupId>
-      <artifactId>spring-social-linkedin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.social</groupId>
-      <artifactId>spring-social-facebook</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.im4java</groupId>
@@ -238,24 +235,26 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
 
     <!-- CMIS -->
     <dependency>
-      <groupId>org.apache.chemistry.opencmis</groupId>
-      <artifactId>chemistry-opencmis-commons-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry.opencmis</groupId>
-      <artifactId>chemistry-opencmis-commons-impl</artifactId>
+      <groupId>org.silverpeas.jakarta</groupId>
+      <artifactId>cmis</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
 
     <!-- Mail -->
     <dependency>
       <groupId>com.icegreen</groupId>
       <artifactId>greenmail</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>jakarta.mail</artifactId>
       <scope>test</scope>
     </dependency>
 

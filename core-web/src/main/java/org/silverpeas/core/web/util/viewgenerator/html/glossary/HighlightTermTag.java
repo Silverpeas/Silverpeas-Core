@@ -27,9 +27,9 @@ import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.BodyContent;
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.tagext.BodyContent;
+import jakarta.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 
 /**

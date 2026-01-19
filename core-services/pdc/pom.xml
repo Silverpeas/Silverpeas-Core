@@ -29,15 +29,15 @@
   <parent>
     <groupId>org.silverpeas.core</groupId>
     <artifactId>services</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
   <artifactId>silverpeas-core-pdc</artifactId>
   <packaging>jar</packaging>
-  <name>Silverpeas PdC Service ${project.version}</name>
+  <name>Silverpeas PdC Engine ${project.version}</name>
   <description>
-    Provides business beans and services to define a classification plan, to parametrize it for
+    Provides business beans and mechanisms to define a classification plan, to parametrize it for
     a Silverpeas component instance, to classify a content, etc.
   </description>
 

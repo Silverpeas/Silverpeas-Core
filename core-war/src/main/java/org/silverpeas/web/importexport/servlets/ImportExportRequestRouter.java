@@ -23,13 +23,13 @@
  */
 package org.silverpeas.web.importexport.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.importexport.report.ExportPDFReport;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.WAAttributeValuePair;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -41,6 +41,7 @@ import org.silverpeas.web.importexport.control.ImportExportSessionController;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class ImportExportRequestRouter extends
     ComponentRequestRouter<ImportExportSessionController> {
@@ -70,7 +71,7 @@ public class ImportExportRequestRouter extends
    * destination page
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param importExportSC The component Session Control, build and initialised.
+   * @param importExportSC The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
@@ -78,7 +79,7 @@ public class ImportExportRequestRouter extends
   @Override
   public String getDestination(String function, ImportExportSessionController importExportSC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
     try {
       if (function.startsWith("Main")) {
         importExportSC.checkAdminAccessOnly();
@@ -91,9 +92,10 @@ public class ImportExportRequestRouter extends
           if (!item.isFormField()) {
             String fileName = FileUploadUtil.getFileName(item);
             file = new File(FileRepositoryManager.getTemporaryPath() + fileName);
-            FileUploadUtil.saveToFile(file, item);
+            item.saveTo(file);
           }
         }
+        Objects.requireNonNull(file);
         ImportReport importReport =
             importExportSC.processImport(file.getAbsolutePath(), (MultiSilverpeasBundle) request.
             getAttribute("resources"));
@@ -111,9 +113,10 @@ public class ImportExportRequestRouter extends
         importExportSC.processExportOfSavedItems(mode, isNameUsedForFolders(request));
         destination = "/importExportPeas/jsp/pingExport.jsp";
       } else if ("ExportItems".equals(function)) {
-        /** Export from search engine results */
-        List<WAAttributeValuePair> itemPKs = (List<WAAttributeValuePair>) request.getAttribute(
-            "selectedResultsWa");
+        /* Export from search engine results */
+        //noinspection unchecked
+        List<WAAttributeValuePair> itemPKs =
+            (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         NodePK rootPK = (NodePK) request.getAttribute("RootPK");
         if (itemPKs != null && !itemPKs.isEmpty()) {
           importExportSC.processExport(itemPKs, rootPK, true);
@@ -149,6 +152,7 @@ public class ImportExportRequestRouter extends
         }
       } else if (function.equals("KmaxExportComponent")) {
 
+        //noinspection unchecked
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         if (itemPKs != null && !itemPKs.isEmpty()) {
@@ -160,9 +164,11 @@ public class ImportExportRequestRouter extends
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
         }
       } else if (function.equals("KmaxExportPublications")) {
+        //noinspection unchecked
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
-        List combination = (List) request.getAttribute("Combination");
+        //noinspection unchecked
+        List<String> combination = (List<String>) request.getAttribute("Combination");
         String timeCriteria = (String) request.getAttribute("TimeCriteria");
 
         if (itemPKs != null && !itemPKs.isEmpty()) {
@@ -184,9 +190,6 @@ public class ImportExportRequestRouter extends
     return destination;
   }
 
-  /** use Name or Id for folders
-   * @param request
-   **/
   private boolean isNameUsedForFolders(HttpRequest request) {
     boolean useNameForFolders = true;
     if (StringUtil.isDefined(request.getParameter("UseIdForFolders"))) {

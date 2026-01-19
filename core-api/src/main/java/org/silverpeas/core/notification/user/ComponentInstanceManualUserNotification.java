@@ -17,7 +17,7 @@ import static org.silverpeas.core.util.ServiceProvider.getService;
  * </p>
  * <p>
  * Each component dealing with manual {@link UserNotification} has to implement this
- * interface and the implementation has to be qualified with the @{@link javax.inject.Named}
+ * interface and the implementation has to be qualified with the @{@link jakarta.inject.Named}
  * annotation by a name satisfying the following convention <code>[COMPONENT
  * NAME]InstanceManualUserNotification</code>. For example, for an application Kmelia, the
  * implementation must be qualified with <code>@Named("kmeliaInstanceManualUserNotification")

@@ -25,7 +25,7 @@ package org.silverpeas.core.admin;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 

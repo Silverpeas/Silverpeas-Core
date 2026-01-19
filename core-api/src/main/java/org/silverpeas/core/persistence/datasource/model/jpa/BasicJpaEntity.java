@@ -26,17 +26,18 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * This abstract class must be extended by all basic JPA entities that don't fit to the persistence
  * rules of the Silverpeas Persistence API. Usually it means to be used for the migration of
  * entities from the old persistence way (J2EE BMP) to JPA.
- *
+ * <p>
  * Please be careful into the child entity classes about the use of @PrePersist and @PreUpdate
- * annotations. In most of cases you don't need to use them, but to override {@link
+ * annotations. In most of the cases you don't need to use them, but to override {@link
  * BasicJpaEntity#performBeforePersist} or {@link BasicJpaEntity#performBeforeUpdate} methods
  * without forgetting to invoke the super call.
+ * </p>
  * @param <E> the class name of the represented entity.
  * @param <I> the unique identifier class used by the entity to identify it
  * uniquely in the persistence context.

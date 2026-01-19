@@ -31,17 +31,18 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -54,10 +55,10 @@ import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.has
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.navigateTo;
 
 /**
- * This class handles all the route paths of Web Resources.
- * First time the manager is called by a resource, an initialization is done. It consists of
- * scanning all the methods of the resource to extract these the can be associated to a route (URI
- * path).
+ * This class handles all the route paths of Web Resources. First time the manager is called by a
+ * resource, an initialization is done. It consists of scanning all the methods of the resource to
+ * extract these the can be associated to a route (URI path).
+ *
  * @author Yohann Chastagnier
  */
 public class WebComponentManager {
@@ -72,18 +73,18 @@ public class WebComponentManager {
   /**
    * This method must be called before all treatments in order to initilize the Web Component
    * Context associated to the current request.
+   *
    * @param webComponentControllerClass the class resource which exposes the methods that will be
    * invoked.
    * @param httpMethodClass the annotation class associated to the current http method of the
    * request.
    * @param request the request itself.
    * @param response the response itself.
-   * @param <T> the type of the Web Component Controller that provides a lot of stuff
-   * around
-   * the component, the user, etc.
+   * @param <T> the type of the Web Component Controller that provides a lot of stuff around the
+   * component, the user, etc.
    * @param <R> the type of the web component request context.
    */
-  public static <T extends WebComponentController<R>, R extends WebComponentRequestContext> void manageRequestFor(
+  public static <T extends WebComponentController<R>, R extends WebComponentRequestContext<?>> void manageRequestFor(
       Class<T> webComponentControllerClass, Class<? extends Annotation> httpMethodClass,
       HttpRequest request, HttpServletResponse response) {
 
@@ -123,16 +124,14 @@ public class WebComponentManager {
 
   /**
    * Initializes all the route paths from the method analyzing of the given
-   * webComponentControllerClass instance.
-   * The webComponentControllerClass must provide methods with only one parameter :
-   * WebRouteContext.
-   * This methods can be annotated by :
+   * webComponentControllerClass instance. The webComponentControllerClass must provide methods with
+   * only one parameter : WebRouteContext. This methods can be annotated by :
    * <ul>
-   * <li>{@link javax.ws.rs.GET}</li>
-   * <li>{@link javax.ws.rs.POST}</li>
-   * <li>{@link javax.ws.rs.PUT}</li>
-   * <li>{@link javax.ws.rs.DELETE}</li>
-   * <li>{@link javax.ws.rs.Path} (multiple)</li>
+   * <li>{@link jakarta.ws.rs.GET}</li>
+   * <li>{@link jakarta.ws.rs.POST}</li>
+   * <li>{@link jakarta.ws.rs.PUT}</li>
+   * <li>{@link jakarta.ws.rs.DELETE}</li>
+   * <li>{@link jakarta.ws.rs.Path} (multiple)</li>
    * <li>{@link org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess} (at most
    * one)</li>
    * <li>{@link org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore} </li>
@@ -141,6 +140,7 @@ public class WebComponentManager {
    * </ul>
    * The webComponentControllerClass methods must also return a {@link Navigation} instance or
    * must be annotated by a @RedirectTo...
+   *
    * @param webComponentControllerClass the webComponentControllerClass which exposes the method
    * that will be invoked.
    * @param <C> the type of the WebComponentController which exposes the method that will be
@@ -313,12 +313,13 @@ public class WebComponentManager {
   /**
    * Performs a request path by executing the right method behind and returning the navigation
    * object instance.
+   *
    * @param webComponentController the handled component controller.
    * @param path the path that must be matched in finding of the method to invoke.
    * @param <T> the type of the resource which hosts the method that must be invoked.
    * @param <R> the type of the web component context.
    * @return the resulting of processing.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
   @SuppressWarnings({"unchecked", "ConstantConditions"})
   public static <T extends WebComponentController<R>, R extends WebComponentRequestContext> PathExecutionResponse perform(
@@ -326,7 +327,7 @@ public class WebComponentManager {
 
     // Retrieving the web component request context
     R webComponentRequestContext = (R) CacheAccessorProvider.getThreadCacheAccessor().getCache()
-            .get(WebComponentRequestContext.class.getName());
+        .get(WebComponentRequestContext.class.getName());
     Objects.requireNonNull(webComponentRequestContext).setController(webComponentController);
 
     // Just after the instantiation of the Web Controller
@@ -344,7 +345,8 @@ public class WebComponentManager {
       return webComponentManager
           .executePath(webComponentController, path, webComponentRequestContext);
     } catch (WebApplicationException e) {
-      webComponentRequestContext.getResponse().sendError(e.getResponse().getStatus(), e.getMessage());
+      webComponentRequestContext.getResponse().sendError(e.getResponse().getStatus(),
+          e.getMessage());
       throw e;
     } catch (InvocationTargetException e) {
       if (e.getTargetException() instanceof WebApplicationException) {
@@ -357,15 +359,16 @@ public class WebComponentManager {
 
   /**
    * Performs a request path by executing the right method behind and returning the navigation.
+   *
    * @param webComponentController the resource which exposes the method that will be invoked.
    * @param path the path that must be matched in finding of the method to invoke.
    * @param webComponentContext the context of the web component routing.
    * @param <T> the type of the resource which hosts the method that must be invoked.
    * @param <R> the type of the web component context.
    * @return the {@link PathExecutionResponse} instance.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
-  private <T extends WebComponentController<R>, R extends WebComponentRequestContext> PathExecutionResponse
+  private <T extends WebComponentController<R>, R extends WebComponentRequestContext<?>> PathExecutionResponse
   executePath(T webComponentController, String path, R webComponentContext) throws Exception {
     org.silverpeas.core.web.mvc.webcomponent.Path pathToPerform = null;
 
@@ -385,7 +388,8 @@ public class WebComponentManager {
     if (pathToPerform == null) {
       SilverLogger.getLogger(this)
           .error(
-              "[{0}] The path ''{1}'' in the URL ''{2}'' for the HTTP method {3} isn''t taken in charge by" +
+              "[{0}] The path ''{1}'' in the URL ''{2}'' for the HTTP method {3} isn''t taken in " +
+                  "charge by" +
                   " the controller",
               webComponentController.getComponentName(), path,
               webComponentContext.getRequest().getRequestURI(),

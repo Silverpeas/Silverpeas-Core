@@ -54,7 +54,7 @@ public class EntityIdentifierConverter {
   public <T extends EntityIdentifier> T convertToEntityIdentifier(String idAsString) {
     try {
       T identifier = (T) getEntityIdentifierClass().getDeclaredConstructor().newInstance();
-      identifier.fromString(idAsString);
+      identifier.setFromString(idAsString);
       return identifier;
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);

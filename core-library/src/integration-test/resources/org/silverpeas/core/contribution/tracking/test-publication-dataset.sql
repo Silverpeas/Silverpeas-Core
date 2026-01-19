@@ -29,37 +29,14 @@ VALUES (100, 1, 'A kmelia 100', 'kmelia', 1, 0, 0, 1),
        (300, 1, 'A kmelia 300', 'kmelia', 3, 0, 1, 0);
 
 /**
- * Nodes in Kmelia instances
- */
-INSERT INTO sb_node_node (nodeid, nodename, nodedescription, nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, nodestatus, instanceid, type, ordernumber, lang, rightsdependson)
-VALUES (0, 'Accueil', 'La Racine', '2016/01/14', '2', '/', 1, -1, '', 'Visible', 'kmelia200', NULL, 0, NULL, -1),
-       (1, 'Corbeille', 'Vous trouvez ici les publications que vous avez supprimé', '2016/01/14', '2', '/0/', 2, 0, '', 'Invisible', 'kmelia200', NULL, 0, NULL, -1),
-       (2, 'Déclassées', 'Vos publications inaccessibles se retrouvent ici', '2016/01/14', '2', '/0/', 2, 0, '', 'Invisible', 'kmelia200', NULL, 0, NULL, -1),
-       (110, 'Les publications', '', '2016/01/14', '2', '/0/', 2, 0, NULL, 'Visible', 'kmelia200', 'default', 3, 'fr', -1),
-       (111, 'Archives', '', '2016/01/14', '2', '/0/', 2, 0, NULL, 'Visible', 'kmelia200', 'default', 4, 'fr', -1),
-       (0, 'Accueil', 'La Racine', '2016/01/14', '2', '/', 1, -1, '', 'Visible', 'kmelia300', NULL, 0, NULL, -1),
-       (1, 'Corbeille', 'Vous trouvez ici les publications que vous avez supprimé', '2016/01/14', '2', '/0/', 2, 0, '', 'Invisible', 'kmelia300', NULL, 0, NULL, -1),
-       (2, 'Déclassées', 'Vos publications inaccessibles se retrouvent ici', '2016/01/14', '2', '/0/', 2, 0, '', 'Invisible', 'kmelia300', NULL, 0, NULL, -1);
-
-/**
- * Links between nodes and publications in Kmelia instances
- */
-INSERT INTO sb_publication_publifather (pubid, nodeid, instanceid, aliasuserid, aliasdate, puborder)
-VALUES (100, 110, 'kmelia200', NULL, NULL, 0),
-       (101, 110, 'kmelia200', NULL, NULL, 5);
-
-/**
  * Publications in Kmelia instances
  */
-INSERT INTO sb_publication_publi (pubid, infoid, pubname, pubdescription, pubcreationdate, pubbegindate, pubenddate,
-                                  pubcreatorid, pubimportance, pubversion, pubkeywords, pubcontent, pubstatus,
-                                  pubupdatedate, instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid,
-                                  pubbeginhour, pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus, lang)
-VALUES (100, '0', 'Publication 1', 'Première publication de test', '2008/11/18', '2009/10/18', '2120/12/18',
-        '100', 1, NULL, 'test', 'Contenu de la publication 1', 'Valid',
-        '2009/11/18', 'kmelia200', '200', '2008/11/18', '300',
-        '00:00', '23:59', 'Homer Simpson', NULL, -1, NULL, 'fr'),
-       (101, '0', 'Publication 2', '2ème publication de test', '2008/11/18', '2009/10/18', '2120/12/18',
-        '101', '5', NULL, 'test', 'Contenu de la publication 2', 'Valid',
-        '2009/11/18', 'kmelia200', '200', '2008/11/18', '300',
-        '01:10', '20:35', 'Bart Simpson', NULL, -1, NULL, 'fr');
+INSERT INTO sb_publications (id, title, description, creationdate,
+                                  creatorid, version, keywords, content,
+                                  updatedate, instanceid, updaterid)
+VALUES (100, 'Publication 1', 'Première publication de test', '2008-11-18T09:46:34.00',
+        '100', '1.0', 'test', 'Contenu de la publication 1',
+        '2009-11-18T14:09:12.00', 'kmelia200', '200'),
+       (101, 'Publication 2', '2ème publication de test', '2008-11-18T15:23:04.00',
+        '101', '5.0', 'test', 'Contenu de la publication 2',
+        '2009-11-18T09:12:31.00', 'kmelia200', '200');

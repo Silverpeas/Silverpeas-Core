@@ -30,7 +30,7 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Bean
 public class NodeSharingListener extends CDIResourceEventListener<NodeEvent> {

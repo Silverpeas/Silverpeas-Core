@@ -26,13 +26,7 @@ package org.silverpeas.core.mylinks.service;
 
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
-import java.sql.SQLException;
 import java.util.List;
-
-import static java.lang.String.valueOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 
 /**
  * @author silveryocha

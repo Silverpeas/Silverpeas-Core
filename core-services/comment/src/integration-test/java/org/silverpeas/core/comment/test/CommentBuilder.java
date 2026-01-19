@@ -36,7 +36,6 @@ public class CommentBuilder {
 
   private static final String RESOURCE_TYPE = "RtypeTest";
   private static final String RESOURCE_ID = "500";
-  private static final String SPACE_ID = "Toto";
   private static final String COMPONENT_ID = "instanceId10";
 
   private int i = 0;
@@ -61,7 +60,7 @@ public class CommentBuilder {
   }
 
   /**
-   * Gets a reference to the resource to which comments are built by all of the
+   * Gets a reference to the resource to which comments are built by all the
    * CommentBuilder instances.
    * @return the primary key of the commented resource.
    */

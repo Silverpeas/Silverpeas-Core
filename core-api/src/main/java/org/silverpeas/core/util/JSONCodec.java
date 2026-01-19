@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.EncodingException;
 
@@ -45,7 +45,7 @@ import java.util.function.UnaryOperator;
  * An encoder of Java bean to a JSON representation and a decoder of JSON stream into the
  * corresponding Java bean.
  * <p>
- * In order to perform the marshalling and the unmarchalling, the fields of the bean must be
+ * In order to perform the marshalling and the unmarshalling, the fields of the bean must be
  * annotated with the JAXB annotations. All null fields are by default ignored.
  * @author mmoquillon
  */
@@ -158,7 +158,7 @@ public class JSONCodec {
 
   private static ObjectMapper getObjectMapper() {
     ObjectMapper mapper = new ObjectMapper();
-    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(
+    AnnotationIntrospector introspector = new JakartaXmlBindAnnotationIntrospector(
         TypeFactory.defaultInstance());
     mapper.setAnnotationIntrospector(introspector);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -178,6 +178,7 @@ public class JSONCodec {
       return this.objectNode;
     }
 
+    @SuppressWarnings("unused")
     public JSONObject putNull(final String fieldName) {
       objectNode.putNull(fieldName);
       return this;

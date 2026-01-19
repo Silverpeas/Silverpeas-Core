@@ -23,38 +23,27 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import jakarta.inject.Inject;
+import jakarta.mail.Address;
+import jakarta.mail.internet.InternetAddress;
 import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.EntityArrays;
 import org.apache.commons.text.translate.LookupTranslator;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
-import org.silverpeas.core.contribution.attachment.model.UnlockOption;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.TypeManager;
-import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.attachment.model.*;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.attachment.AttachmentPK;
@@ -77,18 +66,16 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.Mutable;
-import org.silverpeas.kernel.util.Pair;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -119,6 +106,8 @@ public class RepositoriesTypeManager {
 
   @Inject
   private PdcImportExport pdcImportExport;
+  @Inject
+  private I18n i18n;
 
   protected RepositoriesTypeManager() {
 
@@ -273,7 +262,7 @@ public class RepositoriesTypeManager {
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.DEFAULT_LANGUAGE);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, i18n.getDefaultLanguage());
       return null;
     }
   }

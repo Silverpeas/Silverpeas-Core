@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.admin.service;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
@@ -56,7 +62,7 @@ import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -75,13 +81,6 @@ import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -111,7 +110,6 @@ import static org.silverpeas.kernel.util.StringUtil.*;
  * </p>
  */
 @Service
-@Singleton
 @Transactional(rollbackOn = AdminException.class)
 class DefaultAdministration implements Administration {
 
@@ -198,6 +196,8 @@ class DefaultAdministration implements Administration {
   private SynchroGroupManager synchroGroupManager;
   @Inject
   private Instance<SearchCriteriaVisitor> searchCriteriaVisitors;
+  @Inject
+  private I18n i18n;
 
   private void setup() {
     // Load silverpeas admin resources
@@ -376,6 +376,7 @@ class DefaultAdministration implements Administration {
     }
   }
 
+  @Transactional
   @Override
   public String deleteSpaceInstById(String userId, String spaceId, boolean definitive)
       throws AdminException {
@@ -1066,6 +1067,7 @@ class DefaultAdministration implements Administration {
    * instance is moved into the bin.
    * @throws AdminException if an error occurs while deleting the component instance.
    */
+  @Transactional
   @Override
   public String deleteComponentInst(String userId, String componentId, boolean definitive)
       throws AdminException {
@@ -5392,10 +5394,8 @@ class DefaultAdministration implements Administration {
     ComponentInst newCompo = new ComponentInst(getComponentInst(pasteDetail.getFromComponentId()));
     SpaceInst destinationSpace = getSpaceInstById(pasteDetail.getToSpaceId());
 
-    String lang = newCompo.getLanguage();
-    if (StringUtil.isNotDefined(lang)) {
-      lang = I18NHelper.DEFAULT_LANGUAGE;
-    }
+    String lang = i18n.checkLanguage(newCompo.getLanguage());
+
     // Creation
     newCompo.setLocalId(-1);
     newCompo.setDomainFatherId(destinationSpace.getId());
@@ -5595,10 +5595,7 @@ class DefaultAdministration implements Administration {
     newSpace.setOrderNum(brotherSpaceIds.size());
     newSpace.setCreationDate(new Date());
     newSpace.setCreatorUserId(pasteDetail.getUserId());
-    String lang = oldSpace.getLanguage();
-    if (StringUtil.isNotDefined(lang)) {
-      lang = I18NHelper.DEFAULT_LANGUAGE;
-    }
+    String lang = i18n.checkLanguage(oldSpace.getLanguage());
     newSpace.setLanguage(lang);
 
     // Rename if spaceName already used in the destination space

@@ -23,11 +23,10 @@
  */
 package org.silverpeas.core.socialnetwork.model;
 
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
-
-import javax.persistence.Embeddable;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 @Embeddable
 public class ExternalAccountIdentifier implements CompositeEntityIdentifier {
@@ -96,13 +95,8 @@ public class ExternalAccountIdentifier implements CompositeEntityIdentifier {
       return false;
     }
     if (profileId == null) {
-      if (other.profileId != null) {
-        return false;
-      }
-    } else if (!profileId.equals(other.profileId)) {
-      return false;
-    }
-    return true;
+      return other.profileId == null;
+    } else return profileId.equals(other.profileId);
   }
 
   @Override
@@ -115,5 +109,10 @@ public class ExternalAccountIdentifier implements CompositeEntityIdentifier {
     this.networkId = SocialNetworkID.from(values[0]);
     this.profileId = values[1];
     return this;
+  }
+
+  @Override
+  public boolean isNull() {
+    return this.networkId == null || this.profileId == null;
   }
 }

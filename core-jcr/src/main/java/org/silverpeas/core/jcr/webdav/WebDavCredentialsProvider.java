@@ -37,7 +37,7 @@ import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A provider of credentials for the WebDAV servlet to permit the authentication of the user

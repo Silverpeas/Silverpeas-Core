@@ -23,9 +23,12 @@
  */
 package org.silverpeas.core.calendar;
 
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.initialization.Initialization;
@@ -45,10 +48,6 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -86,8 +85,7 @@ import static java.text.MessageFormat.format;
  * </p>
  * @author mmoquillon
  */
-@Service
-@Singleton
+@Bean
 public class ICalendarEventSynchronization implements Initialization {
 
   /**

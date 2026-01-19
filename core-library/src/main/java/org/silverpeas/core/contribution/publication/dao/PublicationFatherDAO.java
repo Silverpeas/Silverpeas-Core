@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.publication.dao;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
  * This is the Publication Father Data Access Object.
  * @author Nicolas Eysseric
  */
+@Repository
 public class PublicationFatherDAO {
 
   private static final String NODE_ID = "nodeId";
@@ -59,9 +61,6 @@ public class PublicationFatherDAO {
   private static final String LOCATION_FIELDS = "nodeId, instanceId, aliasUserId, aliasDate, pubOrder";
   static final String PUBLICATION_FATHER_TABLE_NAME = "SB_Publication_PubliFather";
 
-  private PublicationFatherDAO() {
-  }
-
   /**
    * Deletes all locations of publications linked to the component instance represented by the
    * given identifier.
@@ -69,7 +68,7 @@ public class PublicationFatherDAO {
    * must be deleted.
    * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+  public void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
     JdbcSqlQuery.deleteFrom(PUBLICATION_FATHER_TABLE_NAME).where("pubId in (" +
         JdbcSqlQuery.select(PUB_ID).from(PublicationDAO.PUBLICATION_TABLE_NAME)
             .where(INSTANCE_ID_SET).getSqlQuery() + ")", componentInstanceId).execute();
@@ -86,7 +85,7 @@ public class PublicationFatherDAO {
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
    * @exception java.sql.SQLException if an error occurs while requesting the data source.
    */
-  public static void addFather(Connection con, PublicationPK pubPK,
+  public void addFather(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
     JdbcSqlQuery.insertInto(PUBLICATION_FATHER_TABLE_NAME)
         .withInsertParam(PUB_ID, Integer.parseInt(pubPK.getId()))
@@ -107,7 +106,7 @@ public class PublicationFatherDAO {
    * @param order the new order of the publication.
    * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static void updateOrder(Connection con, PublicationPK pubPK, NodePK fatherPK, int order)
+  public void updateOrder(Connection con, PublicationPK pubPK, NodePK fatherPK, int order)
       throws SQLException {
     JdbcSqlQuery.update(PUBLICATION_FATHER_TABLE_NAME)
         .withUpdateParam(PUB_ORDER, order)
@@ -123,7 +122,7 @@ public class PublicationFatherDAO {
    * @param fatherPK the identifier of the father in the data source.
    * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static void resetOrder(Connection con, NodePK fatherPK) throws SQLException {
+  public void resetOrder(Connection con, NodePK fatherPK) throws SQLException {
     JdbcSqlQuery.update(PUBLICATION_FATHER_TABLE_NAME)
         .withUpdateParam(PUB_ORDER, 0)
         .where(NODE_ID_SET, Integer.parseInt(fatherPK.getId()))
@@ -139,7 +138,7 @@ public class PublicationFatherDAO {
    * @param location the new location of the publication as alias.
    * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static void addAlias(Connection con, PublicationPK pubPK, Location location)
+  public void addAlias(Connection con, PublicationPK pubPK, Location location)
       throws SQLException {
     if (!location.isAlias()) {
       throw new IllegalArgumentException("Location " + location.getId() + " isn't an alias!");
@@ -168,7 +167,7 @@ public class PublicationFatherDAO {
    * @param location the alias to remove.
    * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static void removeAlias(Connection con, PublicationPK pubPK, Location location)
+  public void removeAlias(Connection con, PublicationPK pubPK, Location location)
       throws SQLException {
 
     if (!location.isAlias()) {
@@ -195,7 +194,7 @@ public class PublicationFatherDAO {
    * @return a list of {@link Location} instances.
    * @throws SQLException on database error.
    */
-  public static Map<String, List<Location>> getAllLocationsByPublicationIds(Connection con,
+  public Map<String, List<Location>> getAllLocationsByPublicationIds(Connection con,
       Collection<String> pubIds) throws SQLException {
     return JdbcSqlQuery.executeBySplittingOn(pubIds, (pubIdBatch, result) -> {
       final JdbcSqlQuery query = JdbcSqlQuery.select(LOCATION_FIELDS + ", " + PUB_ID)
@@ -216,7 +215,7 @@ public class PublicationFatherDAO {
    * @return a collection of the locations of the publication.
    * @throws SQLException if an error occurs while executing the SQL request.
    */
-  public static List<Location> getLocations(Connection con, PublicationPK pubPK) throws SQLException {
+  public List<Location> getLocations(Connection con, PublicationPK pubPK) throws SQLException {
     final JdbcSqlQuery query = JdbcSqlQuery.select(LOCATION_FIELDS)
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()));
@@ -231,7 +230,7 @@ public class PublicationFatherDAO {
    * @return a collection of the locations of the publication in the component instance.
    * @throws SQLException if an error occurs while executing the SQL request.
    */
-  public static List<Location> getLocations(Connection con, PublicationPK pubPK, String compoId)
+  public List<Location> getLocations(Connection con, PublicationPK pubPK, String compoId)
       throws SQLException {
     final JdbcSqlQuery query = JdbcSqlQuery.select(LOCATION_FIELDS)
         .from(PUBLICATION_FATHER_TABLE_NAME)
@@ -240,7 +239,7 @@ public class PublicationFatherDAO {
     return findLocations(con, query);
   }
 
-  private static List<Location> findLocations(final Connection con, final JdbcSqlQuery query)
+  private List<Location> findLocations(final Connection con, final JdbcSqlQuery query)
       throws SQLException {
     return query.executeWith(con, PublicationFatherDAO::fetchLocation);
   }
@@ -269,7 +268,7 @@ public class PublicationFatherDAO {
    * @return the main location of the specified publication or null.
    * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static Location getMainLocation(Connection con, PublicationPK pubPK) throws SQLException {
+  public Location getMainLocation(Connection con, PublicationPK pubPK) throws SQLException {
     return JdbcSqlQuery.select("nodeId, instanceId, pubOrder")
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
@@ -295,12 +294,12 @@ public class PublicationFatherDAO {
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
    * @exception java.sql.SQLException if an error occurs while requesting the data source.
    */
-  public static void removeFather(Connection con, PublicationPK pubPK,
+  public void removeFather(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
     removeLink(con, pubPK, fatherPK);
   }
 
-  private static void removeFatherToPublications(Connection con, NodePK fatherPK)
+  private void removeFatherToPublications(Connection con, NodePK fatherPK)
       throws SQLException {
     // get all publications linked to fatherPK
     List<PublicationPK> pubPKs = (List<PublicationPK>) getPubPKsInFatherPK(con, fatherPK);
@@ -311,7 +310,7 @@ public class PublicationFatherDAO {
     }
   }
 
-  private static void removeLink(Connection con, PublicationPK pubPK,
+  private void removeLink(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
     JdbcSqlQuery.deleteFrom(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
@@ -319,7 +318,7 @@ public class PublicationFatherDAO {
         .executeWith(con);
   }
 
-  public static void removeFathersToPublications(Connection con,
+  public void removeFathersToPublications(Connection con,
       PublicationPK pubPK, Collection<String> fatherIds) throws SQLException {
     for (final String fatherId : fatherIds) {
       NodePK fatherPK = new NodePK(fatherId, pubPK);
@@ -334,7 +333,7 @@ public class PublicationFatherDAO {
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
    * @exception java.sql.SQLException if an error occurs while requesting the database.
    */
-  public static void removeAllFathers(Connection con, PublicationPK pubPK)
+  public void removeAllFathers(Connection con, PublicationPK pubPK)
       throws SQLException {
     JdbcSqlQuery.deleteFrom(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
@@ -346,12 +345,12 @@ public class PublicationFatherDAO {
    * component instance the publication is.
    * @param con the connection to the database
    * @param pubPK the unique identifier of the publication.
-   * @return a collection of all of the persistence identifiers of the publication's fathers.
+   * @return a collection of all the persistence identifiers of the publication's fathers.
    * @see NodePK
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
    * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static List<NodePK> getAllFatherPKInSamePublicationComponentInstance(Connection con,
+  public List<NodePK> getAllFatherPKInSamePublicationComponentInstance(Connection con,
       PublicationPK pubPK) throws SQLException {
     return JdbcSqlQuery.select(NODE_ID).from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
@@ -363,14 +362,14 @@ public class PublicationFatherDAO {
   }
 
   /**
-   * Gets the identifiers of all of the publications that have as father at least one of the
+   * Gets the identifiers of all the publications that have as father at least one of the
    * specified ones.
    * @param con the connection to the data source.
    * @param fatherPK the unique identifier of the fathers in the data source.
    * @return a collection of the publication's identifiers in the data source.
    * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static Collection<PublicationPK> getPubPKsInFatherPK(Connection con, NodePK fatherPK)
+  public Collection<PublicationPK> getPubPKsInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
     return JdbcSqlQuery.select("P.pubId, P.instanceId")
@@ -392,7 +391,7 @@ public class PublicationFatherDAO {
    * @return a collection of the aliases of the publication, each of them being a location.
    * @throws SQLException if an error occurs while executing the SQL request.
    */
-  public static List<Location> getAliases(final Connection con, final PublicationPK pubPK)
+  public List<Location> getAliases(final Connection con, final PublicationPK pubPK)
       throws SQLException {
     final JdbcSqlQuery query = JdbcSqlQuery.select(LOCATION_FIELDS)
         .from(PUBLICATION_FATHER_TABLE_NAME)

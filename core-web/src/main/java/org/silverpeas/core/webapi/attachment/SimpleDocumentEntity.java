@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 

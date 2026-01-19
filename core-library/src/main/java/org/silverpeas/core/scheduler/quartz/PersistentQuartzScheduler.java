@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
+import jakarta.inject.Singleton;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.scheduler.Job;
@@ -34,10 +35,10 @@ import org.silverpeas.core.scheduler.PersistentScheduling;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -51,7 +52,8 @@ import java.lang.reflect.InvocationTargetException;
  * such scheduler should be use with care and only for very short-time jobs.
  * @author mmoquillon
  */
-@Service
+@Technical
+@Bean
 @Singleton
 @PersistentScheduling
 public class PersistentQuartzScheduler extends QuartzScheduler {

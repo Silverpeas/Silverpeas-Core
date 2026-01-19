@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.scheduler;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -34,11 +35,10 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.scheduler.SchedulerInitializer.SchedulerType;
 import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -48,19 +48,19 @@ import java.util.concurrent.Callable;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
 import static org.junit.Assert.fail;
 
 /**
  * The scheduling engine in Silverpeas provides an API to get either a volatile or a persistent
- * scheduler. The first one is for scheduling volatile jobs in the time, jobs that will be
- * discarded at each VM restarting. The last one is for scheduling persistent jobs, that is to say
- * the scheduled jobs are serialized into a persistence context so that they can be restored at
- * each VM restarting. Both are built atop of an existing scheduling system (currently Quartz) and
- * the Scheduling Engine encapsulates it. It keeps a backward compatibility with an old previous
- * API, this is why a there is a great use of the scheduler event listeners in the code to perform
- * the actual jobs (instead of using a {@link Job} itself).
+ * scheduler. The first one is for scheduling volatile jobs in the time, jobs that will be discarded
+ * at each VM restarting. The last one is for scheduling persistent jobs, that is to say the
+ * scheduled jobs are serialized into a persistence context so that they can be restored at each VM
+ * restarting. Both are built atop of an existing scheduling system (currently Quartz) and the
+ * Scheduling Engine encapsulates it. It keeps a backward compatibility with an old previous API,
+ * this is why a there is a great use of the scheduler event listeners in the code to perform the
+ * actual jobs (instead of using a {@link Job} itself).
  * <p>
  * This integration test is about the persistent scheduler.
  * </p>
@@ -78,12 +78,8 @@ public class PersistentSchedulerIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(PersistentSchedulerIT.class)
-        .addCommonBasicUtilities()
-        .addSchedulerFeatures()
-        .addMavenDependencies("org.awaitility:awaitility", "org.antlr:ST4")
-        .testFocusedOn((warBuilder) ->
-            warBuilder.addPackages(true, "org.silverpeas.core.initialization"))
+    return LibCoreWarBuilder.onWarForTestClass(PersistentSchedulerIT.class)
+        .addSchedulingEngine()
         .build();
   }
 
@@ -98,14 +94,11 @@ public class PersistentSchedulerIT {
   }
 
   @After
-  public void tearDown() {
-    try {
-      if (scheduler.isJobScheduled(JOB_NAME)) {
-        scheduler.unscheduleJob(JOB_NAME);
-      }
-    } catch (SchedulerException e) {
-      e.printStackTrace();
+  public void tearDown() throws SchedulerException {
+    if (scheduler.isJobScheduled(JOB_NAME)) {
+      scheduler.unscheduleJob(JOB_NAME);
     }
+
   }
 
   /**
@@ -148,7 +141,7 @@ public class PersistentSchedulerIT {
 
   @Test(expected = SchedulerException.class)
   public void schedulingAnAlreadyScheduledJobShouldThrowASchedulerException() throws Exception {
-    scheduleAJob(JOB_NAME);
+    scheduleAJob();
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusHours(1));
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
   }
@@ -156,7 +149,7 @@ public class PersistentSchedulerIT {
   @Test(expected = SchedulerException.class)
   public void schedulingAnAlreadyScheduledJobExecutionShouldThrowASchedulerException()
       throws Exception {
-    scheduleAJob(JOB_NAME);
+    scheduleAJob();
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusHours(1));
     scheduler.scheduleJob(new MyJob(JOB_NAME), trigger, eventHandler);
   }
@@ -289,7 +282,7 @@ public class PersistentSchedulerIT {
   }
 
   @Test
-  public void aNonScheduledJobShouldBeNotFound() throws Exception {
+  public void aNonScheduledJobShouldBeNotFound() {
     assertThat(scheduler.isJobScheduled(JOB_NAME), is(false));
   }
 
@@ -301,7 +294,8 @@ public class PersistentSchedulerIT {
 
   /**
    * Is a job was executed at a given time?
-   * @return true if a job was executed.
+   *
+   * @return in the future true if a job was executed.
    */
   private Callable<Boolean> jobIsExecuted() {
     return this::isJobExecuted;
@@ -309,7 +303,9 @@ public class PersistentSchedulerIT {
 
   /**
    * Is the event handler completed its treatment?
-   * @return true if the event handler completes its treatment on the event fired by the scheduler.
+   *
+   * @return in the future true if the event handler completes its treatment on the event fired by
+   * the scheduler.
    */
   private Callable<Boolean> eventHandlingCompleted() {
     return () -> eventHandler.isCompleted();
@@ -320,15 +316,13 @@ public class PersistentSchedulerIT {
   }
 
   /**
-   * Schedules a job under the specified name.
-   * This method is dedicated for fixture preparations. If the job scheduling throw an exception,
-   * then the fixture will fail.
-   * @param jobName the name of the job to schedule.
+   * Schedules a job under the specified name. This method is dedicated for fixture preparations. If
+   * the job scheduling throw an exception, then the fixture will fail.
    */
-  protected void scheduleAJob(final String jobName) {
+  protected void scheduleAJob() {
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     try {
-      ScheduledJob job = scheduler.scheduleJob(jobName, trigger, eventHandler);
+      ScheduledJob job = scheduler.scheduleJob(PersistentSchedulerIT.JOB_NAME, trigger, eventHandler);
       assertThat(job, notNullValue());
     } catch (SchedulerException ex) {
       fail(ex.getMessage());

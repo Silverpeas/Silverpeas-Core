@@ -32,20 +32,20 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -119,10 +119,12 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
    * contents of the component instance. If no predefined classification on the PdC is defined for
    * the requested node, a predefined one is then looked backward among the parent nodes up to the
    * component instance itself.
-   *
+   * <p>
    * The PdC classification is sent back in JSON. If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to access the requested resource, a 403 is returned. If
    * a problem occurs when processing the request, a 503 HTTP code is returned.
+   * </p>
+   *
    * @return a web entity representing the requested predefined PdC classification. If no predefined
    * classification is defined along the path of the nodes up to the component instance, then an
    * empty classification is sent back.

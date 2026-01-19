@@ -30,9 +30,9 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.AllowedAction;
 import org.silverpeas.core.workflow.api.model.AllowedActions;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 

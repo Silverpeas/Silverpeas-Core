@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
+import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
@@ -36,34 +37,26 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.annotation.Technical;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.parser.Parser;
 import org.silverpeas.core.index.indexing.parser.ParserManager;
 import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.lang.System.currentTimeMillis;
 import static java.text.MessageFormat.format;
@@ -78,8 +71,7 @@ import static org.silverpeas.core.index.indexing.model.IndexProcessor.doRemoveAl
  * an IndexManager between several threads use an IndexerThread.
  */
 @Technical
-@Bean
-@Singleton
+@Service
 public class IndexManager {
 
   /**
@@ -134,13 +126,8 @@ public class IndexManager {
   private final Map<String, IndexWriter> indexWriters = new LinkedHashMap<>();
   @Inject
   private ParserManager parserManager;
-
-  /**
-   * The constructor takes no parameters and all the index engine parameters are taken from the
-   * properties file "org/silverpeas/util/indexing/indexing.properties".
-   */
-  private IndexManager() {
-  }
+  @Inject
+  private I18n i18n;
 
   public static IndexManager get() {
     return ServiceProvider.getService(IndexManager.class);
@@ -619,7 +606,7 @@ public class IndexManager {
   }
 
   private String getFieldName(String name, String language) {
-    if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
+    if (!i18n.isEnabled() || i18n.isDefaultLanguage(language)) {
       return name;
     }
     return name + "_" + language;

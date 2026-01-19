@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.webapi.viewer;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +47,7 @@ import static java.util.Optional.ofNullable;
  * </p>
  * @author silveryocha
  */
-@Singleton
+@Provider
 public class ResourceViewProviderRegistry {
 
   private final Map<String, List<ResourceViewProvider>> newRegistry = new HashMap<>();

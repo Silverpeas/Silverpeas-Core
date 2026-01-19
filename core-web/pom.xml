@@ -27,7 +27,7 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core</groupId>
@@ -42,40 +42,24 @@
       <artifactId>httpclient</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+      <groupId>org.silverpeas.jakarta</groupId>
+      <artifactId>portlet</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.ccpp</groupId>
-      <artifactId>ccpp</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.portal.portletcontainer</groupId>
-      <artifactId>container</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.portal.portletcontainer</groupId>
-      <artifactId>portlet-container</artifactId>
+      <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+      <version>3.0.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-html</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.psu.swe.scim</groupId>
-      <artifactId>scim-server-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.psu.swe.commons</groupId>
-      <artifactId>commons-jaxrs</artifactId>
+      <groupId>org.apache.directory.scimple</groupId>
+      <artifactId>scim-server</artifactId>
+      <version>1.0.0-M1</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -211,18 +195,14 @@
       <artifactId>encoder</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.owasp.encoder</groupId>
-      <artifactId>encoder-jsp</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.0.1</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

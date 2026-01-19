@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.notification.sse;
 
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpoint;
 
 /**
  * @author silveryocha

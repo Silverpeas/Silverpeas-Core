@@ -30,11 +30,11 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
@@ -182,13 +182,6 @@ public final class AttachmentDetail implements Serializable {
 
   public String getInstanceId() {
     return instanceId;
-  }
-
-  protected String getLanguage(String language) {
-    if (language != null && ("fr".equalsIgnoreCase(language) || "".equals(language.trim()))) {
-      return null;
-    }
-    return language;
   }
 
   /**

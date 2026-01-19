@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.comment.socialnetwork;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Provider;
@@ -32,19 +33,14 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialPublicationCommentProvider;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Provider
-public class SocialPublicationComment implements SocialPublicationCommentProvider {
+public class SocialPublicationComment
+    implements SocialPublicationCommentProvider<SocialInformationComment> {
 
   @Inject
   private PublicationService publicationService;
@@ -59,8 +55,7 @@ public class SocialPublicationComment implements SocialPublicationCommentProvide
     return publicationService;
   }
 
-  @SuppressWarnings("unchecked")
-  private List<SocialInformation> decorate(
+  private List<SocialInformationComment> decorate(
       List<SocialInformationComment> listSocialInformation) {
     for (SocialInformationComment socialInformation : listSocialInformation) {
       String resourceId = socialInformation.getComment().getResourceReference().getLocalId();
@@ -75,12 +70,11 @@ public class SocialPublicationComment implements SocialPublicationCommentProvide
       socialInformation.setTitle(pubDetail.getTitle());
     }
 
-    return (List) listSocialInformation;
+    return listSocialInformation;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public List<SocialInformation> getSocialInformationList(String userId, Date begin,
+  public List<SocialInformationComment> getSocialInformationList(String userId, Date begin,
       Date end) {
     List<SocialInformationComment> listSocialInformation =
         CommentServiceProvider.getCommentService()
@@ -91,7 +85,7 @@ public class SocialPublicationComment implements SocialPublicationCommentProvide
   }
 
   @Override
-  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+  public List<SocialInformationComment> getSocialInformationListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     List<String> instanceIds = new ArrayList<>();
@@ -103,7 +97,7 @@ public class SocialPublicationComment implements SocialPublicationCommentProvide
             instanceIds, Period.between(begin.toInstant(), end.toInstant()));
 
     // Even if the data has been found by filtering on instanceIds that the user can access, it
-    // could exists more precise right rules to apply.
+    // could exist more precise right rules to apply.
     Iterator<SocialInformationComment> socialCommentIt = socialComments.iterator();
     while (socialCommentIt.hasNext()) {
       SocialInformationComment socialComment = socialCommentIt.next();

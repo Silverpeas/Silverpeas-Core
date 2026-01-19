@@ -25,13 +25,13 @@ package org.silverpeas.web.filter;
 
 import org.silverpeas.core.web.http.HttpRequest;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -49,7 +49,7 @@ public class HttpServletRequestDecoration implements Filter {
       if (jQueryTs == null) {
         jQueryTs = httpRequest.getParameterAsLong("IEFix");
       }
-      if (jQueryTs != null && jQueryTs.compareTo(0l) != 0) {
+      if (jQueryTs != null && jQueryTs.compareTo(0L) != 0) {
         HttpServletResponse servletResponse = (HttpServletResponse) response;
         servletResponse.setHeader("Cache-Control", "no-store"); //HTTP 1.1
         servletResponse.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -57,10 +57,6 @@ public class HttpServletRequestDecoration implements Filter {
       }
     }
     chain.doFilter(httpRequest, response);
-  }
-
-  @Override
-  public void destroy() {
   }
 
   @Override

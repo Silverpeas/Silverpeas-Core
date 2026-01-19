@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.quota.service;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
+import jakarta.inject.Inject;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -33,17 +34,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaFullException;
 import org.silverpeas.core.admin.quota.exception.QuotaNotEnoughException;
 import org.silverpeas.core.admin.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.kernel.SilverpeasException;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -90,11 +90,10 @@ public class AbstractQuotaServiceIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AbstractQuotaServiceIT.class)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .testFocusedOn(
-            (warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.core.admin.quota"))
+    return LibCoreWarBuilder.onFullWarForTestClass(AbstractQuotaServiceIT.class)
+        .addAsResource("org/silverpeas/admin")
+        .addAsResource("org/silverpeas/jobStartPagePeas/settings")
+        .addAsResource("org/silverpeas/core/admin/domain/driver")
         .build();
   }
 

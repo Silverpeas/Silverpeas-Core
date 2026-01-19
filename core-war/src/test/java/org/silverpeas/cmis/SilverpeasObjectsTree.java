@@ -147,7 +147,7 @@ public class SilverpeasObjectsTree {
     } catch (IllegalArgumentException e) {
       appId = fatherId;
       fatherNodeId = "-1";
-      localId = Integer.parseInt(NodePK.ROOT_NODE_ID);
+      localId = 0;
       parentNode = cache.get(appId);
     }
 

@@ -27,7 +27,7 @@ import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * This class provides an implementation of {@link JdbcSqlExecutor} API.

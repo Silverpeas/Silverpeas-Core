@@ -29,8 +29,8 @@ import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -54,7 +54,7 @@ abstract class AbstractTransactionTestService implements TransactionTestService 
     Connection connection1;
     UserDetail user;
     try (Connection connection = DBUtil.openConnection()) {
-      Thread.sleep(1000l);
+      Thread.sleep(1000L);
       // assert that the connection is managed
       assertThat(connection.getAutoCommit(), is(false));
       connection1 = getWrappedConnection(connection);

@@ -23,21 +23,20 @@
  */
 package org.silverpeas.core.admin.component;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ObjectFactory;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.SystemWrapper;
 
-import javax.inject.Singleton;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -67,7 +66,6 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class WAComponentRegistry implements Initialization {
 
   private final Map<String, WAComponent> componentsByName = new HashMap<>();

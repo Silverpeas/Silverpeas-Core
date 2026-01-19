@@ -25,6 +25,8 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 
+import java.util.Objects;
+
 /**
  * The composite primary key used to store values of PdC's axis.
  */
@@ -78,11 +80,10 @@ public class PdcAxisValuePk implements CompositeEntityIdentifier {
       return false;
     }
     final PdcAxisValuePk other = (PdcAxisValuePk) obj;
-    if (this.valueId != other.valueId &&
-        (this.valueId == null || !this.valueId.equals(other.valueId))) {
+    if (!Objects.equals(this.valueId, other.valueId)) {
       return false;
     }
-    return this.axisId == other.axisId || (this.axisId != null && this.axisId.equals(other.axisId));
+    return Objects.equals(this.axisId, other.axisId);
   }
 
   @Override
@@ -107,6 +108,11 @@ public class PdcAxisValuePk implements CompositeEntityIdentifier {
 
   @Override
   public String asString() {
-    return String.valueOf(getValueId()) + COMPOSITE_SEPARATOR + String.valueOf(getAxisId());
+    return getValueId() + COMPOSITE_SEPARATOR + getAxisId();
+  }
+
+  @Override
+  public boolean isNull() {
+    return valueId == null || axisId == null;
   }
 }

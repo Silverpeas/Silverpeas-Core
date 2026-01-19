@@ -23,19 +23,16 @@
  */
 package org.silverpeas.core.util.file;
 
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-/**
- * @author NEY
- */
 public class FileServerUtils {
 
   public static final String COMPONENT_ID_PARAMETER = "ComponentId";
@@ -59,6 +56,21 @@ public class FileServerUtils {
   private static final String URL_PATH_SEP = "/";
 
   protected FileServerUtils() {
+  }
+
+  /**
+   * Replace chars that have special meanings in url by their http substitute.
+   *
+   * @param toParse the string which chars that have special meanings in url by their http
+   * substitute.
+   * @return a string without url meaning chars.
+   */
+  public static String replaceSpecialChars(String toParse) {
+    String newLogicalName = toParse.replace("#", "%23");
+    newLogicalName = newLogicalName.replace("%", "%25");
+    newLogicalName = newLogicalName.replace("&", "%26");
+    newLogicalName = newLogicalName.replace(";", "%3B");
+    return newLogicalName;
   }
 
   /**
@@ -125,10 +137,7 @@ public class FileServerUtils {
       String lang) {
     String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     StringBuilder url = new StringBuilder();
-    String language = lang;
-    if (language == null) {
-      language = I18NHelper.DEFAULT_LANGUAGE;
-    }
+    String language = I18n.get().checkLanguage(lang);
     url.append("/attached_file/").append("componentId/").append(URLEncoder.encodePathSegment(
             componentId)).append("/attachmentId/").append(URLEncoder.encodePathSegment(attachmentId)).
         append("/lang/").append(URLEncoder.encodePathSegment(language)).append("/name/").
@@ -182,8 +191,7 @@ public class FileServerUtils {
     return resizedImagePath;
   }
 
-  public static String getUrl(String componentId, String name, String mimeType,
-      String subDirectory) {
+  public static String getUrl(String componentId, String name, String mimeType, String subDirectory) {
     return getUrl(componentId, name, name, mimeType, subDirectory);
   }
 

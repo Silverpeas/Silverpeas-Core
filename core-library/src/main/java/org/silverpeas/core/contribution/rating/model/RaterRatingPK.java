@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.rating.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 
 /**
  * This class represents a technical primary key of a rater rating.
@@ -31,14 +31,14 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 public class RaterRatingPK extends ContributionRatingPK {
   private static final long serialVersionUID = -7143887879838137369L;
 
-  private UserDetail rater;
+  private final User rater;
 
-  public RaterRatingPK(String id, String componentId, String type, UserDetail rater) {
+  public RaterRatingPK(String id, String componentId, String type, User rater) {
     super(id, componentId, type);
     this.rater = rater;
   }
 
-  public UserDetail getRater() {
+  public User getRater() {
     return rater;
   }
 
@@ -51,7 +51,7 @@ public class RaterRatingPK extends ContributionRatingPK {
    * Comparison between two notation primary key. Since various attributes of the both elements can
    * be null, using toString() method to compare the elements avoids to check null cases for each
    * attribute.
-   * @param other
+   * @param other the other pk
    */
   @Override
   public boolean equals(Object other) {

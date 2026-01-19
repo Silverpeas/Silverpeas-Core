@@ -72,7 +72,7 @@ public class EntityIdSetter {
    * @return the entity itself with its identifier set.
    */
   public <T extends AbstractJpaEntity<?, ?>> T setIdTo(final T entity) {
-    invokeIdSetter(entity, this.generator.generateNewId().asString());
+    invokeIdSetter(entity, this.generator.generateNewValue().asString());
     return entity;
   }
 
@@ -87,7 +87,7 @@ public class EntityIdSetter {
    */
   @SuppressWarnings("UnusedReturnValue")
   public <T extends AbstractJpaEntity<?, ?>> T setIdTo(final T entity, final String id) {
-    invokeIdSetter(entity, generator.fromString(id).asString());
+    invokeIdSetter(entity, generator.setFromString(id).asString());
     return entity;
   }
 

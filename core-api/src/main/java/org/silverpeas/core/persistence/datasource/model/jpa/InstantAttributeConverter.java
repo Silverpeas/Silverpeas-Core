@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -63,10 +63,10 @@ public class InstantAttributeConverter implements AttributeConverter<Instant, Ti
     if (sqlTimestamp == null) {
       return null;
     }
-    if (sqlTimestamp.equals(MIN_TIMESTAMP)) {
+    if (sqlTimestamp.equals(MIN_TIMESTAMP) || sqlTimestamp.before(MIN_TIMESTAMP)) {
       return Instant.MIN;
     }
-    if (sqlTimestamp.equals(MAX_TIMESTAMP)) {
+    if (sqlTimestamp.equals(MAX_TIMESTAMP) || sqlTimestamp.after(MAX_TIMESTAMP)) {
       return Instant.MAX;
     }
     return sqlTimestamp.toLocalDateTime().atOffset(ZoneOffset.UTC).toInstant();

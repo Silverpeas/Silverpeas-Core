@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.calendar;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  * An attendee that is a person external to Silverpeas. It can only be notified, and hence

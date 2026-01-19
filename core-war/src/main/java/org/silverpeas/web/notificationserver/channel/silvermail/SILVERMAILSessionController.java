@@ -74,10 +74,10 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   private static final int DEFAULT_PAGINATION_SIZE = 25;
   private String currentFunction;
   private long currentMessageId = -1;
-  private Set<String> selectedUserNotificationIds = new HashSet<>();
+  private final Set<String> selectedUserNotificationIds = new HashSet<>();
   private PaginationPage pagination;
   private QUERY_ORDER_BY orderBy;
-  private Function<String, String> sourceSupplier = this::getSource;
+  private final Function<String, String> sourceSupplier = this::getSource;
 
   public SILVERMAILSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
@@ -104,22 +104,10 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getCurrentFunction() {
     return currentFunction;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param currentFunction
-   * @see
-   */
   public void setCurrentFunction(String currentFunction) {
     this.currentFunction = currentFunction;
   }
@@ -162,7 +150,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
           .computeIfAbsent(componentCacheKey, String.class, () -> {
             final Optional<SilverpeasComponentInstance> optionalComponentInstance =
                 SilverpeasComponentInstance.getById(componentId).filter(i -> !i.isPersonal());
-            if (!optionalComponentInstance.isPresent()) {
+            if (optionalComponentInstance.isEmpty()) {
               return StringUtil.EMPTY;
             }
             final SilverpeasComponentInstance componentInstance = optionalComponentInstance.get();
@@ -186,10 +174,10 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * Delete the sent message notification
+   * Delete the notification message
    *
-   * @param notifId
-   * @throws NotificationException
+   * @param notifId th unique identifier of the notification.
+   * @throws NotificationException if the deletion fails.
    */
   public void deleteSentNotif(String notifId) throws NotificationException {
       getNotificationInterface().deleteNotif(getUserId(), Integer.parseInt(notifId));
@@ -207,22 +195,10 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     return SILVERMAILPersistence.getMessageAndMarkAsRead(getUserId(), messageId);
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public long getCurrentMessageId() {
     return currentMessageId;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param value
-   * @see
-   */
   public void setCurrentMessageId(long value) {
     currentMessageId = value;
   }
@@ -232,8 +208,8 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * Delete the message notification
-   * @param notifId
+   * Delete the notification message
+   * @param notifId the unique identifier of a notification
    */
   public void deleteMessage(String notifId) {
     long notificationId = Long.parseLong(notifId);

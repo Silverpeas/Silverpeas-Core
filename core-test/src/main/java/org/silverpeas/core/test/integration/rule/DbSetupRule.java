@@ -98,6 +98,8 @@ public class DbSetupRule implements TestRule {
    * @return itself.
    */
   public static DbSetupRule createTablesFrom(String... sqlScripts) {
+    Logger.getLogger(DbSetupRule.class.getName())
+        .info("Load database scripts: " + String.join("\n\t", sqlScripts));
     Objects.requireNonNull(sqlScripts);
     return new DbSetupRule(sqlScripts);
   }
@@ -120,6 +122,8 @@ public class DbSetupRule implements TestRule {
    * @return itself.
    */
   public DbSetupRule loadInitialDataSetFrom(String... sqlScripts) {
+    Logger.getLogger(this.getClass().getName())
+        .info("Load dataset scripts: " + String.join("\n\t", sqlScripts));
     sqlInsertScripts = sqlScripts;
     return this;
   }
@@ -175,10 +179,12 @@ public class DbSetupRule implements TestRule {
     };
   }
 
+  @SuppressWarnings("unused")
   protected void performBefore(Description description) {
     // For now, this method is useful for extension rules.
   }
 
+  @SuppressWarnings("unused")
   protected void performAfter(Description description) {
     // For now, this method is useful for extension rules.
   }
@@ -236,7 +242,7 @@ public class DbSetupRule implements TestRule {
           String tableName = rs.getString(1);
           if (!tableName.startsWith("QRTZ_")) {
             try (PreparedStatement dropStatement = connection.prepareStatement(
-                "DROP  TABLE " + tableName)) {
+                "DROP  TABLE " + tableName + " CASCADE;")) {
               dropStatement.execute();
             }
           }
@@ -316,7 +322,6 @@ public class DbSetupRule implements TestRule {
   /*
   CURRENT ME
    */
-
   private static final ThreadLocal<DbSetupRule> me = new ThreadLocal<>();
 
   /**
@@ -367,7 +372,6 @@ public class DbSetupRule implements TestRule {
    * data source according to the operations that were performed in the behaviour of the test.
    * @param connection a connection to the database
    * @return the actual data set.
-   * @throws Exception if an error occurs while fetching the data set in the database.
    */
   public static IDataSet getActualDataSet(Connection connection) {
     try {

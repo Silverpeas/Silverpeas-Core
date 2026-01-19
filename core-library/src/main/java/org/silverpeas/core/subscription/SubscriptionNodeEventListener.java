@@ -24,14 +24,12 @@
 
 package org.silverpeas.core.subscription;
 
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.notification.NodeEvent;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
-
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 
 /**
  * Listener of events on the deletion of a node in a component instance to delete all subscriptions
@@ -40,7 +38,6 @@ import javax.transaction.Transactional;
  * @author mmoquillon
  */
 @Bean
-@Singleton
 public class SubscriptionNodeEventListener
     extends AbstractProfiledResourceSubscriptionListener<NodeDetail, NodeEvent> {
 

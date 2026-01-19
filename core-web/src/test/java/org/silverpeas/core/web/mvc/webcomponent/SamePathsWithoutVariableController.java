@@ -28,11 +28,11 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 @org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")

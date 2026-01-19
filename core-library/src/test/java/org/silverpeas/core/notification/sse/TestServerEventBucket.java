@@ -24,9 +24,10 @@
 package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,7 @@ import static java.util.stream.Collectors.*;
  * notification.
  * @author Yohann Chastagnier
  */
+@Bean
 @Singleton
 public class TestServerEventBucket {
 

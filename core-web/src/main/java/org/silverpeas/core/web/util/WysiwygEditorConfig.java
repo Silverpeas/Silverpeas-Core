@@ -24,13 +24,13 @@
 package org.silverpeas.core.web.util;
 
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class WysiwygEditorConfig {
   private SettingBundle wysiwygSettings;
   private String height = "500";
   private String width = "100%";
-  private String language = I18NHelper.DEFAULT_LANGUAGE;
+  private String language = I18n.get().getDefaultLanguage();
   private String toolbar = "Default";
   private boolean toolbarStartExpanded = true;
   private boolean fileBrowserDisplayed = true;

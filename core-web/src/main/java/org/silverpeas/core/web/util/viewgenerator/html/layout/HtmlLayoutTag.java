@@ -27,8 +27,8 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.html;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * This tag MUST be the first called from a JSP page providing HTML code.

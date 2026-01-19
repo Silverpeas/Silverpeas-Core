@@ -42,7 +42,7 @@ import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
@@ -89,10 +89,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     connection.close();
   }
 
-  /**
-   * Test of getSubscriptionsByResource method, of class SubscriptionDao.
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByNodeResource() throws Exception {
     SubscriptionResource resource = NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID));
@@ -112,11 +108,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscriptions, hasSize(3));
   }
 
-  /**
-   * Test of getSubscriptionsByResource method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByComponentResource() throws Exception {
     SubscriptionResource resource = ComponentSubscriptionResource.from(INSTANCE_ID);
@@ -129,11 +120,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscriptions, hasSize(3));
   }
 
-  /**
-   * Test of getSubscriptionsByResource method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByPKResource() throws Exception {
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
@@ -148,11 +134,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscriptions, hasSize(1));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test(expected = AssertionError.class)
   public void testAddNodeSubscriptionForUnknownBySelfCreationMethod() throws Exception {
     NodePK nodePk = new NodePK("26", INSTANCE_ID);
@@ -175,11 +156,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     }, nodePk));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddNodeSubscriptionForUserBySelfCreationMethod() throws Exception {
     NodePK nodePk = new NodePK("26", INSTANCE_ID);
@@ -195,11 +171,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("100"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddNodeSubscriptionForUserBySelfCreationMethodAndExplicitCreatorId()
       throws Exception {
@@ -218,11 +189,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("100"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddNodeSubscriptionForUserByForcedMethodAndExplicitDifferentCreatorId()
       throws Exception {
@@ -240,11 +206,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("200"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddNodeSubscriptionForGroupByExplicitCreatorId() throws Exception {
     String groupId = "100";
@@ -262,11 +223,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("100"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddNodeSubscriptionForGroupByExplicitDifferentCreatorId() throws Exception {
     NodePK nodePk = new NodePK("26", INSTANCE_ID);
@@ -283,11 +239,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("200"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddComponentSubscriptionForUserBySelfCreationMethod() throws Exception {
     Subscription subscription = new ComponentSubscription(UserSubscriptionSubscriber.from("100"),
@@ -302,11 +253,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("100"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddComponentSubscriptionForUserBySelfCreationMethodAndExplicitCreatorId()
       throws Exception {
@@ -323,11 +269,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("100"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddComponentSubscriptionForUserByForcedMethodAndExplicitDifferentCreatorId()
       throws Exception {
@@ -343,11 +284,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("200"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testComponentNodeSubscriptionForGroupByExplicitCreatorId() throws Exception {
     String groupId = "100";
@@ -363,11 +299,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("100"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddComponentSubscriptionForGroupByExplicitDifferentCreatorId() throws Exception {
     Subscription subscription = new ComponentSubscription(GroupSubscriptionSubscriber.from("100"),
@@ -382,11 +313,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("200"));
   }
 
-  /**
-   * Test of add method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testAddPKSubscriptionForUserBySelfCreation() throws Exception {
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
@@ -403,12 +329,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getCreatorId(), is("200"));
   }
 
-  /**
-   * Centralization.
-   *
-   * @param subscription
-   * @throws Exception
-   */
   private void assertAddSubscription(Subscription subscription) throws Exception {
 
     // Verifying that subscription doesn't exist
@@ -431,11 +351,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result.iterator().next(), equalTo(subscription));
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveNodeSubscriptionForUserBySelfCreationMethod() throws Exception {
     String userId = "2";
@@ -444,11 +359,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 2);
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveNodeSubscriptionForUserBySelfCreationMethodWithExplicitCreatorId()
       throws Exception {
@@ -459,11 +369,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 2);
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveNodeSubscriptionForUserByForcedMethodWithExplicitDifferentCreatorId()
       throws Exception {
@@ -474,11 +379,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 2);
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveNodeSubscriptionForGroup() throws Exception {
     String groupId = "2";
@@ -488,11 +388,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 1);
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveComponentSubscriptionForUserBySelfCreationMethod() throws Exception {
     String userId = "5";
@@ -500,11 +395,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 2);
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveComponentSubscriptionForUserBySelfCreationMethodWithExplicitCreatorId()
       throws Exception {
@@ -514,11 +404,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 2);
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveComponentSubscriptionForUserByForcedMethodWithExplicitDifferentCreatorId()
       throws Exception {
@@ -528,11 +413,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 2);
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveComponentSubscriptionForGroup() throws Exception {
     String groupId = "55";
@@ -541,11 +421,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 1);
   }
 
-  /**
-   * Test of remove method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemovePKSubscriptionForUserBySelfCreationMethod() throws Exception {
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
@@ -555,12 +430,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertRemoveSubscription(subscription, 1);
   }
 
-  /**
-   * Centralization.
-   *
-   * @param subscription
-   * @throws Exception
-   */
   private void assertRemoveSubscription(Subscription subscription, int nbBeforeRemove)
       throws Exception {
 
@@ -583,11 +452,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, hasSize(nbBeforeRemove - 1));
   }
 
-  /**
-   * Test of removeBySubscriber method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testRemoveByUserSubscriberBySelfCreation() throws Exception {
     String userId = "1";
@@ -605,9 +469,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, hasSize(0));
   }
 
-  /**
-   * Test of removeByResource method, of class SubscriptionDao.
-   */
   @Test
   public void testRemoveByResource() throws Exception {
     String userId = "1";
@@ -616,10 +477,10 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
 
     // Verifying state of subscription before removing
     Collection<Subscription> result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(),
-        userSubscriber, INSTANCE_ID);
+        userSubscriber);
     assertThat(result, hasSize(8));
-    result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(), user11Subscriber,
-        INSTANCE_ID);
+    result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(), user11Subscriber
+    );
     assertThat(result, hasSize(2));
 
     Transaction.getTransaction().perform(() -> {
@@ -631,19 +492,14 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     });
 
     // Verifying the deleted subscriptions
-    result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(), userSubscriber,
-        INSTANCE_ID);
+    result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(), userSubscriber
+    );
     assertThat(result, hasSize(6));
-    result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(), user11Subscriber,
-        INSTANCE_ID);
+    result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(), user11Subscriber
+    );
     assertThat(result, hasSize(0));
   }
 
-  /**
-   * Test of existsSubscription method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testExistsSubscription() throws Exception {
     SubscriptionSubscriber subscriber = UserSubscriptionSubscriber.from("2");
@@ -673,20 +529,15 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     assertThat(subscriptionDao.
         existsSubscription(getConnection(),
-            new PKSubscription(UserSubscriptionSubscriber.from("126"),
+            new PKSubscription<>(UserSubscriptionSubscriber.from("126"),
                 new PKSubscriptionResource(pk, FORUM), "999")), is(false));
 
     // PK - User 126 - Self creation method
     assertThat(subscriptionDao.
-        existsSubscription(getConnection(), new PKSubscription("126",
+        existsSubscription(getConnection(), new PKSubscription<>("126",
             new PKSubscriptionResource(pk, FORUM))), is(true));
   }
 
-  /**
-   * Test of getSubscriptionsBySubscriber method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByUserSubscriber() throws Exception {
     Collection<Subscription> result = subscriptionDao.
@@ -694,11 +545,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, hasSize(10));
   }
 
-  /**
-   * Test of getSubscriptionsBySubscriber method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByGroupSubscriber() throws Exception {
     Collection<Subscription> result = subscriptionDao.
@@ -706,11 +552,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, hasSize(5));
   }
 
-  /**
-   * Test of getSubscriptionsBySubscriberAndComponent method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByUserSubscriberAndComponent() throws Exception {
     Collection<Subscription> result = subscriptionDao.
@@ -719,11 +560,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, hasSize(8));
   }
 
-  /**
-   * Test of getSubscriptionsBySubscriberAndComponent method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByGroupSubscriberAndComponent() throws Exception {
     Collection<Subscription> result = subscriptionDao.
@@ -732,11 +568,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, hasSize(4));
   }
 
-  /**
-   * Test of getSubscribers method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscribersForNodeResource() throws Exception {
     Collection<SubscriptionSubscriber> result = subscriptionDao.getSubscribers(getConnection(),
@@ -754,11 +585,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, Matchers.hasItem(GroupSubscriptionSubscriber.from("55")));
   }
 
-  /**
-   * Test of getSubscribers method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscribersForComponentResource() throws Exception {
     Collection<SubscriptionSubscriber> result = subscriptionDao
@@ -772,11 +598,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, Matchers.hasItem(GroupSubscriptionSubscriber.from("55")));
   }
 
-  /**
-   * Test of getSubscribers method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscribersForPKResource() throws Exception {
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
@@ -790,11 +611,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, Matchers.hasItem(UserSubscriptionSubscriber.from("126")));
   }
 
-  /**
-   * Test of getSubscribers method, of class SubscriptionDao.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscribersForNodeResources() throws Exception {
     List<NodeSubscriptionResource> resources = Arrays.asList(
@@ -837,30 +653,17 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, Matchers.hasItem(UserSubscriptionSubscriber.from("5")));
   }
 
-  /**
-   * Search data for testing.
-   *
-   * @param con
-   * @param subscriber
-   * @param instanceId
-   * @return
-   */
   private Collection<Subscription> selectSubscriptionsBySubscriberAndInstanceId(Connection con,
-      SubscriptionSubscriber subscriber, String instanceId) throws Exception {
-    return subscriptionDao.getSubscriptionsBySubscriberAndComponent(con, subscriber, instanceId);
+      SubscriptionSubscriber subscriber) throws Exception {
+    return subscriptionDao.getSubscriptionsBySubscriberAndComponent(con, subscriber, SubscriptionDaoIT.INSTANCE_ID);
   }
 
-  /**
-   * Test of selectSubscriptionsBySubscriberAndInstanceId method, included in this class of tests.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByUserSubscriberAndInstanceId() throws Exception {
     String userId = "1";
     SubscriptionSubscriber userSubscriber = UserSubscriptionSubscriber.from(userId);
     Collection<Subscription> result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(),
-        userSubscriber, INSTANCE_ID);
+        userSubscriber);
     assertThat(result, hasSize(8));
 
     // User - Node - Self creation
@@ -883,17 +686,12 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, Matchers.hasItem(new ComponentSubscription(userSubscriber, INSTANCE_ID, "userB")));
   }
 
-  /**
-   * Test of selectSubscriptionsBySubscriberAndInstanceId method, included in this class of tests.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSubscriptionsByGroupSubscriberAndInstanceId() throws Exception {
     String groupId = "1";
     SubscriptionSubscriber groupSubscriber = GroupSubscriptionSubscriber.from(groupId);
     Collection<Subscription> result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(),
-        groupSubscriber, INSTANCE_ID);
+        groupSubscriber);
     assertThat(result, hasSize(4));
 
     // Group - Node - forced

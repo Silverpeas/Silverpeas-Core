@@ -25,34 +25,33 @@ package org.silverpeas.core.admin.domain.driver;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.hamcrest.core.IsInstanceOf;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.validation.ConstraintViolationException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.security.authentication.password.PasswordEncryption;
-import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.security.authentication.password.PasswordEncryption;
+import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThrows;
 
 /**
  * Integration tests on the SPUserRepository JPA repository.
+ *
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
@@ -93,20 +92,12 @@ public class SPUserRepositoryIT {
   private EntityManager entityManager;
 
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
-  @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)
       .loadInitialDataSetFrom(SPUSER_INSERTION, SPGROUP_INSERTION, SPGROUP_SPUSER_RELATION);
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SPUserRepositoryIT.class)
-        .addDatabaseToolFeatures()
-        .addAdministrationFeatures()
-        .addJpaPersistenceFeatures().testFocusedOn((warBuilder) -> warBuilder
-            .addPackages(true, "org.silverpeas.core.security.authentication.password")
-            .addClasses(SPUserRepository.class, SPUserJpaRepository.class, SPUser.class, SPGroup.class))
+    return LibCoreWarBuilder.onFullWarForTestClass(SPUserRepositoryIT.class)
         .build();
   }
 
@@ -115,7 +106,7 @@ public class SPUserRepositoryIT {
   }
 
   @Test
-  public void createANewSPUser() throws Exception {
+  public void createANewSPUser() {
     SPUser expected = Transaction.performInOne(() -> {
       SPUser newUser = new SPUser();
       newUser.setFirstname("Titi");
@@ -138,29 +129,23 @@ public class SPUserRepositoryIT {
   }
 
   /**
-   * This test checks the ConstraintViolationException linked to SPUser.password column
+   * This test checks the ConstraintViolationException linked to SPUser password column
    */
-  @Test(expected = ConstraintViolationException.class)
-  @Transactional
+  @Test
   public void testNewUserWithInvalidPassword() {
-    try {
-      Transaction.performInOne(() -> {
-        SPUser tartempion = getTartempion();
-        tartempion.setPassword(tartempion.getPassword() + "b");
-        return userManager.saveAndFlush(tartempion);
-      });
-    } catch (Exception e) {
-      expectedException
-          .expectCause(is(IsInstanceOf.<Throwable>instanceOf(ConstraintViolationException.class)));
-      throw new ConstraintViolationException("Transactional wrap ConstraintViolation", null);
-    }
+    Transaction.performInOne(() -> {
+      SPUser tartempion = getTartempion();
+      tartempion.setPassword(tartempion.getPassword() + "b");
+      assertThrows(ConstraintViolationException.class, () ->
+          userManager.saveAndFlush(tartempion));
+      return null;
+    });
   }
 
   /**
    * This test checks the groups loading inside a transactional process
    */
   @Test
-  @Transactional
   public void getExistingSPUserById() {
     Transaction.performInOne(() -> {
       SPUser bart = userManager.getById("1000");
@@ -187,7 +172,7 @@ public class SPUserRepositoryIT {
   }
 
   @Test
-  public void getExistingSPUsersByFirstName() throws Exception {
+  public void getExistingSPUsersByFirstName() {
     List<SPUser> users = userManager.findByFirstname("Toto");
     assertThat(users.isEmpty(), is(false));
 
@@ -203,7 +188,7 @@ public class SPUserRepositoryIT {
   }
 
   @Test
-  public void getExistingSPUsersByLastName() throws Exception {
+  public void getExistingSPUsersByLastName() {
     List<SPUser> users = userManager.findByLastname("Chez-les-Papoos");
     assertThat(users.isEmpty(), is(false));
 
@@ -219,7 +204,7 @@ public class SPUserRepositoryIT {
   }
 
   @Test
-  public void getExistingSPUsersByCompany() throws Exception {
+  public void getExistingSPUsersByCompany() {
     List<SPUser> users = userManager.findByCompany("Silverpeas");
     assertThat(users.isEmpty(), is(false));
 
@@ -235,7 +220,7 @@ public class SPUserRepositoryIT {
   }
 
   @Test
-  public void getExistingSPUsersByPhoneNumber() throws Exception {
+  public void getExistingSPUsersByPhoneNumber() {
     List<SPUser> users = userManager.findByPhone("0146221498");
     assertThat(users.isEmpty(), is(false));
 
@@ -258,7 +243,7 @@ public class SPUserRepositoryIT {
   private SPUser getTartempion() {
     PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
     StringBuilder passwordBuilder = new StringBuilder(encryption.encrypt("tartempion"));
-    for (; passwordBuilder.length() < PASSWORD_MAX_SIZE; ) {
+    while (passwordBuilder.length() < PASSWORD_MAX_SIZE) {
       passwordBuilder.append("a");
     }
     SPUser tartempion = new SPUser();

@@ -46,8 +46,8 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,8 +72,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   private ToDoHeader currentToDoHeader = null;
   private Collection<Attendee> currentAttendees = null;
   private NotificationSender notifSender = null;
-  private Map<String, ComponentInstLight> componentsMap = new HashMap<String, ComponentInstLight>();
-  private Map<String, SpaceInstLight> spacesMap = new HashMap<String, SpaceInstLight>();
+  private final Map<String, ComponentInstLight> componentsMap = new HashMap<>();
+  private final Map<String, SpaceInstLight> spacesMap = new HashMap<>();
   private final Set<String> selectedTodoIds = new HashSet<>();
 
   /**
@@ -108,28 +108,28 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   /**
    * Method declaration
    */
-  public SilverpeasList<ToDoHeader> getNotCompletedToDos() throws TodoException {
+  public SilverpeasList<ToDoHeader> getNotCompletedToDos() {
     return calendarBm.getNotCompletedToDosForUser(getUserId());
   }
 
   /**
    * Method declaration
    */
-  public SilverpeasList<ToDoHeader> getOrganizerToDos() throws TodoException {
+  public SilverpeasList<ToDoHeader> getOrganizerToDos() {
     return calendarBm.getOrganizerToDos(getUserId());
   }
 
   /**
    * Method declaration
    */
-  public SilverpeasList<ToDoHeader> getClosedToDos() throws TodoException {
+  public SilverpeasList<ToDoHeader> getClosedToDos() {
     return calendarBm.getClosedToDos(getUserId());
   }
 
   /**
    * Method declaration
    */
-  public ToDoHeader getToDoHeader(String todoId) throws TodoException {
+  public ToDoHeader getToDoHeader(String todoId) {
     verifyCurrentUserIsOwner(todoId);
     return calendarBm.getToDoHeader(todoId);
   }
@@ -409,7 +409,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   public Collection<Attendee> getUserSelected() throws TodoException {
     Selection sel = getSelection();
-    List<Attendee> attendees = new ArrayList<Attendee>();
+    List<Attendee> attendees = new ArrayList<>();
     Collection<Attendee> oldAttendees = null;
 
     ToDoHeader todo = getCurrentToDoHeader();
@@ -449,7 +449,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * ComponentInst cache mechanism
    */
   public ComponentInstLight getComponentInst(String componentId) {
-    ComponentInstLight resultComp = null;
+    ComponentInstLight resultComp;
     ComponentInstLight cachedComp = componentsMap.get(componentId);
     if (cachedComp != null) {
       resultComp = cachedComp;
@@ -464,7 +464,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * SpaceInst cache mechanism
    */
   public SpaceInstLight getSpaceInst(String spaceId) {
-    SpaceInstLight resultSpace = null;
+    SpaceInstLight resultSpace;
     SpaceInstLight cachedSpace = spacesMap.get(spaceId);
     if (cachedSpace != null) {
       resultSpace = cachedSpace;

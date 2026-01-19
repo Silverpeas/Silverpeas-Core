@@ -27,10 +27,10 @@ package org.silverpeas.web.test.stub;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.annotation.Nonnull;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.util.*;
@@ -72,16 +72,6 @@ public class TestHttpResponse implements HttpServletResponse {
 
     @Override
     public String encodeRedirectURL(String url) {
-        return URLEncoder.encode(url, Charsets.UTF_8);
-    }
-
-    @Override
-    public String encodeUrl(String url) {
-        return URLEncoder.encode(url, Charsets.UTF_8);
-    }
-
-    @Override
-    public String encodeRedirectUrl(String url) {
         return URLEncoder.encode(url, Charsets.UTF_8);
     }
 
@@ -142,11 +132,6 @@ public class TestHttpResponse implements HttpServletResponse {
     @Override
     public void setStatus(int sc) {
         status = Pair.of(sc, "");
-    }
-
-    @Override
-    public void setStatus(int sc, String sm) {
-        status = Pair.of(sc, sm);
     }
 
     @Override

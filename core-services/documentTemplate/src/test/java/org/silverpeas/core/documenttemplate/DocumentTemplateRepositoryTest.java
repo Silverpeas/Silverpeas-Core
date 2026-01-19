@@ -37,7 +37,7 @@ import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.file.DeletingPathVisitor;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;

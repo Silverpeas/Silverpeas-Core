@@ -24,31 +24,22 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -188,10 +179,12 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return the language of the user as he has chosen in its profile in Silverpeas.
    */
   public String getUserLanguage() {
-    String language = I18NHelper.DEFAULT_LANGUAGE;
+    String language;
     User user = User.getCurrentRequester();
     if (user != null) {
       language = user.getUserPreferences().getLanguage();
+    } else {
+      language = I18n.get().getDefaultLanguage();
     }
     return language;
   }
@@ -299,12 +292,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
       for (FileItem item : items) {
         if (item.isFormField()) {
           String[] value;
-          try {
-            value = new String[]{item.getString(getCharacterEncoding())};
-          } catch (UnsupportedEncodingException ex) {
-            SilverLogger.getLogger(this).warn(ex);
-            value = new String[]{item.getString()};
-          }
+          value = new String[]{item.getContent(Charsets.toCharset(getCharacterEncoding()))};
           map.put(item.getFieldName(), value);
         }
       }
@@ -489,7 +477,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
-   * Get a parameter value as an Integer.
+   * Get a parameter value as Integer.
    *
    * @param parameterName the name of the parameter.
    * @return the value of the parameter as an integer.
@@ -590,7 +578,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   public String getCharacterEncoding() {
     String encoding = super.getCharacterEncoding();
     if (StringUtil.isNotDefined(encoding)) {
-      encoding = FileUploadUtil.DEFAULT_ENCODING;
+      encoding = Charsets.UTF_8.name();
     }
     return encoding;
   }

@@ -23,24 +23,24 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
+import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.MessageDriven;
+import jakarta.inject.Inject;
 import org.silverpeas.core.notification.system.JMSResourceEventListener;
 import org.silverpeas.core.notification.system.TestResourceEvent;
 import org.silverpeas.core.notification.system.TestResourceEventBucket;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.ejb.Singleton;
-import javax.inject.Inject;
-
 /**
  * @author mmoquillon
  */
 @MessageDriven(name = "ResourceEventListener2", activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/topic/resource"),
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
-@Singleton
+    @ActivationConfigProperty(propertyName = "destinationLookup",
+        propertyValue = "jms/topic/resource"),
+    @ActivationConfigProperty(propertyName = "destinationType",
+        propertyValue = "jakarta.jms.Topic"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode",
+        propertyValue = "Auto-acknowledge") })
 public class JMSTopicTestResourceEventListener2 extends JMSResourceEventListener<TestResourceEvent> {
 
   @Inject

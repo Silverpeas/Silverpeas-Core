@@ -39,7 +39,8 @@ public class DomainDriverProvider {
   }
 
   @SuppressWarnings("unchecked")
-  private static DomainDriver loadDomainDriver(String name) throws ClassNotFoundException {
+  private static DomainDriver loadDomainDriver(String name) throws ClassNotFoundException,
+      SilverpeasRuntimeException {
     try {
       return ServiceProvider.getService(name);
     } catch (SilverpeasRuntimeException e) {
@@ -50,7 +51,7 @@ public class DomainDriverProvider {
   @SuppressWarnings("unchecked")
   public static DomainDriver getDriver(String name)
       throws IllegalAccessException, InstantiationException, ClassNotFoundException,
-      NoSuchMethodException, InvocationTargetException {
+      SilverpeasRuntimeException, NoSuchMethodException, InvocationTargetException {
 
     DomainDriver domainDriver = loadDomainDriver(name);
     if (domainDriver == null) {

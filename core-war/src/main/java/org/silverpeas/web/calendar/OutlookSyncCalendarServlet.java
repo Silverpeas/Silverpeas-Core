@@ -23,6 +23,10 @@
  */
 package org.silverpeas.web.calendar;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.core.personalorganizer.model.Classification;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
@@ -31,24 +35,13 @@ import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.kernel.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.rmi.RemoteException;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Ludovic Bertin
@@ -61,6 +54,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
   private static final int ELEMENT_UPDATED = 2;
   private static final int SYNCHRO_ERROR = -1;
   private static final int NB_DAYS_BEFORE = 7;
+
   @Inject
   private SilverpeasCalendar calendar;
 
@@ -71,7 +65,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response) {
-    String report = "";
+    String report;
     try (InputStream input = new BufferedInputStream(request.getInputStream())) {
       // read the serialized JournalHeader list from applet
       List<CalendarEntry> entries = read(input);
@@ -80,7 +74,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
       int nbEventsUpdated = 0;
       int nbEventsAdded = 0;
       int nbErrors = 0;
-      int nbDeleted = 0;
+      int nbDeleted;
       Map<String, JournalHeader> existingEvents = null;
 
       setHeaderDelegators(entries);
@@ -140,7 +134,6 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
    * method asks SessionManager which user is using the given session id
    *
    * @param headers	Journal Headers
-   * @throws	PeasCoreException if session Id is not valid or has expired
    */
   private void setHeaderDelegators(List<CalendarEntry> headers) {
     String userId = null;
@@ -155,11 +148,10 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
   }
 
   /**
-   * Get all previously imported events (only event for which startdate greater today-7 days)
+   * Get all previously imported events (only event for which start date greater today - 7 days)
    *
    * @param userId	for security purpose, session id is given instead of user id directly
-   * @return
-   * @throws RemoteException
+   * @return a collection of events, each of them keyed by their external identifier.
    */
   private Map<String, JournalHeader> getExternalEvents(String userId) {
     Calendar cal = Calendar.getInstance();
@@ -229,7 +221,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
    *
    * @param oldJournal	event in Silverpeas
    * @param element	event from external application
-   * @return
+   * @return true if the two event representations differ
    */
   private boolean areDifferent(JournalHeader oldJournal, CalendarEntry element) {
     if (oldJournal.getClassification().isPrivate() != Classification.PRIVATE.equals(element

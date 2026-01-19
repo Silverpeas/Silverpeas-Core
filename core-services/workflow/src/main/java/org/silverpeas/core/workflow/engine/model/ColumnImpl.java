@@ -26,7 +26,7 @@ package org.silverpeas.core.workflow.engine.model;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Item;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 /**
  * Class implementing the representation of the &lt;column&gt; element of a Process Model.

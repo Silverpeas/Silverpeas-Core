@@ -23,16 +23,13 @@
  */
 package org.silverpeas.core.webapi.validation;
 
+import jakarta.xml.bind.annotation.*;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.ValidableContribution;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -42,7 +39,7 @@ import java.util.Date;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class ContributionValidationEntity {
+public class ContributionValidationEntity implements Serializable {
 
   private final ContributionValidation validation;
 
@@ -110,10 +107,6 @@ public class ContributionValidationEntity {
       validatorName = validation.getValidator().getDisplayedName();
     }
     return validatorName;
-  }
-
-  protected void setValidatorName(String validatorName) {
-
   }
 
   @XmlElement

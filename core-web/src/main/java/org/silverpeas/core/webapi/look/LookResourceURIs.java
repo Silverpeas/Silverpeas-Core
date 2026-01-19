@@ -23,14 +23,6 @@
  */
 package org.silverpeas.core.webapi.look;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.ws.rs.core.UriInfo;
-
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
-
 /**
  * Base URIs from which the REST-based ressources representing look entities are defined.
  * @author Yohann Chastagnier
@@ -39,55 +31,4 @@ public final class LookResourceURIs {
 
   public static final String DISPLAY_BASE_URI = "display";
   public static final String DISPLAY_USER_CONTEXT_URI_PART = "userContext";
-
-  private static final char separator = '/';
-
-  /**
-   * Gets the URI from a given UriInfo and URI path parts
-   * @param uriInfo
-   * @param uriPathParts
-   * @return
-   */
-  protected static URI buildURI(final UriInfo uriInfo, final String... uriPathParts) {
-    return buildURI(uriInfo.getBaseUri().toString(), uriPathParts);
-  }
-
-  /**
-   * Gets the URI from a given URI base and URI path parts
-   * @param uriBase
-   * @param uriPathParts
-   * @return
-   */
-  protected static URI buildURI(final String uriBase, final String... uriPathParts) {
-    try {
-      return new URI(buildStringURI(uriBase, uriPathParts));
-    } catch (final URISyntaxException ex) {
-      SilverLogger.getLogger(LookResourceURIs.class).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    }
-  }
-
-  /**
-   * Gets the URI from a given URI base and URI path parts
-   * @param uriBase
-   * @param uriPathParts
-   * @return
-   */
-  private static String buildStringURI(final String uriBase, final String... uriPathParts) {
-
-    if (!StringUtil.isDefined(uriBase)) {
-      return "";
-    }
-
-    final StringBuilder stringURI = new StringBuilder(uriBase);
-    if (uriPathParts != null) {
-      for (final String pathPart : uriPathParts) {
-        if (stringURI.charAt(stringURI.length() - 1) != separator) {
-          stringURI.append(separator);
-        }
-        stringURI.append(pathPart);
-      }
-    }
-    return stringURI.toString();
-  }
 }

@@ -30,7 +30,7 @@ import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 

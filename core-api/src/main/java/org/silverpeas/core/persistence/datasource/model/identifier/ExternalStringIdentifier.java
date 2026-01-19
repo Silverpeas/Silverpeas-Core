@@ -23,65 +23,23 @@
  */
 package org.silverpeas.core.persistence.datasource.model.identifier;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.persistence.datasource.model.ExternalEntityIdentifier;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  * This identifier implementation handles external one with string type.
+ *
  * @author Yohann Chastagnier
  */
 @Embeddable
-public class ExternalStringIdentifier implements ExternalEntityIdentifier {
-
-  @Column(name = "id")
-  private String id;
+public class ExternalStringIdentifier extends BaseExternalEntityIdentifier<String> {
 
   public static ExternalStringIdentifier from(String value) {
-    return new ExternalStringIdentifier().fromString(value);
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(final String id) {
-    this.id = id;
+    return new ExternalStringIdentifier().setFromString(value);
   }
 
   @Override
-  public String asString() {
-    return id;
-  }
-
-  @Override
-  public ExternalStringIdentifier fromString(final String id) {
-    this.id = id;
+  public ExternalStringIdentifier setFromString(final String id) {
+    setId(id);
     return this;
-  }
-
-  @Override
-  public int hashCode() {
-    return new HashCodeBuilder().append(getId()).toHashCode();
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final ExternalStringIdentifier other = (ExternalStringIdentifier) obj;
-    return new EqualsBuilder().append(getId(), other.getId()).isEquals();
-  }
-
-  @Override
-  public String toString() {
-    return asString();
   }
 }

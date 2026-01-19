@@ -23,21 +23,16 @@
  */
 package org.silverpeas.core.index.indexing.parser;
 
-import org.silverpeas.core.annotation.Bean;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
@@ -46,27 +41,25 @@ import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
  * The ParserManager class manages all the parsers which will be used to parse the indexed files.
  */
 @Technical
-@Bean
-@Singleton
-public final class ParserManager {
+@Service
+public class ParserManager {
 
   /**
    * The map giving the parser for a specific file format. The type of this map is : Map (String ->
    * Parser).
    */
   private final Map<String, Parser> parserMap = new HashMap<>();
+
   @Inject
   @DefaultParser
   private Parser defaultParser;
 
-  private ParserManager() {
-  }
 
   /**
    * Set all the parsers declared in Parsers.properties file.
    */
   @PostConstruct
-  private void init() {
+  void init() {
     try {
       SettingBundle parsersConfiguration =
           ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.Parser");

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.user;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
@@ -39,9 +41,6 @@ import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -52,7 +51,6 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.*;
 
 @Service
-@Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class ProfileInstManager {
 

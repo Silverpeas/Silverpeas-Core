@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Utility class providing features relative to the runtime of a test.
+ *
  * @author mmoquillon
  */
 public class TestRuntime {
@@ -41,6 +42,7 @@ public class TestRuntime {
 
   /**
    * Suspends the execution of the test until a given amount of time.
+   *
    * @param duration the duration of the execution suspension.
    * @param unit the unit of time of the duration
    */
@@ -50,6 +52,7 @@ public class TestRuntime {
 
   /**
    * Suspends the execution of the test until a given amount of time.
+   *
    * @param duration the duration of the execution suspension.
    */
   public static void awaitUntil(final Duration duration) {

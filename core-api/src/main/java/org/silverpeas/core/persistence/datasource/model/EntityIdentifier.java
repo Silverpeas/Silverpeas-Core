@@ -28,32 +28,42 @@ import org.silverpeas.core.ResourceIdentifier;
 import java.io.Serializable;
 
 /**
- * All Silverpeas entities must use this interface for their identifier.
- * By this way, all entities have a typed identifier that only the entity knows.
+ * All Silverpeas entities must use this interface for their identifier. By this way, all entities
+ * have a typed identifier that only the entity knows.
+ *
  * @author Yohann Chastagnier
  */
 public interface EntityIdentifier extends ResourceIdentifier, Serializable,
     Comparable<EntityIdentifier> {
 
   /**
-   * Sets the identifier's value from its given String representation.
+   * Sets the identifier's value from the given String representation.
+   *
    * @param id the encoded value of the identifier.
-   * @return the identifier decoded from the specified String representation.
+   * @return itself valued with the encoded value.
    */
-  EntityIdentifier fromString(String id);
+  EntityIdentifier setFromString(String id);
 
   /**
-   * Generates a new unique entity identifier.
+   * Generates a new unique value for this entity identifier if and only it isn't yet valued.
    * "Auto-Increment" identifiers must implement this method.
+   *
    * @param parameters the parameters required in the generation of the new identifier. Those
    * depends on the kind of entity identifier and they must be documented in the concrete class.
-   * @return a new identifier.
+   * @return the valued identifier.
    */
-  EntityIdentifier generateNewId(String... parameters);
+  EntityIdentifier generateNewValue(String... parameters);
+
+  /**
+   * Is this identifier null? In other terms, is this identifier valued?
+   * @return true if this identifier has no value. False otherwise.
+   */
+  boolean isNull();
 
   /**
    * Compares this identifier of entity with the specified one. The comparing is done by their
    * String representation.
+   *
    * @param o another entity identifier.
    * @return a negative integer, zero, or a positive integer as this object is less than, equal to,
    * or greater than the specified object.

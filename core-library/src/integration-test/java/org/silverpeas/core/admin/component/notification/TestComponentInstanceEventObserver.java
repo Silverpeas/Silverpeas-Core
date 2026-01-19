@@ -23,15 +23,19 @@
  */
 package org.silverpeas.core.admin.component.notification;
 
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Singleton;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Singleton;
-
 /**
+ * Singleton observer of {@link ComponentInstanceEvent} events. Singleton in order to access the
+ * same instance that the one received the event.
+ *
  * @author mmoquillon
  */
+@Bean
 @Singleton
 public class TestComponentInstanceEventObserver {
 

@@ -25,28 +25,25 @@ package org.silverpeas.core.contribution.attachment.model;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
-import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.core.test.util.RandomGenerator;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
+import static org.hamcrest.Matchers.contains;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getUploadPath;
 
 /**
@@ -56,14 +53,6 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getUploadPath;
 class SimpleDocumentTest {
   
   private static final String instanceId = "kmelia36";
-
-  @Inject
-  I18n i18n;
-  
-  @BeforeEach
-  void setDefaultI18nLanguage() {
-    when(i18n.getDefaultLanguage()).thenReturn("fr");
-  }
 
   /**
    * Test of computeNodeName method, of class SimpleDocument.

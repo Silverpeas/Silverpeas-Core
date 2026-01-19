@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import java.sql.Date;
 import java.time.LocalDate;
 
@@ -61,10 +61,12 @@ public class LocalDateAttributeConverter implements
     if (sqlDate == null) {
       return null;
     }
-    if (sqlDate.toLocalDate().equals(MIN_DATE.toLocalDate())) {
+    if (sqlDate.toLocalDate().isEqual(MIN_DATE.toLocalDate()) ||
+        sqlDate.toLocalDate().isBefore(MIN_DATE.toLocalDate())) {
       return LocalDate.MIN;
     }
-    if (sqlDate.toLocalDate().equals(MAX_DATE.toLocalDate())) {
+    if (sqlDate.toLocalDate().isEqual(MAX_DATE.toLocalDate()) ||
+        sqlDate.toLocalDate().isAfter(MAX_DATE.toLocalDate())) {
       return LocalDate.MAX;
     }
     return sqlDate.toLocalDate();

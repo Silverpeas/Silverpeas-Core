@@ -33,11 +33,12 @@ import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ExportServlet extends HttpServlet {
@@ -51,7 +52,7 @@ public class ExportServlet extends HttpServlet {
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Optional<ExportCSVBuilder> csvBuilder = ExportCSVBuilder.getFrom(HttpRequest.decorate(request));
-    if (!csvBuilder.isPresent()) {
+    if (csvBuilder.isEmpty()) {
       // Get the session
       final String type = request.getParameter("type");
       final String name = request.getParameter("name");
@@ -75,14 +76,14 @@ public class ExportServlet extends HttpServlet {
           (List<ArrayColumn>) cache.get(name + ArrayPane.CACHE_COLUMNS_KEY_SUFFIX);
 
       CSVRow header = new CSVRow();
-      for (ArrayColumn curCol : columns) {
+      for (ArrayColumn curCol : Objects.requireNonNull(columns)) {
         header.addCell(curCol.getTitle());
       }
       csvBuilder.setHeader(header);
 
       final List<ArrayLine> lines =
           (List<ArrayLine>) cache.get(name + ArrayPane.CACHE_LINES_KEY_SUFFIX);
-      for (ArrayLine curLine : lines) {
+      for (ArrayLine curLine : Objects.requireNonNull(lines)) {
         CSVRow row = new CSVRow();
         for (ArrayColumn curCol : columns) {
           final String fullCell = curLine.getCellAt(curCol.getColumnNumber()).print();
@@ -100,7 +101,7 @@ public class ExportServlet extends HttpServlet {
    * Clean HTML code
    * @param html the string to clean (removing HTML node and attributes)
    * @return text node
-   * @throws IOException
+   * @throws IOException if the cleaning fails.
    */
   private String cleanHtmlCode(String html) throws IOException {
     return cleaner.cleanHtmlFragment(html);

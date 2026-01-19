@@ -29,8 +29,8 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class GoToVersion extends GoToDocument {
 
@@ -48,7 +48,7 @@ public class GoToVersion extends GoToDocument {
           .searchDocumentById(new SimpleDocumentPK(objectId), getContentLanguage(req));
     }
     if (document != null) {
-      return redirectToFile(document, req, res);
+      return redirectToFile(document, req);
     }
     return null;
   }

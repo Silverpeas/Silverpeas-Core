@@ -26,7 +26,7 @@ package org.silverpeas.core.test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

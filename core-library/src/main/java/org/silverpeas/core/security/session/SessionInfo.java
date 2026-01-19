@@ -24,7 +24,6 @@
 package org.silverpeas.core.security.session;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 
@@ -172,12 +171,12 @@ public abstract class SessionInfo implements SilverpeasUserSession {
    * Gets the profile of the user that opened the session.
    * @return a UserDetail instance with the profile information on the user.
    */
-  public UserDetail getUserDetail() {
-    return (UserDetail) userDetail;
+  public User getUserDetail() {
+    return userDetail;
   }
 
   /**
-   * Updates the last access timestamp. A one-shot session cannot used in several user calls.
+   * Updates the last access timestamp. A one-shot session cannot be used in several user calls.
    * Invoking this method on such a session will throw an {@link IllegalStateException} exception.
    */
   public void updateLastAccess() {

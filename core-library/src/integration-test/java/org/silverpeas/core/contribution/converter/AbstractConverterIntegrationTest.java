@@ -26,8 +26,11 @@ package org.silverpeas.core.contribution.converter;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.io.media.MetaData;
+import org.silverpeas.core.io.media.MetadataExtractor;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.office.OfficeServiceInitializationListener;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -45,11 +48,14 @@ public abstract class AbstractConverterIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AbstractConverterIntegrationTest.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addFileRepositoryFeatures()
-        .testFocusedOn(w -> ((WarBuilder4LibCore) w).addOfficeFeatures())
+    return LibCoreWarBuilder.onWarForTestClass(AbstractConverterIntegrationTest.class)
+        .addIndexingEngine()
+        .addWebListener(OfficeServiceInitializationListener.class)
+        .addMavenDependencies("org.apache.commons:commons-exec",
+            "org.jodconverter:jodconverter-local")
+        .addPackages(true, "org.silverpeas.core.contribution.converter")
+        .addClasses(MetadataExtractor.class, MetaData.class)
+        .addAsResource("org/silverpeas/converter")
         .build();
   }
 

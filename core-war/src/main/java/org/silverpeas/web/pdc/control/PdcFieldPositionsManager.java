@@ -47,10 +47,7 @@ public class PdcFieldPositionsManager {
   // PDC field displayer.
   private PdcFieldDisplayer displayer;
 
-  /**
-   * Constructor
-   */
-  protected PdcFieldPositionsManager() {
+  PdcFieldPositionsManager() {
     reset();
   }
 

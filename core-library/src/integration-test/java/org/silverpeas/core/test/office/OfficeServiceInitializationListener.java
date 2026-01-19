@@ -24,30 +24,28 @@
 
 package org.silverpeas.core.test.office;
 
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.initialization.SilverpeasServiceInitialization;
-import org.silverpeas.core.test.WarBuilder4LibCore;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import java.util.function.Predicate;
 
 /**
  * In order to initialize the services around the office document, this listener MUST be defined
  * into the web.xml of the archive built of an integration test with arquillian + Wildfly.
  * <p>
- *   At server starting, when the context of the integration is initialized, each implementation
- *   of {@link Initialization} interface that the class name contains the keyword "OfficeService"
- *   is performed.
+ * At server starting, when the context of the integration is initialized, each implementation of
+ * {@link Initialization} interface that the class name contains the keyword "OfficeService" is
+ * performed.
  * </p>
- * <p>
- *   To use it easily, {@link WarBuilder4LibCore#addOfficeFeatures()} method is provided.
- * </p>
+ *
  * @author silveryocha
  */
 public class OfficeServiceInitializationListener implements ServletContextListener {
 
-  private static final Predicate<Initialization> FILTER = i -> i.getClass().getSimpleName().contains("OfficeService");
+  private static final Predicate<Initialization> FILTER =
+      i -> i.getClass().getSimpleName().contains("OfficeService");
 
   @Override
   public void contextInitialized(final ServletContextEvent sce) {

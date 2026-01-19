@@ -27,7 +27,7 @@ import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import java.io.IOException;
 
 /**

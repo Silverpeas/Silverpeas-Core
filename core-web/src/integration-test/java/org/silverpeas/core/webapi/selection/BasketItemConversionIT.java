@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.webapi.selection;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -34,7 +35,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.publication.service.DefaultPublicationService;
 import org.silverpeas.web.test.RESTWebServiceTest;
 
 import java.time.Month;
@@ -47,7 +48,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.in;
 
 /**
  * Integration tests on the conversion of a {@link BasketItem} instance to its counterpart
@@ -56,6 +56,11 @@ import static org.hamcrest.Matchers.in;
  */
 @RunWith(Arquillian.class)
 public class BasketItemConversionIT extends RESTWebServiceTest {
+
+  @Inject
+  private OrganizationController controller;
+  @Inject
+  private DefaultPublicationService service;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -72,7 +77,7 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
 
   @Test
   public void aBasketItemMapsAResource() {
-    ComponentInst app = OrganizationController.get().getComponentInst("toto1");
+    ComponentInst app = controller.getComponentInst("toto2");
     BasketItem basketItem = BasketItem.from(app);
     assertThat(basketItem.isComponentInstance(), is(true));
     assertThat(basketItem, is(app));
@@ -80,7 +85,7 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
 
   @Test
   public void aBasketItemMapsAPlannedContribution() {
-    CalendarEvent event = getCalendarEvent(1);
+    CalendarEvent event = getCalendarEvent();
     BasketItem basketItem = BasketItem.from(event);
     assertThat(basketItem.isContribution(), is(true));
     assertThat(basketItem.isPlanned(), is(true));
@@ -101,7 +106,7 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
 
   @Test
   public void aResourceCanBeObtainedByItsMappedBasketItem() {
-    ComponentInst app = OrganizationController.get().getComponentInst("toto1");
+    ComponentInst app = controller.getComponentInst("toto2");
 
     BasketItem basketItem = BasketItem.from(app);
     assertThat(basketItem.isComponentInstance(), is(true));
@@ -113,7 +118,7 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
 
   @Test
   public void aPlannedContributionCanBeObtainedByItsMappedBasketItem() {
-    CalendarEvent event = getCalendarEvent(1);
+    CalendarEvent event = getCalendarEvent();
 
     BasketItem basketItem = BasketItem.from(event);
     assertThat(basketItem.isContribution(), is(true));
@@ -152,8 +157,7 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
   }
 
   private PublicationDetail getPublication(int index) {
-    Collection<PublicationDetail> publications = PublicationService.get()
-        .getAllPublications("toto1");
+    Collection<PublicationDetail> publications = service.getAllPublications("toto2");
     assertThat(publications.size(), greaterThanOrEqualTo(index + 1));
 
     Iterator<PublicationDetail> iterator = publications.iterator();
@@ -163,11 +167,11 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
     return iterator.next();
   }
 
-  private CalendarEvent getCalendarEvent(int index) {
+  private CalendarEvent getCalendarEvent() {
     List<CalendarEvent> events =  Calendar.getById("CAL_ID_1")
         .in(YearMonth.of(2011, Month.JULY))
         .getEvents();
-    assertThat(events.size(), greaterThanOrEqualTo(index + 1));
-    return events.get(index);
+    assertThat(events.size(), greaterThanOrEqualTo(1 + 1));
+    return events.get(1);
   }
 }

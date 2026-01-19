@@ -28,11 +28,11 @@ package org.silverpeas.core.node.importexport;
 
 import org.silverpeas.core.node.model.NodeDetail;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Classe utilisée pour le (un)marshalling
@@ -51,30 +51,18 @@ public class NodeTreeType {
     // This constructor is necessary with JAXB
   }
 
-  /**
-   * @return
-   */
   public String getComponentId() {
     return componentId;
   }
 
-  /**
-   * @return
-   */
   public NodeDetail getNodeDetail() {
     return nodeDetail;
   }
 
-  /**
-   * @param string
-   */
   public void setComponentId(String string) {
     componentId = string;
   }
 
-  /**
-   * @param detail
-   */
   public void setNodeDetail(NodeDetail detail) {
     nodeDetail = detail;
   }

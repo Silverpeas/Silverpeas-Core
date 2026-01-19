@@ -55,10 +55,10 @@ import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServl
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -253,7 +253,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
   /**
    * @param space : the space instance
    * @param listUFS : the list of user favorite space
-   * @return true if the current space contains user favorites sub space, false else if
+   * @return true if the current space contains user favorites subspace, false else if
    */
   private boolean containsFavoriteSubSpace(SpaceInstLight space, List<UserFavoriteSpaceVO> listUFS,
       String userId) {
@@ -269,21 +269,6 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     return userFavoriteSpaceService.isUserFavoriteSpace(listUFS, space);
   }
 
-  /**
-   * displaySpace build XML response tree of current spaceId
-   * @param spaceId
-   * @param componentId
-   * @param spacePath
-   * @param userId
-   * @param language
-   * @param defaultLook
-   * @param displayTransverse
-   * @param helper
-   * @param writer
-   * @param listUFS
-   * @param userMenuDisplayMode
-   * @throws IOException
-   */
   private void displaySpace(String spaceId, String componentId, List<String> spacePath,
       String userId, String language, String defaultLook, boolean displayTransverse,
       LookHelper helper, Writer writer, List<UserFavoriteSpaceVO> listUFS,
@@ -308,13 +293,12 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     // Affichage de l'espace collaboratif
     SpaceInstLight space = organisationController.getSpaceInstLightById(spaceId);
     if (space != null && isSpaceVisible(userId, space, helper)) {
-      StringBuilder itemSB = new StringBuilder(200);
-      itemSB.append("<item open=\"").append(open).append("\" ");
-      itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
-      itemSB.append(getFavoriteSpaceAttribute(userId, listUFS, space, helper));
-      itemSB.append(">");
+      String itemSB = "<item open=\"" + open + "\" " +
+          getSpaceAttributes(space, language, defaultLook, helper) +
+          getFavoriteSpaceAttribute(userId, listUFS, space, helper) +
+          ">";
 
-      writer.write(itemSB.toString());
+      writer.write(itemSB);
 
       if (open) {
         // Default display configuration
@@ -335,13 +319,6 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     }
   }
 
-  /**
-   * @param userId
-   * @param listUFS
-   * @param space
-   * @param helper
-   * @return an XML user favorite space attribute only if User Favorite Space is enable
-   */
   private String getFavoriteSpaceAttribute(String userId, List<UserFavoriteSpaceVO> listUFS,
       SpaceInstLight space, LookHelper helper) {
     StringBuilder favSpace = new StringBuilder(20);
@@ -409,7 +386,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
   /**
    * Recursive method to get the right look.
-   * @param space
+   * @param space the space
    * @param defaultLook : current default look name
    * @return the space style according to the space hierarchy
    */
@@ -441,13 +418,12 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       spaceId = availableSpaceId;
       space = organisationController.getSpaceInstLightById(spaceId);
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, space, listUFS);
-      if (loadCurSpace && isSpaceVisible(userId, space, helper) && space != null) {
-        StringBuilder itemSB = new StringBuilder(200);
-        itemSB.append("<item ");
-        itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
-        itemSB.append(getFavoriteSpaceAttribute(userId, listUFS, space, helper));
-        itemSB.append("/>");
-        out.write(itemSB.toString());
+      if (loadCurSpace && isSpaceVisible(userId, space, helper)) {
+        String itemSB = "<item " +
+            getSpaceAttributes(space, language, defaultLook, helper) +
+            getFavoriteSpaceAttribute(userId, listUFS, space, helper) +
+            "/>";
+        out.write(itemSB);
       }
     }
     out.write("</spaces>");
@@ -469,14 +445,13 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
         // Check user favorite space
         loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, space, listUFS);
         if (loadCurSpace && isSpaceVisible(userId, space, helper)) {
-          StringBuilder itemSB = new StringBuilder(200);
-          itemSB.append("<item ");
-          itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
-          itemSB.append(" open=\"").append(open).append("\"");
-          itemSB.append(getFavoriteSpaceAttribute(userId, listUFS, space, helper));
-          itemSB.append(">");
+          String itemSB = "<item " +
+              getSpaceAttributes(space, language, defaultLook, helper) +
+              " open=\"" + open + "\"" +
+              getFavoriteSpaceAttribute(userId, listUFS, space, helper) +
+              ">";
 
-          out.write(itemSB.toString());
+          out.write(itemSB);
 
           if (open) {
             // Default display configuration
@@ -652,7 +627,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
         rootSpaceIds.add(availableSpaceId);
       }
     }
-    return rootSpaceIds.toArray(new String[rootSpaceIds.size()]);
+    return rootSpaceIds.toArray(new String[0]);
   }
 
   protected boolean isPersonalSpace(String spaceId) {
@@ -731,8 +706,8 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
             .andFullComponentUrl("javascript:openClipboard()"));
       }
 
-      List<SilverpeasComponentInstance> instances = new ArrayList<>();
-      instances.addAll(personalSpaceManager.getVisiblePersonalComponentInstances(user));
+      List<SilverpeasComponentInstance> instances =
+          new ArrayList<>(personalSpaceManager.getVisiblePersonalComponentInstances(user));
 
       if (settings.getBoolean("PersonalSpaceAddingsEnabled", true)) {
         SpaceInst personalSpace = personalSpaceManager.getPersonalSpace(userId);
@@ -831,7 +806,6 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     private String label = "N/A";
     private String description = "";
     private String kind = "";
-    private String component = "component";
     private int level = 1;
     private boolean open = false;
     private String componentUrl;
@@ -855,6 +829,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     }
 
     void write(Writer writer) throws IOException {
+      String component = "component";
       writer.write(
           "<item id=\"" + id + NAME + Encode.forXml(label) + "\" description=\"" +
               Encode.forXml(description) + "\" type=\"" + component + "\" kind=\"" + kind +

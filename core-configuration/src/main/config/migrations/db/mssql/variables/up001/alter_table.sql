@@ -1,0 +1,1 @@
+EXEC sp_rename 'SB_Variables_Value.value', 'variableValue', 'COLUMN';

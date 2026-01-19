@@ -34,14 +34,11 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +53,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * Integration tests on the getting, on the saving, on the deletion and on the update of the events
  * in a given calendar.
- * We first check the getting of an existing event works fine so that we can use afterwards the
+ * We first check the getting of an existing event works fine so that we can use afterward the
  * getting method to get the previously saved event in order to check its persisted properties.
  * @author Yohann Chastagnier
  */
@@ -74,7 +71,9 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(CalendarEventManagementIT.class)
+    return LibCoreWarBuilder.onWarForTestClass(CalendarEventManagementIT.class)
+        .addStubbedUserAPI()
+        .addCalendarEngine()
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
@@ -86,11 +85,15 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
   }
 
   @Before
-  public void verifyInitialData() throws Exception {
+  public void setUpInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarEventTableLines(), hasSize(6));
-    OperationContext.fromUser(USER_ID);
     TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+
+    User user = StubbedUserProvider.addUser(USER_ID);
+    OperationContext.fromUser(user);
+    StubbedUserProvider.addUser("0");
+    StubbedUserProvider.addUser("2") ;
   }
 
   @Test

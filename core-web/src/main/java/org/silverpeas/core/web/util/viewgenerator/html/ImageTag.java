@@ -30,8 +30,8 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.apache.ecs.xhtml.img;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 
 /**

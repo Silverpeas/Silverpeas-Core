@@ -34,7 +34,8 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -95,22 +96,16 @@ public class SilverStatisticsPeasDAOAccesVolume {
   @Nonnull
   private static Collection<String> getYearsWithQuery(final String selectQuery)
       throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
-    try {
-      myCon = DBUtil.openConnection();
-      stmt = myCon.prepareStatement(selectQuery);
-      rs = stmt.executeQuery();
-      LinkedHashSet<String> years = new LinkedHashSet<>();
-      while (rs.next()) {
-        String currentYear = extractYearFromDate(rs.getString("dateStat"));
-        years.add(currentYear);
+    try (Connection myCon = DBUtil.openConnection();
+         PreparedStatement stmt = myCon.prepareStatement(selectQuery)) {
+      try (ResultSet rs = stmt.executeQuery()) {
+        LinkedHashSet<String> years = new LinkedHashSet<>();
+        while (rs.next()) {
+          String currentYear = extractYearFromDate(rs.getString("dateStat"));
+          years.add(currentYear);
+        }
+        return years;
       }
-      return years;
-    } finally {
-      DBUtil.close(rs, stmt);
-      DBUtil.close(myCon);
     }
   }
 
@@ -170,18 +165,12 @@ public class SilverStatisticsPeasDAOAccesVolume {
   @Nonnull
   private static List<String[]> getAccessEvolFor(final String spaceId,
       final String accessQuery) throws SQLException, ParseException {
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
-    try {
-      myCon = DBUtil.openConnection();
-      pstmt = myCon.prepareStatement(accessQuery);
-      pstmt.setString(1, spaceId);
-      rs = pstmt.executeQuery();
-      return getStatsUserFromResultSet(rs);
-    } finally {
-      DBUtil.close(rs, pstmt);
-      DBUtil.close(myCon);
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement stmt = connection.prepareStatement(accessQuery)) {
+      stmt.setString(1, spaceId);
+      try (ResultSet rs = stmt.executeQuery()) {
+        return getStatsUserFromResultSet(rs);
+      }
     }
   }
 
@@ -343,65 +332,33 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   static Map<String, String> selectVolumeForUser(String dateStat, String filterIdUser)
       throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
-    try {
-      myCon = DBUtil.openConnection();
-      stmt = myCon.prepareStatement(SELECT_VOLUME_BY_USER);
-      stmt.setString(1, dateStat);
-      stmt.setInt(2, Integer.parseInt(filterIdUser));
-      rs = stmt.executeQuery();
-      Map<String, String> result = new HashMap<>();
-      while (rs.next()) {
-        addNewStatistic(result, rs.getString(COMPONENT_ID), rs.getLong("volume"));
-      }
-      return result;
-    } finally {
-      DBUtil.close(rs, stmt);
-      DBUtil.close(myCon);
-    }
+    return performSQLQuery(SELECT_VOLUME_BY_USER, dateStat, filterIdUser, "volume");
   }
 
   static Map<String, String> selectAccessForAllComponents(String dateStat) throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
-    try {
-      myCon = DBUtil.openConnection();
-      stmt = myCon.prepareStatement(SELECT_ACCESS_FOR_ALL_COMPONENTS);
-      stmt.setString(1, dateStat);
-      rs = stmt.executeQuery();
-      Map<String, String> result = new HashMap<>();
-      while (rs.next()) {
-        addNewStatistic(result, rs.getString(COMPONENT_ID), rs.getLong("accesses"));
-      }
-      return result;
-    } finally {
-      DBUtil.close(rs, stmt);
-      DBUtil.close(myCon);
-    }
+    return performSQLQuery(SELECT_ACCESS_FOR_ALL_COMPONENTS, dateStat, null, "accesses");
   }
 
   static Map<String, String> selectAccessForUser(String dateStat, String filterIdUser)
       throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
-    try {
-      myCon = DBUtil.openConnection();
-      stmt = myCon.prepareStatement(SELECT_ACCESS_FOR_USER);
+    return performSQLQuery(SELECT_ACCESS_FOR_USER, dateStat, filterIdUser, "accesses");
+  }
+
+  private static Map<String, String> performSQLQuery(String query, String dateStat,
+      String userId, String statField) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement stmt = connection.prepareStatement(query)) {
       stmt.setString(1, dateStat);
-      stmt.setInt(2, Integer.parseInt(filterIdUser));
-      rs = stmt.executeQuery();
-      Map<String, String> result = new HashMap<>();
-      while (rs.next()) {
-        addNewStatistic(result, rs.getString(COMPONENT_ID), rs.getLong("accesses"));
+      if (StringUtil.isDefined(userId)) {
+        stmt.setInt(2, Integer.parseInt(userId));
       }
-      return result;
-    } finally {
-      DBUtil.close(rs, stmt);
-      DBUtil.close(myCon);
+      try (ResultSet rs = stmt.executeQuery()) {
+        Map<String, String> result = new HashMap<>();
+        while (rs.next()) {
+          addNewStatistic(result, rs.getString(COMPONENT_ID), rs.getLong(statField));
+        }
+        return result;
+      }
     }
   }
 
@@ -411,17 +368,21 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Map<String, String> allAccesses = new HashMap<>();
     for (UserDetail user : users) {
       Map<String, String> userStats = selectAccessForUser(dateStat, user.getId());
-      for (Map.Entry<String, String> stat : userStats.entrySet()) {
-        if (allAccesses.containsKey(stat.getKey())) {
-          allAccesses.put(stat.getKey(), String.valueOf(
-              Integer.parseInt(allAccesses.get(stat.getKey())) +
-                  Integer.parseInt(stat.getValue())));
-        } else {
-          allAccesses.put(stat.getKey(), stat.getValue());
-        }
-      }
+      extractAccesses(allAccesses, userStats);
     }
     return allAccesses;
+  }
+
+  private static void extractAccesses(Map<String, String> allAccesses, Map<String, String> userStats) {
+    for (Map.Entry<String, String> stat : userStats.entrySet()) {
+      if (allAccesses.containsKey(stat.getKey())) {
+        allAccesses.put(stat.getKey(), String.valueOf(
+            Integer.parseInt(allAccesses.get(stat.getKey())) +
+                Integer.parseInt(stat.getValue())));
+      } else {
+        allAccesses.put(stat.getKey(), stat.getValue());
+      }
+    }
   }
 
   static Map<String, String> selectVolumeForGroup(String dateStat, String groupId)
@@ -430,14 +391,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Map<String, String> allVolumes = new HashMap<>();
     for (UserDetail user : users) {
       Map<String, String> userStats = selectVolumeForUser(dateStat, user.getId());
-      for (Map.Entry<String, String> stat : userStats.entrySet()) {
-        if (allVolumes.containsKey(stat.getKey())) {
-          allVolumes.put(stat.getKey(), String.valueOf(
-              Integer.parseInt(allVolumes.get(stat.getKey())) + Integer.parseInt(stat.getValue())));
-        } else {
-          allVolumes.put(stat.getKey(), stat.getValue());
-        }
-      }
+      extractAccesses(allVolumes, userStats);
     }
     return allVolumes;
   }
@@ -489,6 +443,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Returns the last accessed components of a user.
+   *
    * @param currentUserId the identifier of the current user
    * @param nbObjects to return
    * @return the list of the last accessed components of a user.

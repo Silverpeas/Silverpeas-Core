@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.sharing.services;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
@@ -35,9 +37,6 @@ import org.silverpeas.core.sharing.repository.DownloadDetailRepository;
 import org.silverpeas.core.sharing.repository.TicketRepository;
 import org.silverpeas.core.util.SilverpeasList;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.silverpeas.core.backgroundprocess.BackgroundProcessTask.LOCK_DURATION.A_DAY;
@@ -47,7 +46,6 @@ import static org.silverpeas.core.backgroundprocess.BackgroundProcessTask.LOCK_D
  * @author ehugonnet
  */
 @Service
-@Singleton
 @Transactional
 public class JpaSharingTicketService implements SharingTicketService, ComponentInstanceDeletion {
 

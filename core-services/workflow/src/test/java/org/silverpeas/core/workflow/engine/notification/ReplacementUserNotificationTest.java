@@ -38,20 +38,18 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.kernel.test.annotations.TestManagedBeans;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.engine.user.ReplacementConstructor;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -115,8 +113,6 @@ class ReplacementUserNotificationTest {
 
     when(userManager.getUser(userA.getUserId())).thenReturn(userA);
     when(userManager.getUser(userB.getUserId())).thenReturn(userB);
-
-    mocker.setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
 
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     when(componentAccessControl.isGroupAuthorized(anyString(), anyString())).thenReturn(true);

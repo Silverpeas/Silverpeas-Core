@@ -33,7 +33,7 @@ import org.silverpeas.core.cmis.model.CmisFilePath;
 import org.silverpeas.core.cmis.model.CmisFilePathProvider;
 import org.silverpeas.core.cmis.model.Space;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Technical
 @Provider

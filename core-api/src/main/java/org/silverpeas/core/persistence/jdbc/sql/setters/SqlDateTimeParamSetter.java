@@ -25,6 +25,7 @@
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.date.DateTime;
 
@@ -35,6 +36,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,6 +45,7 @@ import java.util.List;
  * {@link Instant}, {@link java.time.LocalDate}, {@link OffsetDateTime} and {@link ZonedDateTime}.
  * @author mmoquillon
  */
+@SuppressWarnings("deprecation")
 @Technical
 @Bean
 class SqlDateTimeParamSetter extends SqlTemporalParamSetter {
@@ -59,16 +62,17 @@ class SqlDateTimeParamSetter extends SqlTemporalParamSetter {
     if (value instanceof Timestamp) {
       statement.setTimestamp(idx, (Timestamp) value);
     } else if (isADateTime(value)) {
-      statement.setTimestamp(idx, Timestamp.from(toInstant(value)));
+      Instant instant = TemporalConverter.asInstant((Temporal) value);
+      statement.setTimestamp(idx, Timestamp.from(instant));
+    } else if (value instanceof DateTime) {
+      var dateTime = (DateTime) value;
+      statement.setTimestamp(idx, Timestamp.from(dateTime.toZoneDateTime().toInstant()));
     } else {
       throwTypeNotSupported(value.getClass());
     }
   }
 
   private boolean isADateTime(final Object parameter) {
-    if (parameter instanceof DateTime) {
-      return true;
-    }
     if (parameter instanceof Instant) {
       return true;
     }
@@ -81,4 +85,4 @@ class SqlDateTimeParamSetter extends SqlTemporalParamSetter {
     return parameter instanceof ZonedDateTime;
   }
 }
-  
+

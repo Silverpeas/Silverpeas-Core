@@ -39,12 +39,12 @@ import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -100,10 +100,6 @@ public class AjaxActionServlet extends HttpServlet {
     }
   }
 
-  /**
-   * @param req
-   * @return JSON action result
-   */
   private String addSpace(HttpServletRequest req) {
     // Get current session
     HttpSession session = req.getSession(true);
@@ -113,7 +109,7 @@ public class AjaxActionServlet extends HttpServlet {
     // Retrieve space identifier parameter
     String spaceId = req.getParameter("SpaceId");
 
-    String json = "";
+    String json;
     if (StringUtil.isDefined(spaceId) && StringUtil.isDefined(userId)) {
       // Retrieve all sub space identifier
       ArrayList<String> addedSubSpaceIds = getSubSpaceIdentifiers(userId, spaceId);
@@ -140,10 +136,6 @@ public class AjaxActionServlet extends HttpServlet {
     return json;
   }
 
-  /**
-   * @param listSpaces
-   * @return JSONArray of list of spaces
-   */
   private UnaryOperator<JSONArray> getJSONSpaces(
       List<String> listSpaces) {
     return (jsonSpaces -> {
@@ -154,33 +146,17 @@ public class AjaxActionServlet extends HttpServlet {
     });
   }
 
-  /**
-   * @param spaceId
-   * @return
-   */
   private ArrayList<String> getParentSpaceIds(String spaceId) {
     ArrayList<String> parentSpaceIds = new ArrayList<>();
     return getParentSpaceOfFavoriteSpace(spaceId, parentSpaceIds);
   }
 
-  /**
-   * @param userId
-   * @param spaceId
-   * @return sub space identifiers of current space id given in parameter
-   */
   private ArrayList<String> getSubSpaceIdentifiers(String userId, String spaceId) {
     ArrayList<String> addedSubSpaceIds = new ArrayList<>();
     addSubSpace(spaceId, userId, addedSubSpaceIds);
     return addedSubSpaceIds;
   }
 
-  /**
-   * addSubSpace add all sub space into user favorite spaces
-   * @param spaceId
-   * @param userId
-   * @param addedSpaceIds
-   * @return
-   */
   private List<String> addSubSpace(String spaceId, String userId, ArrayList<String> addedSpaceIds) {
     SpaceInstLight space = organisationController.getSpaceInstLightById(spaceId);
     if (userFavoriteSpaceService.addUserFavoriteSpace(
@@ -195,10 +171,6 @@ public class AjaxActionServlet extends HttpServlet {
     return addedSpaceIds;
   }
 
-  /**
-   * @param req
-   * @return JSON action result
-   */
   private String removeSpace(HttpServletRequest req) {
     // Get current session
     HttpSession session = req.getSession(true);
@@ -210,7 +182,7 @@ public class AjaxActionServlet extends HttpServlet {
 
     // Retrieve space identifier parameter
     String spaceId = req.getParameter("SpaceId");
-    String json = "";
+    String json;
     if (StringUtil.isDefined(spaceId) && StringUtil.isDefined(userId)) {
       SpaceInstLight spaceInst = organisationController.getSpaceInstLightById(spaceId);
       // Retrieve all the subspace identifier and status in order to display the right status
@@ -254,12 +226,6 @@ public class AjaxActionServlet extends HttpServlet {
     return jsonRslt;
   }
 
-  /**
-   * @param userId
-   * @param listUFS
-   * @param parentSpaceIds
-   * @return
-   */
   private UnaryOperator<JSONArray> buildParentJA(String userId,
       List<UserFavoriteSpaceVO> listUFS, ArrayList<String> parentSpaceIds) {
     return (resultJA -> {
@@ -293,10 +259,6 @@ public class AjaxActionServlet extends HttpServlet {
     return req.getParameter("Action");
   }
 
-  /**
-   * @param spaceId
-   * @return true if current space is a sub space from a user favorite space, false else if
-   */
   private ArrayList<String> getParentSpaceOfFavoriteSpace(String spaceId,
       ArrayList<String> parentSpaceIds) {
     SpaceInst curSpaceInst = organisationController.getSpaceInstById(spaceId);

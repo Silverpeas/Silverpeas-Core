@@ -32,18 +32,18 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
 import org.silverpeas.core.web.mvc.webcomponent.entity.WebEntity4Test;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 @org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
@@ -51,6 +51,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
 
   /**
    * Standard Session Controller Constructor
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    *
@@ -223,7 +224,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
   }
 
   @GET
-  @Path("/wysiwyg/resourceId-{anResourceId  :  [0-9]+ }-test/{otherId}/view")
+  @Path("/wysiwyg/resourceId-{anResourceId:[0-9]+ }-test/{otherId}/view")
   @RedirectToInternal("view/resource/4")
   public void viewOtherResource2(TestWebComponentRequestContext context) {
   }
@@ -336,51 +337,52 @@ public class TestWebComponentController extends ParentTestWebComponentController
 
   @Override
   protected void onInstantiation(final TestWebComponentRequestContext context) {
-    Object called = CacheAccessorProvider.getSessionCacheAccessor().getCache().get("onInstantiationCalled");
+    Object called = CacheAccessorProvider.getSessionCacheAccessor().getCache().get(
+        "onInstantiationCalled");
     if (called == null) {
       context.getNavigationContext()
           .addListener(new AbstractNavigationContextListener<TestWebComponentRequestContext>() {
             @Override
-            public void navigationContextCleared(final NavigationContext navigationContext) {
+            public void navigationContextCleared(final NavigationContext<TestWebComponentRequestContext> navigationContext) {
               navigationContext.getWebComponentRequestContext().getRequest()
                   .setAttribute("navigationContextCleared", true);
             }
 
             @Override
-            public void navigationStepCreated(final NavigationContext navigationContext) {
+            public void navigationStepCreated(final NavigationContext<TestWebComponentRequestContext> navigationContext) {
               navigationContext.getWebComponentRequestContext().getRequest()
                   .setAttribute("navigationStepCreated", true);
             }
 
             @Override
-            public void navigationStepReset(final NavigationContext navigationContext) {
+            public void navigationStepReset(final NavigationContext<TestWebComponentRequestContext> navigationContext) {
               navigationContext.getWebComponentRequestContext().getRequest()
                   .setAttribute("navigationStepReset", true);
             }
 
             @Override
-            public void noNavigationStepPerformed(final NavigationContext navigationContext) {
+            public void noNavigationStepPerformed(final NavigationContext<TestWebComponentRequestContext> navigationContext) {
               navigationContext.getWebComponentRequestContext().getRequest()
                   .setAttribute("noNavigationStepPerformed", true);
             }
 
             @Override
             public void navigationStepTrashed(
-                final NavigationContext.NavigationStep trashedNavigationStep) {
+                final NavigationContext<TestWebComponentRequestContext>.NavigationStep trashedNavigationStep) {
               trashedNavigationStep.getNavigationContext().getWebComponentRequestContext()
                   .getRequest().setAttribute("navigationStepTrashed", true);
             }
 
             @Override
             public void navigationStepLabelSet(
-                final NavigationContext.NavigationStep navigationStep, final String oldLabel) {
+                final NavigationContext<TestWebComponentRequestContext>.NavigationStep navigationStep, final String oldLabel) {
               navigationStep.getNavigationContext().getWebComponentRequestContext().getRequest()
                   .setAttribute("navigationStepLabelSet", true);
             }
 
             @Override
             public void navigationStepContextIdentifierSet(
-                final NavigationContext.NavigationStep navigationStep,
+                final NavigationContext<TestWebComponentRequestContext>.NavigationStep navigationStep,
                 final String oldContextIdentifier) {
               navigationStep.getNavigationContext().getWebComponentRequestContext().getRequest()
                   .setAttribute("navigationStepContextIdentifierSet", true);
@@ -413,7 +415,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
     }
   }
 
-  public static enum ViewContext {
+  public enum ViewContext {
     navigationStepA, navigationStepB, navigationStepC;
 
     public static ViewContext fromIdentifier(String identifier) {

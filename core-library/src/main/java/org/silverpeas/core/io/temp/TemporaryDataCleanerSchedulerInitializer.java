@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.temp;
 
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.SchedulingInitializer;
@@ -32,7 +32,6 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -54,8 +53,7 @@ import static org.silverpeas.core.io.temp.TemporaryDataManagementSetting.getTime
 /**
  * @author Yohann Chastagnier
  */
-@Service
-@Singleton
+@Bean
 public class TemporaryDataCleanerSchedulerInitializer extends SchedulingInitializer {
 
   protected static final String JOB_NAME = "TemporayDataCleanerJob";

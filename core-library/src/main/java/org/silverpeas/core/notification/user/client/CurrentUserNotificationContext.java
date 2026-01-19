@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.notification.NotificationException;
 
@@ -54,8 +54,8 @@ public class CurrentUserNotificationContext {
   /**
    * Performs some control around a manual user notification by considering that the sender is
    * the current user.
-   * @param notificationMetaData
-   * @throws NotificationException
+   * @param notificationMetaData metadata of the notification to send.
+   * @throws NotificationException if the check fails.
    */
   public void checkManualUserNotification(NotificationMetaData notificationMetaData)
       throws NotificationException {
@@ -64,7 +64,7 @@ public class CurrentUserNotificationContext {
 
       // Checking the limit
       final boolean limitExceeded;
-      UserDetail currentUser = UserDetail.getCurrentRequester();
+      User currentUser = User.getCurrentRequester();
       if (currentUser != null) {
         limitExceeded = currentUser.isUserManualNotificationUserReceiverLimit() &&
             currentUser.getUserManualNotificationUserReceiverLimitValue() < nbUserReceivers;

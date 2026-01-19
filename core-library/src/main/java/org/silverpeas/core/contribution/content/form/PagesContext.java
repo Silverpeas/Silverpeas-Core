@@ -23,11 +23,12 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.util.SharingContext;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.URLUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,46 +43,46 @@ public class PagesContext implements Serializable {
   public static final String OPERATOR_AND = "AND";
   public static final String OPERATOR_OR = "OR";
 
-  RenderingContext context = RenderingContext.WEB;
-  String formName = "";
-  String formIndex = "0";
-  String currentFieldIndex = "0";
-  String language = "fr";
-  boolean printTitle;
-  String componentId;
-  String userId;
-  String objectId;
-  boolean versioningUsed;
-  boolean printBorder = true;
-  String contentLanguage = "fr";
-  int nbFields;
-  String nodeId;
-  int lastFieldIndex;
-  boolean useMandatory = true; // used to modify several objects at the same
+  private RenderingContext context = RenderingContext.WEB;
+  private String formName = "";
+  private String formIndex = "0";
+  private String currentFieldIndex = "0";
+  private String language = "fr";
+  private boolean printTitle;
+  private String componentId;
+  private String userId;
+  private String objectId;
+  private boolean versioningUsed;
+  private boolean printBorder = true;
+  private String contentLanguage = "fr";
+  private int nbFields;
+  private String nodeId;
+  private int lastFieldIndex;
+  private boolean useMandatory = true; // used to modify several objects at the same
   // time.
-  boolean useBlankFields; // display all fields blank
-  boolean ignoreDefaultValues; // do not display default value
-  String xmlFormName = "";
-  int updatePolicy;
-  String encoding = "UTF-8";
-  boolean creation;
-  String serverURL;
-  boolean designMode;
-  SharingContext sharingContext;
-  transient Map<String, String> searchOperators = new HashMap<>();
-  boolean formSkippable = false;
-  String elementToHideWhenSkipping;
-  String domainId;
+  private boolean useBlankFields; // display all fields blank
+  private boolean ignoreDefaultValues; // do not display default value
+  private int updatePolicy;
+  private String encoding = Charsets.UTF_8.name();
+  private boolean creation;
+  private String serverURL;
+  private boolean designMode;
+  private SharingContext sharingContext;
+  private transient Map<String, String> searchOperators = new HashMap<>();
+  private boolean formSkippable = false;
+  private String elementToHideWhenSkipping;
+  private String domainId;
 
-  boolean extraSearchFieldPeriod = false;
-  boolean extraSearchFieldSpace = false;
+  private boolean extraSearchFieldPeriod = false;
+  private boolean extraSearchFieldSpace = false;
 
-  boolean multiFormInPage = false;
-  boolean showMandatorySnippet = true;
+  private boolean multiFormInPage = false;
+  private boolean showMandatorySnippet = true;
 
   public PagesContext() {
   }
 
+  @SuppressWarnings("CopyConstructorMissesField")
   public PagesContext(PagesContext pc) {
     setRenderingContext(pc.getRenderingContext());
     setFormIndex(pc.getFormIndex());
@@ -250,7 +251,7 @@ public class PagesContext implements Serializable {
   /**
    * Used by Form. If parameter equals true, encapsulated border (around the form) will be written.
    * Else no border will be displayed. Default value = true.
-   * @param b
+   * @param b flag indicating if the border has to be printed out.
    */
   public final void setBorderPrinted(boolean b) {
     printBorder = b;

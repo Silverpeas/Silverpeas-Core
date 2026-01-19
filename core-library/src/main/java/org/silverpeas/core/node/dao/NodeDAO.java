@@ -23,30 +23,24 @@
  */
 package org.silverpeas.core.node.dao;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import jakarta.ejb.NoSuchEntityException;
+import jakarta.inject.Inject;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodeI18NDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodePath;
-import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.node.model.*;
 import org.silverpeas.core.persistence.jdbc.AbstractDAO;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ejb.NoSuchEntityException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -95,9 +89,8 @@ public class NodeDAO extends AbstractDAO {
   private static final String NODE_ID = "NodeId = ";
   private static final String UPDATE = "update ";
 
-  private NodeDAO() {
-
-  }
+  @Inject
+  private I18n i18n;
 
   /**
    * Deletes all nodes linked to the component instance represented by the given identifier.
@@ -392,7 +385,7 @@ public class NodeDAO extends AbstractDAO {
         new NodeI18NDetail(node.getLanguage(), node.getName(), node.
         getDescription());
     node.addTranslation(nodeI18NDetail);
-    if (I18NHelper.isI18nContentActivated) {
+    if (i18n.isEnabled()) {
       List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, node.getId());
       for (final NodeI18NDetail anotherNodeI18NDetail : translations) {
         node.addTranslation(anotherNodeI18NDetail);
@@ -403,18 +396,16 @@ public class NodeDAO extends AbstractDAO {
   private void setTranslations(Connection con, Collection<NodeDetail> nodes) {
     if (nodes != null && !nodes.isEmpty()) {
       long startTime = System.currentTimeMillis();
-      final List<String> nodeIds = I18NHelper.isI18nContentActivated
-          ? nodes.stream().map(NodeDetail::getId).collect(Collectors.toList())
-          : emptyList();
+      final List<String> nodeIds = i18n.isEnabled() ?
+          nodes.stream().map(NodeDetail::getId).collect(Collectors.toList()) : emptyList();
       try {
-        final Map<Integer, List<NodeI18NDetail>> translations = I18NHelper.isI18nContentActivated
-            ? NodeI18NDAO.getIndexedTranslations(con, nodeIds)
-            : emptyMap();
+        final Map<Integer, List<NodeI18NDetail>> translations = i18n.isEnabled() ?
+            NodeI18NDAO.getIndexedTranslations(con, nodeIds) : emptyMap();
         nodes.forEach(n -> {
           NodeI18NDetail translation = new NodeI18NDetail(n.getLanguage(), n.getName(),
               n.getDescription());
           n.addTranslation(translation);
-          if (I18NHelper.isI18nContentActivated) {
+          if (i18n.isEnabled()) {
             n.setTranslations(translations.get(n.getLocalId()));
           }
         });
@@ -449,7 +440,9 @@ public class NodeDAO extends AbstractDAO {
       final Collection<String> instanceIds) throws SQLException {
     final List<NodeDetail> entities = new ArrayList<>();
     final List<Integer> instanceIdsAsInt = instanceIds.stream()
-        .map(ComponentInst::getComponentLocalId).collect(Collectors.toList());
+        .map(SilverpeasSharedComponentInstance::getIdentity)
+        .map(SilverpeasSharedComponentInstance.Identity::getInstanceLocalId)
+        .collect(Collectors.toList());
     JdbcSqlQuery.executeBySplittingOn(instanceIdsAsInt, (idBatch, ignore) ->
       JdbcSqlQuery.select("nodeid, instanceid, rightsdependson")
           .from(NODE_TABLE + " N")

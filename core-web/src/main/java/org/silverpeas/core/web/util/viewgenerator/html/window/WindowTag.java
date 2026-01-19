@@ -25,8 +25,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.window;
 
 import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
 import java.io.IOException;
 
 public class WindowTag extends NeedWindowTag {

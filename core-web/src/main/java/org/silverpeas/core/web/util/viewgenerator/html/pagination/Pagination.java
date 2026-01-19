@@ -31,13 +31,13 @@ import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.portlet.RenderRequest;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Pagination is an interface to be implemented by a graphic element to print a pages index or a
+ * Pagination is an interface to be implemented by a graphic element to print a pages index or
  * elements counter.
  * @author neysseri
  */

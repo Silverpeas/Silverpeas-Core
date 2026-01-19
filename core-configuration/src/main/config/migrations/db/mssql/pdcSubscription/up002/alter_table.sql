@@ -1,0 +1,1 @@
+EXEC sp_rename 'SB_PDC_Subscription_Axis.value', 'val', 'COLUMN';

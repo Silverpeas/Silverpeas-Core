@@ -25,9 +25,9 @@ package org.silverpeas.web.silverstatistics.control;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Connection;
@@ -35,68 +35,56 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class SilverStatisticsPeasDAOVolumeServices {
 
   /**
-   * donne les stats global pour l'enemble de tous les users cad 2 infos, la collection contient
-   * donc un seul element
-   * @return
-   * @throws SQLException
+   * Gives the global statistics for the whole users. The statistics are made up of two data: the
+   * user identifier and the statistic value for that user.
+   *
+   * @return a pair of two lists: the first one contains the user identifiers and the second one
+   * contains the statistic for the user in the first list at the same index.
+   * @throws SQLException if the statistics fail to be fetched.
    */
-  public static Collection[] getStatsInstancesServices() throws SQLException, UtilException {
+  public static Pair<List<String>, List<Long>> getStatsInstancesServices() throws SQLException {
     String selectQuery =
         " SELECT componentname, count(*) AS nbcomponent FROM st_componentinstance GROUP BY "
-        + "componentname ORDER BY nbcomponent DESC";
+            + "componentname ORDER BY nbcomponent DESC";
 
     return getCollectionArrayFromQuery(selectQuery);
   }
 
-  /**
-   * Method declaration
-   * @param rs
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  private static Collection[] getCollectionArrayFromResultset(ResultSet rs)
+  private static Pair<List<String>, List<Long>> getCollectionArrayFromResultset(ResultSet rs)
       throws SQLException {
     List<String> apps = new ArrayList<>();
-    List<String> counts = new ArrayList<>();
-    long count = 0;
-    Map<String, WAComponent> components = AdministrationServiceProvider.getAdminService().getAllWAComponents();
-    String label = null;
+    List<Long> counts = new ArrayList<>();
+    Map<String, WAComponent> components =
+        AdministrationServiceProvider.getAdminService().getAllWAComponents();
+    String defaultLanguage = I18NHelper.getDefaultLanguage();
     while (rs.next()) {
       String componentName = rs.getString(1);
       WAComponent compo = components.get(componentName);
       if (compo != null) {
-        String value = compo.getLabel(I18NHelper.DEFAULT_LANGUAGE);
+        String label;
+        String value = compo.getLabel(defaultLanguage);
         if (StringUtil.isDefined(value)) {
-          label = (value.indexOf("-") == -1) ? value : value.substring(value.indexOf("-") + 1);
+          int idx = value.indexOf("-");
+          label = idx == -1 ? value : value.substring(idx + 1);
         } else {
           // this case occurs when xmlcomponent is not conform to xsd
           label = componentName;
         }
         apps.add(label);
-        count = rs.getLong(2);
-        counts.add(Long.toString(count));
+        counts.add(rs.getLong(2));
       }
     }
-    return new Collection[] { apps, counts };
+    return Pair.of(apps, counts);
   }
 
-  /**
-   * Method declaration
-   * @param selectQuery
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  private static Collection[] getCollectionArrayFromQuery(String selectQuery)
-      throws SQLException, UtilException {
+  private static Pair<List<String>, List<Long>> getCollectionArrayFromQuery(String selectQuery)
+      throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;

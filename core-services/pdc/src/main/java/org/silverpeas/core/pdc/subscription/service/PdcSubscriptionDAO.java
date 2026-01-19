@@ -59,7 +59,7 @@ public class PdcSubscriptionDAO {
           "PdcSubscriptionDAO.getPDCSubscriptionByUserId",
           SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
-    List<PdcSubscription> result = new ArrayList<PdcSubscription>();
+    List<PdcSubscription> result = new ArrayList<>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -90,7 +90,7 @@ public class PdcSubscriptionDAO {
           "PdcSubscriptionDAO.getAllPDCSubscriptions",
           SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
     }
-    List<PdcSubscription> result = new ArrayList<PdcSubscription>();
+    List<PdcSubscription> result = new ArrayList<>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -113,12 +113,11 @@ public class PdcSubscriptionDAO {
 
   private static PdcSubscription getSubScFromRS(ResultSet rs)
       throws SQLException, PdcSubscriptionRuntimeException {
-    PdcSubscription result = new PdcSubscription(rs.getInt("id"), rs
+    return new PdcSubscription(rs.getInt("id"), rs
         .getString("name"), null, rs.getInt("ownerId"));
-    return result;
   }
   public final static String GET_CRITERIAS_BY_SC_ID_QUERY =
-      "SELECT id, pdcSubscriptionId, axisId, value FROM "
+      "SELECT id, pdcSubscriptionId, axisId, val FROM "
       + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE pdcSubscriptionId = ? ";
 
   private static List<Criteria> getCriteriasBySubscriptionID(Connection conn,
@@ -128,7 +127,7 @@ public class PdcSubscriptionDAO {
           "PdcSubscriptionDAO.getCriteriasBySubscriptionID",
           SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
     }
-    List<Criteria> result = new ArrayList<Criteria>();
+    List<Criteria> result = new ArrayList<>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -156,8 +155,7 @@ public class PdcSubscriptionDAO {
 
   private static Criteria getSCFromRS(ResultSet rs) throws SQLException,
       PdcSubscriptionRuntimeException {
-    Criteria result = new Criteria(rs.getInt("axisId"), rs.getString("value"));
-    return result;
+    return new Criteria(rs.getInt("axisId"), rs.getString("value"));
   }
   public static final String GET_SUBSCRIPTION_BY_ID_QUERY = "SELECT id, name, ownerId FROM "
       + PDC_SUBSRIPTION_TABLE_NAME + " WHERE id = ? ";
@@ -212,7 +210,7 @@ public class PdcSubscriptionDAO {
           SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
     PreparedStatement prepStmt = null;
-    int newId = -1;
+    int newId;
 
     try {
       newId = DBUtil.getNextId(PDC_SUBSRIPTION_TABLE_NAME, "id");
@@ -251,7 +249,7 @@ public class PdcSubscriptionDAO {
   }
   public final static String CREATE_PDC_SEARCHCRITERIA_QUERY = "INSERT INTO "
       + PDC_SUBSRIPTION_AXIS_TABLE_NAME
-      + " (id, pdcSubscriptionId, axisId, value) VALUES (?, ?, ?, ?)";
+      + " (id, pdcSubscriptionId, axisId, val) VALUES (?, ?, ?, ?)";
 
   private static void createSearchCriterias(Connection conn,
       List<? extends Criteria> searchCriterias, int subscriptionId)
@@ -271,7 +269,7 @@ public class PdcSubscriptionDAO {
     }
 
     PreparedStatement prepStmt = null;
-    int newId = -1;
+    int newId;
 
     try {
       prepStmt = conn.prepareStatement(CREATE_PDC_SEARCHCRITERIA_QUERY);
@@ -441,9 +439,9 @@ public class PdcSubscriptionDAO {
           "PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis",
           SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
-    List<PdcSubscription> result = new ArrayList<PdcSubscription>();
+    List<PdcSubscription> result = new ArrayList<>();
 
-    List<Integer> ids = new ArrayList<Integer>();
+    List<Integer> ids = new ArrayList<>();
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;

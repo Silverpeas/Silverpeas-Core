@@ -26,16 +26,17 @@ package org.silverpeas.core.admin.component.model;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,7 +46,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
-import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 
 /**
  * Instance parameter defined for an application component. An instance parameter is a
@@ -80,6 +80,7 @@ public class Parameter {
   protected Map<String, String> help;
   protected Warning warning;
   protected String personalSpaceValue;
+  private transient final I18n i18n = I18n.get();
 
   public Parameter() {
   }
@@ -140,7 +141,7 @@ public class Parameter {
    * @param label a localized label.
    */
   public void putLabel(final String language, final String label) {
-    getLabel().put(checkLanguage(language), label);
+    getLabel().put(i18n.checkLanguage(language), label);
   }
 
   /**
@@ -286,7 +287,7 @@ public class Parameter {
    * @param help a localized help.
    */
   public void putHelp(final String language, final String help) {
-    getHelp().put(checkLanguage(language), help);
+    getHelp().put(i18n.checkLanguage(language), help);
   }
 
   /**

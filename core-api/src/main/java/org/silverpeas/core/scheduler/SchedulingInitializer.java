@@ -30,7 +30,7 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.text.ParseException;
 
 /**

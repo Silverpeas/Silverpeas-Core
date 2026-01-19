@@ -25,10 +25,10 @@ package org.silverpeas.web.test;
 
 import org.junit.Test;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 
 /**
  * Unit tests on the getting of a resource in Silverpeas through a REST web service. This class is
- * an abstract one and it implements some tests that are redondant over all web resources in
+ * an abstract one, and it implements some tests that are redondant over all web resources in
  * Silverpeas (about authorization failure, authentication failure, ...)
  */
 public abstract class ResourceGettingTest extends RESTWebServiceTest implements WebResourceTesting {

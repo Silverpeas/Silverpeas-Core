@@ -26,8 +26,8 @@ package org.silverpeas.core.web.util;
 
 import org.owasp.encoder.Encode;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 

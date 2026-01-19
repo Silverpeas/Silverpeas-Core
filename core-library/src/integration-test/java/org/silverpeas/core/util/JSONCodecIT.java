@@ -23,26 +23,14 @@
  */
 package org.silverpeas.core.util;
 
+import jakarta.json.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
-import org.silverpeas.core.calendar.ical4j.ICal4JImporter;
-import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
-import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
-import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.EncodingException;
-import org.silverpeas.core.reminder.DefaultReminderRepository;
-import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonWriter;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -51,9 +39,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test on the decoding/encoding of beans from/to JSON.
@@ -66,12 +54,7 @@ public class JSONCodecIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(JSONCodecIT.class)
-        .addClasses(DefaultReminderRepository.class)
-        .testFocusedOn(war -> war.addClasses(TestSerializableBean.class, TestBean.class,
-            DecodingException.class, EncodingException.class, JSONCodec.class))
-        .addClasses(ICal4JImporter.class, ICal4JDateCodec.class, ICal4JRecurrenceCodec.class,
-            DefaultCalendarEventRepository.class)
+    return LibCoreWarBuilder.onWarForTestClass(JSONCodecIT.class)
         .build();
   }
 
@@ -174,7 +157,7 @@ public class JSONCodecIT {
     assertThat(bean, notNullValue());
     assertThat(bean.getId(), is("42"));
     assertThat(bean.getName(), is("Toto Chez-les-Papoos"));
-    assertThat(bean.getDate().getTime(), is(1416580107074l));
+    assertThat(bean.getDate().getTime(), is(1416580107074L));
   }
 
   @Test
@@ -209,11 +192,11 @@ public class JSONCodecIT {
     assertThat(beans.length, is(2));
     assertThat(beans[0].getId(), is("42"));
     assertThat(beans[0].getName(), is("Toto Chez-les-Papoos"));
-    assertThat(beans[0].getDate().getTime(), is(1416580107074l));
+    assertThat(beans[0].getDate().getTime(), is(1416580107074L));
     assertThat(beans[1], notNullValue());
     assertThat(beans[1].getId(), is("24"));
     assertThat(beans[1].getName(), is("Titi Gros-Minet"));
-    assertThat(beans[1].getDate().getTime(), is(1416580107074l));
+    assertThat(beans[1].getDate().getTime(), is(1416580107074L));
   }
 
   @Test

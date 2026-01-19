@@ -28,8 +28,6 @@ import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.html.WebPluginConsumerRegistry;
 import org.silverpeas.core.initialization.Initialization;
 
-import javax.inject.Singleton;
-
 import static org.silverpeas.core.html.SupportedWebPlugin.Constants.*;
 import static org.silverpeas.core.html.WebPluginConsumerRegistry.add;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
@@ -38,7 +36,6 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 public class DefaultWebPlugin implements WebPlugin, Initialization {
 
   /**

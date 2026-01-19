@@ -24,23 +24,21 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import edu.psu.swe.scim.server.exception.UnableToCreateResourceException;
-import edu.psu.swe.scim.server.exception.UnableToDeleteResourceException;
-import edu.psu.swe.scim.server.exception.UnableToRetrieveExtensionsException;
-import edu.psu.swe.scim.server.exception.UnableToRetrieveResourceException;
-import edu.psu.swe.scim.server.exception.UnableToUpdateResourceException;
-import edu.psu.swe.scim.server.provider.Provider;
-import edu.psu.swe.scim.server.provider.UpdateRequest;
-import edu.psu.swe.scim.spec.protocol.filter.FilterResponse;
-import edu.psu.swe.scim.spec.protocol.search.Filter;
-import edu.psu.swe.scim.spec.protocol.search.PageRequest;
-import edu.psu.swe.scim.spec.protocol.search.SortRequest;
-import edu.psu.swe.scim.spec.resources.ScimExtension;
-import edu.psu.swe.scim.spec.resources.ScimGroup;
+import org.apache.directory.scim.core.repository.Repository;
+import org.apache.directory.scim.server.exception.*;
+import org.apache.directory.scim.spec.filter.Filter;
+import org.apache.directory.scim.spec.filter.FilterResponse;
+import org.apache.directory.scim.spec.filter.PageRequest;
+import org.apache.directory.scim.spec.filter.SortRequest;
+import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
+import org.apache.directory.scim.spec.patch.PatchOperation;
+import org.apache.directory.scim.spec.resources.ScimExtension;
+import org.apache.directory.scim.spec.resources.ScimGroup;
 import org.silverpeas.core.annotation.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
 
@@ -58,7 +56,12 @@ import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
  * @author silveryocha
  */
 @Service
-public class ScimGroupAdminService extends AbstractScimAdminService implements Provider<ScimGroup> {
+public class ScimGroupAdminService extends AbstractScimAdminService implements Repository<ScimGroup> {
+
+  @Override
+  public Class<ScimGroup> getResourceClass() {
+    return ScimGroup.class;
+  }
 
   @Override
   public ScimGroup create(final ScimGroup resource) throws UnableToCreateResourceException {
@@ -68,9 +71,20 @@ public class ScimGroupAdminService extends AbstractScimAdminService implements P
   }
 
   @Override
-  public ScimGroup update(final UpdateRequest<ScimGroup> updateRequest)
+  public ScimGroup update(String id, String version, ScimGroup resource,
+      Set<AttributeReference> includedAttributeReferences,
+      Set<AttributeReference> excludedAttributeReferences)
       throws UnableToUpdateResourceException {
     logger().warn("SCIM update group not handled");
+    validateDomainExists();
+    return null;
+  }
+
+  @Override
+  public ScimGroup patch(String id, String version, List<PatchOperation> patchOperations,
+      Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes)
+      throws UnableToUpdateResourceException {
+    logger().warn("SCIM patch group not handled");
     validateDomainExists();
     return null;
   }
@@ -97,8 +111,7 @@ public class ScimGroupAdminService extends AbstractScimAdminService implements P
   }
 
   @Override
-  public List<Class<? extends ScimExtension>> getExtensionList()
-      throws UnableToRetrieveExtensionsException {
+  public List<Class<? extends ScimExtension>> getExtensionList() {
     logger().debug(() -> "getting group SCIM extensions");
     return Collections.emptyList();
   }

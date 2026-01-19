@@ -36,8 +36,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.wbe.WbeHostManager;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
@@ -255,7 +255,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     String checkoutAndEditLabel = resources.getString("attachment.checkOutAndEditOnline");
     String checkoutAndEditLabelWebBrowser = resources.getString("attachment.checkOutAndEditOnlineWebBrowner");
     String webdavContentEditionLanguageLabel = "";
-    if (I18NHelper.isI18nContentEnabled()) {
+    if (I18NHelper.isI18nContentActivated()) {
       webdavContentEditionLanguageLabel = I18NHelper.getLanguageLabel(StringUtil
           .defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
               attachment.getLanguage()), userLanguage);

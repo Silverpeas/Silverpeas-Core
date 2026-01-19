@@ -21,5 +21,5 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://silverpeas.org/xml/ns/component", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://silverpeas.org/xml/ns/component", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.silverpeas.core.admin.component.model;

@@ -23,21 +23,19 @@
  */
 package org.silverpeas.core.web.rs.aspect;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
-
+import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
-import org.silverpeas.core.web.rs.ProtectedWebResource;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-
-import javax.annotation.Priority;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.web.rs.ProtectedWebResource;
+
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * An aspect to insert component existence checking in the web services so that it is performed
@@ -48,6 +46,9 @@ import org.silverpeas.core.admin.service.OrganizationController;
 @ComponentInstMustExistIfSpecified
 @Priority(APPLICATION)
 public class ComponentExistenceAspect {
+
+  @Inject
+  private OrganizationController controller;
 
   @AroundInvoke
   public Object processAuthorization(InvocationContext context) throws Exception {
@@ -61,10 +62,9 @@ public class ComponentExistenceAspect {
         // ignore the exception
       }
       if (isDefined(instanceId)) {
-        OrganizationController controller =
-            OrganizationControllerProvider.getOrganisationController();
-        if (!PersonalComponentInstance.from(instanceId).isPresent() &&
-            !controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId) &&
+        if (PersonalComponentInstance.from(instanceId).isEmpty() &&
+            !controller.isComponentExist(instanceId) &&
+            !controller.isToolAvailable(instanceId) &&
             !controller.isAdminTool(instanceId)) {
           throw new WebApplicationException(Response.Status.NOT_FOUND);
         }

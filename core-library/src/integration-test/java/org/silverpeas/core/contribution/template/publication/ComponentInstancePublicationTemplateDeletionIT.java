@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.template.publication;
 
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,8 +30,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -59,16 +59,12 @@ public class ComponentInstancePublicationTemplateDeletionIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore
-        .onWarForTestClass(ComponentInstancePublicationTemplateDeletionIT.class)
-        .addDatabaseToolFeatures()
-        .addSilverpeasExceptionBases()
-        .addOrganisationFeatures()
-        .addPublicationTemplateFeatures()
-        .addComponentInstanceDeletionFeatures()
-        .addIndexEngineFeatures()
-        .testFocusedOn(
-            war -> war.addAsResource("org/silverpeas/core/contribution/template/publication"))
+    return LibCoreWarBuilder
+        .onFullWarForTestClass(ComponentInstancePublicationTemplateDeletionIT.class)
+        .addAsResource("xmlcomponents")
+        .addAsResource("org/silverpeas/core/contribution/template/publication")
+        .addAsResource("org/silverpeas/admin")
+        .addAsResource("org/silverpeas/util/stringtemplate.properties")
         .build();
   }
 

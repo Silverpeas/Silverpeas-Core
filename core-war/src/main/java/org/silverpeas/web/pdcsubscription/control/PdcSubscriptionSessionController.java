@@ -107,13 +107,13 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   public List<AbstractSubscriptionBean> getUserSubscriptionsOfCategory(final String userId,
       final SubscriptionCategory category) {
     final String currentUserId = StringUtil.isDefined(userId) ? userId : getUserId();
-    final List<AbstractSubscriptionBean> subscribes = category.getHandledTypes()
+    return category.getHandledTypes()
         .stream()
-        .flatMap(t -> SubscriptionBeanProvider.getByUserSubscriberAndSubscriptionResourceType(t,
-            currentUserId, getLanguage()).stream())
+        .flatMap(t ->
+            SubscriptionBeanProvider.getByUserSubscriberAndSubscriptionResourceType(t,
+                currentUserId, getLanguage()).stream())
+        .sorted(new SubscriptionComparator())
         .collect(Collectors.toList());
-    subscribes.sort(new SubscriptionComparator());
-    return subscribes;
   }
 
   public void deleteUserSubscriptions(final String[] selectedItems) {
@@ -198,7 +198,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
         }
 
         List<Value> fullPath = new ArrayList<>();
-        if (searchValue != null && treeId != null) {
+        if (treeId != null) {
           fullPath = getFullPath(searchValue, treeId);
         }
 

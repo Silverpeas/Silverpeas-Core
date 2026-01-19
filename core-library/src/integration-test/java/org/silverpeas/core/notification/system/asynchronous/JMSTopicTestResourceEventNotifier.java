@@ -23,23 +23,22 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
+import jakarta.annotation.Resource;
+import jakarta.enterprise.event.Observes;
+import jakarta.jms.Destination;
+import jakarta.jms.Topic;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.JMSResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.system.TestResource;
 import org.silverpeas.core.notification.system.TestResourceEvent;
-
-import javax.annotation.Resource;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
-import javax.jms.Destination;
-import javax.jms.Topic;
 
 /**
  * A stateless EJB producing notification (according to the JEE spec, the definition of a queue
  * or a topic by annotation can only be done with either Web or EJB components)
  * @author mmoquillon
  */
-@Stateless
+@Bean
 public class JMSTopicTestResourceEventNotifier
     extends JMSResourceEventNotifier<TestResource, TestResourceEvent> {
 

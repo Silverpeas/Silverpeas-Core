@@ -23,20 +23,19 @@
  */
 package org.silverpeas.core.io.media;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.time.Duration;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +48,6 @@ import java.math.BigDecimal;
  */
 @Technical
 @Service
-@Singleton
 public class MetadataExtractor {
 
   private Tika tika;

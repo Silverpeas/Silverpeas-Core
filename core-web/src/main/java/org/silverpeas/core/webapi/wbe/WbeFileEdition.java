@@ -32,8 +32,8 @@ import org.silverpeas.core.wbe.WbeEdition;
 import org.silverpeas.core.wbe.WbeFile;
 import org.silverpeas.core.wbe.WbeHostManager;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 import java.util.function.Consumer;
 

@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
@@ -38,8 +38,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
  */
 public class AdminUtils {
 
-  private static Logger logger = Logger.getLogger(AdminUtils.class.getPackage()
-      .getName(), "org.silverpeas.portlets.PCDLogMessages");
+  private static final Logger logger = Logger.getLogger(AdminUtils.class.getPackage().getName(),
+      "org.silverpeas.portlets.PCDLogMessages");
 
   protected static HttpSession getClearedSession(HttpServletRequest request) {
     HttpSession session = request.getSession(true);

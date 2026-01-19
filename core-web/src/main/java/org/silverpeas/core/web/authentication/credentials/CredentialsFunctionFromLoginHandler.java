@@ -29,8 +29,8 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthDomain;
 import org.silverpeas.core.security.authentication.Authentication;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 

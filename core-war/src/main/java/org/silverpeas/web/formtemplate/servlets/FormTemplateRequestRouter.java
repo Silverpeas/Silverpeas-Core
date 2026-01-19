@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.formtemplate.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -37,6 +36,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -45,7 +45,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.web.form.FormTemplateSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -74,7 +74,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
    *
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param controller The component Session Control, build and initialised.
+   * @param controller The component Session Control, build and initialized.
    * @param request The entering request. The request Router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
@@ -83,10 +83,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
   public String getDestination(String function, FormTemplateSessionController controller,
       HttpRequest request) {
 
-    String destination = "";
-
-
-
+    String destination;
     try {
       if ("Edit".equals(function)) {
         destination = editForm(controller, request);
@@ -101,8 +98,6 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
       request.setAttribute("javax.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
-
-
     return destination;
   }
 

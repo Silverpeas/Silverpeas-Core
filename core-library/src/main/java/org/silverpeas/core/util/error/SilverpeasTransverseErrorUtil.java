@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorage
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.UnitUtil;
 
-import javax.ejb.EJBException;
+import jakarta.ejb.EJBException;
 import java.rmi.RemoteException;
 
 /**
@@ -44,7 +44,7 @@ public class SilverpeasTransverseErrorUtil {
 
   /**
    * Stops a runtime transverse exception exists
-   * @param exception
+   * @param exception the exception
    */
   @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
   public static <E extends Exception> void stopTransverseErrorIfAny(E exception) throws E {
@@ -93,8 +93,8 @@ public class SilverpeasTransverseErrorUtil {
 
   /**
    * Retrieves a formatted exception message if any handled from a given exception
-   * @param exception
-   * @return
+   * @param exception the exception
+   * @return the formatted message
    */
   @SuppressWarnings({"exceptionResultOfMethodCallIgnored", "ThrowableResultOfMethodCallIgnored"})
   public static <E extends Exception> String performExceptionMessage(E exception, String language) {
@@ -137,8 +137,8 @@ public class SilverpeasTransverseErrorUtil {
 
   /**
    * Retrieves a DataStorageQuotaException if any from a given exception
-   * @param exception
-   * @return
+   * @param exception the exception
+   * @return the {@link DataStorageQuotaException} instance
    */
   private static <E extends Exception> DataStorageQuotaException retrieveDataStorageQuotaException(
       E exception) {
@@ -147,8 +147,8 @@ public class SilverpeasTransverseErrorUtil {
 
   /**
    * Retrieves a ComponentFileFilterException if any from a given exception
-   * @param exception
-   * @return
+   * @param exception the exception
+   * @return the {@link ComponentFileFilterException} instance
    */
   private static <E extends Exception> ComponentFileFilterException
   retrieveComponentFileFilterException(
@@ -158,9 +158,9 @@ public class SilverpeasTransverseErrorUtil {
 
   /**
    * Retrieves an exception if any from a given exception
-   * @param exception
-   * @param exceptionClass
-   * @return
+   * @param exception the exception
+   * @param exceptionClass the exception class
+   * @return the instance of the exception
    */
   @SuppressWarnings("unchecked")
   private static <E extends Exception, T extends Exception> E retrieveException(T exception,

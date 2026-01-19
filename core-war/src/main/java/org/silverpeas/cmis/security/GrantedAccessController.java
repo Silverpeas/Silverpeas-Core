@@ -24,8 +24,10 @@
 
 package org.silverpeas.cmis.security;
 
+import jakarta.inject.Singleton;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authorization.AbstractAccessController;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 
@@ -36,6 +38,8 @@ import java.util.Set;
  * of users.
  * @author mmoquillon
  */
+@Service
+@Singleton
 public class GrantedAccessController extends AbstractAccessController<String> {
 
   @Override

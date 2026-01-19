@@ -25,11 +25,11 @@ package org.silverpeas.core.webapi.admin;
 
 import org.silverpeas.core.admin.space.SpaceInstLight;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
 import static org.silverpeas.core.web.SilverpeasWebResource.getBasePathBuilder;
@@ -164,11 +164,6 @@ public class SpaceEntity extends StructureElementEntity<SpaceEntity> {
     return favorite;
   }
 
-  /**
-   * Instantiating a new web entity from the corresponding data
-   * @param space
-   * @param language
-   */
   private SpaceEntity(final SpaceInstLight space, final String language) {
     super(TYPE, String.valueOf(space.getLocalId()), space.getFatherId(), space.getName(language),
         space.getDescription(), space.getStatus(), space.getOrderNum(), space.isInheritanceBlocked());

@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.socialnetwork.status;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -37,7 +36,6 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@Singleton
 public class StatusService {
 
   @Inject
@@ -52,7 +50,7 @@ public class StatusService {
 
   public String changeStatus(Status status) {
     Connection connection = null;
-    int id = -1;
+    int id;
     try {
       connection = getConnection();
       id = statusDao.changeStatus(connection, status);

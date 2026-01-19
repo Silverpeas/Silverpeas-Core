@@ -27,7 +27,7 @@ import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Participant;
 import org.silverpeas.core.workflow.api.model.RelatedUser;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.Objects;
 
 /**

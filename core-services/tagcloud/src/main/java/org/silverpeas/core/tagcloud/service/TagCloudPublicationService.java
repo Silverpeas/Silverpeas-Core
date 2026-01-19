@@ -24,6 +24,7 @@
 package org.silverpeas.core.tagcloud.service;
 
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.dao.TagCloudPK;
 import org.silverpeas.core.tagcloud.model.TagCloudUtil;
@@ -32,28 +33,26 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.core.i18n.I18NHelper;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * This service extends the default implementation of the
- * {@©ode org.silverpeas.core.contribution.publication.service.PublicationService} interface by adding
- * tag cloud capabilities.
+ * {@link org.silverpeas.core.contribution.publication.service.PublicationService} interface by
+ * adding tag cloud capabilities.
  * @author mmoquillon
  */
 @Service
-@Singleton
 @Alternative
 @Priority(APPLICATION + 10)
 public class TagCloudPublicationService extends DefaultPublicationService {
@@ -62,8 +61,11 @@ public class TagCloudPublicationService extends DefaultPublicationService {
 
   @Inject
   private TagCloudService tagCloudService;
+  @Inject
+  private I18n i18n;
 
   @PostConstruct
+  @Override
   protected void init() {
     super.init();
     SettingBundle publicationSettings =
@@ -90,10 +92,6 @@ public class TagCloudPublicationService extends DefaultPublicationService {
     }
   }
 
-  /**
-   * Called on : - deletePublication()
-   * @param pubPK
-   */
   @Override
   public void deleteIndex(final PublicationPK pubPK) {
     super.deleteIndex(pubPK);
@@ -107,7 +105,6 @@ public class TagCloudPublicationService extends DefaultPublicationService {
   /**
    * Create the tagclouds corresponding to the publication detail.
    * @param pubDetail The detail of the publication.
-   * @
    */
   private void createTagCloud(PublicationDetail pubDetail) {
     String keywords = pubDetail.getKeywords();
@@ -121,7 +118,7 @@ public class TagCloudPublicationService extends DefaultPublicationService {
         String tagKey = TagCloudUtil.getTag(tag);
         if (!tagList.contains(tagKey)) {
           tagCloud.setTag(tagKey);
-          tagCloud.setLabel(tag.toLowerCase(I18NHelper.defaultLocale));
+          tagCloud.setLabel(tag.toLowerCase(new Locale(i18n.getDefaultLanguage())));
           tagCloudService.createTagCloud(tagCloud);
           tagList.add(tagKey);
         }
@@ -132,7 +129,6 @@ public class TagCloudPublicationService extends DefaultPublicationService {
   /**
    * Delete the tagclouds corresponding to the publication key.
    * @param pubPK The primary key of the publication.
-   * @
    */
   private void deleteTagCloud(PublicationPK pubPK) {
     tagCloudService.deleteTagCloud(new TagCloudPK(pubPK.getId(), pubPK.getInstanceId()),
@@ -142,7 +138,6 @@ public class TagCloudPublicationService extends DefaultPublicationService {
   /**
    * Update the tagclouds corresponding to the publication detail.
    * @param pubDetail The detail of the publication.
-   * @
    */
   private void updateTagCloud(PublicationDetail pubDetail) {
     deleteTagCloud(pubDetail.getPK());

@@ -23,20 +23,18 @@
  */
 package org.silverpeas.web.directory.control;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.annotations.TestManagedMocks;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.web.directory.model.DirectoryItemList;
 
 import java.util.ArrayList;
@@ -46,7 +44,8 @@ import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,11 +55,6 @@ class DirectorySessionControllerTest {
 
   @TestManagedMock
   private OrganizationController mockOrganizationController;
-
-  @BeforeEach
-  void setup(@TestManagedMock SilverpeasComponentInstanceProvider mockProvider) {
-    when(mockProvider.getComponentName(any())).thenAnswer(i -> i.<String>getArgument(0));
-  }
 
   @Test
   void testGetAllUsers() {

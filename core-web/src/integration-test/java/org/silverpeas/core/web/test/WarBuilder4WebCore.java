@@ -42,7 +42,7 @@ public class WarBuilder4WebCore extends WarBuilder4Web {
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
-   * @param test the class of the test for which a war archive will be build.
+   * @param test the class of the test for which a war archive will be built.
    */
   protected <T> WarBuilder4WebCore(final Class<T> test) {
     super(test);
@@ -70,6 +70,7 @@ public class WarBuilder4WebCore extends WarBuilder4Web {
     addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties");
     addAsResource("org/silverpeas/util/attachment/Attachment.properties");
     addAsResource("org/silverpeas/util/security.properties");
+    addAsResource("org/silverpeas/util/logging");
     addAsResource("org/silverpeas/social/settings/socialNetworkSettings.properties");
     addAsResource("org/silverpeas/publicationTemplate/settings/template.properties");
     addAsResource("org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties");
@@ -95,7 +96,6 @@ public class WarBuilder4WebCore extends WarBuilder4Web {
    * @return the instance of the war archive builder.
    */
   public WarBuilder4WebCore addRESTWebServiceEnvironment() {
-    addMavenDependencies("edu.psu.swe.commons:commons-jaxrs");
     addMavenDependenciesWithoutTransitivity("org.silverpeas.core:silverpeas-core-rs");
     return this;
   }

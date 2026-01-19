@@ -53,16 +53,15 @@ public class SqlDateParamSetter extends SqlTemporalParamSetter {
       throws SQLException {
     if (value instanceof java.sql.Date) {
       statement.setDate(idx, (java.sql.Date) value);
-    } else if (isADate(value)) {
-      statement.setDate(idx,
-          new java.sql.Date(toInstant(value).toEpochMilli()));
+    } else if (value instanceof Date) {
+      var date = (Date) value;
+      statement.setDate(idx, new java.sql.Date(date.getTime()));
+    } else if (value instanceof LocalDate) {
+      var date = (LocalDate) value;
+      statement.setDate(idx, java.sql.Date.valueOf(date));
     } else {
       throwTypeNotSupported(value.getClass());
     }
-  }
-
-  private boolean isADate(final Object parameter) {
-    return parameter instanceof Date || parameter instanceof LocalDate;
   }
 }
   

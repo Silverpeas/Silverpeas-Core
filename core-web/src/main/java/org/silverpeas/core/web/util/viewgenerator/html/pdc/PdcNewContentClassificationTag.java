@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.pdc;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
 import static org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTagOperation.*;
 
@@ -35,8 +35,6 @@ import static org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificat
  * PdcClassificationValidationTag one.
  */
 public class PdcNewContentClassificationTag extends BaseClassificationPdCTag {
-
-  private static final long serialVersionUID = 3377113335947703561L;
 
   @Override
   public void doTag() throws JspException {

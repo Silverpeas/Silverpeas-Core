@@ -34,7 +34,7 @@ import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import jakarta.inject.Singleton;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.UserSpaceAvailabilityChecker;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

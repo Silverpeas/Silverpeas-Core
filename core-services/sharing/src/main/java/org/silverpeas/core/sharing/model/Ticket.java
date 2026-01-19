@@ -32,8 +32,8 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.*;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;

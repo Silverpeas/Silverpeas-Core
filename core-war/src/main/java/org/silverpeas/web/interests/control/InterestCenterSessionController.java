@@ -23,18 +23,16 @@
  */
 package org.silverpeas.web.interests.control;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.core.pdc.interests.service.InterestsRuntimeException;
 import org.silverpeas.core.pdc.interests.service.InterestsService;
-
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InterestCenterSessionController extends AbstractComponentSessionController {
 
@@ -66,7 +64,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   /**
    * Method getInterestsByUserId returns ArrayList of all Interests objects for user given by userId
    */
-  public List<Interests> getICByUserId() throws RemoteException {
+  public List<Interests> getICByUserId() {
     checkServiceInjection();
     return interestCS.getInterestsByUserId(Integer.parseInt(getUserId()));
   }
@@ -74,7 +72,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   /**
    * Method getInterestsByPK returns Interests object by pk
    */
-  public Interests getICByPK(int pk) throws RemoteException {
+  public Interests getICByPK(int pk) {
     checkServiceInjection();
     return interestCS.getInterestsById(pk);
   }
@@ -82,7 +80,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   /**
    * Method createInterests creates new Interests
    */
-  public void createIC(Interests icToCreate) throws RemoteException {
+  public void createIC(Interests icToCreate) {
     checkServiceInjection();
     interestCS.createInterests(icToCreate);
   }
@@ -90,7 +88,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   /**
    * Method updateInterests updates existing Interests
    */
-  public void updateIC(Interests icToUpdate) throws RemoteException {
+  public void updateIC(Interests icToUpdate) {
     checkServiceInjection();
     interestCS.updateInterests(icToUpdate);
   }
@@ -98,7 +96,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   /**
    * Method removeICByPKs removes Interests objects corresponding to PKs from given ArrayList
    */
-  public void removeICByPKs(String[] iDs) throws RemoteException {
+  public void removeICByPKs(String[] iDs) {
     checkServiceInjection();
     List<Integer> pkToRemove = new ArrayList<>();
     for (String id : iDs) {
@@ -110,12 +108,12 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   /**
    * Method removeInterestsById removes Interests object corresponding to given PK
    */
-  public void removeICByPK(int pk) throws RemoteException {
+  public void removeICByPK(int pk) {
     checkServiceInjection();
     interestCS.removeInterestsById(pk);
   }
 
-  public boolean isICExists(String nameIC) throws RemoteException {
+  public boolean isICExists(String nameIC) {
     List<Interests> icList = getICByUserId();
     for (Interests ic : icList) {
       if (nameIC.equals(ic.getName())) {

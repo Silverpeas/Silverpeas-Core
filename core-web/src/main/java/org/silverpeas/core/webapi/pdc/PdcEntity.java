@@ -31,8 +31,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
+
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * A web entity representing the classification plan (named PdC). The classification plan can be
@@ -51,7 +53,7 @@ public class PdcEntity implements WebEntity {
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement
-  private List<PdcAxis> axis = new ArrayList<PdcAxis>();
+  private List<PdcAxis> axis = new ArrayList<>();
 
   /**
    * Creates a new web entity of a PdC containing the specified axis whose terms are expressed in
@@ -145,7 +147,7 @@ public class PdcEntity implements WebEntity {
 
   private static List<PdcAxis> fromUsedAxis(final List<UsedAxis> theAxisToUse, String inLanguage,
       final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
-    List<PdcAxis> axis = new ArrayList<PdcAxis>();
+    List<PdcAxis> axis = new ArrayList<>();
     for (UsedAxis usedAxis : theAxisToUse) {
       axis.add(PdcAxis.fromTheUsedAxis(usedAxis, inLanguage, usingThesaurus));
     }
@@ -154,7 +156,7 @@ public class PdcEntity implements WebEntity {
 
   private static List<PdcAxis> fromAxis(final List<Axis> theAxis, String inLanguage,
       final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
-    List<PdcAxis> axis = new ArrayList<PdcAxis>();
+    List<PdcAxis> axis = new ArrayList<>();
     for (Axis anAxis : theAxis) {
       axis.add(PdcAxis.fromTheAxis(anAxis, inLanguage, usingThesaurus));
     }
@@ -174,10 +176,10 @@ public class PdcEntity implements WebEntity {
       return false;
     }
     final PdcEntity other = (PdcEntity) obj;
-    if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
+    if (!Objects.equals(this.uri, other.uri)) {
       return false;
     }
-    return !(this.axis != other.axis && (this.axis == null || !this.axis.equals(other.axis)));
+    return Objects.equals(this.axis, other.axis);
   }
 
   @Override
@@ -199,6 +201,6 @@ public class PdcEntity implements WebEntity {
     } else {
       axisArray.append("]");
     }
-    return "PdcEntity{uri=" + getURI() + ", axis=" + axisArray.toString() + '}';
+    return "PdcEntity{uri=" + getURI() + ", axis=" + axisArray + '}';
   }
 }

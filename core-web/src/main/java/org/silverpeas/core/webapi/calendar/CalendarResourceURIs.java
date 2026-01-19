@@ -34,9 +34,9 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Base64;
 

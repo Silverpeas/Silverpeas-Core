@@ -25,9 +25,9 @@ package org.silverpeas.core.web.rs.aspect;
 
 import org.silverpeas.core.web.rs.WebEntity;
 
-import javax.interceptor.InterceptorBinding;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
+import jakarta.interceptor.InterceptorBinding;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

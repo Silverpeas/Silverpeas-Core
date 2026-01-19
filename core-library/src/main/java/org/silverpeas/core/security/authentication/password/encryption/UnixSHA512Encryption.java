@@ -67,11 +67,11 @@ package org.silverpeas.core.security.authentication.password.encryption;
 
 
 import org.apache.commons.codec.digest.Crypt;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
 
-import javax.inject.Singleton;
 import java.text.MessageFormat;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -102,14 +102,14 @@ import java.util.regex.Pattern;
  * <a href="http://people.redhat.com/drepper/SHA-crypt.txt">
  * http://people.redhat.com/drepper/SHA-crypt.txt</a>
  */
-@Singleton
+@Bean
 public class UnixSHA512Encryption implements PasswordEncryption {
 
   private static final String SALTCHARS =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/.";
   private static final String ENCRYPTION_METHOD_ID = "$6$";
 
-  private static Random random = new Random();
+  private static final Random random = new Random();
 
   /**
    * Encrypts the specified password by using a random salt (or no salt for some weakness
@@ -190,18 +190,18 @@ public class UnixSHA512Encryption implements PasswordEncryption {
     return digest.matches("\\$6\\$(rounds=[0-9]+\\$)?[a-zA-Z0-9/.]{0,16}\\$[a-zA-Z0-9/.]{86}");
   }
 
-  private static final String computeRandomSalt() {
+  private static String computeRandomSalt() {
     StringBuilder saltBuf = new StringBuilder(ENCRYPTION_METHOD_ID);
 
     while (saltBuf.length() < 16) {
       int index = (int) (random.nextFloat() * SALTCHARS.length());
-      saltBuf.append(SALTCHARS.substring(index, index + 1));
+      saltBuf.append(SALTCHARS.charAt(index));
     }
 
     return saltBuf.toString();
   }
 
-  private static final String setUpSalt(byte[] salt) {
+  private static String setUpSalt(byte[] salt) {
     return ENCRYPTION_METHOD_ID + new String(salt, Charsets.UTF_8);
   }
 }

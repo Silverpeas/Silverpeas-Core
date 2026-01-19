@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.Map;
 public class MultilangHashMapAdapter extends XmlAdapter<Multilang, Map<String, String>> {
 
   @Override
-  public Map<String, String> unmarshal(Multilang multilang) throws Exception {
+  public Map<String, String> unmarshal(Multilang multilang) {
     Map<String, String> result = new HashMap<>();
     for (Message message : multilang.getMessage()) {
       result.put(message.getLang(), message.getValue());
@@ -45,7 +45,7 @@ public class MultilangHashMapAdapter extends XmlAdapter<Multilang, Map<String, S
   }
 
   @Override
-  public Multilang marshal(Map<String, String> content) throws Exception {
+  public Multilang marshal(Map<String, String> content) {
     List<Message> messages = new ArrayList<>(content.size());
     for (Map.Entry<String, String> entry : content.entrySet()) {
       Message message = new Message();

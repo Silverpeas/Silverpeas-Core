@@ -25,9 +25,9 @@ package org.silverpeas.core.web.calendar;
 
 import org.silverpeas.core.util.DateUtil;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,10 +38,10 @@ import java.util.Date;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class CalendarDay {
 
-  private int year;
-  private int month;
-  private int dayOfMonth;
-  private int weekOfYear;
+  private final int year;
+  private final int month;
+  private final int dayOfMonth;
+  private final int weekOfYear;
 
   /**
    * Constructs a new CalendarDay instance from the specified date.

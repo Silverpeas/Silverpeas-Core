@@ -28,6 +28,7 @@ import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
+import jakarta.annotation.Resource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,15 +36,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPermalink;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControllerIT;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Arquillian.class)
 public class VersionPermalinkRepositoryIT {
@@ -55,7 +56,7 @@ public class VersionPermalinkRepositoryIT {
 
   @Resource(lookup = "java:/datasources/silverpeas")
   private DataSource dataSource;
-  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
+  private final DbSetupTracker dbSetupTracker = new DbSetupTracker();
 
   public static final Operation TABLES_CREATION = Operations.sql(
       "CREATE TABLE IF NOT EXISTS permalinks_version (" +
@@ -75,11 +76,10 @@ public class VersionPermalinkRepositoryIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(VersionPermalinkRepositoryIT.class)
-        .addJpaPersistenceFeatures()
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.contribution.attachment.permalinks");
-    }).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(WysiwygControllerIT.class)
+        .addAsResource("silverpeas-oak.properties")
+        .addAsResource("org/silverpeas/util/attachment/Attachment.properties")
+        .build();
   }
 
   @Test

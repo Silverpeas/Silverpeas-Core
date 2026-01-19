@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.user.delayed;
 
-import com.ibm.icu.util.Calendar;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
@@ -38,15 +37,10 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
+import java.util.*;
 
 /**
  * @author Yohann Chastagnier
@@ -150,7 +144,7 @@ public class DelayedNotificationManager implements DelayedNotification {
 
   @Override
   public int deleteDelayedNotifications(final Collection<Long> ids) {
-    int nbDeletes = 0;
+    long nbDeletes = 0;
     if (CollectionUtil.isNotEmpty(ids)) {
       for (final Collection<Long> idLot : CollectionUtil.split(ids)) {
         nbDeletes += dnRepository.deleteByIds(idLot);
@@ -158,7 +152,7 @@ public class DelayedNotificationManager implements DelayedNotification {
       nrRepository.deleteResources();
       dnRepository.flush();
     }
-    return nbDeletes;
+    return Math.toIntExact(nbDeletes);
   }
 
   /*

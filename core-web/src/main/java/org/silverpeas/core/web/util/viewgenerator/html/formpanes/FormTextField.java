@@ -31,14 +31,12 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author frageade
- * @version
  */
-
 public class FormTextField extends FormLine {
 
   // contraintes
@@ -55,10 +53,6 @@ public class FormTextField extends FormLine {
   protected static int LOWER_CONVERSION = 1;
   protected static int UPPER_CONVERSION = 2;
 
-  /**
-   * Constructor declaration
-   * @see
-   */
   public FormTextField() {
     super();
     setName("newFormTextField");
@@ -68,12 +62,6 @@ public class FormTextField extends FormLine {
     setDBEntry(true);
   }
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   * @see
-   */
   public FormTextField(String nam, String val) {
     super(nam, val);
     setLabel("newFormTextField");
@@ -82,13 +70,6 @@ public class FormTextField extends FormLine {
     setDBEntry(true);
   }
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   * @param lab
-   * @see
-   */
   public FormTextField(String nam, String val, String lab) {
     super(nam, val);
     setLabel(lab);
@@ -97,20 +78,10 @@ public class FormTextField extends FormLine {
     setDBEntry(true);
   }
 
-  /**
-   * Method declaration
-   * @param nb
-   * @see
-   */
   public void setNbCharMax(int nb) {
     nbCharMax = nb;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String print() {
     String retour =
         "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
@@ -122,14 +93,6 @@ public class FormTextField extends FormLine {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @param nam
-   * @param url
-   * @param pc
-   * @return
-   * @see
-   */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
 
@@ -146,21 +109,11 @@ public class FormTextField extends FormLine {
     return fpw;
   }
 
-  /**
-   * Method declaration
-   * @param req
-   * @see
-   */
   public void getConfigurationByRequest(HttpServletRequest req) {
     setLabel(req.getParameter("configuratorLabelValue"));
     setValue(req.getParameter("configuratorDefaultValue"));
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String printDemo() {
     String retour =
         "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
@@ -173,33 +126,23 @@ public class FormTextField extends FormLine {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"text\">";
 
     retour = retour + "\n<name>" + name + "</name>";
     retour = retour + "\n<label>" + label + "</label>";
     retour = retour + "\n<value>" + value + "</value>";
-    retour = retour + "\n<size>" + String.valueOf(nbCharMax) + "</size>";
+    retour = retour + "\n<size>" + nbCharMax + "</size>";
     retour = retour + "\n<dbtype>" + DBType + "</dbtype>";
     retour = retour + "\n</field>";
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getDBColumnCreationRequest() {
     String result = id + " " + DBType;
 
     if (DBType.equals("character varying")) {
-      result = result + "(" + String.valueOf(nbCharMax) + ")";
+      result = result + "(" + nbCharMax + ")";
     }
     if (mandatory) {
       result = result + " NOT NULL, ";

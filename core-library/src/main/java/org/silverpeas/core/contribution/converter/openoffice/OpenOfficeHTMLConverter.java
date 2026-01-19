@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.HTMLConverter;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.io.File;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;

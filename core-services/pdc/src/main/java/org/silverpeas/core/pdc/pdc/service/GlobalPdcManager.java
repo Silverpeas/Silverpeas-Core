@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.*;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ObjectValuePair;
@@ -51,7 +52,6 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -61,7 +61,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.*;
-import static org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.getComponentName;
+import static org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.getIdentity;
 import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.GREATER_OR_EQUAL;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
@@ -102,6 +102,8 @@ public class GlobalPdcManager implements PdcManager {
   private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private TreeService treeService;
+  @Inject
+  private I18n i18n;
 
   private static final Map<String, AxisHeader> axisHeaders =
       Collections.synchronizedMap(new HashMap<>());
@@ -223,7 +225,7 @@ public class GlobalPdcManager implements PdcManager {
   }
 
   /**
-   * Create an axe into the data base.
+   * Create an axe into the database.
    * @param axisHeader - the object which contains all data about an axe
    * @return 1 if the maximun of axe is atteignable, 2 if the axe already exist, 0 otherwise
    */
@@ -249,7 +251,7 @@ public class GlobalPdcManager implements PdcManager {
         BeanCriteria criteria = BeanCriteria.addCriterion(AXIS_TYPE, type)
             .and(AXIS_ORDER, GREATER_OR_EQUAL, order);
         criteria.setAscOrderBy(AXIS_ORDER);
-        // ATTENTION il faut traiter l'ordre des autres axes
+        // ATTENTION, il faut traiter l'ordre des autres axes
         Collection<AxisHeaderPersistence> axisToUpdate =
             dao.findBy(criteria);
 
@@ -297,7 +299,7 @@ public class GlobalPdcManager implements PdcManager {
   }
 
   /**
-   * Update an axe into the data base.
+   * Update an axe into the database.
    * @param axisHeader - the object which contains all data about an axe
    * @return 2 if the axe already exist, 0 otherwise
    */
@@ -371,7 +373,7 @@ public class GlobalPdcManager implements PdcManager {
     if (axisHeader.getLanguage() != null) {
       if (oldAxisHeader.getLanguage() == null) {
         // translation for the first time
-        oldAxisHeader.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
+        oldAxisHeader.setLanguage(i18n.getDefaultLanguage());
       }
       if (!axisHeader.getLanguage().equalsIgnoreCase(oldAxisHeader.getLanguage())) {
         AxisHeaderI18N newAxis =
@@ -398,7 +400,7 @@ public class GlobalPdcManager implements PdcManager {
       Connection con) throws SQLException, PersistenceException {
     if (oldAxisHeader.getLanguage() == null) {
       // translation for the first time
-      oldAxisHeader.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
+      oldAxisHeader.setLanguage(i18n.getDefaultLanguage());
     }
     if (oldAxisHeader.getLanguage().equalsIgnoreCase(axisHeader.getLanguage())) {
       List<AxisHeaderI18N> translations =
@@ -455,7 +457,7 @@ public class GlobalPdcManager implements PdcManager {
         .and(AXIS_ORDER, GREATER_OR_EQUAL, order);
     criteria.setAscOrderBy(AXIS_ORDER);
 
-    // ATTENTION il faut traiter l'ordre des autres axes
+    // ATTENTION, il faut traiter l'ordre des autres axes
     Collection<AxisHeaderPersistence> axisToUpdate = dao.findBy(con, criteria);
 
     boolean axisHasMoved = true;
@@ -501,7 +503,7 @@ public class GlobalPdcManager implements PdcManager {
   }
 
   /**
-   * delete the axe from the data base and all its subtrees.
+   * delete the axe from the database and all its subtrees.
    * @param axisId - the id of the selected axe
    */
   @Override
@@ -552,7 +554,7 @@ public class GlobalPdcManager implements PdcManager {
   }
 
   @Override
-  public String getTreeId(String axisId) throws PdcException {
+  public String getTreeId(String axisId) {
     // get the header of the axis to obtain the rootId.
     AxisHeaderPersistence axisHeader = getAxisHeaderPersistence(axisId);
     int treeId = -1;
@@ -1581,7 +1583,7 @@ public class GlobalPdcManager implements PdcManager {
   private void initUsedAxis(final String instanceId, final int silverObjectId,
       final List<UsedAxis> usedAxis) throws PdcException {
     for (UsedAxis axis : usedAxis) {
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18n.isEnabled()) {
         AxisHeader header = getAxisHeader(Integer.toString(axis.getAxisId()));
         axis._setAxisHeader(header);
       }
@@ -2214,7 +2216,8 @@ public class GlobalPdcManager implements PdcManager {
           .getAllServices(GlobalSilverContentProcessor.class).stream()
           .collect(toMap(GlobalSilverContentProcessor::relatedToComponent, p -> p));
       return contentMgtEngine.getResourceReferencesByContentIds(silverContentIds).stream()
-          .collect(groupingBy(r -> getComponentName(r.getComponentInstanceId()),
+          .collect(groupingBy(r ->
+                  getIdentity(r.getComponentInstanceId()).getComponentName(),
               mapping(r -> r, toList())))
           .entrySet().stream()
           .flatMap(e -> {

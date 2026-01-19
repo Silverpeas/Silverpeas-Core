@@ -22,37 +22,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 /*
-* Copyright (C) 2000 - 2024 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection withWriter Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have received a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2024 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package org.silverpeas.web.test;
 
 import org.junit.Test;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
+
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -60,11 +61,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 
 /**
- * Unit tests on the update of a resource in Silverpeas through a REST web service. This class is
- * an
- * abstract one and it implements some tests that are redondant over all web resources in
- * Silverpeas
- * (about authorization failure, authentication failure, ...)
+ * Unit tests on the update of a resource in Silverpeas through a REST web service. This class is an
+ * abstract one, and it implements some tests that are redondant over all web resources in
+ * Silverpeas (about authorization failure, authentication failure, ...)
  */
 public abstract class ResourceUpdateTest extends RESTWebServiceTest implements WebResourceTesting {
 
@@ -72,6 +71,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
 
   /**
    * A convenient method to improve the readability of the method calls.
+   *
    * @param uri a resource URI.
    * @return the specified resource URI.
    */
@@ -81,6 +81,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
 
   /**
    * Puts at the specified URI the specified new state of the resource.
+   *
    * @param <C> the type of the resource's state.
    * @param uri the URI at which the resource is.
    * @param newResourceState the new state of the resource.

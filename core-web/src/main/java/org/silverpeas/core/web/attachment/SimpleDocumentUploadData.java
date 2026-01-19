@@ -31,7 +31,7 @@ import org.silverpeas.core.web.http.RequestFile;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +40,7 @@ import static org.silverpeas.core.io.upload.FileUploadManager.getUploadedFiles;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class SimpleDocumentUploadData {
 

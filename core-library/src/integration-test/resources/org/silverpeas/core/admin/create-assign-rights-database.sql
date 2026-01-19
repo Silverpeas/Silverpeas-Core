@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS ST_Instance_Data
   componentId INT          NOT NULL,
   name        VARCHAR(100) NOT NULL,
   label       VARCHAR(100) NOT NULL,
-  value       VARCHAR(400),
+  val         VARCHAR(400),
   CONSTRAINT PK_Instance_Data PRIMARY KEY (id),
   CONSTRAINT UN_Instance_Data_1 UNIQUE(componentId, name),
   CONSTRAINT FK_Instance_Data_1 FOREIGN KEY (componentId) REFERENCES ST_ComponentInstance(id)

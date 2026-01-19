@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.DateUtil;
 
 import java.io.Serializable;
@@ -53,7 +53,7 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   /**
    * list of XML form fields used to sort results
    */
-  private Map<String, String> sortableXMLFormFields = null;
+  private final Map<String, String> sortableXMLFormFields = null;
 
   /* following attributes are exclusively used by taglibs */
   private String spaceId = "";
@@ -71,7 +71,7 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     this.userId = userId;
 
     GlobalSilverContentI18N gscI18N =
-        new GlobalSilverContentI18N(I18NHelper.DEFAULT_LANGUAGE, name, desc);
+        new GlobalSilverContentI18N(I18n.get().getDefaultLanguage(), name, desc);
     addTranslation(gscI18N);
   }
 

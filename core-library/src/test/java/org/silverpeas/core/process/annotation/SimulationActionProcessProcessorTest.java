@@ -62,8 +62,8 @@ class SimulationActionProcessProcessorTest {
 
   private static final String TARGET_INSTANCE_ID = "kmelia26";
   private static final String OTHER_TARGET_INSTANCE_ID = "kmelia07";
-  private final static NodeDetail TARGET = new NodeDetail(new NodePK("26", TARGET_INSTANCE_ID), "", "", 0, ROOT_NODE_ID);
-  private final static NodeDetail OTHER_TARGET = new NodeDetail(new NodePK("7", OTHER_TARGET_INSTANCE_ID), "", "", 0, ROOT_NODE_ID);
+  private NodeDetail nodeTarget;
+  private NodeDetail nodeOtherTarget;
 
   @TestManagedMock
   private ProcessManagement processManagement;
@@ -74,6 +74,10 @@ class SimulationActionProcessProcessorTest {
   @BeforeEach
   public void setup() {
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    nodeTarget = new NodeDetail(
+        new NodePK("26", TARGET_INSTANCE_ID), "", "", 0, ROOT_NODE_ID);
+    nodeOtherTarget = new NodeDetail(
+        new NodePK("7", OTHER_TARGET_INSTANCE_ID), "", "", 0, ROOT_NODE_ID);
   }
 
   @DisplayName("Process is executed without any simulation when no source and no target specified")
@@ -97,7 +101,7 @@ class SimulationActionProcessProcessorTest {
         .withContext(s -> { })
           .listElementsWith(SimulationElementLister4Test::new)
           .byAction(() -> ActionType.COPY)
-        .toTargets(t -> t.getTargetPKs().add(TARGET.getNodePK()))
+        .toTargets(t -> t.getTargetPKs().add(nodeTarget.getNodePK()))
         .setLanguage(() -> null)
         .execute(this::isSimulationProcessPerformed);
     assertFalse(processor.isSimulationProcessPerforming());
@@ -112,7 +116,7 @@ class SimulationActionProcessProcessorTest {
         .withContext(s -> s.getSourcePKs().add(new ResourceReference("38", "kmelia38")))
           .listElementsWith(() -> test)
           .byAction(() -> ActionType.COPY)
-        .toTargets(t -> t.getTargetPKs().add(TARGET.getNodePK()))
+        .toTargets(t -> t.getTargetPKs().add(nodeTarget.getNodePK()))
         .setLanguage(() -> null)
         .execute(() -> {
           assertFalse(processor.isSimulationProcessPerforming());
@@ -124,7 +128,7 @@ class SimulationActionProcessProcessorTest {
     assertThat(test.getSources(), empty());
     final Captures captures = getSimulationProcessCaptures(1);
     assertThat(captures.elementCaptor.getValue().actionType, is(ActionType.COPY));
-    assertThat(captures.elementCaptor.getValue().target, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getValue().target, is(nodeTarget.getNodePK()));
     assertThat(captures.contextCaptor.getValue().getComponentInstanceId(), is(TARGET_INSTANCE_ID));
   }
 
@@ -136,7 +140,7 @@ class SimulationActionProcessProcessorTest {
         .withContext(s -> s.getSourceObjects().add(new ResourceReference("69", "kmelia69")))
           .listElementsWith(() -> test)
           .byAction(() -> ActionType.MOVE)
-        .toTargets(t -> t.getTargetPKs().add(TARGET.getNodePK()))
+        .toTargets(t -> t.getTargetPKs().add(nodeTarget.getNodePK()))
         .setLanguage(() -> null)
         .execute(() -> {
           assertFalse(processor.isSimulationProcessPerforming());
@@ -148,7 +152,7 @@ class SimulationActionProcessProcessorTest {
     assertThat(test.getSources(), hasSize(1));
     final Captures captures = getSimulationProcessCaptures(1);
     assertThat(captures.elementCaptor.getValue().actionType, is(ActionType.MOVE));
-    assertThat(captures.elementCaptor.getValue().target, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getValue().target, is(nodeTarget.getNodePK()));
     assertThat(captures.contextCaptor.getValue().getComponentInstanceId(), is(TARGET_INSTANCE_ID));
   }
 
@@ -166,7 +170,7 @@ class SimulationActionProcessProcessorTest {
           })
           .listElementsWith(() -> test)
           .byAction(() -> ActionType.MOVE)
-        .toTargets(t -> t.getTargetPKs().add(TARGET.getNodePK()))
+        .toTargets(t -> t.getTargetPKs().add(nodeTarget.getNodePK()))
         .setLanguage(() -> null)
         .execute(() -> {
           assertFalse(processor.isSimulationProcessPerforming());
@@ -178,7 +182,7 @@ class SimulationActionProcessProcessorTest {
     assertThat(test.getSources(), hasSize(2));
     final Captures captures = getSimulationProcessCaptures(1);
     assertThat(captures.elementCaptor.getValue().actionType, is(ActionType.MOVE));
-    assertThat(captures.elementCaptor.getValue().target, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getValue().target, is(nodeTarget.getNodePK()));
     assertThat(captures.contextCaptor.getValue().getComponentInstanceId(), is(TARGET_INSTANCE_ID));
   }
 
@@ -191,8 +195,8 @@ class SimulationActionProcessProcessorTest {
           .listElementsWith(() -> test)
           .byAction(() -> ActionType.CREATE)
         .toTargets(t -> {
-          t.getTargetPKs().add(TARGET.getNodePK());
-          t.getTargetPKs().add(OTHER_TARGET.getNodePK());
+          t.getTargetPKs().add(nodeTarget.getNodePK());
+          t.getTargetPKs().add(nodeOtherTarget.getNodePK());
         })
         .setLanguage(() -> null)
         .execute(() -> {
@@ -206,9 +210,9 @@ class SimulationActionProcessProcessorTest {
     final Captures captures = getSimulationProcessCaptures(2);
     assertThat(captures.elementCaptor.getAllValues(), hasSize(2));
     assertThat(captures.elementCaptor.getAllValues().get(0).actionType, is(ActionType.CREATE));
-    assertThat(captures.elementCaptor.getAllValues().get(0).target, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(0).target, is(nodeTarget.getNodePK()));
     assertThat(captures.elementCaptor.getAllValues().get(1).actionType, is(ActionType.CREATE));
-    assertThat(captures.elementCaptor.getAllValues().get(1).target, is(OTHER_TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(1).target, is(nodeOtherTarget.getNodePK()));
     assertThat(captures.contextCaptor.getAllValues(), hasSize(2));
     assertThat(captures.contextCaptor.getAllValues().get(0).getComponentInstanceId(), is(TARGET_INSTANCE_ID));
     assertThat(captures.contextCaptor.getAllValues().get(1).getComponentInstanceId(), is(OTHER_TARGET_INSTANCE_ID));
@@ -227,8 +231,8 @@ class SimulationActionProcessProcessorTest {
           .listElementsWith(() -> otherTest)
           .byAction(() -> ActionType.CREATE)
         .toTargets(t -> {
-          t.getTargetPKs().add(TARGET.getNodePK());
-          t.getTargetPKs().add(OTHER_TARGET.getNodePK());
+          t.getTargetPKs().add(nodeTarget.getNodePK());
+          t.getTargetPKs().add(nodeOtherTarget.getNodePK());
         })
         .setLanguage(() -> null)
         .execute(() -> {
@@ -244,13 +248,13 @@ class SimulationActionProcessProcessorTest {
     final Captures captures = getSimulationProcessCaptures(4);
     assertThat(captures.elementCaptor.getAllValues(), hasSize(4));
     assertThat(captures.elementCaptor.getAllValues().get(0).actionType, is(ActionType.COPY));
-    assertThat(captures.elementCaptor.getAllValues().get(0).target, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(0).target, is(nodeTarget.getNodePK()));
     assertThat(captures.elementCaptor.getAllValues().get(1).actionType, is(ActionType.COPY));
-    assertThat(captures.elementCaptor.getAllValues().get(1).target, is(OTHER_TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(1).target, is(nodeOtherTarget.getNodePK()));
     assertThat(captures.elementCaptor.getAllValues().get(2).actionType, is(ActionType.CREATE));
-    assertThat(captures.elementCaptor.getAllValues().get(2).target, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(2).target, is(nodeTarget.getNodePK()));
     assertThat(captures.elementCaptor.getAllValues().get(3).actionType, is(ActionType.CREATE));
-    assertThat(captures.elementCaptor.getAllValues().get(3).target, is(OTHER_TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(3).target, is(nodeOtherTarget.getNodePK()));
     assertThat(captures.contextCaptor.getAllValues(), hasSize(4));
     assertThat(captures.contextCaptor.getAllValues().get(0).getComponentInstanceId(), is(TARGET_INSTANCE_ID));
     assertThat(captures.contextCaptor.getAllValues().get(1).getComponentInstanceId(), is(OTHER_TARGET_INSTANCE_ID));

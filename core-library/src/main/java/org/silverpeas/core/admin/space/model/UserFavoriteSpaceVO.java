@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.admin.space.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
+
+import java.io.Serializable;
 
 public class UserFavoriteSpaceVO implements Serializable {
 
@@ -53,8 +53,8 @@ public class UserFavoriteSpaceVO implements Serializable {
 
   /**
    * Default UserFavoriteSpaceVO constructor
-   * @param userId
-   * @param spaceId
+   * @param userId the unique user identifier
+   * @param spaceId the unique favorite space identifier
    */
   public UserFavoriteSpaceVO(int userId, int spaceId) {
     this.userId = userId;
@@ -63,11 +63,11 @@ public class UserFavoriteSpaceVO implements Serializable {
 
   /**
    * Default UserFavoriteSpaceVO constructor
-   * @param user
-   * @param space
+   *  @param user the user
+   *  @param space the favorite space instance
    */
-  public UserFavoriteSpaceVO(UserDetail user, SpaceInstLight space) {
-    this.userId = Integer.valueOf(user.getId());
+  public UserFavoriteSpaceVO(User user, SpaceInstLight space) {
+    this.userId = Integer.parseInt(user.getId());
     this.spaceId = space.getLocalId();
   }
 

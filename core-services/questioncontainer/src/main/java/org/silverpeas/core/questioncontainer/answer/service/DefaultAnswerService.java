@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.answer.service;
 
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -31,8 +32,6 @@ import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerRuntimeException;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.Collection;
 
@@ -42,7 +41,6 @@ import java.util.Collection;
  * @author neysseri
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.REQUIRED)
 public class DefaultAnswerService implements AnswerService {
 

@@ -42,10 +42,10 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
@@ -58,7 +58,7 @@ import static org.silverpeas.core.web.rs.UserPrivilegeValidation.*;
 /**
  * An HTTP authentication mechanism for Silverpeas to allow users to consume the Silverpeas Web API.
  * It implements the authentication process for any incoming HTTPs requests targeting a web resource
- * of the Silverpeas Web API. This HTTP request can be as well an explicit
+ * in the Silverpeas Web API. This HTTP request can be as well an explicit
  * authentication ask as a Silverpeas API consume. The HTTP request is expected either to contain
  * the HTTP header {@code Authorization} valued with the authentication scheme and the user
  * credentials as expected by the IETF RFC 2617 or to target a web resource URI with the query
@@ -136,7 +136,7 @@ public class HTTPAuthentication {
    * authentication scheme, the session comes from a session opening in Silverpeas by the
    * {@link org.silverpeas.core.security.session.SessionManagement} subsystem and its unique
    * identifier is set in the {@link UserPrivilegeValidation#HTTP_SESSIONKEY} header of the
-   * HTTP response; the session life will span over several HTTP requests and it will be closed
+   * HTTP response; the session life will span over several HTTP requests, and it will be closed
    * either explicitly or by the default session timeout. For a bearer authentication scheme and for
    * an authentication from the {@code access_token} parameter, the
    * session is just created for the specific incoming request and will expire at the end of it;

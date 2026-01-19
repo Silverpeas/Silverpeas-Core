@@ -26,30 +26,25 @@ package org.silverpeas.core.webapi.look;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
- * Centralizations of look resource processings
+ * Centralization of look resource processing
  * @author Yohann Chastagnier
  */
 public abstract class AbstractLookResource extends RESTWebService {
 
   private LookWebDelegate lookDelegate;
 
-  /**
-   * Not recognized object : error.
-   * @param object
-   * @return the corresponding component entity.
-   */
   protected AbstractLookEntity<?> asWebEntity(final Object object) {
     throw new WebApplicationException(Status.NOT_FOUND);
   }
 
   /**
    * Gets the common look services for Web Services
-   * @return
+   * @return a delegate to the look
    */
   protected LookWebDelegate getLookDelegate() {
     verifyUserAuthorizedToAccessLookContext();
@@ -76,6 +71,6 @@ public abstract class AbstractLookResource extends RESTWebService {
           LookWebDelegate.getInstance(getUser(), getUserPreferences(),
               getHttpServletRequest());
     }
-    return (lookDelegate != null && lookDelegate.getHelper() != null);
+    return lookDelegate.getHelper() != null;
   }
 }

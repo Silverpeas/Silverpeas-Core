@@ -26,8 +26,8 @@ package org.silverpeas.cmis.security;
 
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class CmisRequest extends HttpServletRequestWrapper {
 
   /**
    * Constructs a request object wrapping the given request.
-   * @param request
+   * @param request the HTTP request
    * @throws IllegalArgumentException if the request is null
    */
   private CmisRequest(final HttpServletRequest request) {

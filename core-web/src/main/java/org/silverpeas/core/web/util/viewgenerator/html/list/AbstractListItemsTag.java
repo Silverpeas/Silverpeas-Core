@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.list;
 import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
 import org.silverpeas.core.util.SilverpeasList;
 
-import javax.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspTagException;
 import java.util.List;
 
 /**

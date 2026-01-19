@@ -30,7 +30,7 @@ import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.time.ZoneId;
 import java.util.List;
 

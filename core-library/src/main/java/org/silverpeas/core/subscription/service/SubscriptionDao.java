@@ -39,7 +39,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -98,16 +98,7 @@ public class SubscriptionDao {
   @Inject
   private SubscriptionFactory factory;
 
-  /**
-   * Method declaration
-   * @param con
-   * @param subscription
-   * @throws SQLException
-   *
-   */
   public void add(Connection con, Subscription subscription) throws SQLException, AssertionError {
-
-
     if (!subscription.getSubscriber().getType().isValid() ||
         !subscription.getSubscriptionMethod().isValid() ||
         !subscription.getResource().getType().isValid()) {
@@ -136,13 +127,6 @@ public class SubscriptionDao {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param subscription
-   * @throws SQLException
-   *
-   */
   public void remove(Connection con, Subscription subscription) throws SQLException {
     final SubscriptionSubscriber subscriber = subscription.getSubscriber();
     final SubscriptionResource resource = subscription.getResource();
@@ -156,13 +140,6 @@ public class SubscriptionDao {
         .executeWith(con);
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param subscriber
-   * @throws SQLException
-   *
-   */
   public void removeBySubscriber(Connection con, SubscriptionSubscriber subscriber)
       throws SQLException {
     PreparedStatement prepStmt = null;
@@ -176,12 +153,6 @@ public class SubscriptionDao {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @throws SQLException
-   *
-   */
   public void removeByResource(Connection con, SubscriptionResource resource) throws SQLException {
     JdbcSqlQuery.deleteFrom(SUBSCRIBE_TABLE)
         .where(RESOURCE_ID_CLAUSE, resource.getId())
@@ -197,14 +168,6 @@ public class SubscriptionDao {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param subscription
-   * @return
-   * @throws SQLException
-   *
-   */
   public boolean existsSubscription(Connection con, Subscription subscription) throws SQLException {
     final SubscriptionSubscriber subscriber = subscription.getSubscriber();
     final SubscriptionResource resource = subscription.getResource();
@@ -219,14 +182,6 @@ public class SubscriptionDao {
         .executeUniqueWith(con, r -> r.getLong(1) > 0L);
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param subscriber
-   * @return
-   * @throws SQLException
-   *
-   */
   public SubscriptionList getSubscriptionsBySubscriber(Connection con,
       SubscriptionSubscriber subscriber) throws SQLException {
 
@@ -243,14 +198,6 @@ public class SubscriptionDao {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param subscriber
-   * @return
-   * @throws SQLException
-   *
-   */
   public SubscriptionList getSubscriptionsBySubscriberAndComponent(Connection con,
       SubscriptionSubscriber subscriber, String instanceId) throws SQLException {
 
@@ -268,15 +215,6 @@ public class SubscriptionDao {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param resource
-   * @param method
-   * @return
-   * @throws SQLException
-   *
-   */
   public SubscriptionList getSubscriptionsByResource(Connection con,
       SubscriptionResource resource, final SubscriptionMethod method) throws SQLException {
     JdbcSqlQuery query = JdbcSqlQuery.select(SUBSCRIBE_COLUMNS)
@@ -292,15 +230,6 @@ public class SubscriptionDao {
     return new SubscriptionList(query.executeWith(con, this::createSubscriptionInstance));
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param subscriber
-   * @param resource
-   * @return
-   * @throws SQLException
-   *
-   */
   public SubscriptionList getSubscriptionsBySubscriberAndResource(Connection con,
       SubscriptionSubscriber subscriber, SubscriptionResource resource) throws SQLException {
     return new SubscriptionList(JdbcSqlQuery.select(SUBSCRIBE_COLUMNS)
@@ -313,28 +242,11 @@ public class SubscriptionDao {
         .executeWith(con, this::createSubscriptionInstance));
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param resource
-   * @param method
-   * @return
-   * @throws SQLException
-   *
-   */
   public SubscriptionSubscriberList getSubscribers(Connection con,
       SubscriptionResource resource, SubscriptionMethod method) throws SQLException {
     return getSubscribers(con, Collections.singletonList(resource), method);
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param resources
-   * @param method
-   * @return
-   * @throws SQLException
-   */
   public SubscriptionSubscriberList getSubscribers(Connection con,
       Collection<? extends SubscriptionResource> resources, SubscriptionMethod method)
       throws SQLException {
@@ -346,14 +258,6 @@ public class SubscriptionDao {
     return new SubscriptionSubscriberList(result);
   }
 
-  /**
-   * Centralized method.
-   * @param con
-   * @param resource
-   * @param result
-   * @param method
-   * @throws SQLException
-   */
   private void findSubscribers(Connection con, SubscriptionResource resource,
       Collection<SubscriptionSubscriber> result, SubscriptionMethod method) throws SQLException {
     JdbcSqlQuery query = JdbcSqlQuery.select("subscriberId, subscriberType")
@@ -374,12 +278,6 @@ public class SubscriptionDao {
     });
   }
 
-  /**
-   * Transforms a result set into a subscription collection
-   * @param rs
-   * @return
-   * @throws SQLException
-   */
   private SubscriptionList toList(ResultSet rs) throws SQLException {
     SubscriptionList list = new SubscriptionList();
     Subscription subscription;
@@ -396,7 +294,7 @@ public class SubscriptionDao {
    * Create a subscription from a result set.
    * @param rs the result set
    * @return null if it is not possible to instance a subscription object.
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
   @SuppressWarnings("rawtypes")
   private Subscription createSubscriptionInstance(ResultSet rs) throws SQLException {

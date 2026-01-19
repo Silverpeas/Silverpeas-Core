@@ -29,7 +29,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToNavigationS
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarTag;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +63,12 @@ import java.util.List;
  * parts. {@link NavigationContext.NavigationStep} element with no label defined is ignored in
  * this generation treatment.
  * @param <C> the type of the web component request context.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
-public class NavigationContext<C extends WebComponentRequestContext> {
+public class NavigationContext<C extends WebComponentRequestContext<?>> {
 
   private final NavigationStep baseNavigationStep;
-  private final List<NavigationContextListener> listeners =
-      new ArrayList<NavigationContextListener>();
+  private final List<NavigationContextListener<?>> listeners = new ArrayList<>();
   private C webComponentRequestContext;
   private NavigationStep currentNavigationStep;
   private NavigationStep previousNavigationStep;
@@ -90,7 +89,7 @@ public class NavigationContext<C extends WebComponentRequestContext> {
    * @param context the context into which the navigation context must be set.
    */
   @SuppressWarnings("unchecked")
-  public static <T extends WebComponentRequestContext> NavigationContext<T> get(T context) {
+  public static <T extends WebComponentRequestContext<?>> NavigationContext<T> get(T context) {
     String cacheKey = "NavigationContext@" + context.getComponentUriBase();
     SimpleCache sessionCache =
         CacheAccessorProvider.getSessionCacheAccessor().getCache();
@@ -304,10 +303,6 @@ public class NavigationContext<C extends WebComponentRequestContext> {
       this.identifier = identifier;
     }
 
-    /**
-     * Gets the navigation context the navigation step is associated to.
-     * @return
-     */
     public NavigationContext<C> getNavigationContext() {
       return NavigationContext.this;
     }

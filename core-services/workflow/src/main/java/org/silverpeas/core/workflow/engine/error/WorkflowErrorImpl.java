@@ -34,7 +34,7 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.user.User;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Date;
@@ -42,9 +42,9 @@ import java.util.Date;
 @Entity
 @Table(name = "sb_workflow_error")
 @NamedQuery(name = "processInstance.findErrors",
-    query = "SELECT error FROM WorkflowErrorImpl error WHERE error.instanceId = :id")
+    query = "SELECT e FROM WorkflowErrorImpl e WHERE e.instanceId = :id")
 @NamedQuery(name = "processInstance.deleteErrors",
-    query = "DELETE FROM WorkflowErrorImpl error WHERE error.instanceId = :id")
+    query = "DELETE FROM WorkflowErrorImpl e WHERE e.instanceId = :id")
 public class WorkflowErrorImpl extends BasicJpaEntity<WorkflowErrorImpl, UniqueIntegerIdentifier> implements WorkflowError {
 
   @Column

@@ -24,13 +24,13 @@
 
 package org.silverpeas.core.security.authorization;
 
+import jakarta.inject.Named;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Base;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,7 +38,7 @@ import java.util.Set;
  * @author silveryocha
  */
 @Base
-@Singleton
+@Bean
 @Named
 public class DefaultInstanceAccessControlExtension
     implements ComponentInstanceAccessControlExtension {

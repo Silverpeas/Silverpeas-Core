@@ -23,24 +23,23 @@
  */
 package org.silverpeas.core.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.SilverpeasToolContent;
+import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.cache.model.Cache;
 import org.silverpeas.kernel.cache.model.SimpleCache;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.SilverpeasToolContent;
-import org.silverpeas.core.html.PermalinkRegistry;
-import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.Temporal;
@@ -106,9 +105,9 @@ public class URLUtil {
   private static final Pattern MINIFY_FILTER = Pattern.compile(".*(/util/yui/|/ckeditor).*");
   private static final int DEFAULT_HTTP_PORT = 80;
   private static final int DEFAULT_HTTPS_PORT = 443;
-  static SettingBundle settings = null;
-  static String httpMode = null;
-  static boolean universalLinksUsed = false;
+  static SettingBundle settings;
+  static String httpMode;
+  static boolean universalLinksUsed;
   private static String silverpeasVersion = null; // ie 5.14.1-SNAPSHOT
   private static CacheBustingManager cacheBustingManager = null;
 
@@ -181,7 +180,7 @@ public class URLUtil {
       return "";
     }
     if (!isDefined(sureCompName)) {
-      sureCompName = SilverpeasComponentInstance.getComponentName(sComponentId);
+      sureCompName = SilverpeasComponentInstance.getIdentity(sComponentId).getComponentName();
     }
     String specialString = settings.getString(sureCompName, "");
     if (isDefined(specialString)) {
@@ -206,7 +205,7 @@ public class URLUtil {
   }
 
   public static String getURL(String sSpace, String sComponentId) {
-    return getURL(null, null, sComponentId);
+    return getURL(null, sSpace, sComponentId);
   }
 
   /**
@@ -217,7 +216,8 @@ public class URLUtil {
    * @return la nouvelle URL
    */
   public static String getNewComponentURL(String spaceId, String componentId) {
-    String sureCompName = ComponentInst.getComponentName(componentId);
+    String sureCompName =
+        SilverpeasSharedComponentInstance.getIdentity(componentId).getComponentName();
     return buildStandardURL(sureCompName, componentId);
   }
 
@@ -306,9 +306,6 @@ public class URLUtil {
     return httpMode;
   }
 
-  /**
-   * @return
-   */
   public static boolean displayUniversalLinks() {
     return universalLinksUsed;
   }
@@ -325,7 +322,7 @@ public class URLUtil {
       url = getApplicationURL();
     }
     Permalink permalink = Permalink.fromType(type);
-    if (permalink != null && permalink == Permalink.FORUM_MESSAGE) {
+    if (permalink == Permalink.FORUM_MESSAGE) {
       url += permalink.getURLPrefix() + id + "?ForumId=" + forumId;
     }
     return url;
@@ -391,13 +388,7 @@ public class URLUtil {
    * @return the encoded URL.
    */
   public static String encodeURL(String url) {
-    String encodedUrl = url;
-    try {
-      encodedUrl = URLEncoder.encode(url, "UTF-8");
-    } catch (UnsupportedEncodingException ex) {
-      SilverLogger.getLogger(URLUtil.class).warn(ex.getMessage());
-    }
-    return encodedUrl;
+    return URLEncoder.encode(url, StandardCharsets.UTF_8);
   }
 
   /**
@@ -467,10 +458,10 @@ public class URLUtil {
     FORUM_MESSAGE(URL_MESSAGE, "/ForumsMessage/"),
     MEDIA(URL_MEDIA, "/Media/"),
     NEWSLETTER(URL_NEWSLETTER, "/Newsletter/");
-    private int type;
-    private String urlPrefix;
+    private final int type;
+    private final String urlPrefix;
 
-    private Permalink(int type, String urlPrefix) {
+    Permalink(int type, String urlPrefix) {
       this.type = type;
       this.urlPrefix = urlPrefix;
     }

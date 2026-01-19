@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.util.Mutable;
@@ -210,19 +210,24 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, TextField field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, TextField field,
+      FieldTemplate template,
       PagesContext pageContext) throws FormException {
     StringBuilder value = new StringBuilder();
-    Iterator<FileItem> iter = items.iterator();
+    var iter = items.iterator();
     String parameterName = template.getFieldName();
-    while (iter.hasNext()) {
-      FileItem item = iter.next();
-      if (parameterName.equals(item.getFieldName())) {
-        if (value.length() > 0) {
-          value.append("##");
+    try {
+      while (iter.hasNext()) {
+        var item = iter.next();
+        if (parameterName.equals(item.getFieldName())) {
+          if (value.length() > 0) {
+            value.append("##");
+          }
+          value.append(item.getContent());
         }
-        value.append(item.getString());
       }
+    } catch (Exception e) {
+      throw new FormException("Error updating " + parameterName, e);
     }
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
         value.length() == 0) {

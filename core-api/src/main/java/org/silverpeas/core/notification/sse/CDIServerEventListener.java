@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.sse;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 /**
  * A synchronous {@link ServerEvent} listener using the notification bus of CDI. This bus is

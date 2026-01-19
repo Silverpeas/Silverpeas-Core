@@ -27,7 +27,7 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core</groupId>
@@ -38,6 +38,10 @@
   </description>
 
   <dependencies>
+    <dependency>
+      <groupId>jakarta.platform</groupId>
+      <artifactId>jakarta.jakartaee-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-api</artifactId>
@@ -57,14 +61,6 @@
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-web</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -151,46 +147,23 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
+      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
     </dependency>
     <dependency>
-      <artifactId>portlet-container</artifactId>
-      <groupId>com.sun.portal.portletcontainer</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>portlet-api</artifactId>
-      <groupId>javax.portlet</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>container</artifactId>
-      <groupId>com.sun.portal.portletcontainer</groupId>
+      <groupId>org.silverpeas.jakarta</groupId>
+      <artifactId>portlet</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <!-- CMIS -->
     <dependency>
-      <groupId>org.apache.chemistry.opencmis</groupId>
-      <artifactId>chemistry-opencmis-server-bindings</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry.opencmis</groupId>
-      <artifactId>chemistry-opencmis-server-support</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-frontend-jaxws</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-http</artifactId>
+      <groupId>org.silverpeas.jakarta</groupId>
+      <artifactId>cmis</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>silverpeas-core-test</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.spec</groupId>
-      <artifactId>jboss-javaee-all-8.0</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -103,8 +103,8 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     if (StringUtil.isDefined(context.getCurrentComponentName())) {
       setComponentRootName(context.getCurrentComponentName());
     } else {
-      setComponentRootName(
-          SilverpeasComponentInstance.getComponentName(context.getCurrentComponentId()));
+      setComponentRootName(SilverpeasComponentInstance
+          .getIdentity(context.getCurrentComponentId()).getComponentName());
     }
     setLocalizationBundle(localizedMessagesBundleName);
     setIconFileName(iconFileName);

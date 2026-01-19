@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.util;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.core.annotation.Bean;
 
 /**
  * A bean that has to be managed by CDI. It is here for testing purpose.
  * @author mmoquillon
  */
+@Bean
 @Named("name1ManagedBean")
 public class TestAnotherManagedBean1 implements AnotherTest {
 }

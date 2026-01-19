@@ -28,9 +28,9 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedThreadFactory;
-import javax.inject.Singleton;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedThreadFactory;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -160,15 +160,7 @@ public class ManagedThreadPool {
         executorService.shutdown();
       }
       if (config.isTimeout()) {
-        boolean allRunnablesAreTerminated =
-            executorService.awaitTermination(config.getTimeout(), config.getTimeUnit());
-        if (!allRunnablesAreTerminated && !config.isRunningInBackgroundAfterTimeout()) {
-          List<Runnable> notExecutedRunnables = executorService.shutdownNow();
-          for (Runnable noExecutedRunnable : notExecutedRunnables) {
-            SilverLogger.getLogger(config).error("Runnable {0} has not been processed.",
-                noExecutedRunnable.getClass().getName());
-          }
-        }
+        checkForNonTerminatedRunnables(executorService, config);
       } else {
         for (Future<?> future : threadExecutionResults) {
           future.get();
@@ -255,17 +247,21 @@ public class ManagedThreadPool {
       executorService.shutdown();
     }
     if (config.isTimeout()) {
-      boolean allRunnablesAreTerminated =
-          executorService.awaitTermination(config.getTimeout(), config.getTimeUnit());
-      if (!allRunnablesAreTerminated && !config.isRunningInBackgroundAfterTimeout()) {
-        List<Runnable> notExecutedRunnables = executorService.shutdownNow();
-        for (Runnable noExecutedRunnable : notExecutedRunnables) {
-          SilverLogger.getLogger(config).error("Runnable {0} has not been processed.",
-              noExecutedRunnable.getClass().getName());
-        }
-      }
+      checkForNonTerminatedRunnables(executorService, config);
     }
     return futures;
+  }
+
+  private void checkForNonTerminatedRunnables(ExecutorService executorService, ExecutionConfig config) throws InterruptedException {
+    boolean allRunnablesAreTerminated =
+        executorService.awaitTermination(config.getTimeout(), config.getTimeUnit());
+    if (!allRunnablesAreTerminated && !config.isRunningInBackgroundAfterTimeout()) {
+      List<Runnable> notExecutedRunnables = executorService.shutdownNow();
+      for (Runnable noExecutedRunnable : notExecutedRunnables) {
+        SilverLogger.getLogger(config).error("Runnable {0} has not been processed.",
+            noExecutedRunnable.getClass().getName());
+      }
+    }
   }
 
   /**

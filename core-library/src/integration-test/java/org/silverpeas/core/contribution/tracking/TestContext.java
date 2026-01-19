@@ -24,46 +24,29 @@
 
 package org.silverpeas.core.contribution.tracking;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.tracking.Publication.PublicationID;
 import org.silverpeas.core.persistence.datasource.model.jpa.InstantAttributeConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.test.stub.ComponentInstImpl;
+import org.silverpeas.core.test.stub.StubbedComponentInstanceProvider;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.security.Principal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static org.exparity.hamcrest.date.DateMatchers.within;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -81,12 +64,37 @@ public class TestContext {
   static final String KMELIA_ID = "kmelia200";
   private static final InstantAttributeConverter INSTANT_CONVERTER = new InstantAttributeConverter();
 
+  public TestContext() {
+    // the component instances
+    StubbedComponentInstanceProvider.addComponentInstance(ComponentInstImpl.builder("100")
+        .setName("A kmelia 100")
+        .setSpaceId("1")
+        .build());
+    StubbedComponentInstanceProvider.addComponentInstance(ComponentInstImpl.builder("200")
+        .setName("A kmelia 200")
+        .setSpaceId("1")
+        .build());
+    StubbedComponentInstanceProvider.addComponentInstance(ComponentInstImpl.builder("300")
+        .setName("A kmelia 300")
+        .setSpaceId("1")
+        .build());
+
+    // the users
+    StubbedUserProvider.addUser("0");
+    StubbedUserProvider.addUser("1");
+    StubbedUserProvider.addUser("2");
+    StubbedUserProvider.addUser("3");
+    StubbedUserProvider.addUser("100");
+    StubbedUserProvider.addUser("101");
+    StubbedUserProvider.addUser("200");
+  }
+
   /**
    * Sets up a user requester of the current test.
    */
   public void setUpUserRequester() {
     SessionCacheAccessor sessionCacheAccessor =
-        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+        CacheAccessorProvider.getSessionCacheAccessor();
     User currentUser = User.getById("1");
     sessionCacheAccessor.newSessionCache(currentUser);
   }
@@ -95,14 +103,14 @@ public class TestContext {
    * Sets in the incoming request the type of the modification that has been done. Without this
    * property, the modification is considered as a simple update, meaning no discrimination is done
    * between a minor and a major update.
-   * @param isMinor is the modification a minor one. Otherwise it is a major one.
+   * @param isMinor is the modification a minor one. Otherwise, it is a major one.
    */
   public void setUpModificationType(boolean isMinor) {
     ContributionModificationContextHandler handler =
         ServiceProvider.getService(ContributionModificationContextHandler.class);
     assertThat(handler, notNullValue());
     HttpRequest request = new HttpRequest();
-    request.setHeader("CONTRIBUTION_MODIFICATION_CONTEXT", "{\"isMinor\": " + isMinor + "}");
+    request.setHeader("{\"isMinor\": " + isMinor + "}");
     handler.parseForProperty(request);
   }
 
@@ -114,11 +122,12 @@ public class TestContext {
    * @param publication the publication on which the action has been executed
    */
   public void assertThatRecordMatches(TrackingEventRecord record, TrackedActionType actionType,
-      PublicationDetail publication) {
+      Publication publication) {
     assertThat(record, notNullValue());
-    assertThat(record.contrib.getLocalId(), is(publication.getId()));
+    assertThat(record.contrib.getLocalId(), is(publication.getIdentifier().getLocalId()));
     assertThat(record.contrib.getType(), is(publication.getContributionType()));
-    assertThat(record.contrib.getComponentInstanceId(), is(publication.getInstanceId()));
+    assertThat(record.contrib.getComponentInstanceId(),
+        is(publication.getIdentifier().getComponentInstanceId()));
     assertThat(record.action.getType(), is(actionType));
     assertThat(record.action.getUser(), is(getRelatedUser(publication, actionType)));
     if (actionType == TrackedActionType.INNER_MOVE || actionType == TrackedActionType.OUTER_MOVE) {
@@ -133,16 +142,12 @@ public class TestContext {
   /**
    * Gets from the database the specified publication.
    * @param pubId the unique identifier of the publication. It is expected to be in Kmelia200.
-   * @return a {@link PublicationDetail} instance.
+   * @return a {@link Publication} instance.
    */
-  public PublicationDetail getPublication(final String pubId) {
-    try (Connection connection = DBUtil.openConnection()) {
-      PublicationPK pk = new PublicationPK(pubId, KMELIA_ID);
-      PublicationDAO publicationDAO = ServiceProvider.getService(PublicationDAO.class);
-      return publicationDAO.selectByPrimaryKey(connection, pk);
-    } catch (SQLException e) {
-      throw new RuntimeException(e.getMessage());
-    }
+  public Publication getPublication(final String pubId) {
+    var id = new PublicationID(pubId, KMELIA_ID);
+    PublicationService service = PublicationService.get();
+    return service.getPublication(id);
   }
 
   /**
@@ -179,7 +184,7 @@ public class TestContext {
     }
   }
 
-  private User getRelatedUser(PublicationDetail publication, TrackedActionType action) {
+  private User getRelatedUser(Publication publication, TrackedActionType action) {
     User user = User.getCurrentRequester();
     if (user == null) {
       switch (action) {
@@ -217,8 +222,8 @@ public class TestContext {
 
     private final Map<String, Object> headers = new HashMap<>();
 
-    protected void setHeader(String name, String value) {
-      this.headers.put(name, value);
+    protected void setHeader(String value) {
+      this.headers.put("CONTRIBUTION_MODIFICATION_CONTEXT", value);
     }
 
     @Override
@@ -354,11 +359,6 @@ public class TestContext {
 
     @Override
     public boolean isRequestedSessionIdFromURL() {
-      return false;
-    }
-
-    @Override
-    public boolean isRequestedSessionIdFromUrl() {
       return false;
     }
 
@@ -518,11 +518,6 @@ public class TestContext {
     }
 
     @Override
-    public String getRealPath(final String path) {
-      return null;
-    }
-
-    @Override
     public int getRemotePort() {
       return 0;
     }
@@ -575,6 +570,21 @@ public class TestContext {
 
     @Override
     public DispatcherType getDispatcherType() {
+      return null;
+    }
+
+    @Override
+    public String getRequestId() {
+      return null;
+    }
+
+    @Override
+    public String getProtocolRequestId() {
+      return null;
+    }
+
+    @Override
+    public ServletConnection getServletConnection() {
       return null;
     }
 

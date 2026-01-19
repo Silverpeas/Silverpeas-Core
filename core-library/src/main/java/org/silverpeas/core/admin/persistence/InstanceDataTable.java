@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.component.model.LocalizedParameter;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.StringUtil;
@@ -50,18 +51,21 @@ import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 public class InstanceDataTable extends Table<InstanceDataRow> {
 
   private static final String INSTANCE_DATA_TABLE = "ST_Instance_Data";
-  private static final String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
+  private static final String INSTANCEDATA_COLUMNS = "id,componentId,name,label,val";
   private static final String INSERT_INSTANCEDATA = "insert into ST_Instance_Data("
       + INSTANCEDATA_COLUMNS + ") values (?,?,?,?,?)";
   private static final String SELECT_ALL_COMPONENTS_BY_PARAMETER_VALUE =
       "select " + INSTANCEDATA_COLUMNS +
-          " from ST_Instance_Data where name = ? and value = ? order by id";
+          " from ST_Instance_Data where name = ? and val = ? order by id";
   private static final String SELECT_ALL_COMPONENT_PARAMETERS = "select " + INSTANCEDATA_COLUMNS
       + " from ST_Instance_Data where componentId = ? order by id";
   private static final String UPDATE_INSTANCEDATA = "UPDATE ST_Instance_Data"
-      + " SET value = ?" + " where componentId = ? and name = ?";
+      + " SET val = ?" + " where componentId = ? and name = ?";
   private static final String REMOVE_INSTANCEDATA = "delete from ST_Instance_Data"
       + " where componentid = ?";
+
+  @Inject
+  private I18n i18n;
 
   public InstanceDataTable() {
     super(INSTANCE_DATA_TABLE);
@@ -105,7 +109,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     Parameter param = new Parameter();
     param.setName(row.name);
     param.setValue(row.value);
-    param.putLabel(I18NHelper.DEFAULT_LANGUAGE, row.label);
+    param.putLabel(i18n.getDefaultLanguage(), row.label);
     return param;
   }
 
@@ -121,7 +125,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   public String getParameterValueByComponentAndParamName(final Integer componentId,
       final String paramName, final boolean ignoreCase) throws SQLException {
     final Mutable<String> result = Mutable.empty();
-    final JdbcSqlQuery query = JdbcSqlQuery.select("value")
+    final JdbcSqlQuery query = JdbcSqlQuery.select("val")
         .from(INSTANCE_DATA_TABLE)
         .where("componentId = ?", componentId);
     if (ignoreCase) {
@@ -148,7 +152,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     final Map<Integer, Map<String, String>> result = new HashMap<>(componentIds.size());
     JdbcSqlQuery.executeBySplittingOn(componentIds, (idBatch, ignore) -> {
       final JdbcSqlQuery query = JdbcSqlQuery
-          .select("componentId,name,value")
+          .select("componentId,name,val")
           .from(INSTANCE_DATA_TABLE)
           .where("componentId").in(idBatch);
       if (isNotEmpty(paramNames)) {

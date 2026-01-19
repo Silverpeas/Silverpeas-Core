@@ -40,10 +40,10 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
@@ -80,16 +80,9 @@ public class DelayedNotificationManagerIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(DelayedNotificationManagerIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addNotificationFeatures()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.notification.user");
-          warBuilder.addAsResource("org/silverpeas/core/notification/user/delayed");
-        }).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(DelayedNotificationManagerIT.class)
+        .addAsResource("org/silverpeas/core/notification/user/delayed")
+        .build();
   }
 
   /*
@@ -323,7 +316,7 @@ public class DelayedNotificationManagerIT {
 
   @Test
   public void testFindUsersToBeNotified_Monthly() {
-    // First of month (not a monday)
+    // First of month (not a Monday)
     final Date date = java.sql.Timestamp.valueOf("2012-05-01 12:45:23.125");
 
     Set<NotifChannel> ac;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.DateUtil;
 
 import java.io.Serializable;
@@ -60,7 +60,7 @@ public class FieldDescription implements Serializable {
 
   public FieldDescription(String fieldName, String content, String lang) {
     this.content = content;
-    this.lang = I18NHelper.checkLanguage(lang);
+    this.lang = I18n.get().checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = false;
     this.basedOnDates = false;
@@ -70,7 +70,7 @@ public class FieldDescription implements Serializable {
 
   public FieldDescription(String fieldName, String content, String lang, boolean stored) {
     this.content = content;
-    this.lang = I18NHelper.checkLanguage(lang);
+    this.lang = I18n.get().checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = stored;
     this.basedOnDates = false;
@@ -80,7 +80,7 @@ public class FieldDescription implements Serializable {
 
   public FieldDescription(String fieldName, Date date, String lang, boolean stored) {
     this.content = DateUtil.formatAsLuceneDate(DateUtil.toLocalDate(date));
-    this.lang = I18NHelper.checkLanguage(lang);
+    this.lang = I18n.get().checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = stored;
     this.basedOnDates = false;
@@ -90,7 +90,7 @@ public class FieldDescription implements Serializable {
 
   public FieldDescription(String fieldName, Date begin, Date end, String lang) {
     this.content = "";
-    this.lang = I18NHelper.checkLanguage(lang);
+    this.lang = I18n.get().checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = false;
     this.basedOnDates = true;

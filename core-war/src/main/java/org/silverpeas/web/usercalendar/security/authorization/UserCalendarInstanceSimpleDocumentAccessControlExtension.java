@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.DefaultInstanceSimpleDocumentAccessControlExtension;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.function.Supplier;
 
 import static org.silverpeas.core.calendar.CalendarEvent.getById;

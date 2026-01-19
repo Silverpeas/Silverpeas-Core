@@ -28,8 +28,10 @@ import com.carrotsearch.junitbenchmarks.BenchmarkRule;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
 import org.silverpeas.core.util.file.FileUtil;
@@ -37,7 +39,7 @@ import org.silverpeas.kernel.TestManagedBeanFeeder;
 import org.silverpeas.kernel.test.UnitTest;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -45,6 +47,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -201,7 +204,7 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
 
   private synchronized static String getContentOfDocumentNamed(final String name) {
     try {
-      return FileUtil.readFileToString(getDocumentNamed(name));
+      return FileUtil.readFileToString(Objects.requireNonNull(getDocumentNamed(name)));
     } catch (IOException e) {
       return null;
     }
@@ -210,12 +213,14 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
   private synchronized static File getDocumentNamed(final String name) {
     final URL documentLocation = WysiwygContentTransformerTest.class.getResource(name);
     try {
+      Assert.assertNotNull(documentLocation);
       return new File(documentLocation.toURI());
     } catch (URISyntaxException e) {
       return null;
     }
   }
 
+  @Bean
   @Singleton
   public static class GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test
       implements ImageUrlAccordingToHtmlSizeDirective.SrcTranslator {

@@ -23,13 +23,14 @@
  */
 package org.silverpeas.web.pdc.control;
 
+import jakarta.inject.Singleton;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 @Technical
 @Bean
+@Singleton
 @Named
 public class DefaultSortResults implements SortResults {
 

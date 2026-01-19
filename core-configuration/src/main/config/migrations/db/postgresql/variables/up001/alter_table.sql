@@ -1,0 +1,1 @@
+ALTER TABLE SB_Variables_Value RENAME COLUMN value TO variableValue;

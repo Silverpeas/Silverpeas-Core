@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.notification.system;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
+import org.silverpeas.core.annotation.Bean;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,10 +35,11 @@ import java.util.List;
  * events coming from the different way of notifications.
  * @author mmoquillon
  */
+@Bean
 @Singleton
 public class TestResourceEventBucket {
 
-  private List<TestResourceEvent> events = new ArrayList<>(2);
+  private final List<TestResourceEvent> events = new ArrayList<>(2);
 
   public void pour(final TestResourceEvent event) {
     events.add(event);

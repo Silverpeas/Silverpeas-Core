@@ -33,20 +33,20 @@ import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @WebService
 @Path(ThesaurusResource.PATH)
@@ -95,9 +95,9 @@ public class ThesaurusResource extends RESTWebService {
   private Synonym getNewSynonym(String vocabularyId, String axisId, String valueId, String name) {
     Synonym synonym = new Synonym();
     synonym.setName(name);
-    synonym.setIdVoca(new Integer(vocabularyId).longValue());
-    synonym.setIdTree(new Integer(axisId).longValue());
-    synonym.setIdTerm(new Integer(valueId).longValue());
+    synonym.setIdVoca(Integer.valueOf(vocabularyId).longValue());
+    synonym.setIdTree(Integer.valueOf(axisId).longValue());
+    synonym.setIdTerm(Integer.valueOf(valueId).longValue());
     return synonym;
   }
 

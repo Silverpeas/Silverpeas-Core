@@ -23,7 +23,9 @@
  */
 package org.silverpeas.web.calendar;
 
-public class CalendarEntry {
+import java.io.Serializable;
+
+public class CalendarEntry implements Serializable {
 
   private static final long serialVersionUID = 6712231674470680038L;
 
@@ -35,7 +37,7 @@ public class CalendarEntry {
   private static final int MINIMUM_PRIORITY = 0;
 
   /**
-   * The maximum alloable priority value. Please note that this refers to the highest possible
+   * The maximum allowable priority value. Please note that this refers to the highest possible
    * integer value for priority. When interpreting this value it is seen as the lowest priority
    * because the value 1 is the highest priority value.
    */
@@ -136,11 +138,7 @@ public class CalendarEntry {
   public void setPriority(int newPriority) {
     if (newPriority > MAXIMUM_PRIORITY) {
       priority = MAXIMUM_PRIORITY;
-    } else if (newPriority < MINIMUM_PRIORITY) {
-      priority = MINIMUM_PRIORITY;
-    } else {
-      priority = newPriority;
-    }
+    } else priority = Math.max(newPriority, MINIMUM_PRIORITY);
   }
 
   public void setStartDay(String date) {

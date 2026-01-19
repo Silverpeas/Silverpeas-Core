@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.security.authentication.password.encryption;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 
-import javax.inject.Singleton;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Random;
@@ -43,10 +43,11 @@ import java.util.Random;
  * <p>
  * It is the Java-based implementation of the unix encrypt command. It is based upon C source code
  * written by Eric Young, eay@psych.uq.oz.au.
- * This class is a renaming of the jcrypt class found at http://www.vulcanware.com/java_jcrypt/
+ * This class is a renaming of the jcrypt class found at
+ * <code>https://www.vulcanware.com/java_jcrypt/</code>
  * @author John F. Dumas
  */
-@Singleton
+@Bean
 public class UnixDESEncryption implements PasswordEncryption {
 
   private static final int ITERATIONS = 16;

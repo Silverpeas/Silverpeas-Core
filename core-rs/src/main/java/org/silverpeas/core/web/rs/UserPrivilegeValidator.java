@@ -40,13 +40,13 @@ import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -252,7 +252,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    * Silverpeas. In this case it validates this session matches the one within which the current
    * HTTP request was sent. If the validation succeeds, the HTTP session is returned. If the key
    * doesn't identify any opened session, the method validates it matches the token of an existing
-   * user session and in this case a session is then created only for the current request and it
+   * user session and in this case a session is then created only for the current request, and it
    * is returned. If the validation fails, a WebApplicationException exception is thrown.
    * </p>
    * <p>

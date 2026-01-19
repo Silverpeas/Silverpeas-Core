@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.system.synchronous;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,20 +31,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.notification.system.GenericTestResource;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.notification.system.TestResource;
-import org.silverpeas.core.notification.system.TestResourceEvent;
-import org.silverpeas.core.notification.system.TestResourceEventBucket;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.notification.system.*;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
 import java.time.Instant;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Integration test on the synchronous mode Silverpeas API Notification.
@@ -60,8 +56,9 @@ public class SynchronousNotificationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SynchronousNotificationIT.class)
-        .addSynchAndAsynchResourceEventFeatures()
+    return LibCoreWarBuilder.onWarForTestClass(SynchronousNotificationIT.class)
+        .addAsResource(
+            "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties")
         .addClasses(GenericTestResource.class, TestResource.class, TestResourceEvent.class,
             TestResourceEventBucket.class)
         .build();
