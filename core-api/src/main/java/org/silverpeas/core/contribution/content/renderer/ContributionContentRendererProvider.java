@@ -27,7 +27,7 @@ package org.silverpeas.core.contribution.content.renderer;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * In charge of providing {@link ContributionContentRenderer} as implementations of renderer
@@ -65,5 +65,5 @@ public interface ContributionContentRendererProvider {
    * @param content the content to render.
    * @return the {@link ContributionContentRenderer} instance.
    */
-  AbstractContributionRenderer ofContent(ContributionContent content);
+  <T extends ContributionContent<?>> AbstractContributionRenderer<T> ofContent(T content);
 }

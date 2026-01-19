@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.reminder;
 
+import jakarta.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,21 +50,18 @@ import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.kernel.test.annotations.TestManagedMocks;
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import javax.ws.rs.core.UriBuilder;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -133,7 +131,7 @@ class DefaultContributionReminderUserNotificationTest {
 
     when(componentInstance.getName()).thenReturn(COMPONENT_NAME);
     when(instanceProvider.getById(INSTANCE_ID)).thenReturn(Optional.of(componentInstance));
-    when(instanceProvider.getComponentName(INSTANCE_ID)).thenReturn(COMPONENT_NAME);
+    //when(instanceProvider.getComponentName(INSTANCE_ID)).thenReturn(COMPONENT_NAME);
 
     when(routingMap.getByInstanceId(INSTANCE_ID)).thenReturn(routingMapProvider);
     when(routingMapProvider.absolute()).thenReturn(instanceRoutingMap);
@@ -162,8 +160,6 @@ class DefaultContributionReminderUserNotificationTest {
 
     when(UserProvider.get()
         .getUser(receiver.getId())).thenReturn(receiver);
-    mocker.setField(DisplayI18NHelper.class, Locale.getDefault()
-        .getLanguage(), "defaultLanguage");
 
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     when(componentAccessControl.isGroupAuthorized(anyString(), anyString())).thenReturn(true);

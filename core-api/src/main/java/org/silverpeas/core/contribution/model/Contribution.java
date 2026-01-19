@@ -93,7 +93,7 @@ public interface Contribution extends SilverpeasResource, Serializable, Securabl
   }
 
   /**
-   * Is this contribution indexable? By default true.
+   * Is this contribution indexable? By default, it is indexable.
    *
    * @return a boolean indicating if this contribution can be taken in charge by the Indexation
    * Engine. By default, any contribution in Silverpeas are indexable unless specified otherwise.
@@ -107,10 +107,12 @@ public interface Contribution extends SilverpeasResource, Serializable, Securabl
    * <p>
    * By default {@link Securable#canBeAccessedBy(User)} is implemented so that a user can access a
    * contribution if it has enough rights to access the application instance in which is managed
-   * this contribution.<br> Indeed, this behavior is mostly the common one.<br> But In the case the
-   * application instance distributes its contribution along of a categorization tree and the nodes
-   * of this tree support access rights, then the user must have also the rights to access the node
-   * to which belongs the content.<br> Of course it could exist other access rules...
+   * this contribution. This behavior is mostly the common one.
+   * </p>
+   * <p>In the case the application instance distributes its contribution along of a categorization
+   * tree and the nodes of this tree support access rights, then the user must have also the rights
+   * to access the node including this contribution. Of course, it could exist other access right
+   * rules.
    * </p>
    *
    * @param user a user in Silverpeas.

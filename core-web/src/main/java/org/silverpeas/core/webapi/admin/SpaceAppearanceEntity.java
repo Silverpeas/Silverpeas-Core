@@ -27,12 +27,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 
 import static org.silverpeas.core.web.SilverpeasWebResource.getBasePathBuilder;
@@ -73,9 +73,10 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
 
   /**
    * Creates a new space appearance entity from the specified data.
-   * @param space
-   * @param look
-   * @param wallpaper
+   * @param space a space
+   * @param look a look name
+   * @param wallpaper a wallpaper URL
+   * @param css a CSS URL
    * @return new space appearance entity
    */
   public static SpaceAppearanceEntity createFrom(final SpaceInstLight space, final String look,
@@ -131,10 +132,6 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
     return css;
   }
 
-  /**
-   * Instantiating a new web entity from the corresponding data
-   * @param space
-   */
   private SpaceAppearanceEntity(final SpaceInstLight space, final String look,
       final String wallpaper, final String css) {
     this();
@@ -148,10 +145,6 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
     super(TYPE);
   }
 
-  /**
-   * Gets the URI base of the current entity
-   * @return
-   */
   protected String getStringBaseURI() {
     return getBasePathBuilder().path(SPACES_BASE_URI).build().toString();
   }

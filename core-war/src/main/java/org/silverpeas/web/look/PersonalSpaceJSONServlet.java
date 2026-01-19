@@ -23,12 +23,11 @@
  */
 package org.silverpeas.web.look;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.PersonalComponent;
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.component.model.WAComponent;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.PersonalSpaceManager;
@@ -41,22 +40,18 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONArray;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -313,7 +308,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
       int nbNotifications = UserNotificationServerEvent.getNbUnreadFor(helper.getUserId());
 
       addTool(jsonArray, helper, "notificationVisible", "notification", message.getString("Mail"),
-          URLUtil.getURL(URLUtil.CMP_SILVERMAIL) + "Main", nbNotifications);
+          URLUtil.getURL(URLUtil.CMP_SILVERMAIL, null, null) + "Main", nbNotifications);
     }
   }
 
@@ -326,7 +321,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
       try {
         if (sharingTicket.countTicketsByUser(helper.getUserId()) > 0) {
           addTool(jsonArray, helper, "fileSharingVisible", "sharingTicket",
-              message.getString("FileSharing"), URLUtil.getURL(URLUtil.CMP_FILESHARING)
+              message.getString("FileSharing"), URLUtil.getURL(URLUtil.CMP_FILESHARING, null, null)
               + "Main");
         }
       } catch (Exception e) {
@@ -340,14 +335,10 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     // mes connexions
     if (helper.getSettings("webconnectionsVisible", true)) {
       WebConnectionsInterface webConnections = WebConnectionsInterface.get();
-      try {
-        if (!webConnections.listWebConnectionsOfUser(helper.getUserId()).isEmpty()) {
-          addTool(jsonArray, helper, "webconnectionsVisible", "webConnections",
-              message.getString("WebConnections"),
-              URLUtil.getURL(URLUtil.CMP_WEBCONNECTIONS) + "Main");
-        }
-      } catch (RemoteException e) {
-        SilverLogger.getLogger(this).error(e);
+      if (!webConnections.listWebConnectionsOfUser(helper.getUserId()).isEmpty()) {
+        addTool(jsonArray, helper, "webconnectionsVisible", "webConnections",
+            message.getString("WebConnections"),
+            URLUtil.getURL(URLUtil.CMP_WEBCONNECTIONS, null, null) + "Main");
       }
     }
   }

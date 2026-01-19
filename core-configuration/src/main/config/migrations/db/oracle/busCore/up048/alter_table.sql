@@ -1,0 +1,1 @@
+ALTER TABLE st_instance_data RENAME COLUMN value TO val;

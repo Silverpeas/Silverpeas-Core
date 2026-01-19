@@ -26,22 +26,11 @@ package org.silverpeas.core.contribution.attachment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
-import org.silverpeas.core.contribution.attachment.model.UnlockOption;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerEvent;
-import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.*;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -57,7 +46,7 @@ import java.util.Date;
  * Silverpeas.
  * @author mmoquillon
  */
-@Service
+@Bean
 public class ActifyDocumentProcessScheduler implements SchedulerEventListener, Initialization {
 
   @Override

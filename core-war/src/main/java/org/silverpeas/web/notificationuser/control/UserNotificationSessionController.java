@@ -38,6 +38,7 @@ import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,7 +61,7 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
   }
 
   /**
-   * Gets the list of users whose the identifiers are specified in the given line.
+   * Gets the list of users whose identifier is specified in the given line.
    * @param userIdsLine a line of underscore-separated user's unique identifiers.
    * @return a list of users.
    */
@@ -81,7 +82,7 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
   }
 
   /**
-   * Gets the list of groups whose the identifiers are specified in the given line.
+   * Gets the list of groups whose identifier is specified in the given line.
    * @param groupIdsLine a line of underscore-separated group's unique identifiers.
    * @return a list of groups.
    */
@@ -154,11 +155,8 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
 
   private UserNotificationWrapper getUserNotification(final NotificationContext context) {
     final UserNotificationWrapper notification;
-    if (this.currentNotification == null) {
-      notification = supplyUserNotification(context);
-    } else {
-      notification = this.currentNotification;
-    }
+    notification = Objects.requireNonNullElseGet(this.currentNotification,
+        () -> supplyUserNotification(context));
     return notification;
   }
 }

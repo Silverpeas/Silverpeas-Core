@@ -31,11 +31,11 @@ import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -271,7 +271,7 @@ public class PdcClassificationEntity implements WebEntity {
     } else {
       positionArray.append("]");
     }
-    return "PdcClassificationEntity{" + "uri=" + uri + ", positions=" + positionArray.toString()
+    return "PdcClassificationEntity{" + "uri=" + uri + ", positions=" + positionArray
         + '}';
   }
 

@@ -27,16 +27,15 @@ package org.silverpeas.core.web.rs;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.security.session.SessionInfo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.WebApplicationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.WebApplicationException;
 
 /**
  * Validation of the authentication of a user accessing a web endpoint in Silverpeas.
- * This interface requires to be implemented by all of authentication validators in Silverpeas.
+ * This interface requires to be implemented by all authentication validators in Silverpeas.
  * @author mmoquillon
  */
 public interface WebAuthenticationValidation {
@@ -71,7 +70,7 @@ public interface WebAuthenticationValidation {
     if (currentUser != null) {
       MessageManager.setLanguage(currentUser.getUserPreferences().getLanguage());
       if (User.getCurrentRequester() == null && !session.isAnonymous()) {
-        ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
+        CacheAccessorProvider.getSessionCacheAccessor()
             .setCurrentSessionCache(session.getCache());
       }
     }

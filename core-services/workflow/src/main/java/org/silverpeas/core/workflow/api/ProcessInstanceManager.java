@@ -40,23 +40,23 @@ public interface ProcessInstanceManager {
   /**
    * Get the list of process instances for a given peas Id, user and role.
    * @param peasId id of processManager instance
-   * @param user user for who the process instance list is
-   * @param role role name of the user for who the process instance list is (useful when user has
+   * @param user user for whom the process instance list is
+   * @param role role name of the user for whom the process instance list is (useful when user has
    * different roles)
    * @return an array of ProcessInstance objects
    */
-  List<ProcessInstance> getProcessInstances(String peasId, User user, String role)
+  List<? extends ProcessInstance> getProcessInstances(String peasId, User user, String role)
       throws WorkflowException;
 
   /**
    * Get the list of process instances for a given peas Id, user and role, and user's roles.
    * @param peasId id of processManager instance
-   * @param user user for who the process instance list is
-   * @param role role name of the user for who the process instance list is (useful when user has
+   * @param user user for whom the process instance list is
+   * @param role role name of the user for whom the process instance list is (useful when user has
    * @param userRoles all role names that user has for this component instance different roles)
    * @return an array of ProcessInstance objects
    */
-  List<ProcessInstance> getProcessInstances(String peasId, User user, String role,
+  List<? extends ProcessInstance> getProcessInstances(String peasId, User user, String role,
       String[] userRoles, String[] groupIds) throws WorkflowException;
 
   /**
@@ -81,5 +81,5 @@ public interface ProcessInstanceManager {
    * @return an array of ProcessInstance objects
    * @throws WorkflowException
    */
-  SilverpeasList<ProcessInstance> getTimeOutProcessInstances() throws WorkflowException;
+  SilverpeasList<? extends ProcessInstance> getTimeOutProcessInstances() throws WorkflowException;
 }

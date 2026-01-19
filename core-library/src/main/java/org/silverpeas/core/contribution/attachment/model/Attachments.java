@@ -27,16 +27,12 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.CollectionUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 
@@ -89,7 +85,7 @@ public class Attachments {
    * @param contribution the contribution to which the attachments have to be attached.
    */
   public void attachTo(final Contribution contribution) {
-    attachTo(contribution, I18NHelper.DEFAULT_LANGUAGE);
+    attachTo(contribution, I18n.get().getDefaultLanguage());
   }
 
   /**

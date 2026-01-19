@@ -23,22 +23,22 @@
  */
 package org.silverpeas.core.util.logging;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.kernel.logging.Level;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Priority;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.Priority;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * A processor of {@code org.silverpeas.core.util.logging.Log} annotations. Each time a method
@@ -81,7 +81,7 @@ public class LogAnnotationProcessor {
   private Object logCustomMessage(SilverLogger logger, LogProperties logProps,
       InvocationContext context)
       throws Exception {
-    UserDetail currentUser = UserDetail.getCurrentRequester();
+    User currentUser = User.getCurrentRequester();
     Result result;
     String message = computeCustomMessage(logProps.getMessage(), context);
     if (currentUser == null) {
@@ -110,7 +110,7 @@ public class LogAnnotationProcessor {
   private Object logDefaultMessage(SilverLogger logger, LogProperties logProps,
       InvocationContext context)
       throws Exception {
-    UserDetail currentUser = UserDetail.getCurrentRequester();
+    User currentUser = User.getCurrentRequester();
     Result result;
     String className = context.getMethod().getDeclaringClass().getSimpleName();
     String message = computeDefaultMessage(context);

@@ -25,7 +25,7 @@ package org.silverpeas.core.web.index.components;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import static org.silverpeas.kernel.logging.SilverLogger.getLogger;
 

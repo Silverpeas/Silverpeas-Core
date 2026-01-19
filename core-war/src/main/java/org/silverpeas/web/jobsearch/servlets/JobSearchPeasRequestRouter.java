@@ -66,7 +66,7 @@ public class JobSearchPeasRequestRouter extends
         String searchField = request.getParameter("SearchField");
         searchField = searchField.trim();//supprime les espaces avant et après la chaine
         while(!searchField.isEmpty() && (searchField.charAt(0) == '*' || searchField.charAt(0) == '?')) {
-          //supprime les * et ? en début de chaine : non supportés par Lucène
+          //supprime les '*' et les '?' en début de chaine : non supportés par Lucène
           if(searchField.length() == 1) {
             searchField = "";
           } else {

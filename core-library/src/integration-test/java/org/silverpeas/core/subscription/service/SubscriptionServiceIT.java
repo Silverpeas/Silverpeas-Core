@@ -35,7 +35,7 @@ import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -154,7 +154,7 @@ public class SubscriptionServiceIT extends AbstractCommonSubscriptionIntegration
    * Test of unsubscribe method, of interface SubscriptionService.
    */
   @Test
-  public void testUnsubscribeByResource() throws Exception {
+  public void testUnsubscribeByResource() {
     String userId = "1";
     SubscriptionSubscriber userSubscriber = UserSubscriptionSubscriber.from(userId);
     SubscriptionSubscriber user11Subscriber = UserSubscriptionSubscriber.from("11");
@@ -192,7 +192,7 @@ public class SubscriptionServiceIT extends AbstractCommonSubscriptionIntegration
    * Test of existsSubscription method, of interface SubscriptionService.
    */
   @Test
-  public void testExistsSubscription() throws Exception {
+  public void testExistsSubscription() {
     SubscriptionSubscriber subscriber = UserSubscriptionSubscriber.from("2");
 
     // Node - User 2 - Self creation method

@@ -30,10 +30,10 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -56,7 +56,7 @@ public class SubscribeAgenda extends HttpServlet {
     String login = getLogin(req);
     String password = getPassword(req);
     try {
-      // Check login/pwd must be a identified user
+      // Check login/pwd must be an identified user
       UserFull user = adminController.getUserFull(userId);
       if (user != null && login.equals(user.getLogin())
           && password.equals(user.getPassword())) {

@@ -27,11 +27,10 @@ package org.silverpeas.web.pdcsubscription.control;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.subscription.SubscriptionContributionType;
-import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionFactory;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -44,7 +43,6 @@ import static java.util.Comparator.comparingInt;
  * @author silveryocha
  */
 @Service
-@Singleton
 public class SubscriptionCategoryWebManager {
 
   private static final String CATEGORY_LIST_CACHE_KEY =

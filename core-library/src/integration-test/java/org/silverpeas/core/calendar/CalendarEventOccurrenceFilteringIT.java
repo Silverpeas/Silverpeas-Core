@@ -26,10 +26,12 @@ package org.silverpeas.core.calendar;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.LibCoreWarBuilder;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -48,18 +50,26 @@ public class CalendarEventOccurrenceFilteringIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(
-        CalendarEventOccurrenceFilteringIT.class)
+    return LibCoreWarBuilder.onWarForTestClass(CalendarEventOccurrenceFilteringIT.class)
+        .addStubbedUserAPI()
+        .addCalendarEngine()
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
+  }
+
+  @Before
+  public void setUpExpectedUsers() {
+    StubbedUserProvider.addUser("0");
+    StubbedUserProvider.addUser("1");
+    StubbedUserProvider.addUser("2");
   }
 
   /**
    * Whatever the calendars, get the occurrences of events in which participate some given users
    * and in a given period of time.
    * <p>
-   * Input: users that participate to some events and a period of time without any occurrences of
+   * Input: users participating in some events and a period of time without any occurrences of
    * events.
    * Output: no occurrences.
    */
@@ -76,7 +86,7 @@ public class CalendarEventOccurrenceFilteringIT extends BaseCalendarTest {
    * Whatever the calendars, get the occurrences of events in which participate some given users
    * and in a given period of time.
    * <p>
-   * Input: users that don't participate to the events in the given a period of time.
+   * Input: users that don't participate in the events in the given a period of time.
    * Output: no occurrences.
    */
   @Test

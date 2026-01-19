@@ -24,12 +24,14 @@
 
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.content.renderer.AbstractContributionRenderer;
 import org.silverpeas.core.contribution.content.renderer.ContributionContentRendererProvider;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * This renderer is instantiated as explained into
@@ -37,6 +39,8 @@ import javax.inject.Named;
  * documentation.
  * @author silveryocha
  */
+@Technical
+@Bean
 @Named
 public class WysiwygContentRenderer extends AbstractContributionRenderer<WysiwygContent> {
   private static final long serialVersionUID = -5283748624108237499L;

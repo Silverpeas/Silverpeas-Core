@@ -30,10 +30,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControllerIT;
+import org.silverpeas.core.jcr.JCRSession;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.jcr.JCRSession;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -64,8 +65,9 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(WebdavDocumentRepositoryIT.class)
-        .addJcrFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(WysiwygControllerIT.class)
+        .addAsResource("silverpeas-oak.properties")
+        .addAsResource("org/silverpeas/util/attachment/Attachment.properties")
         .build();
   }
 

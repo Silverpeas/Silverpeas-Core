@@ -29,7 +29,7 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.web.util.WebRedirection;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;

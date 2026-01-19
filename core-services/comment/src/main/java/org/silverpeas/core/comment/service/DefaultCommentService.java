@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.comment.service;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
@@ -41,19 +42,16 @@ import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 
 /**
  * A service that provide the features to handle the comments in Silverpeas. Such features are, for
  * example, retrieving comments on a given content, creating a comment into the business layer,
- * indexing them, notifying components interested by the creation or the deletion of a comment, and
+ * indexing them, notifying components interested in the creation or the deletion of a comment, and
  * so on. A comment is text written by users about a content published in Silverpeas. Such comment,
  * as any other contents in Silverpeas, can be indexed in order to be found by the Silverpeas search
  * engine. This service is managed by an IoC container and this be retrieved by dependency
@@ -77,7 +75,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   }
 
   /**
-   * Gets the comment DAO with wich operations with the underlying data source can be performed.
+   * Gets the comment DAO with which operations with the underlying data source can be performed.
    *
    * @return the DAO on the comments.
    */
@@ -85,6 +83,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     return commentDAO;
   }
 
+  @Transactional
   @Override
   public Comment createComment(final Comment cmt) {
     Comment comment = getCommentDAO().saveComment(cmt);
@@ -92,6 +91,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     return comment;
   }
 
+  @Transactional
   @Override
   public Comment createAndIndexComment(final Comment cmt) {
     Comment comment = createComment(cmt);
@@ -99,12 +99,14 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     return comment;
   }
 
+  @Transactional
   @Override
   public void deleteComment(final CommentId commentId) {
     Comment comment = getComment(commentId);
     deleteComment(comment);
   }
 
+  @Transactional
   @Override
   public void deleteAllCommentsOnResource(final String resourceType,
       final ResourceReference resourceRef) {
@@ -114,6 +116,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     }
   }
 
+  @Transactional
   @Override
   public void deleteComment(final Comment comment) {
     deleteIndex(comment);
@@ -121,6 +124,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     notifier.notifyEventOn(ResourceEvent.Type.DELETION, comment);
   }
 
+  @Transactional
   @Override
   public void moveComments(final String resourceType, final ResourceReference fromResource,
       final ResourceReference toResource) {
@@ -128,6 +132,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     getCommentDAO().moveComments(resourceType, fromResource, toResource);
   }
 
+  @Transactional
   @Override
   public void moveAndReindexComments(final String resourceType,
       final ResourceReference fromResource, final ResourceReference toResource) {
@@ -135,11 +140,13 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     indexAllCommentsOnPublication(resourceType, toResource);
   }
 
+  @Transactional
   @Override
   public void updateComment(final Comment cmt) {
     getCommentDAO().updateComment(cmt);
   }
 
+  @Transactional
   @Override
   public void updateAndIndexComment(final Comment cmt) {
     updateComment(cmt);
@@ -234,15 +241,6 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
-  }
-
-  /**
-   * Gets an organization controller.
-   *
-   * @return an OrganizationController instance.
-   */
-  protected OrganizationController getOrganisationController() {
-    return OrganizationControllerProvider.getOrganisationController();
   }
 
   @Override

@@ -65,8 +65,8 @@ import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPaneSilverpeas
 import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 import org.silverpeas.core.web.util.viewgenerator.html.window.WindowWeb20V5;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,9 +78,9 @@ import java.util.Set;
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
- * The GraphicElementFactory is the only class to instanciate in this package. You should have one
+ * The GraphicElementFactory is the only class to instantiate in this package. You should have one
  * factory for each client (for future evolution). The GraphicElementFactory is responsible from
- * graphic component instanciation. You should never directly instanciate a component without using
+ * graphic component instanciation. You should never directly instantiate a component without using
  * this factory ! This class uses the "factory design pattern".
  */
 public class GraphicElementFactory implements Serializable {
@@ -130,11 +130,6 @@ public class GraphicElementFactory implements Serializable {
     }
   }
 
-  /**
-   * Constructor declaration
-   * @param look
-   * @see
-   */
   public GraphicElementFactory(String look) {
     setLook(look);
   }
@@ -162,7 +157,7 @@ public class GraphicElementFactory implements Serializable {
   }
 
   private String getLanguage() {
-    String language = I18NHelper.DEFAULT_LANGUAGE;
+    String language = I18NHelper.getDefaultLanguage();
     if (mainSessionController != null) {
       language = mainSessionController.getFavoriteLanguage();
     }
@@ -172,35 +167,20 @@ public class GraphicElementFactory implements Serializable {
   /**
    * Get the settings for the factory.
    * @return The ResourceLocator returned contains all default environment settings necessary to
-   * know wich component to instanciate, but also to know how to generate html code.
+   * know which component to instantiate, but also to know how to generate HTML code.
    */
   public static SettingBundle getSettings() {
     return settings;
   }
 
-  /**
-   * Method declaration
-   * @return Customer specific look settings if defined, default look settings otherwise
-   * @see
-   */
   public SettingBundle getLookSettings() {
     return lookSettings;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public SettingBundle getFavoriteLookSettings() {
     return this.favoriteLookSettings;
   }
 
-  /**
-   * Method declaration
-   * @param lookName
-   * @see
-   */
   public final String setLook(String lookName) {
     // get the customer lookSettings
     String aLookName = lookName;
@@ -272,11 +252,6 @@ public class GraphicElementFactory implements Serializable {
     return (getExternalStylesheet() != null);
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getLookFrame() {
     return getFavoriteLookSettings().getString("FrameJSP");
   }
@@ -291,20 +266,10 @@ public class GraphicElementFactory implements Serializable {
     return WebCommonLookAndFeel.getInstance().getCommonHeader(request);
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getIcon(String iconKey) {
     return getFavoriteLookSettings().getString(iconKey, null);
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public List<String> getAvailableLooks() {
     SettingBundle theLookSettings = getLookSettings();
     return new ArrayList<>(theLookSettings.keySet());
@@ -326,8 +291,8 @@ public class GraphicElementFactory implements Serializable {
   /**
    * Construct a new button.
    * @param label The new button label
-   * @param action The action associated exemple : "javascript:onClick=history.back()", or
-   * "http://www.stratelia.com/"
+   * @param action The action associated exemple: "javascript:onClick=history.back()", or
+   * "https://www.silverpeas.com/"
    * @param disabled Specify if the button is disabled or not. If disabled, no action will be
    * possible.
    * @return returns an object implementing the FormButton interface. That's the new button to use.
@@ -404,7 +369,7 @@ public class GraphicElementFactory implements Serializable {
    * Construct a new button.
    * @param label The new button label
    * @param action The action associated exemple : "javascript:history.back()", or
-   * "http://www.stratelia.com/"
+   * "https://www.silverpeas.com/"
    * @param disabled Specify if the button is disabled or not. If disabled, no action will be
    * possible.
    * @param imagePath The path where the images needed to display buttons will be found.
@@ -422,7 +387,7 @@ public class GraphicElementFactory implements Serializable {
    */
   public TabbedPane getTabbedPane() {
     String tabbedPaneClassName = getFavoriteLookSettings().getString("TabbedPane");
-    TabbedPane tabbedPane = null;
+    TabbedPane tabbedPane;
     try {
       tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).getConstructor().newInstance();
     } catch (Exception e) {
@@ -443,7 +408,7 @@ public class GraphicElementFactory implements Serializable {
    * @deprecated
    */
   @Deprecated(forRemoval = true)
-  public ArrayPane getArrayPane(String name, javax.servlet.jsp.PageContext pageContext) {
+  public ArrayPane getArrayPane(String name, jakarta.servlet.jsp.PageContext pageContext) {
     String arrayPaneClassName = getFavoriteLookSettings().getString(ARRAY_PANE);
     ArrayPane arrayPane = null;
 
@@ -492,8 +457,8 @@ public class GraphicElementFactory implements Serializable {
    * @param name The name from your array. This name has to be unique in the session. It will be
    * used to put some information (including the sorted column), in the session. exemple :
    * "MyToDoArrayPane"
-   * @param url The url to root sorting action. This url can contain parameters. exemple :
-   * http://localhost/webactiv/Rkmelia/topicManager?topicId=12
+   * @param url The url to root sorting action. This url can contain parameters. exemple:
+   * http://localhost/silverpeas/Rkmelia/topicManager?topicId=12
    * @param request The http request (to get entering action, like sort operation)
    * @param session The client session (to get the old status, like on which column we are sorted)
    * @return An object implementing the ArrayPane interface.

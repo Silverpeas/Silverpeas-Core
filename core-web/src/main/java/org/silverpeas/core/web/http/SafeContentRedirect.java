@@ -25,8 +25,8 @@ package org.silverpeas.core.web.http;
 
 import org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.silverpeas.core.util.URLUtil.*;
 

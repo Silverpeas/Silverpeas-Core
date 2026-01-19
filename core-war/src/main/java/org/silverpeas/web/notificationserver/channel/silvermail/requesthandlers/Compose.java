@@ -26,14 +26,14 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
-@Singleton
+@Bean
 @Named("Compose")
 public class Compose implements SILVERMAILRequestHandler {
 

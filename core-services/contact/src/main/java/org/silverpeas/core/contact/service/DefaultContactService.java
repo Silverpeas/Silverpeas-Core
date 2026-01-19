@@ -23,27 +23,22 @@
  */
 package org.silverpeas.core.contact.service;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contact.info.InfoDAO;
-import org.silverpeas.core.contact.model.CompleteContact;
-import org.silverpeas.core.contact.model.Contact;
-import org.silverpeas.core.contact.model.ContactDetail;
-import org.silverpeas.core.contact.model.ContactFatherDetail;
-import org.silverpeas.core.contact.model.ContactPK;
-import org.silverpeas.core.contact.model.ContactRuntimeException;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.contact.model.*;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -459,7 +454,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
             "Contact", contact.getPK().getId()));
         String fullName = contact.getFirstName() + " " + contact.getLastName();
         indexEntry.setTitle(fullName);
-        indexEntry.setLang(I18NHelper.DEFAULT_LANGUAGE);
+        indexEntry.setLang(I18n.get().getDefaultLanguage());
         indexEntry.setCreationDate(contact.getCreationDate());
         indexEntry.setCreationUser(contact.getCreatorId());
         indexEntry.addTextContent(contact.getPhone());

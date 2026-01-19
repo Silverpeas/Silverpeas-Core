@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.calendar.ical4j;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarParserFactory;
 import net.fortuna.ical4j.data.ParserException;
@@ -36,7 +38,6 @@ import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.util.CompatibilityHints;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
@@ -47,13 +48,12 @@ import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
@@ -171,7 +171,7 @@ public class ICal4JImporter implements ICalendarImporter {
         return Pair.of(replacement[0], replacement[1]);
       }).forEach(r -> {
         String previous = icsContent.get();
-        icsContent.set(previous.replaceAll(r.getLeft(), r.getRight()));
+        icsContent.set(previous.replaceAll(r.getFirst(), r.getSecond()));
       });
       return toInputStream(icsContent.get(), Charsets.UTF_8);
     }

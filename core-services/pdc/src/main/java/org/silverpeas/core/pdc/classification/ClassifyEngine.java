@@ -34,9 +34,9 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -59,11 +59,11 @@ public class ClassifyEngine implements SilverContentPostUpdate {
   // Maximum number of axis processed by the classifyEngine (from properties)
   private int nbMaxAxis = 0;
   // Helper object to build all the SQL statements
-  private org.silverpeas.core.pdc.classification.SQLStatement sqlStatement = new SQLStatement();
+  private final org.silverpeas.core.pdc.classification.SQLStatement sqlStatement = new SQLStatement();
   // Registered axis cache
   private int[] registeredAxis = null;
   // GetSinglePertinentAxis Cache
-  private Map<String, PertinentAxis> singlePertinentAxis = new ConcurrentHashMap<>(0);
+  private final Map<String, PertinentAxis> singlePertinentAxis = new ConcurrentHashMap<>(0);
 
   private static ClassifyEngine getInstance() {
     return ServiceProvider.getService(ClassifyEngine.class);
@@ -154,7 +154,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
   public List<Integer> unregisterAxis(Connection connection, int nLogicalAxisId)
       throws ClassifyEngineException {
     PreparedStatement prepStmt = null;
-    List<Integer> alDeletedPositionIds = null;
+    List<Integer> alDeletedPositionIds;
 
     // Check the minimum required
     int nAxis = this.getPhysicalAxisId(nLogicalAxisId);
@@ -455,13 +455,13 @@ public class ClassifyEngine implements SilverContentPostUpdate {
       try (final PreparedStatement prepStmt = connection.prepareStatement(sSQLStatement)) {
 
         // works on dates
-        if ((beforeDate != null && beforeDate.length() > 0) &&
-            (afterDate != null && afterDate.length() > 0)) {
+        if ((beforeDate != null && !beforeDate.isEmpty()) &&
+            (afterDate != null && !afterDate.isEmpty())) {
           prepStmt.setDate(1, new Date(DateUtil.parseDate(beforeDate).getTime()));
           prepStmt.setDate(2, new Date(DateUtil.parseDate(afterDate).getTime()));
-        } else if (beforeDate != null && beforeDate.length() > 0) {
+        } else if (beforeDate != null && !beforeDate.isEmpty()) {
           prepStmt.setDate(1, new Date(DateUtil.parseDate(beforeDate).getTime()));
-        } else if (afterDate != null && afterDate.length() > 0) {
+        } else if (afterDate != null && !afterDate.isEmpty()) {
           prepStmt.setDate(1, new Date(DateUtil.parseDate(afterDate).getTime()));
         }
 
@@ -698,7 +698,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
       for (Integer alAxisId : alAxisIds) {
         int nAxisId = this.getPhysicalAxisId(alAxisId);
         alPertinentAxis.add(getSinglePertinentAxisByJoin(connection,
-            alCriterias, nAxisId, "", instanceIds, today));
+            alCriterias, nAxisId, instanceIds, today));
       }
 
       return alPertinentAxis;
@@ -711,13 +711,13 @@ public class ClassifyEngine implements SilverContentPostUpdate {
    * Return a PertinentAxis object corresponding to the given AxisId, rootValue and search Criterias
    */
   private PertinentAxis getSinglePertinentAxisByJoin(final Connection connection,
-      final List<? extends Criteria> alCriterias, final int nAxisId, final String sRootValue,
+      final List<? extends Criteria> alCriterias, final int nAxisId,
       final List<String> instanceIds, final String todayFormatted) throws ClassifyEngineException {
 
     // build the statements
     final String sSQLStatement =
         sqlStatement.buildGetPertinentAxisStatementByJoin(alCriterias, nAxisId,
-            sRootValue, instanceIds, todayFormatted);
+            "", instanceIds, todayFormatted);
 
     PertinentAxis pertinentAxis = singlePertinentAxis.get(sSQLStatement);
     if (pertinentAxis == null) {
@@ -733,7 +733,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
           nDocs += resSet.getInt(1);
         }
         pertinentAxis.setNbObjects(nDocs);
-        pertinentAxis.setRootValue(sRootValue);
+        pertinentAxis.setRootValue("");
 
         // Add in cache
         singlePertinentAxis.put(sSQLStatement, pertinentAxis);
@@ -822,10 +822,10 @@ public class ClassifyEngine implements SilverContentPostUpdate {
   }
 
   /**
-   * Get axis on which some informations are classified according to given list
+   * Get axis on which some information are classified according to given list
    * @param instanceIds a List of component ids
    * @return a List of axis id on which at least one information is classified
-   * @throws ClassifyEngineException
+   * @throws ClassifyEngineException if the axis cannot be fetched
    */
   public List<Integer> getPertinentAxisByInstanceIds(List<String> instanceIds)
       throws ClassifyEngineException {
@@ -844,18 +844,14 @@ public class ClassifyEngine implements SilverContentPostUpdate {
         inClause.append("'").append(instanceId).append("'");
         first = false;
       }
-      final StringBuilder sSQLStatement = new StringBuilder(200);
-      sSQLStatement.append("select * from sb_classifyengine_classify ");
-      sSQLStatement.append("where objectid in ");
-      sSQLStatement
-          .append(
-          "(select silvercontentid from sb_contentmanager_content, sb_contentmanager_instance where contentinstanceid in ");
-      sSQLStatement.append(
-          "(select instanceid from sb_contentmanager_instance where componentid IN (").append(
-          inClause.toString()).append(")))");
+      String sSQLStatement = "select * from sb_classifyengine_classify " +
+          "where objectid in " +
+          "(select silvercontentid from sb_contentmanager_content, sb_contentmanager_instance where contentinstanceid in " +
+          "(select instanceid from sb_contentmanager_instance where componentid IN (" +
+          inClause + ")))";
 
       // Execute the finding
-      try (final PreparedStatement prepStmt = connection.prepareStatement(sSQLStatement.toString());
+      try (final PreparedStatement prepStmt = connection.prepareStatement(sSQLStatement);
            final ResultSet resSet = prepStmt.executeQuery()) {
         final List<Integer> axisIds = new ArrayList<>();
         // Fetch the results

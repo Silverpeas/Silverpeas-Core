@@ -36,7 +36,7 @@ import org.silverpeas.core.subscription.AbstractProfiledResourceSubscriptionList
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

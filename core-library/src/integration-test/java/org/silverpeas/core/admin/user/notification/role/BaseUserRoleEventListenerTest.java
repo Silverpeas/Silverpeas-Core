@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.admin.user.notification.role;
 
+import jakarta.inject.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,12 +36,13 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.notification.role.test.Validator;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.cache.service.SessionCacheAccessor;
+import org.silverpeas.core.node.service.NodeProfileInstEventListener;
+import org.silverpeas.core.node.service.UserRoleEventListener;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -70,15 +72,13 @@ public abstract class BaseUserRoleEventListenerTest {
   private Administration admin;
 
   public static Archive<?> createTestArchiveFor(Class<? extends BaseUserRoleEventListenerTest> test) {
-    return WarBuilder4LibCore.onWarForTestClass(test)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addDatabaseToolFeatures()
-        .addJpaPersistenceFeatures()
-        .addPublicationTemplateFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(test)
+        // remove non required listeners of ProfileInstEvent (and which can badly interact within
+        // the test because all the resources required by those listeners aren't correctly set)
+        .deleteClasses(NodeProfileInstEventListener.class, UserRoleEventListener.class)
+        .addAsResource("org/silverpeas/admin")
+        .addAsResource("org/silverpeas/jobStartPagePeas/settings")
         .addAsResource("org/silverpeas/core/admin/user/notification/role")
-        .testFocusedOn(warBuilder ->
-            warBuilder.addPackages(true, test.getPackageName()))
         .build();
   }
 

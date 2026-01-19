@@ -29,13 +29,13 @@
   <parent>
     <groupId>org.silverpeas.core</groupId>
     <artifactId>services</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
   <artifactId>silverpeas-core-comment</artifactId>
   <packaging>jar</packaging>
-  <name>Silverpeas Comment Service ${project.version}</name>
+  <name>Silverpeas Commenting Engine ${project.version}</name>
 
   <dependencies>
     <dependency>

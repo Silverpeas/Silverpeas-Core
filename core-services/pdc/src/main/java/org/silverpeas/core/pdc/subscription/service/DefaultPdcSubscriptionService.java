@@ -46,7 +46,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -57,11 +57,6 @@ import java.util.List;
 @Transactional
 public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
 
-  /**
-   * Remote interface method
-   *
-   * @param userId
-   */
   @Override
   public List<PdcSubscription> getPDCSubscriptionByUserId(int userId) {
     try(Connection conn = DBUtil.openConnection()) {
@@ -73,12 +68,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
   }
 
-  /**
-   * Remote interface method
-   *
-   * @param id
-   * @return
-   */
   @Override
   public PdcSubscription getPDCSubsriptionById(int id) {
     PdcSubscription result = null;
@@ -97,11 +86,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     return result;
   }
 
-  /**
-   * Remote interface method
-   *
-   * @param subscription
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public int createPDCSubscription(PdcSubscription subscription) {
@@ -114,11 +98,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
   }
 
-  /**
-   * Remote interface method
-   *
-   * @param subscription
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void updatePDCSubscription(PdcSubscription subscription) {
@@ -131,11 +110,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
   }
 
-  /**
-   * Remote interface method
-   *
-   * @param id
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void removePDCSubscriptionById(int id) {
@@ -148,11 +122,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
   }
 
-  /**
-   * Remote interface method
-   *
-   * @param ids
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void removePDCSubscriptionById(int[] ids) {
@@ -165,20 +134,13 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
   }
 
-  /**
-   * Remote inteface method Implements PdcSubscription check for axis deletion. It deletes all
-   * references to this axis from PdcSubscription module DB
-   *
-   * @param axisId the axis to be checked
-   * @param axisName the name of the axis
-   */
   @Override
   public void checkAxisOnDelete(int axisId, String axisName) {
     try(Connection conn = DBUtil.openConnection()) {
       // found all subscription uses axis provided
       List<PdcSubscription> subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
           axisId);
-      if (subscriptions == null || subscriptions.isEmpty()) {
+      if (subscriptions.isEmpty()) {
         return;
       }
       int[] pdcIds = new int[subscriptions.size()];
@@ -196,23 +158,13 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
   }
 
-  /**
-   * Implements PdcSubscription check for value deletion. It deletes all references to the path
-   * containing this value from PdcSubscription module DB
-   *
-   * @param axisId the axis to be checked
-   * @param axisName the name of the axis
-   * @param oldPath old path that would be removed soon
-   * @param newPath new path. That will be places instead of old for this axis
-   * @param pathInfo should contains PdcBm.getFullPath data structure
-   */
   @Override
   public void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
       List<String> newPath, List<org.silverpeas.core.pdc.pdc.model.Value> pathInfo) {
     try(Connection conn = DBUtil.openConnection()) {
       List<PdcSubscription> subscriptions =
           PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn, axisId);
-      if (subscriptions == null || subscriptions.isEmpty()) {
+      if (subscriptions.isEmpty()) {
         return;
       }
 
@@ -237,14 +189,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
   }
 
-  /**
-   * This method check is any subscription that match criterias provided and sends notification if
-   * succeed
-   *
-   * @param classifyValues Linst of ClassifyValues to be checked
-   * @param componentId component where classify event occures
-   * @param silverObjectid object that was classified
-   */
   @Override
   public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
       int silverObjectid) {
@@ -346,12 +290,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     return false;
   }
 
-  /**
-   * @param originalPath
-   * @param oldPath
-   * @param newPath
-   * @return true if path provided was removed should be removed
-   */
   protected boolean checkValuesRemove(String originalPath, List<String> oldPath,
       List<String> newPath) {
     if (!originalPath.endsWith("/")) {
@@ -359,16 +297,11 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
     // substring a value from original path. Ex: /2/3/9/ value will be /9/
     int idx = originalPath.lastIndexOf("/", originalPath.length() - 2);
-    String value = originalPath.substring(idx, originalPath.length());
-    boolean result = false;
+    String value = originalPath.substring(idx);
 
     // check if extracted value presented in old path but not presented in
     // newPath
-    if (checkValueInPath(value, oldPath) && !checkValueInPath(value, newPath)) {
-      result = true;
-    }
-
-    return result;
+    return checkValueInPath(value, oldPath) && !checkValueInPath(value, newPath);
   }
 
   /**
@@ -391,11 +324,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     return false;
   }
 
-  /**
-   * @param subscription
-   * @param classifyValues
-   * @return true if subscription provided match the list of classify values
-   */
   protected boolean isCorrespondingSubscription(PdcSubscription subscription,
       List<? extends Value> classifyValues) {
     List<? extends Criteria> searchCriterias = subscription.getPdcContext();
@@ -428,13 +356,8 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     return true;
   }
 
-  /**
-   * @param criteria
-   * @param searchValue
-   * @return true if criteria provided match the searchValue provided
-   */
   protected boolean checkValues(Criteria criteria, Value searchValue) {
     return searchValue.getAxisId() == criteria.getAxisId() &&
-        searchValue.getValue().startsWith(criteria.getValue(), 0);
+        searchValue.getValue().startsWith(criteria.getValue());
   }
 }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
 import org.silverpeas.core.web.util.viewgenerator.html.window.WindowTag;

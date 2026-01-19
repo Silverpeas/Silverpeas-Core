@@ -42,7 +42,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;

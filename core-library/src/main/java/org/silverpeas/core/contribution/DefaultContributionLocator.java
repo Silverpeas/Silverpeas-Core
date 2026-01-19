@@ -31,19 +31,12 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author silveryocha
  */
 @Service
-@Singleton
 public class DefaultContributionLocator implements ContributionLocator {
 
   private final Map<String, List<Class<? extends ContributionLocatorByLocalIdAndType>>>

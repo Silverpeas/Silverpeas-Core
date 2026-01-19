@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.util.SilverpeasList;
@@ -34,8 +35,10 @@ import static java.util.Collections.emptyList;
 
 /**
  * JPA repository of <code>SILVERMAILMessageBean</code> instances.
+ *
  * @author mmoquillon
  */
+@Repository
 public class SILVERMAILMessageBeanRepository
     extends BasicJpaEntityRepository<SILVERMAILMessageBean> {
 
@@ -44,6 +47,7 @@ public class SILVERMAILMessageBeanRepository
 
   /**
    * Finds user notifications according to the given criteria.
+   *
    * @param criteria the user notification criteria.
    * @return the list corresponding to the given criteria.
    */
@@ -56,6 +60,7 @@ public class SILVERMAILMessageBeanRepository
 
   /**
    * Finds user notifications according to the given criteria.
+   *
    * @param criteria the user notification criteria.
    * @return the list corresponding to the given criteria.
    */
@@ -67,8 +72,9 @@ public class SILVERMAILMessageBeanRepository
   }
 
   /**
-   * Marks as read all the messages of folder specified by given identifier which belong to the
-   * user represented by the given identifier.
+   * Marks as read all the messages of folder specified by given identifier which belong to the user
+   * represented by the given identifier.
+   *
    * @param userId the identifier of a user.
    * @param folderId the identifier of a folder.
    * @return the number of message marked as read.
@@ -80,8 +86,9 @@ public class SILVERMAILMessageBeanRepository
   }
 
   /**
-   * Marks as read the messages specified by given identifiers which belong to the user
-   * represented by the given identifier.
+   * Marks as read the messages specified by given identifiers which belong to the user represented
+   * by the given identifier.
+   *
    * @param userId the identifier of a user.
    * @param ids the identifiers of user notifications.
    * @return the number of message marked as read.
@@ -97,21 +104,25 @@ public class SILVERMAILMessageBeanRepository
   }
 
   /**
-   * Gets all long text ids of the messages of folder specified by given identifier which belong
-   * to the user represented by the given identifier.
+   * Gets all long text ids of the messages of folder specified by given identifier which belong to
+   * the user represented by the given identifier.
+   *
    * @param userId the identifier of a user.
    * @param folderId the identifier of a folder.
    * @return a list of string identifier.
    */
-  public List<String> getLongTextIdsOfAllMessagesByUserIdAndFolderId(String userId, String folderId) {
+  public List<String> getLongTextIdsOfAllMessagesByUserIdAndFolderId(String userId,
+      String folderId) {
     NamedParameters parameters = newNamedParameters();
     parameters.add(USER_ID, Long.parseLong(userId)).add(FOLDER_ID, Long.parseLong(folderId));
-    return listFromNamedQuery("getLongTextIdsOfAllMessagesByUserIdAndFolderId", parameters, String.class);
+    return listFromNamedQuery("getLongTextIdsOfAllMessagesByUserIdAndFolderId", parameters,
+        String.class);
   }
 
   /**
    * Deletes all the messages of folder specified by given identifier which belong to the user
    * represented by the given identifier.
+   *
    * @param userId the identifier of a user.
    * @param folderId the identifier of a folder.
    * @return the number of message deleted.
@@ -123,25 +134,29 @@ public class SILVERMAILMessageBeanRepository
   }
 
   /**
-   * Gets all long text ids of the messages specified by given identifiers which belong to the
-   * user represented by the given identifier.
+   * Gets all long text ids of the messages specified by given identifiers which belong to the user
+   * represented by the given identifier.
+   *
    * @param userId the identifier of a user.
    * @param ids the identifiers of user notifications.
    * @return a list of string identifier.
    */
-  public List<String> getLongTextIdsOfMessagesByUserIdAndByIds(String userId, Collection<String> ids) {
+  public List<String> getLongTextIdsOfMessagesByUserIdAndByIds(String userId,
+      Collection<String> ids) {
     if (ids.isEmpty()) {
       return emptyList();
     }
     NamedParameters parameters = newNamedParameters();
     parameters.add(USER_ID, Long.parseLong(userId))
         .add("ids", getIdentifierConverter().convertToEntityIdentifiers(ids));
-    return listFromNamedQuery("getLongTextIdsOfAllMessagesByUserIdAndIds", parameters, String.class);
+    return listFromNamedQuery("getLongTextIdsOfAllMessagesByUserIdAndIds", parameters,
+        String.class);
   }
 
   /**
-   * Deletes the messages specified by given identifiers which belong to the user represented by
-   * the given identifier.
+   * Deletes the messages specified by given identifiers which belong to the user represented by the
+   * given identifier.
+   *
    * @param userId the identifier of a user.
    * @param ids the identifiers of user notifications.
    * @return the number of message marked as read.

@@ -26,21 +26,15 @@
 
 package org.silverpeas.web.notificationserver.channel.popup;
 
-/**
- * Titre : PopupRequestRouter.java
- * @author dlesimple
- * @version 1.0
- */
-
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**
- * Class declaration
- * @author
- * @version %I%, %G%
+ * Titre : PopupRequestRouter.java
+ * @author dlesimple
+ * @version 1.0
  */
 public class POPUPRequestRouter extends ComponentRequestRouter<POPUPSessionController> {
 

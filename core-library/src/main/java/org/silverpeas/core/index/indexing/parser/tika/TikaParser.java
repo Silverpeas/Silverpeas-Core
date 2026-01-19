@@ -30,8 +30,8 @@ import org.silverpeas.core.index.indexing.parser.DefaultParser;
 import org.silverpeas.core.index.indexing.parser.Parser;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -51,7 +51,7 @@ public class TikaParser implements Parser {
   private Tika tika;
 
   @PostConstruct
-  private void initTika() {
+  void initTika() {
     tika = new Tika();
   }
 

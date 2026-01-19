@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.notification.role.test.ResourceValidators;
 import org.silverpeas.core.admin.user.notification.role.test.Validator;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 /**

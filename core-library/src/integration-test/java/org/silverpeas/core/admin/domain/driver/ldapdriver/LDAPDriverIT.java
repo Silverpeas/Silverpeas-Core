@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import com.sun.nio.file.SensitivityWatchEventModifier;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -41,26 +40,14 @@ import org.opends.server.core.DirectoryServer;
 import org.opends.server.core.LockFileManager;
 import org.opends.server.protocols.internal.InternalClientConnection;
 import org.opends.server.tools.BackendToolUtils;
-import org.opends.server.types.DN;
-import org.opends.server.types.DirectoryEnvironmentConfig;
-import org.opends.server.types.DirectoryException;
-import org.opends.server.types.Entry;
-import org.opends.server.types.InitializationException;
-import org.opends.server.types.LDIFImportConfig;
-import org.opends.server.types.LDIFImportResult;
+import org.opends.server.types.*;
 import org.opends.server.util.EmbeddedUtils;
 import org.opends.server.util.StaticUtils;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.token.exception.TokenException;
-import org.silverpeas.core.security.token.exception.TokenRuntimeException;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 
 import java.io.File;
@@ -70,9 +57,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(Arquillian.class)
 public class LDAPDriverIT {
@@ -82,23 +70,14 @@ public class LDAPDriverIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(LDAPDriverIT.class).addLDAPFeatures()
-        .addAdministrationFeatures()
-        .addSilverpeasExceptionBases()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.admin.domain.driver.ldapdriver");
-          warBuilder
-              .addClasses(SensitivityWatchEventModifier.class,
-                  AuthenticationBadCredentialException.class, AuthenticationException.class,
-                  LdapConfiguration.class, TokenException.class, FieldTemplate.class, Field.class,
-                  TokenRuntimeException.class);
-          warBuilder.addAsResource("org/silverpeas/domains/domainLDAP.properties");
-        }).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(LDAPDriverIT.class)
+        .addMavenDependencies("com.novell.ldap:jldap")
+        .addAsResource("org/silverpeas/domains/domainLDAP.properties")
+        .build();
   }
 
   private String connectionId;
-  private LDAPDriver driver = new LDAPDriver();
+  private final LDAPDriver driver = new LDAPDriver();
 
   public LDAPDriverIT() {
   }
@@ -110,14 +89,12 @@ public class LDAPDriverIT {
     final String LDIF_CONFIG_FILE = BASE_PATH + "/opendj/config/config.ldif";
     final String SERVER_HOME = BASE_PATH + "/opendj";
     final String LDIFF_FILE = BASE_PATH + "/opendj/silverpeas-ldap.ldif";
-    final String BACKEND_ID = "silverpeas";
     final String BACKEND_DN = "dc=silverpeas,dc=org";
 
     try {
       startLdapServer(SERVER_HOME, LDIF_CONFIG_FILE);
-      loadLdif(LDIFF_FILE, BACKEND_ID, DN.decode(BACKEND_DN));
+      loadLdif(LDIFF_FILE, DN.decode(BACKEND_DN));
     } catch (Exception ex) {
-      ex.printStackTrace();
       throw new RuntimeException("Could'nt start LDAP Server", ex);
     }
     driver.init(0, "org.silverpeas.domains.domainLDAP", null);
@@ -143,8 +120,8 @@ public class LDAPDriverIT {
   @Test
   public void getAllUsers() throws Exception {
     List<String> userNames = Arrays.asList(
-        new String[]{"Nicolas", "Aaren", "Aarika", "Aaron", "Aartjan", "Abagael", "Abagail",
-            "Abahri", "Abbas", "Abbe"});
+        "Nicolas", "Aaren", "Aarika", "Aaron", "Aartjan", "Abagael", "Abagail",
+        "Abahri", "Abbas", "Abbe");
     UserDetail[] users = driver.getAllUsers();
     assertThat(users, notNullValue());
     assertThat(users, arrayWithSize(10));
@@ -158,10 +135,10 @@ public class LDAPDriverIT {
     Group[] groups = driver.getAllGroups();
     assertThat(groups, notNullValue());
     assertThat(groups, arrayWithSize(3));
-    List<String> groupNames = Arrays.asList(new String[]{"Groupe 1", "Groupe 2", "Groupe 3"});
+    List<String> groupNames = Arrays.asList("Groupe 1", "Groupe 2", "Groupe 3");
     List<String> groupDescriptions = Arrays.asList(
-        new String[]{"Description du premier groupe", "Description du second groupe",
-            "Description du troisème groupe"});
+        "Description du premier groupe", "Description du second groupe",
+        "Description du troisème groupe");
     for (Group group : groups) {
       assertThat(groupNames, hasItem(group.getName()));
       assertThat(groupDescriptions, hasItem(group.getDescription()));
@@ -209,18 +186,20 @@ public class LDAPDriverIT {
     // checks a non-updatable field is not updated
     assertThat(user.getValue("matricule"), is("7"));
     // checks reset is ok
-    assertThat(user.getValue("homePhone"), isEmptyOrNullString());
+    assertThat(user.getValue("homePhone"), is(emptyOrNullString()));
   }
 
 
   /**
    * Start the LDAP server.
-   * @param serverHome
-   * @param ldifConfigFile
-   * @throws org.opends.server.types.InitializationException
-   * @throws org.opends.server.config.ConfigException
-   * @throws java.net.URISyntaxException
+   *
+   * @param serverHome the home directory of the LDAP server
+   * @param ldifConfigFile the LDIF configuration file
+   * @throws org.opends.server.types.InitializationException if the server initialization fails
+   * @throws org.opends.server.config.ConfigException if the server configuration fails
+   * @throws java.net.URISyntaxException if the URI syntax is invalid
    */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   private void startLdapServer(String serverHome, String ldifConfigFile)
       throws InitializationException, ConfigException, URISyntaxException {
     File directoryServerRoot = getServerRoot(serverHome);
@@ -263,17 +242,18 @@ public class LDAPDriverIT {
   }
 
   /**
-   * Load a LDIF file into th LDAP server.
-   * @param ldifFile
-   * @throws InitializationException
-   * @throws ConfigException
-   * @throws java.io.FileNotFoundException
-   * @throws DirectoryException
-   * @throws URISyntaxException
+   * Load the LDIF file into th LDAP server.
+   *
+   * @param ldifFile the LDIF file to load.
+   * @throws InitializationException if the initialization with the LDIF fails
+   * @throws ConfigException if the LDIF load fails
+   * @throws java.io.FileNotFoundException if the LDIF file isn't found
+   * @throws DirectoryException for an LDAP exception
+   * @throws URISyntaxException if the URI syntax is invalid.
    */
-  private void loadLdif(String ldifFile, String backendID, DN baseDN)
+  private void loadLdif(String ldifFile, DN baseDN)
       throws InitializationException, ConfigException, FileNotFoundException, DirectoryException,
-             URISyntaxException {
+      URISyntaxException {
     LDIFImportConfig importConfig = new LDIFImportConfig(new FileInputStream(getFile(ldifFile)));
     importConfig.setAppendToExistingData(true);
     importConfig.setReplaceExistingEntries(true);
@@ -287,13 +267,13 @@ public class LDAPDriverIT {
     BackendToolUtils.getBackends(backendList, entryList, dnList);
     Backend backend = null;
     for (Backend b : backendList) {
-      if (backendID.equals(b.getBackendID())) {
+      if ("silverpeas".equals(b.getBackendID())) {
         backend = b;
         break;
       }
     }
     if (backend == null) {
-      backend = initializeTestBackend(true, baseDN, backendID);
+      backend = initializeTestBackend(true, baseDN, "silverpeas");
       LDIFImportResult result = backend.importLDIF(importConfig);
       System.out.println("OpenDJ LDIF import result " + result);
 
@@ -325,33 +305,20 @@ public class LDAPDriverIT {
     }
   }
 
-  /**
-   * Contruct a java.io.File to the specified SERVER_HOME directory, trying as a full path and if
-   * not
-   * found as a resource path.
-   * @param serverHome
-   * @return
-   * @throws URISyntaxException
-   */
   private File getServerRoot(String serverHome) throws URISyntaxException {
     File file = new File(serverHome);
     if (!file.exists() || !file.isDirectory()) {
-      return new File(LDAPDriverIT.class.getClassLoader().getResource(serverHome).toURI());
+      return new File(Objects.requireNonNull(
+          LDAPDriverIT.class.getClassLoader().getResource(serverHome)).toURI());
     }
     return file;
   }
 
-  /**
-   * Contruct a java.io.File to the specified file, trying as a full path and if not found as a
-   * resource path.
-   * @param fileName
-   * @return
-   * @throws URISyntaxException
-   */
   private File getFile(String fileName) throws URISyntaxException {
     File file = new File(fileName);
     if (!file.exists() || file.isDirectory()) {
-      return new File(LDAPDriverIT.class.getClassLoader().getResource(fileName).toURI());
+      return new File(Objects.requireNonNull(
+          LDAPDriverIT.class.getClassLoader().getResource(fileName)).toURI());
     }
     return file;
   }

@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.importexport.coordinates;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.util.List;
 
 /**
@@ -39,8 +39,6 @@ public class CoordinatesPositionsType {
 
   @XmlElement(name = "coordinatePosition")
   private List coordinatesPositions;
-  @XmlAttribute
-  private boolean createEnable = false;
 
   public CoordinatesPositionsType() {
     // This constructor is necessary with JAXB
@@ -55,6 +53,7 @@ public class CoordinatesPositionsType {
   }
 
   public boolean getCreateEnable() {
+    boolean createEnable = false;
     return createEnable;
   }
 

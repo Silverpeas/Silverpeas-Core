@@ -31,19 +31,20 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.io.file.ImageResizingProcessor.IMAGE_CACHE_PATH;
 
 @RunWith(Arquillian.class)
@@ -72,16 +73,13 @@ public class ImageResizingProcessorIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(ImageResizingProcessorIT.class)
-        .addCommonBasicUtilities().addSilverpeasExceptionBases().addFileRepositoryFeatures()
-        .addImageToolFeatures()
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addClasses(AbstractSilverpeasFileProcessor.class, ImageResizingProcessor.class,
-              SilverpeasFileProcessor.class, SilverpeasFile.class, SilverpeasFileProvider.class,
-              ImageCache.class);
-        }).build();
+    return LibCoreWarBuilder.onWarForTestClass(ImageResizingProcessorIT.class)
+        .addSchedulingEngine()
+        .addMavenDependencies("org.im4java:im4java")
+        .addPackages(true, "org.silverpeas.core.io.file")
+        .addPackages(true, "org.silverpeas.core.io.media")
+        .build();
   }
-
 
   @Before
   public void setUp() throws Exception {
@@ -101,18 +99,20 @@ public class ImageResizingProcessorIT {
 
   /**
    * No resizing occurs when the targeted image exists.
+   *
    * @throws Exception if an error occurs.
    */
   @Test
   public void noResizingOccursIfTheImageAlreadyExists() throws Exception {
-    String actualPath = processor.processBefore(originalImage.getCanonicalPath(), SilverpeasFileProcessor.ProcessingContext.GETTING);
+    String actualPath = processor.processBefore(originalImage.getCanonicalPath(),
+        SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, is(originalImage.getCanonicalPath()));
   }
 
   /**
-   * An already resized image (that is an existing image in the directory corresponding to the
-   * image
-   * size) is not any more resized.
+   * An already resized image (which is an existing image in the directory corresponding to the
+   * image size) that is not anymore resized.
+   *
    * @throws Exception if an error occurs.
    */
   @Test
@@ -131,7 +131,8 @@ public class ImageResizingProcessorIT {
   @Test
   public void resizeAtCorrectDimension() throws Exception {
     String askedPath = pathForOriginalImageSize(NEW_SIZE);
-    String actualPath = processor.processBefore(askedPath, SilverpeasFileProcessor.ProcessingContext.GETTING);
+    String actualPath = processor.processBefore(askedPath,
+        SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, not(is(askedPath)));
 
     BufferedImage image = ImageIO.read(new File(actualPath));
@@ -142,7 +143,8 @@ public class ImageResizingProcessorIT {
   @Test
   public void resizeAtCorrectWidth() throws Exception {
     String askedPath = pathForOriginalImageSize(NEW_SIZE_WIDTH);
-    String actualPath = processor.processBefore(askedPath, SilverpeasFileProcessor.ProcessingContext.GETTING);
+    String actualPath = processor.processBefore(askedPath,
+        SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, not(is(askedPath)));
 
     BufferedImage image = ImageIO.read(new File(actualPath));
@@ -153,7 +155,8 @@ public class ImageResizingProcessorIT {
   @Test
   public void resizeAtCorrectHeight() throws Exception {
     String askedPath = pathForOriginalImageSize(NEW_SIZE_HEIGHT);
-    String actualPath = processor.processBefore(askedPath, SilverpeasFileProcessor.ProcessingContext.GETTING);
+    String actualPath = processor.processBefore(askedPath,
+        SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, not(is(askedPath)));
 
     BufferedImage image = ImageIO.read(new File(actualPath));
@@ -162,30 +165,33 @@ public class ImageResizingProcessorIT {
   }
 
   @Test
-  public void noResizingIfNoSizeInThePath() throws Exception {
+  public void noResizingIfNoSizeInThePath() {
     String askedPath = pathForOriginalImageSize(NO_SIZE);
-    String actualPath = processor.processBefore(askedPath, SilverpeasFileProcessor.ProcessingContext.GETTING);
+    String actualPath = processor.processBefore(askedPath,
+        SilverpeasFileProcessor.ProcessingContext.GETTING);
 
     assertThat(actualPath, is(askedPath));
   }
 
   @Test
-  public void noResizingIfInvalidSize() throws Exception {
+  public void noResizingIfInvalidSize() {
     String askedPath = pathForOriginalImageSize(INVALID_SIZE);
-    String actualPath = processor.processBefore(askedPath, SilverpeasFileProcessor.ProcessingContext.GETTING);
+    String actualPath = processor.processBefore(askedPath,
+        SilverpeasFileProcessor.ProcessingContext.GETTING);
 
     assertThat(actualPath, is(askedPath));
   }
 
   /**
    * Copy the image used in the tests into the specified location.
+   *
    * @param path the absolute path of the directory into which the original image will be copied.
    * @return the path of the copied image.
    * @throws IOException if the copy fails.
    */
   private String copyOriginalImageInto(String path) throws IOException {
     File destination = new File(path + File.separator + originalImage.getName());
-    destination.getParentFile().mkdirs();
+    Files.createDirectories(destination.getParentFile().toPath());
     FileUtil.copyFile(originalImage, destination);
     return destination.getCanonicalPath();
   }
@@ -194,6 +200,7 @@ public class ImageResizingProcessorIT {
    * Computes the path of the original image for an image size as specified in argument. The
    * resizing is performed according to the size specified in the path (the name of the last
    * directory in the path). This method then builds the path according to this rule.
+   *
    * @param size the size to which the image should be resized.
    * @return the computed path.
    */

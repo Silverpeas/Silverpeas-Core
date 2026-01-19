@@ -28,13 +28,14 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
+import jakarta.servlet.jsp.PageContext;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-import javax.servlet.jsp.PageContext;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The FormPane interface gives us the skeleton for all funtionnalities we need to display typical
@@ -50,16 +51,16 @@ public abstract class FormPane implements SimpleGraphicElement {
   public static final String UTILISATEUR_CODE = "utilisateur";
   public static final String DEFAULT_LANGUAGE = "fr";
   // Membres
-  protected Vector formLines;
-  protected Vector formHiddenFields;
-  protected Vector formActionButtons;
+  protected List<FormLine> formLines;
+  protected List<FormLine> formHiddenFields;
+  protected List<FormLine> formActionButtons;
   protected String actionURL;
   protected String formMethod;
   protected String title = null;
   protected String name;
   protected String displayName;
   protected String description;
-  protected PageContext pageContext = null;
+  protected PageContext pageContext;
   protected boolean reply;
   protected LocalizationBundle message;
   // Modes de gestion
@@ -69,18 +70,10 @@ public abstract class FormPane implements SimpleGraphicElement {
   protected boolean publieurArchivageReponses;
   protected boolean utilisateurEnvoiDemandes;
 
-  /**
-   * Constructor declaration
-   *
-   * @param nam
-   * @param url
-   * @param pc
-   * @see
-   */
   public FormPane(String nam, String url, PageContext pc) {
-    formLines = new Vector();
-    formHiddenFields = new Vector();
-    formActionButtons = new Vector();
+    formLines = new ArrayList<>();
+    formHiddenFields = new ArrayList<>();
+    formActionButtons = new ArrayList<>();
     name = nam;
     description = "";
     displayName = nam;
@@ -98,133 +91,55 @@ public abstract class FormPane implements SimpleGraphicElement {
         DEFAULT_LANGUAGE);
   }
 
-  /**
-   * Method declaration
-   *
-   * @param title
-   * @see
-   */
   public void setTitle(String title) {
     this.title = title;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getTitle() {
     return title;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getName() {
     return name;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param nam
-   * @see
-   */
   public void setName(String nam) {
     name = nam;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getDisplayName() {
     return displayName;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param nam
-   * @see
-   */
   public void setDisplayName(String nam) {
     displayName = nam;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getDescription() {
     return description;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param des
-   * @see
-   */
   public void setDescription(String des) {
     description = des;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public PageContext getPageContext() {
     return pageContext;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
-  public Vector getFormLines() {
+  public List<FormLine> getFormLines() {
     return formLines;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public int getNbLines() {
     return formLines.size() + formHiddenFields.size()
         + formActionButtons.size();
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public boolean hasReply() {
     return reply;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param rep
-   * @see
-   */
   public void setReply(boolean rep) {
     reply = rep;
     if (rep) {
@@ -233,112 +148,46 @@ public abstract class FormPane implements SimpleGraphicElement {
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public boolean getUtilisateurArchivageDemandes() {
     return utilisateurArchivageDemandes;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param uad
-   * @see
-   */
   public void setUtilisateurArchivageDemandes(boolean uad) {
     utilisateurArchivageDemandes = uad;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public boolean getPublieurArchivageDemandes() {
     return publieurArchivageDemandes;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param uad
-   * @see
-   */
   public void setPublieurArchivageDemandes(boolean uad) {
     publieurArchivageDemandes = uad;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public boolean getUtilisateurArchivageReponses() {
     return utilisateurArchivageReponses;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param uad
-   * @see
-   */
   public void setUtilisateurArchivageReponses(boolean uad) {
     utilisateurArchivageReponses = uad;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public boolean getPublieurArchivageReponses() {
     return publieurArchivageReponses;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param uad
-   * @see
-   */
   public void setPublieurArchivageReponses(boolean uad) {
     publieurArchivageReponses = uad;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public boolean getUtilisateurEnvoiDemandes() {
     return utilisateurEnvoiDemandes;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param uad
-   * @see
-   */
   public void setUtilisateurEnvoiDemandes(boolean uad) {
     utilisateurEnvoiDemandes = uad;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param language
-   * @see
-   */
   public void setLanguage(String language) {
     if (language != null) {
       message = ResourceLocator.getLocalizationBundle(
@@ -347,124 +196,89 @@ public abstract class FormPane implements SimpleGraphicElement {
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param line
-   * @see
-   */
   public void add(FormLine line) {
     line.setPane(this);
     line.setLanguage(message.getLocale().getLanguage());
-    if (line.getType().equals("hidden")) {
-      formHiddenFields.add(line);
-    } else if (line.getType().equals("button")) {
-      formActionButtons.add(line);
-    } else if (line.getType().equals("buttonLine")) {
-      formActionButtons.add(line);
-    } else {
-      formLines.add(line);
+    switch (line.getType()) {
+      case "hidden":
+        formHiddenFields.add(line);
+        break;
+      case "button":
+      case "buttonLine":
+        formActionButtons.add(line);
+        break;
+      default:
+        formLines.add(line);
+        break;
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param lineName
-   * @see
-   */
   public void remove(String lineName) {
-    boolean search = true;
-    int i;
-
-    if ((search) && (formLines.size() > 0)) {
-      i = 0;
-      while ((search) && (i < formLines.size())) {
-        FormLine fl = (FormLine) formLines.elementAt(i);
-
-        if (fl.getName().equals(lineName)) {
-          formLines.removeElementAt(i);
-          search = false;
-        }
-        i++;
-      }
-    }
-    if ((search) && (formHiddenFields.size() > 0)) {
-      i = 0;
-      while ((search) && (i < formHiddenFields.size())) {
-        FormLine fl = (FormLine) formHiddenFields.elementAt(i);
-
-        if (fl.getName().equals(lineName)) {
-          formHiddenFields.removeElementAt(i);
-          search = false;
-        }
-        i++;
-      }
-    }
-    if ((search) && (formActionButtons.size() > 0)) {
-      i = 0;
-      while ((search) && (i < formActionButtons.size())) {
-        FormLine fl = (FormLine) formActionButtons.elementAt(i);
-
-        if (fl.getName().equals(lineName)) {
-          formActionButtons.removeElementAt(i);
-          search = false;
-        }
-        i++;
-      }
-    }
+    boolean search = removeLine(lineName, true, formLines);
+    search = removeLine(lineName, search, formHiddenFields);
+    removeLine(lineName, search, formActionButtons);
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
+  private boolean removeLine(String lineName, boolean search, List<FormLine> lines) {
+    if (search && !lines.isEmpty()) {
+      int i = 0;
+      while ((search) && (i < lines.size())) {
+        FormLine fl = lines.get(i);
+
+        if (fl.getName().equals(lineName)) {
+          lines.remove(i);
+          search = false;
+        }
+        i++;
+      }
+    }
+    return search;
+  }
+
   public String toXML() {
     int i;
     StringBuilder result = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
     result.append("\n\n").append(getDTD());
     result.append("\n\n<formulaire>");
-    result.append("\n<name>" + name + "</name>");
-    result.append("\n<displayName>" + displayName + "</displayName>");
-    result.append("\n<description>" + description + "</description>");
-    result.append("\n<reply>" + String.valueOf(reply) + "</reply>");
+    result.append("\n<name>").append(name).append("</name>");
+    result.append("\n<displayName>").append(displayName).append("</displayName>");
+    result.append("\n<description>").append(description).append("</description>");
+    result.append("\n<reply>").append(reply).append("</reply>");
     result.append("\n<utilisateurArchivageDemandes>")
-        .append(String.valueOf(utilisateurArchivageDemandes))
+        .append(utilisateurArchivageDemandes)
         .append("</utilisateurArchivageDemandes>");
     result.append("\n<publieurArchivageDemandes>")
-        .append(String.valueOf(publieurArchivageDemandes))
+        .append(publieurArchivageDemandes)
         .append("</publieurArchivageDemandes>");
     result.append("\n<utilisateurArchivageReponses>")
-        .append(String.valueOf(utilisateurArchivageReponses))
+        .append(utilisateurArchivageReponses)
         .append("</utilisateurArchivageReponses>");
     result.append("\n<publieurArchivageReponses>")
-        .append(String.valueOf(publieurArchivageReponses))
+        .append(publieurArchivageReponses)
         .append("</publieurArchivageReponses>");
     result.append("\n<utilisateurEnvoiDemandes>")
-        .append(String.valueOf(utilisateurEnvoiDemandes))
+        .append(utilisateurEnvoiDemandes)
         .append("</utilisateurEnvoiDemandes>");
 
     // Champs "hidden"
-    if (formHiddenFields.size() > 0) {
+    if (!formHiddenFields.isEmpty()) {
       for (i = 0; i < formHiddenFields.size(); i++) {
-        result.append(((FormLine) formHiddenFields.elementAt(i)).toXML());
+        result.append(formHiddenFields.get(i).toXML());
       }
     }
 
     // Champs de saisie du formulaire
-    if (formLines.size() > 0) {
+    if (!formLines.isEmpty()) {
       for (i = 0; i < formLines.size(); i++) {
-        result.append("\n" + ((FormLine) formLines.elementAt(i)).toXML());
+        result.append("\n").append(formLines.get(i).toXML());
       }
     }
 
     // Boutons d'actions
-    if (formActionButtons.size() > 0) {
+    if (!formActionButtons.isEmpty()) {
       for (i = 0; i < formActionButtons.size(); i++) {
-        result.append("\n").append(((FormLine) formActionButtons.elementAt(i)).toXML());
+        result.append("\n").append(formActionButtons.get(i).toXML());
       }
     }
     result.append("\n</formulaire>");
@@ -476,52 +290,20 @@ public abstract class FormPane implements SimpleGraphicElement {
     return new String(readbytes);
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getBuildRequest() {
     StringBuilder result = new StringBuilder();
     int i;
 
     // Champs de saisie du formulaire
-    if (formLines.size() > 0) {
+    if (!formLines.isEmpty()) {
       for (i = 0; i < formLines.size(); i++) {
-        result.append(((FormLine) formLines.elementAt(i)).getDBColumnCreationRequest());
+        result.append(formLines.get(i).getDBColumnCreationRequest());
       }
     }
 
     return result.toString();
   }
 
-  /**
-   * Method declaration
-   *
-   * @param resultVector
-   * @see
-   */
-  public void initFromVector(Vector resultVector) {
-    int i;
-    int j = 0;
-
-    for (i = 0; i < formLines.size(); i++) {
-      FormLine fl = (FormLine) formLines.elementAt(i);
-
-      if (fl.isDBEntry()) {
-        fl.setValue((String) resultVector.elementAt(j));
-        j++;
-      }
-    }
-  }
-
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getDTD() {
     String retour = "<!DOCTYPE formulaire [";
 
@@ -560,35 +342,11 @@ public abstract class FormPane implements SimpleGraphicElement {
     return retour;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public abstract String print();
 
-  /**
-   * Method declaration
-   *
-   * @param trueActionPage
-   * @param deleteActionCode
-   * @param modifyActionCode
-   * @return
-   * @see
-   */
   public abstract String printDemo(String trueActionPage,
       String deleteActionCode, String modifyActionCode);
 
-  /**
-   * Method declaration
-   *
-   * @param trueActionPage
-   * @param submitPage
-   * @param modifyActionCode
-   * @return
-   * @see
-   */
   public abstract String printHeader(String trueActionPage, String submitPage,
       String modifyActionCode);
 }

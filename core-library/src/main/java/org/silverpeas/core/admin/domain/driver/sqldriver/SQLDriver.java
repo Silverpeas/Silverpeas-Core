@@ -32,16 +32,18 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +56,8 @@ import static java.util.Collections.singleton;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
+@Technical
+@Bean
 public class SQLDriver extends AbstractDomainDriver {
 
   public static final String GROUP = "group";
@@ -100,7 +104,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail importUser(String userLogin) throws AdminException {
+  public UserDetail importUser(String userLogin) {
     return null;
   }
 
@@ -110,7 +114,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail synchroUser(String userId) throws AdminException {
+  public UserDetail synchroUser(String userId) {
     return null;
   }
 
@@ -303,12 +307,12 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
+  public UserDetail[] getUsersByQuery(Map<String, String> query) {
     return new UserDetail[0];
   }
 
   @Override
-  public GroupDetail importGroup(String groupName) throws AdminException {
+  public GroupDetail importGroup(String groupName) {
     return null;
   }
 
@@ -318,7 +322,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public GroupDetail synchroGroup(String groupId) throws AdminException {
+  public GroupDetail synchroGroup(String groupId) {
     return null;
   }
 

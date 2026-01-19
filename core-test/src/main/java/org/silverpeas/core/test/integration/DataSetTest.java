@@ -33,6 +33,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * Test implying or requiring a database and for which a dataset has to be loaded in the database
+ * before any test case execution.
+ *
  * @author Yohann Chastagnier
  */
 public abstract class DataSetTest {
@@ -42,10 +45,12 @@ public abstract class DataSetTest {
    */
   protected static final Object NO_INITIALIZATION = null;
 
-  private DbSetupRule dbSetupRule;
+  @Rule
+  public DbSetupRule dbSetupRule = createDbSetupRule();
 
   /**
-   * Gets the path of sql script that contains the creation of the tables.
+   * Gets the path of SQL script that contains the creation of the tables.
+   *
    * @return a string that represents a path.
    */
   protected String getDbSetupTableCreationSqlScript() {
@@ -53,43 +58,37 @@ public abstract class DataSetTest {
   }
 
   /**
-   * Gets the necessary to initialize the data into the database.<br>
-   * If null, then the database isn't set up with some data.
-   * @param <T> {@link Operation}, array of {@link Operation}, {@link String} or array of {@link
-   * String}.
-   * @return Must return an {@link Operation}, an array of {@link Operation}, a dataset path or
-   * an array of dataset path (.sql or .xml), otherwise an exception is thrown during the
-   * database loading. Can be null to indicate no initialization.
+   * Gets the necessary to initialize the data into the database. If null, then the database isn't
+   * set up with some data.
+   *
+   * @param <T> {@link Operation}, array of {@link Operation}, {@link String} or array of
+   * {@link String}.
+   * @return Must return an {@link Operation}, an array of {@link Operation}, a dataset path or an
+   * array of dataset path (.sql or .xml), otherwise an exception is thrown during the database
+   * loading. Can be null to indicate no initialization.
    */
   protected abstract <T> T getDbSetupInitializations();
 
-  @Rule
-  public DbSetupRule getDbSetupRule() {
-    if (dbSetupRule == null) {
-      Object dbSetupInitializations = getDbSetupInitializations();
-      if (dbSetupInitializations == NO_INITIALIZATION) {
-        dbSetupRule = newDbSetupRule();
-      } else if (dbSetupInitializations instanceof Operation) {
+  public final DbSetupRule getDbSetupRule() {
+    return dbSetupRule;
+  }
 
-        dbSetupRule = loadFrom(new Operation[]{(Operation) dbSetupInitializations});
-
-      } else if (dbSetupInitializations instanceof Operation[]) {
-
-        dbSetupRule = loadFrom((Operation[]) dbSetupInitializations);
-
-      } else if (dbSetupInitializations instanceof String) {
-
-        dbSetupRule = loadFrom(new String[]{(String) dbSetupInitializations});
-
-      } else if (dbSetupInitializations instanceof String[]) {
-
-        dbSetupRule = loadFrom((String[]) dbSetupInitializations);
-
-      } else {
-        throw new IllegalArgumentException(
-            "getDbSetupInitializations method returns an unexpected result. Please consult the " +
-                "method documentation.");
-      }
+  private DbSetupRule createDbSetupRule() {
+    Object dbSetupInitializations = getDbSetupInitializations();
+    if (dbSetupInitializations == NO_INITIALIZATION) {
+      dbSetupRule = newDbSetupRule();
+    } else if (dbSetupInitializations instanceof Operation) {
+      dbSetupRule = loadFrom(new Operation[]{(Operation) dbSetupInitializations});
+    } else if (dbSetupInitializations instanceof Operation[]) {
+      dbSetupRule = loadFrom((Operation[]) dbSetupInitializations);
+    } else if (dbSetupInitializations instanceof String) {
+      dbSetupRule = loadFrom(new String[]{(String) dbSetupInitializations});
+    } else if (dbSetupInitializations instanceof String[]) {
+      dbSetupRule = loadFrom((String[]) dbSetupInitializations);
+    } else {
+      throw new IllegalArgumentException(
+          "getDbSetupInitializations method returns an unexpected result. Please consult the " +
+              "method documentation.");
     }
     return dbSetupRule;
   }

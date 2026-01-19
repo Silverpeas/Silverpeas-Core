@@ -28,7 +28,6 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,7 +36,6 @@ import static java.util.Collections.singleton;
 /**
  * @author Yohann Chastagnier
  */
-@Singleton
 @Repository
 public class DefaultCalendarRepository extends SilverpeasJpaEntityRepository<Calendar>
     implements CalendarRepository {

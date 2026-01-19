@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.index.indexing;
 
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.nio.file.Files;
 /**
  * Initializes the indexation engine of Silverpeas.
  */
-@Service
+@Bean
 public class IndexEngineInitialize implements Initialization {
 
   /**

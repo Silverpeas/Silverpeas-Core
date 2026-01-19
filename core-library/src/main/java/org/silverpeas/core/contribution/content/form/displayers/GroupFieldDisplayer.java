@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.xhtml.div;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -34,6 +33,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.GroupField;
 import org.silverpeas.core.html.plugin.UserGroupSelectProducer;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 
 import java.io.PrintWriter;
@@ -142,7 +142,8 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, GroupField field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, GroupField field,
+      FieldTemplate template,
       PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);

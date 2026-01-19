@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.user;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.persistence.*;
@@ -49,12 +51,9 @@ import org.silverpeas.core.security.encryption.X509Factory;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -65,7 +64,6 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_X509_USER;
 
 @Service
-@Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class UserManager {
 

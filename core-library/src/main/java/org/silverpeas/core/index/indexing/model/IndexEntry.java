@@ -23,20 +23,13 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * IndexEntry is the base class for all the entries which are indexed in the Silverpeas indexes. An
@@ -78,6 +71,7 @@ public class IndexEntry implements Serializable {
   private String filename = null;
   private List<String> paths = null;
   private boolean alias = false;
+  private final transient I18n i18n = I18n.get();
 
   public IndexEntry(IndexEntryKey pk) {
     this.pk = pk;
@@ -161,7 +155,7 @@ public class IndexEntry implements Serializable {
 
   public void setTitle(String title, String lang) {
     if (title != null) {
-      getTitles().put(I18NHelper.checkLanguage(lang), title);
+      getTitles().put(i18n.checkLanguage(lang), title);
     }
   }
 
@@ -189,7 +183,7 @@ public class IndexEntry implements Serializable {
 
   public void setKeywords(String keywords, String lang) {
     if (keywords != null) {
-      getAllKeywords().put(I18NHelper.checkLanguage(lang), keywords);
+      getAllKeywords().put(i18n.checkLanguage(lang), keywords);
     }
   }
 
@@ -217,7 +211,7 @@ public class IndexEntry implements Serializable {
 
   public void setPreview(String preview, String lang) {
     if (preview != null) {
-      getPreviews().put(I18NHelper.checkLanguage(lang), preview);
+      getPreviews().put(i18n.checkLanguage(lang), preview);
     }
   }
 
@@ -505,9 +499,9 @@ public class IndexEntry implements Serializable {
   }
 
   private String getTranslation(final Map<String, String> translations, final String lang) {
-    String preview = translations.get(I18NHelper.checkLanguage(lang));
+    String preview = translations.get(i18n.checkLanguage(lang));
     if (!StringUtil.isDefined(preview)) {
-      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      List<String> languages = I18n.get().getSupportedLanguageCodes();
       for (String language : languages) {
         preview = translations.get(language);
         if (StringUtil.isDefined(preview)) {

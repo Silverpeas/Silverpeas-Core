@@ -30,9 +30,9 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.webapi.media.MediaDefinitionEntity;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author silveryocha
@@ -55,7 +55,7 @@ public class VimeoDataEntity extends StreamingProviderDataEntity {
     // duration.
     if (StringUtil.isInteger(oembedVimeoData.getDuration())) {
       setFormattedDurationHMS(
-          UnitUtil.getDuration(Long.valueOf(oembedVimeoData.getDuration()), TimeUnit.SECOND)
+          UnitUtil.getDuration(Long.parseLong(oembedVimeoData.getDuration()), TimeUnit.SECOND)
               .getFormattedDurationAsHMS());
     }
 
@@ -65,7 +65,7 @@ public class VimeoDataEntity extends StreamingProviderDataEntity {
     String height = oembedVimeoData.getHeight();
     if (StringUtil.isInteger(width) && StringUtil.isInteger(height)) {
       setDefinition(MediaDefinitionEntity
-          .createFrom(Definition.of(Integer.valueOf(width), Integer.valueOf(height))));
+          .createFrom(Definition.of(Integer.parseInt(width), Integer.parseInt(height))));
     }
   }
 

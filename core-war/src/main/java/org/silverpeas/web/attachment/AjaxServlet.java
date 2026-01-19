@@ -36,10 +36,10 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -186,7 +186,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
       String id = tokenizer.nextToken();
       SimpleDocumentPK pk;
       if (StringUtil.isLong(id)) {
-        pk = new SimpleDocumentPK(null, componentId).setOldSilverpeasId(Long.valueOf(id));
+        pk = new SimpleDocumentPK(null, componentId).setOldSilverpeasId(Long.parseLong(id));
       } else {
         pk = new SimpleDocumentPK(id, componentId);
       }

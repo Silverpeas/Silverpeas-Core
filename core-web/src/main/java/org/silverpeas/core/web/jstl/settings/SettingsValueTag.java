@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.jstl.settings;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 import org.silverpeas.core.web.jstl.util.AbstractSetVarTagSupport;
 

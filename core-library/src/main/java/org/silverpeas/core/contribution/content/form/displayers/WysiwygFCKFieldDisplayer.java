@@ -41,7 +41,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -91,6 +91,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           "indexIt : {2}" +
         "'}');" +
       "'}');\n";
+
+  private final I18n i18n = I18n.get();
 
   /**
    * Returns the name of the managed types.
@@ -253,7 +255,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           String fileName = fieldValue.substring(DB_KEY.length());
           setContentIntoFile(pageContext.getComponentId(), fileName, newValue);
         } else {
-          String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
+          String contentLanguage = i18n.checkLanguage(pageContext.getContentLanguage());
           String fileName =
               setContentIntoFile(pageContext.getComponentId(), pageContext.getObjectId(),
                   template.getFieldName(), newValue, contentLanguage);
@@ -319,7 +321,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   public void duplicateContent(Field field, FieldTemplate template,
       PagesContext pageContext, String newObjectId) throws FormException {
 
-    String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
+    String contentLanguage = i18n.checkLanguage(pageContext.getContentLanguage());
 
     String code = getContent(pageContext.getComponentId(), pageContext.getObjectId(),
         template.getFieldName(), contentLanguage);
@@ -352,7 +354,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   public static String getContentFromFile(String componentId, String objectId, String fieldName,
       String language) {
-    String fileName = getFileName(fieldName, objectId, language);
+    String fileName = new WysiwygFCKFieldDisplayer().getFileName(fieldName, objectId, language);
     return getContentFromFile(componentId, fileName);
   }
 
@@ -367,12 +369,12 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     return "";
   }
 
-  private static String getFileName(String fieldName, String objectId) {
+  private String getFileName(String fieldName, String objectId) {
     return getFileName(fieldName, objectId, null);
   }
 
-  private static String getFileName(String fieldName, String objectId, String language) {
-    if (language == null || I18NHelper.isDefaultLanguage(language)) {
+  private String getFileName(String fieldName, String objectId, String language) {
+    if (language == null || i18n.isDefaultLanguage(language)) {
       return objectId + "_" + fieldName;
     } else {
       return objectId + "_" + language + "_" + fieldName;
@@ -399,7 +401,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           File destFile = new File(toPath, getFileName(fieldName, toPK.getId()));
           moveOrCopyFile(fromPK, toPK, srcFile, destFile, copy, oldAndNewFileIds);
 
-          Collection<String> languages = I18NHelper.getLanguages();
+          Collection<String> languages = i18n.getSupportedLanguageCodes();
           for (final String language: languages) {
             if (fieldName.startsWith(language + "_")) {
               // skip en_
@@ -491,7 +493,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           setContentIntoFile(componentIdTo, objectIdTo, fieldName, fieldContent, null);
 
           // paste translations
-          Collection<String> languages = I18NHelper.getLanguages();
+          Collection<String> languages = i18n.getSupportedLanguageCodes();
           for (final String language: languages) {
             if (fieldName.startsWith(language + "_")) {
               // skip en_
@@ -507,7 +509,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
   }
 
-  public static String getFile(String componentId, String objectId, String fieldName,
+  public String getFile(String componentId, String objectId, String fieldName,
       String language) {
     return getPath(componentId) + getFileName(fieldName, objectId, language);
   }
@@ -518,7 +520,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   * @param fieldNames list of name of fields to delete
   * @param language the language to delete
   */
-  public static void removeContents(ResourceReference pk, List<String> fieldNames, String language) {
+  public void removeContents(ResourceReference pk, List<String> fieldNames, String language) {
     String fromPath = getPath(pk.getInstanceId());
     File directory = new File(fromPath);
     if (directory.exists()) {

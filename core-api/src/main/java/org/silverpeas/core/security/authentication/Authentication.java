@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.List;
 
 /**

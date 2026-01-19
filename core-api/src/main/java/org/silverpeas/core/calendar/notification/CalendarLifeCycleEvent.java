@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar.notification;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A lifecycle event of {@link Calendar} instances. Such an event is triggered when a change

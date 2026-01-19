@@ -32,8 +32,8 @@ import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
+import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;

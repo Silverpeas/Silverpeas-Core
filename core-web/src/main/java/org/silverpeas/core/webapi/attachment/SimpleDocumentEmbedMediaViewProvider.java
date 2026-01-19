@@ -24,17 +24,17 @@
 
 package org.silverpeas.core.webapi.attachment;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.viewer.service.ViewerContext;
+import org.silverpeas.core.webapi.viewer.RegisteredResourceViewProvider;
 import org.silverpeas.core.webapi.viewer.ResourceView;
 import org.silverpeas.core.webapi.viewer.ResourceViewProvider;
-import org.silverpeas.core.webapi.viewer.ResourceViewProviderRegistry;
 
-import javax.inject.Inject;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -44,15 +44,11 @@ import static java.util.Optional.ofNullable;
  * instances for viewer APIs.
  * @author silveryocha
  */
-public class SimpleDocumentEmbedMediaViewProvider implements ResourceViewProvider, Initialization {
+@Provider
+public class SimpleDocumentEmbedMediaViewProvider extends RegisteredResourceViewProvider {
 
   @Inject
   private AttachmentService service;
-
-  @Override
-  public void init() {
-    ResourceViewProviderRegistry.get().addNewEmbedMediaProvider(this);
-  }
 
   @Override
   public Optional<ResourceView> getByIdAndLanguage(final String documentId, final String language) {

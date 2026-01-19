@@ -27,7 +27,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ThesaurusHelper {
 

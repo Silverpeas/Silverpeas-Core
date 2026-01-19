@@ -23,15 +23,13 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlTransient;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
@@ -51,14 +49,15 @@ public abstract class PdcValueEntity implements Serializable {
   @XmlElement(defaultValue = "")
   private String treeId = "";
   @XmlElement
-  private List<String> synonyms = new ArrayList<String>();
+  private List<String> synonyms = new ArrayList<>();
 
   /**
    * Gets the identifier of this value. The identifier is expressed in the form of an absolute path
    * relative to its axis, so it starts with the slash character. If the value is a single term of
-   * the axis, the identifier does then contains only one node that is the identifier of the term.
-   * If it belongs to an hierarchic semantic tree, then the identifier is the path of term
-   * identifiers in that tree.
+   * the axis, the identifier does then contain only one node that is the identifier of the term. If
+   * it belongs to a hierarchic semantic tree, then the identifier is the path of term identifiers
+   * in that tree.
+   *
    * @return the value identifier.
    */
   public String getId() {
@@ -68,6 +67,7 @@ public abstract class PdcValueEntity implements Serializable {
   /**
    * Gets the unique identifier of the term of this value. If the term belongs to a semantic tree
    * (not a single term), it is the one of the last term of the path in the tree.
+   *
    * @return the term identifier.
    */
   @XmlTransient
@@ -78,6 +78,7 @@ public abstract class PdcValueEntity implements Serializable {
 
   /**
    * Gets the unique identifier of the PdC's axis related by this value.
+   *
    * @return the PdC's axis identifier.
    */
   public int getAxisId() {
@@ -86,17 +87,19 @@ public abstract class PdcValueEntity implements Serializable {
 
   /**
    * Gets the unique identifier of the tree to which this value belongs.
+   *
    * @return the tree identifier or an empty identifier if the value is a single term (and then
-   * doesn't belong to an hierachical tree of terms)
+   * doesn't belong to a hierarchical tree of terms)
    */
   public String getTreeId() {
     return treeId;
   }
 
   /**
-   * Is this value is a node in an hierachical semantic tree? The value belong to a tree when it
+   * Is this value is a node in a hierarchical semantic tree? The value belong to a tree when it
    * defines a more exactness meaning for a given position value.
-   * @return true if the value is a node in an hierarchical semantic tree, false otherwise.
+   *
+   * @return true if the value is a node in a hierarchical semantic tree, false otherwise.
    */
   public boolean belongToATree() {
     return isDefined(this.treeId) && !this.treeId.isEmpty();
@@ -104,6 +107,7 @@ public abstract class PdcValueEntity implements Serializable {
 
   /**
    * Gets the synonyms of this value according to a given thesaurus.
+   *
    * @return an unmodifiable list of synonyms to this value.
    */
   public List<String> getSynonyms() {
@@ -119,16 +123,16 @@ public abstract class PdcValueEntity implements Serializable {
       return false;
     }
     final PdcValueEntity other = (PdcValueEntity) obj;
-    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+    if (!Objects.equals(this.id, other.id)) {
       return false;
     }
     if (this.axisId != other.axisId) {
       return false;
     }
-    if ((this.treeId == null) ? (other.treeId != null) : !this.treeId.equals(other.treeId)) {
+    if (!Objects.equals(this.treeId, other.treeId)) {
       return false;
     }
-    return !(this.synonyms != other.synonyms && (this.synonyms == null || !this.synonyms
+    return !(!Objects.equals(this.synonyms, other.synonyms) && (this.synonyms == null || !this.synonyms
         .equals(other.synonyms)));
   }
 

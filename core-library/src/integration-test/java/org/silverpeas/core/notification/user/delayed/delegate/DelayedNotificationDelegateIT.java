@@ -38,11 +38,12 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
+import org.silverpeas.core.notification.user.delayed.DelayedNotificationManagerIT;
 import org.silverpeas.core.notification.user.delayed.DelayedNotificationProvider;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.server.NotificationData;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.Charsets;
 
@@ -71,16 +72,9 @@ public class DelayedNotificationDelegateIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(DelayedNotificationDelegateIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addNotificationFeatures()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.notification.user");
-          warBuilder.addAsResource("org/silverpeas/core/notification/user/delayed");
-        }).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(DelayedNotificationManagerIT.class)
+        .addAsResource("org/silverpeas/core/notification/user/delayed")
+        .build();
   }
 
   @Test
@@ -109,7 +103,7 @@ public class DelayedNotificationDelegateIT {
     dndTest = buildValidDelayedNotificationData();
     final List<NotifChannel> channels = new ArrayList<>(Arrays.asList(NotifChannel.values()));
     channels.remove(NotifChannel.SMTP);
-    channels.add(null); //=> I'm sorry but it is a bug! How we can know to send a message if we
+    channels.add(null); //=> I'm sorry, but it is a bug! How we can know to send a message if we
     // don't know the channel through which it can be sent!
     for (final NotifChannel channel : channels) {
       dndTest.setChannel(channel);

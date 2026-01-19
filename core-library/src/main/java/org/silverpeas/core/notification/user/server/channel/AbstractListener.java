@@ -28,9 +28,9 @@ import org.silverpeas.core.notification.user.server.NotificationServerConstant;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.NotificationServerUtil;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.TextMessage;
 
 public abstract class AbstractListener implements INotificationServerChannel {
 

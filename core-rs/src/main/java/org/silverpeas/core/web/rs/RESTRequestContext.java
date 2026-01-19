@@ -25,7 +25,7 @@
 
 package org.silverpeas.core.web.rs;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * @author silveryocha

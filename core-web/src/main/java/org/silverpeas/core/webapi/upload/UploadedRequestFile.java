@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.upload;
 
 import org.silverpeas.core.web.http.RequestFile;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
 

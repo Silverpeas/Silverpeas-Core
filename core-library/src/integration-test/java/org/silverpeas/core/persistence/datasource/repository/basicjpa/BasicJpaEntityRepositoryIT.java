@@ -40,7 +40,7 @@ import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.Anim
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.EquipmentBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.PersonBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityServiceTest;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -91,14 +91,11 @@ public class BasicJpaEntityRepositoryIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(BasicJpaEntityRepositoryIT.class)
-        .addAdministrationFeatures()
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addClasses(BasicJpaEntityServiceTest.class);
-          warBuilder.addPackages(true, "org.silverpeas.core.persistence.datasource.repository");
-          warBuilder.addAsResource(
-              "org/silverpeas/core/persistence/datasource/basicjpa/create_table.sql");
-        }).build();
+    return LibCoreWarBuilder.onWarForTestClass(BasicJpaEntityRepositoryIT.class)
+        .addStubbedUserAPI()
+        .addPackages(true, "org.silverpeas.core.persistence.datasource.repository")
+        .addAsResource("org/silverpeas/core/persistence/datasource/basicjpa/create_table.sql")
+        .build();
   }
 
   @Test

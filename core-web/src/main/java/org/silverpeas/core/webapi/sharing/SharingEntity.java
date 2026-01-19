@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.sharing;
 
 import java.net.URI;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.web.rs.WebEntity;

@@ -25,15 +25,17 @@ package org.silverpeas.core.pdc.interests.service;
 
 import java.util.List;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.pdc.interests.model.Interests;
 
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
+@Bean
 public class InterestsManager {
 
-  public static final InterestsManager getInstance() {
+  public static InterestsManager getInstance() {
     return ServiceProvider.getService(InterestsManager.class);
   }
 

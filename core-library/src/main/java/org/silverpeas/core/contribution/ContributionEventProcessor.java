@@ -23,19 +23,21 @@
  */
 package org.silverpeas.core.contribution;
 
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.util.ServiceProvider;
-
-import javax.ejb.Singleton;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * Processor listening for events on a contribution to perform additional tasks relative to the
  * contribution concerned by the received event. Such tasks are commonly for allocating, cleaning up
- * or updating the resources that allocated for the contribution (like the attachments for example).
+ * or updating the resources that allocated for the contribution (like the attachments for
+ * example).
+ *
  * @author mmoquillon
  */
 @Technical
@@ -44,28 +46,34 @@ import javax.ejb.Singleton;
 public class ContributionEventProcessor
     extends CDIResourceEventListener<AbstractResourceEvent<? extends Contribution>> {
 
+  @Inject
+  private Instance<ContributionMove> moves;
+  @Inject
+  private Instance<ContributionModification> modifications;
+  @Inject
+  private Instance<ContributionDeletion> deletions;
+  @Inject
+  private Instance<ContributionCreation> creations;
+
   @Override
   public void onUpdate(final AbstractResourceEvent<? extends Contribution> event) {
-    ServiceProvider.getAllServices(ContributionModification.class).forEach(
-        s -> s.update(event.getTransition().getBefore(), event.getTransition().getAfter()));
+    modifications.forEach(s -> s.update(event.getTransition().getBefore(),
+            event.getTransition().getAfter()));
   }
 
   @Override
   public void onMove(final AbstractResourceEvent<? extends Contribution> event) {
-    ServiceProvider.getAllServices(ContributionMove.class).forEach(
-        s -> s.move(event.getTransition().getBefore(), event.getTransition().getAfter()));
+    moves.forEach(s -> s.move(event.getTransition().getBefore(), event.getTransition().getAfter()));
   }
 
   @Override
   public void onDeletion(final AbstractResourceEvent<? extends Contribution> event) {
-    ServiceProvider.getAllServices(ContributionDeletion.class)
-        .forEach(s -> s.delete(event.getTransition().getBefore()));
+    deletions.forEach(s -> s.delete(event.getTransition().getBefore()));
   }
 
   @Override
   public void onCreation(final AbstractResourceEvent<? extends Contribution> event) {
-    ServiceProvider.getAllServices(ContributionCreation.class)
-        .forEach(s -> s.create(event.getTransition().getAfter()));
+    creations.forEach(s -> s.create(event.getTransition().getAfter()));
   }
 }
   

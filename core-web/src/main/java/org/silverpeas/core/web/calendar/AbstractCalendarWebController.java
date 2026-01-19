@@ -42,13 +42,13 @@ import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.Temporal;
@@ -62,12 +62,12 @@ import static org.silverpeas.core.util.URLUtil.getApplicationURL;
  * Common behaviors about WEB component controllers which handle the rendering of a calendar.
  * @param <C>
  */
-public abstract class AbstractCalendarWebController<C extends AbstractCalendarWebRequestContext>
+public abstract class AbstractCalendarWebController<C extends AbstractCalendarWebRequestContext<?>>
     extends WebComponentController<C> {
 
   private static final int STRING_MAX_LENGTH = 50;
 
-  private Selection userPanelSelection = null;
+  private final Selection userPanelSelection;
 
   public AbstractCalendarWebController(final MainSessionController controller,
       final ComponentContext context, final String multilangFileName, final String iconFileName,
@@ -97,16 +97,21 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
     }
     String timeWindow = context.getRequest().getParameter("timeWindow");
     if (StringUtil.isDefined(timeWindow)) {
-      if ("previous".equals(timeWindow)) {
-        getCalendarTimeWindowContext().previous();
-      } else if ("next".equals(timeWindow)) {
-        getCalendarTimeWindowContext().next();
-      } else if ("today".equals(timeWindow)) {
-        getCalendarTimeWindowContext().today();
-      } else if ("referenceDay".equals(timeWindow)) {
-        LocalDate date =
-            LocalDate.parse(context.getRequest().getParameter("timeWindowDate").split("T")[0]);
-        getCalendarTimeWindowContext().setReferenceDay(Date.valueOf(date));
+      switch (timeWindow) {
+        case "previous":
+          getCalendarTimeWindowContext().previous();
+          break;
+        case "next":
+          getCalendarTimeWindowContext().next();
+          break;
+        case "today":
+          getCalendarTimeWindowContext().today();
+          break;
+        case "referenceDay":
+          LocalDate date =
+              LocalDate.parse(context.getRequest().getParameter("timeWindowDate").split("T")[0]);
+          getCalendarTimeWindowContext().setReferenceDay(Date.valueOf(date));
+          break;
       }
     }
     return getCalendarTimeWindowContext();
@@ -134,7 +139,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
    */
   protected SelectionUsersGroups getUserParticipationSelectionParams() {
     SelectionUsersGroups attendeeSelectionParams = new SelectionUsersGroups();
-    if(!PersonalComponentInstance.from(getComponentId()).isPresent()) {
+    if(PersonalComponentInstance.from(getComponentId()).isEmpty()) {
       attendeeSelectionParams.setComponentId(getComponentId());
     }
     return attendeeSelectionParams;
@@ -161,20 +166,20 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
    */
   protected SelectionUsersGroups getAttendeeSelectionParams() {
     SelectionUsersGroups attendeeSelectionParams = new SelectionUsersGroups();
-    if(!PersonalComponentInstance.from(getComponentId()).isPresent()) {
+    if(PersonalComponentInstance.from(getComponentId()).isEmpty()) {
       attendeeSelectionParams.setComponentId(getComponentId());
     }
     return attendeeSelectionParams;
   }
 
-  protected void processNewEvent(final AbstractCalendarWebRequestContext context) {
+  protected void processNewEvent(final C context) {
     final Temporal startDate = context.getOccurrenceStartDate();
     if (startDate != null) {
       context.getRequest().setAttribute("occurrenceStartDate", startDate.toString());
     }
   }
 
-  protected void processViewOccurrence(final AbstractCalendarWebRequestContext context,
+  protected void processViewOccurrence(final C context,
       final String navigationStepId) {
     CalendarEventOccurrence occurrence = context.getCalendarEventOccurrenceById();
     if (occurrence != null) {
@@ -227,7 +232,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   @GET
   @Path("searchResult")
   @RedirectToInternal("calendars/occurrences/{occurrenceId}")
-  public void searchResult(AbstractCalendarWebRequestContext context) {
+  public void searchResult(C context) {
     context.getNavigationContext().clear();
     final CalendarEventOccurrence occurrence = CalendarWebManager.get(getComponentName())
         .getFirstCalendarEventOccurrenceFromEventId(context.getRequest().getParameter("Id"));

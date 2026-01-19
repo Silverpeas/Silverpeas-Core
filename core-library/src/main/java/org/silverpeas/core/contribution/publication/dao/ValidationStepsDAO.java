@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.dao;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -36,23 +37,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Repository
 public class ValidationStepsDAO {
 
-  private static String publicationValidationTableName = "SB_Publication_Validation";
-
-  private ValidationStepsDAO() {
-
-  }
+  private static final String TABLE_NAME = "SB_Publication_Validation";
 
   /**
    * Deletes all validation data of publications linked to the component instance represented by
    * the given identifier.
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
-   * @throws SQLException
+   * @throws SQLException if the deletion fails
    */
-  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.deleteFrom(publicationValidationTableName)
+  public void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.deleteFrom(TABLE_NAME)
         .where("instanceId = ?", componentInstanceId).execute();
   }
 
@@ -61,18 +59,11 @@ public class ValidationStepsDAO {
    * decisionDate varchar(20) NOT NULL, decision varchar(50) NOT NULL
    */
 
-  public static void addStep(Connection con, ValidationStep step)
+  public void addStep(Connection con, ValidationStep step)
       throws SQLException {
-    StringBuilder insertStatement = new StringBuilder(128);
-    insertStatement.append("insert into ").append(
-        publicationValidationTableName).append(" values (?, ?, ?, ?, ?, ?)");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(insertStatement.toString());
-
-      int id = DBUtil.getNextId(publicationValidationTableName, "id");
-
+    String query = "insert into " + TABLE_NAME + " values (?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
+      int id = DBUtil.getNextId(TABLE_NAME, "id");
       prepStmt.setInt(1, id);
       prepStmt.setInt(2, Integer.parseInt(step.getPubPK().getId()));
       prepStmt.setString(3, step.getPubPK().getInstanceId());
@@ -80,100 +71,62 @@ public class ValidationStepsDAO {
       prepStmt.setString(5, Long.toString(new Date().getTime()));
       prepStmt.setString(6, step.getDecision());
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
-  public static void removeSteps(Connection con, PublicationPK pubPK)
+  public void removeSteps(Connection con, PublicationPK pubPK)
       throws SQLException {
-    StringBuilder statement = new StringBuilder(128);
-    statement.append("delete from ").append(publicationValidationTableName)
-        .append(" where pubId = ? and instanceId = ?");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(statement.toString());
-
+    String query = "delete from " + TABLE_NAME + " where pubId = ? and instanceId = ?";
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
       prepStmt.setString(2, pubPK.getInstanceId());
-
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
-  public static List<ValidationStep> getSteps(Connection con, PublicationPK pubPK)
+  public List<ValidationStep> getSteps(Connection con, PublicationPK pubPK)
       throws SQLException {
+    String query = "select * from " + TABLE_NAME +
+        " where pubId = ? and instanceId = ? order by decisionDate desc";
     List<ValidationStep> steps = new ArrayList<>();
-
-    StringBuilder statement = new StringBuilder(128);
-    statement.append("select * from ").append(publicationValidationTableName)
-        .append(
-        " where pubId = ? and instanceId = ? order by decisionDate desc");
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(statement.toString());
-
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
       prepStmt.setString(2, pubPK.getInstanceId());
-      rs = prepStmt.executeQuery();
-
-      while (rs.next()) {
-        ValidationStep step = new ValidationStep();
-
-        step.setId(rs.getInt(1));
-        step.setPubPK(pubPK);
-        step.setUserId(String.valueOf(rs.getInt(4)));
-        step.setValidationDate(new Date(Long.parseLong(rs.getString(5))));
-        step.setDecision(rs.getString(6));
-
-        steps.add(step);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          ValidationStep step = toValidationStep(pubPK, rs);
+          steps.add(step);
+        }
       }
-    } finally {
-      DBUtil.close(rs);
-      DBUtil.close(prepStmt);
     }
-
     return steps;
   }
 
-  public static ValidationStep getStepByUser(Connection con,
+  public ValidationStep getStepByUser(Connection con,
       PublicationPK pubPK, String userId) throws SQLException {
-    StringBuilder statement = new StringBuilder(128);
-    statement.append("select * from ").append(publicationValidationTableName)
-        .append(" where pubId = ? and instanceId = ?");
-    statement.append(" and userId = ? order by decisionDate desc");
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(statement.toString());
-
+    String query = "select * from " + TABLE_NAME + " where pubId = ? and instanceId = ?" +
+        " and userId = ? order by decisionDate desc";
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
       prepStmt.setString(2, pubPK.getInstanceId());
       prepStmt.setInt(3, Integer.parseInt(userId));
-
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        ValidationStep step = new ValidationStep();
-
-        step.setId(rs.getInt(1));
-        step.setPubPK(pubPK);
-        step.setUserId(String.valueOf(rs.getInt(4)));
-        step.setValidationDate(new Date(Long.parseLong(rs.getString(5))));
-        step.setDecision(rs.getString(6));
-
-        return step;
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        if (rs.next()) {
+          return toValidationStep(pubPK, rs);
+        }
       }
-    } finally {
-      DBUtil.close(rs);
-      DBUtil.close(prepStmt);
     }
-
     return null;
+  }
+
+  private ValidationStep toValidationStep(PublicationPK pubPK, ResultSet rs) throws SQLException {
+    ValidationStep step = new ValidationStep();
+    step.setId(rs.getInt(1));
+    step.setPubPK(pubPK);
+    step.setUserId(String.valueOf(rs.getInt(4)));
+    step.setValidationDate(new Date(Long.parseLong(rs.getString(5))));
+    step.setDecision(rs.getString(6));
+    return step;
   }
 
 }

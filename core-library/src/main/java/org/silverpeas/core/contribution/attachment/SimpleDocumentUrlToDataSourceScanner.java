@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 
-import javax.activation.FileDataSource;
+import jakarta.activation.FileDataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

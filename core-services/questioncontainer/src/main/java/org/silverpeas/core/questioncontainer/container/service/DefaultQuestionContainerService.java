@@ -62,8 +62,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

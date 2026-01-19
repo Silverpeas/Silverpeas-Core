@@ -26,7 +26,6 @@ package org.silverpeas.core.calendar.icalendar;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
@@ -56,6 +55,7 @@ import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.kernel.util.Pair;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -102,10 +102,10 @@ class ICal4JExchangeImportTest {
   private final BiConsumer<Pair<CalendarEvent, List<CalendarEventOccurrence>>, Pair<CalendarEvent,
       List<CalendarEventOccurrence>>>
       defaultAssert = (actual, expected) -> {
-    CalendarEvent actualEvent = actual.getLeft();
-    CalendarEvent expectedEvent = expected.getLeft();
-    List<CalendarEventOccurrence> actualOccurrences = actual.getRight();
-    List<CalendarEventOccurrence> expectedOccurrences = expected.getRight();
+    CalendarEvent actualEvent = actual.getFirst();
+    CalendarEvent expectedEvent = expected.getFirst();
+    List<CalendarEventOccurrence> actualOccurrences = actual.getSecond();
+    List<CalendarEventOccurrence> expectedOccurrences = expected.getSecond();
     verify(actualEvent, expectedEvent, actualOccurrences, expectedOccurrences);
   };
 
@@ -514,7 +514,7 @@ class ICal4JExchangeImportTest {
     iCalendarImporter.imports(ImportDescriptor.withInputStream(new ByteArrayInputStream(
             getFileContent(fileNameOfImport).getBytes(StandardCharsets.UTF_8))),
         events -> result.putAll(events.collect(
-            Collectors.toMap(p -> p.getLeft().getExternalId(), Function.identity()))));
+            Collectors.toMap(p -> p.getFirst().getExternalId(), Function.identity()))));
 
     Map<String, Pair<CalendarEvent, List<CalendarEventOccurrence>>> expected =
         expectedEvents.stream().collect(Collectors
@@ -543,6 +543,7 @@ class ICal4JExchangeImportTest {
       CalendarEventOccurrence actual = actualOccurrences.stream()
           .filter(o -> expected.getOriginalStartDate().equals(o.getOriginalStartDate())).findFirst()
           .orElse(null);
+      assertThat(actual, notNullValue());
       assertThat(reason + "getId", actual.getId(), is(expected.getId()));
       assertThat(reason + "getId", actual.getOriginalStartDate(), is(expected.getOriginalStartDate()));
       assertThat(reason + "getCalendar", actual.getCalendarEvent().getCalendar(), is(expected.getCalendarEvent().getCalendar()));

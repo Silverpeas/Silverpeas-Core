@@ -27,7 +27,7 @@ package org.silverpeas.core.admin.space.notification;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Notification event about the creation, the deletion, or the update of a profile instance for a

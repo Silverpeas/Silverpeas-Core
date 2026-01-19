@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.content.wysiwyg.notification;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * An event about a change in the life-cycle of the specified WYSIWYG content. A change can be

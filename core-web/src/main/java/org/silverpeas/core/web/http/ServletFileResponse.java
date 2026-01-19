@@ -25,10 +25,10 @@ package org.silverpeas.core.web.http;
 
 import org.silverpeas.core.io.file.SilverpeasFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

@@ -32,11 +32,11 @@ import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -59,8 +59,8 @@ public class CalendarTimeWindowViewContext implements Serializable {
   private static final EnumSet<PeriodType> DISPLAY_WEEK_PERIODS =
       of(PeriodType.week, PeriodType.day);
 
-  private String locale = null;
-  private ZoneId zoneId = null;
+  private final String locale;
+  private ZoneId zoneId;
   private final String componentInstanceId;
   private List<CalendarViewType> availableViewTypes = asList(NEXT_EVENTS, DAILY, WEEKLY, MONTHLY, YEARLY);
   private CalendarViewType viewType = MONTHLY;
@@ -199,10 +199,6 @@ public class CalendarTimeWindowViewContext implements Serializable {
     moveReferenceDate(1);
   }
 
-  /**
-   * Centralization.
-   * @param offset
-   */
   private void moveReferenceDate(int offset) {
     switch (viewType) {
       case YEARLY:
@@ -227,18 +223,10 @@ public class CalendarTimeWindowViewContext implements Serializable {
     setReferenceDay(DateUtil.getDate());
   }
 
-  /**
-   * Indicates if weekends have to be displayed.
-   * @return
-   */
   public boolean isWithWeekend() {
     return withWeekend;
   }
 
-  /**
-   * Set if weekends have to be displayed.
-   * @param withWeekend
-   */
   public void setWithWeekend(final boolean withWeekend) {
     this.withWeekend = withWeekend;
   }
@@ -246,27 +234,17 @@ public class CalendarTimeWindowViewContext implements Serializable {
   /**
    * Gets the first day of weeks of the calendar with 1 meaning for sunday, 2 meaning for monday,
    * and so on. The first day of weeks depends on the locale; the first day of weeks is monday for
-   * french whereas it is for sunday for US.
+   * french whereas it is for Sunday for US.
    * @return the first day of week.
    */
   public int getFirstDayOfWeek() {
     return DateUtil.getFirstDayOfWeek(locale);
   }
 
-  /**
-   * Gets the bundle
-   * @return
-   */
   protected static LocalizationBundle getBundle(final String language) {
     return ResourceLocator.getGeneralLocalizationBundle(language);
   }
 
-  /**
-   * Compute a period label.
-   * @param period
-   * @param language
-   * @return
-   */
   public static String getPeriodLabel(CalendarPeriod period, String language) {
     LocalizationBundle bundle = getBundle(language);
     StringBuilder periodLabel = new StringBuilder();

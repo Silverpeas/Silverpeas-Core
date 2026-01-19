@@ -29,6 +29,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlToDataSourceScanner;
@@ -50,9 +51,9 @@ import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.SettingBundleStub;
 
-import javax.activation.FileDataSource;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.activation.FileDataSource;
+import jakarta.inject.Singleton;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -289,6 +290,7 @@ public class WysiwygContentTransformerTest {
     }
   }
 
+  @Bean
   @Singleton
   public static class GalleryLinkUrlDataSourceScanner4Test implements LinkUrlDataSourceScanner {
 
@@ -307,6 +309,7 @@ public class WysiwygContentTransformerTest {
     }
   }
 
+  @Bean
   @Singleton
   public static class GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test
       implements ImageUrlAccordingToHtmlSizeDirective.SrcTranslator {

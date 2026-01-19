@@ -46,8 +46,8 @@ import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByIn
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -86,7 +86,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
  * method.
  * </p>
  * <p>
- * When a list of events is retrieved from one or more calendars, they are all ordered by the
+ * When a list of events is retrieved from one or more calendars, they are all ordered first by the
  * component instance that owns the calendar, then by the calendar on which they are planned, then
  * by the user who authored them, and finally by their starting  date in the timeline of the
  * calendar.
@@ -185,7 +185,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
       "FROM CalendarEvent e " +
       "JOIN e.component cmp " +
       "JOIN cmp.calendar c " +
-      "LEFT OUTER JOIN FETCH e.recurrence r " +
+      "LEFT OUTER JOIN FETCH e.recurrence " +
       "WHERE (c IN :calendars " +
       "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
       "           OR (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
@@ -207,7 +207,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
     "FROM CalendarEvent e " +
     "JOIN e.component cmp " +
     "JOIN cmp.calendar c " +
-    "LEFT OUTER JOIN FETCH e.recurrence r " +
+    "LEFT OUTER JOIN FETCH e.recurrence " +
     "WHERE ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
     "       OR (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))) " +
     "OR e.id IN (SELECT occ_e.id " +
@@ -227,7 +227,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
       "JOIN e.component cmp " +
       "JOIN cmp.calendar c " +
       "JOIN cmp.attendees.attendees a " +
-      "LEFT OUTER JOIN FETCH e.recurrence r " +
+      "LEFT OUTER JOIN FETCH e.recurrence " +
       "WHERE (a.attendeeId IN :participantIds " +
       "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
       "            OR" +
@@ -251,7 +251,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
       "JOIN e.component cmp " +
       "JOIN cmp.calendar c " +
       "JOIN cmp.attendees.attendees a " +
-      "LEFT OUTER JOIN FETCH e.recurrence r " +
+      "LEFT OUTER JOIN FETCH e.recurrence " +
       "WHERE (c IN :calendars " +
       "       AND a.attendeeId IN :participantIds " +
       "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
@@ -303,6 +303,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @Transient
   private WysiwygContent content;
+
+  @Transient
+  private CalendarEventRepository repository;
 
   /**
    * Constructs a new calendar event that spawns to the specified period of time.
@@ -514,8 +517,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   /**
    * Gets the external identifier.
    * <p>
-   *   Any events coming from a calendar external to Silverpeas are identified by an unique
-   *   identifier for this external calendar. The external identifier is this identifier and it
+   *   Any events coming from a calendar external to Silverpeas are identified by a unique
+   *   identifier for this external calendar. The external identifier is this identifier, and it
    *   is null for events in a Silverpeas calendar. This identifier is typically processed by the
    *   calendar import/export mechanism of Silverpeas.
    * </p>
@@ -836,7 +839,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public CalendarEvent planOn(final Calendar calendar) {
     CalendarEvent event = Transaction.performInOne(() -> {
       if (!isPersisted()) {
-        CalendarEventRepository repository = CalendarEventRepository.get();
+        CalendarEventRepository repository = getRepository();
         setCalendar(calendar);
         normalize();
         CalendarEvent savedEvent = repository.save(this);
@@ -1060,7 +1063,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * but with a new state, otherwise an {@link IllegalStateException} exception is thrown.
    * @return the result of the update. It has the updated event.
    */
-  public EventOperationResult updateFrom(final CalendarEvent event) {
+  EventOperationResult updateFrom(final CalendarEvent event) {
     if (!this.getId().equals(event.getId()) &&
         (this.externalId == null || !this.externalId.equals(event.externalId))) {
       throw new IllegalStateException(
@@ -1224,7 +1227,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private void deleteFromPersistence() {
     if (isPersisted()) {
       Transaction.getTransaction().perform(() -> {
-        CalendarEventRepository repository = CalendarEventRepository.get();
+        CalendarEventRepository repository = getRepository();
         repository.delete(this);
         WysiwygContent.deleteAllContents(this);
         return null;
@@ -1235,7 +1238,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private CalendarEvent updateIntoPersistence() {
     if (getNativeId() != null) {
       return Transaction.getTransaction().perform(() -> {
-        CalendarEventRepository repository = CalendarEventRepository.get();
+        CalendarEventRepository repository = getRepository();
         getContent().filter(WysiwygContent::isModified).ifPresent(WysiwygContent::save);
         return repository.save(this);
       });
@@ -1330,7 +1333,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     }
 
     // Getting previous data from the persistence.
-    final CalendarEvent event = Transaction.performInNew(() -> CalendarEvent.getById(this.getId()));
+    final CalendarEvent event = Transaction.performInNew(() ->
+        getRepository().getById(this.getId()));
 
     // Checking that previous and new data concerns the same scope specified by the identifier of
     // a component instance.
@@ -1350,7 +1354,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     }
 
     final CalendarEventOccurrence previous = Transaction.performInNew(
-        () -> CalendarEventOccurrence.getById(occurrence.getId()).orElse(null));
+        () -> CalendarEventOccurrence.getById(occurrence.getId())).orElse(null);
 
     if (previous == null ||
         !previous.getCalendarEvent().getId().equals(occurrence.getCalendarEvent().getId()) ||
@@ -1426,7 +1430,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     // Saving updated data
     updateIntoPersistence();
     // Then moving it
-    final CalendarEvent movedCalendar = CalendarEventRepository.get().moveToCalendar(this, target);
+    final CalendarEvent movedCalendar = getRepository().moveToCalendar(this, target);
     return new EventOperationResult().withUpdated(movedCalendar);
   }
 
@@ -1460,6 +1464,13 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
             .forEach(CalendarEventOccurrence::saveIntoPersistence);
       }
     }
+  }
+
+  private CalendarEventRepository getRepository() {
+    if (repository == null) {
+      repository = CalendarEventRepository.get();
+    }
+    return repository;
   }
 
   private static List<CalendarEventOccurrence> getPersistedOccurrences(final CalendarEvent event) {

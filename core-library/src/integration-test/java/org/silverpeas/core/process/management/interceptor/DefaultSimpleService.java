@@ -32,13 +32,10 @@ import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Singleton;
-
 /**
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 public class DefaultSimpleService implements SimpleService {
 
   @SimulationActionProcess(elementLister = InterceptorTestFileElementLister.class)

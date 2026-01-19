@@ -42,8 +42,8 @@ import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static javax.ws.rs.core.UriBuilder.fromUri;
+import static jakarta.ws.rs.core.UriBuilder.fromUri;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
 import static org.silverpeas.kernel.util.Mutable.empty;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;

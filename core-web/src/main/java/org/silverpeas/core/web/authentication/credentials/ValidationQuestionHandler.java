@@ -30,9 +30,9 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import org.silverpeas.core.web.http.HttpRequest;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Navigation case : user has validated login question form.

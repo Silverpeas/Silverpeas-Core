@@ -25,7 +25,7 @@ package org.silverpeas.core.workflow.api.model;
 
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.io.Serializable;
 
 /**

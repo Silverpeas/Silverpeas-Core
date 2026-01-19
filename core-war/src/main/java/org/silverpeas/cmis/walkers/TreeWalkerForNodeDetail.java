@@ -33,7 +33,6 @@ import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
@@ -46,8 +45,8 @@ import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +64,6 @@ import java.util.stream.Stream;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
 
   @Override

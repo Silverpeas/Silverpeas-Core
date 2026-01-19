@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.notification.system;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -86,11 +86,7 @@ public class UnitTestResource implements Serializable {
     if (!modificationDate.equals(that.modificationDate)) {
       return false;
     }
-    if (!name.equals(that.name)) {
-      return false;
-    }
-
-    return true;
+    return name.equals(that.name);
   }
 
   @Override

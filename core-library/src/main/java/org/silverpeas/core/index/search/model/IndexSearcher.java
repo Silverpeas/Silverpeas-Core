@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.index.search.model;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -32,26 +34,19 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.BytesRef;
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.annotation.Technical;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.IndexFileManager;
-import org.silverpeas.core.index.indexing.model.ExternalComponent;
-import org.silverpeas.core.index.indexing.model.FieldDescription;
-import org.silverpeas.core.index.indexing.model.IndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.index.indexing.model.*;
 import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -70,8 +65,7 @@ import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
  * manages a set of cached lucene IndexSearcher.
  */
 @Technical
-@Bean
-@Singleton
+@Service
 public class IndexSearcher {
 
   private static final String INDEX_SEARCH_ERROR = "Index search failure";
@@ -89,6 +83,9 @@ public class IndexSearcher {
   @Inject
   private IndexManager indexManager;
 
+  @Inject
+  private I18n i18n;
+
   /**
    * indicates the number maximum of results returned by the search
    */
@@ -98,7 +95,7 @@ public class IndexSearcher {
    * The no parameters constructor retrieves all the needed data from the IndexEngine.properties
    * file.
    */
-  private IndexSearcher() {
+  IndexSearcher() {
     indexManager = IndexManager.get();
   }
 
@@ -261,7 +258,7 @@ public class IndexSearcher {
     if (!StringUtil.isDefined(query.getQuery())) {
       return null;
     }
-    final Set<String> languages = getRequestedLanguages(query);
+    final List<String> languages = getRequestedLanguages(query);
     final Query queryOnContent = getQuery(IndexManager.CONTENT, query.getQuery(), languages);
     final Query queryOnHeader = getQuery(IndexManager.HEADER, query.getQuery(), languages);
     final BoostQuery boostQuery = new BoostQuery(queryOnHeader, fieldHeaderBoost);
@@ -275,7 +272,7 @@ public class IndexSearcher {
   private Query getMultiFieldQuery(QueryDescription query)
       throws org.silverpeas.core.index.search.model.ParseException {
     try {
-      Set<String> languages = getRequestedLanguages(query);
+      List<String> languages = getRequestedLanguages(query);
       BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
 
       Query plainTextQuery = getPlainTextQuery(query);
@@ -306,10 +303,10 @@ public class IndexSearcher {
     }
   }
 
-  private Set<String> getRequestedLanguages(final QueryDescription query) {
+  private List<String> getRequestedLanguages(final QueryDescription query) {
     return query.getRequestedLanguage()
-        .map(Collections::singleton)
-        .orElseGet(I18NHelper::getAllSupportedLanguages);
+        .map(Collections::singletonList)
+        .orElseGet(i18n::getSupportedLanguageCodes);
   }
 
   /**
@@ -322,7 +319,7 @@ public class IndexSearcher {
    * @return a Query limited to given fieldName
    * @throws ParseException if an error occurs while parsing the text of the query.
    */
-  private Query getQuery(String fieldName, String queryStr, Set<String> languages)
+  private Query getQuery(String fieldName, String queryStr, List<String> languages)
       throws ParseException {
     BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
     for (String language : languages) {
@@ -358,7 +355,7 @@ public class IndexSearcher {
   }
 
   private String getFieldName(String name, String language) {
-    if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
+    if (!i18n.isEnabled() || i18n.isDefaultLanguage(language)) {
       return name;
     }
     return name + "_" + language;
@@ -410,7 +407,7 @@ public class IndexSearcher {
       String fieldValue;
 
       for (String formXMLFieldName : SearchEnginePropertiesManager.getFieldsNameList()) {
-        if ("*".equals(requestedLanguage) || I18NHelper.isDefaultLanguage(requestedLanguage)) {
+        if ("*".equals(requestedLanguage) || i18n.isDefaultLanguage(requestedLanguage)) {
           fieldValue = doc.get(formXMLFieldName);
         } else {
           fieldValue = doc.get(formXMLFieldName + "_" + requestedLanguage);
@@ -444,7 +441,7 @@ public class IndexSearcher {
   }
 
   private void setIndexEntryLanguageData(final MatchingIndexEntry indexEntry, final Document doc) {
-    final Collection<String> languages = I18NHelper.getLanguages();
+    final Collection<String> languages = i18n.getSupportedLanguageCodes();
     for (final String language : languages) {
       indexEntry.setTitle(doc.get(getFieldName(IndexManager.TITLE, language)), language);
       indexEntry.setPreview(doc.get(getFieldName(IndexManager.PREVIEW, language)), language);

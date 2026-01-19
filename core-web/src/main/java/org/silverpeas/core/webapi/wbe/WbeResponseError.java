@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.wbe;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author silveryocha

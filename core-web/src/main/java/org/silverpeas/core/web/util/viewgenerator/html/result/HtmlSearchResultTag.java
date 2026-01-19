@@ -43,9 +43,9 @@ import org.silverpeas.core.web.search.ResultSearchRendererUtil;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +73,7 @@ public class HtmlSearchResultTag extends TagSupport {
   private Integer sortValue = null;
   private boolean exportEnabled = false;
   private MultiSilverpeasBundle resources = null;
-  private Map<String, Boolean> componentSettings = new HashMap<>();
+  private final Map<String, Boolean> componentSettings = new HashMap<>();
 
   @Override
   public int doStartTag() throws JspException {
@@ -187,7 +187,6 @@ public class HtmlSearchResultTag extends TagSupport {
    * @param instanceId : the component instance identifier
    * @param componentName : the component name
    * @return true if this instance need to generate a specific result template, false else if
-   * @throws JspTagException
    */
   private boolean isResultTemplating(String instanceId, String componentName) {
     boolean doResultTemplating = false;
@@ -210,13 +209,6 @@ public class HtmlSearchResultTag extends TagSupport {
     }
   }
 
-  /**
-   * @param resources
-   * @param componentName
-   * @param extraInformation
-   * @return the default HTML result search of a searched element
-   * @throws JspTagException
-   */
   private String generateHTMLSearchResult(MultiSilverpeasBundle resources, String componentName,
       String extraInformation) {
     // initialize html result
@@ -283,7 +275,7 @@ public class HtmlSearchResultTag extends TagSupport {
         ImageTag image = new ImageTag();
         image.setSrc(gsr.getThumbnailURL());
         image.setSize("60x");
-        result.append(image.toString());
+        result.append(image);
       }
       result.append("</div>");
     }
@@ -350,7 +342,7 @@ public class HtmlSearchResultTag extends TagSupport {
           .append(resources.getString("GML.view.file")).append("\"/>");
     }
     if (!gsr.isDownloadAllowedForReaders()) {
-      String forbiddenDownloadHelp = "";
+      String forbiddenDownloadHelp;
       forbiddenDownloadHelp =
           gsr.isUserAllowedToDownloadFile() ? resources.getString("GML.download.forbidden.readers") :
               resources.getString("GML.download.forbidden");
@@ -405,10 +397,6 @@ public class HtmlSearchResultTag extends TagSupport {
     return result.toString();
   }
 
-  /**
-   * @return a UserPreferences object from Personalization service.
-   * @throws JspTagException
-   */
   private UserPreferences getUserPreferences() {
     return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getUserId());
   }

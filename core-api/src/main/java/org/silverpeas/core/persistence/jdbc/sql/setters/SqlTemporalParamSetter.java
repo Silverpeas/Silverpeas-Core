@@ -24,34 +24,12 @@
 
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.annotation.Technical;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.time.Instant;
-
 /**
  * An abstract setter of SQL parameters of type temporal. It provides common features for more
  * concrete setter of temporal parameters.
  * @author mmoquillon
  */
-@Technical
-@Bean
 public abstract class SqlTemporalParamSetter implements SqlTypedParameterSetter {
-
-  protected Instant toInstant(final Object value) {
-    try {
-      if (value instanceof Instant) {
-        return (Instant) value;
-      }
-      Method toInstant = value.getClass().getMethod("toInstant");
-      return (Instant) toInstant.invoke(value);
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-      throw new IllegalArgumentException(
-          "Date or date time parameter expected. But is " + value.getClass(), e);
-    }
-  }
 
   protected void throwTypeNotSupported(final Class<?> type) {
     throw new IllegalArgumentException("Type not supported: " + type.getName());

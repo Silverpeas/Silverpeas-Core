@@ -34,7 +34,7 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -237,7 +237,7 @@ public class PdcSearchRequestRouterHelper {
   public static void setContext(PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
 
-    // on retire du searchcontext tous les criteres qui ne sont pas dans
+    // On retire du searchcontext tous les criteres qui ne sont pas dans
     // l'espace choisi par l'utilisateur.
     // Dans ce cas, on retire de la list de searchContext, le critere de
     // recherche.

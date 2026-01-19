@@ -32,71 +32,30 @@ package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.core.exception.SilverpeasTrappedException;
 
-/**
- * Class declaration
- * @author
- */
 public class JobDomainPeasTrappedException extends SilverpeasTrappedException {
 
   private static final long serialVersionUID = 1L;
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   *
-   */
   public JobDomainPeasTrappedException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
   public JobDomainPeasTrappedException(String callingClass, int errorLevel,
       String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
   public JobDomainPeasTrappedException(String callingClass, int errorLevel,
       String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
   public JobDomainPeasTrappedException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getModule() {
     return "jobDomainPeas";
   }

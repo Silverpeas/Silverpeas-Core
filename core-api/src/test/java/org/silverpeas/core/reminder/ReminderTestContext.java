@@ -42,8 +42,8 @@ import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.TestManagedBeanFeeder;
 
-import javax.enterprise.util.AnnotationLiteral;
-import javax.persistence.EntityManager;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.persistence.EntityManager;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;

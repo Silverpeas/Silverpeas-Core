@@ -36,8 +36,8 @@ public class SpaceLookHelper implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private String spaceId = null;
-  private Hashtable<String, SpaceLookItem> items = new Hashtable<String, SpaceLookItem>();
+  private final String spaceId;
+  private final Hashtable<String, SpaceLookItem> items = new Hashtable<>();
 
   public SpaceLookHelper(String spaceId) {
     this.spaceId = spaceId;
@@ -47,9 +47,7 @@ public class SpaceLookHelper implements Serializable {
     if (files != null) {
       for (File file : files) {
         SpaceLookItem item = new SpaceLookItem(file, spaceId);
-        if (item != null) {
-          items.put(FilenameUtils.getBaseName(item.getName()), item);
-        }
+        items.put(FilenameUtils.getBaseName(item.getName()), item);
       }
     }
   }

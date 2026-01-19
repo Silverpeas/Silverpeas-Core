@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.util;
 
-import javax.xml.bind.annotation.XmlElement;
+import org.silverpeas.core.annotation.Bean;
+
 import java.util.Date;
 
 /**
  * @author mmoquillon
  */
+@Bean
 public class TestBean {
 
   private String id;

@@ -27,7 +27,7 @@ package org.silverpeas.core.contribution.content;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 
 /**
  * An implementation of this interface provides a list of {@link RegexpPatternDirective} to extract
- * link urls from an html content represented as a {@link String} and it provides also the
+ * URL of links from HTML content represented as a {@link String} and it provides also the
  * {@link DataSource} initialization according to an extracted link.
  * @author silveryocha
  */
@@ -53,13 +53,13 @@ public interface LinkUrlDataSourceScanner {
   static Map<String, String> extractUrlParameters(final String url) {
     return Optional.ofNullable(url)
         .stream()
-        .flatMap(u -> Stream.of(u.substring(u.indexOf('?') + 1).replace("&amp;", "&").split("[&]")))
-        .map(p -> p.split("[=]"))
+        .flatMap(u -> Stream.of(u.substring(u.indexOf('?') + 1).replace("&amp;", "&").split("&")))
+        .map(p -> p.split("="))
         .collect(Collectors.toMap(p -> p[0], p -> p[1]));
   }
 
   /**
-   * Scans the given html content to extract the link url and provide related {@link DataSource}.
+   * Scans the given HTML content to extract the link url and provide related {@link DataSource}.
    * @param htmlContent the HTML content to scan.
    * @return list of {@link LinkUrlDataSource}.
    */

@@ -36,12 +36,12 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.web.notificationuser.control.UserNotificationSessionController;
 
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 import java.util.Enumeration;
 
 import static org.silverpeas.core.admin.user.model.User.getCurrentRequester;
 
-@WebServlet()
+@WebServlet
 public class UserNotificationRequestRouter
     extends ComponentRequestRouter<UserNotificationSessionController> {
 
@@ -69,7 +69,7 @@ public class UserNotificationRequestRouter
   /**
    * Compute a destination page.
    * @param function The entering request function (ex : "Main.jsp")
-   * @param nuSC The component Session Control, build and initialised.
+   * @param nuSC The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")

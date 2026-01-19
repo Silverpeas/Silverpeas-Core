@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
@@ -48,10 +49,11 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.SystemWrapper;
 import org.silverpeas.web.test.WarBuilder4WarCore;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+
 import java.io.File;
 import java.text.ParseException;
 import java.time.ZoneId;
@@ -61,7 +63,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -88,7 +90,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
   public static final String USER_2 = "2";
 
   @Inject
-  private SocialEventProvider socialEventsInterface;
+  private SocialEventProvider<SocialInformation> socialEventsInterface;
 
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
@@ -112,7 +114,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
   }
 
   @Before
-  public void setup() throws Exception {
+  public void setup() {
     final File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
     SystemWrapper.getInstance().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     WAComponentRegistry.get().init();
@@ -180,7 +182,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
     list = socialEventsInterface
         .getSocialInformationListOfMyContacts(USER_2, myContactIds, begin, end);
     assertThat(list, notNullValue());
-    // Order by day and time  event 3et 3 have the same day but the hour of event3 befor Event2
+    // Order by day and time  event 3et 3 have the same day but the hour of event3 before Event2
     assertThat(toTitles(list), contains(RDV_4_TITLE, RDV_3_TITLE));
     assertThat(toSocialTypes(list).filter(SocialInformationType.EVENT::equals).count(), is(2L));
     assertCountOfMine(list, 0L);
@@ -284,8 +286,9 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
    * Update information is here hacked and the real meaning of this information is:
    * <ul>
    *   <li>true = mine</li>
-   *   <li>false = to an other user</li>
+   *   <li>false = to another user</li>
    * </ul>
+   *
    * @param list the list to verify.
    * @param expectedCount the expected count.
    */
@@ -293,6 +296,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
     assertThat(list.stream().filter(SocialInformation::isUpdated).count(), is(expectedCount));
   }
 
+  @Service
   @Singleton
   @Alternative
   @Priority(APPLICATION + 100)
@@ -314,10 +318,12 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
   /**
    * An implementation is needed
    */
+  @Service
   @Singleton
   @Alternative
   @Priority(APPLICATION + 100)
-  public static class StubbedSocialMediaCommentProvider implements SocialMediaCommentProvider {
+  public static class StubbedSocialMediaCommentProvider
+      implements SocialMediaCommentProvider<SocialInformation> {
     @Override
     public List<SocialInformation> getSocialInformationList(final String userId, final Date begin,
         final Date end) {
@@ -334,10 +340,11 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
   /**
    * An implementation is needed
    */
+  @Service
   @Singleton
   @Alternative
   @Priority(APPLICATION + 100)
-  public static class StubbedSocialMediaProvider implements SocialMediaProvider {
+  public static class StubbedSocialMediaProvider implements SocialMediaProvider<SocialInformation> {
 
     @Override
     public List<SocialInformation> getSocialInformationList(final String userId, final Date begin,
@@ -355,10 +362,12 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
   /**
    * An implementation is needed
    */
+  @Service
   @Singleton
   @Alternative
   @Priority(APPLICATION + 100)
-  public static class StubbedSocialNewsCommentProvider implements SocialNewsCommentProvider {
+  public static class StubbedSocialNewsCommentProvider
+      implements SocialNewsCommentProvider<SocialInformation> {
     @Override
     public List<SocialInformation> getSocialInformationList(final String userId, final Date begin,
         final Date end) {
@@ -377,6 +386,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
    * {@link org.silverpeas.core.personalization.UserPreferences} cannot be queried, the
    * personalization service is stubbed.
    */
+  @Service
   @Singleton
   @Alternative
   @Priority(APPLICATION + 100)

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -32,17 +31,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDAOIT;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,9 +57,9 @@ public class ComponentInstanceThumbnailDeletionIT {
   private static final String TABLE_CREATION_SCRIPT =
       "/org/silverpeas/core/io/media/image/thumbnail/create-database.sql";
   private static final String DATASET_SCRIPT =
-      "test-thumbnail-component-instance-deletion-data.sql";
+      "/org/silverpeas/core/io/media/image/thumbnail/control/test-thumbnail-component-instance-deletion-data.sql";
 
-  private Map<String, File> componentInstanceRepos = new HashMap<>();
+  private final Map<String, File> componentInstanceRepos = new HashMap<>();
 
   private ComponentInstanceDeletion thumbnailController;
 
@@ -71,15 +69,15 @@ public class ComponentInstanceThumbnailDeletionIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore
-        .onWarForTestClass(ComponentInstanceThumbnailDeletionIT.class)
-        .addDatabaseToolFeatures().addSilverpeasExceptionBases().addFileRepositoryFeatures()
-        .addProcessFeatures()
-        .addImageToolFeatures()
-        .addComponentInstanceDeletionFeatures()
-        .testFocusedOn(war -> war
-            .addPackages(true, "org.silverpeas.core.io.media.image.thumbnail")
-            .addAsResource("org/silverpeas/core/io/media/image/thumbnail/create-database.sql"))
+    return LibCoreWarBuilder.onWarForTestClass(ThumbnailDAOIT.class)
+        .addSchedulingEngine()
+        .addMavenDependencies("commons-io:commons-io")
+        .addMavenDependencies("org.im4java:im4java")
+        .addClasses(ComponentInstanceDeletion.class)
+        .addPackages(true, "org.silverpeas.core.io.file")
+        .addPackages(true, "org.silverpeas.core.io.media.image")
+        .addAsResource(TABLE_CREATION_SCRIPT.substring(1))
+        .addAsResource(DATASET_SCRIPT.substring(1))
         .addAsResource("org/silverpeas/publication/publicationSettings.properties")
         .build();
   }
@@ -99,7 +97,8 @@ public class ComponentInstanceThumbnailDeletionIT {
 
       SilverLogger.getLogger(this)
           .info("{0}ImagePath={1} with files {2}", componentInstanceId, componentInstanceRepo,
-              Arrays.asList(componentInstanceRepo.listFiles()).stream().map(file -> file.getName())
+              Arrays.stream(Objects.requireNonNull(componentInstanceRepo.listFiles()))
+                  .map(File::getName)
                   .collect(Collectors.joining(", ")));
     }
   }
@@ -120,7 +119,8 @@ public class ComponentInstanceThumbnailDeletionIT {
         "kmelia166 | 167 | 1 | 1383059151941.jpg",
         "kmelia188 | 211 | 1 | 1391424414501.png",
         "kmelia188 | 214 | 1 | 1391508876097.jpg",
-        "kmelia188 | 317 | 1 | /silverpeas/GalleryInWysiwyg/dummy?ImageId=9e548e2d-8cc9-4865-993c-da07c6774c6d&ComponentId=gallery283&UseOriginal=false",
+        "kmelia188 | 317 | 1 | /silverpeas/GalleryInWysiwyg/dummy?ImageId=9e548e2d-8cc9-4865-993c" +
+            "-da07c6774c6d&ComponentId=gallery283&UseOriginal=false",
         "kmelia343 | 480 | 1 | 1422267307101.png"));
 
     for (Map.Entry<String, File> componentInstanceEntry : componentInstanceRepos.entrySet()) {
@@ -151,7 +151,8 @@ public class ComponentInstanceThumbnailDeletionIT {
         "kmelia166 | 167 | 1 | 1383059151941.jpg",
         "kmelia188 | 211 | 1 | 1391424414501.png",
         "kmelia188 | 214 | 1 | 1391508876097.jpg",
-        "kmelia188 | 317 | 1 | /silverpeas/GalleryInWysiwyg/dummy?ImageId=9e548e2d-8cc9-4865-993c-da07c6774c6d&ComponentId=gallery283&UseOriginal=false",
+        "kmelia188 | 317 | 1 | /silverpeas/GalleryInWysiwyg/dummy?ImageId=9e548e2d-8cc9-4865-993c" +
+            "-da07c6774c6d&ComponentId=gallery283&UseOriginal=false",
         "kmelia343 | 480 | 1 | 1422267307101.png"));
 
     File deletedComponentInstanceRepo = componentInstanceRepos.remove("kmelia144");
@@ -165,13 +166,14 @@ public class ComponentInstanceThumbnailDeletionIT {
 
   /**
    * Returns the list of thumbnails (sb_thumbnail_thumbnail table).
+   *
    * @return list of strings which the schema is:
    * [instanceid]-[objectid]-[objecttype]-[originalattachmentname]
-   * @throws Exception
+   * @throws Exception if the thumbnails cannot be fetched from the database
    */
   private List<String> getThumbnails() throws Exception {
     return JdbcSqlQuery.select(
-        "instanceid, objectid, objecttype, originalattachmentname from sb_thumbnail_thumbnail")
+            "instanceid, objectid, objecttype, originalattachmentname from sb_thumbnail_thumbnail")
         .addSqlPart("order by instanceid, objectid")
         .execute(row -> row.getString(1) + " | " + row.getInt(2) + " | " + row.getInt(3) + " | " +
             row.getString(4));

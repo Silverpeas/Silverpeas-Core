@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.domain;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -32,14 +34,11 @@ import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaService;
 import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.admin.quota.service.TestDummyQuotaServiceWithAdditionalTools;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(Arquillian.class)
 public class DomainServiceProviderIT {
@@ -52,6 +51,7 @@ public class DomainServiceProviderIT {
   @Named("sqlDomainService")
   private DomainService sqlDomainService;
 
+  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject
   private QuotaService<UserDomainQuotaKey> userDomainQuotaService;
 
@@ -60,14 +60,8 @@ public class DomainServiceProviderIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(DomainServiceProviderIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.admin.domain");
-        }).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(DomainServiceProviderIT.class)
+        .build();
   }
 
   @Test
@@ -93,7 +87,6 @@ public class DomainServiceProviderIT {
     assertThat(testSqlDomainService, instanceOf(SQLDomainService.class));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void getUserDomainQuotaService() {
     // Verifying that it exists several implementation of QuotaService interface for the test in

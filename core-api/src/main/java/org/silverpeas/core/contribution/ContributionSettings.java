@@ -48,9 +48,9 @@ public class ContributionSettings {
   }
 
   /**
-   * Indicates if the behavior of asking to user if its modification is a minor one is enabled or
+   * Indicates if the behavior of asking the user his modification is a minor one is enabled or
    * not.
-   * @return true if enabled, false otherwise.
+   * @return either true if enabled, otherwise false.
    */
   public static Stream<String> streamComponentNamesWithMinorModificationBehaviorEnabled() {
     return Stream.of(

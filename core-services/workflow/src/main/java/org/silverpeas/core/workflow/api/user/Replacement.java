@@ -38,7 +38,7 @@ import java.util.Optional;
  * A replacement of a user by another one in a given period of time to exercise the
  * responsibilities of the former for all the tasks in which he's implied. A given task could be
  * performed by the substitute if and only if he does already play the role required by the task; in
- * other terms the substitute and the incumbent must plays the same role(s) otherwise the
+ * other terms the substitute and the incumbent must play the same role(s) otherwise the
  * substitute will be unable to exercise the responsibilities of the incumbent.
  * @author mmoquillon
  */

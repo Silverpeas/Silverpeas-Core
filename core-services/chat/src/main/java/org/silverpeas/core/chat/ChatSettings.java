@@ -31,7 +31,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

@@ -24,14 +24,13 @@
 package org.silverpeas.core.util.logging;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Priority;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.Priority;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -40,7 +39,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * A processor of the {@link Error} annotations. Each time a method annotated with this
@@ -83,7 +82,7 @@ public class ErrorAnnotationProcessor {
 
   private void logCustomMessage(SilverLogger logger, ErrorProperties errorProps,
       InvocationContext context) {
-    UserDetail currentUser = UserDetail.getCurrentRequester();
+    User currentUser = User.getCurrentRequester();
     String message = computeCustomMessage(errorProps.getMessage(), errorProps.getException(),
         context);
     if (currentUser == null) {
@@ -98,7 +97,7 @@ public class ErrorAnnotationProcessor {
 
   private void logDefaultMessage(SilverLogger logger, ErrorProperties errorProps,
       InvocationContext context) {
-    User currentUser = UserDetail.getCurrentRequester();
+    User currentUser = User.getCurrentRequester();
     String className = context.getMethod().getDeclaringClass().getSimpleName();
     String message = computeDefaultMessage(context);
     if (currentUser == null) {

@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
@@ -42,7 +45,7 @@ import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -57,6 +60,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
@@ -65,6 +69,7 @@ import org.silverpeas.core.util.Pagination;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Cacheable;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -72,9 +77,6 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -86,13 +88,12 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
-import static org.silverpeas.core.persistence.Transaction.getTransaction;
 
 /**
  * Default implementation of {@code PublicationService} to manage the publications in Silverpeas.
  */
 @Service
-@Transactional(Transactional.TxType.SUPPORTS)
+@Cacheable
 public class DefaultPublicationService implements PublicationService, ComponentInstanceDeletion {
 
   @Inject
@@ -105,15 +106,23 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private PublicationEventNotifier notifier;
   @Inject
   private PublicationDAO publicationDAO;
+  @Inject
+  private PublicationFatherDAO fatherDAO;
+  @Inject
+  private PublicationI18NDAO i18nDAO;
+  @Inject
+  private ValidationStepsDAO validationStepsDAO;
+  @Inject
+  private SeeAlsoDAO seeAlsoDAO;
 
   @Override
   @Transactional
   public void delete(final String componentInstanceId) {
     try {
-      ValidationStepsDAO.deleteComponentInstanceData(componentInstanceId);
-      PublicationI18NDAO.deleteComponentInstanceData(componentInstanceId);
-      PublicationFatherDAO.deleteComponentInstanceData(componentInstanceId);
-      SeeAlsoDAO.deleteComponentInstanceData(componentInstanceId);
+      validationStepsDAO.deleteComponentInstanceData(componentInstanceId);
+      i18nDAO.deleteComponentInstanceData(componentInstanceId);
+      fatherDAO.deleteComponentInstanceData(componentInstanceId);
+      seeAlsoDAO.deleteComponentInstanceData(componentInstanceId);
       publicationDAO.deleteComponentInstanceData(componentInstanceId);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
@@ -125,7 +134,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       PublicationDetail publicationDetail = publicationDAO.selectByPrimaryKey(con, pubPK);
       if (publicationDetail != null) {
-        return loadTranslations(publicationDetail);
+        return loadTranslations(con, publicationDetail);
       }
       return null;
     } catch (SQLException e) {
@@ -139,8 +148,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final List<String> publicationIds =
           publications.stream().map(PublicationDetail::getId).collect(Collectors.toList());
       try {
-        final Map<String, List<PublicationI18N>> translations = PublicationI18NDAO
-            .getIndexedTranslations(con, publicationIds);
+        final Map<String, List<PublicationI18N>> translations =
+            i18nDAO.getIndexedTranslations(con, publicationIds);
         publications.forEach(p -> {
           PublicationI18N translation = new PublicationI18N(p.getLanguage(), p.getName(),
               p.getDescription(), p.getKeywords());
@@ -163,14 +172,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public PublicationPK createPublication(PublicationDetail detail) {
     try (Connection con = getConnection()) {
       int indexOperation = detail.getIndexOperation();
-      int id;
-      id = DBUtil.getNextId(detail.getPK().getTableName(), "pubId");
+      int id = DBUtil.getNextId(detail.getPK().getTableName(), "pubId");
       detail.getPK().setId(String.valueOf(id));
       publicationDAO.insertRow(con, detail);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         createTranslations(con, detail);
       }
-      loadTranslations(detail);
+      loadTranslations(con, detail);
       detail.setIndexOperation(indexOperation);
       createIndex(detail, false);
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, detail);
@@ -188,7 +196,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         if (publication.getLanguage() != null &&
             !publication.getLanguage().equals(translation.getLanguage())) {
           translation.setObjectId(publication.getPK().getId());
-          PublicationI18NDAO.addTranslation(con, translation);
+          i18nDAO.addTranslation(con, translation);
         }
       }
     }
@@ -205,8 +213,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         moveRating(pk, toFatherPK.getInstanceId());
         pk.setComponentName(toFatherPK.getInstanceId());
       }
-      PublicationFatherDAO.removeAllFathers(con, pk);
-      PublicationFatherDAO.addFather(con, pk, toFatherPK);
+      fatherDAO.removeAllFathers(con, pk);
+      fatherDAO.addFather(con, pk, toFatherPK);
       if (indexIt) {
         createIndex(pk);
       }
@@ -226,7 +234,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       for (int i = 0; i < ids.size(); i++) {
         String id = ids.get(i);
         pubPK.setId(id);
-        PublicationFatherDAO.updateOrder(con, pubPK, nodePK, i);
+        fatherDAO.updateOrder(con, pubPK, nodePK, i);
       }
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
@@ -237,7 +245,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Transactional
   public void resetPublicationsOrder(NodePK nodePK) {
     try (Connection con = getConnection()) {
-      PublicationFatherDAO.resetOrder(con, nodePK);
+      fatherDAO.resetOrder(con, nodePK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -266,7 +274,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       for (int p = 0; p < publications.size(); p++) {
         PublicationDetail publiToOrder = publications.get(p);
-        PublicationFatherDAO.updateOrder(con, publiToOrder.getPK(), fatherPK, p);
+        fatherDAO.updateOrder(con, publiToOrder.getPK(), fatherPK, p);
       }
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
@@ -292,10 +300,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       PublicationDetail publi = publicationDAO.loadRow(con, pk);
       // delete links from another publication to removed publication
-      SeeAlsoDAO.deleteLinksByObjectId(con, pk);
-      SeeAlsoDAO.deleteLinksByTargetId(con, new ResourceReference(pk.getId(), pk.getInstanceId()));
+      seeAlsoDAO.deleteLinksByObjectId(con, pk);
+      seeAlsoDAO.deleteLinksByTargetId(con, new ResourceReference(pk.getId(), pk.getInstanceId()));
       // delete translations
-      PublicationI18NDAO.removeTranslations(con, pk);
+      i18nDAO.removeTranslations(con, pk);
 
       deleteRating(pk);
 
@@ -313,7 +321,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   @Transactional
   public void removePublication(PublicationPK pubPk) {
-    try(Connection con = getConnection()) {
+    try (Connection con = getConnection()) {
       publicationDAO.removePubByPk(con, pubPk, User.getCurrentUser().getId());
       PublicationDetail publication = publicationDAO.loadRow(con, pubPk);
       notifier.notifyEventOn(ResourceEvent.Type.REMOVING, publication);
@@ -325,7 +333,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   @Transactional
   public void restorePublication(PublicationPK pubPk) {
-    try(Connection con = getConnection()) {
+    try (Connection con = getConnection()) {
       publicationDAO.restorePubByPk(con, pubPk);
       PublicationDetail publication = publicationDAO.loadRow(con, pubPk);
       notifier.notifyEventOn(ResourceEvent.Type.RECOVERY, publication);
@@ -343,7 +351,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   @Transactional
   public void setDetail(PublicationDetail detail, boolean forceUpdateDate) {
-    setDetail(detail, false, ResourceEvent.Type.UPDATE);
+    setDetail(detail, forceUpdateDate, ResourceEvent.Type.UPDATE);
   }
 
   @Override
@@ -356,7 +364,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       if (detail.isRemoveTranslation()) {
         WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail.getPK().getId(),
             detail.getLanguage());
-        // remove xml content
+        // remove XML content
         String infoId = detail.getInfoId();
 
         if (StringUtil.isDefined(infoId) && !StringUtil.isInteger(infoId)) {
@@ -381,7 +389,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       ResourceEvent.Type eventType) {
     try (Connection con = getConnection()) {
       final PublicationPK newPK = pubDetail.getPK();
-      PublicationDetail publi = getTransaction().performNew(() -> {
+      // to ensure to get the original publication data whatever the modifications have been
+      // done on this publication within the current running transaction
+      PublicationDetail publi = Transaction.performInNew(() -> {
         try (Connection subCon = DBUtil.openConnection()) {
           return publicationDAO.loadRow(subCon, newPK);
         }
@@ -402,7 +412,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           // Default language = translation
           loadTranslation(con, publi);
         } else {
-          PublicationI18NDAO.removeTranslation(con, pubDetail.getTranslationId());
+          i18nDAO.removeTranslation(con, pubDetail.getTranslationId());
           publi.setName(oldName);
           publi.setDescription(oldDesc);
           publi.setKeywords(oldKeywords);
@@ -413,7 +423,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         if (pubDetail.getLanguage() != null) {
           if (oldLang == null) {
             // translation for the first time
-            publi.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
+            publi.setLanguage(defaultLanguage);
           }
           if (oldLang != null && !oldLang.equalsIgnoreCase(pubDetail.getLanguage())) {
             addOrUpdateTranslation(con, pubDetail);
@@ -424,7 +434,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           }
         }
       }
-      loadTranslations(publi);
+      loadTranslations(con, publi);
       publicationDAO.storeRow(con, publi);
       notifier.notifyEventOn(eventType, before, publi);
     } catch (SQLException e) {
@@ -434,14 +444,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private void loadTranslation(final Connection con, final PublicationDetail publi)
       throws SQLException {
-    List<PublicationI18N> translations = PublicationI18NDAO.getTranslations(con, publi.getPK());
+    PublicationI18NDAO i18nDao = i18nDAO;
+    List<PublicationI18N> translations = i18nDao.getTranslations(con, publi.getPK());
     if (!translations.isEmpty()) {
       PublicationI18N translation = translations.get(0);
       publi.setLanguage(translation.getLanguage());
       publi.setName(translation.getName());
       publi.setDescription(translation.getDescription());
       publi.setKeywords(translation.getKeywords());
-      PublicationI18NDAO.removeTranslation(con, translation.getId());
+      i18nDao.removeTranslation(con, translation.getId());
     }
   }
 
@@ -450,9 +461,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     String translationId = pubDetail.getTranslationId();
     try {
       if (translationId != null && !translationId.equals("-1")) {
-        PublicationI18NDAO.updateTranslation(con, translation);
+        i18nDAO.updateTranslation(con, translation);
       } else {
-        PublicationI18NDAO.addTranslation(con, translation);
+        i18nDAO.addTranslation(con, translation);
       }
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
@@ -538,7 +549,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public List<ValidationStep> getValidationSteps(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      return ValidationStepsDAO.getSteps(con, pubPK);
+      return validationStepsDAO.getSteps(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -547,7 +558,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public ValidationStep getValidationStepByUser(PublicationPK pubPK, String userId) {
     try (Connection con = getConnection()) {
-      return ValidationStepsDAO.getStepByUser(con, pubPK, userId);
+      return validationStepsDAO.getStepByUser(con, pubPK, userId);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -556,7 +567,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public void addValidationStep(ValidationStep step) {
     try (Connection con = getConnection()) {
-      ValidationStepsDAO.addStep(con, step);
+      validationStepsDAO.addStep(con, step);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -565,7 +576,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public void removeValidationSteps(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      ValidationStepsDAO.removeSteps(con, pubPK);
+      validationStepsDAO.removeSteps(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -575,7 +586,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Transactional
   public void addFather(PublicationPK pubPK, NodePK fatherPK) {
     try (Connection con = getConnection()) {
-      PublicationFatherDAO.addFather(con, pubPK, fatherPK);
+      fatherDAO.addFather(con, pubPK, fatherPK);
     } catch (SQLException re) {
       throw new PublicationRuntimeException(re);
     }
@@ -585,7 +596,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Transactional
   public void removeFather(PublicationPK pubPK, NodePK fatherPK) {
     try (Connection con = getConnection()) {
-      PublicationFatherDAO.removeFather(con, pubPK, fatherPK);
+      fatherDAO.removeFather(con, pubPK, fatherPK);
     } catch (SQLException re) {
       throw new PublicationRuntimeException(re);
     }
@@ -595,7 +606,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Transactional
   public void removeFathers(PublicationPK pubPK, Collection<String> fatherIds) {
     try (Connection con = getConnection()) {
-      PublicationFatherDAO.removeFathersToPublications(con, pubPK, fatherIds);
+      fatherDAO.removeFathersToPublications(con, pubPK, fatherIds);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -606,7 +617,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public void removeAllFathers(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
       deleteIndex(pubPK);
-      PublicationFatherDAO.removeAllFathers(con, pubPK);
+      fatherDAO.removeAllFathers(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -617,7 +628,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> pubDetails =
           publicationDAO.getOrphanPublications(con, componentId);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, pubDetails);
       }
       return pubDetails;
@@ -634,7 +645,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public List<NodePK> getAllFatherPKInSamePublicationComponentInstance(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getAllFatherPKInSamePublicationComponentInstance(con, pubPK);
+      return fatherDAO.getAllFatherPKInSamePublicationComponentInstance(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -643,7 +654,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public Map<String, List<Location>> getAllLocationsByPublicationIds(final Collection<String> ids) {
     try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getAllLocationsByPublicationIds(con, ids);
+      return fatherDAO.getAllLocationsByPublicationIds(con, ids);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -652,7 +663,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public List<Location> getAllLocations(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getLocations(con, pubPK);
+      return fatherDAO.getLocations(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -662,7 +673,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public List<Location> getLocationsInComponentInstance(final PublicationPK pubPK,
       final String instanceId) {
     try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getLocations(con, pubPK, instanceId);
+      return fatherDAO.getLocations(con, pubPK, instanceId);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -671,7 +682,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public Optional<Location> getMainLocation(final PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      return Optional.ofNullable(PublicationFatherDAO.getMainLocation(con, pubPK));
+      return Optional.ofNullable(fatherDAO.getMainLocation(con, pubPK));
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -680,7 +691,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public List<Location> getAllAliases(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getAliases(con, pubPK);
+      return fatherDAO.getAliases(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -714,7 +725,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private void addAlias(final Connection connection, final PublicationPK pubPK,
       final Collection<Location> aliases) throws SQLException {
     for (Location location : aliases) {
-      PublicationFatherDAO.addAlias(connection, pubPK, location);
+      fatherDAO.addAlias(connection, pubPK, location);
     }
   }
 
@@ -734,7 +745,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private void removeAndUnindexAlias(final Connection connection, final PublicationPK pubPK,
       final Collection<Location> aliases) throws SQLException {
     for (Location location : aliases) {
-      PublicationFatherDAO.removeAlias(connection, pubPK, location);
+      fatherDAO.removeAlias(connection, pubPK, location);
       // update the index in which the alias is referenced by removing within it any reference to
       // the alias (if there is no more aliases referenced in the index, remove it)
       updateAliasesIndex(pubPK, location.getInstanceId());
@@ -769,7 +780,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> publications =
           publicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, publications);
       }
       return publications;
@@ -796,7 +807,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> publications =
           publicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod, userId);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, publications);
       }
       return publications;
@@ -815,7 +826,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> detailList =
           publicationDAO.selectNotInFatherPK(con, fatherPK, sorting);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, detailList);
       }
       return detailList;
@@ -828,7 +839,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Transactional
   public void deleteLink(String id) {
     try {
-      SeeAlsoDAO.deleteLink(id);
+      seeAlsoDAO.deleteLink(id);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException("Can't delete seeAlso " + id, e);
     }
@@ -838,11 +849,11 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public CompletePublication getCompletePublication(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
       PublicationDetail detail = publicationDAO.loadRow(con, pubPK);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, singletonList(detail));
       }
-      List<PublicationLink> links = SeeAlsoDAO.getLinks(con, pubPK);
-      List<PublicationLink> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
+      List<PublicationLink> links = seeAlsoDAO.getLinks(con, pubPK);
+      List<PublicationLink> reverseLinks = seeAlsoDAO.getReverseLinks(con, pubPK);
       CompletePublication cp = new CompletePublication(detail, links, reverseLinks);
       cp.setValidationSteps(getValidationSteps(pubPK));
       return cp;
@@ -871,7 +882,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       final List<PublicationDetail> publications = publicationDAO.getByIds(con, publicationIds,
           indexedPks);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, publications);
       }
       return publications;
@@ -886,7 +897,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       final SilverpeasList<PublicationDetail> publications =
           publicationDAO.selectPublicationsByCriteria(con, criteria);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, publications);
       }
       return publications;
@@ -948,7 +959,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> detailList = publicationDAO
           .selectByFatherIds(con, fatherIds, instanceId, sorting, status, filterOnVisibilityPeriod);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, detailList);
       }
       return detailList;
@@ -960,7 +971,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public Collection<PublicationPK> getPubPKsInFatherPK(NodePK fatherPK) {
     try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getPubPKsInFatherPK(con, fatherPK);
+      return fatherDAO.getPubPKsInFatherPK(con, fatherPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -1325,7 +1336,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       Collection<PublicationDetail> detailList =
           publicationDAO.selectBetweenDate(con, beginDate, endDate, instanceId);
       List<PublicationDetail> result = new ArrayList<>(detailList);
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, result);
       }
       return result;
@@ -1334,15 +1345,16 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
-  private PublicationDetail loadTranslations(PublicationDetail detail) {
+  private PublicationDetail loadTranslations(Connection con, PublicationDetail detail) {
     PublicationI18N translation =
         new PublicationI18N(detail.getLanguage(), detail.getName(), detail.getDescription(),
             detail.getKeywords());
     List<PublicationI18N> translations = new ArrayList<>();
     translations.add(translation);
-    if (I18NHelper.isI18nContentActivated) {
-      try (Connection con = getConnection()) {
-        translations.addAll(PublicationI18NDAO.getTranslations(con, detail.getPK()));
+    if (i18nEnabled) {
+      try {
+        var i18nPubs = i18nDAO.getTranslations(con, detail.getPK());
+        translations.addAll(i18nPubs);
       } catch (SQLException e) {
         throw new PublicationRuntimeException(e);
       }
@@ -1433,9 +1445,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       if (links != null) {
         // deletes existing links
-        SeeAlsoDAO.deleteLinksByObjectId(con, pubPK);
+        seeAlsoDAO.deleteLinksByObjectId(con, pubPK);
         for (ResourceReference link : links) {
-          SeeAlsoDAO.addLink(con, pubPK, link);
+          seeAlsoDAO.addLink(con, pubPK, link);
         }
       }
     } catch (SQLException e) {
@@ -1538,7 +1550,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
               .collect(SilverpeasList.collector(publications));
         }
       }
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18nEnabled) {
         setTranslations(con, authorizedPublications);
       }
       return authorizedPublications;
@@ -1587,7 +1599,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     long startTime = System.currentTimeMillis();
     try {
       final Map<String, List<Location>> indexedLocations =
-          PublicationFatherDAO.getAllLocationsByPublicationIds(con, publications.stream()
+          fatherDAO.getAllLocationsByPublicationIds(con, publications.stream()
               .map(PublicationDetail::getId)
               .collect(Collectors.toSet()));
       final Set<String> instanceIds = new HashSet<>(criteria.getComponentInstanceIds());
@@ -1659,6 +1671,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private boolean indexAuthorName;
   private String thumbnailDirectory;
+  private boolean i18nEnabled;
+  private String defaultLanguage;
 
   @PostConstruct
   protected void init() {
@@ -1666,6 +1680,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
     indexAuthorName = publicationSettings.getBoolean("indexAuthorName", false);
     thumbnailDirectory = publicationSettings.getString("imagesSubDirectory");
+    I18n i18n = I18n.get();
+    i18nEnabled = i18n.isEnabled();
+    defaultLanguage = i18n.getDefaultLanguage();
   }
 
 }

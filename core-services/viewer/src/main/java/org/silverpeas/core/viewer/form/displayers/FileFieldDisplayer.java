@@ -27,11 +27,11 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.displayers.AbstractFileFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -39,7 +39,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.viewer.service.ViewerProvider;
 
 import java.io.File;
@@ -55,6 +54,9 @@ import java.io.PrintWriter;
  */
 public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
 
+  private static final String TITLE = "\" title=\"";
+  private static final String NAME = "\" name=\"";
+
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
@@ -62,11 +64,10 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   * @throws FormException
    */
   public void display(PrintWriter out, FileField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
+      PagesContext pageContext) {
+    String contentLanguage = I18n.get().checkLanguage(pageContext.getContentLanguage());
     StringBuilder html = new StringBuilder(1024);
     Operation defaultOperation = Operation.ADD;
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
@@ -110,7 +111,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
                   .append(webContext)
                   .append("/util/icons/preview.png\" alt=\"")
                   .append(Util.getString("GML.preview.file", contentLanguage))
-                  .append("\" title=\"")
+                  .append(TITLE)
                   .append(Util.getString("GML.preview.file", contentLanguage))
                   .append("\"/>");
             }
@@ -121,7 +122,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
                   .append(webContext)
                   .append("/util/icons/view.png\" alt=\"")
                   .append(Util.getString("GML.view.file", contentLanguage))
-                  .append("\" title=\"")
+                  .append(TITLE)
                   .append(Util.getString("GML.view.file", contentLanguage))
                   .append("\"/>");
             }
@@ -137,7 +138,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
                   .append(webContext)
                   .append("/util/icons/share.png\" alt=\"")
                   .append(Util.getString("GML.share.file", contentLanguage))
-                  .append("\" title=\"")
+                  .append(TITLE)
                   .append(Util.getString("GML.share.file", contentLanguage))
                   .append("\"/>");
             }
@@ -146,19 +147,19 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
       } else if (!template.isDisabled()) {
         html.append("<input type=\"file\" size=\"50\" id=\"")
             .append(fieldName)
-            .append("\" name=\"")
+            .append(NAME)
             .append(fieldName)
             .append("\"/>")
             .append("<input type=\"hidden\" id=\"")
-            .append(fieldName + FileField.PARAM_ID_SUFFIX)
-            .append("\" name=\"")
-            .append(fieldName + Field.FILE_PARAM_NAME_SUFFIX)
+            .append(fieldName).append(FileField.PARAM_ID_SUFFIX)
+            .append(NAME)
+            .append(fieldName).append(Field.FILE_PARAM_NAME_SUFFIX)
             .append("\" value=\"")
             .append(attachmentId)
             .append("\"/>")
             .append("<input type=\"hidden\" id=\"")
             .append(fieldName)
-            .append(OPERATION_KEY + "\" name=\"")
+            .append(OPERATION_KEY + NAME)
             .append(fieldName)
             .append(OPERATION_KEY + "\" value=\"")
             .append(defaultOperation.name())
@@ -206,37 +207,33 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     html.append(displayPreviewJavascript(pageContext));
     html.append(displayViewJavascript(pageContext));
 
-    out.println(html.toString());
+    out.println(html);
   }
 
   private String displayPreviewJavascript(PagesContext context) {
-    StringBuilder sb = new StringBuilder(50);
-    sb.append("<script type=\"text/javascript\">\n");
-    sb.append("function previewFormFile(target, attachmentId) {\n");
-    sb.append("$(target).preview(\"document\", {\n");
-    sb.append("documentType: 'attachment',\n");
-    sb.append("documentId: attachmentId,\n");
-    sb.append("lang: '").append(context.getContentLanguage()).append("'\n");
-    sb.append("});\n");
-    sb.append("return false;");
-    sb.append("}\n");
-    sb.append("</script>\n");
-    return sb.toString();
+    return "<script type=\"text/javascript\">\n" +
+        "function previewFormFile(target, attachmentId) {\n" +
+        "$(target).preview(\"document\", {\n" +
+        "documentType: 'attachment',\n" +
+        "documentId: attachmentId,\n" +
+        "lang: '" + context.getContentLanguage() + "'\n" +
+        "});\n" +
+        "return false;" +
+        "}\n" +
+        "</script>\n";
   }
 
   private String displayViewJavascript(PagesContext context) {
-    StringBuilder sb = new StringBuilder(50);
-    sb.append("<script type=\"text/javascript\">\n");
-    sb.append("function viewFormFile(target, attachmentId) {\n");
-    sb.append("$(target).view(\"document\", {\n");
-    sb.append("documentType: 'attachment',\n");
-    sb.append("documentId: attachmentId,\n");
-    sb.append("lang: '").append(context.getContentLanguage()).append("'\n");
-    sb.append("});\n");
-    sb.append("return false;");
-    sb.append("}\n");
-    sb.append("</script>\n");
-    return sb.toString();
+    return "<script type=\"text/javascript\">\n" +
+        "function viewFormFile(target, attachmentId) {\n" +
+        "$(target).view(\"document\", {\n" +
+        "documentType: 'attachment',\n" +
+        "documentId: attachmentId,\n" +
+        "lang: '" + context.getContentLanguage() + "'\n" +
+        "});\n" +
+        "return false;" +
+        "}\n" +
+        "</script>\n";
   }
 
   /**

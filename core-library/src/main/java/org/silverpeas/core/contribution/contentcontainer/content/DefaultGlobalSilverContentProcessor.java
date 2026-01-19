@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import static org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor.Constants.PROCESSOR_NAME_SUFFIX;
 

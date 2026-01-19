@@ -24,7 +24,7 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -214,7 +214,7 @@ public class GlobalSilverResult implements Serializable {
   public String getAttachmentLanguage() {
     String type = getType();
     int idx = type.indexOf('_');
-    return idx != -1 ? type.substring(idx + 1) : I18NHelper.DEFAULT_LANGUAGE;
+    return idx != -1 ? type.substring(idx + 1) : I18n.get().getDefaultLanguage();
   }
 
   public void setVersioned(boolean versioned) {

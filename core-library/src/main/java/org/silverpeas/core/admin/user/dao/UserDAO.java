@@ -34,7 +34,7 @@ import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -369,6 +369,7 @@ public class UserDAO {
   public ListSlice<UserDetail> getUsersByCriteria(Connection connection,
       UserDetailsSearchCriteria criteria) throws SQLException {
     SqlUserSelectorByCriteriaBuilder builder = new SqlUserSelectorByCriteriaBuilder(USER_COLUMNS);
+
     return builder.build(criteria).executeWith(connection, UserDAO::fetchUser);
   }
 

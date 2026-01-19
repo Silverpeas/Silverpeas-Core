@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.contribution.attachment.webdav.impl;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
@@ -61,6 +62,9 @@ import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 @Repository
 public class WebdavDocumentRepository implements WebdavRepository {
 
+  @Inject
+  private I18n i18n;
+
   @Override
   public void createAttachmentNode(Session session, SimpleDocument attachment) throws
       RepositoryException, IOException {
@@ -71,10 +75,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
     if (attachment.getId() != null) {
       contextFolder = addFolder(contextFolder, attachment.getId());
     }
-    String lang = attachment.getLanguage();
-    if (!StringUtil.isDefined(lang)) {
-      lang = I18NHelper.DEFAULT_LANGUAGE;
-    }
+    String lang = i18n.checkLanguage(attachment.getLanguage());
     contextFolder = addExclusiveFolder(contextFolder, lang);
     addFile(contextFolder, attachment);
   }

@@ -23,23 +23,17 @@
  */
 package org.silverpeas.core.webapi.bundle;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.MissingResourceException;
@@ -49,26 +43,28 @@ import java.util.Set;
 
 /**
  * The bundle resource represents either a settings bundle or an i18n messages bundle.
- *
+ * <p>
  * This WEB service is an entry point to access the different bundles in use in Silverpeas. It can
- * be accessed only by authenticated users so that is is easy to know the language of the bundle to
+ * be accessed only by authenticated users so that it is easy to know the language of the bundle to
  * sent back.
- *
+ * </p>
+ * <p>
  * The i18n bundled is referred in the URI by its absolute location in the classpath of the
  * Silverpeas portal with as well / or . as path separators, and it can be or not suffixed with
  * properties. For i18n bundles, the language can be indicated with the resource bundle name,
  * otherwise the language of the current user underlying at the HTTP request is taken. If the
  * specified language isn't supported by Silverpeas, then the default language in Silverpeas (yet
  * the French), is taken.
- *
+ * </p>
+ * <p>
  * In order to add some flexibility, particularly with client-side scripts, the language of the user
  * can be explicitly indicated with the i18n bundle name, whatever it is and without knowing it, by
  * using the wildcard $$ as language code; this wildcard means whatever the language (then takes the
  * preferred language of the current user in the session). This parameter isn't taken into account
  * with the settings bundles.
+ * </p>
  */
-
-@RequestScoped
+@WebService
 @Path(BundleResource.PATH)
 @Authenticated
 public class BundleResource extends RESTWebService {
@@ -110,16 +106,17 @@ public class BundleResource extends RESTWebService {
    * Asks for an i18n resource bundle either in the language of the current user in the session or
    * in the specified language. The returned bundle does not provide the general Silverpeas i18n
    * texts.
-   *
+   * <p>
    * The resource bundle is specified by its absolute path in the classpath of the WEB service.
-   *
+   * </p>
+   * <p>
    * If the language is specified with the name of the bundle, it will be considered in place of the
    * language of the current user in the underlying WEB session. For doing, the langage has to be
    * indicated as expected with localized resource bundles. If the language isn't supported by
-   * Silverpeas, the default language will be taken. In order to work with some javascript plugins
+   * Silverpeas, the default language will be taken. In order to work with some JavaScript plugins
    * in charge of i18n texts, the method accepts also the particular wildcard $$ to specify
    * explicitly the language of the current user.
-   *
+   * </p>
    * @see java.util.ResourceBundle
    * @param bundle the absolute path of the resource bundle in the classpath of Silverpeas.
    * @return an HTTP response with the asked properties or an HTTP error.
@@ -136,16 +133,17 @@ public class BundleResource extends RESTWebService {
    * Asks for an i18n resource bundle either in the language of the current user in the session or
    * in the specified language. The returned bundle is a merge of both the asked i18n properties and
    * the general Silverpeas i18n texts.
-   *
+   * <p>
    * The resource bundle is specified by its absolute path in the classpath of the WEB service.
-   *
+   * </p>
+   * <p>
    * If the language is specified with the name of the bundle, it will be considered in place of the
    * language of the current user in the underlying WEB session. For doing, the langage has to be
    * indicated as expected with localized resource bundles. If the language isn't supported by
-   * Silverpeas, the default language will be taken. In order to work with some javascript plugins
+   * Silverpeas, the default language will be taken. In order to work with some JavaScript plugins
    * in charge of i18n texts, the method accepts also the particular wildcard $$ to specify
    * explicitly the language of the current user.
-   *
+   * </p>
    * @see java.util.ResourceBundle
    * @param bundle the absolute path of the resource bundle in the classpath of Silverpeas.
    * @param withoutGeneral true if the general bundle must not be merged into response.
@@ -210,9 +208,9 @@ public class BundleResource extends RESTWebService {
   /**
    * Asks for a settings bundle. The returned bundle is a merge of both the asked settings and the
    * general Silverpeas settings.
-   *
+   * <p>
    * The resource bundle is specified by its absolute path in the classpath of the WEB service.
-   *
+   * </p>
    * @see java.util.ResourceBundle
    * @param bundle the absolute path of the resource bundle in the classpath of Silverpeas.
    * @param withGeneral true if the general settings must be added into response.
@@ -257,23 +255,5 @@ public class BundleResource extends RESTWebService {
     } catch (MissingResourceException ex) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-  }
-
-  /**
-   * Due to the particularity of this WEB Service according to authentication, the language is
-   * handled at this level.
-   *
-   * @return the language of the user or the default language.
-   */
-  private String getLanguage() {
-    final String language;
-    if (getUser() != null) {
-      language = getUserPreferences().getLanguage();
-    } else if (getHttpRequest().getLocale() != null) {
-      language = DisplayI18NHelper.verifyLanguage(getHttpRequest().getLocale().getLanguage());
-    } else {
-      language = DisplayI18NHelper.getDefaultLanguage();
-    }
-    return language;
   }
 }

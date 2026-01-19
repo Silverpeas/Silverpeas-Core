@@ -28,7 +28,14 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.DataRecordUtil;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
@@ -42,10 +49,13 @@ import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.instance.*;
+import org.silverpeas.core.workflow.api.instance.Actor;
+import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.Participant;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+import org.silverpeas.core.workflow.api.instance.Question;
+import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.*;
-import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.datarecord.LazyProcessInstanceDataRecord;
@@ -55,8 +65,14 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.*;
-import javax.persistence.Column;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -73,7 +89,7 @@ import static org.silverpeas.core.workflow.api.instance.ActionStatus.SAVED;
  */
 @Entity
 @Table(name = "sb_workflow_processinstance")
-@AttributeOverride(name = "id", column = @javax.persistence.Column(name = "instanceid"))
+@AttributeOverride(name = "id", column = @jakarta.persistence.Column(name = "instanceid"))
 public class ProcessInstanceImpl
     extends BasicJpaEntity<ProcessInstanceImpl, UniqueIntegerIdentifier>
     implements UpdatableProcessInstance {
@@ -807,21 +823,21 @@ public class ProcessInstanceImpl
     // special case: WYSIWYG, check if data has been put into file and not kept in value field
     try {
       // first update data folder
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - actionData {0}"
-          , actionData.toString());
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - actionData {0}",
+          actionData.toString());
       checkWysiwygData(step, actionData);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - " +
-                                        "checkWysiwygData OK");
+      SilverLogger.getLogger(this).info(
+          "ProcessInstanceImpl.saveActionRecord() - checkWysiwygData OK");
       updateFolder(actionData);
       SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - updateFolder OK");
 
       // then save action record
       updateWysiwygDataWithStepId(step, actionData);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - " +
-                                        "updateWysiwygDataWithStepId OK");
+      SilverLogger.getLogger(this).info(
+          "ProcessInstanceImpl.saveActionRecord() - updateWysiwygDataWithStepId OK");
       step.setActionRecord(actionData);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - step" +
-                                        ".setActionRecord OK");
+      SilverLogger.getLogger(this).info(
+          "ProcessInstanceImpl.saveActionRecord() - step.setActionRecord OK");
     } catch (FormException e) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FORM_CREATE_FAILED",
           INSTANCEID_PARAM + getId(), e);
@@ -848,16 +864,17 @@ public class ProcessInstanceImpl
     SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - template {0}",
         template);
     String[] fieldNames = actionData.getFieldNames();
-    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - fieldNames: {0} " +
-                                      "Longueur: {1]", fieldNames, fieldNames.length);
+    SilverLogger.getLogger(this).info(
+        "ProcessInstanceImpl.checkWysiwygData() - fieldNames: {0} Longueur: {1]",
+        fieldNames, fieldNames.length);
 
     for (String fieldName : fieldNames) {
       SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - Field {0}",
           fieldName);
       Field updatedField = actionData.getField(fieldName);
       FieldTemplate tmpl = template.getFieldTemplate(fieldName);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - FieldTemplate " +
-                                        "{0}", tmpl);
+      SilverLogger.getLogger(this).info(
+          "ProcessInstanceImpl.checkWysiwygData() - FieldTemplate {0}", tmpl);
       if ("wysiwyg".equals(tmpl.getDisplayerName()) && updatedField != null &&
           !updatedField.isNull() &&
           !updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {

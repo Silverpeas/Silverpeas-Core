@@ -23,17 +23,25 @@
  */
 package org.silverpeas.core.socialnetwork.connectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
-import org.springframework.social.connect.UserProfile;
 
-import org.silverpeas.core.socialnetwork.service.AccessToken;
+import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Connector to an existing remote social network service.
+ */
 public interface SocialNetworkConnector {
 
   /**
+   * Gets the identifier, in uppercase, of the social network. For example, FACEBOOK for Facebook.
+   * @see org.silverpeas.core.socialnetwork.model.SocialNetworkID
+   * @return the identifier of the social network in uppercase.
+   */
+  String getID();
+
+  /**
    * Build URL to call for authentication over social network
+   *
    * @param callBackURL the URL to call to after authentication
    * @return authentication URL as String
    */

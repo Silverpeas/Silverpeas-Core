@@ -32,71 +32,43 @@ package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.PageContext;
 
 /**
  * @author frageade
- * @version
  */
 public class FormButtonsLine extends FormLine {
 
-  private List<FormButton> buttons;
+  private final List<FormButton> buttons;
 
-  /**
-   * Constructor declaration
-   *
-   * @param nam
-   * @param val
-   * @see
-   */
   public FormButtonsLine(String nam, String val) {
     super(nam, val);
-    buttons = new ArrayList<FormButton>();
+    buttons = new ArrayList<>();
     setType("buttonLine");
   }
 
-  /**
-   * Constructor declaration
-   *
-   * @param nam
-   * @param val
-   * @param lab
-   * @see
-   */
   public FormButtonsLine(String nam, String val, String lab) {
     super(nam, val);
     setLabel(lab);
-    buttons = new ArrayList<FormButton>();
+    buttons = new ArrayList<>();
     setType("buttonLine");
   }
 
-  /**
-   * Method declaration
-   *
-   * @param fb
-   * @see
-   */
   public void addButton(FormButton fb) {
     buttons.add(fb);
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   @Override
   public String print() {
     StringBuilder buttonLine = new StringBuilder();
 
-    if (!label.equals("")) {
+    if (!label.isEmpty()) {
       buttonLine.append("\n<td>").append(noNull(label)).append("</td>");
     } else {
       buttonLine.append("\n<td>&nbsp;</td>");
     }
-    if (buttons.size() > 0) {
+    if (!buttons.isEmpty()) {
       buttonLine.append("\n<td><table><tr>");
       for (FormButton button : buttons) {
         buttonLine.append(button.print());
@@ -108,15 +80,6 @@ public class FormButtonsLine extends FormLine {
     return buttonLine.toString();
   }
 
-  /**
-   * Method declaration
-   *
-   * @param nam
-   * @param url
-   * @param pc
-   * @return
-   * @see
-   */
   @Override
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
@@ -128,33 +91,21 @@ public class FormButtonsLine extends FormLine {
     return fpw;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param req
-   * @see
-   */
   @Override
   public void getConfigurationByRequest(HttpServletRequest req) {
     setLabel(req.getParameter("configuratorLabelValue"));
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   @Override
   public String printDemo() {
     StringBuilder buttonLine = new StringBuilder();
 
-    if (!label.equals("")) {
+    if (!label.isEmpty()) {
       buttonLine.append("\n<td>").append(label).append("</td>");
     } else {
       buttonLine.append("\n<td>&nbsp;</td>");
     }
-    if (buttons.size() > 0) {
+    if (!buttons.isEmpty()) {
       buttonLine.append("\n<td><table><tr>");
       for (FormButton button : buttons) {
         buttonLine.append(button.printDemo());
@@ -166,12 +117,6 @@ public class FormButtonsLine extends FormLine {
     return buttonLine.toString();
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   @Override
   public String toXML() {
     StringBuilder buttonLine = new StringBuilder();
@@ -179,7 +124,7 @@ public class FormButtonsLine extends FormLine {
         append("\n<name>").append(name).append("</name>").
         append("\n<label>").append(label).append("</label>").
         append("\n<value>").append(value).append("</value>");
-    if (buttons.size() > 0) {
+    if (!buttons.isEmpty()) {
       buttonLine.append("\n<actions>");
       for (FormButton button : buttons) {
         buttonLine.append(button.toLineXML());

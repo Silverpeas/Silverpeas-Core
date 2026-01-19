@@ -29,10 +29,12 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.LibCoreWarBuilder;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -44,8 +46,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.ACCEPTED;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.AWAITING;
 
@@ -68,7 +70,9 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(CalendarEventOccurrenceIT.class)
+    return LibCoreWarBuilder.onWarForTestClass(CalendarEventOccurrenceIT.class)
+        .addStubbedUserAPI()
+        .addCalendarEngine()
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
@@ -76,7 +80,10 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
 
   @Before
   public void prepareARecurrentEventForTests() {
-    OperationContext.fromUser("0");
+    User user = StubbedUserProvider.addUser("0");
+    OperationContext.fromUser(user);
+    StubbedUserProvider.addUser("1");
+    StubbedUserProvider.addUser("2");
 
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     recurrentEvent = CalendarEvent.on(TODAY)

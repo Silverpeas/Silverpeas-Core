@@ -31,9 +31,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.sql.Connection;
@@ -67,10 +66,7 @@ public class SilverpeasBeanDAOIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SilverpeasBeanDAOIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addClasses(WAPrimaryKey.class)
+    return LibCoreWarBuilder.onWarForTestClass(SilverpeasBeanDAOIT.class)
         .addPackages(true, "org.silverpeas.core.persistence.jdbc.bean")
         .build();
   }

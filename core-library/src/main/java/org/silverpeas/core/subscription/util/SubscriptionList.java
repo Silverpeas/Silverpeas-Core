@@ -26,7 +26,7 @@ package org.silverpeas.core.subscription.util;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -54,13 +54,8 @@ public class SubscriptionList extends ArrayList<Subscription> {
    */
   public SubscriptionList filterOnDomainVisibilityFrom(final UserDetail user) {
     if (user.isDomainRestricted()) {
-      Iterator<Subscription> itOfSubscriptions = this.iterator();
-      while (itOfSubscriptions.hasNext()) {
-        Subscription subscription = itOfSubscriptions.next();
-        if (!isSameVisibilityAsTheCurrentRequester(subscription.getSubscriber(), user)) {
-          itOfSubscriptions.remove();
-        }
-      }
+      this.removeIf(subscription ->
+          !isSameVisibilityAsTheCurrentRequester(subscription.getSubscriber(), user));
     }
     return this;
   }

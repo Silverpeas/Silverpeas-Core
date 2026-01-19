@@ -26,6 +26,7 @@ package org.silverpeas.core.test;
 
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
+import org.silverpeas.core.chat.servers.DummyChatServer;
 
 /**
  * The build of a war archive for the chat service.
@@ -36,7 +37,7 @@ public class WarBuilder4Chat extends BasicWarBuilder {
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
-   * @param classOfTest the class of the test for which a war archive will be build.
+   * @param classOfTest the class of the test for which a war archive will be built.
    */
   protected <U> WarBuilder4Chat(final Class<U> classOfTest) {
     super(classOfTest);
@@ -53,13 +54,14 @@ public class WarBuilder4Chat extends BasicWarBuilder {
   public static <T> WarBuilder4Chat onWarForTestClass(Class<T> test) {
     return (WarBuilder4Chat) new WarBuilder4Chat(test)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        //.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .testFocusedOn(war -> {
-          war.addPackages(false, "org.silverpeas.core.chat")
-              .addClasses(ChatServer.class, DefaultChatServer.class)
-              .addAsResource("org/silverpeas/chat/settings/chat.properties")
-              .addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
-        });
+        .testFocusedOn(war ->
+            war.addPackages(false, "org.silverpeas.core.chat")
+            .addClasses(ChatServer.class, DefaultChatServer.class, DummyChatServer.class)
+            .addAsResource("org/silverpeas/general.properties")
+            .addAsResource("org/silverpeas/chat/settings/chat.properties")
+            .addAsResource("org/silverpeas/lookAndFeel/generalLook.properties")
+            .addAsResource("org/silverpeas/util/logging")
+            .addAsResource("org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties"));
   }
 }
   

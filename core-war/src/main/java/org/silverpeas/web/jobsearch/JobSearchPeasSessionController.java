@@ -51,7 +51,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.web.pdc.QueryParameters;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -180,7 +180,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     searchResult.setName(nom);
     searchResult.setDesc(desc);
     searchResult.setCreationDate(dateCrea);
-    searchResult.setCreaorName(nomCrea);
+    searchResult.setCreatorName(nomCrea);
     searchResult.setPath(listEmplacement);
     searchResult.setUrl(url);
     return searchResult;
@@ -206,7 +206,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           searchResult.setName(result.getTitle(getLanguage()));
           searchResult.setDesc(result.getPreview(getLanguage()));
           searchResult.setCreationDate(DateUtil.parseFromLucene(result.getCreationDate()));
-          searchResult.setCreaorName(nomCrea);
+          searchResult.setCreatorName(nomCrea);
           searchResult.setPath(listEmplacement);
           if (spaceInstLight.isRoot()) {
             searchResult.setUrl("openSpace('" + spaceInstLight.getId() + "')");
@@ -305,7 +305,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           searchResult.setName(result.getTitle(getLanguage()));
           searchResult.setDesc(result.getPreview(getLanguage()));
           searchResult.setCreationDate(DateUtil.parseFromLucene(creationDate));
-          searchResult.setCreaorName(nomCrea);
+          searchResult.setCreatorName(nomCrea);
           searchResult.setPath(listEmplacement);
           searchResult.setUrl("openComponent('" + componentId + "')");
           listSearchResult.add(searchResult);
@@ -364,7 +364,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       searchResult.setName(nom);
       searchResult.setDesc(desc);
       searchResult.setCreationDate(dateCrea);
-      searchResult.setCreaorName(nomCrea);
+      searchResult.setCreatorName(nomCrea);
       searchResult.setPath(paths);
       searchResult.setUrl("openPublication('" + URLUtil.getSimpleURL(URLUtil.URL_PUBLI,
           pubPK.getId()) + "')");
@@ -412,7 +412,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
       searchResult.setDesc(desc);
-      searchResult.setCreaorName("");
+      searchResult.setCreatorName("");
       searchResult.setPath(listEmplacement);
       searchResult.setUrl(url);
       result.add(searchResult);
@@ -505,7 +505,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
       searchResult.setDesc(desc);
-      searchResult.setCreaorName("");
+      searchResult.setCreatorName("");
       searchResult.setPath(listEmplacement);
       searchResult.setUrl(url);
       result.add(searchResult);

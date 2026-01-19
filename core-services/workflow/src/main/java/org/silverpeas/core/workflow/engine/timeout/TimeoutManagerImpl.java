@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.timeout;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
@@ -32,10 +32,6 @@ import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
@@ -43,16 +39,16 @@ import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.engine.WorkflowEngineTask;
 import org.silverpeas.core.workflow.engine.event.TimeoutEventImpl;
 import org.silverpeas.core.workflow.engine.instance.ActionAndState;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Date;
 
 /**
  * The workflow engine services relate to error management.
  */
 @Service
-@Singleton
 public class TimeoutManagerImpl implements Initialization, SchedulerEventListener {
 
   @Inject
@@ -86,22 +82,22 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
   }
 
   /**
-   * This method is called periodically by the scheduler, it test for each peas of type
-   * processManager if associated model contains states with timeout events If so, all the instances
-   * of these peas that have the "timeout" states actives are read to check if timeout interval has
-   * been reached. In that case, the administrator can be notified, the active state and the
-   * instance are marked as timeout
+   * This method is called periodically by the scheduler, it tests for each pea of type
+   * processManager if associated model contains states with timeout events. If so, all the
+   * instances of these peas that have the "timeout" states actives are read to check if timeout
+   * interval has been reached. In that case, the administrator can be notified, the active state
+   * and the instance are marked as timeout
    */
   private void doTimeoutManagement() {
     try {
       // parse all "process manager" peas
-      SilverpeasList<ProcessInstance> instances = manager.getTimeOutProcessInstances();
+      var instances = manager.getTimeOutProcessInstances();
       Date now = new Date();
 
       for (final ProcessInstance instance : instances) {
-        ComponentInstLight componentInstLight = Administration.get().getComponentInstLight(instance.getModelId());
+        var componentInstLight = Administration.get().getComponentInstLight(instance.getModelId());
         if (componentInstLight != null && !componentInstLight.isRemoved()) {
-            addTimeoutRequest(now, instance);
+          addTimeoutRequest(now, instance);
         }
       }
     } catch (Exception e) {

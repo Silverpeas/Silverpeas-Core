@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.ui;
 
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.core.i18n.I18nSettings;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -32,62 +31,76 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class permits to handle the different languages that a user can choose to display the
- * labels of the application.<br>
- * Be careful, this class handles possible user languages and not possible content languages.<br>
- * The different content languages are managed by {@code org.silverpeas.util.i18n.I18NHelper}.
+ * This class permits to handle the different languages that a user can choose to display the labels
+ * of the application.<br> Be careful, this class handles possible user languages and not possible
+ * content languages.<br> The different content languages are managed by
+ * {@code org.silverpeas.util.i18n.I18NHelper}.
  */
 public class DisplayI18NHelper {
 
   private static final String ZONE_ID_COMPOSED_WITH_LETTERS_ONLY = "(?i)^[a-z_]+/[a-z_]+";
-  private static List<String> languages = new ArrayList<>();
-  private static String defaultLanguage;
-  private static List<String> zoneIds = new ArrayList<>();
-  private static ZoneId defaultZoneId;
+  private static DisplayI18NHelper instance;
+  private final List<String> languages = new ArrayList<>();
+  private final String defaultLanguage;
+  private final List<String> zoneIds = new ArrayList<>();
+  private final ZoneId defaultZoneId;
 
   private DisplayI18NHelper() {
+    I18nSettings i18nSettings = new I18nSettings();
+    defaultLanguage = i18nSettings.getDefaultUserLanguage();
+    defaultZoneId = i18nSettings.getDefaultUserZoneId();
+    languages.addAll(i18nSettings.getUserLanguages());
+
+    ZoneId.getAvailableZoneIds().stream()
+        .filter(s -> s.matches(ZONE_ID_COMPOSED_WITH_LETTERS_ONLY))
+        .sorted().forEach(zoneIds::add);
   }
 
   /**
    * Returns the default language used to display user interface (UI)
+   *
    * @return a String (ie : 'fr', 'en' or another two-letters code)
    */
   public static String getDefaultLanguage() {
-    return defaultLanguage;
+    return getInstance().defaultLanguage;
   }
 
   /**
    * Returns the default zone id used dor user interface (UI)
+   *
    * @return an instance of {@link ZoneId}.
    */
   public static ZoneId getDefaultZoneId() {
-    return defaultZoneId;
+    return getInstance().defaultZoneId;
   }
 
   /**
    * Returns all languages available to display user interface
+   *
    * @return a List of String (ie : 'fr', 'en' or another two-letters code)
    */
   public static List<String> getLanguages() {
-    return Collections.unmodifiableList(languages);
+    return Collections.unmodifiableList(getInstance().languages);
   }
 
   /**
    * Returns all zone identifiers available for user interface
+   *
    * @return a List of String.
    */
   public static List<String> getZoneIds() {
-    return Collections.unmodifiableList(zoneIds);
+    return Collections.unmodifiableList(getInstance().zoneIds);
   }
 
   /**
    * Verifies if the given user language is handled by the server.
+   *
    * @param language the language to verify
    * @return the given user language if it is handled by the server, the default user language
    * otherwise.
    */
   public static String verifyLanguage(String language) {
-    if (languages.contains(language)) {
+    if (getInstance().languages.contains(language)) {
       return language;
     }
     return getDefaultLanguage();
@@ -95,32 +108,22 @@ public class DisplayI18NHelper {
 
   /**
    * Verifies if the given user zone id is handled by the server.
+   *
    * @return the given user zone id if it is handled by the server, the default user zone id
    * otherwise.
    */
   public static ZoneId verifyZoneId(String zoneId) {
-    if (zoneIds.contains(zoneId)) {
+    if (getInstance().zoneIds.contains(zoneId)) {
       return ZoneId.of(zoneId);
     }
     return getDefaultZoneId();
   }
 
-  static {
-    SettingBundle settings = ResourceLocator.getSettingBundle(
-        "org.silverpeas.personalization.settings.personalizationPeasSettings");
-
-    defaultLanguage = settings.getString("DefaultLanguage");
-    defaultZoneId = ZoneId.of(settings.getString("DefaultZoneId"));
-
-    String[] supportedLanguages = settings.getString("languages").split(",");
-    for (String lang: supportedLanguages) {
-      lang = lang.trim();
-      if (!lang.isEmpty()) {
-        languages.add(lang);
-      }
+  private static DisplayI18NHelper getInstance() {
+    if (instance == null) {
+      instance = new DisplayI18NHelper();
     }
-
-    ZoneId.getAvailableZoneIds().stream().filter(s -> s.matches(ZONE_ID_COMPOSED_WITH_LETTERS_ONLY))
-        .sorted().forEach(s -> zoneIds.add(s));
+    return instance;
   }
+
 }

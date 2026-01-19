@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.notification.sse;
 
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 
 /**
  * A synchronous {@link ServerEvent} notifier using the notification bus of CDI. This bus is

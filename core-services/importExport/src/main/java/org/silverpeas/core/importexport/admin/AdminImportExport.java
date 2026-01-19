@@ -23,18 +23,23 @@
  */
 package org.silverpeas.core.importexport.admin;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.AdminController;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Classe de gestion des components dans le moteur d'importExport de silverpeas.
  * @author sdevolder
  */
 public class AdminImportExport {
+
+  private final AdminController adminController;
+
+  public AdminImportExport(AdminController controller) {
+    this.adminController = controller;
+  }
 
   /**
    * Méthode récupérant la liste des componentInsts des composants impliqués dans une exportation
@@ -43,7 +48,7 @@ public class AdminImportExport {
    * @return l'objet ComponentsType complété, null si la liste passée en paramètre est vide
    */
   public List<ComponentInst> getComponents(List<String> listComponentId) {
-    List<ComponentInst> listComponentInst = new ArrayList<ComponentInst>();
+    List<ComponentInst> listComponentInst = new ArrayList<>();
     for (String componentId : listComponentId) {
       ComponentInst componentInst = getAdminController().getComponentInst(componentId);
       listComponentInst.add(componentInst);
@@ -54,8 +59,8 @@ public class AdminImportExport {
   /**
    * @return un objet AdminController
    */
-  private synchronized AdminController getAdminController() {
-    return ServiceProvider.getService(AdminController.class);
+  private AdminController getAdminController() {
+    return adminController;
   }
 
 }

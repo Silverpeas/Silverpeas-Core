@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.password;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,7 +39,7 @@ public class PasswordPolicyEntity {
 
   /* List of password rules indexed by rule names */
   @XmlElement(defaultValue = "")
-  private Map<String, PasswordRuleEntity> rules = new LinkedHashMap<String, PasswordRuleEntity>();
+  private Map<String, PasswordRuleEntity> rules = new LinkedHashMap<>();
 
   /* Number of rules that have to match within a combination of rules */
   @XmlElement
@@ -48,7 +48,7 @@ public class PasswordPolicyEntity {
   /* List of password combined rules indexed by rule names */
   @XmlElement(defaultValue = "")
   private Map<String, PasswordRuleEntity> combinedRules =
-      new LinkedHashMap<String, PasswordRuleEntity>();
+      new LinkedHashMap<>();
 
   /* Message contains additional rules that are not verifiable within Silverpeas services */
   @XmlElement(defaultValue = "")
@@ -56,8 +56,8 @@ public class PasswordPolicyEntity {
 
   /**
    * Creates a new password policy entity
-   * @param nbMatchingCombinedRules
-   * @param extraRuleMessage
+   * @param nbMatchingCombinedRules the number of matching rules
+   * @param extraRuleMessage an extra message
    * @return the entity representing the specified rule.
    */
   public static PasswordPolicyEntity createFrom(int nbMatchingCombinedRules,
@@ -65,10 +65,6 @@ public class PasswordPolicyEntity {
     return new PasswordPolicyEntity(nbMatchingCombinedRules, extraRuleMessage);
   }
 
-  /**
-   * Default hidden constructor.
-   * @param extraRuleMessage
-   */
   private PasswordPolicyEntity(int nbMatchingCombinedRules, final String extraRuleMessage) {
     this.nbMatchingCombinedRules = nbMatchingCombinedRules;
     this.extraRuleMessage = extraRuleMessage;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.servlets;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 

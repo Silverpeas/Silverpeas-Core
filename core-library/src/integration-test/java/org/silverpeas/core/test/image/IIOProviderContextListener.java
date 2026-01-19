@@ -26,8 +26,8 @@ package org.silverpeas.core.test.image;
 
 import org.silverpeas.core.io.file.IIOProviderInitializer;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 /**
  * Because the execution of the integration tests implies a lot of deployment/undeployment of web

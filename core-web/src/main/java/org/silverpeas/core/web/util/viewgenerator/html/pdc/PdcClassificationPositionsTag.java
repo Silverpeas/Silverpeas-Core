@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.pdc;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
 
 /**
@@ -31,7 +31,6 @@ import org.apache.ecs.ElementContainer;
  */
 public class PdcClassificationPositionsTag extends BaseClassificationPdCTag {
 
-  private static final long serialVersionUID = -562523990230139481L;
   private String setIn;
 
   public PdcClassificationPositionsTag() {

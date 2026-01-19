@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import edu.psu.swe.scim.spec.resources.Email;
-import edu.psu.swe.scim.spec.resources.Name;
-import edu.psu.swe.scim.spec.resources.ScimUser;
+import org.apache.directory.scim.spec.resources.Email;
+import org.apache.directory.scim.spec.resources.Name;
+import org.apache.directory.scim.spec.resources.ScimUser;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -38,7 +38,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
- * Centralization of conversion between {@link User} of Silverpeas server ans {@link ScimUser} of
+ * Centralization of conversion between {@link User} of Silverpeas server and {@link ScimUser} of
  * SCIM clients.
  * @author silveryocha
  */
@@ -68,7 +68,7 @@ class SilverpeasScimServerConverter {
       user.setFirstName(null);
     }
     user.setLogin(scimUser.getUserName());
-    // if no email, then the user name account is taken into account
+    // if no email, then the username account is taken into account
     final String email = scimUser.getPrimaryEmailAddress()
         .map(Email::getValue)
         .orElse(scimUser.getUserName());
@@ -101,7 +101,7 @@ class SilverpeasScimServerConverter {
       scimUser.setExternalId(user.getSpecificId());
       scimUser.setUserName(user.getLogin());
       if (isDefined(user.getEmailAddress()) && !user.getLogin().equals(user.getEmailAddress())) {
-        // putting an email if it exist an other one different from the user name
+        // putting an email if it exists another one different from the username
         scimUser.setEmails(new ArrayList<>(1));
         final Email email = new Email();
         email.setValue(user.getEmailAddress());

@@ -1,5 +1,6 @@
 package org.silverpeas.core.test.unit.extention;
 
+import jakarta.enterprise.concurrent.ManagedThreadFactory;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -12,11 +13,13 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.test.extension.SilverTestEnvContext;
 import org.silverpeas.kernel.test.util.Reflections;
 
-import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
@@ -93,8 +96,21 @@ public class JEETestContext extends SilverTestEnvContext {
   }
 
   private void mockI18n() {
+    // the languages should be ordered when loaded from config
+    var languages = new ArrayList<>(Arrays.asList("fr", "en", "de"));
+    when(i18n.isEnabled()).thenReturn(true);
     when(i18n.getDefaultLanguage()).thenReturn("fr");
-    when(i18n.getSupportedLanguages()).thenReturn(Set.of("fr", "en", "de"));
+    when(i18n.getSupportedLanguageCodes()).thenReturn(languages);
+    when(i18n.checkLanguage(null)).thenReturn("fr");
+    when(i18n.checkLanguage(anyString())).thenAnswer(i -> {
+      String language = i.getArgument(0);
+      return languages.contains(language) ? language : "fr";
+    });
+    when(i18n.isDefaultLanguage(null)).thenReturn(false);
+    when(i18n.isDefaultLanguage(anyString())).thenAnswer(i -> {
+      String language = i.getArgument(0);
+      return language.equals("fr");
+    });
   }
 
   private void mockUserProvider() {
@@ -110,7 +126,17 @@ public class JEETestContext extends SilverTestEnvContext {
     // ManagedThreadFactory is required by ManagedThreadPool: publishes it first into the bean
     // container for the dependency of ManagedThreadPool on it to be resolved.
     TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
-    ManagedThreadFactory factory = Thread::new;
+    ManagedThreadFactory factory = new ManagedThreadFactory() {
+      @Override
+      public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
+        return new ForkJoinWorkerThread(pool) {};
+      }
+
+      @Override
+      public Thread newThread(@NonNull Runnable r) {
+        return new Thread(r);
+      }
+    };
     ManagedThreadPool pool = Reflections.instantiate(ManagedThreadPool.class);
     feeder.manageBean(factory, ManagedThreadFactory.class);
     feeder.manageBean(pool, ManagedThreadPool.class);

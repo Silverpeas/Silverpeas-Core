@@ -30,10 +30,10 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nullable;
-import javax.servlet.ServletRequest;
-import javax.ws.rs.FormParam;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.ServletRequest;
+import jakarta.ws.rs.FormParam;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -49,14 +49,14 @@ import java.util.Set;
 
 /**
  * This class decodes the request parameters in order to set them to a simple specified POJO which
- * attributes are annotated by {@link javax.ws.rs.FormParam} or
- * {@link javax.xml.bind.annotation.XmlElement} annotation.<br>
+ * attributes are annotated by {@link jakarta.ws.rs.FormParam} or
+ * {@link jakarta.xml.bind.annotation.XmlElement} annotation.<br>
  * It is possible to annotate the attribute with {@link UnescapeHtml} annotation in order to
  * perform an HTML unescape operation (string type only).<br>
  * WARNINGS:
  * <ul>
  * <li>for now, the decoder is not compatible with Inner Classes</li>
- * <li>specified default value on {@link javax.xml.bind.annotation.XmlElement} is not yet
+ * <li>specified default value on {@link jakarta.xml.bind.annotation.XmlElement} is not yet
  * handled</li>
  * </ul>
  * @author Yohann Chastagnier

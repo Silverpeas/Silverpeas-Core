@@ -23,9 +23,12 @@
  */
 package org.silverpeas.core.contribution.template.publication;
 
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.kernel.SilverpeasException;
+import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.GlobalContext;
@@ -33,14 +36,9 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.record.FormEncryptionContentIterator;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
@@ -50,48 +48,37 @@ import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.kernel.annotation.Nullable;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.kernel.util.SystemWrapper;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.annotation.Nullable;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.util.SystemWrapper;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
  * singleton.
  */
 @Service
-@Singleton
 public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
-  // PublicationTemplates instances associated to silverpeas components. Theses templates should
+  // PublicationTemplates instances associated to silverpeas components. These templates should
   // already exist and be loaded.
   // map externalId -> PublicationTemplate
   private final Map<String, PublicationTemplate> externalTemplates = new HashMap<>();
-  // All of the PublicationTemplates loaded in silverpeas and identified by their XML file.
-  // map templateFileName -> PublicationTemplate to avoid multiple marshalling
+  // All the PublicationTemplates loaded in silverpeas and identified by their XML file.
+  // map templateFileName -> PublicationTemplate to avoid multiple marshallings
   private final Map<String, PublicationTemplateImpl> templates = new HashMap<>();
   private String templateDir;
   private String defaultTemplateDir;

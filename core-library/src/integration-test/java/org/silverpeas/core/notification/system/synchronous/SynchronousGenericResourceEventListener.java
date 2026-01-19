@@ -28,7 +28,7 @@ import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.system.GenericTestResource;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * @author mmoquillon

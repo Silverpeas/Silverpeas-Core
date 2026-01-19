@@ -32,12 +32,12 @@ import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.util.ArgumentAssertion;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 import java.util.Date;
 
 /**
@@ -66,10 +66,10 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
   @Transient
   private User lastUpdater;
 
-  @Column(name = "createdBy", nullable = false, insertable = true, updatable = false, length = 40)
+  @Column(name = "createdBy", nullable = false, updatable = false, length = 40)
   private String creatorId;
 
-  @Column(name = "createDate", nullable = false, insertable = true, updatable = false)
+  @Column(name = "createDate", nullable = false, updatable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
   private Date creationDate = null;
 

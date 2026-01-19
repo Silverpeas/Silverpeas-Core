@@ -31,7 +31,7 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.MissingResourceException;
 import java.util.Optional;
 

@@ -24,12 +24,12 @@
 package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.base.GreenMailOperations;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.engine.MailSender;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
@@ -43,15 +43,10 @@ import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.LoggerLevel;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
-import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
@@ -181,10 +176,6 @@ class SmtpMailSendingMassiveTest {
   /**
    * Stubbed SMTP mail sender.
    */
-  @Service
-  @Singleton
-  @Alternative
-  @Priority(APPLICATION + 10)
   static class StubbedSmtpMailSender extends SmtpMailSender {
 
     public List<String> sentOneByOne = new ArrayList<>();

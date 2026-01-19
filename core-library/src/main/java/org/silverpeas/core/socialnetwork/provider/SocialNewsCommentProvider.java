@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * Provider of comments on a news that can be shared among users.
+ * Provider of comments on news that can be shared among users.
  */
-public interface SocialNewsCommentProvider extends SocialInformationProvider {
+public interface SocialNewsCommentProvider<T extends SocialInformation> extends SocialInformationProvider<T> {
 
-  static SocialNewsCommentProvider get() {
+  static SocialNewsCommentProvider<?> get() {
     return ServiceProvider.getService(SocialNewsCommentProvider.class);
   }
 }

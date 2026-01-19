@@ -33,8 +33,8 @@ import org.silverpeas.core.security.authentication.password.ForgottenPasswordExc
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesService;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ResetPasswordHandler extends CredentialsFunctionHandler {

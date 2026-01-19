@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.dao;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
@@ -41,34 +42,33 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 
 /**
- * This is the Publication Data Access Object.
+ * DAO to manage the persistence of the translations of the l10n publications.
+ *
  * @author Nicolas Eysseric
  */
+@Repository
 public class PublicationI18NDAO {
 
-  private static final String TABLENAME = "SB_Publication_PubliI18N";
+  private static final String TABLE_NAME = "SB_Publication_PubliI18N";
   private static final String FIELDS = "id, pubId, lang, name, description, keywords";
-
-  private PublicationI18NDAO() {
-    throw new IllegalStateException("DAO class");
-  }
 
   /**
    * Deletes all translations of publications linked to the component instance represented by the
    * given identifier.
+   *
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
    * @throws SQLException on technical SQL error
    */
-  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.deleteFrom(TABLENAME).where("pubId in (" +
+  public void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.deleteFrom(TABLE_NAME).where("pubId in (" +
         JdbcSqlQuery.select("pubId from " + PublicationDAO.PUBLICATION_TABLE_NAME)
             .where("instanceId = ?").getSqlQuery() + ")", componentInstanceId).execute();
   }
 
-  public static List<PublicationI18N> getTranslations(Connection con, PublicationPK pubPK)
+  public List<PublicationI18N> getTranslations(Connection con, PublicationPK pubPK)
       throws SQLException {
-    final String selectStatement = "select * from " + TABLENAME + " where pubId = ? ";
+    String selectStatement = "select " + FIELDS + " from " + TABLE_NAME + " where pubId = ? ";
     try (PreparedStatement stmt = con.prepareStatement(selectStatement)) {
       stmt.setInt(1, Integer.parseInt(pubPK.getId()));
       try (ResultSet rs = stmt.executeQuery()) {
@@ -81,11 +81,11 @@ public class PublicationI18NDAO {
     }
   }
 
-  public static Map<String, List<PublicationI18N>> getIndexedTranslations(Connection con,
+  public Map<String, List<PublicationI18N>> getIndexedTranslations(Connection con,
       List<String> publicationIds) throws SQLException {
     return JdbcSqlQuery.executeBySplittingOn(publicationIds, (idBatch, result) -> JdbcSqlQuery
         .select(FIELDS)
-        .from(TABLENAME)
+        .from(TABLE_NAME)
         .where("pubId").in(idBatch.stream().map(Integer::parseInt).collect(toList()))
         .executeWith(con, r -> {
           final PublicationI18N pub = resultSetToEntity(r);
@@ -105,14 +105,11 @@ public class PublicationI18NDAO {
     return pub;
   }
 
-  public static void addTranslation(Connection con, PublicationI18N translation)
+  public void addTranslation(Connection con, PublicationI18N translation)
       throws SQLException {
-    StringBuilder insertStatement = new StringBuilder(128);
-    insertStatement.append("insert into ").append(TABLENAME).append(
-        " values (?, ?, ?, ?, ?, ?)");
-
-    try (PreparedStatement prepStmt = con.prepareStatement(insertStatement.toString())) {
-      prepStmt.setInt(1, DBUtil.getNextId(TABLENAME, "id"));
+    String insertStatement = "insert into " + TABLE_NAME + " values (?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement prepStmt = con.prepareStatement(insertStatement)) {
+      prepStmt.setInt(1, DBUtil.getNextId(TABLE_NAME, "id"));
       prepStmt.setInt(2, Integer.parseInt(translation.getObjectId()));
       prepStmt.setString(3, translation.getLanguage());
       prepStmt.setString(4, translation.getName());
@@ -122,16 +119,13 @@ public class PublicationI18NDAO {
     }
   }
 
-  public static void updateTranslation(Connection con,
+  public void updateTranslation(Connection con,
       PublicationI18N translation) throws SQLException {
     int rowCount;
 
-    StringBuilder updateQuery = new StringBuilder(128);
-    updateQuery.append("update ").append(TABLENAME);
-    updateQuery.append(" set name = ? , description = ? , keywords = ? ");
-    updateQuery.append(" where id = ? ");
-
-    try (PreparedStatement prepStmt = con.prepareStatement(updateQuery.toString())) {
+    String updateQuery = "update " + TABLE_NAME +
+        " set name = ? , description = ? , keywords = ? where id = ? ";
+    try (PreparedStatement prepStmt = con.prepareStatement(updateQuery)) {
       prepStmt.setString(1, translation.getName());
       prepStmt.setString(2, translation.getDescription());
       prepStmt.setString(3, translation.getKeywords());
@@ -146,28 +140,24 @@ public class PublicationI18NDAO {
     }
   }
 
-  public static void removeTranslation(Connection con, String translationId)
+  public void removeTranslation(Connection con, String translationId)
       throws SQLException {
     removeTranslation(con, Integer.parseInt(translationId));
   }
 
-  public static void removeTranslation(Connection con, int translationId)
+  public void removeTranslation(Connection con, int translationId)
       throws SQLException {
-    StringBuilder deleteStatement = new StringBuilder(128);
-    deleteStatement.append("delete from ").append(TABLENAME).append(
-        " where id = ? ");
-    try (PreparedStatement stmt = con.prepareStatement(deleteStatement.toString())) {
+    String deleteStatement = "delete from " + TABLE_NAME + " where id = ? ";
+    try (PreparedStatement stmt = con.prepareStatement(deleteStatement)) {
       stmt.setInt(1, translationId);
       stmt.executeUpdate();
     }
   }
 
-  public static void removeTranslations(Connection con, PublicationPK pubPK)
+  public void removeTranslations(Connection con, PublicationPK pubPK)
       throws SQLException {
-    StringBuilder deleteStatement = new StringBuilder(128);
-    deleteStatement.append("delete from ").append(TABLENAME).append(
-        " where pubId = ? ");
-    try (PreparedStatement stmt = con.prepareStatement(deleteStatement.toString())) {
+    String deleteStatement = "delete from " + TABLE_NAME + " where pubId = ? ";
+    try (PreparedStatement stmt = con.prepareStatement(deleteStatement)) {
       stmt.setInt(1, Integer.parseInt(pubPK.getId()));
       stmt.executeUpdate();
     }

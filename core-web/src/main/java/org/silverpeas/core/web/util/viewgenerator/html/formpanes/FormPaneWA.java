@@ -32,7 +32,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 
 /**
  * The default implementation of FormPane abstract class
@@ -53,11 +53,6 @@ public class FormPaneWA extends FormPane {
 
   // Methodes
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String print() {
     int i;
     StringBuilder result = new StringBuilder("\n<!-- Formulaire genere automatiquement par Activ'Portal -->\n");
@@ -66,28 +61,28 @@ public class FormPaneWA extends FormPane {
         .append("\" method=\"").append(formMethod).append("\">");
 
     // Champs "hidden"
-    if (formHiddenFields.size() > 0) {
+    if (!formHiddenFields.isEmpty()) {
       for (i = 0; i < formHiddenFields.size(); i++) {
-        result.append(((FormLine) formHiddenFields.elementAt(i)).print());
+        result.append(formHiddenFields.get(i).print());
       }
     }
 
     // Champs de saisie du formulaire
-    if (formLines.size() > 0) {
+    if (!formLines.isEmpty()) {
       result.append("\n<table cellpadding=0 cellspacing=0 border=0>");
       for (i = 0; i < formLines.size(); i++) {
         result.append("\n<tr>")
-            .append(((FormLine) formLines.elementAt(i)).print()).append("\n</tr>");
+            .append(formLines.get(i).print()).append("\n</tr>");
       }
       result.append("\n</table>");
     }
 
     // Boutons d'actions
-    if (formActionButtons.size() > 0) {
+    if (!formActionButtons.isEmpty()) {
       result.append("\n<table cellpadding=0 cellspacing=0 border=0>");
       for (i = 0; i < formActionButtons.size(); i++) {
         result.append("\n<tr>")
-            .append(((FormLine) formActionButtons.elementAt(i)).print()).append("\n</tr>");
+            .append(formActionButtons.get(i).print()).append("\n</tr>");
       }
       result.append("\n</table>");
     }
@@ -96,14 +91,6 @@ public class FormPaneWA extends FormPane {
     return result.toString();
   }
 
-  /**
-   * Method declaration
-   * @param trueActionPage
-   * @param submitPage
-   * @param modifyActionCode
-   * @return
-   * @see
-   */
   public String printHeader(String trueActionPage, String submitPage,
       String modifyActionCode) {
     String retour = "<!--JAVASCRIPT UTIL -->";
@@ -380,34 +367,26 @@ public class FormPaneWA extends FormPane {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @param trueActionPage
-   * @param deleteActionCode
-   * @param modifyActionCode
-   * @return
-   * @see
-   */
   public String printDemo(String trueActionPage, String deleteActionCode,
       String modifyActionCode) {
     int i;
     StringBuilder result = new StringBuilder("\n<!-- Formulaire genere automatiquement par Activ'Portal -->\n");
 
     // Champs "hidden"
-    if (formHiddenFields.size() > 0) {
+    if (!formHiddenFields.isEmpty()) {
       result.append("\n<table width=\"100%\">");
       for (i = 0; i < formHiddenFields.size(); i++) {
         result.append("\n<tr>")
-            .append(((FormLine) formHiddenFields.elementAt(i)).printDemo());
+            .append(formHiddenFields.get(i).printDemo());
         result.append("\n<td>");
-        if (((FormLine) formHiddenFields.elementAt(i)).isLocked()) {
+        if (formHiddenFields.get(i).isLocked()) {
           result.append("&nbsp;");
         } else {
-          result.append("<a href=\"" + trueActionPage + "&action=")
+          result.append("<a href=\"").append(trueActionPage).append("&action=")
               .append(deleteActionCode);
           result.append("&params=")
-              .append(((FormLine) formHiddenFields.elementAt(i)).getName() + "\">")
-              .append(message.getString("Supprimer") + "</a>");
+              .append(formHiddenFields.get(i).getName()).append("\">")
+              .append(message.getString("Supprimer")).append("</a>");
         }
         result.append("\n</td>\n</tr>");
       }
@@ -415,20 +394,19 @@ public class FormPaneWA extends FormPane {
     }
 
     // Champs de saisie du formulaire
-    if (formLines.size() > 0) {
+    if (!formLines.isEmpty()) {
       result.append("\n<table width=\"100%\">");
       for (i = 0; i < formLines.size(); i++) {
         result.append("\n<tr>")
-            .append(((FormLine) formLines.elementAt(i)).printDemo());
+            .append(formLines.get(i).printDemo());
         result.append("\n<td>");
-        if (((FormLine) formLines.elementAt(i)).isLocked()) {
+        if (formLines.get(i).isLocked()) {
           result.append("&nbsp;");
         } else {
-          result.append("<a href=\"" + trueActionPage + "&action=")
+          result.append("<a href=\"").append(trueActionPage).append("&action=")
               .append(deleteActionCode);
-          result.append("&params=")
-              .append(((FormLine) formLines.elementAt(i)).getName() + "\">")
-              .append(message.getString("Supprimer") + "</a>");
+          result.append("&params=").append(formLines.get(i).getName())
+              .append("\">").append(message.getString("Supprimer")).append("</a>");
         }
         result.append("\n</td>\n</tr>");
       }
@@ -436,20 +414,19 @@ public class FormPaneWA extends FormPane {
     }
 
     // Boutons d'actions
-    if (formActionButtons.size() > 0) {
+    if (!formActionButtons.isEmpty()) {
       result.append("\n<table width=\"100%\">");
       for (i = 0; i < formActionButtons.size(); i++) {
         result.append("\n<tr>")
-            .append(((FormLine) formActionButtons.elementAt(i)).printDemo());
+            .append(formActionButtons.get(i).printDemo());
         result.append("\n<td>");
-        if (((FormLine) formActionButtons.elementAt(i)).isLocked()) {
+        if (formActionButtons.get(i).isLocked()) {
           result.append("&nbsp;");
         } else {
           result.append("<a href=\"").append(trueActionPage).append("&action=")
               .append(deleteActionCode);
-          result.append("&params=")
-              .append(((FormLine) formActionButtons.elementAt(i)).getName() + "\">")
-              .append(message.getString("Supprimer") + "</a>");
+          result.append("&params=").append(formActionButtons.get(i).getName())
+              .append("\">").append(message.getString("Supprimer")).append("</a>");
         }
         result.append("\n</td>\n</tr>");
       }

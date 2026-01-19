@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.wbe;
 
 import org.silverpeas.core.web.rs.SilverpeasRequestContext;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 

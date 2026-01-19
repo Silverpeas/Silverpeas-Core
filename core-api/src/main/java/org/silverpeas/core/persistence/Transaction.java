@@ -24,15 +24,15 @@
 package org.silverpeas.core.persistence;
 
 
+import jakarta.annotation.Resource;
+import jakarta.inject.Singleton;
+import jakarta.transaction.Status;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.util.Process;
-
-import javax.annotation.Resource;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
-import javax.transaction.Transactional;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * A transaction. All processes it performs will be in charge by the JPA transaction manager.
@@ -40,6 +40,7 @@ import javax.transaction.Transactional;
  */
 @Technical
 @Bean
+@Singleton
 public class Transaction {
 
   @Resource(mappedName = "java:/TransactionManager")
@@ -83,8 +84,8 @@ public class Transaction {
 
   /**
    * Gets the status of the transaction currently in the current thread. If there is no
-   * transaction, then {@link javax.transaction.Status#STATUS_NO_TRANSACTION} is returned.
-   * @see javax.transaction.Status
+   * transaction, then {@link jakarta.transaction.Status#STATUS_NO_TRANSACTION} is returned.
+   * @see jakarta.transaction.Status
    * @return the current transaction's status.
    */
   @SuppressWarnings("unused")
@@ -112,7 +113,7 @@ public class Transaction {
   /**
    * Gets the current status of this transaction.
    * @return the status code of this transaction.
-   * @see javax.transaction.Status
+   * @see jakarta.transaction.Status
    */
   public int getStatus() {
     try {

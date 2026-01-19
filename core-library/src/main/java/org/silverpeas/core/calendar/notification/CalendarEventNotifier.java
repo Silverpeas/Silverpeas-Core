@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar.notification;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Attendee;
@@ -39,6 +40,9 @@ import java.util.List;
 @Bean
 public class CalendarEventNotifier
     extends AbstractNotifier<CalendarEventLifeCycleEvent> {
+
+  @Inject
+  private AttendeeLifeCycleEventNotifier attendeeNotifier;
 
   @Override
   public void onCreation(final CalendarEventLifeCycleEvent event) {
@@ -94,7 +98,7 @@ public class CalendarEventNotifier
       // the update is about the attendees themselves
       LifeCycleEventSubType subType =
           after.isRecurrent() ? LifeCycleEventSubType.SINCE : LifeCycleEventSubType.SINGLE;
-      AttendeeLifeCycleEventNotifier.notifyAttendees(subType, after, before.getAttendees(),
+      attendeeNotifier.notifyAttendees(subType, after, before.getAttendees(),
           after.getAttendees());
     }
   }
@@ -116,8 +120,8 @@ public class CalendarEventNotifier
   }
 
   /**
-   * Gets the user behind the invocation of the attendees notification. It should be set in the
-   * {@link OperationContext} of the current process (thread). Otherwise it is the current
+   * Gets the user behind the invocation of the attendees' notification. It should be set in the
+   * {@link OperationContext} of the current process (thread). Otherwise, it is the current
    * requester that is used.
    * @return the user sending the notification.
    */

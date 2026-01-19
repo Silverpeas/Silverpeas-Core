@@ -59,7 +59,8 @@ import org.silverpeas.core.security.Securable;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,11 +71,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Abstract class providing default behaviour of the different methods defined in the {@link
- * CmisObjectsTreeWalker} interface. Both the existence of accessed objects and the user permission
- * to perform the invoked task are checked by this class. The more concrete walkers, each of them
- * working on a specific type of Silverpeas object (and hence of the mapped CMIS object), have to
- * extend this class and implement the methods required by the default behaviour in this class.
+ * Abstract class providing default behavior of the different methods defined in the
+ * {@link CmisObjectsTreeWalker} interface. Both the existence of accessed objects and the user
+ * permission to perform the invoked task are checked by this class. The more concrete walkers, each
+ * of them working on a specific type of Silverpeas object (and hence of the mapped CMIS object),
+ * have to extend this class and implement the methods required by the default behavior in this
+ * class.
  */
 public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWalker, CmisFilePath {
 
@@ -93,9 +95,11 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * Prepares the creation of the object in Silverpeas from the specified CMIS properties and
    * content stream, and in the given language. The preparation can update some CMIS properties and
    * some content stream attributes required to create the object as a child of the given parent.
-   * This method is invoked by the {@link #createChildData(String, CmisProperties, ContentStream,
-   * String)} method before the creation of the child itself. By default, this method throws the
+   * This method is invoked by the
+   * {@link #createChildData(String, CmisProperties, ContentStream, String)} method before the
+   * creation of the child itself. By default, this method throws the
    * {@link CmisNotSupportedException} exception.
+   *
    * @param parent the resource in Silverpeas for which a new object has to be created.
    * @param properties the CMIS properties of the object to create.
    * @param contentStream a stream on a content from which a document has to be created. If not a
@@ -110,10 +114,12 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
 
   /**
    * Creates a new {@link CmisObject} instance from the specified CMIS data properties and in the
-   * given language. This method is called by the {@link #createChildData(String, CmisProperties,
-   * ContentStream, String)} method after the CMIS properties and content stream has been prepared
-   * by the walker in charge of the object parent of the child to create. By default, this method
-   * throws the {@link CmisNotSupportedException} exception.
+   * given language. This method is called by the
+   * {@link #createChildData(String, CmisProperties, ContentStream, String)} method after the CMIS
+   * properties and content stream has been prepared by the walker in charge of the object parent of
+   * the child to create. By default, this method throws the {@link CmisNotSupportedException}
+   * exception.
+   *
    * @param properties the CMIS properties of the object to create.
    * @param contentStream a stream on a content from which a document has to be created. If not a
    * document, can be null.
@@ -130,9 +136,11 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
 
   /**
    * Updates the specified Silverpeas object with the given CMIS properties and content stream, and
-   * for the given language. This method is invoked by the {@link #updateObjectData(String,
-   * CmisProperties, ContentStream, String)} method to effectively perform the update. By default,
-   * this method throws the {@link CmisNotSupportedException} exception.
+   * for the given language. This method is invoked by the
+   * {@link #updateObjectData(String, CmisProperties, ContentStream, String)} method to effectively
+   * perform the update. By default, this method throws the {@link CmisNotSupportedException}
+   * exception.
+   *
    * @param object the Silverpeas object to update.
    * @param properties the CMIS properties that contain the data with which the object has to be
    * updated.
@@ -150,10 +158,10 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   /**
    * Encodes the specified Silverpeas object into its CMIS counterpart. The CMIS representation
    * depends on the concrete type of the Silverpeas object. The way how create such a CMIS object
-   * depends on the type of the Silverpeas object and it is then delegated to the walker that
+   * depends on the type of the Silverpeas object, and it is then delegated to the walker that
    * handles such a type of Silverpeas objects.
    *
-   * @param <T>      the concrete type of the CMIS object.
+   * @param <T> the concrete type of the CMIS object.
    * @param resource a localized resource in Silverpeas.
    * @param language the language to use in the localization of the CMIS object.
    * @return a {@link CmisObject} instance.
@@ -163,6 +171,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
 
   /**
    * Is the object with the specified identifier supported by this walker?
+   *
    * @param objectId the unique identifier of an object.
    * @return true if the walker knows how to work with objects with such an identifier pattern.
    * False otherwise.
@@ -171,6 +180,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
 
   /**
    * Is the specified CMIS type supported by this walker?
+   *
    * @param typeId the unique identifier of a CMIS type.
    * @return true if the walker knows how to work with objects of the specified CMIS type. False
    * otherwise.
@@ -241,7 +251,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    *
    * @param resource a localized resource in Silverpeas exposed in the CMIS objects tree
    * @param language the language in which the resource has to be exposed.
-   * @param <T>      the concrete type of the CMIS object
+   * @param <T> the concrete type of the CMIS object
    * @return @return a {@link CmisObject} instance.
    */
   protected final <T extends CmisObject> T getCmisObject(final LocalizedResource resource,
@@ -259,26 +269,27 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   /**
    * Browses for the parents in the CMIS objects tree of the specified Silverpeas object. In a CMIS
    * objects tree, a child can have direct one or several parents. This method returns all of them.
-   * However, as the browsing of the CMIS objects tree depends on the type of its node and hence on
-   * the type of the objects in Silverpeas, the browsing is delegated to the walker that knows how
-   * to handle such a Silverpeas object.
+   * However, as the browsing of the CMIS objects tree depends on the type of its node (and hence on
+   * the type of the objects in Silverpeas), it is delegated to the walker knowing how to handle
+   * such an object.
    *
-   * @param object    an identifiable object in Silverpeas.
+   * @param object an identifiable object in Silverpeas.
    * @param filtering the filtering rules to apply on the CMIS data to return.
-   * @return a list of {@link ObjectParentData} elements, each of them being a wrapper of an {@link
-   * ObjectData} instance with the path of the specified object relative to this parent. The CMIS
-   * data are carried by the {@link ObjectData} object. If the specified object isn't file-able or
-   * it is the root folder (the virtual root space in Silverpeas), then an empty list is returned.
+   * @return a list of {@link ObjectParentData} elements, each of them being a wrapper of an
+   * {@link ObjectData} instance with the path of the specified object relative to this parent. The
+   * CMIS data are carried by the {@link ObjectData} object. If the specified object isn't
+   * file-able, or it is the root folder (the virtual root space in Silverpeas), then an empty list
+   * is returned.
    */
   protected abstract List<ObjectParentData> browseParentsOfObject(final LocalizedResource object,
       final Filtering filtering);
 
   /**
    * Gets in Silverpeas the object identified by the specified unique identifier. The way how to get
-   * such an object depends on its type and it is then delegated to the walker that handles such a
+   * such an object depends on its type, and it is then delegated to the walker that handles such a
    * type of Silverpeas objects.
    *
-   * @param <T>      the concrete type of the object to return.
+   * @param <T> the concrete type of the object to return.
    * @param objectId the unique identifier of an object in Silverpeas.
    * @return a Silverpeas object or null if no such object exists.
    */
@@ -286,18 +297,19 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
       final String objectId);
 
   /**
-   * Builds the CMIS data corresponding to all of the specified Silverpeas object by taking into
+   * Builds the CMIS data corresponding to all the specified Silverpeas object. It takes into
    * account the filtering that indicates the properties to return and the paging that indicates
    * both from which object the build is started and the number of objects to build (and return).
    *
-   * @param objects   the objects in Silverpeas to expose and therefore for which a CMIS object
-   *                  representation has to be built.
+   * @param objects the objects in Silverpeas to expose and therefore for which a CMIS object
+   * representation has to be built.
    * @param filtering the filtering rules to apply on the data to build.
-   * @param paging    the paging to apply on the elements of the list.
+   * @param paging the paging to apply on the elements of the list.
    * @return an {@link ObjectInFolderList} instance that is a list of {@link ObjectInFolderData}
    * elements, each of them being a decorator of an {@link ObjectData} instance with its path in the
-   * CMIS repository tree (if asked by the filtering). The CMIS data are carried by the {@link
-   * ObjectData} object. The size and the content of the list is conditioned by the paging rules.
+   * CMIS repository tree (if asked by the filtering). The CMIS data are carried by the
+   * {@link ObjectData} object. The size and the content of the list is conditioned by the paging
+   * rules.
    */
   protected final ObjectInFolderList buildObjectInFolderList(final List<LocalizedResource> objects,
       final Filtering filtering, final Paging paging) {
@@ -320,11 +332,11 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
 
   /**
    * Gets in Silverpeas all the children objects of the specified parent and that are accessible to
-   * the given user. The way how to get such an object depends on its type and it is then delegated
+   * the given user. The way how to get such an object depends on its type, and it is then delegated
    * to the walker that handles such a type of Silverpeas objects.
    *
    * @param parentId the unique identifier of the parent in Silverpeas.
-   * @param user     the user for which the children are get.
+   * @param user the user for which the children are get.
    * @return a stream over all the allowed children of the specified parent in Silverpeas.
    */
   protected abstract Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(final ResourceIdentifier parentId, final User user);
@@ -333,7 +345,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * Builds the CMIS data both for the specified CMIS folder and recursively for all of its children
    * by taking into account the filtering that indicates the properties to return.
    *
-   * @param file      a CMIS file representing a Silverpeas object.
+   * @param file a CMIS file representing a Silverpeas object.
    * @param filtering the filtering rules to apply on the data to build.
    * @return an {@link ObjectInFolderContainerImpl} instance representing the CMIS data of the
    * folder plus the CMIS data of its direct children, and so on for each of its children.
@@ -347,7 +359,8 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   }
 
   @Override
-  public ObjectInFolderList getChildrenData(final String folderId, final Filtering filtering, final Paging paging) {
+  public ObjectInFolderList getChildrenData(final String folderId, final Filtering filtering,
+      final Paging paging) {
     return checkAndDo(folderId, filtering, (o, f) -> browseObjectsInFolder(o, f, paging));
   }
 
@@ -356,7 +369,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * defines the specific CMIS attributes and properties a CMIS object should have. Sets these data
    * by taking into account the specified filtering rules.
    *
-   * @param object    a CMIS object.
+   * @param object a CMIS object.
    * @param filtering the filtering rules to apply on the data to set.
    */
   protected final void setObjectDataFields(final CmisObject object, final Filtering filtering) {
@@ -388,34 +401,34 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
 
   /**
    * Browses for the objects in the CMIS tree rooted at the specified object in Silverpeas. The
-   * browsing depends on the type of the specified object in Silverpeas and it is then delegated to
+   * browsing depends on the type of the specified object in Silverpeas, and it is then delegated to
    * the walker that knows how to browse a tree rooted at such a tree.
    *
-   * @param object    an identifiable object in Silverpeas.
+   * @param object an identifiable object in Silverpeas.
    * @param filtering the filtering rules to apply on the CMIS data to return.
-   * @param depth     the depth of the browsing of the tree.
-   * @return a list of {@link ObjectInFolderContainer} elements (the direct children), each of them
-   * being a container of others {@link ObjectInFolderContainer} objects (recursive walk of the
-   * different tree's nodes) and described by an {@link ObjectInFolderData} instance that is a
-   * decorator of an {@link ObjectData} instance (the CMIS data) with its path in the CMIS
-   * repository tree (if asked by the filtering). The CMIS data are carried by the {@link
-   * ObjectData} object.
+   * @param depth the depth of the browsing of the tree.
+   * @return a list of {@link ObjectInFolderContainer} elements (the direct children). Each of them
+   * is a container of others {@link ObjectInFolderContainer} objects (recursive walk of the
+   * different tree's nodes). And they are described by an {@link ObjectInFolderData} instance that
+   * is a decorator of an {@link ObjectData} instance (the CMIS data) with its path in the CMIS
+   * repository tree (if asked by the filtering). The CMIS data are carried by the
+   * {@link ObjectData} object.
    */
   protected abstract List<ObjectInFolderContainer> browseObjectsInFolderTree(
       final LocalizedResource object, final Filtering filtering, final long depth);
 
   /**
    * Browses for the direct children in the CMIS folder represented by the specified Silverpeas
-   * object. the browsing of children depends on the type of the specified object in Silverpeas and
+   * object. the browsing of children depends on the type of the specified object in Silverpeas, and
    * it is then delegated to the walker that knows how to browse for children such an object.
    *
-   * @param object    an identifiable object in Silverpeas.
+   * @param object an identifiable object in Silverpeas.
    * @param filtering the filtering rules to apply on the CMIS data to return.
-   * @param paging    the paging to apply on the elements of the list.
+   * @param paging the paging to apply on the elements of the list.
    * @return an {@link ObjectInFolderList} instance that is a list of {@link ObjectInFolderData}
    * elements, each of them being a decorator of an {@link ObjectData} instance with its path in the
-   * CMIS repository tree (if asked by the filtering). The CMIS data are carried by the {@link
-   * ObjectData} object.
+   * CMIS repository tree (if asked by the filtering). The CMIS data are carried by the
+   * {@link ObjectData} object.
    */
   protected abstract ObjectInFolderList browseObjectsInFolder(final LocalizedResource object,
       final Filtering filtering, final Paging paging);
@@ -425,15 +438,15 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * by the user in the given filter up to the specified level depth of the trees. The subtrees are
    * all part of a same CMIS objects tree and therefore share a common parent.
    *
-   * @param objects   the objects in Silverpeas as root of the subtrees to browse.
+   * @param objects the objects in Silverpeas as root of the subtrees to browse.
    * @param filtering the filtering rules to apply on the CMIS data to return.
-   * @param depth     the depth of the browsing of the tree.
-   * @return a list of {@link ObjectInFolderContainer} elements (the direct children), each of them
-   * being a container of others {@link ObjectInFolderContainer} objects (recursive walk of the
-   * different tree's nodes) and described by an {@link ObjectInFolderData} instance that is a
-   * decorator of an {@link ObjectData} instance (the CMIS data) with its path in the CMIS
-   * repository tree (if asked by the filtering). The CMIS data are carried by the {@link
-   * ObjectData} object.
+   * @param depth the depth of the browsing of the tree.
+   * @return a list of {@link ObjectInFolderContainer} elements (the direct children). Each of them
+   * is a container of others {@link ObjectInFolderContainer} objects (recursive walk of the
+   * different tree's nodes). And they are described by an {@link ObjectInFolderData} instance that
+   * is a decorator of an {@link ObjectData} instance (the CMIS data) with its path in the CMIS
+   * repository tree (if asked by the filtering). The CMIS data are carried by the
+   * {@link ObjectData} object.
    */
   protected final List<ObjectInFolderContainer> browseObjectsInFolderSubTrees(
       final List<LocalizedResource> objects, final Filtering filtering, final long depth) {
@@ -459,6 +472,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   /**
    * Builds the CMIS data corresponding to the specified CMIS folder and by taking into account the
    * filtering that indicates the properties to return.
+   *
    * @param file a CMIS file representing a Silverpeas object.
    * @param filtering the filtering rules to apply on the data to build.
    * @return an {@link ObjectInFolderData} object representing the CMIS data of the folder plus its
@@ -479,10 +493,9 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * Builds the CMIS data corresponding to the given parent of the specified folder and by taking
    * into account the filtering that indicates the properties to return.
    *
-   * @param parent    a CMIS folder parent of the below other CMIS folder. It represents a
-   *                  Silverpeas object, itself parent of the Silverpeas object represented by the
-   *                  below CMIS folder.
-   * @param folder    a CMIS folder representing a Silverpeas object.
+   * @param parent a CMIS folder parent of the below other CMIS folder. It represents a Silverpeas
+   * object, itself parent of the Silverpeas object represented by the below CMIS folder.
+   * @param folder a CMIS folder representing a Silverpeas object.
    * @param filtering the filtering rules to apply on the data to build.
    * @return an {@link ObjectParentData} object representing the CMIS data of the parent plus the
    * path segment of the child folder relative to the parent in the CMIS objects tree (if not
@@ -523,6 +536,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   /**
    * Checks both the specified object exists and the user can access it to perform the given action.
    * Then does the action.
+   *
    * @param objectId the unique identifier of the object for which the existence and the access is
    * checked.
    * @param filtering the CMIS properties and data filtering rules to pass to the action to
@@ -615,6 +629,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   /**
    * Gets an {@link OrganizationController} object to access, create and modify an object in
    * Silverpeas.
+   *
    * @return an {@link OrganizationController} instance.
    */
   protected final OrganizationController getController() {
@@ -634,6 +649,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   /**
    * Gets a {@link TreeWalkerSelector} object to select the correct {@link CmisObjectsTreeWalker}
    * object able to work on given CMIS objects.
+   *
    * @return a {@link TreeWalkerSelector} instance.
    */
   protected final TreeWalkerSelector getTreeWalkerSelector() {

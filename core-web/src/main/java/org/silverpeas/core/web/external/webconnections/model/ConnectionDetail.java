@@ -27,9 +27,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class ConnectionDetail implements Serializable {
-  /**
-   *
-   */
+
   private static final long serialVersionUID = 1L;
   private int connectionId;
   private String url;
@@ -37,7 +35,6 @@ public class ConnectionDetail implements Serializable {
   private String componentId;
   private String componentName;
   private Map<String, String> param;
-  private boolean newWindow;
   private String method;
 
   public ConnectionDetail() {
@@ -93,14 +90,6 @@ public class ConnectionDetail implements Serializable {
 
   public void setComponentName(String componentName) {
     this.componentName = componentName;
-  }
-
-  public boolean isNewWindow() {
-    return newWindow;
-  }
-
-  public void setNewWindow(final boolean newWindow) {
-    this.newWindow = newWindow;
   }
 
   public String getMethod() {

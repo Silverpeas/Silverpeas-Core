@@ -30,10 +30,10 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 
 /**
@@ -52,7 +52,7 @@ public class ActifyToAttachment extends HttpServlet {
    *
    * @param req the incoming HTTP request with as parameter the file size, the identifier of an
    * existing attachment, and the name of the file resulting of the conversion.
-   * @param res the sent back HTTP response.
+   * @param res the send back HTTP response.
    */
   @Override
   public void service(HttpServletRequest req, HttpServletResponse res) {

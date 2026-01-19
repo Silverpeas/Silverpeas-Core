@@ -27,8 +27,8 @@ import org.apache.ecs.xhtml.script;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion

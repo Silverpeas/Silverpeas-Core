@@ -31,10 +31,10 @@ import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 

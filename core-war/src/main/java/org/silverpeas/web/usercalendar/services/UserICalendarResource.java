@@ -27,7 +27,7 @@ package org.silverpeas.web.usercalendar.services;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.webapi.calendar.ICalendarResource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import static org.silverpeas.web.usercalendar.services.UserCalendarResource.USER_CALENDAR_BASE_URI;
 

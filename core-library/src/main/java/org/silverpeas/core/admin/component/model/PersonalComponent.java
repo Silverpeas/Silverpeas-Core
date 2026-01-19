@@ -26,12 +26,12 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -88,7 +88,8 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
    * @return optionally a PersonalComponent object related to the personal component instance.
    */
   public static Optional<PersonalComponent> getByInstanceId(String componentInstanceId) {
-    return getByName(PersonalComponentInstance.getComponentName(componentInstanceId));
+    return getByName(
+        SilverpeasPersonalComponentInstance.getIdentity(componentInstanceId).getComponentName());
   }
 
   /**

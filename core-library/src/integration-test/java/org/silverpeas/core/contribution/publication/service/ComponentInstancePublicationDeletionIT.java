@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,9 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 
@@ -52,7 +51,9 @@ public class ComponentInstancePublicationDeletionIT {
   private static final String DATASET_SCRIPT =
       "publication-component-instance-deletion-dataset.sql";
 
-  private ComponentInstanceDeletion publicationService;
+  // DefaultPublicationService implements ComponentInstanceDeletion
+  @Inject
+  private DefaultPublicationService publicationService;
 
   @Rule
   public DbSetupRule dbSetupRule =
@@ -60,13 +61,14 @@ public class ComponentInstancePublicationDeletionIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4Publication.onWarForTestClass(
-        ComponentInstancePublicationDeletionIT.class).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(PublicationDAOIT.class)
+        .addAsResource("org/silverpeas/core/contribution/publication/service")
+        .addAsResource("org/silverpeas/publication/publicationSettings.properties")
+        .build();
   }
 
   @Before
   public void setup() {
-    publicationService = ServiceProvider.getService(DefaultPublicationService.class);
     assertThat(publicationService, notNullValue());
   }
 
@@ -198,7 +200,7 @@ public class ComponentInstancePublicationDeletionIT {
   /**
    * Returns the list of publications (sb_publication_publi table).
    * @return list of strings which the schema is: [pubid]-[instanceid]-[pubstatus]
-   * @throws Exception
+   * @throws Exception if the publications cannot be fetched
    */
   private List<String> getPublications() throws Exception {
     return JdbcSqlQuery.select("pubid, instanceid, pubstatus from sb_publication_publi")
@@ -209,7 +211,7 @@ public class ComponentInstancePublicationDeletionIT {
   /**
    * Returns the list of publication translations (sb_publication_publii18n table).
    * @return list of strings which the schema is: [id]-[pubid]-[lang]
-   * @throws Exception
+   * @throws Exception if the publication translations cannot be fetched
    */
   private List<String> getPublicationTranslations() throws Exception {
     return JdbcSqlQuery.select("id, pubid, lang from sb_publication_publii18n")
@@ -220,7 +222,7 @@ public class ComponentInstancePublicationDeletionIT {
   /**
    * Returns the list of publication locations (sb_publication_publifather table).
    * @return list of strings which the schema is: [pubid]-[nodeid]-[instanceid]
-   * @throws Exception
+   * @throws Exception if the publication locations cannot be fetched
    */
   private List<String> getPublicationLocations() throws Exception {
     return JdbcSqlQuery.select("pubid, nodeid, instanceid from sb_publication_publifather")
@@ -231,7 +233,7 @@ public class ComponentInstancePublicationDeletionIT {
   /**
    * Returns the list of publication validations (sb_publication_validation table).
    * @return list of strings which the schema is: [id]-[pubid]-[instanceid]-[userid]
-   * @throws Exception
+   * @throws Exception if the publication validations cannot be fetched
    */
   private List<String> getPublicationValidations() throws Exception {
     return JdbcSqlQuery.select("id, pubid, instanceid, userid from sb_publication_validation")
@@ -244,7 +246,7 @@ public class ComponentInstancePublicationDeletionIT {
    * Returns the list of publication see also (sb_seealso_link table).
    * @return list of strings which the schema is:
    * [id]-[objectid]-[objectinstanceid]-[targetid]-[targetinstanceid]
-   * @throws Exception
+   * @throws Exception if the publication references cannot be fetched
    */
   private List<String> getPublicationSeeAlso() throws Exception {
     return JdbcSqlQuery.select(

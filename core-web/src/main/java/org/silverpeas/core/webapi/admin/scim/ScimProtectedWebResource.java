@@ -25,26 +25,23 @@
 package org.silverpeas.core.webapi.admin.scim;
 
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.rs.ProtectedWebResource;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.WebApplicationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.WebApplicationException;
 
 import static java.text.MessageFormat.format;
 import static java.util.Arrays.stream;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
-import static org.silverpeas.core.webapi.admin.scim.ScimServerFilter
-    .PUSH_SILVERPEAS_AUTHORIZED_ADMIN_IDS_PROP_KEY;
+import static org.silverpeas.core.webapi.admin.scim.ScimServerFilter.PUSH_SILVERPEAS_AUTHORIZED_ADMIN_IDS_PROP_KEY;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * <p>
@@ -92,10 +89,6 @@ public interface ScimProtectedWebResource extends ProtectedWebResource {
       logger().error(error);
       throw new WebApplicationException(error, FORBIDDEN);
     }
-  }
-
-  default AdminController getAdminController() {
-    return ServiceProvider.getService(AdminController.class);
   }
 
   @Override

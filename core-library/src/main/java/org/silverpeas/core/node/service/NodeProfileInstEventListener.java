@@ -33,8 +33,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

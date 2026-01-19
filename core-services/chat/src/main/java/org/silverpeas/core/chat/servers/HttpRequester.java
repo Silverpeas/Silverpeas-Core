@@ -29,9 +29,9 @@ import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.security.GeneralSecurityException;
 import java.util.function.UnaryOperator;
 
@@ -128,10 +128,9 @@ public class HttpRequester implements AutoCloseable {
   /**
    * Closes this {@link HttpRequester}. It frees all the resources used to perform HTTP requests.
    * So, once this method is called, this instance cannot be used again to send HTTP requests.
-   * @throws Exception if the {@link HttpRequester} cannot be closed.
    */
   @Override
-  public void close() throws Exception {
+  public void close() {
     client.close();
   }
 

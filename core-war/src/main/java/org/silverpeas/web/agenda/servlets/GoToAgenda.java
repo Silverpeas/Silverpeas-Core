@@ -23,13 +23,13 @@
  */
 package org.silverpeas.web.agenda.servlets;
 
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
+
+import java.net.URLEncoder;
 
 public class GoToAgenda extends GoTo {
 
@@ -38,14 +38,8 @@ public class GoToAgenda extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     String url = "ViewOtherAgenda?Id=" + objectId;
-
-
-
-    String gotoURL = URLUtil.getURL(URLUtil.CMP_AGENDA) + url;
-
-
-
-    return "goto=" + URLEncoder.encode(gotoURL);
+    String gotoURL = URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + url;
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 
 }

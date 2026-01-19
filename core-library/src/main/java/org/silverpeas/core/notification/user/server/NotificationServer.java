@@ -28,9 +28,9 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Resource;
-import javax.jms.Queue;
-import javax.jms.TextMessage;
+import jakarta.annotation.Resource;
+import jakarta.jms.Queue;
+import jakarta.jms.TextMessage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ public class NotificationServer {
   @Resource(lookup = "java:/jms/queue/notificationsQueue")
   private Queue queue;
 
-  private Map<String, String> mJmsHeaders = new HashMap<>();
+  private final Map<String, String> mJmsHeaders = new HashMap<>();
 
   public static NotificationServer get() {
     return ServiceProvider.getService(NotificationServer.class);
@@ -52,11 +52,6 @@ public class NotificationServer {
   private NotificationServer() {
   }
 
-  /**
-   * @param pData a notification data
-   * @return
-   * @throws NotificationServerException
-   */
   public long addNotification(NotificationData pData) throws NotificationServerException {
     long notificationId = 0;
     mJmsHeaders.clear();

@@ -33,7 +33,7 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;

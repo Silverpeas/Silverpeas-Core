@@ -33,9 +33,9 @@ import org.silverpeas.core.util.file.FileServerUtils;
 public class SpaceLookItem implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  private String name = null;
-  private String size = null;
-  private String url = null;
+  private final String name;
+  private final String size;
+  private final String url;
 
   public SpaceLookItem(File file, String spaceId) {
     name = file.getName();

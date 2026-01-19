@@ -25,8 +25,8 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  * An attendee that is a user in Silverpeas.

@@ -32,17 +32,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Class declaration
- * @author
- */
 public class CalendarWA1 extends AbstractCalendar {
   public CalendarWA1(String context, String language, Date date) {
     super(context, language, date);
   }
 
   public String print() {
-    StringBuffer result = new StringBuffer(255);
+    StringBuilder result = new StringBuilder(255);
     List<Date> nonSelectableDays = getNonSelectableDays();
     boolean nonSelectable = isEmptyDayNonSelectable();
 
@@ -68,7 +64,7 @@ public class CalendarWA1 extends AbstractCalendar {
     int month = calendar.get(Calendar.MONTH);
     int year = calendar.get(Calendar.YEAR);
 
-    // calcul du nombre de jour dans le mois
+    // calcul du nombre de jours dans le mois
     calendar.add(Calendar.MONTH, 1);
     calendar.set(Calendar.DAY_OF_MONTH, 1);
     calendar.add(Calendar.DATE, -1);
@@ -146,8 +142,8 @@ public class CalendarWA1 extends AbstractCalendar {
 
     // Record in HashSet all the days of the month with an event
     calendar.setTime(getCurrentDate());
-    String dayStyle = monthDayStyle;
-    HashSet<Integer> dayWithEvents = new HashSet<Integer>();
+    String dayStyle;
+    HashSet<Integer> dayWithEvents = new HashSet<>();
 
     Collection<Event> events = getEvents();
     if (events != null) {
@@ -165,11 +161,10 @@ public class CalendarWA1 extends AbstractCalendar {
         }
       }
     }
-    dayStyle = monthDayStyleEvent;
 
-    boolean isSelectableDate = true;
-    Date currentDate = null;
-    String d = null;
+    boolean isSelectableDate;
+    Date currentDate;
+    String d;
     for (int i = 1; i <= numDays; i++) {
       calendar.set(Calendar.DAY_OF_MONTH, i);
 
@@ -186,12 +181,10 @@ public class CalendarWA1 extends AbstractCalendar {
 
       // If day has events
       dayStyle = monthDayStyle;
-      boolean isSelectable = true;
+      boolean isSelectable = !nonSelectable;
       // si "nonSelectable = true" on fait la diférence entre les jours avec
       // évènements et ceux sans évènements
-      if (nonSelectable)
-        isSelectable = false;
-      if (dayWithEvents.contains(new Integer(i))) {
+      if (dayWithEvents.contains(i)) {
         dayStyle = monthDayStyleEvent;
         isSelectable = true;
       }

@@ -23,22 +23,20 @@
  */
 package org.silverpeas.core.workflow.engine.error;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.workflow.api.ErrorManager;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * The workflow engine services relate to error management.
  */
 @Service
-@Singleton
 public class ErrorManagerImpl implements ErrorManager {
 
   @Inject
@@ -61,7 +59,7 @@ public class ErrorManagerImpl implements ErrorManager {
    */
   public WorkflowError[] getErrorsOfInstance(String instanceId) {
     List<WorkflowErrorImpl> errors = repository.getByProcessInstanceId(instanceId);
-    return errors.toArray(new WorkflowError[errors.size()]);
+    return errors.toArray(new WorkflowError[0]);
   }
 
   /**

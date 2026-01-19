@@ -25,6 +25,7 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
@@ -35,8 +36,8 @@ import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -50,8 +51,9 @@ import static org.silverpeas.core.reminder.BackgroundReminderProcess.Constants.P
  * entities.
  * @author silveryocha
  */
-@Named(CalendarEventUserNotificationReminder.PROCESS_NAME + PROCESS_NAME_SUFFIX)
+@Bean
 @Singleton
+@Named(CalendarEventUserNotificationReminder.PROCESS_NAME + PROCESS_NAME_SUFFIX)
 public class CalendarEventUserNotificationReminder implements BackgroundReminderProcess {
 
   static final String PROCESS_NAME = "CalendarEventUserNotification";
@@ -94,7 +96,7 @@ public class CalendarEventUserNotificationReminder implements BackgroundReminder
 
         occurrence = CalendarEventOccurrence.getBy(calendarEvent, occStartDate).orElseThrow(() ->
             new SilverpeasRuntimeException(failureOnGetting("occurrence from event and date",
-            calendarEvent.getId() + " and " + occStartDate)));
+                calendarEvent.getId() + " and " + occStartDate)));
 
         setResource(occurrence);
       }

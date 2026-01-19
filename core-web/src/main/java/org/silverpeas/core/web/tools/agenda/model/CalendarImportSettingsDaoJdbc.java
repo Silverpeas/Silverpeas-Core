@@ -27,7 +27,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

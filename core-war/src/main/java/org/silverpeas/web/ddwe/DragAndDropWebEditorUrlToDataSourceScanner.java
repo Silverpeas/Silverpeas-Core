@@ -24,12 +24,14 @@
 
 package org.silverpeas.web.ddwe;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.content.AbstractLocalhostLinkUrlDataSourceScanner;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.StringDataExtractor;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -39,6 +41,8 @@ import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirectiv
 /**
  * @author silveryocha
  */
+@Technical
+@Bean
 @Singleton
 public class DragAndDropWebEditorUrlToDataSourceScanner
     extends AbstractLocalhostLinkUrlDataSourceScanner {

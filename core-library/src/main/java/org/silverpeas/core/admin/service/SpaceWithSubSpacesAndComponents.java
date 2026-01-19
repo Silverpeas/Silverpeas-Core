@@ -25,7 +25,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  */
 public class SpaceWithSubSpacesAndComponents {
 
-  private SpaceInstLight space;
+  private final SpaceInstLight space;
   private List<SpaceWithSubSpacesAndComponents> subSpaces;
   private List<SilverpeasComponentInstance> components;
 

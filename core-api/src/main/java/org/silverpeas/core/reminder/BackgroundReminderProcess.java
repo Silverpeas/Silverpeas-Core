@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.reminder;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * <p>

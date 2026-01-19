@@ -34,8 +34,8 @@ import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +48,6 @@ import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 @Named("commentDAO")
 public class JDBCCommentDAO implements CommentDAO {
 
-  protected static final long serialVersionUID = -4880326368611108874L;
   private static final String IN_COMPONENT_INSTANCE = " in component instance ";
 
   @Inject
@@ -134,7 +133,7 @@ public class JDBCCommentDAO implements CommentDAO {
         throw new SilverpeasRuntimeException(e.getMessage(), e);
       }
     }
-    return (commentedPubs == null ? new ArrayList<CommentedPublicationInfo>() : commentedPubs);
+    return (commentedPubs == null ? new ArrayList<>() : commentedPubs);
   }
 
   @Override

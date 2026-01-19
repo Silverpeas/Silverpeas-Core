@@ -33,7 +33,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -49,20 +49,20 @@ public class AdminCache {
   // Cache management
 
   private boolean useCache = true;
-  private boolean useSpaceInstCache = true;
-  private Map<Integer, SpaceInst> spaceInstCache = new ConcurrentHashMap<>();
-  private boolean useComponentInstCache = true;
-  private Map<Integer, ComponentInst> componentInstCache = new ConcurrentHashMap<>();
-  private boolean useProfileInstCache = true;
-  private Map<String, ProfileInst> profileInstCache = new ConcurrentHashMap<>();
-  private boolean useUserDetailCache = true;
-  private Map<String, UserDetail> userDetailCache = new ConcurrentHashMap<>();
-  private boolean useManageableSpaceIdsCache = true;
-  private Map<String, String[]> manageableSpaceIdsCache = new ConcurrentHashMap<>();
-  private boolean useAvailCompoIdsCache = true;
-  private Map<String, Map<String, String[]>> availCompoIdsCache = new ConcurrentHashMap<>();
-  private boolean useProfileIdsCache = true;
-  private Map<String, String[]> profileIdsCache = new ConcurrentHashMap<>();
+  private final boolean useSpaceInstCache = true;
+  private final Map<Integer, SpaceInst> spaceInstCache = new ConcurrentHashMap<>();
+  private final boolean useComponentInstCache = true;
+  private final Map<Integer, ComponentInst> componentInstCache = new ConcurrentHashMap<>();
+  private final boolean useProfileInstCache = true;
+  private final Map<String, ProfileInst> profileInstCache = new ConcurrentHashMap<>();
+  private final boolean useUserDetailCache = true;
+  private final Map<String, UserDetail> userDetailCache = new ConcurrentHashMap<>();
+  private final boolean useManageableSpaceIdsCache = true;
+  private final Map<String, String[]> manageableSpaceIdsCache = new ConcurrentHashMap<>();
+  private final boolean useAvailCompoIdsCache = true;
+  private final Map<String, Map<String, String[]>> availCompoIdsCache = new ConcurrentHashMap<>();
+  private final boolean useProfileIdsCache = true;
+  private final Map<String, String[]> profileIdsCache = new ConcurrentHashMap<>();
 
   public void setCacheAvailable(boolean useCache) {
     // Cache management

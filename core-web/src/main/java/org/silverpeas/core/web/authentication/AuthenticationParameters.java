@@ -33,18 +33,19 @@ import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
-import org.silverpeas.core.socialnetwork.service.AccessToken;
+import org.silverpeas.core.socialnetwork.connectors.AccessToken;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.sso.SilverpeasSsoPrincipal;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
- * Parameters used in the authentication process. Theses parameters are fetched from both the
+ * Parameters used in the authentication process. These parameters are fetched from both the
  * incoming HTTP request used for authenticating the user and its HTTP session.
  */
 public class AuthenticationParameters {
@@ -56,12 +57,12 @@ public class AuthenticationParameters {
   private String login;
   private String password;
   private String domainId;
-  private String domainIdParam;
-  private boolean casMode;
-  private SilverpeasSsoPrincipal ssoPrincipal;
+  private final String domainIdParam;
+  private final boolean casMode;
+  private final SilverpeasSsoPrincipal ssoPrincipal;
   private boolean userByInternalAuthTokenMode;
-  private boolean useNewEncryptionMode;
-  private boolean secured;
+  private final boolean useNewEncryptionMode;
+  private final boolean secured;
 
   private boolean socialNetworkMode;
   private AuthenticationCredential credential;
@@ -94,6 +95,7 @@ public class AuthenticationParameters {
       password = notTakenIntoAccount;
     } else if (socialNetworkMode) {
       // nothing else to do
+      SilverLogger.getLogger(this).info("Authentication by external social network service");
     } else if (useNewEncryptionMode) {
       login = request.getParameter("Var2");
       password = request.getParameter("Password");
@@ -200,8 +202,7 @@ public class AuthenticationParameters {
     // We fill the key to keyMaxLength char. if not enough letters in
     // sessionId.
     if (alphaString.length() < KEY_MAX_LENGTH) {
-      alphaString.append("ZFGHZSZHHJNT".substring(0, KEY_MAX_LENGTH
-          - alphaString.length()));
+      alphaString.append("ZFGHZSZHHJNT", 0, KEY_MAX_LENGTH - alphaString.length());
     }
     return alphaString.toString();
   }
@@ -224,7 +225,7 @@ public class AuthenticationParameters {
   }
 
   /**
-   * Internal server method of user authentication. This method consists to use {@link
+   * Internal server method of user authentication. This method consistes to use {@link
    * Cache}. The module that must authenticate a user by this
    * way have to set a token value to the request attribute "internalAuthToken". The token has to be
    * a key of the common cache that references a {@link UserDetail}

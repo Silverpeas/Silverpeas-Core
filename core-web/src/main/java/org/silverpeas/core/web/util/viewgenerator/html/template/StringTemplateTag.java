@@ -28,9 +28,9 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.jstl.core.Config;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -113,7 +113,7 @@ public class StringTemplateTag extends TagSupport {
       language = locale.getLanguage();
     }
     if (StringUtil.isNotDefined(language)) {
-      language = I18NHelper.DEFAULT_LANGUAGE;
+      language = I18NHelper.getDefaultLanguage();
     }
 
     // Template file

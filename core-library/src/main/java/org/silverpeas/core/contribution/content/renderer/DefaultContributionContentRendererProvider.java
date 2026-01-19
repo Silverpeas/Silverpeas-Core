@@ -39,9 +39,9 @@ public class DefaultContributionContentRendererProvider
   private static final String NAME_SUFFIX = "Renderer";
 
   @Override
-  public AbstractContributionRenderer ofContent(final ContributionContent content) {
+  public <T extends ContributionContent<?>> AbstractContributionRenderer<T> ofContent(T content) {
     final String contentClassName = content.getClass().getSimpleName();
-    final AbstractContributionRenderer renderer = ServiceProvider.getService(
+    final AbstractContributionRenderer<T> renderer = ServiceProvider.getService(
         contentClassName.substring(0, 1).toLowerCase() + contentClassName.substring(1) +
             NAME_SUFFIX);
     renderer.setContent(content);

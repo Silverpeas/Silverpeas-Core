@@ -23,26 +23,21 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.core.index.search.model.SearchCompletion;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
 
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 
-/**
- *
- *
- */
 public class AutocompleteServlet extends HttpServlet {
 
   private static final long serialVersionUID = 4312057984251158000L;
@@ -81,8 +76,6 @@ public class AutocompleteServlet extends HttpServlet {
    *
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -95,8 +88,6 @@ public class AutocompleteServlet extends HttpServlet {
    *
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {

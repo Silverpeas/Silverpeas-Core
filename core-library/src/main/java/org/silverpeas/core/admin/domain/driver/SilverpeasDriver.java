@@ -23,33 +23,26 @@
  */
 package org.silverpeas.core.admin.domain.driver;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singleton;
@@ -57,8 +50,8 @@ import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
-@Singleton
-@Service
+@Technical
+@Bean
 public class SilverpeasDriver extends AbstractDomainDriver implements SilverpeasDomainDriver {
 
   private static final String TITLE = "title";
@@ -86,7 +79,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public UserDetail importUser(String userLogin) throws AdminException {
+  public UserDetail importUser(String userLogin) {
     return null;
   }
 
@@ -96,7 +89,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public UserDetail synchroUser(String userId) throws AdminException {
+  public UserDetail synchroUser(String userId) {
     return null;
   }
 
@@ -284,12 +277,12 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
+  public UserDetail[] getUsersByQuery(Map<String, String> query) {
     return new UserDetail[0];
   }
 
   @Override
-  public GroupDetail importGroup(String groupName) throws AdminException {
+  public GroupDetail importGroup(String groupName) {
     return null;
   }
 
@@ -299,7 +292,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public GroupDetail synchroGroup(String groupId) throws AdminException {
+  public GroupDetail synchroGroup(String groupId) {
     return null;
   }
 
@@ -388,7 +381,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public GroupDetail getGroupByName(String groupName) throws AdminException {
+  public GroupDetail getGroupByName(String groupName) {
     return null;
   }
 

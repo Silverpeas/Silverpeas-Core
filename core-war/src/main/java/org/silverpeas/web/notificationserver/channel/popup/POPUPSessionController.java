@@ -31,19 +31,10 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-/**
- * Class declaration
- * @author
- * @version %I%, %G%
- */
 public class POPUPSessionController extends AbstractComponentSessionController {
   protected String currentFunction;
   protected long currentMessageId = -1;
 
-  /**
-   * Constructor declaration
-   * @see
-   */
   public POPUPSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
     super(mainSessionCtrl, context,
@@ -56,48 +47,22 @@ public class POPUPSessionController extends AbstractComponentSessionController {
     return URLUtil.CMP_POPUP;
   }
 
-  /**
-   * Method declaration
-   * @param currentFunction
-   * @see
-   */
   public void setCurrentFunction(String currentFunction) {
     this.currentFunction = currentFunction;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getCurrentFunction() {
     return currentFunction;
   }
 
-  /**
-   * Method declaration
-   * @param messageId
-   * @return
-   * @see
-   */
   public POPUPMessage getMessage(long messageId) throws POPUPException {
     return POPUPPersistence.getMessage(messageId);
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public long getCurrentMessageId() {
     return currentMessageId;
   }
 
-  /**
-   * Method declaration
-   * @param value
-   * @see
-   */
   public void setCurrentMessageId(long value) {
     currentMessageId = value;
   }

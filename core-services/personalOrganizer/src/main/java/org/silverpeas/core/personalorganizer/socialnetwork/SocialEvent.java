@@ -26,11 +26,10 @@ package org.silverpeas.core.personalorganizer.socialnetwork;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialEventProvider;
 import org.silverpeas.core.util.DateUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +38,7 @@ import java.util.List;
  * @author Bensalem Nabil
  */
 @Provider
-public class SocialEvent implements SocialEventProvider {
+public class SocialEvent implements SocialEventProvider<SocialInformationEvent> {
 
   @Inject
   private SilverpeasCalendar calendar;
@@ -52,20 +51,13 @@ public class SocialEvent implements SocialEventProvider {
 
   }
 
-  /**
-   * @param userId the user identifier
-   * @param classification
-   * @param begin date
-   * @param end date
-   * @return
-   */
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userId, String classification,
+  public List<SocialInformationEvent> getSocialInformationsList(String userId, String classification,
       Date begin, Date end) {
     String now = DateUtil.date2SQLDate(new java.util.Date());
     List<JournalHeader> list =
         getCalendar().getNextEventsForUser(now, userId, classification, begin, end);
-    List<SocialInformation> listEvent = new ArrayList<>(list.size());
+    List<SocialInformationEvent> listEvent = new ArrayList<>(list.size());
     for (JournalHeader jh : list) {
       SocialInformationEvent event = new SocialInformationEvent(jh);
       listEvent.add(event);
@@ -74,48 +66,29 @@ public class SocialEvent implements SocialEventProvider {
   }
 
   @Override
-  public List<SocialInformation> getSocialInformationList(final String userId, final Date begin,
+  public List<SocialInformationEvent> getSocialInformationList(final String userId, final Date begin,
       final Date end) {
     return getSocialInformationsList(userId, "", begin, end);
   }
 
-  /**
-   * get the next socialEvents of my contacts according to number of Item and the first Index
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return
-   */
   @Override
-  public List getSocialInformationListOfMyContacts(String myId, List<String> myContactsIds,
+  public List<SocialInformationEvent> getSocialInformationListOfMyContacts(String myId,
+      List<String> myContactsIds,
       Date begin, Date end) {
     String day = DateUtil.date2SQLDate(new java.util.Date());
     return getCalendar().getNextEventsForMyContacts(day, myId, myContactsIds, begin, end);
   }
 
-  /**
-   * get the Last socialEvents of my contacts according to number of Item and the first Index
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return
-   */
   @Override
-  public List getLastSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+  public List<SocialInformationEvent> getLastSocialInformationsListOfMyContacts(String myId,
+      List<String> myContactsIds,
       Date begin, Date end) {
     String day = DateUtil.date2SQLDate(new java.util.Date());
     return getCalendar().getLastEventsForMyContacts(day, myId, myContactsIds, begin, end);
   }
 
-  /**
-   * get the my last socialEvents according to number of Item and the first Index
-   * @param myId
-   * @return
-   */
   @Override
-  public List getMyLastSocialInformationsList(String myId, Date begin, Date end) {
+  public List<SocialInformationEvent> getMyLastSocialInformationsList(String myId, Date begin, Date end) {
     String day = DateUtil.date2SQLDate(new java.util.Date());
     return getCalendar().getMyLastEvents(day, myId, begin, end);
   }

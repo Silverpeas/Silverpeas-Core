@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.chat.listeners;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -32,7 +33,6 @@ import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipEvent;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
 import java.util.stream.Stream;
 
 /**
@@ -40,7 +40,7 @@ import java.util.stream.Stream;
  * @author remipassmoilesel
  */
 @Technical
-@Service
+@Bean
 public class RelationShipListener extends CDIResourceEventListener<RelationShipEvent> {
 
   @Inject

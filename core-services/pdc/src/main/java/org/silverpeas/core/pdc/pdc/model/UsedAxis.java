@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.kernel.annotation.NonNull;
 
@@ -70,7 +70,7 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
 
   private String _baseValueName = null;
 
-  private List _axisValues = null;
+  private List<Value> _axisValues = null;
 
   private int _axisRootId = -1;
 
@@ -168,7 +168,7 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
   }
 
   public String _getAxisName(String language) {
-    if (!I18NHelper.isI18nContentActivated || _axisHeader == null)
+    if (!I18n.get().isEnabled() || _axisHeader == null)
       return _getAxisName();
 
     return _axisHeader.getName(language);
@@ -190,11 +190,11 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
     return this._baseValueName;
   }
 
-  public void _setAxisValues(List axisValues) {
+  public void _setAxisValues(List<Value> axisValues) {
     this._axisValues = axisValues;
   }
 
-  public List _getAxisValues() {
+  public List<Value> _getAxisValues() {
     return this._axisValues;
   }
 
@@ -216,10 +216,10 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
 
   public String _getBaseValuePath() {
     String baseValuePath = "";
-    Value value = null;
-    String valueId = null;
+    Value value;
+    String valueId;
     for (int a = 0; _getAxisValues() != null && a < _getAxisValues().size(); a++) {
-      value = (Value) _getAxisValues().get(a);
+      value = _getAxisValues().get(a);
       valueId = value.getPK().getId();
       if (valueId.equals(Integer.toString(getBaseValue()))) {
         baseValuePath = value.getPath();

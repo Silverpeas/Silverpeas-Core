@@ -32,18 +32,19 @@ import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControllerIT;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
-import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
@@ -72,11 +73,9 @@ public class AttachmentHugeProcessManagerIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AttachmentHugeProcessManagerIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addPackages(true, "org.silverpeas.core.i18n")
-        .addPackages(true, "org.silverpeas.core.contribution.attachment")
+    return LibCoreWarBuilder.onFullWarForTestClass(WysiwygControllerIT.class)
+        .addAsResource("silverpeas-oak.properties")
+        .addAsResource("org/silverpeas/util/attachment/Attachment.properties")
         .build();
   }
 

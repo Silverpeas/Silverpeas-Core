@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.http;
 
-import javax.ws.rs.FormParam;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.ws.rs.FormParam;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Date;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class PoJo {
 

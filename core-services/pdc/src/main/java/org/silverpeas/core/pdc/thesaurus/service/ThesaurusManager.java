@@ -31,7 +31,7 @@ import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.thesaurus.model.Synonym;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,12 +51,12 @@ public class ThesaurusManager {
   }
 
   /**
-   * Retourne la liste des synonymes d'un mot donné (ce mot peut-etre un terme ou un synonyme) pour
-   * un utilisateur donné retourne une Collection de String
-   * @param mot
-   * @param idUser
-   * @return Collection
-   * @throws ThesaurusException
+   * Retourne la liste des synonymes d'un mot donné (ce mot peut être un terme ou un synonyme) pour
+   * un utilisateur donné
+   * @param mot le mot
+   * @param idUser l'identifiant de l'utilisateur
+   * @return une collection de synonymes
+   * @throws ThesaurusException si une erreur survient
    */
   public Collection<String> getSynonyms(String mot, String idUser)
       throws ThesaurusException {
@@ -90,12 +90,11 @@ public class ThesaurusManager {
   }
 
   /**
-   * Retourne la liste des mots synonymes d'un terme dans un vocabulaire donné retourne une
-   * Collection de String
-   * @param idVoca
-   * @param term
-   * @return Collection
-   * @throws ThesaurusException
+   * Retourne la liste des mots synonymes d'un terme dans un vocabulaire donné
+   * @param idVoca l'identifiant du vocabulaire à utiliser
+   * @param term le terme
+   * @return une collection de synonymes
+   * @throws ThesaurusException si une erreur survient
    */
   private Collection<String> getSynonymsTerm(long idVoca, String term)
       throws ThesaurusException {
@@ -128,11 +127,11 @@ public class ThesaurusManager {
 
   /**
    * Retourne la liste des autres synonymes d'un mot étant un synonyme d'un terme dans un
-   * vocabulaire donné retourne une Collection de String
-   * @param idVoca
-   * @param synonym
-   * @return Collection
-   * @throws ThesaurusException
+   * vocabulaire donné
+   * @param idVoca l'identifiant du vocabulaire
+   * @param synonym le synonyme
+   * @return collection des autres synonymes
+   * @throws ThesaurusException si une erreur survient
    */
   private Collection<String> getSynonyms(long idVoca, String synonym)
       throws ThesaurusException {
@@ -169,14 +168,6 @@ public class ThesaurusManager {
 
   }
 
-  /**
-   * Retourne vrai si le nom appartient au tableau
-   * @param nom
-   * @param tab
-   * @return boolean
-   * @throws
-   *
-   */
   private boolean isExist(String nom, Collection<String> tab) {
     for (String mot : tab) {
       if (nom.equalsIgnoreCase(mot)) {
@@ -186,15 +177,6 @@ public class ThesaurusManager {
     return false;
   }
 
-  /**
-   * Retourne la liste des synonymes d'un terme pour un utilisateur donné retourne une Collection de
-   * String
-   * @param idTree
-   * @param idTerm
-   * @param idUser
-   * @return Collection
-   * @throws ThesaurusException
-   */
   public Collection<String> getSynonyms(long idTree, long idTerm, String idUser)
       throws ThesaurusException {
 
@@ -230,11 +212,10 @@ public class ThesaurusManager {
 
   /**
    * Retourne la liste des synonymes d'un terme pour un utilisateur donné, à partir de son axe
-   * retourne une Collection de String
-   * @param axisId
-   * @param idUser
-   * @return Collection
-   * @throws ThesaurusException
+   * @param axisId identifiant d'un axe du PdC
+   * @param idUser identifiant de l'utilisateur
+   * @return collection des synonymes sur l'axe
+   * @throws ThesaurusException si une erreur survient
    */
   public Collection<String> getSynonymsAxis(String axisId, String idUser)
       throws ThesaurusException {
@@ -270,9 +251,9 @@ public class ThesaurusManager {
 
   /**
    * Retourne le jargon utilisé par l'utilisateur retourne un Jargon ou null s'il n'a pas de jargon
-   * @param idUser
+   * @param idUser l'identifiant de l'utilisateur
    * @return Jargon
-   * @throws ThesaurusException
+   * @throws ThesaurusException si une erreur survient
    */
   public Jargon getJargon(String idUser) throws ThesaurusException {
     return thesaurus.getJargon(idUser);
@@ -280,9 +261,8 @@ public class ThesaurusManager {
 
   /**
    * Supprime les synonymes de tous les termes associés à l'axe passé en paramètre
-   * @param idTree
-   * @return
-   * @throws ThesaurusException
+   * @param idTree l'identifiant d'un axe du PdC
+   * @throws ThesaurusException si une erreur survient
    */
   public void deleteSynonymsAxis(Connection con, long idTree)
       throws ThesaurusException {
@@ -291,10 +271,9 @@ public class ThesaurusManager {
 
   /**
    * Supprime les synonymes de tous les termes passés en paramètre
-   * @param idTree
-   * @param idTerms : List de String
-   * @return
-   * @throws ThesaurusException
+   * @param idTree identifiant de l'axe
+   * @param idTerms liste de termes
+   * @throws ThesaurusException si une erreur survient
    */
   public void deleteSynonymsTerms(Connection con, long idTree, List<String> idTerms)
       throws ThesaurusException {

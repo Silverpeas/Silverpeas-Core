@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -32,6 +31,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -138,7 +138,8 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   }
 
   @Override
-  public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, FileField field,
+      FieldTemplate template,
       PagesContext pageContext) throws FormException {
 
     String attachmentId = processInput(items, field, pageContext);
@@ -146,7 +147,8 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     return new ArrayList<>(update(attachmentId, field, template, pageContext));
   }
 
-  protected String processInput(List<FileItem> items, FileField field, PagesContext pageContext) {
+  protected String processInput(List<FileItem> items, FileField field,
+      PagesContext pageContext) {
     try {
       String currentAttachmentId = field.getAttachmentId();
       String inputName = Util.getFieldOccurrenceName(field.getName(), field.getOccurrence());
@@ -236,8 +238,8 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
       String componentId = pagesContext.getComponentId();
       String userId = pagesContext.getUserId();
       String objectId = pagesContext.getObjectId();
-      if (StringUtil.isDefined(item.getName())) {
-        String fileName = FileUtil.getFilename(item.getName());
+      if (StringUtil.isDefined(item.getFieldName())) {
+        String fileName = FileUtil.getFilename(item.getFileName());
         long size = item.getSize();
         if (size > 0L) {
           SimpleDocument document = createSimpleDocument(objectId, componentId, item, fileName,

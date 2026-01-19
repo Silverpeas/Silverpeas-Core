@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.pdc;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
@@ -32,6 +31,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.pdc.form.fieldtype.PdcField;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.annotation.Nullable;

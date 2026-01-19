@@ -30,7 +30,7 @@ import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * A possible validator of a resource managed by the component instance used in tests.

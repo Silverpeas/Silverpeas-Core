@@ -48,7 +48,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 /**
- * Each object in CMIS are defined by properties whose some of them are common to all of the CMIS
+ * Each object in CMIS are defined by properties. Some of them are common to all the CMIS
  * objects (name and description for example). This class is dedicated to access these properties
  * gathered in a {@link org.apache.chemistry.opencmis.commons.data.Properties} object for
  * Silverpeas. It provides a centralized and a common way to set and to get the usual CMIS
@@ -65,7 +65,7 @@ public class CmisProperties {
 
   /**
    * Creates a {@link CmisProperties} instance wrapping by default a {@link MutableProperties}
-   * object that can be get with the {@link CmisProperties#getProperties()} method.
+   * object that can be got with the {@link CmisProperties#getProperties()} method.
    */
   public CmisProperties() {
     this(new PropertiesImpl());
@@ -74,6 +74,7 @@ public class CmisProperties {
   /**
    * Creates a {@link CmisProperties} instance from the {@link Properties} object so that the CMIS
    * object's properties can be more easily accessed.
+   *
    * @param properties properties of a CMIS object.
    */
   public CmisProperties(final Properties properties) {
@@ -86,6 +87,7 @@ public class CmisProperties {
    * Creates a {@link CmisProperties} instance from the {@link Properties} object so that the CMIS
    * object's properties can be more easily accessed. The specified filter indicates what properties
    * in {@link Properties} have to be taken into account; others properties will be ignored.
+   *
    * @param properties properties of a CMIS object.
    * @param filter a set of filtering rules to apply on the properties to access.
    */
@@ -96,6 +98,7 @@ public class CmisProperties {
 
   /**
    * Gets the underlying {@link Properties} object.
+   *
    * @return the underlying and wrapped {@link Properties} instance.
    */
   public Properties getProperties() {
@@ -104,6 +107,7 @@ public class CmisProperties {
 
   /**
    * Gets the CMIS type of the object described by the underlying properties.
+   *
    * @return a {@link TypeId} value.
    */
   public TypeId getObjectTypeId() {
@@ -113,6 +117,7 @@ public class CmisProperties {
 
   /**
    * Gets the unique identifier of the parent of the object.
+   *
    * @return a {@link String} representation of the identifier of the parent object.
    */
   public String getParentObjectId() {
@@ -121,6 +126,7 @@ public class CmisProperties {
 
   /**
    * Gets the name of the object described by the underlying properties.
+   *
    * @return the name of the CMIS object.
    */
   public String getName() {
@@ -129,6 +135,7 @@ public class CmisProperties {
 
   /**
    * Gets the short description about the object described by the underlying properties.
+   *
    * @return the description about the CMIS object.
    */
   public String getDescription() {
@@ -137,6 +144,7 @@ public class CmisProperties {
 
   /**
    * Gets the date at which the object has been created as it was set in the underlying properties.
+   *
    * @return the creation date of the CMIS object.
    */
   public Date getCreationDate() {
@@ -145,6 +153,7 @@ public class CmisProperties {
 
   /**
    * Gets the MIME type of the content of the document.
+   *
    * @return the document content MIME Type.
    */
   public String getContentMimeType() {
@@ -153,6 +162,7 @@ public class CmisProperties {
 
   /**
    * Gets the name of the file in which is stored the document content.
+   *
    * @return the file name.
    */
   public String getContentFileName() {
@@ -160,8 +170,9 @@ public class CmisProperties {
   }
 
   /**
-   * Gets the path of the file in which the content stream has been uploaded. This property is
-   * only set at document creation or update. Otherwise it is always null.
+   * Gets the path of the file in which the content stream has been uploaded. This property is only
+   * set at document creation or update. Otherwise, it is always null.
+   *
    * @return the absolute path of the file with the content of a document.
    */
   public String getContentPath() {
@@ -170,6 +181,7 @@ public class CmisProperties {
 
   /**
    * Is this object indexed in Silverpeas?
+   *
    * @return true if this object is indexed, false otherwise.
    */
   public boolean isIndexed() {
@@ -180,6 +192,7 @@ public class CmisProperties {
   /**
    * Sets the type and the base type of the CMIS object. Each object is CMIS is defined by a
    * concrete type and a base type from which the concrete type is derived.
+   *
    * @param typeId the identifier of a CMIS type to qualify a resource or a contribution of
    * Silverpeas into the CMIS tree.
    * @return itself
@@ -191,6 +204,7 @@ public class CmisProperties {
 
   /**
    * Sets the unique identifier of the CMIS object in the CMIS tree.
+   *
    * @param id the CMIS object's unique identifier.
    * @return itself.
    */
@@ -202,6 +216,7 @@ public class CmisProperties {
    * Sets the default common CMIS object properties as defined in Silverpeas. The CMIS properties
    * not supported or not handled by Silverpeas for its objects exposed in the CMIS tree are set
    * with a null value.
+   *
    * @return itself
    */
   public CmisProperties setDefaultProperties() {
@@ -211,6 +226,7 @@ public class CmisProperties {
 
   /**
    * Sets the name or the title of the CMIS object.
+   *
    * @param name the CMIS object name.
    * @return itself
    */
@@ -220,6 +236,7 @@ public class CmisProperties {
 
   /**
    * Sets the short description of the CMIS object.
+   *
    * @param description a description of the CMIS object.
    * @return itself
    */
@@ -228,13 +245,13 @@ public class CmisProperties {
   }
 
   /**
-   * Sets the creator display name and the creation date at which the CMIS object was created. In
-   * the case the CMIS object is a Private Working Copy of a document, then the creation date must
-   * be the date at which the creation of the PWC was spawned and the creator should be set to the
-   * name of the user that has checkout-ed the document. In the case the CMIS object is a version in
-   * a version series for a document the creation data is about by who and when the PWC was created.
-   * In the case of a non-versionable document, like any other CMIS objects, the creation data are
-   * about by who and when the original document was created in the CMIS tree.
+   * Sets the creator display name and the creation date at which the CMIS object was created. For a
+   * Private Working Copy of a document, the creation date and the creator must be respectively the
+   * date at which the PWC was spawned and the name of the user having checkout the document. For a
+   * version within a version series of a document, the creation data is about by who and when the
+   * PWC was created. For a non-versionable document, like any other CMIS objects, the creation data
+   * are about by who and when the original document was created in the CMIS tree.
+   *
    * @param userName the full name of the user as to be displayed in the CMIS tree.
    * @param dateTime the creation date of the object in number of milliseconds from Epoch
    * @return itself
@@ -245,14 +262,14 @@ public class CmisProperties {
   }
 
   /**
-   * Sets the update display name and the date at which the CMIS object was lastly updated. In the
-   * case of a Private Working Copy of a document, the last modification data are about by who and
-   * when the PWC was updated (with the <code>PWCUpdatable</code> repository capability, several
-   * users can work on a PWC).In the case of a given version in a version series for a document, the
-   * last modification data is about by who and when the version was checked-in and hence became the
-   * last version. For a non-versionable document as well as for others CMIS objects, these
-   * properties are about by who and when the original document was lastly modified in the CMIS
-   * tree.
+   * Sets the update display name and the date at which the CMIS object was lastly updated. For a
+   * Private Working Copy of a document, the last modification data are about by who and when the
+   * PWC was updated (with the <code>PWCUpdatable</code> repository capability, several users can
+   * work on a PWC). For a given version within a version series of a document, the last
+   * modification data is about by who and when the version was checked-in and hence became the last
+   * version. For a non-versionable document as well as for others CMIS objects, these properties
+   * are about by who and when the original document was lastly modified in the CMIS tree.
+   *
    * @param userName the full name of the user as to be displayed in the CMIS tree.
    * @param dateTime the last modification date of the object in number of milliseconds from Epoch
    * @return itself
@@ -263,8 +280,9 @@ public class CmisProperties {
   }
 
   /**
-   * Sets the type of all of the children allowed for the CMIS object represented by the underlying
+   * Sets the type of all the children allowed for the CMIS object represented by the underlying
    * properties.
+   *
    * @param objectTypeIds the unique identifier of the types of the allowed children objects.
    * @return itself
    */
@@ -275,6 +293,7 @@ public class CmisProperties {
   /**
    * Sets the unique identifier of the object that is parent of the CMIS object represented by the
    * underlying properties.
+   *
    * @param parentId the unique identifier of a CMIS object in the CMIS tree.
    * @return itself.
    */
@@ -285,6 +304,7 @@ public class CmisProperties {
   /**
    * Sets the path in the CMIS tree of the object represented by the underlying properties. Each
    * node of the path is the name of a parent from the CMIS tree root upto the name of the object.
+   *
    * @param path a path of the object in the CMIS tree from the CMIS tree root.
    * @return itself
    */
@@ -302,6 +322,7 @@ public class CmisProperties {
    * objects that were created from an original document in the CMIS tree. These document objects
    * represent each of them a given version of the related original document. For a non-versionable
    * document, the version series has only one document object, the latest version.
+   *
    * @param seriesId the unique identifier of the version series id of the document.
    * @param label a version label (like "version 1.0" for example)
    * @param comment a comment about the version represented by the object
@@ -329,14 +350,15 @@ public class CmisProperties {
    * clone of a given document object created by a checkout operation. This PWC must have a unique
    * identifier different from the original document in the CMIS tree. A Private Working Copy is a
    * CMIS document private to one or more users (for a repository with the <code>PWCUpdatable</code>
-   * capability) on which those users works until the modifications are pushed to the document in
-   * the CMIS tree by a checkin operation; in this case, the PWC becomes a new version of the
-   * original document (id est its latest version).
+   * capability) on which those users work until the modifications are pushed to the document in the
+   * CMIS tree by a checkin operation; in this case, the PWC becomes a new version of the original
+   * document (id est its latest version).
+   *
    * @param isThereAPwc is there exists currently a Private Working Copy for the version series of
    * the document?
    * @param isPwc is the object is a Private Working Copy of the document
    * @param pwcId the unique identifier of the Private Working Copy that has to be different from
-   * the document identifier)
+   * the document identifier
    * @param userId the identifier of the user that has created the Private Working Copy.
    * @return itself
    */
@@ -350,6 +372,7 @@ public class CmisProperties {
 
   /**
    * Sets the content to the CMIS document.
+   *
    * @param id the unique identifier of the content.
    * @param mimeType the MIME type of the content.
    * @param length the length of the content in bytes.
@@ -365,6 +388,7 @@ public class CmisProperties {
 
   /**
    * Sets the path at which is located the file into which the content stream has been uploaded.
+   *
    * @param contentFilePath the path of the content file.
    * @return itself.
    */
@@ -374,6 +398,7 @@ public class CmisProperties {
 
   /**
    * Sets the indexation property of this object.
+   *
    * @param indexed the object is indexed or should be indexed.
    * @return itself.
    */
@@ -383,6 +408,7 @@ public class CmisProperties {
 
   /**
    * Gets the value of the specified identifier property.
+   *
    * @param propertyName the name of the property to get.
    * @return the identifier as a {@link String} value.
    */
@@ -392,6 +418,7 @@ public class CmisProperties {
 
   /**
    * Gets the value of the specified {@link String} property.
+   *
    * @param propertyName the name of the property to get.
    * @return the {@link String} value.
    */
@@ -405,6 +432,7 @@ public class CmisProperties {
 
   /**
    * Gets the value of the specified date time property.
+   *
    * @param propertyName the name of the property to get.
    * @return the date time in milliseconds from Epoch.
    */
@@ -435,6 +463,7 @@ public class CmisProperties {
 
   /**
    * Sets the specified {@link String} property.
+   *
    * @param propertyName the name of the property to set.
    * @param propertyValue the value of the property to set.
    * @param filtering should the filter be applied on the property?
@@ -447,7 +476,8 @@ public class CmisProperties {
   }
 
   /**
-   * Sets the specified {@link String} multi-valued property.
+   * Sets the specified {@link String} multivalued property.
+   *
    * @param propertyName the name of the property to set.
    * @param propertyValue the value of the property to set.
    * @param filtering should the filter be applied on the property?
@@ -462,6 +492,7 @@ public class CmisProperties {
 
   /**
    * Sets the specified boolean property.
+   *
    * @param propertyName the name of the property to set.
    * @param propertyValue the value of the property to set.
    * @param filtering should the filter be applied on the property?
@@ -475,6 +506,7 @@ public class CmisProperties {
 
   /**
    * Sets the specified integer property.
+   *
    * @param propertyName the name of the property to set.
    * @param propertyValue the value of the property to set.
    * @param filtering should the filter be applied on the property?
@@ -488,6 +520,7 @@ public class CmisProperties {
 
   /**
    * Sets the specified identifier property.
+   *
    * @param propertyName the name of the property to set.
    * @param propertyValue the value of the property to set.
    * @param filtering should the filter be applied on the property?
@@ -500,13 +533,15 @@ public class CmisProperties {
 
   /**
    * Sets the specified datetime property.
+   *
    * @param propertyName the name of the property to set.
    * @param propertyValue the value of the property to set.
    * @param filtering should the filter be applied on the property?
    */
   private CmisProperties setDateTime(String propertyName, long propertyValue, boolean filtering) {
     applyFilter(propertyName, props -> props.addProperty(
-        new PropertyDateTimeImpl(propertyName, CmisDateConverter.millisToCalendar(propertyValue))),
+            new PropertyDateTimeImpl(propertyName,
+                CmisDateConverter.millisToCalendar(propertyValue))),
         !filtering);
     return this;
   }
@@ -515,6 +550,7 @@ public class CmisProperties {
    * Applies the filter on the specified property. If the property isn't referred by any of the
    * filtering rules of the filter, then it isn't set. The filtering rules can be explicitly
    * bypassed and this case the property is set.
+   *
    * @param propertyName the name of the property to set.
    * @param function the function that set a value to the property.
    * @param bypass a flag indicating if the filtering rules are applied or not. If true, then the

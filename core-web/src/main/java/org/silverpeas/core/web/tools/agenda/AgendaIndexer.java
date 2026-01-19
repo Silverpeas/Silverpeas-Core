@@ -27,9 +27,9 @@ import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 @Singleton
 @Named("agenda" + PersonalToolIndexation.QUALIFIER_SUFFIX)

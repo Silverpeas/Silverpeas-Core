@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.jobdomain;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -32,16 +33,13 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.ZoneId;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -59,10 +57,6 @@ public class UserRequestDataTest {
 
   @BeforeEach
   public void setup() {
-    mocker.setField(DisplayI18NHelper.class, asList("fr", "en", "de"), "languages");
-    mocker.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
-    mocker.setField(DisplayI18NHelper.class, asList("Europe/Paris", "Europe/Berlin"), "zoneIds");
-    mocker.setField(DisplayI18NHelper.class, ZoneId.of("Europe/Berlin"), "defaultZoneId");
     mockedSettings = mocker.mockField(NotificationManagerSettings.class,
         SettingBundle.class, "settings");
     httpServletRequestMock = mock(HttpServletRequest.class);

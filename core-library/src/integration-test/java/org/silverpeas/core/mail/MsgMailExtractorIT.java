@@ -33,8 +33,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.office.OfficeServiceInitializationListener;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -58,9 +59,9 @@ import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 @RunWith(Arquillian.class)
 public class MsgMailExtractorIT {
 
-  private final static String FILENAME_MAIL_WITH_ATTACHMENTS = "mailWithAttachments.msg";
+  private static final String FILENAME_MAIL_WITH_ATTACHMENTS = "mailWithAttachments.msg";
 
-  private final static DateFormat DATE_MAIL_FORMAT = new SimpleDateFormat(
+  private static final DateFormat DATE_MAIL_FORMAT = new SimpleDateFormat(
       "EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
   @Rule
@@ -68,33 +69,28 @@ public class MsgMailExtractorIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(MsgMailExtractorIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addOfficeFeatures()
-        .testFocusedOn(warBuilder -> {
-          warBuilder
-              .addMavenDependencies("org.apache.poi:poi-scratchpad")
-              .addMavenDependencies("com.icegreen:greenmail")
-              .addPackages(true, "org.silverpeas.core.mail")
-              .addAsResource("org/silverpeas/core/mail/mailWithAttachments.msg");
-        }).build();
+    return LibCoreWarBuilder.onWarForTestClass(MsgMailExtractorIT.class)
+        .addMavenDependencies("org.apache.poi:poi-scratchpad")
+        .addMavenDependencies("com.icegreen:greenmail")
+        .addMavenDependencies("commons-io:commons-io")
+        .addMavenDependencies("org.jodconverter:jodconverter-local")
+        .addPackages(true, "org.silverpeas.core.contribution.converter")
+        .addPackages(true, "org.silverpeas.core.mail")
+        .addAsResource("org/silverpeas/core/mail/mailWithAttachments.msg")
+        .addWebListener(OfficeServiceInitializationListener.class)
+        .build();
   }
 
-  /**
-   * This unit test is support for MSG exploration solution testing.
-   *
-   * @throws Exception
-   */
   @Test
   public void readMailWithAttachmentsMSG() throws Exception {
-    MAPIMessage msg = new MAPIMessage(getDocumentFromName(FILENAME_MAIL_WITH_ATTACHMENTS).getPath());
+    MAPIMessage msg = new MAPIMessage(getAttachedFile().getPath());
     msg.setReturnNullOnMissingChunk(true);
 
     assertThat(msg.getDisplayFrom(), is("Nicolas Eysseric"));
     assertThat(msg.getRecipientDetailsChunks(), is(notNullValue()));
     assertThat(msg.getRecipientDetailsChunks().length, is(2));
-    assertThat(msg.getRecipientDetailsChunks()[0].getRecipientName(), is("Aurore ADR. DELISSNYDER"));
+    assertThat(msg.getRecipientDetailsChunks()[0].getRecipientName(), is("Aurore ADR. " +
+        "DELISSNYDER"));
     assertThat(msg.getRecipientDetailsChunks()[0].getRecipientEmailAddress(), is(
         "Aurore.DELISSNYDER@hydrostadium.fr"));
     assertThat(msg.getRecipientDetailsChunks()[1].getRecipientName(), is("Ludovic BERTIN"));
@@ -103,7 +99,7 @@ public class MsgMailExtractorIT {
     AttachmentChunks[] attachments = msg.getAttachmentFiles();
     assertThat(attachments, is(notNullValue()));
     assertThat(attachments.length, is(2));
-    if (attachments != null && attachments.length > 0) {
+    if (attachments.length > 0) {
       System.out.print("\n");
       for (AttachmentChunks attachmentChunks : attachments) {
         System.out.println(attachmentChunks.getAttachFileName().getValue());
@@ -120,13 +116,6 @@ public class MsgMailExtractorIT {
     System.out.println("<<<");
   }
 
-  /**
-   * Gets the message from email.
-   *
-   * @param msg
-   * @return
-   * @throws Exception
-   */
   protected String getMessageBody(MAPIMessage msg) throws Exception {
     String messageBody = msg.getHtmlBody();
     if (!StringUtil.isDefined(messageBody)) {
@@ -138,28 +127,14 @@ public class MsgMailExtractorIT {
     return messageBody;
   }
 
-  /**
-   * Gets readable string from RTF text.
-   *
-   * @param rtfText
-   * @return
-   * @throws Exception
-   */
-  protected String getRtfText(String rtfText) throws Exception {
+  protected String getRtfText(String rtfText) {
     ByteArrayOutputStream htmlText = new ByteArrayOutputStream();
     DocumentFormatConverterProvider.getToHTMLConverter()
-        .convert(new ByteArrayInputStream(rtfText.getBytes()), inFormat(rtf), htmlText,
-        inFormat(html));
+        .convert(new ByteArrayInputStream(rtfText.getBytes()),
+            inFormat(rtf), htmlText, inFormat(html));
     return htmlText.toString();
   }
 
-  /**
-   * Gets the reception date of email.
-   *
-   * @param msg
-   * @return
-   * @throws Exception
-   */
   protected static Date getMessageDate(MAPIMessage msg) throws Exception {
     Calendar messageDate = msg.getMessageDate();
     if (messageDate == null) {
@@ -168,13 +143,6 @@ public class MsgMailExtractorIT {
     return messageDate.getTime();
   }
 
-  /**
-   * Extracts the reception date from an email.
-   *
-   * @param msg
-   * @return
-   * @throws Exception
-   */
   protected static Date extractDateOfReception(MAPIMessage msg) throws Exception {
     if (msg.getMainChunks().getMessageHeaders() != null) {
       String chunkContent = msg.getMainChunks().getMessageHeaders().getValue();
@@ -188,15 +156,9 @@ public class MsgMailExtractorIT {
     return null;
   }
 
-  /**
-   * Gets the file from its name.
-   *
-   * @param name
-   * @return
-   * @throws Exception
-   */
-  private File getDocumentFromName(final String name) throws Exception {
+  private File getAttachedFile() {
     return FileUtils
-        .getFile(mavenTargetDirectoryRule.getResourceTestDirFile(), "org/silverpeas/core/mail", name);
+        .getFile(mavenTargetDirectoryRule.getResourceTestDirFile(), "org/silverpeas/core/mail",
+            MsgMailExtractorIT.FILENAME_MAIL_WITH_ATTACHMENTS);
   }
 }

@@ -35,7 +35,6 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -46,14 +45,13 @@ import java.util.List;
 public class PdcClassifySessionController extends AbstractComponentSessionController {
   private int currentSilverObjectId = -1;
   private List<String> currentSilverObjectIds = null;
-  private PdcManager pdcManager = PdcServiceProvider.getPdcManager();
+  private final PdcManager pdcManager = PdcServiceProvider.getPdcManager();
   private boolean sendSubscriptions = true;
 
-  private ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
+  private final ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
 
   // Positions manager in PDC field mode.
-  private PdcFieldPositionsManager pdcFieldPositionsManager =
-      ServiceProvider.getService(PdcFieldPositionsManager.class);
+  private final PdcFieldPositionsManager pdcFieldPositionsManager = new PdcFieldPositionsManager();
 
   // jargon utilise par l'utilisateur
   private Jargon jargon = null;
@@ -190,8 +188,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
 
   public void initializeJargon() throws PdcException {
     try {
-      Jargon theJargon = thesaurus.getJargon(getUserId());
-      this.jargon = theJargon;
+      this.jargon = thesaurus.getJargon(getUserId());
     } catch (ThesaurusException e) {
       throw new PdcException(e);
     }

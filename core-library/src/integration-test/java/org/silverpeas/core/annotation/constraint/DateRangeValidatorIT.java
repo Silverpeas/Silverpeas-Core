@@ -24,18 +24,17 @@
 package org.silverpeas.core.annotation.constraint;
 
 
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.variables.VariablesManagementIT;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 
-import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -57,11 +56,7 @@ public class DateRangeValidatorIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(VariablesManagementIT.class)
-        .addAdministrationFeatures()
-        .addSilverpeasExceptionBases()
-        .addJpaPersistenceFeatures()
-        .addPublicationTemplateFeatures()
+    return LibCoreWarBuilder.onWarForTestClass(DateRangeValidatorIT.class)
         .addPackages(true, "org.silverpeas.core.annotation.constraint")
         .build();
   }

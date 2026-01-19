@@ -28,7 +28,7 @@ package org.silverpeas.core.admin.quota.service;
  */
 public interface TestQuotaServiceWithAdditionalTools extends QuotaService<TestQuotaKey> {
 
-  public int getCount();
+  int getCount();
 
-  public void setCount(final int count);
+  void setCount(final int count);
 }

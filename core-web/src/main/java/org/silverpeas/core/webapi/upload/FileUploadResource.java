@@ -44,11 +44,19 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.*;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -64,6 +72,7 @@ import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
  * <li>silverpeas-filUpload.js: useful to handle file upload on resource creation</li>
  * <li>silverpeas-ddUpload.js: useful to handle drag & drop file upload on existing resources</li>
  * </ul>
+ *
  * @author Yohann Chastagnier
  */
 @WebService
@@ -82,8 +91,9 @@ public class FileUploadResource extends RESTWebService {
   private AntivirusClientProvider antivirusProvider;
 
   /**
-   * Performs some verifications before starting a file upload.
-   * All the verifications are checked again on the effective upload (security).
+   * Performs some verifications before starting a file upload. All the verifications are checked
+   * again on the effective upload (security).
+   *
    * @return the result of the verification: HTTP OK.
    */
   @POST
@@ -91,7 +101,7 @@ public class FileUploadResource extends RESTWebService {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public Response verify() {
     FileUploadVerifyData fileUploadVerifyData =
-            RequestParameterDecoder.decode(getHttpRequest(), FileUploadVerifyData.class);
+        RequestParameterDecoder.decode(getHttpRequest(), FileUploadVerifyData.class);
     checkMaximumFileSize(fileUploadVerifyData.getName(), fileUploadVerifyData.getSize());
     checkAuthorizedMimeTypes(fileUploadVerifyData.getName());
     checkSpecificComponentVerifications(fileUploadVerifyData, null);
@@ -99,12 +109,13 @@ public class FileUploadResource extends RESTWebService {
   }
 
   /**
-   * Permits to upload files from multipart http request.
-   * If the user isn't authenticated, a 401 HTTP code is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Permits to upload files from multipart http request. If the user isn't authenticated, a 401
+   * HTTP code is returned. If a problem occurs when processing the request, a 503 HTTP code is
+   * returned.
+   *
    * @return the response in relation with jQuery plugins used on the client side: a html textarea
-   * tag that contains a JSON array structure. Each line of this array contains
-   * information of an uploaded file :
+   * tag that contains a JSON array structure. Each line of this array contains information of an
+   * uploaded file :
    * <ul>
    * <li><b>uploadSessionId</b> : the uploaded session identifier</li>
    * <li><b>fullPath</b> : the full path of the uploaded file</li>
@@ -119,17 +130,17 @@ public class FileUploadResource extends RESTWebService {
   @Produces(MediaType.TEXT_HTML)
   public Response uploadFiles() {
     UploadedRequestFile uploadedRequestFile =
-            RequestParameterDecoder.decode(getHttpRequest(), UploadedRequestFile.class);
+        RequestParameterDecoder.decode(getHttpRequest(), UploadedRequestFile.class);
 
     try {
       UnaryOperator<JSONObject> builder =
-              uploadFile(FileUploadData.from(uploadedRequestFile),
-                      uploadedRequestFile.getRequestFile().getInputStream());
+          uploadFile(FileUploadData.from(uploadedRequestFile),
+              uploadedRequestFile.getRequestFile().getInputStream());
       String jsonFiles = packJSonArrayWithHtmlContainer(a -> a.addJSONObject(builder));
       return Response.ok().entity(jsonFiles).build();
     } catch (WebApplicationException ex) {
       if (AJAX_IFRAME_TRANSPORT.equals(uploadedRequestFile.getXRequestedWith()) &&
-              ex.getResponse().getStatus() == Response.Status.PRECONDITION_FAILED.getStatusCode()) {
+          ex.getResponse().getStatus() == Response.Status.PRECONDITION_FAILED.getStatusCode()) {
 
         // In case of file upload performed by Ajax IFrame transport way,
         // the exception must also be returned into a text/html response.
@@ -146,13 +157,13 @@ public class FileUploadResource extends RESTWebService {
   }
 
   /**
-   * Permits to upload one file from http request.
-   * If antivirus scanning is enabled, the file is scanned before upload.
-   * If the user isn't authenticated, a 401 HTTP code is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Permits to upload one file from http request. If antivirus scanning is enabled, the file is
+   * scanned before upload. If the user isn't authenticated, a 401 HTTP code is returned. If a
+   * problem occurs when processing the request, a 503 HTTP code is returned.
+   *
    * @return the response in relation with jQuery plugins used on the client side: a html textarea
-   * tag that contains a JSON array structure. Each line of this array contains
-   * information of an uploaded file :
+   * tag that contains a JSON array structure. Each line of this array contains information of an
+   * uploaded file :
    * <ul>
    * <li><b>uploadSessionId</b> : the uploaded session identifier</li>
    * <li><b>fullPath</b> : the full path of the uploaded file</li>
@@ -173,8 +184,8 @@ public class FileUploadResource extends RESTWebService {
       byte[] fileBytes = buffer.toByteArray();
 
       LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
-              "org.silverpeas.util.attachment.multilang.attachment",
-              getUserPreferences().getLanguage());
+          "org.silverpeas.util.attachment.multilang.attachment",
+          getUserPreferences().getLanguage());
 
       FileUploadData fileUploadData = FileUploadData.from(getHttpServletRequest());
 
@@ -184,7 +195,7 @@ public class FileUploadResource extends RESTWebService {
 
       // Proceed with upload
       String jsonFile = packJSonObjectWithHtmlContainer(
-              uploadFile(fileUploadData, new ByteArrayInputStream(fileBytes)));
+          uploadFile(fileUploadData, new ByteArrayInputStream(fileBytes)));
 
       return Response.ok().entity(jsonFile).build();
     } catch (final WebApplicationException ex) {
@@ -198,21 +209,25 @@ public class FileUploadResource extends RESTWebService {
     }
   }
 
-  /** Handles the result of the antivirus scan and throws appropriate HTTP exceptions. */
-  private void handleScanResult(AntivirusResult scanResult, FileUploadData fileData, LocalizationBundle bundle) {
+  /**
+   * Handles the result of the antivirus scan and throws appropriate HTTP exceptions.
+   */
+  private void handleScanResult(AntivirusResult scanResult, FileUploadData fileData,
+      LocalizationBundle bundle) {
     if (scanResult.isSafe()) return;
 
     String message;
     if (scanResult.isError()) {
       if (!scanResult.isAllowUnverifiedFiles()) {
-        message = MessageFormat.format(bundle.getString("antivirus.scan.unavailable"), fileData.getName());
+        message = MessageFormat.format(bundle.getString("antivirus.scan.unavailable"),
+            fileData.getName());
         SilverLogger.getLogger(this).warn(scanResult.getErrorMessage());
         MessageNotifier.addError(message);
         throw new WebApplicationException(Response.Status.FORBIDDEN);
       }
     } else {
       message = MessageFormat.format(bundle.getString("antivirus.scan.infected"),
-              fileData.getName(), scanResult.getVirusName());
+          fileData.getName(), scanResult.getVirusName());
       SilverLogger.getLogger(this).error(scanResult.getErrorMessage());
       MessageNotifier.addError(message);
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -223,8 +238,8 @@ public class FileUploadResource extends RESTWebService {
    * Scans a file for viruses using ClamAV and returns the result.
    *
    * <p>Checks if antivirus scanning is enabled in the settings. If disabled, the file
-   * is considered safe. Otherwise, the file is scanned and the result indicates whether
-   * the file is safe, infected, or if an error occurred.</p>
+   * is considered safe. Otherwise, the file is scanned and the result indicates whether the file is
+   * safe, infected, or if an error occurred.</p>
    *
    * @param file the InputStream of the file to scan
    * @return an AntivirusResult containing the scan outcome
@@ -232,11 +247,12 @@ public class FileUploadResource extends RESTWebService {
   public AntivirusResult checkVirus(InputStream file) {
     Optional<AntivirusClient> antivirus = antivirusProvider.getAntivirusClient();
     return antivirus.map(a -> a.checkVirus(file))
-            .orElseGet(AntivirusResult::safeResult);
+        .orElseGet(AntivirusResult::safeResult);
   }
 
   /**
    * Handles the upload of one file.
+   *
    * @param fileUploadData the uploaded file data (except the content)
    * @param inputStream the input stream to upload
    * @return a builder of the JSON representation of the uploaded file (more information on
@@ -247,7 +263,7 @@ public class FileUploadResource extends RESTWebService {
    * by another thread.
    */
   private UnaryOperator<JSONObject> uploadFile(
-          FileUploadData fileUploadData, InputStream inputStream) throws InterruptedException {
+      FileUploadData fileUploadData, InputStream inputStream) throws InterruptedException {
 
     if (StringUtil.isNotDefined(fileUploadData.getFullPath())) {
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -260,14 +276,14 @@ public class FileUploadResource extends RESTWebService {
       UploadSession uploadSession = UploadSession.from(fileUploadData.getUploadSessionId());
 
       if (StringUtil.isDefined(fileUploadData.getComponentInstanceId()) &&
-              !componentAccessController
-                      .isUserAuthorized(getUser().getId(), fileUploadData.getComponentInstanceId())) {
+          !componentAccessController
+              .isUserAuthorized(getUser().getId(), fileUploadData.getComponentInstanceId())) {
         throw new WebApplicationException(Response.Status.FORBIDDEN);
       }
 
       if (StringUtil.isDefined(uploadSession.getComponentInstanceId())) {
         if (!uploadSession.getComponentInstanceId()
-                .equals(fileUploadData.getComponentInstanceId())) {
+            .equals(fileUploadData.getComponentInstanceId())) {
           throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
       } else if (StringUtil.isDefined(fileUploadData.getComponentInstanceId())) {
@@ -275,7 +291,7 @@ public class FileUploadResource extends RESTWebService {
       }
 
       UploadSessionFile uploadSessionFile =
-              uploadSession.getUploadSessionFile(fileUploadData.getFullPath());
+          uploadSession.getUploadSessionFile(fileUploadData.getFullPath());
 
       // Writing the file on server
       try {
@@ -307,6 +323,7 @@ public class FileUploadResource extends RESTWebService {
 
   /**
    * Checks the maximum size authorized.
+   *
    * @param fileName the name of the file to check.
    * @param fileSize the size of the file to check.
    */
@@ -314,22 +331,23 @@ public class FileUploadResource extends RESTWebService {
     long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
     if (fileSize > maximumFileSize) {
       LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
-              "org.silverpeas.util.attachment.multilang.attachment",
-              getUserPreferences().getLanguage());
+          "org.silverpeas.util.attachment.multilang.attachment",
+          getUserPreferences().getLanguage());
       String errorMessage = bundle.getString("attachment.dialog.errorFileSize") +
-              " " +
-              bundle.getString("attachment.dialog.maximumFileSize") + " (" +
-              UnitUtil.formatMemSize(maximumFileSize) + ")";
+                            " " +
+                            bundle.getString("attachment.dialog.maximumFileSize") + " (" +
+                            UnitUtil.formatMemSize(maximumFileSize) + ")";
       errorMessage = MessageFormat.format(errorMessage, fileName);
       MessageNotifier.addError(errorMessage);
       throw new WebApplicationException(
-              Response.status(Response.Status.PRECONDITION_FAILED).entity(errorMessage).build());
+          Response.status(Response.Status.PRECONDITION_FAILED).entity(errorMessage).build());
     }
   }
 
   /**
-   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br>
-   * If no defined value is returned by {@link #getComponentId()}, nothing is verified.
+   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br> If no
+   * defined value is returned by {@link #getComponentId()}, nothing is verified.
+   *
    * @param fileName the file name to test.
    */
   private void checkAuthorizedMimeTypes(final String fileName) {
@@ -338,7 +356,7 @@ public class FileUploadResource extends RESTWebService {
 
       // Component file filter that contains authorized and forbidden rules
       final ComponentFileFilterParameter componentFileFilter = ComponentFileFilterParameter
-              .from(getOrganisationController().getComponentInstance(componentInstanceId).orElse(null));
+          .from(getOrganisationController().getComponentInstance(componentInstanceId).orElse(null));
 
       try {
         componentFileFilter.verifyFileAuthorized(new File(fileName));
@@ -349,18 +367,19 @@ public class FileUploadResource extends RESTWebService {
   }
 
   /**
-   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br>
-   * If no defined value is returned by {@link #getComponentId()}, nothing is verified.
+   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br> If no
+   * defined value is returned by {@link #getComponentId()}, nothing is verified.
+   *
    * @param fileUploadData the file upload data (filled when file has not been yet uploaded).
    * @param uploadedFile the uploaded file.
    */
   private void checkSpecificComponentVerifications(FileUploadVerifyData fileUploadData,
-                                                   File uploadedFile) {
+      File uploadedFile) {
     String componentInstanceId = getComponentId();
     if (StringUtil.isDefined(componentInstanceId)) {
       try {
         Optional<ComponentInstanceFileUploadVerification> verification =
-                ComponentInstanceFileUploadVerification.get(componentInstanceId);
+            ComponentInstanceFileUploadVerification.get(componentInstanceId);
         if (fileUploadData != null) {
           verification.ifPresent(i -> i.verify(componentInstanceId, fileUploadData));
         } else {
@@ -374,21 +393,22 @@ public class FileUploadResource extends RESTWebService {
 
   /**
    * Builds a JSON representation of the given uploaded file.
+   *
    * @param uploadSessionFile the uploaded file into current session.
    * @return a builder of the JSON representation of the uploaded file (more information on
    * {@link FileUploadResource#uploadFiles()})
    */
   private UnaryOperator<JSONObject> asJSON(
-          UploadSessionFile uploadSessionFile) {
+      UploadSessionFile uploadSessionFile) {
     return o ->
-            o.put("uploadSessionId", uploadSessionFile.getUploadSession().getId())
-                    .put("fullPath", uploadSessionFile.getFullPath())
-                    .put("name", uploadSessionFile.getServerFile().getName())
-                    .put("size", uploadSessionFile.getServerFile().length())
-                    .put("formattedSize", UnitUtil.formatMemSize(
-                            new BigDecimal(String.valueOf(uploadSessionFile.getServerFile().length()))))
-                    .put("iconUrl", FileRepositoryManager
-                            .getFileIcon(FilenameUtils.getExtension(uploadSessionFile.getServerFile().getName())));
+        o.put("uploadSessionId", uploadSessionFile.getUploadSession().getId())
+            .put("fullPath", uploadSessionFile.getFullPath())
+            .put("name", uploadSessionFile.getServerFile().getName())
+            .put("size", uploadSessionFile.getServerFile().length())
+            .put("formattedSize", UnitUtil.formatMemSize(
+                new BigDecimal(String.valueOf(uploadSessionFile.getServerFile().length()))))
+            .put("iconUrl", FileRepositoryManager
+                .getFileIcon(FilenameUtils.getExtension(uploadSessionFile.getServerFile().getName())));
   }
 
   @DELETE
@@ -400,8 +420,8 @@ public class FileUploadResource extends RESTWebService {
       if (StringUtil.isDefined(fileToDelete.getFullPath())) {
         if (!uploadSession.remove(fileToDelete.getFullPath())) {
           SilverLogger.getLogger(this).error(
-                  "Trying to delete non existing file with session id '" + uploadSession.getId() +
-                          "' and fullPath '" + fileToDelete.getFullPath() + "'");
+              "Trying to delete non existing file with session id '" + uploadSession.getId() +
+              "' and fullPath '" + fileToDelete.getFullPath() + "'");
         }
       } else {
         uploadSession.clear();
@@ -418,11 +438,7 @@ public class FileUploadResource extends RESTWebService {
   protected String getResourceBasePath() {
     return PATH;
   }
-
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.web.RESTWebService#getComponentId()
-   */
+  
   @Override
   public String getComponentId() {
     return getHttpRequest().getHeader(FileUploadData.X_COMPONENT_INSTANCE_ID);

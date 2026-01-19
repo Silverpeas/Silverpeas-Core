@@ -56,8 +56,9 @@ import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,12 +72,14 @@ import java.util.stream.Collectors;
  * service capabilities that are supported as well as of the constrained support of those
  * capabilities by Silverpeas.
  * <p>
- * Behind the scene, it defines the capabilities actually supported and delegates to a type manager
- * the knowledge of what are the CMIS types for each kind of Silverpeas objects exposed by CMIS and
- * to an object manager the knowledge of how the CMIS and the Silverpeas objects are mapped between
- * them. The access to the Silverpeas objects is done through this manager and it is controlled by
- * the repository itself according to the supported CMIS service capabilities.
+ * Behind the scene, it defines the capabilities actually supported, and it delegates to managers
+ * the handling of exposed CMIS objects. The type manager takes care for each kind of exposed
+ * Silverpeas objects their corresponding CMIS type whereas the object manager knows how the CMIS
+ * and the Silverpeas objects are mapped to each other. The access to the Silverpeas objects is done
+ * through this manager, and it is controlled by the repository itself according to the supported
+ * CMIS service capabilities.
  * </p>
+ *
  * @author mmoquillon
  */
 @Repository
@@ -98,6 +101,7 @@ public class SilverpeasCmisRepository {
 
   /**
    * Gets the unique identifier of this repository.
+   *
    * @return the repository's unique identifier.
    */
   public String getId() {
@@ -105,8 +109,9 @@ public class SilverpeasCmisRepository {
   }
 
   /**
-   * Gets information about the CMIS repository, the optional capabilities
-   * it supports and its access control information if applicable.
+   * Gets information about the CMIS repository, the optional capabilities it supports and its
+   * access control information if applicable.
+   *
    * @return the repository info
    */
   public RepositoryInfo getRepositoryInfo() {
@@ -141,24 +146,17 @@ public class SilverpeasCmisRepository {
   }
 
   /**
-   * Gets the list of object types defined for the repository that are
-   * children of the specified type.
+   * Gets the list of object types defined for the repository that are children of the specified
+   * type.
    *
-   * @param typeId
-   *            <em>(optional)</em> the typeId of an object type specified in
-   *            the repository (if not specified the repository MUST return
-   *            all base object types)
-   * @param includePropertyDefinitions
-   *            <em>(optional)</em> if <code>true</code> the repository MUST
-   *            return the property definitions for each object type returned
-   *            (default is <code>false</code>)
-   * @param maxItems
-   *            <em>(optional)</em> the maximum number of items to return in a
-   *            response (default is repository specific)
-   * @param skipCount
-   *            <em>(optional)</em> number of potential results that the
-   *            repository MUST skip/page over before returning any results
-   *            (default is 0)
+   * @param typeId <em>(optional)</em> the typeId of an object type specified in the repository (if
+   * not specified the repository MUST return all base object types)
+   * @param includePropertyDefinitions <em>(optional)</em> if <code>true</code> the repository MUST
+   * return the property definitions for each object type returned (default is <code>false</code>)
+   * @param maxItems <em>(optional)</em> the maximum number of items to return in a response
+   * (default is repository specific)
+   * @param skipCount <em>(optional)</em> number of potential results that the repository MUST
+   * skip/page over before returning any results (default is 0)
    * @return the list of type children
    */
   public TypeDefinitionList getTypeChildren(final String typeId,
@@ -170,8 +168,8 @@ public class SilverpeasCmisRepository {
 
   /**
    * Gets the definition of the specified object type.
-   * @param typeId
-   *            typeId of an object type specified in the repository
+   *
+   * @param typeId typeId of an object type specified in the repository
    * @return the type definition
    */
   public TypeDefinition getTypeDefinition(final String typeId) {
@@ -181,31 +179,19 @@ public class SilverpeasCmisRepository {
   /**
    * Gets the list of child objects contained in the specified folder.
    *
-   * @param folderId
-   *            the identifier for the folder
-   * @param filter
-   *            <em>(optional)</em> a comma-separated list of query names that
-   *            defines which properties must be returned by the repository
-   *            (default is repository specific)
-   * @param includeAllowableActions
-   *            <em>(optional)</em> if {@code true}, then the repository must
-   *            return the available actions for each object in the result set
-   *            (default is {@code false})
-   * @param includeRelationships
-   *            <em>(optional)</em> indicates what relationships in which the
-   *            objects participate must be returned (default is
-   *            {@link IncludeRelationships#NONE})
-   * @param includePathSegment
-   *            <em>(optional)</em> if {@code true}, returns a path segment
-   *            for each child object for use in constructing that object's
-   *            path (default is {@code false})
-   * @param maxItems
-   *            <em>(optional)</em> the maximum number of items to return in a
-   *            response (default is repository specific)
-   * @param skipCount
-   *            <em>(optional)</em> number of potential results that the
-   *            repository MUST skip/page over before returning any results
-   *            (default is 0)
+   * @param folderId the identifier for the folder
+   * @param filter <em>(optional)</em> a comma-separated list of query names that defines which
+   * properties must be returned by the repository (default is repository specific)
+   * @param includeAllowableActions <em>(optional)</em> if {@code true}, then the repository must
+   * return the available actions for each object in the result set (default is {@code false})
+   * @param includeRelationships <em>(optional)</em> indicates what relationships in which the
+   * objects participate must be returned (default is {@link IncludeRelationships#NONE})
+   * @param includePathSegment <em>(optional)</em> if {@code true}, returns a path segment for each
+   * child object for use in constructing that object's path (default is {@code false})
+   * @param maxItems <em>(optional)</em> the maximum number of items to return in a response
+   * (default is repository specific)
+   * @param skipCount <em>(optional)</em> number of potential results that the repository MUST
+   * skip/page over before returning any results (default is 0)
    * @return the list of children. Each child is a {@link org.silverpeas.core.cmis.model.CmisFile}
    * instance.
    */
@@ -220,33 +206,23 @@ public class SilverpeasCmisRepository {
   }
 
   /**
-   * Gets the set of descendant objects contained in the specified folder or
-   * any of its child folders. The difference with {
-   * @link #getFolderTree(String, BigInteger, String, Boolean, IncludeRelationships, Boolean)} is
+   * Gets the set of descendant objects contained in the specified folder or any of its child
+   * folders. The difference with
+   * {@link #getFolderTree(String, BigInteger, String, Boolean, IncludeRelationships, Boolean)} is
    * that this method returns both folders and documents.
    *
-   * @param folderId
-   *            the identifier for the folder
-   * @param depth
-   *            the number of levels of depth in the folder hierarchy from
-   *            which to return results. If null, by default set at -1 meaning returning only the
-   *            direct children of the folder.
-   * @param filter
-   *            <em>(optional)</em> a comma-separated list of query names that
-   *            defines which properties must be returned by the repository
-   *            (default is repository specific)
-   * @param includeAllowableActions
-   *            <em>(optional)</em> if {@code true}, then the repository must
-   *            return the available actions for each object in the result set
-   *            (default is {@code false})
-   * @param includeRelationships
-   *            <em>(optional)</em> indicates what relationships in which the
-   *            objects participate must be returned (default is
-   *            {@link IncludeRelationships#NONE})
-   * @param includePathSegment
-   *            <em>(optional)</em> if {@code true}, returns a path segment
-   *            for each child object for use in constructing that object's
-   *            path (default is {@code false})
+   * @param folderId the identifier for the folder
+   * @param depth the number of levels of depth in the folder hierarchy from which to return
+   * results. If null, by default set at -1 meaning returning only the direct children of the
+   * folder.
+   * @param filter <em>(optional)</em> a comma-separated list of query names that defines which
+   * properties must be returned by the repository (default is repository specific)
+   * @param includeAllowableActions <em>(optional)</em> if {@code true}, then the repository must
+   * return the available actions for each object in the result set (default is {@code false})
+   * @param includeRelationships <em>(optional)</em> indicates what relationships in which the
+   * objects participate must be returned (default is {@link IncludeRelationships#NONE})
+   * @param includePathSegment <em>(optional)</em> if {@code true}, returns a path segment for each
+   * child object for use in constructing that object's path (default is {@code false})
    * @return the tree of descendants. Each descendent carried by the
    * {@link org.apache.chemistry.opencmis.commons.data.ObjectInFolderData} objects in the listed
    * containers is a {@link org.silverpeas.core.cmis.model.CmisFile} instance.
@@ -259,37 +235,28 @@ public class SilverpeasCmisRepository {
   }
 
   /**
-   * Gets the set of descendant folder objects contained in the specified
-   * folder. The difference with
+   * Gets the set of descendant folder objects contained in the specified folder. The difference
+   * with
    * {@link #getDescendants(String, BigInteger, String, Boolean, IncludeRelationships, Boolean)} is
    * that this method returns only folders and not documents.
    *
-   * @param folderId
-   *            the identifier for the folder
-   * @param depth
-   *            the number of levels of depth in the folder hierarchy from
-   *            which to return results
-   * @param filter
-   *            <em>(optional)</em> a comma-separated list of query names that
-   *            defines which properties must be returned by the repository
-   *            (default is repository specific)
-   * @param includeAllowableActions
-   *            <em>(optional)</em> if {@code true}, then the repository must
-   *            return the available actions for each object in the result set
-   *            (default is {@code false})
-   * @param includeRelationships
-   *            <em>(optional)</em> indicates what relationships in which the
-   *            objects participate must be returned (default is
-   *            {@link IncludeRelationships#NONE})
-   * @param includePathSegment
-   *            <em>(optional)</em> if {@code true}, returns a path segment
-   *            for each child object for use in constructing that object's
-   *            path (default is {@code false})
+   * @param folderId the identifier for the folder
+   * @param depth the number of levels of depth in the folder hierarchy from which to return
+   * results
+   * @param filter <em>(optional)</em> a comma-separated list of query names that defines which
+   * properties must be returned by the repository (default is repository specific)
+   * @param includeAllowableActions <em>(optional)</em> if {@code true}, then the repository must
+   * return the available actions for each object in the result set (default is {@code false})
+   * @param includeRelationships <em>(optional)</em> indicates what relationships in which the
+   * objects participate must be returned (default is {@link IncludeRelationships#NONE})
+   * @param includePathSegment <em>(optional)</em> if {@code true}, returns a path segment for each
+   * child object for use in constructing that object's path (default is {@code false})
    * @return the folder tree. Each descendent carried by the
-   * {@link org.apache.chemistry.opencmis.commons.data.ObjectInFolderData} objects in the
-   * listed containers is a {@link org.silverpeas.core.cmis.model.CmisFolder} instance.
+   * {@link org.apache.chemistry.opencmis.commons.data.ObjectInFolderData} objects in the listed
+   * containers is a {@link org.silverpeas.core.cmis.model.CmisFolder} instance.
    **/
-  public List<ObjectInFolderContainer> getFolderTree(String folderId, BigInteger depth, String filter,
+  public List<ObjectInFolderContainer> getFolderTree(String folderId, BigInteger depth,
+      String filter,
       Boolean includeAllowableActions, IncludeRelationships includeRelationships,
       Boolean includePathSegment) {
     return getObjectInFolderContainers(folderId, depth, filter, includeAllowableActions,
@@ -299,20 +266,14 @@ public class SilverpeasCmisRepository {
   /**
    * Gets the parent folder(s) for the specified fileable object.
    *
-   * @param objectId
-   *            the identifier for the object
-   * @param filter
-   *            <em>(optional)</em> a comma-separated list of query names that
-   *            defines which properties must be returned by the repository
-   *            (default is repository specific)
-   * @param includeAllowableActions
-   *            <em>(optional)</em> if {@code true}, then the repository must
-   *            return the available actions for each object in the result set
-   *            (default is {@code false})
-   * @param includeRelativePathSegment
-   *            <em>(optional)</em> if {@code true}, returns a relative path
-   *            segment for each parent object for use in constructing that
-   *            object's path (default is {@code false})
+   * @param objectId the identifier for the object
+   * @param filter <em>(optional)</em> a comma-separated list of query names that defines which
+   * properties must be returned by the repository (default is repository specific)
+   * @param includeAllowableActions <em>(optional)</em> if {@code true}, then the repository must
+   * return the available actions for each object in the result set (default is {@code false})
+   * @param includeRelativePathSegment <em>(optional)</em> if {@code true}, returns a relative path
+   * segment for each parent object for use in constructing that object's path (default is
+   * {@code false})
    * @return the list of parents. Each parent is a {@link org.silverpeas.core.cmis.model.CmisFolder}
    * instance.
    */
@@ -327,23 +288,15 @@ public class SilverpeasCmisRepository {
   /**
    * Gets the specified information for the object specified by its unique identifier.
    *
-   * @param objectId
-   *            the identifier for the object
-   * @param filter
-   *            <em>(optional)</em> a comma-separated list of query names that
-   *            defines which properties must be returned by the repository
-   *            (default is repository specific)
-   * @param includeAllowableActions
-   *            <em>(optional)</em> if {@code true}, then the repository must
-   *            return the allowable actions for the object (default is
-   *            {@code false})
-   * @param includeRelationships
-   *            <em>(optional)</em> indicates what relationships in which the
-   *            object participates must be returned (default is
-   *            {@link IncludeRelationships#NONE})
-   * @param includeAcl
-   *            <em>(optional)</em> if {@code true}, then the repository must
-   *            return the ACL for the object (default is {@code false})
+   * @param objectId the identifier for the object
+   * @param filter <em>(optional)</em> a comma-separated list of query names that defines which
+   * properties must be returned by the repository (default is repository specific)
+   * @param includeAllowableActions <em>(optional)</em> if {@code true}, then the repository must
+   * return the allowable actions for the object (default is {@code false})
+   * @param includeRelationships <em>(optional)</em> indicates what relationships in which the
+   * object participates must be returned (default is {@link IncludeRelationships#NONE})
+   * @param includeAcl <em>(optional)</em> if {@code true}, then the repository must return the ACL
+   * for the object (default is {@code false})
    * @return the CMIS object.
    */
   public CmisObject getObject(final String objectId, final String filter,
@@ -359,23 +312,15 @@ public class SilverpeasCmisRepository {
   /**
    * Gets the specified information for the object specified by path.
    *
-   * @param path
-   *            the path to the object
-   * @param filter
-   *            <em>(optional)</em> a comma-separated list of query names that
-   *            defines which properties must be returned by the repository
-   *            (default is repository specific)
-   * @param includeAllowableActions
-   *            <em>(optional)</em> if {@code true}, then the repository must
-   *            return the allowable actions for the object (default is
-   *            {@code false})
-   * @param includeRelationships
-   *            <em>(optional)</em> indicates what relationships in which the
-   *            object participates must be returned (default is
-   *            {@link IncludeRelationships#NONE})
-   * @param includeAcl
-   *            <em>(optional)</em> if {@code true}, then the repository must
-   *            return the ACL for the object (default is {@code false})
+   * @param path the path to the object
+   * @param filter <em>(optional)</em> a comma-separated list of query names that defines which
+   * properties must be returned by the repository (default is repository specific)
+   * @param includeAllowableActions <em>(optional)</em> if {@code true}, then the repository must
+   * return the allowable actions for the object (default is {@code false})
+   * @param includeRelationships <em>(optional)</em> indicates what relationships in which the
+   * object participates must be returned (default is {@link IncludeRelationships#NONE})
+   * @param includeAcl <em>(optional)</em> if {@code true}, then the repository must return the ACL
+   * for the object (default is {@code false})
    * @return the CMIS file-able object located at the given path.
    */
   public CmisFile getObjectByPath(final String path, final String filter,
@@ -391,11 +336,9 @@ public class SilverpeasCmisRepository {
   /**
    * Gets the content stream for the specified document object.
    *
-   * @param objectId
-   *            the identifier for the object
-   * @param offset
-   *            the position in bytes in the document content from which the stream to return
-   *            should start.
+   * @param objectId the identifier for the object
+   * @param offset the position in bytes in the document content from which the stream to return
+   * should start.
    * @param length the length in bytes of the stream to return.
    * @return the content stream
    */
@@ -428,6 +371,7 @@ public class SilverpeasCmisRepository {
    * specified parent folder. If the parent doesn't support the creation of such a folder type, then
    * a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException} exception
    * is thrown.
+   *
    * @param properties the property values that must be applied to the newly created folder object
    * @param parentId the identifier for the parent folder
    * @return the ID of the newly created folder
@@ -445,14 +389,10 @@ public class SilverpeasCmisRepository {
    * Creates a document object of the specified type (given by the cmis:objectTypeId property) in
    * the specified location and with the given content.
    *
-   * @param properties
-   *            the property values that must be applied to the newly created
-   *            folder object
-   * @param folderId
-   *            the identifier for the parent folder
-   * @param stream
-   *            the stream on the document's content. The stream is consumed but not closed by this
-   *            method.
+   * @param properties the property values that must be applied to the newly created folder object
+   * @param folderId the identifier for the parent folder
+   * @param stream the stream on the document's content. The stream is consumed but not closed by
+   * this method.
    * @return the ID of the newly created document
    */
   public String createDocument(final Properties properties, final String folderId,
@@ -469,18 +409,13 @@ public class SilverpeasCmisRepository {
    * Updates the specified document object by setting its content with the one in the given stream.
    * The stream in <code>contentStream</code> is consumed but not closed by this method.
    *
-   * @param documentId
-   *            the identifier for the document.
-   * @param overwrite
-   *            If {@code true}, then the repository must
-   *            replace the existing content stream for the object (if any)
-   *            with the input content stream. If {@code false}, then the
-   *            repository must only set the input content stream for the
-   *            object if the object currently does not have a content stream
-   *            (default is {@code true})
-   * @param contentStream
-   *            the stream on the document's content. The stream is consumed but not closed by this
-   *            method.
+   * @param documentId the identifier for the document.
+   * @param overwrite If {@code true}, then the repository must replace the existing content stream
+   * for the object (if any) with the input content stream. If {@code false}, then the repository
+   * must only set the input content stream for the object if the object currently does not have a
+   * content stream (default is {@code true})
+   * @param contentStream the stream on the document's content. The stream is consumed but not
+   * closed by this method.
    */
   public void updateDocument(final String documentId, final boolean overwrite,
       final ContentStream contentStream) {

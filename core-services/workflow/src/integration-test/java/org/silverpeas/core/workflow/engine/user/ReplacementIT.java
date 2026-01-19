@@ -72,9 +72,10 @@ public class ReplacementIT {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(ReplacementIT.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer")
+        .addMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer")
+        .addAsResource("org/silverpeas/util/logging")
+        .addAsResource(
+            "org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties")
         .addAsResource("org/silverpeas/lookAndFeel")
         .addAsResource("org/silverpeas/util")
         .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.workflow")
@@ -192,6 +193,7 @@ public class ReplacementIT {
             r.getIncumbent().getUserId().equals(incumbent.getUserId())), is(true));
   }
 
+  @SuppressWarnings("rawtypes")
   @Test
   public void getAReplacementByItsId() {
     final String id = "c550ffb1-6e76-4947-9fe3-b69777d758b6";

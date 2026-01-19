@@ -25,13 +25,13 @@ package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 import java.io.IOException;
 
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
 
 /**
- * This is a wrap of a {@link javax.websocket.Session} instance.
+ * This is a wrap of a {@link jakarta.websocket.Session} instance.
  * <p>
  *   All Server Event requests performed from a WebSocket MUST be wrapped by this implementation
  *   and registered by {@link SilverpeasServerEventContextManager}.
@@ -98,8 +98,7 @@ public class SilverpeasWebSocketContext extends AbstractServerEventContext<Sessi
   }
 
   @Override
-  public void performEventSend(final String name, final long id, final String data)
-      throws IOException {
+  public void performEventSend(final String name, final long id, final String data) {
     getWrappedInstance().getAsyncRemote()
         .sendObject(encodeObject(o -> o.put("name", name).put("id", id).put("data", data)));
   }

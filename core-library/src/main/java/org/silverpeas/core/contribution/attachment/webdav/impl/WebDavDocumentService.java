@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
 import org.silverpeas.core.jcr.JCRSession;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
 import java.io.IOException;
 import java.io.InputStream;

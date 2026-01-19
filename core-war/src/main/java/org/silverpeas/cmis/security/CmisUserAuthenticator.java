@@ -36,7 +36,7 @@ import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.WebAuthenticationValidation;
 import org.silverpeas.core.web.rs.WebAuthorizationValidation;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 import static org.silverpeas.kernel.util.StringUtil.*;
 

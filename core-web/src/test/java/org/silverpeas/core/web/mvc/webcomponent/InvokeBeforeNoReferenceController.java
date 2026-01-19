@@ -30,10 +30,10 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.Invokable;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 
-import javax.ws.rs.GET;
+import jakarta.ws.rs.GET;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 @org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")

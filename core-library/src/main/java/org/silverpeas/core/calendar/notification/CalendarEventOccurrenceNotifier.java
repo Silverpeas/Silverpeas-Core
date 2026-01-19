@@ -47,6 +47,7 @@
  */
 package org.silverpeas.core.calendar.notification;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
@@ -60,6 +61,9 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 @Bean
 public class CalendarEventOccurrenceNotifier
     extends AbstractNotifier<CalendarEventOccurrenceLifeCycleEvent> {
+
+  @Inject
+  private AttendeeLifeCycleEventNotifier attendeeNotifier;
 
   @Override
   public void onDeletion(final CalendarEventOccurrenceLifeCycleEvent event) {
@@ -117,7 +121,7 @@ public class CalendarEventOccurrenceNotifier
 
     if (after.getAttendees().isNotSameAs(before.getAttendees())) {
       // the update is about the attendees themselves
-      AttendeeLifeCycleEventNotifier.notifyAttendees(event.getSubtype(), after,
+      attendeeNotifier.notifyAttendees(event.getSubtype(), after,
           before.getAttendees(), after.getAttendees());
     }
   }

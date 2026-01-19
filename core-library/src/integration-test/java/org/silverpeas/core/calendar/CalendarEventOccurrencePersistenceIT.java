@@ -29,20 +29,18 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.SQLRequester;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -62,8 +60,9 @@ public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(
-        CalendarEventOccurrencePersistenceIT.class)
+    return LibCoreWarBuilder.onWarForTestClass(CalendarEventOccurrencePersistenceIT.class)
+        .addStubbedUserAPI()
+        .addCalendarEngine()
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
@@ -71,7 +70,10 @@ public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
 
   @Before
   public void persistSomeCalendarEventOccurrences() {
-    OperationContext.fromUser("0");
+    User user = StubbedUserProvider.addUser("0");
+    OperationContext.fromUser(user);
+    StubbedUserProvider.addUser("1");
+    StubbedUserProvider.addUser("2");
 
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     List<CalendarEventOccurrence> occurrences =

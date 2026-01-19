@@ -43,25 +43,29 @@ public class SQLDateTimeConstants {
 
   /**
    * The minimum date for any of our supported data sources. Currently, it is based upon the more
-   * limited ones, that are Oracle and MS-SQLServer.
+   * limited ones, that are Oracle and MS-SQLServer. Usually used to specify a required date as
+   * empty (undefined date).
    */
   public static final Date MIN_DATE = Date.valueOf(MIN.toLocalDate());
 
   /**
    * The maximum date for any of our supported data sources. Currently, it is based upon the more
-   * limited ones, that are Oracle and MS-SQLServer.
+   * limited ones, that are Oracle and MS-SQLServer. Usually used to specify an unlimited period
+   * of time.
    */
   public static final Date MAX_DATE = Date.valueOf(MAX.toLocalDate());
 
   /**
    * The minimum timestamp for any of our supported data sources. Currently, it is based upon the
-   * more limited ones, that are Oracle and MS-SQLServer.
+   * more limited ones, that are Oracle and MS-SQLServer. Usually used to specify a required
+   * datetime as empty (no defined date).
    */
   public static final Timestamp MIN_TIMESTAMP = Timestamp.valueOf(MIN);
 
   /**
    * The maximum timestamp for any of our supported data sources. Currently, it is based upon the
-   * more limited ones, that are Oracle and MS-SQLServer.
+   * more limited ones, that are Oracle and MS-SQLServer. Usually used to specify an unlimited
+   * period of time.
    */
   public static final Timestamp MAX_TIMESTAMP = Timestamp.valueOf(MAX);
 }

@@ -49,7 +49,7 @@ public class PdcFieldTemplateManager {
   // The axis used to define the PDC field.
   private ArrayList<UsedAxis> usedAxisList;
 
-  protected PdcFieldTemplateManager() {
+  PdcFieldTemplateManager() {
     reset();
   }
 

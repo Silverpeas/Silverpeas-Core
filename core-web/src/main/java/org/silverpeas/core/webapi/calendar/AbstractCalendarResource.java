@@ -27,9 +27,9 @@ package org.silverpeas.core.webapi.calendar;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import javax.inject.Inject;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import java.time.ZoneId;
 
 /**

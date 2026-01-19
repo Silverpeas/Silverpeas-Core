@@ -51,7 +51,7 @@ import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.MemoizedSupplier;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

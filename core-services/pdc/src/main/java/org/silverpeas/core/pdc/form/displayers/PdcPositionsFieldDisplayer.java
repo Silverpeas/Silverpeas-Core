@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.pdc.form.displayers;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.TD;
 import org.apache.ecs.html.TR;
@@ -43,6 +42,8 @@ import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.util.file.FileItem;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -60,12 +61,6 @@ import java.util.Map;
 public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   private PdcManager pdcManager = null;
-
-  /**
-   * Constructeur
-   */
-  public PdcPositionsFieldDisplayer() {
-  }
 
   /**
    * Returns the name of the managed types.
@@ -87,8 +82,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     // no javascript as this displayer is for readonly purpose.
   }
 
@@ -102,7 +96,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
-      PagesContext context) throws FormException {
+      PagesContext context) {
 
     String language = context.getLanguage();
     Map<String, String> parameters = template.getParameters(language);
@@ -128,7 +122,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
           String valueId = position.getValueOnAxis(Integer.parseInt(axisId));
           if (StringUtil.isDefined(valueId)) {
             valueId = valueId.substring(0, valueId.length() - 1);
-            valueId = valueId.substring(valueId.lastIndexOf('/') + 1, valueId.length());
+            valueId = valueId.substring(valueId.lastIndexOf('/') + 1);
             TR row = new TR();
             TD cell = new TD();
             Value value = getPdcManager().getValue(axisId, valueId);
@@ -138,14 +132,15 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
           }
         }
         result.addElement(positionsTables);
-        out.println(positionsTables.toString());
+        out.println(positionsTables);
       } catch (ContentManagerException | PdcException e) {
+        SilverLogger.getLogger(this).silent(e);
       }
     }
 
   }
 
-  private ContentManagementEngine getContentManager() throws ContentManagerException {
+  private ContentManagementEngine getContentManager() {
     return ContentManagementEngineProvider.getContentManagementEngine();
   }
 
@@ -158,7 +153,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
 
   @Override
   public List<String> update(String values, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
 
     // nothing to do as this displayer is for readonly purpose.
     return new ArrayList<>();

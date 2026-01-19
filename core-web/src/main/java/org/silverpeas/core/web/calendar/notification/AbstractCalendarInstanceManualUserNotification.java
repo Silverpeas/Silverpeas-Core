@@ -30,9 +30,9 @@ import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUser
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
 

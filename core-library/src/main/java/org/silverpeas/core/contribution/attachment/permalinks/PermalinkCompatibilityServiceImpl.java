@@ -32,9 +32,9 @@ import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPerma
 import org.silverpeas.core.contribution.attachment.permalinks.repository.DocumentPermalinkRepository;
 import org.silverpeas.core.contribution.attachment.permalinks.repository.VersionPermalinkRepository;
 
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @Default
 @Service

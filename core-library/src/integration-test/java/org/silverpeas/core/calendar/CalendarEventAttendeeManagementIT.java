@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,9 +31,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.LibCoreWarBuilder;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -57,17 +59,26 @@ public class CalendarEventAttendeeManagementIT extends BaseCalendarTest {
   private static final String EVENT_WITH_ATTENDEE_AND_DATE_PART = "ID_E_5";
   private static final String EVENT_WITHOUT_ATTENDEE = "ID_E_4";
 
+  @SuppressWarnings("CdiInjectionPointsInspection")
+  @Inject
+  private UserProvider userProvider;
+
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(CalendarEventAttendeeManagementIT.class)
+    return LibCoreWarBuilder.onWarForTestClass(CalendarEventAttendeeManagementIT.class)
+        .addStubbedUserAPI()
+        .addCalendarEngine()
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
   }
 
   @Before
-  public void prepareOperationContext() {
-    OperationContext.fromUser("0");
+  public void prepareContext() {
+    User user = StubbedUserProvider.addUser("0");
+    OperationContext.fromUser(user);
+    StubbedUserProvider.addUser("1");
+    StubbedUserProvider.addUser("2") ;
   }
 
   @Test
@@ -344,9 +355,7 @@ public class CalendarEventAttendeeManagementIT extends BaseCalendarTest {
   }
 
   private User expectedUser() {
-    UserDetail user = new UserDetail();
-    user.setId("1");
-    return user;
+    return userProvider.getUser("1");
   }
 
   private List<CalendarEventOccurrence> allOccurrencesOf(final CalendarEvent event) {

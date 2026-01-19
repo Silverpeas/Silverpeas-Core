@@ -24,6 +24,7 @@
 
 package org.silverpeas.cmis.walkers;
 
+import jakarta.inject.Inject;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
@@ -33,15 +34,10 @@ import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
-import org.silverpeas.core.cmis.model.CmisFolder;
-import org.silverpeas.core.cmis.model.CmisObject;
-import org.silverpeas.core.cmis.model.CmisObjectFactory;
-import org.silverpeas.core.cmis.model.Publication;
-import org.silverpeas.core.cmis.model.TypeId;
+import org.silverpeas.core.cmis.model.*;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.Document;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -54,9 +50,8 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +66,6 @@ import java.util.stream.Stream;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalker {
 
   @Inject

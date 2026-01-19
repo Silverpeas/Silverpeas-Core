@@ -23,9 +23,6 @@
  */
 package org.silverpeas.core.node.coordinates.persistence;
 
-import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.coordinates.model.CoordinatePK;
-import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.Column;
 import org.dbunit.dataset.DefaultTable;
@@ -38,7 +35,11 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.coordinates.model.CoordinatePK;
+import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
+import org.silverpeas.core.node.dao.NodeDAOIT;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
@@ -47,8 +48,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.MatcherAssert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.silverpeas.core.test.integration.rule.DbSetupRule.getActualDataSet;
@@ -70,24 +71,13 @@ public class CoordinatesDAOIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(CoordinatesDAOIT.class)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addIndexEngineFeatures()
-        .addWysiwygFeatures()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn(
-            war -> war.addPackages(true, "org.silverpeas.core.node")
-                .addAsResource("node-create-database.sql")
-                .addAsResource("org/silverpeas/node")
-                .addAsResource("org/silverpeas/core/node"))
+    return LibCoreWarBuilder.onFullWarForTestClass(NodeDAOIT.class)
+        .addAsResource("node-create-database.sql")
+        .addAsResource("org/silverpeas/node")
+        .addAsResource("org/silverpeas/core/node")
         .build();
   }
 
-  /**
-   * Test of selectByFatherIds method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test
   public void testSelectByFatherIds() throws Exception {
     try (Connection con = getSafeConnection()) {
@@ -98,16 +88,12 @@ public class CoordinatesDAOIT {
       Collection<String> expResult = new ArrayList<>(2);
       expResult.add("1");
       expResult.add("2");
-      @SuppressWarnings("unchecked") Collection<String> result =
+      Collection<String> result =
           CoordinatesDAO.selectByFatherIds(con, fatherIds, pk);
       assertEquals(expResult, result);
     }
   }
 
-  /**
-   * Test of selectByFatherPaths method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test
   public void testSelectByFatherPaths() throws Exception {
     try (Connection con = getSafeConnection()) {
@@ -118,16 +104,12 @@ public class CoordinatesDAOIT {
       Collection<String> expResult = new HashSet<>(2);
       expResult.add("1");
       expResult.add("2");
-      @SuppressWarnings("unchecked") HashSet<String> result =
+      HashSet<String> result =
           new HashSet<>(CoordinatesDAO.selectByFatherPaths(con, fatherPaths, pk));
       assertEquals(expResult, result);
     }
   }
 
-  /**
-   * Test of addCoordinate method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test
   public void testAddCoordinate() throws Exception {
     try (Connection con = getSafeConnection()) {
@@ -178,12 +160,7 @@ public class CoordinatesDAOIT {
     }
   }
 
-  /**
-   * Test of removeCoordinates method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test()
-  @SuppressWarnings("unchecked")
   public void testRemoveCoordinates() throws Exception {
     try (Connection con = getSafeConnection()) {
       String instanceId = "kmax888";
@@ -191,7 +168,7 @@ public class CoordinatesDAOIT {
       List<String> coordinateIds = new ArrayList<>(2);
       coordinateIds.add("1");
       coordinateIds.add("2");
-      @SuppressWarnings("unchecked") Collection<Coordinate> result =
+      Collection<Coordinate> result =
           CoordinatesDAO.selectCoordinatesByCoordinateIds(con, coordinateIds, pk);
       assertNotNull(result);
       assertEquals("We should have 2 coordinates", 2, result.size());
@@ -250,10 +227,6 @@ public class CoordinatesDAOIT {
     }
   }
 
-  /**
-   * Test of removeCoordinatesByPoints method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test
   public void testRemoveCoordinatesByPoints() throws Exception {
     try (Connection con = getSafeConnection()) {
@@ -262,7 +235,7 @@ public class CoordinatesDAOIT {
       List<String> coordinateIds = new ArrayList<>(2);
       coordinateIds.add("1");
       coordinateIds.add("2");
-      @SuppressWarnings("unchecked") Collection<Coordinate> result =
+      Collection<Coordinate> result =
           CoordinatesDAO.selectCoordinatesByCoordinateIds(con, coordinateIds, pk);
       assertNotNull(result);
       assertEquals("We should have 2 coordinates", 2, result.size());
@@ -315,10 +288,6 @@ public class CoordinatesDAOIT {
     }
   }
 
-  /**
-   * Test of selectCoordinatesByCoordinateIds method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test
   public void testSelectCoordinatesByCoordinateIds() throws Exception {
     try (Connection con = getSafeConnection()) {
@@ -326,7 +295,7 @@ public class CoordinatesDAOIT {
       List<String> coordinateIds = new ArrayList<>(2);
       coordinateIds.add("1");
       coordinateIds.add("2");
-      @SuppressWarnings("unchecked") Collection<Coordinate> result = CoordinatesDAO
+      Collection<Coordinate> result = CoordinatesDAO
           .selectCoordinatesByCoordinateIds(con, coordinateIds,
               new CoordinatePK(null, null, instanceId));
       assertNotNull(result);
@@ -349,10 +318,6 @@ public class CoordinatesDAOIT {
     }
   }
 
-  /**
-   * Test of addPointToAllCoordinates method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test
   public void testAddPointToAllCoordinates() throws Exception {
     try (Connection con = getSafeConnection()) {
@@ -397,17 +362,13 @@ public class CoordinatesDAOIT {
     }
   }
 
-  /**
-   * Test of getCoordinateIdsByNodeId method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test
   public void testGetCoordinateIdsByNodeId() throws Exception {
     try (Connection con = getSafeConnection()) {
       String instanceId = "kmax888";
       CoordinatePK pk = new CoordinatePK(null, null, instanceId);
       String nodeId = "1060";
-      @SuppressWarnings("unchecked") Collection<String> result =
+      Collection<String> result =
           CoordinatesDAO.getCoordinateIdsByNodeId(con, pk, nodeId);
       assertNotNull(result);
       assertEquals("We should have 2 coordinates", 2, result.size());
@@ -416,16 +377,12 @@ public class CoordinatesDAOIT {
     }
   }
 
-  /**
-   * Test of getCoordinateIdsByNodeId method, of class CoordinatesDAO.
-   * @throws Exception
-   */
   @Test
   public void testGetCoordinateIds() throws Exception {
     try (Connection con = getSafeConnection()) {
       String instanceId = "kmax888";
       CoordinatePK pk = new CoordinatePK(null, null, instanceId);
-      @SuppressWarnings("unchecked") Collection<String> result =
+      Collection<String> result =
           CoordinatesDAO.getCoordinateIds(con, pk);
       assertNotNull(result);
       assertEquals("We should have 3 coordinates", 3, result.size());

@@ -24,7 +24,7 @@ import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
  * A wrapper of a {@link org.silverpeas.core.notification.user.UserNotification} object with
  * additional methods to customize the user notification that was built and returned by a given
  * Silverpeas component instance. The customization is provided by the sender of such a
- * notification and they consist mainly by setting a title other than the provided one or by
+ * notification, and they consist mainly by setting a title other than the provided one or by
  * setting an additional message.
  * @author mmoquillon
  */

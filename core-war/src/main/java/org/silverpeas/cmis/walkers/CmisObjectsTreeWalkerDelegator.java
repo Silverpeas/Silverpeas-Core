@@ -24,6 +24,7 @@
 
 package org.silverpeas.cmis.walkers;
 
+import jakarta.inject.Inject;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
@@ -35,10 +36,9 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
+import org.silverpeas.kernel.annotation.Cacheable;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -49,7 +49,7 @@ import java.util.List;
  */
 @Technical
 @Service
-@Singleton
+@Cacheable
 public class CmisObjectsTreeWalkerDelegator implements CmisObjectsTreeWalker {
 
   @Inject

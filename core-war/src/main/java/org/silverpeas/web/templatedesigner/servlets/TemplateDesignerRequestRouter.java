@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.templatedesigner.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -38,6 +37,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.pdc.form.fieldtype.PdcField;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -47,7 +47,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -288,9 +288,9 @@ public class TemplateDesignerRequestRouter extends
 
     boolean deleteViewLayer = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "DeleteViewLayer"));
     FileItem viewLayer = FileUploadUtil.getFile(parameters, "ViewLayer");
-    if (viewLayer != null && StringUtil.isDefined(viewLayer.getName())) {
+    if (viewLayer != null && StringUtil.isDefined(viewLayer.getFileName())) {
       File file = new File(FileRepositoryManager.getTemporaryPath()+System.currentTimeMillis(), "view.html");
-      FileUploadUtil.saveToFile(file, viewLayer);
+      viewLayer.saveTo(file);
       template.setViewLayerFileName(file.getAbsolutePath());
       template.setViewLayerAction(PublicationTemplateImpl.LAYER_ACTION_ADD);
     } else if (deleteViewLayer) {
@@ -299,9 +299,9 @@ public class TemplateDesignerRequestRouter extends
 
     boolean deleteUpdateLayer = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "DeleteUpdateLayer"));
     FileItem updateLayer = FileUploadUtil.getFile(parameters, "UpdateLayer");
-    if (updateLayer != null && StringUtil.isDefined(updateLayer.getName())) {
+    if (updateLayer != null && StringUtil.isDefined(updateLayer.getFileName())) {
       File file = new File(FileRepositoryManager.getTemporaryPath()+System.currentTimeMillis(), "update.html");
-      FileUploadUtil.saveToFile(file, updateLayer);
+      updateLayer.saveTo(file);
       template.setUpdateLayerFileName(file.getAbsolutePath());
       template.setUpdateLayerAction(PublicationTemplateImpl.LAYER_ACTION_ADD);
     } else if (deleteUpdateLayer) {

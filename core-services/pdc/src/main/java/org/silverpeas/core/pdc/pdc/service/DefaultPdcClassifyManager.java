@@ -46,8 +46,8 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -203,14 +203,6 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
     return objectIdList;
   }
 
-  /**
-   * search a defined position for one usedAxis
-   *
-   * @param objectIdList
-   * @param usedAxis - the UsedAxis object
-   * @return true if for one UsedAxis, a position exists, false otherwise
-   * @throws PdcException
-   */
   @Override
   public boolean hasAlreadyPositions(List<Integer> objectIdList, UsedAxis usedAxis)
       throws PdcException {
@@ -267,19 +259,6 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
     }
   }
 
-  /**
-   * Find all the SilverContentId with the given position.
-   *
-   * @param searchContext
-   * @param alComponentId
-   * @param authorId
-   * @param afterDate
-   * @param beforeDate
-   * @param recursiveSearch
-   * @param visibilitySensitive
-   * @return
-   * @throws PdcException
-   */
   @Override
   public List<Integer> findSilverContentIdByPosition(SearchContext searchContext,
       List<String> alComponentId, String authorId, String afterDate, String beforeDate,

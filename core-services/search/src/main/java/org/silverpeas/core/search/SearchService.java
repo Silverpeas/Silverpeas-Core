@@ -35,7 +35,7 @@ import org.silverpeas.core.index.search.qualifiers.TaxonomySearch;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;

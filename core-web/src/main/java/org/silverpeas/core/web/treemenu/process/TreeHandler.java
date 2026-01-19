@@ -30,7 +30,7 @@ import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.core.web.treemenu.model.MenuItem;
 import org.silverpeas.core.web.treemenu.model.NodeType;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.silverpeas.core.web.treemenu.model.MenuConstants.*;
 

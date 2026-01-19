@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.admin.user.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
@@ -32,6 +33,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
  * group, that is to say implying the belonging of a user to a given group.
  * @author mmoquillon
  */
+@Bean
 public class GroupUserLinkEventNotifier
     extends CDIResourceEventNotifier<GroupUserLink, GroupUserLinkEvent> {
 

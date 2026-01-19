@@ -34,8 +34,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class GoToDocument extends GoTo {
 
@@ -53,16 +53,14 @@ public class GoToDocument extends GoTo {
           new SimpleDocumentPK(objectId), getContentLanguage(req));
     }
     if (document != null) {
-      return redirectToFile(document, req, res);
+      return redirectToFile(document, req);
     }
     return null;
   }
 
-  public String redirectToFile(SimpleDocument version, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+  public String redirectToFile(SimpleDocument version, HttpServletRequest req) {
     boolean isLoggedIn = isUserLogin(req);
     String componentId = version.getInstanceId();
-    String foreignId = version.getForeignId();
     if (StringUtil.isDefined(componentId)) {
       setGefSpaceId(req, componentId);
     }

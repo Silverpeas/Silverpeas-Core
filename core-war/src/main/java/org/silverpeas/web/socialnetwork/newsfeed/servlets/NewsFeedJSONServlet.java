@@ -41,10 +41,10 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -235,15 +235,15 @@ public class NewsFeedJSONServlet extends HttpServlet {
   }
 
   /**
-   * convert the Map of socialInformation to JSON String representation
-   * @param map
+   * convert the social information to JSON String representation
+   * @param socialInfo a list of social information.
    * @return JSONArray
    */
-  private String toJsonS(Map<Date, List<SocialInformation>> map, LocalizationBundle multilang) {
+  private String toJsonS(Map<Date, List<SocialInformation>> socialInfo, LocalizationBundle multilang) {
     SimpleDateFormat formatDate =
         new SimpleDateFormat("EEEE dd MMMM yyyy", multilang.getLocale());
     return JSONCodec.encodeArray(jsonRoot -> {
-      for (Map.Entry<Date, List<SocialInformation>> entry : map.entrySet()) {
+      for (Map.Entry<Date, List<SocialInformation>> entry : socialInfo.entrySet()) {
         jsonRoot.addJSONArray(json -> {
           json.addJSONObject(jsonDate -> {
             jsonDate.put("day", formatDate.format(entry.getKey()));

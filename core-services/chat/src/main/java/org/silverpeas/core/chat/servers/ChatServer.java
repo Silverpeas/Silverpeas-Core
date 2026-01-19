@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.chat.servers;
 
+import jakarta.enterprise.util.AnnotationLiteral;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatSettings;
@@ -40,7 +41,8 @@ import org.silverpeas.kernel.util.StringUtil;
 public interface ChatServer {
 
   static ChatServer get() {
-    return ServiceProvider.getService(ChatServer.class, DefaultChatServer.Literal.INSTANCE);
+    return ServiceProvider.getService(ChatServer.class, new AnnotationLiteral<DefaultChatServer>() {
+    });
   }
 
   /**

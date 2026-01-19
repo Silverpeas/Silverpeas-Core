@@ -48,10 +48,10 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.kernel.util.Mutable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.*;

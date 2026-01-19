@@ -31,7 +31,7 @@ import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 

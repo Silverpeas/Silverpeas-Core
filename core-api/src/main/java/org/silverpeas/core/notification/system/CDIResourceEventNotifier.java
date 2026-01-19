@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.notification.system;
 
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+
 import java.io.Serializable;
 
 /**
@@ -43,6 +44,7 @@ public abstract class CDIResourceEventNotifier<R extends Serializable,
   @Inject
   private Event<T> notification;
 
+  @SuppressWarnings("unchecked")
   protected abstract T createResourceEventFrom(final ResourceEvent.Type type, final R... resource);
 
   @Override
@@ -51,7 +53,12 @@ public abstract class CDIResourceEventNotifier<R extends Serializable,
   }
 
   @Override
+  @SafeVarargs
   public final void notifyEventOn(final ResourceEvent.Type type, final R... resource) {
+    if (resource == null || resource.length > 3) {
+      throw new IllegalArgumentException(
+          "The resource states concerned by the event should exist and shouldn't exceed 3");
+    }
     notify(createResourceEventFrom(type, resource));
   }
 }

@@ -23,10 +23,8 @@
  */
 package org.silverpeas.core.chat.servers;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Qualifier;
+import jakarta.inject.Qualifier;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -45,17 +43,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, PARAMETER, TYPE})
 public @interface DefaultChatServer {
 
-  /**
-   * Supports inline instantiation of the {@link DefaultChatServer} qualifier.
-   * @author silveryocha
-   * @see Instance
-   * @see Event
-   */
-  final class Literal extends AnnotationLiteral<DefaultChatServer> implements DefaultChatServer {
 
-    public static final Literal INSTANCE = new Literal();
-
-    private static final long serialVersionUID = 1L;
-
-  }
 }

@@ -27,10 +27,10 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * An event in the tracking of modifications on a given contribution. The event is about a given
@@ -81,8 +81,8 @@ public class ContributionTrackingEvent
   /**
    * Sets a short text explaining the context under which the tracked modification of the underlying
    * contribution was operated.
-   * @param context
-   * @return
+   * @param context the context
+   * @return the event
    */
   public ContributionTrackingEvent setContext(final String context) {
     this.context = context;

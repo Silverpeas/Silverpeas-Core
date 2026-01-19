@@ -23,24 +23,26 @@
  */
 package org.silverpeas.web.jobmanager;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * This class manage the information needed for job manager
- * @t.leroi
+ * @author t.leroi
  */
+@Bean
 @Singleton
 public class JobManagerSettings {
 
-  private boolean isKMVisible = false;
-  private boolean isToolSpecificAuthentVisible = false;
-  private boolean isToolWorkflowDesignerVisible = false;
-  private boolean isTemplateDesignerVisible = false;
-  private boolean isPortletDeployerVisible = false;
+  private final boolean isKMVisible;
+  private final boolean isToolSpecificAuthentVisible;
+  private final boolean isToolWorkflowDesignerVisible;
+  private final boolean isTemplateDesignerVisible;
+  private final boolean isPortletDeployerVisible;
 
   protected JobManagerSettings() {
     SettingBundle rs = ResourceLocator.getSettingBundle(
@@ -53,7 +55,7 @@ public class JobManagerSettings {
     isPortletDeployerVisible = rs.getBoolean("IsPortletDeployerVisible", false);
   }
 
-  public static final JobManagerSettings get() {
+  public static JobManagerSettings get() {
     return ServiceProvider.getService(JobManagerSettings.class);
   }
 

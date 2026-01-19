@@ -23,26 +23,20 @@
  */
 package org.silverpeas.core.webapi.util.logging;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.apache.ecs.xhtml.span;
-import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.logging.LogsAccessor;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A Web resource representing a given log used by Silverpeas. It is a REST-based Web service.
@@ -70,14 +64,14 @@ public class LogResource extends AbstractLoggingResource {
   @GET
   @Produces(MediaType.TEXT_HTML)
   public String getLastLogRecordsAsHtml(@QueryParam("count") int count) {
-    return getLastLogRecords(count).stream().collect(Collectors.joining("<br>"))
+    return String.join("<br>", getLastLogRecords(count))
         .replace("\t", new span("&#160;&#160;&#160;&#160;").toString());
   }
 
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String getLastLogRecordsAsText(@QueryParam("count") int count) {
-    return getLastLogRecords(count).stream().collect(Collectors.joining("\n"));
+    return String.join("\n", getLastLogRecords(count));
   }
 
   private List<String> getLastLogRecords(int count) {

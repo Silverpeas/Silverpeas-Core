@@ -23,27 +23,25 @@
  */
 package com.sun.portal.portletcontainer.driver.admin;
 
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.silverpeas.core.util.file.DiskFileItemFactoryProvider;
-import org.silverpeas.web.portlets.portal.DesktopMessages;
 import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
 import com.sun.portal.portletcontainer.admin.deployment.WebAppDeployerException;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.file.FileItem;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.web.portlets.portal.DesktopMessages;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -60,8 +58,6 @@ public class UploadServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private ServletContext context;
 
-  private long maxUploadSize;
-
   private static final Logger logger = Logger.getLogger(UploadServlet.class
       .getPackage().getName(), "org.silverpeas.portlets.PCDLogMessages");
 
@@ -69,8 +65,6 @@ public class UploadServlet extends SilverpeasAuthenticatedHttpServlet {
   public void init(ServletConfig config) throws ServletException {
     // TODO Auto-generated method stub
     super.init(config);
-    maxUploadSize = config.getInitParameter("MAX_UPLOAD_SIZE") == null ? 10000000
-        : Integer.parseInt(config.getInitParameter("MAX_UPLOAD_SIZE"));
     context = config.getServletContext();
   }
 
@@ -82,13 +76,11 @@ public class UploadServlet extends SilverpeasAuthenticatedHttpServlet {
     }
 
     // Initialize DesktopMessages' Resource Bundle
-    DesktopMessages.init(getLanguage(request));
+    DesktopMessages.init(getLanguage());
     try {
-      uploadFile(request, response);
-    } catch (PortletRegistryException pre) {
+      uploadFile(request);
+    } catch (Exception pre) {
       logger.log(Level.SEVERE, "PSPCD_CSPPD0029", pre);
-    } catch (FileUploadException e) {
-      logger.log(Level.SEVERE, "PSPCD_CSPPD0029", e);
     } finally {
       RequestDispatcher reqd = context
           .getRequestDispatcher("/portlet/jsp/jsr/deployer.jsp");
@@ -99,37 +91,12 @@ public class UploadServlet extends SilverpeasAuthenticatedHttpServlet {
   /*
    * This method below is for use with commons-fileupload version 1.1
    */
-  private void uploadFile(HttpServletRequest request,
-      HttpServletResponse response) throws FileUploadException, PortletRegistryException {
+  private void uploadFile(HttpServletRequest request) throws PortletRegistryException {
 
     HttpSession session = AdminUtils.getClearedSession(request);
-
-    DiskFileItemFactory factory = new DiskFileItemFactoryProvider().provide();
-
-    ServletFileUpload upload = new ServletFileUpload(factory);
-    upload.setSizeMax(maxUploadSize);
-
-    // Parse the request
-    @SuppressWarnings("unchecked")
-    List<FileItem> fileItems = upload.parseRequest(request);
-    Iterator<FileItem> itr = fileItems.iterator();
-
-    while (itr.hasNext()) {
-      FileItem fi = itr.next();
-      // The following is not being used since in the upload form we are
-      // not using any
-      // non-file form fields. If you do put in some form fields you want
-      // to use,
-      // then this is where you will get the values of the form fields. -
-      // Sandeep
-      if (fi.isFormField()) {
-        String name = fi.getFieldName();
-        String value = fi.getString();
-      }
-    }
-
+    List<FileItem> fileItems = FileUploadUtil.parseRequest(request);
     String[] fileNames = new String[2];
-    itr = fileItems.iterator();
+    Iterator<FileItem> itr = fileItems.iterator();
     int i = 0;
     while (itr.hasNext()) {
       FileItem fi = itr.next();
@@ -140,7 +107,7 @@ public class UploadServlet extends SilverpeasAuthenticatedHttpServlet {
     }
     deployPortlet(fileNames, session);
     // refresh portlet list
-    AdminUtils.refreshList(request, getLanguage(request));
+    AdminUtils.refreshList(request, getLanguage());
   }
 
   // First item is portlet war, second item is roles file
@@ -152,8 +119,8 @@ public class UploadServlet extends SilverpeasAuthenticatedHttpServlet {
           DesktopMessages.getLocalizedString(AdminConstants.INVALID_PORTLET_APP));
     } else {
       PortletAdminData portletAdminData = PortletAdminDataFactory.getPortletAdminData(null);
-      boolean success = false;
-      StringBuffer messageBuffer = new StringBuffer();
+      boolean success;
+      StringBuilder messageBuffer = new StringBuilder();
       try {
         // If already deployed. Unregister it before deploying
         if (isPortletDeployed(warFileName)) {
@@ -198,34 +165,32 @@ public class UploadServlet extends SilverpeasAuthenticatedHttpServlet {
     }
   }
 
-  private String processFileItem(FileItem fi) throws FileUploadException {
+  private String processFileItem(FileItem fi) {
 
     // On some browsers fi.getName() will return the full path to the file
     // the client select this can cause problems
     // so the following is a workaround.
     try {
-      String fileName = fi.getName();
-      if (fileName == null || fileName.trim().length() == 0) {
+      String fileName = fi.getFileName();
+      if (fileName == null || fileName.trim().isEmpty()) {
         return null;
       }
       fileName = FilenameUtils.getName(fileName);
 
       File fNew = File.createTempFile("opc", ".tmp");
       fNew.deleteOnExit();
-      fi.write(fNew);
+      fi.saveTo(fNew);
 
       File finalFileName = new File(fNew.getParent() + File.separator
           + fileName);
-      if (fNew.renameTo(finalFileName)) {
-        return finalFileName.getAbsolutePath();
-      } else {
+      if (!fNew.renameTo(finalFileName)) {
         // unable to rename, copy the contents of the file instead
         PortletWarUpdaterUtil.copyFile(fNew, finalFileName, true, false);
-        return finalFileName.getAbsolutePath();
       }
+      return finalFileName.getAbsolutePath();
 
     } catch (Exception e) {
-      throw new FileUploadException(e.getMessage());
+      throw new SilverpeasRuntimeException(e.getMessage());
     }
   }
 
@@ -243,7 +208,7 @@ public class UploadServlet extends SilverpeasAuthenticatedHttpServlet {
     return (new File(filename)).exists();
   }
 
-  private String getLanguage(HttpServletRequest request) {
+  private String getLanguage() {
     return User.getCurrentRequester().getUserPreferences().getLanguage();
   }
 }

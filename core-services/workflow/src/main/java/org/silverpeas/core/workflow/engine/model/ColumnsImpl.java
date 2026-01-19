@@ -27,7 +27,7 @@ import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Columns;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

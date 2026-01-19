@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -166,7 +166,8 @@ public class SqlUserSelectorByCriteriaBuilder {
   private void applyCriteriaOnRoles(final JdbcSqlQuery query,
       final UserDetailsSearchCriteria criteria) {
     criteria.getNonPublicSharedComponentInstance().ifPresent(i -> {
-      int instanceId = ComponentInst.getComponentLocalId(i.getId());
+      int instanceId =
+          SilverpeasSharedComponentInstance.getIdentity(i.getId()).getInstanceLocalId();
       query.and("st_user.id IN (");
       query.addSqlPart(
           "SELECT distinct all_profiles.userid " +

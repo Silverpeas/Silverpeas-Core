@@ -23,45 +23,27 @@
  */
 package org.silverpeas.core.workflow.engine;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.kernel.util.Mutable;
-import org.silverpeas.core.workflow.api.ProcessInstanceManager;
-import org.silverpeas.core.workflow.api.TaskManager;
-import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
-import org.silverpeas.core.workflow.api.WorkflowEngine;
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.event.GenericEvent;
-import org.silverpeas.core.workflow.api.event.QuestionEvent;
-import org.silverpeas.core.workflow.api.event.ResponseEvent;
-import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
-import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
-import org.silverpeas.core.workflow.api.instance.ActionStatus;
-import org.silverpeas.core.workflow.api.instance.Actor;
-import org.silverpeas.core.workflow.api.instance.ProcessInstance;
-import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
-import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
+import org.silverpeas.core.workflow.api.*;
+import org.silverpeas.core.workflow.api.event.*;
+import org.silverpeas.core.workflow.api.instance.*;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
-import org.silverpeas.core.workflow.engine.instance.HistoryStepImpl;
-import org.silverpeas.core.workflow.engine.instance.HistoryStepRepository;
-import org.silverpeas.core.workflow.engine.instance.LockingUser;
-import org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl;
-import org.silverpeas.core.workflow.engine.instance.ProcessInstanceRepository;
+import org.silverpeas.core.workflow.engine.instance.*;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
+import org.silverpeas.kernel.util.Mutable;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Date;
 
 /**
  * One implementation of WorkflowEngine The workflow engine main services.
  */
 @Service
-@Singleton
 public class WorkflowEngineImpl implements WorkflowEngine {
 
   @Inject

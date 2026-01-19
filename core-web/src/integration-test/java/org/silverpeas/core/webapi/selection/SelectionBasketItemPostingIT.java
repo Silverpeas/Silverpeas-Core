@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.webapi.selection;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -40,8 +41,8 @@ import org.silverpeas.core.selection.SelectionBasket;
 import org.silverpeas.web.test.AuthId;
 import org.silverpeas.web.test.ResourceCreationTest;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.Collection;
@@ -62,6 +63,8 @@ public class SelectionBasketItemPostingIT extends ResourceCreationTest {
 
   private String authToken;
   private User user;
+  @Inject
+  private PublicationService service;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -83,25 +86,29 @@ public class SelectionBasketItemPostingIT extends ResourceCreationTest {
   @Test
   public void postAnItemIntoAnEmptyBasket() {
     SelectionBasketEntry expected = aResource();
-    Response response = post(expected, at(aResourceURI()));
-    assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    try (Response response = post(expected, at(aResourceURI()))) {
+      assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
 
-    GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {};
-    List<SelectionBasketEntry> content = response.readEntity(contentType);
-    assertThat(content.size(), is(1));
-    assertThat(content.get(0).getItem(), is(expected.getItem()));
+      GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {
+      };
+      List<SelectionBasketEntry> content = response.readEntity(contentType);
+      assertThat(content.size(), is(1));
+      assertThat(content.get(0).getItem(), is(expected.getItem()));
+    }
   }
 
   @Test
   public void postAnEventIntoAnEmptyBasket() {
     SelectionBasketEntry expected = aCalendarEvent();
-    Response response = post(expected, at(aResourceURI()));
-    assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    try (Response response = post(expected, at(aResourceURI()))) {
+      assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
 
-    GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {};
-    List<SelectionBasketEntry> content = response.readEntity(contentType);
-    assertThat(content.size(), is(1));
-    assertThat(content.get(0).getItem(), is(expected.getItem()));
+      GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {
+      };
+      List<SelectionBasketEntry> content = response.readEntity(contentType);
+      assertThat(content.size(), is(1));
+      assertThat(content.get(0).getItem(), is(expected.getItem()));
+    }
   }
 
   @Test
@@ -110,18 +117,21 @@ public class SelectionBasketItemPostingIT extends ResourceCreationTest {
     AuthId authId = AuthId.sessionKey(sessionKey);
 
     SelectionBasketEntry expected1 = aResource();
-    Response response = post(expected1, at(aResourceURI()), withAsAuthId(authId));
+    try (Response response = post(expected1, at(aResourceURI()), withAsAuthId(authId))) {
     assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    }
 
     SelectionBasketEntry expected2 = anotherResource();
-    response = post(expected2, at(aResourceURI()), withAsAuthId(authId));
-    assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    try (Response response = post(expected2, at(aResourceURI()), withAsAuthId(authId))) {
+      assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
 
-    GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {};
-    List<SelectionBasketEntry> content = response.readEntity(contentType);
-    assertThat(content.size(), is(2));
-    assertThat(content.get(0).getItem(), is(expected2.getItem()));
-    assertThat(content.get(1).getItem(), is(expected1.getItem()));
+      GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {
+      };
+      List<SelectionBasketEntry> content = response.readEntity(contentType);
+      assertThat(content.size(), is(2));
+      assertThat(content.get(0).getItem(), is(expected2.getItem()));
+      assertThat(content.get(1).getItem(), is(expected1.getItem()));
+    }
 
     SelectionBasket.get().clear();
   }
@@ -132,18 +142,21 @@ public class SelectionBasketItemPostingIT extends ResourceCreationTest {
     AuthId authId = AuthId.sessionKey(sessionKey);
 
     SelectionBasketEntry expected1 = aResource();
-    Response response = post(expected1, at(aResourceURI()), withAsAuthId(authId));
-    assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    try (Response response = post(expected1, at(aResourceURI()), withAsAuthId(authId))) {
+      assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    }
 
     SelectionBasketEntry expected2 = aCalendarEvent();
-    response = post(expected2, at(aResourceURI()), withAsAuthId(authId));
-    assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    try (Response response = post(expected2, at(aResourceURI()), withAsAuthId(authId))) {
+      assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
 
-    GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {};
-    List<SelectionBasketEntry> content = response.readEntity(contentType);
-    assertThat(content.size(), is(2));
-    assertThat(content.get(0).getItem(), is(expected2.getItem()));
-    assertThat(content.get(1).getItem(), is(expected1.getItem()));
+      GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {
+      };
+      List<SelectionBasketEntry> content = response.readEntity(contentType);
+      assertThat(content.size(), is(2));
+      assertThat(content.get(0).getItem(), is(expected2.getItem()));
+      assertThat(content.get(1).getItem(), is(expected1.getItem()));
+    }
 
     SelectionBasket.get().clear();
   }
@@ -154,16 +167,19 @@ public class SelectionBasketItemPostingIT extends ResourceCreationTest {
     AuthId authId = AuthId.sessionKey(sessionKey);
 
     SelectionBasketEntry expected = aResource();
-    Response response = post(expected, at(aResourceURI()), withAsAuthId(authId));
-    assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    try (Response response = post(expected, at(aResourceURI()), withAsAuthId(authId))) {
+      assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    }
 
-    response = post(expected, at(aResourceURI()), withAsAuthId(authId));
-    assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    try (Response response = post(expected, at(aResourceURI()), withAsAuthId(authId))) {
+      assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
 
-    GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {};
-    List<SelectionBasketEntry> content = response.readEntity(contentType);
-    assertThat(content.size(), is(1));
-    assertThat(content.get(0).getItem(), is(expected.getItem()));
+      GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {
+      };
+      List<SelectionBasketEntry> content = response.readEntity(contentType);
+      assertThat(content.size(), is(1));
+      assertThat(content.get(0).getItem(), is(expected.getItem()));
+    }
 
     SelectionBasket.get().clear();
   }
@@ -177,14 +193,16 @@ public class SelectionBasketItemPostingIT extends ResourceCreationTest {
     SelectionBasket.get().put(publication);
 
     SelectionBasketEntry expected = aResource();
-    Response response = post(expected, at(aResourceURI()), withAsAuthId(authId));
-    assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    try (Response response = post(expected, at(aResourceURI()), withAsAuthId(authId))) {
+        assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
 
-    GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {};
-    List<SelectionBasketEntry> content = response.readEntity(contentType);
-    assertThat(content.size(), is(2));
-    assertThat(content.get(0).getItem(), is(expected.getItem()));
-    assertThat(content.get(1).getItem().getIdentifier(), is(publication.getIdentifier()));
+         GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {
+         };
+         List<SelectionBasketEntry> content = response.readEntity(contentType);
+         assertThat(content.size(), is(2));
+         assertThat(content.get(0).getItem(), is(expected.getItem()));
+         assertThat(content.get(1).getItem().getIdentifier(), is(publication.getIdentifier()));
+    }
 
     SelectionBasket.get().clear();
   }
@@ -228,8 +246,7 @@ public class SelectionBasketItemPostingIT extends ResourceCreationTest {
   }
 
   private PublicationDetail getPublication(int index) {
-    Collection<PublicationDetail> publications = PublicationService.get()
-        .getAllPublications("toto1");
+    Collection<PublicationDetail> publications = service.getAllPublications("toto2");
     assertThat(publications.size(), greaterThanOrEqualTo(index + 1));
 
     Iterator<PublicationDetail> iterator = publications.iterator();

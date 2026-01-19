@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.exception.ComponentFileFilterExceptio
 import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 
 /**
  * Centralized treatment of web transverse exceptions.
@@ -53,13 +53,8 @@ public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorU
     }
   }
 
-  /**
-   * Retrieves an unformatted exception message if any handled from a given throwable
-   * @param exception
-   * @return
-   */
   public static String performAppletAlertExceptionMessage(Exception exception, String language) {
     return WebEncodeHelper.htmlStringToJavaString(performExceptionMessage(exception, language))
-        .replaceAll("(</?b|</?i|</?p)[a-zA-Z=\"'${}\\.0-9 ]*/?>", "").replace("\\n", "\\\\n");
+        .replaceAll("(</?b|</?i|</?p)[a-zA-Z=\"'${}.0-9 ]*/?>", "").replace("\\n", "\\\\n");
   }
 }

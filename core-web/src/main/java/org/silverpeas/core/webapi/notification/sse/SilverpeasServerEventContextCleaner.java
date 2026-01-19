@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.web.session.UserSessionEvent;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unregisterBySessionId;
 

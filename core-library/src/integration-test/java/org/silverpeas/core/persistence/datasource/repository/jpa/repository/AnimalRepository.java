@@ -29,7 +29,6 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalType;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -37,7 +36,6 @@ import java.util.List;
  * Date: 20/11/13
  */
 @Repository
-@Singleton
 public class AnimalRepository extends SilverpeasJpaEntityRepository<Animal> {
 
   public List<Animal> getByType(AnimalType type) {

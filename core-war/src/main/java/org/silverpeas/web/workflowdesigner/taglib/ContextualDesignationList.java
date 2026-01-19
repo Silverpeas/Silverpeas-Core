@@ -30,7 +30,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;

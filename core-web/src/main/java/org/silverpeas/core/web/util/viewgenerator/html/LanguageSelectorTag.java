@@ -23,20 +23,16 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.jstl.core.Config;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.Input;
-import org.apache.ecs.html.Label;
-import org.apache.ecs.html.Option;
-import org.apache.ecs.html.Select;
-import org.apache.ecs.html.Span;
-import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.apache.ecs.html.*;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.I18NLanguage;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.tagext.TagSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +43,7 @@ import java.util.Locale;
 public class LanguageSelectorTag extends TagSupport {
   private static final long serialVersionUID = -6521946554686125224L;
 
-  private String currentLangCode = I18NHelper.DEFAULT_LANGUAGE;
+  private String currentLangCode = I18NHelper.getDefaultLanguage();
   private String elementId;
   private String elementName;
   private boolean includeLabel;
@@ -80,7 +76,7 @@ public class LanguageSelectorTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     ElementContainer xhtml = new ElementContainer();
-    if (I18NHelper.isI18nContentActivated) {
+    if (I18NHelper.isI18nContentActivated()) {
       String userLanguage = null;
       final Locale locale = (Locale) Config.find(pageContext, Config.FMT_LOCALE);
       if (locale != null) {
@@ -91,7 +87,7 @@ public class LanguageSelectorTag extends TagSupport {
         Select langSelector = new Select();
         langSelector.setID(elementId);
         langSelector.setName(elementName);
-        List<Option> options = new ArrayList<Option>(I18NHelper.getNumberOfLanguages());
+        List<Option> options = new ArrayList<>(I18NHelper.getNumberOfLanguages());
         for (I18NLanguage language : I18NHelper.getAllUserTranslationsOfContentLanguages(
             userLanguage)) {
           Option option = new Option(language.getLabel(), language.getCode());
@@ -101,7 +97,7 @@ public class LanguageSelectorTag extends TagSupport {
           }
           options.add(option);
         }
-        langSelector.addElement(options.toArray(new Option[options.size()]));
+        langSelector.addElement(options.toArray(new Option[0]));
         langElement = langSelector;
       } else {
         Span readOnlyLanguage = new Span();
@@ -126,11 +122,6 @@ public class LanguageSelectorTag extends TagSupport {
     }
     xhtml.output(pageContext.getOut());
     return SKIP_BODY;
-  }
-
-  @Override
-  public int doEndTag() throws JspException {
-    return EVAL_PAGE;
   }
 
   public void setLangCode(String currentLang) {

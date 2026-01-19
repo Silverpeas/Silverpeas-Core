@@ -56,13 +56,6 @@ public class InterestsDAO {
       "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
       + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM SB_Interests a WHERE a.ownerId = ? ";
 
-  /**
-   * @param con
-   * @param userid
-   * @return a list of <code>Interests</code>s by user id provided
-   * @throws SQLException
-   * @throws InterestsDAOException
-   */
   public static List<Interests> getInterestsByUserID(Connection con, int userid) throws SQLException,
       InterestsDAOException {
     if (con == null) {
@@ -76,7 +69,7 @@ public class InterestsDAO {
       prepStmt = con.prepareStatement(GET_IC_BY_USERID_QUERY);
       prepStmt.setInt(1, userid);
 
-      List<Interests> result = new ArrayList<Interests>();
+      List<Interests> result = new ArrayList<>();
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         Interests ic = getInterestsfromResultSet(rs, con);
@@ -189,7 +182,7 @@ public class InterestsDAO {
     PreparedStatement prepStmt = null;
     SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 
-    int newId = -1;
+    int newId;
     try {
       newId = DBUtil.getNextId("SB_Interests", "Id");
     } catch (Exception e) {
@@ -338,7 +331,7 @@ public class InterestsDAO {
   /**
    * loadPdcContext sql query constant
    */
-  public final static String LOAD_PDC_PK_QUERY = "SELECT a.axisId, a.value "
+  public final static String LOAD_PDC_PK_QUERY = "SELECT a.axisId, a.val "
       + "  FROM " + INTERESTS_AXES_TABLE_NAME + " a WHERE a.icId = ? ";
 
   /**
@@ -352,13 +345,13 @@ public class InterestsDAO {
     }
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    List<Criteria> result = null;
+    List<Criteria> result;
 
     try {
       prepStmt = con.prepareStatement(LOAD_PDC_PK_QUERY);
       prepStmt.setInt(1, icId);
 
-      result = new ArrayList<Criteria>();
+      result = new ArrayList<>();
       rs = prepStmt.executeQuery();
 
       while (rs.next()) {
@@ -379,7 +372,7 @@ public class InterestsDAO {
    */
   public final static String CREATE_PDC_CONTEXT_QUERY = "INSERT  INTO "
       + INTERESTS_AXES_TABLE_NAME + " ( "
-      + " id, icId, axisId, value) VALUES (?, ?, ?, ?) ";
+      + " id, icId, axisId, val) VALUES (?, ?, ?, ?) ";
 
   /**
    * Appends a list of SearchCriteria to the Interests by id
@@ -396,7 +389,7 @@ public class InterestsDAO {
       return null;
     }
     PreparedStatement prepStmt = null;
-    int[] generatedPKs = null;
+    int[] generatedPKs;
 
     try {
       prepStmt = con.prepareStatement(CREATE_PDC_CONTEXT_QUERY);
@@ -405,7 +398,7 @@ public class InterestsDAO {
       for (int i = 0; i < pdcContext.size(); i++) {
         Criteria criteria = pdcContext.get(i);
 
-        int newId = -1;
+        int newId;
         try {
           newId = DBUtil.getNextId(INTERESTS_AXES_TABLE_NAME, "Id");
         } catch (Exception e) {
@@ -475,8 +468,7 @@ public class InterestsDAO {
     try {
       prepStmt = con.prepareStatement(REMOVE_IC_CONTEXT_QUERY);
       prepStmt.setInt(1, icId);
-
-      int result = prepStmt.executeUpdate();
+      prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
     }

@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 /**
  * This interface extends access controller extension for a Publication resource.
@@ -47,7 +47,7 @@ import javax.enterprise.util.AnnotationLiteral;
  * </p>
  * <p>
  * Any application that requires to implement this interface MUST qualify with the
- * {@link javax.inject.Named} annotation by a name satisfying the following convention
+ * {@link jakarta.inject.Named} annotation by a name satisfying the following convention
  * <code>[COMPONENT NAME]InstancePublicationAccessControlExtension</code>. For example, for an
  * application Kmelia, the implementation must be qualified with <code>@Named
  * ("kmeliaInstancePublicationAccessControlExtension")
@@ -84,7 +84,6 @@ public interface ComponentInstancePublicationAccessControlExtension {
    * implementation will be extracted.
    * @return a {@link ComponentInstancePublicationAccessControlExtension} implementation.
    */
-  @SuppressWarnings("serial")
   static ComponentInstancePublicationAccessControlExtension getByInstanceId(final String instanceId) {
     final SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     final String cacheKey = ComponentInstancePublicationAccessControlExtension.class.getName() + "###" + instanceId;

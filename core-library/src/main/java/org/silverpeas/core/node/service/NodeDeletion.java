@@ -35,7 +35,7 @@ import org.silverpeas.core.node.notification.NodeEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;

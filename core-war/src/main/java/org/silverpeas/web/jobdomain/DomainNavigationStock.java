@@ -36,7 +36,7 @@ import java.util.List;
 
 /**
  * This class manage the information needed for domains navigation and browsing.
- * REQUIREMENT: the Domain passed in the constructor MUST BE A VALID DOMAIN (with Id, etc...)
+ * REQUIREMENT: the Domain passed in the constructor MUST BE A VALID DOMAIN (with id, etc...)
  * @author t.leroi
  */
 public class DomainNavigationStock extends NavigationStock {

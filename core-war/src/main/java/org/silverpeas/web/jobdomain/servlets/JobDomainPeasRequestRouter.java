@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.jobdomain.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
@@ -42,6 +41,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.util.Mutable;
@@ -59,7 +59,7 @@ import org.silverpeas.web.jobdomain.JobDomainPeasException;
 import org.silverpeas.web.jobdomain.UserRequestData;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static java.util.Collections.emptySet;
@@ -144,7 +144,7 @@ public class JobDomainPeasRequestRouter extends
    * destination page
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param jobDomainSC The component Session Control, build and initialised.
+   * @param jobDomainSC The component Session Control, build and initialized.
    * @param request the current request.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")

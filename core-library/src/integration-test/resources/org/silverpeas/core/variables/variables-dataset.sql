@@ -8,8 +8,8 @@ INSERT INTO SB_Variables_Variable(id, label, description, createDate, createdBy,
 INSERT INTO SB_Variables_Variable(id, label, description, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
   VALUES ('3', 'Label 3', 'Description Label 3', '2016-07-28T16:50:00Z', '0', '2016-07-28T16:50:00Z', '0', 0);
 
-INSERT INTO SB_Variables_Value(id, variableId, value, startDate, endDate, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+INSERT INTO SB_Variables_Value(id, variableId, variableValue, startDate, endDate, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
   VALUES ('2', '2', 'Value Label 2', '2018-01-01', '2018-02-01', '2016-07-28T16:50:00Z', '0', '2016-07-28T16:50:00Z', '0', 0);
 
-INSERT INTO SB_Variables_Value(id, variableId, value, startDate, endDate, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+INSERT INTO SB_Variables_Value(id, variableId, variableValue, startDate, endDate, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
   VALUES ('3', '3', 'Value Label 3', '2018-01-01', '2119-01-01', '2016-07-28T16:50:00Z', '0', '2016-07-28T16:50:00Z', '0', 0);

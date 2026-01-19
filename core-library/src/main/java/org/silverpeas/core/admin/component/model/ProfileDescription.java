@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.silverpeas.core.i18n.I18n;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 
 /**
  * Description of a user profile. It defines the common properties of such profile. A profile
@@ -53,6 +53,7 @@ public class ProfileDescription {
   protected Map<String, String> help;
   @XmlElement(name = "spaceMapping", nillable = true)
   protected ComponentSpaceProfileMapping spaceProfileMapping;
+  private transient final I18n i18n = I18n.get();
 
   /**
    * Gets the value of the label property.
@@ -71,7 +72,7 @@ public class ProfileDescription {
    * @param label a localized label.
    */
   public void putLabel(final String language, final String label) {
-    getLabel().put(checkLanguage(language), label);
+    getLabel().put(i18n.checkLanguage(language), label);
   }
 
   /**
@@ -91,7 +92,7 @@ public class ProfileDescription {
    * @param help a localized help.
    */
   public void putHelp(final String language, final String help) {
-    getHelp().put(checkLanguage(language), help);
+    getHelp().put(i18n.checkLanguage(language), help);
   }
 
   /**

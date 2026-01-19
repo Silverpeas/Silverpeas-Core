@@ -40,9 +40,9 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;

@@ -23,9 +23,12 @@
  */
 package org.silverpeas.core.util;
 
+import org.silverpeas.core.annotation.Bean;
+
 /**
  * A bean that has to be managed by CDI. It is here for testing purpose.
  * @author mmoquillon
  */
+@Bean
 public class TestManagedBean implements Test {
 }

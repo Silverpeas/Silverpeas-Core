@@ -25,8 +25,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.datereminder;
 
 import java.io.IOException;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 
 /**
@@ -93,7 +93,7 @@ public class DateReminderTag extends TagSupport {
   /**
    * Gets the type of the resource.
    *
-   * @return
+   * @return resource type
    */
   public String getResourceType() {
     return resourceType;

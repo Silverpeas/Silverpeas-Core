@@ -24,18 +24,16 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import edu.psu.swe.scim.server.exception.InvalidProviderException;
-import edu.psu.swe.scim.server.exception.UnableToRetrieveExtensionsException;
-import edu.psu.swe.scim.server.provider.ProviderRegistry;
-import edu.psu.swe.scim.spec.resources.ScimGroup;
-import edu.psu.swe.scim.spec.resources.ScimUser;
+import org.apache.directory.scim.core.repository.InvalidRepositoryException;
+import org.apache.directory.scim.core.repository.RepositoryRegistry;
+import org.apache.directory.scim.spec.resources.ScimGroup;
+import org.apache.directory.scim.spec.resources.ScimUser;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 /**
  * Some initializations that have to be done just after the server has started.
@@ -45,7 +43,7 @@ import javax.inject.Inject;
 public class ScimConfigurator implements Initialization {
 
   @Inject
-  private ProviderRegistry providerRegistry;
+  private RepositoryRegistry repoRegistry;
 
   @Inject
   private Instance<ScimUserAdminService> scimUserAdminProvider;
@@ -56,10 +54,9 @@ public class ScimConfigurator implements Initialization {
   @Override
   public void init() {
     try {
-      providerRegistry.registerProvider(ScimUser.class, scimUserAdminProvider);
-      providerRegistry.registerProvider(ScimGroup.class, scimGroupAdminServices);
-    } catch (InvalidProviderException | JsonProcessingException |
-             UnableToRetrieveExtensionsException e) {
+      repoRegistry.registerRepository(ScimUser.class, scimUserAdminProvider.get());
+      repoRegistry.registerRepository(ScimGroup.class, scimGroupAdminServices.get());
+    } catch (InvalidRepositoryException e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }

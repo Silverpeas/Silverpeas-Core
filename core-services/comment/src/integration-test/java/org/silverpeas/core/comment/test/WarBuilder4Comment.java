@@ -27,13 +27,15 @@ import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
  * A ShrinkWrap War builder for the comment service dedicated to the integration tests.
+ *
  * @author mmoquilon
  */
 public class WarBuilder4Comment extends BasicWarBuilder {
 
   /**
-   * Constructs an instance of the war archive builder for the specified test class.
-   * All the dependencies and resources required by the Comment service are automatically set.
+   * Constructs an instance of the war archive builder for the specified test class. All the
+   * dependencies and resources required by the Comment service are automatically set.
+   *
    * @param test the test class for which a war will be built. Any resources located in the same
    * package of the test will be loaded into the war.
    * @param <T> the type of the test.
@@ -42,17 +44,19 @@ public class WarBuilder4Comment extends BasicWarBuilder {
   public static <T> WarBuilder4Comment onWarForTestClass(Class<T> test) {
     return (WarBuilder4Comment) new WarBuilder4Comment(test)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .testFocusedOn(war -> {
-          war.addPackages(true, "org.silverpeas.core.comment")
-              .addAsResource("org/silverpeas/core/comment");
-        });
+        .addAsResource("org/silverpeas/util/logging")
+        .testFocusedOn(war ->
+            war.addPackages(true, "org.silverpeas.core.comment")
+                .addAsResource(
+                    "org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties")
+                .addAsResource("org/silverpeas/core/comment"));
   }
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
-   * @param test the class of the test for which a war archive will be build.
+   *
+   * @param test the class of the test for which a war archive is built.
    */
   protected <T> WarBuilder4Comment(final Class<T> test) {
     super(test);

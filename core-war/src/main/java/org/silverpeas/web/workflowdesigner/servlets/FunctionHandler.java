@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.workflowdesigner.servlets;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionController;

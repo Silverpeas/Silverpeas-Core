@@ -23,22 +23,24 @@
  */
 package org.silverpeas.core.variables;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -66,14 +68,14 @@ public class VariablesManagementIT {
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)
       .loadInitialDataSetFrom(INITIALIZATION_SCRIPT);
 
+  @Inject
+  private UserProvider userProvider;
+
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(VariablesManagementIT.class)
-        .addAdministrationFeatures()
-        .addSilverpeasExceptionBases()
-        .addJpaPersistenceFeatures()
+    return LibCoreWarBuilder.onWarForTestClass(VariablesManagementIT.class)
+        .addStubbedUserAPI()
         .addPackages(true, "org.silverpeas.core.variables")
-        .addClasses(PublicationTemplateManager.class)
         .addAsResource(TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
@@ -81,11 +83,15 @@ public class VariablesManagementIT {
 
   @Before
   public void setUpTest() {
-    UserDetail user = new UserDetail();
-    user.setId("26");
+    User user = StubbedUserProvider.addUser("26");
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
+    CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
     OperationContext.fromUser(user);
+  }
+
+  @After
+  public void cleanUp() {
+    StubbedUserProvider.removeAllUsers();
   }
 
   @Test

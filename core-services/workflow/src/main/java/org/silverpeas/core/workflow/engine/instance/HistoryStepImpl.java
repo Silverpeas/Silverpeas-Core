@@ -43,11 +43,12 @@ import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.silverpeas.kernel.annotation.NonNull;
 
 @Entity
 @Table(name = "sb_workflow_historystep")
@@ -361,10 +362,7 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
     }
   }
 
-  public int compareTo(HistoryStep anotherStep) {
-    if (anotherStep == null) {
-      return 0;
-    }
+  public int compareTo(@NonNull HistoryStep anotherStep) {
     int stepId = Integer.parseInt(getId());
     int anotherStepId = Integer.parseInt(anotherStep.getId());
     return stepId - anotherStepId;

@@ -26,12 +26,12 @@ package org.silverpeas.core.webapi.admin;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import static org.silverpeas.core.web.SilverpeasWebResource.getBasePathBuilder;
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.COMPONENTS_BASE_URI;
@@ -87,10 +87,6 @@ public class ComponentEntity extends StructureElementEntity<ComponentEntity> {
     return url;
   }
 
-  /**
-   * Instantiating a new web entity from the corresponding data
-   * @param component
-   */
   private ComponentEntity(final ComponentInstLight component, final String language) {
     super(TYPE, (component.getId() == null ? "" : component.getId().replaceFirst(
         component.getName(), "")), component.getDomainFatherId(), component.getLabel(language),

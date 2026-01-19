@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.SQLRequester;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -56,10 +56,10 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AdministrationSearchGroupIT.class)
-        .addCommonBasicUtilities().addPublicationTemplateFeatures().addSilverpeasExceptionBases()
-        .testFocusedOn(w ->
-            ((WarBuilder4LibCore) w).addAdministrationFeatures()).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(AdministrationSearchGroupIT.class)
+        .addAsResource("org/silverpeas/admin")
+        .addAsResource("org/silverpeas/core/admin/domain/driver")
+        .build();
   }
 
   @Test
@@ -220,35 +220,35 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
 
   @Test
   public void parentIdCriteria() throws AdminException {
-    // no sub group with a sub group without children
+    // no subgroup with a subgroup without children
     SilverpeasList<GroupDetail> groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withParentId(GROUP_MIX_311_ID)
         .build());
     assertThat(groups, notNullValue());
     assertThat(extractData(groups, Group::getId), empty());
-    // no sub group with a root group without children
+    // no subgroup with a root group without children
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withParentId(GROUP_SP_1_ID)
         .build());
     assertThat(groups, notNullValue());
     assertThat(extractData(groups, Group::getId), empty());
-    // two sub groups without children
+    // two subgroups without children
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withParentId(GROUP_MIX_31_ID)
         .build());
     assertSortedGroupIds(groups, GROUP_MIX_311_ID, GROUP_MIX_312_ID);
-    // three sub groups without children
+    // three subgroups without children
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withParentId(GROUP_MIX_3_ID)
         .build());
     assertSortedGroupIds(groups, GROUP_MIX_31_ID);
-    // three sub groups with children
+    // three subgroups with children
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withParentId(GROUP_MIX_3_ID)
         .withChildren()
         .build());
     assertSortedGroupIds(groups, GROUP_MIX_31_ID, GROUP_MIX_311_ID, GROUP_MIX_312_ID);
-    // three sub groups with children with pagination
+    // three subgroups with children with pagination
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withParentId(GROUP_MIX_3_ID)
         .withChildren()
@@ -488,7 +488,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .build());
     assertThat(groups, notNullValue());
     assertThat(groups, empty());
-    // searching for kmelia instance and a sub sub node id with specific rights
+    // searching for kmelia instance and a subnode id with specific rights
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
@@ -516,7 +516,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
     assertSortedGroupIds(groups, GROUP_MIX_1_ID, GROUP_SP_1_ID);
-    // searching for blog instance and a other right role name
+    // searching for blog instance and another right role name
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
         .withRoleNames(SilverpeasRole.WRITER.getName())
@@ -607,7 +607,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .matchingAllRoleNames()
         .build());
     assertSortedGroupIds(groups, GROUP_MIX_1_ID, GROUP_SP_1_ID);
-    // searching for blog instance and a other right role name
+    // searching for blog instance and another right role name
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
         .withRoleNames(SilverpeasRole.WRITER.getName())
@@ -682,7 +682,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .build());
     assertThat(groups, notNullValue());
     assertThat(groups, empty());
-    // searching for kmelia instance and a sub sub node id with specific rights and an empty role
+    // searching for kmelia instance and a subnode id with specific rights and an empty role
     // name returns no group
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
@@ -691,7 +691,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .build());
     assertThat(groups, notNullValue());
     assertThat(groups, empty());
-    // searching for kmelia instance and a sub sub node id with specific rights and a right role
+    // searching for kmelia instance and a subnode id with specific rights and a right role
     // name
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
@@ -699,7 +699,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .withRoleNames(SilverpeasRole.WRITER.getName())
         .build());
     assertSortedGroupIds(groups, GROUP_SP_2_ID);
-    // searching for kmelia instance and a sub sub node id with specific rights and several role
+    // searching for kmelia instance and a subnode id with specific rights and several role
     // names
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
@@ -721,7 +721,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .build());
     assertThat(groups, notNullValue());
     assertThat(groups, empty());
-    // searching for kmelia instance and a sub sub node id with specific rights and an empty role
+    // searching for kmelia instance and a subnode id with specific rights and an empty role
     // name returns no group
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
@@ -731,7 +731,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .build());
     assertThat(groups, notNullValue());
     assertThat(groups, empty());
-    // searching for kmelia instance and a sub sub node id with specific rights and a right role
+    // searching for kmelia instance and a subnode id with specific rights and a right role
     // name
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
@@ -740,7 +740,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .matchingAllRoleNames()
         .build());
     assertSortedGroupIds(groups, GROUP_SP_2_ID);
-    // searching for kmelia instance and a sub sub node id with specific rights and several role
+    // searching for kmelia instance and a subnode id with specific rights and several role
     // names
     groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)

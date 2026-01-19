@@ -32,7 +32,7 @@ import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * <p>Openfire server management service</p>

@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar.notification;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A lifecycle event of {@link org.silverpeas.core.calendar.CalendarEvent}

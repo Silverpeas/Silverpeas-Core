@@ -25,14 +25,7 @@ package org.silverpeas.core.contribution.content.form.form;
 
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.contribution.content.form.AbstractForm;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.contribution.content.form.record.ParameterValue;
@@ -40,7 +33,7 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -167,7 +160,7 @@ public class XmlSearchForm extends AbstractForm {
       String fieldName = fieldTemplate.getFieldName();
       String fieldLabel = fieldTemplate.getLabel(language);
 
-      FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
+      FieldDisplayer<Field> fieldDisplayer = getFieldDisplayer(fieldTemplate);
 
       if (fieldDisplayer != null) {
 

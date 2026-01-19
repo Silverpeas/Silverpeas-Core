@@ -24,7 +24,7 @@
 
 package org.silverpeas.cmis.util;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.GregorianCalendar;
 import java.util.Objects;
 import java.util.TimeZone;

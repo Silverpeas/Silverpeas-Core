@@ -33,12 +33,12 @@ import org.silverpeas.core.web.session.HTTPSessionInfo;
 import org.silverpeas.core.webapi.notification.sse.SilverpeasServerSentEventServlet;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.inject.Inject;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 
 /**
  * This class contains all Silverpeas's needs around WEB application lifecycles.

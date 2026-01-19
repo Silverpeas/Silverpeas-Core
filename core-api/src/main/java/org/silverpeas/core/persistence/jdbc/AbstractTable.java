@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.persistence.jdbc;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,20 +36,14 @@ import java.util.List;
 /**
  * A Table object manages a table in a database.
  *
- * Title:        Database object generator
- * Description:  Enable automatic generation of database objects.
- * Support :
- *   - creation, modification, deletion of a record.
- *   - cascading deletion of records.
- * Copyright:    Copyright (c) 2001
- * Company:      Stratelia
  * @author Eric BURGEL
  * @version 1.0
  */
+@SuppressWarnings("SqlSourceToSinkFlow")
 @Transactional(Transactional.TxType.MANDATORY)
 public abstract class AbstractTable<T> {
 
-  private String tableName = null;
+  private final String tableName;
 
   protected AbstractTable(String tableName) {
     this.tableName = tableName;
@@ -56,6 +51,7 @@ public abstract class AbstractTable<T> {
 
   /**
    * Truncates a string value to be inserted in a fixed size column.
+   *
    * @param value the value to truncate.
    * @param maxSize the size at which the value has to be truncated.
    * @return the truncated string.
@@ -69,6 +65,7 @@ public abstract class AbstractTable<T> {
 
   /**
    * Returns the next id which can be used to create a new row.
+   *
    * @return the next identifier value.
    */
   public int getNextId() {
@@ -82,6 +79,7 @@ public abstract class AbstractTable<T> {
 
   /**
    * Builds a new row object which values are retrieved from the given ResultSet.
+   *
    * @param rs the result set from which the row will be fetched.
    * @return the entity in the row.
    * @throws SQLException on SQL error.
@@ -97,7 +95,8 @@ public abstract class AbstractTable<T> {
   /**
    * Returns the unique row referenced by the given query and id. Returns null if no rows match the
    * id. Throws a {@link SQLException} if more then one row match the id.
-   * @param query the sql query string must be like "select * from ... where ... id=?" where id is
+   *
+   * @param query the SQL query string must be like "select * from ... where ... id=?" where id is
    * an int column.
    * @param id references an unique row.
    * @return the required row or null.
@@ -106,7 +105,7 @@ public abstract class AbstractTable<T> {
   protected T getUniqueRow(String query, int id) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {
-        select.setInt(1, id);
+      select.setInt(1, id);
       try (ResultSet rs = select.executeQuery()) {
         return getUniqueRow(rs);
       }
@@ -116,6 +115,7 @@ public abstract class AbstractTable<T> {
   /**
    * Returns the unique row referenced by the given query and String parameter. Returns null if no
    * rows match the id. Throws a {@link SQLException} if more then one row match the id.
+   *
    * @param query the sql query string must be like "select * from ... where ... col=?" where col is
    * a text column.
    * @param parameter references an unique row.
@@ -135,10 +135,10 @@ public abstract class AbstractTable<T> {
   /**
    * Returns the unique row referenced by the given query and int[] ids. Returns null if no rows
    * match the id. Throws a {@link SQLException} if more then one row match the id.
+   *
    * @param query the sql query string must be like "select * from ... where ... col1=? ... coln=?"
    * @param ids references an unique row.
-   * @return the required row or null.
-   * where the col are int columns.
+   * @return the required row or null. where the col are int columns.
    * @throws SQLException if an error occurs while getting the unique row.
    */
   protected T getUniqueRow(String query, int[] ids) throws SQLException {
@@ -156,10 +156,11 @@ public abstract class AbstractTable<T> {
   /**
    * Returns the unique row referenced by the given query and String[] params. Returns null if no
    * rows match the id. Throws a {@link SQLException} if more then one row match the id.
-   * @return the required row or null.
+   *
    * @param query the sql query string must be like "select * from ... where ... col1=? ... coln=?"
    * where the col are int columns.
    * @param params references an unique row.
+   * @return the required row or null.
    * @throws SQLException if an error occurs while getting an unique row.
    */
   protected T getUniqueRow(String query, String[] params) throws SQLException {
@@ -177,6 +178,7 @@ public abstract class AbstractTable<T> {
   /**
    * Returns the unique row referenced by the given query, int[] ids and String[] params. Returns
    * null if no rows match the id. Throws a {@link SQLException} if more then one row match the id.
+   *
    * @param query the sql query string must be like "select * from ... where ... col1=? ... coln=?"
    * where the col are int columns.
    * @param ids references an unique row.
@@ -207,6 +209,7 @@ public abstract class AbstractTable<T> {
   /**
    * Returns the unique row referenced by the given query with no parameters. Returns null if no
    * rows match the id. Throws a UtilException if more then one row match the id.
+   *
    * @param query the sql query string must be like "select * from ... where ..."
    * @return the required row or null.
    * @throws SQLException if an error occurs while getting an unique row.
@@ -215,7 +218,7 @@ public abstract class AbstractTable<T> {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query);
          ResultSet rs = select.executeQuery()) {
-        return getUniqueRow(rs);
+      return getUniqueRow(rs);
     }
   }
 
@@ -285,9 +288,10 @@ public abstract class AbstractTable<T> {
    * Returns the rows like a sample row. The sample is build from a matchColumns names list and a
    * matchValues list of values. For each matchColumn with a non null matchValue is added a
    * criterion: where matchColumn like 'matchValue' The wildcard caracters %, must be set by the
-   * caller: so we can choose and do queries as "login like 'exactlogin'" and queries as
-   * "lastName like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the
-   * returnedColumns parameter which is of the form 'col1, col2, ..., colN'.
+   * caller: so we can choose and do queries as "login like 'exactlogin'" and queries as "lastName
+   * like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the returnedColumns
+   * parameter which is of the form 'col1, col2, ..., colN'.
+   *
    * @param returnedColumns the column to returned.
    * @param matchColumns the column with a matching value.
    * @param matchValues the matching values corresponding to the matching columns.
@@ -307,7 +311,7 @@ public abstract class AbstractTable<T> {
         notNullValues.add(matchValues[i]);
       }
     }
-    return getRows(query.toString(), notNullValues.toArray(new String[notNullValues.size()]));
+    return getRows(query.toString(), notNullValues.toArray(new String[0]));
   }
 
   protected Integer getInteger(String query, int[] ids) throws SQLException {
@@ -362,7 +366,7 @@ public abstract class AbstractTable<T> {
   protected int insertRow(String insertQuery, T row) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement statement = connection.prepareStatement(insertQuery)) {
-        prepareInsert(insertQuery, statement, row);
+      prepareInsert(insertQuery, statement, row);
       return statement.executeUpdate();
     }
   }

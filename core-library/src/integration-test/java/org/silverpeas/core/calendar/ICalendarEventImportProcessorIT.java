@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,16 +31,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
+import org.silverpeas.core.test.stub.UserImpl;
 
-import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -67,8 +63,9 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(ICalendarEventImportProcessorIT.class)
-        .addCalendarSynchronizationFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(ICalendarEventImportProcessorIT.class)
+        .addMavenDependencies("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer")
+        .addClasses(UserImpl.class)
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .addAsResource("org/silverpeas/util/logging")
@@ -82,7 +79,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.isEmpty(), is(true));
 
-    OperationContext.fromUser("0");
+    OperationContext.fromUser(getUser());
     calendar = Calendar.getById(CALENDAR_ID);
   }
 
@@ -142,22 +139,21 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
   @Test
   public void reimportWithUpdatesASimpleEvent() throws Exception {
     String ics = "SIMPLE_EVENT.ics";
-    final int addedEvents = 1;
     ICalendarImportResult result = importProcessor.importInto(calendar, iCalEventsFrom(ics));
-    assertThat(result.added(), is(addedEvents));
+    assertThat(result.added(), is(1));
     assertThat(result.updated(), is(0));
 
     ics = "MODIFIED_SIMPLE_EVENT.ics";
-    final int updatedEvents = 1;
     result = importProcessor.importInto(calendar, touch(ics));
     assertThat(result.added(), is(0));
-    assertThat(result.updated(), is(updatedEvents));
+    assertThat(result.updated(), is(1));
 
     List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
-    assertThat(events.size(), is(addedEvents));
+    assertThat(events.size(), is(1));
     Optional<CalendarEvent> maybeEvent = calendar.externalEvent(events.get(0).get("externalId"));
     assertThat(maybeEvent.isPresent(), is(true));
     CalendarEvent event = maybeEvent.get();
+    assertThat(events.get(0).get("title"), is("Déjeuner avec Fanny"));
     assertThat(event.getTitle(), is("Déjeuner avec Fanny"));
   }
 

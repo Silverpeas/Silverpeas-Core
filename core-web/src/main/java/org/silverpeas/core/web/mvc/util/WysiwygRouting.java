@@ -23,20 +23,20 @@
  */
 package org.silverpeas.core.web.mvc.util;
 
-import org.apache.commons.lang3.CharEncoding;
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
  * A routing definition to the WYSIWYG editor in Silverpeas. It is an HTML page in which is
  * displayed the WYSIWYG text editor tool.
+ *
  * @author mmoquillon
  */
 public class WysiwygRouting {
@@ -46,6 +46,7 @@ public class WysiwygRouting {
 
   /**
    * Gets the path of the WYSIWYG editor page relative to the Silverpeas web context.
+   *
    * @param context the routing context from which properties are set.
    * @param request the current HTTP request. If null, then the path will have query-parameters to
    * set some required properties.
@@ -57,72 +58,63 @@ public class WysiwygRouting {
     if (request == null) {
       return getDestinationToWysiwygEditor(context);
     }
-    try {
-      request.setAttribute("SpaceName", URLEncoder.encode(context.spaceLabel, CharEncoding.UTF_8));
-      request.setAttribute("ComponentId", context.contributionId.getComponentInstanceId());
-      request.setAttribute("ComponentLabel",
-          URLEncoder.encode(context.componentLabel, CharEncoding.UTF_8));
-      request.setAttribute("ObjectId", context.contributionId.getLocalId());
-      request.setAttribute("ObjectType", context.contributionId.getType());
-      request.setAttribute("Language", context.language);
-      request.setAttribute("BrowseInfo", context.browseInfo);
-      request.setAttribute("ReturnUrl", context.comeBackUrl);
-      request.setAttribute("UserId", User.getCurrentRequester().getId());
-      request.setAttribute("IndexIt", String.valueOf(context.indexation));
-      if (StringUtil.isDefined(context.contentLanguage)) {
-        request.setAttribute("ContentLanguage", context.contentLanguage);
-      }
-      if (StringUtil.isDefined(context.browseInfo)) {
-        request.setAttribute("BrowseInfo", context.browseInfo);
-      }
-      if (StringUtil.isDefined(context.fileName)) {
-        request.setAttribute("FileName", context.fileName);
-      }
-      return EDITOR_PAGE_PATH;
-    } catch (UnsupportedEncodingException e) {
-      throw new RoutingException(e);
+    request.setAttribute("SpaceName", URLEncoder.encode(context.spaceLabel, Charsets.UTF_8));
+    request.setAttribute("ComponentId", context.contributionId.getComponentInstanceId());
+    request.setAttribute("ComponentLabel",
+        URLEncoder.encode(context.componentLabel, Charsets.UTF_8));
+    request.setAttribute("ObjectId", context.contributionId.getLocalId());
+    request.setAttribute("ObjectType", context.contributionId.getType());
+    request.setAttribute("Language", context.language);
+    request.setAttribute("BrowseInfo", context.browseInfo);
+    request.setAttribute("ReturnUrl", context.comeBackUrl);
+    request.setAttribute("UserId", User.getCurrentRequester().getId());
+    request.setAttribute("IndexIt", String.valueOf(context.indexation));
+    if (StringUtil.isDefined(context.contentLanguage)) {
+      request.setAttribute("ContentLanguage", context.contentLanguage);
     }
+    if (StringUtil.isDefined(context.browseInfo)) {
+      request.setAttribute("BrowseInfo", context.browseInfo);
+    }
+    if (StringUtil.isDefined(context.fileName)) {
+      request.setAttribute("FileName", context.fileName);
+    }
+    return EDITOR_PAGE_PATH;
   }
 
   /**
    * Gets the path of the WYSIWYG editor path relative to the Silverpeas web context enriched with
    * query parameters to set the required properties asked by the editor.
+   *
    * @param context the routing context from which properties are set.
    * @return the path with query parameters relative to the Silverpeas web context.
-   * @throws RoutingException if an error occurs while building the path.
    */
-  public String getDestinationToWysiwygEditor(final WysiwygRoutingContext context)
-      throws RoutingException {
-    try {
-      StringBuilder destination = new StringBuilder(EDITOR_PAGE_PATH);
-      destination.append("?")
-          .append("SpaceLabel=")
-          .append(URLEncoder.encode(context.spaceLabel, "UTF-8"))
-          .append("&ComponentId=")
-          .append(context.contributionId.getComponentInstanceId())
-          .append("&ComponentLabel=")
-          .append(URLEncoder.encode(context.componentLabel, "UTF-8"))
-          .append("&ObjectId=")
-          .append(context.contributionId.getLocalId())
-          .append("&ObjectType=")
-          .append(context.contributionId.getType())
-          .append("&Language=")
-          .append(context.language)
-          .append("&ReturnUrl=")
-          .append(context.comeBackUrl);
-      if (StringUtil.isDefined(context.contentLanguage)) {
-        destination.append("&ContentLanguage=").append(context.contentLanguage);
-      }
-      if (StringUtil.isDefined(context.browseInfo)) {
-        destination.append("&BrowseInfo=").append(context.browseInfo);
-      }
-      if (StringUtil.isDefined(context.fileName)) {
-        destination.append("&FileName=").append(context.fileName);
-      }
-      return destination.toString();
-    } catch (UnsupportedEncodingException e) {
-      throw new RoutingException(e);
+  public String getDestinationToWysiwygEditor(final WysiwygRoutingContext context) {
+    StringBuilder destination = new StringBuilder(EDITOR_PAGE_PATH);
+    destination.append("?")
+        .append("SpaceLabel=")
+        .append(URLEncoder.encode(context.spaceLabel, Charsets.UTF_8))
+        .append("&ComponentId=")
+        .append(context.contributionId.getComponentInstanceId())
+        .append("&ComponentLabel=")
+        .append(URLEncoder.encode(context.componentLabel, Charsets.UTF_8))
+        .append("&ObjectId=")
+        .append(context.contributionId.getLocalId())
+        .append("&ObjectType=")
+        .append(context.contributionId.getType())
+        .append("&Language=")
+        .append(context.language)
+        .append("&ReturnUrl=")
+        .append(context.comeBackUrl);
+    if (StringUtil.isDefined(context.contentLanguage)) {
+      destination.append("&ContentLanguage=").append(context.contentLanguage);
     }
+    if (StringUtil.isDefined(context.browseInfo)) {
+      destination.append("&BrowseInfo=").append(context.browseInfo);
+    }
+    if (StringUtil.isDefined(context.fileName)) {
+      destination.append("&FileName=").append(context.fileName);
+    }
+    return destination.toString();
   }
 
   /**
@@ -132,7 +124,7 @@ public class WysiwygRouting {
     private String spaceLabel;
     private String componentLabel;
     private ContributionIdentifier contributionId;
-    private String language = I18NHelper.DEFAULT_LANGUAGE;
+    private String language = I18NHelper.getDefaultLanguage();
     private boolean indexation = true;
     private String comeBackUrl;
     private String browseInfo;

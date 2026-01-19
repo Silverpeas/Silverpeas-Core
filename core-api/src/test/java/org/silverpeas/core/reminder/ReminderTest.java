@@ -61,7 +61,7 @@ class ReminderTest {
   private final ReminderTestContext context = new ReminderTestContext();
 
   @BeforeEach
-  public void prepareInjection() {
+  void prepareInjection() {
     context.setUp();
   }
 

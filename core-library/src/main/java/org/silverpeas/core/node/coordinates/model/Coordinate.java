@@ -25,12 +25,8 @@ package org.silverpeas.core.node.coordinates.model;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Objects;
 
-/**
- * Class declaration
- * @author
- * @version %I%, %G%
- */
 public class Coordinate implements Serializable {
 
   private int coordinateId;
@@ -42,66 +38,33 @@ public class Coordinate implements Serializable {
   public Coordinate() {
   }
 
-  /**
-   * Constructor declaration
-   * @param coordinateId
-   * @param coordinatePoints
-   *
-   */
-  public Coordinate(int coordinateId, Collection coordinatePoints) {
+  public Coordinate(int coordinateId, Collection<CoordinatePoint> coordinatePoints) {
     this.coordinateId = coordinateId;
     this.coordinatePoints = coordinatePoints;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public int getCoordinateId() {
     return this.coordinateId;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public Collection getCoordinatePoints() {
     return this.coordinatePoints;
   }
 
-  /**
-   * Method declaration
-   * @param coordinateId
-   *
-   */
   public void setCoordinateId(int coordinateId) {
     this.coordinateId = coordinateId;
   }
 
-  /**
-   * Method declaration
-   * @param coordinatePoints
-   *
-   */
   public void setCoordinatePoints(Collection coordinatePoints) {
     this.coordinatePoints = coordinatePoints;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder("Coordinate {\n");
-    result.append("  getCoordinateId() = ").append(getCoordinateId()).append("\n");
-    result.append("  getCoordinatePoints() = ").append(getCoordinatePoints().toString()).append(
-        "\n");
-    result.append("}");
-    return result.toString();
+    return "Coordinate {\n" + "  getCoordinateId() = " + getCoordinateId() + "\n" +
+        "  getCoordinatePoints() = " + getCoordinatePoints().toString() +
+        "\n" +
+        "}";
   }
 
   @Override
@@ -124,8 +87,7 @@ public class Coordinate implements Serializable {
     if (this.coordinateId != other.coordinateId) {
       return false;
     }
-    return this.coordinatePoints == other.coordinatePoints || (this.coordinatePoints != null
-        && this.coordinatePoints.equals(other.coordinatePoints));
+    return Objects.equals(this.coordinatePoints, other.coordinatePoints);
   }
 
 }

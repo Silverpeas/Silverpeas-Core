@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -39,30 +40,23 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.contribution.attachment.repository.SimpleDocumentMatcher;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControllerIT;
+import org.silverpeas.core.jcr.JCRSession;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
+import org.silverpeas.core.test.stub.StubbedWbeClientManager;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.kernel.util.Pair;
-import org.silverpeas.core.jcr.JCRSession;
 
-import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -81,20 +75,22 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
 
   @Inject
   private AttachmentService instance;
+  @Inject
+  private DocumentRepository documentRepository;
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AttachmentServiceIT.class)
-        .addJcrFeatures()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn(war -> war.addAsResource("LibreOffice.odt"))
+    return LibCoreWarBuilder.onFullWarForTestClass(WysiwygControllerIT.class)
+        .addClasses(StubbedWbeClientManager.class)
+        .addAsResource("silverpeas-oak.properties")
+        .addAsResource("LibreOffice.odt")
+        .addAsResource("org/silverpeas/util/attachment/Attachment.properties")
         .build();
   }
 
   @Before
   public void setUpJcr() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
-      DocumentRepository documentRepository = new DocumentRepository();
       if (!session.getRootNode()
           .hasNode(instanceId)) {
         session.getRootNode()
@@ -115,7 +111,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
           .build();
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      existingFrDoc = new DocumentRepository().createDocument(session, document);
+      existingFrDoc = documentRepository.createDocument(session, document);
       document.setPK(existingFrDoc);
       documentRepository.storeContent(document, content);
 
@@ -146,11 +142,11 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     return getJcrNode(pathParts.toArray(new String[0]));
   }
 
-  private NodeResult getJcrNode(String... pathes) {
+  private NodeResult getJcrNode(String... path) {
     Node node;
     try (JCRSession session = JCRSession.openSystemSession()) {
-      node = session.getNode('/' + StringUtils.join(pathes, '/'));
-      return new NodeResult(node.getPath(), node.getNodes().getSize());
+      node = session.getNode('/' + StringUtils.join(path, '/'));
+      return new NodeResult(node.getNodes().getSize());
     } catch (PathNotFoundException e) {
       // Nothing to do, the root node doesn't exist. That is all.
       return null;
@@ -160,21 +156,15 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   }
 
   private static class NodeResult {
-    private final String path;
 
     private final long nbChildren;
 
-    private NodeResult(final String path, final long nbChildren) {
-      this.path = path;
+    private NodeResult(final long nbChildren) {
       this.nbChildren = nbChildren;
     }
 
     public long getNbChildren() {
       return nbChildren;
-    }
-
-    public String getPath() {
-      return path;
     }
   }
 
@@ -671,10 +661,10 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
     assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
     assertThat(getJcrNode(foreignInstanceId), notNullValue());
-    assertThat(getJcrNode(foreignInstanceId, DocumentType.attachment.name() + "s").getNbChildren(),
-        is(1L));
-    assertThat(getJcrNode(foreignInstanceId, DocumentType.form.name() + "s").getNbChildren(),
-        is(1L));
+    assertThat(Objects.requireNonNull(
+        getJcrNode(foreignInstanceId, DocumentType.attachment.name() + "s")).getNbChildren(), is(1L));
+    assertThat(Objects.requireNonNull(
+        getJcrNode(foreignInstanceId, DocumentType.form.name() + "s")).getNbChildren(), is(1L));
   }
 
   /**
@@ -800,9 +790,11 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(1L));
     assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(0L));
     assertThat(getJcrNode(foreignInstanceId), notNullValue());
-    assertThat(getJcrNode(foreignInstanceId, DocumentType.attachment.name() + "s").getNbChildren(),
+    assertThat(Objects.requireNonNull(
+        getJcrNode(foreignInstanceId, DocumentType.attachment.name() + "s")).getNbChildren(),
         is(1L));
-    assertThat(getJcrNode(foreignInstanceId, DocumentType.form.name() + "s").getNbChildren(),
+    assertThat(Objects.requireNonNull(
+        getJcrNode(foreignInstanceId, DocumentType.form.name() + "s")).getNbChildren(),
         is(1L));
   }
 
@@ -862,7 +854,6 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   public void reorderAttachmentsAndCreateAttachment() throws RepositoryException, IOException {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JCRSession session = JCRSession.openSystemSession()) {
-      DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar()
           .getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -997,7 +988,6 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     attachmentSettings.put("attachment.list.order", "-1");
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JCRSession session = JCRSession.openSystemSession()) {
-      DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar()
           .getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -1145,7 +1135,6 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   public void searchAttachmentsByExternalObject() throws RepositoryException, IOException {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JCRSession session = JCRSession.openSystemSession()) {
-      DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar()
           .getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);

@@ -60,6 +60,12 @@ INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
 INSERT INTO domainsp_group (id, name) VALUES (4, 'Group 4');
 
 /**
+ * user relationships
+ */
+INSERT INTO sb_sn_relationship (id, user1id, user2id, typerelationshipid, acceptancedate, inviterid)
+    VALUES (1, 1, 2, 0, '2020-10-21 16:07:24.528', 1);
+
+/**
  * Last Unique Id for tables used in tests
  */
 INSERT INTO uniqueid (maxid, tableName) VALUES (4, 'domainsp_group');

@@ -35,7 +35,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * This abstract class provides common implementation about the access controller :
+ * This abstract class provides common implementation about the access controller such as caching
+ * and user roles computation. Because it has some final methods (to prevent to be overridden),
+ * the class cannot be proxied by the underlying IoC implementation. This is why each concrete
+ * class extending it has to be a singleton (singletons aren't proxied by default).
  * <ul>
  *   <li>- cache provider</li>
  *   <li>- user roles</li>
@@ -101,9 +104,9 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
     }
     EnumSet<AccessControlOperation> orderedOperations = EnumSet.copyOf(context.getOperations());
     cacheKey.append("@#@").append("OPERATIONS")
-        .append(String.join("|", orderedOperations.stream()
+        .append(orderedOperations.stream()
             .map(o -> Objects.toString(o, StringUtil.EMPTY))
-            .collect(Collectors.toList())));
+            .collect(Collectors.joining("|")));
     return cacheKey.toString();
   }
 }

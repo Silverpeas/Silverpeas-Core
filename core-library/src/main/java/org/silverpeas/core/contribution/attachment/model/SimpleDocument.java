@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedAttachment;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.i18n.ResourceTranslation;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
@@ -51,7 +52,7 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.wbe.WbeHostManager;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Arrays;
@@ -65,7 +66,6 @@ import java.util.Set;
 
 import static java.io.File.separatorChar;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.*;
-import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 
 /**
  * A document file attached to a given user contribution. A document file is itself a user
@@ -650,7 +650,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
   public String getAttachmentPath() {
     String lang = getLanguage();
     if (!StringUtil.isDefined(lang)) {
-      lang = DEFAULT_LANGUAGE;
+      lang = I18n.get().getDefaultLanguage();
     }
     return getDirectoryPath(lang) + getFilename();
   }
@@ -667,7 +667,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     String versionDir = getMajorVersion() + "_" + getMinorVersion();
     String lang = language;
     if (!StringUtil.isDefined(lang)) {
-      lang = DEFAULT_LANGUAGE;
+      lang = I18n.get().getDefaultLanguage();
     }
     return directory + getNodeName() + separatorChar + versionDir + separatorChar + lang
         + separatorChar;

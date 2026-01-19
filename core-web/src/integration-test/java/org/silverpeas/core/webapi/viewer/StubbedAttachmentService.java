@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.webapi.viewer;
 
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
@@ -34,19 +36,15 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.web.test.environment.SilverpeasTestEnvironment;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
 import java.io.File;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getUploadPath;
 
 /**
  * @author mmoquillon
  */
 @Service
-@Singleton
 @Alternative
 @Priority(APPLICATION + 10)
 public class StubbedAttachmentService extends SimpleDocumentService {

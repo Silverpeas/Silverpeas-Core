@@ -27,7 +27,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Optional;
 
 /**

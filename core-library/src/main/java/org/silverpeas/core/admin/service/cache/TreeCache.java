@@ -31,7 +31,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -219,9 +219,8 @@ public class TreeCache {
    * @return a list of component instances.
    */
   public List<ComponentInstLight> getComponentsInSpaceAndSubspaces(int spaceId) {
-    List<ComponentInstLight> components = new ArrayList<>();
     // add components of space
-    components.addAll(getComponents(spaceId));
+    List<ComponentInstLight> components = new ArrayList<>(getComponents(spaceId));
     // add components of subspaces
     for (SpaceInstLight subspace : getSubSpaces(spaceId)) {
       components.addAll(getComponentsInSpaceAndSubspaces(subspace.getLocalId()));

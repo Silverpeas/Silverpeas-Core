@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.directory.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
@@ -33,6 +32,7 @@ import org.silverpeas.core.contribution.content.form.fileitem.InternalFileItem;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -45,7 +45,7 @@ import org.silverpeas.web.directory.model.DirectoryItem;
 import org.silverpeas.web.directory.model.DirectoryItemList;
 import org.silverpeas.web.directory.model.UserFragmentVO;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -92,7 +92,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         List<String> groupIds = processGroups(request);
         String spaceId = request.getParameter("SpaceId");
         String userId = request.getParameter(USER_ID_PARAM);
-        // case of a direct access to directory of contacts of once component
+        // case of direct access to directory of contacts of once component
         String componentId = request.getParameter("ComponentId");
 
         String sort = request.getParameter("Sort");
@@ -251,7 +251,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
   }
 
   /**
-   * return true if this searche by index
+   * return true if this search by index
    */
   private boolean isSearchByIndex(String lettre) {
     if (lettre != null && lettre.length() == 1) {

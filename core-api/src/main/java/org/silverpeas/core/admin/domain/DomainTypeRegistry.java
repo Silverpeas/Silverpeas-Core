@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.admin.domain;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Singleton;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ import java.util.Set;
  *   By default, {@link DomainType#LDAP} and {@link DomainType#SQL} are already registered.
  * </p>
  */
+@Bean
 @Singleton
 public class DomainTypeRegistry {
 

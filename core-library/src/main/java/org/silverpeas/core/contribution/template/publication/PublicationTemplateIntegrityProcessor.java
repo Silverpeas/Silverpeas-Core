@@ -58,8 +58,10 @@ public class PublicationTemplateIntegrityProcessor implements Initialization {
             GenericRecordSetManager.getInstance().getAllComponentIdsOfRecords();
         Transaction.performInOne(() -> {
           componentIds.stream()
-              .filter(c -> isDefined(SilverpeasComponentInstance.getComponentName(c)))
-              .filter(c -> SilverpeasComponentInstance.getById(c).isEmpty())
+              .filter(c ->
+                  isDefined(SilverpeasComponentInstance.getIdentity(c).getComponentName()))
+              .filter(c ->
+                  SilverpeasComponentInstance.getById(c).isEmpty())
               .forEach(c -> PublicationTemplateManager.getInstance().delete(c));
           return null;
         });

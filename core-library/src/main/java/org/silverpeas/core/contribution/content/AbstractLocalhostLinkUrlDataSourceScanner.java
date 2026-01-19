@@ -28,7 +28,7 @@ import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.StringDataExtractor.ExtractorDirective;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.activation.URLDataSource;
+import jakarta.activation.URLDataSource;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;

@@ -35,7 +35,7 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;

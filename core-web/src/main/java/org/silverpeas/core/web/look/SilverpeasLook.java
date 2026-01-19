@@ -37,8 +37,8 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.io.File;
 import java.util.*;
 

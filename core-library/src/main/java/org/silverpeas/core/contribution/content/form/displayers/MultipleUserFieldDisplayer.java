@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.xhtml.div;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -35,6 +34,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.html.plugin.UserGroupSelectProducer;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 

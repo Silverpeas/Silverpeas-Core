@@ -26,8 +26,8 @@ package org.silverpeas.core.date;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.annotation.constraint.DateRange;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.time.*;
 import java.time.temporal.ChronoUnit;

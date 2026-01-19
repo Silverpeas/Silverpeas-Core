@@ -24,12 +24,11 @@
 
 package org.silverpeas.core.webapi.media.streaming;
 
+import jakarta.annotation.PostConstruct;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +51,6 @@ import java.util.function.BiFunction;
  * @author silveryocha
  */
 @Service
-@Singleton
 public class StreamingProviderDataEntityFactory {
 
   private static final BiFunction<StreamingProvider, OembedDataEntity,

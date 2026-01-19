@@ -30,6 +30,7 @@ import org.dbunit.dataset.ITable;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,8 +38,9 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.jpa.JpaEntityServiceTest;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.stub.StubbedUserProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Connection;
@@ -103,18 +105,25 @@ public class TransactionIT {
 
   @Before
   public void setup() {
+    StubbedUserProvider.addUser("0");
+    StubbedUserProvider.addUser("1");
+    StubbedUserProvider.addUser("2");
+    StubbedUserProvider.addUser("10");
+
     jpaEntityServiceTest = ServiceProvider.getService(JpaEntityServiceTest.class);
     OperationContext.fromUser("0");
   }
+  @After
+  public void cleanUp() {
+    StubbedUserProvider.removeAllUsers();
+  }
+
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(TransactionIT.class)
-        .addJpaPersistenceFeatures()
-        .addStubbedOrganizationController()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn((warBuilder) -> warBuilder
-            .addPackages(true, "org.silverpeas.core.persistence.datasource.repository.jpa"))
+    return LibCoreWarBuilder.onWarForTestClass(TransactionIT.class)
+        .addStubbedUserAPI()
+        .addPackages(true, "org.silverpeas.core.persistence.datasource.repository.jpa")
         .build();
   }
 
@@ -136,8 +145,8 @@ public class TransactionIT {
     }
 
       // Modifying person data
-      person.setFirstName("UnknownFirstName");
-
+    StubbedUserProvider.addUser("26");
+    person.setFirstName("UnknownFirstName");
       Transaction transaction = Transaction.getTransaction();
       transaction.perform(() -> {
         person.lastUpdatedBy("26");
@@ -173,8 +182,8 @@ public class TransactionIT {
     }
 
       // Modifying person data
+      StubbedUserProvider.addUser("26");
       person.setFirstName("UnknownFirstName");
-
       boolean exceptionThrown = false;
       try {
         Transaction transaction = Transaction.getTransaction();

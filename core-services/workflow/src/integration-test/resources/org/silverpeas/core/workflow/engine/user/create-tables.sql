@@ -47,7 +47,8 @@ CREATE TABLE ST_ComponentInstance (
   isPublic             INT DEFAULT (0)  NOT NULL,
   isHidden             INT DEFAULT (0)  NOT NULL,
   lang                 CHAR(2),
-  isInheritanceBlocked INT DEFAULT (0)  NOT NULL
+  isInheritanceBlocked INT DEFAULT (0)  NOT NULL,
+  CONSTRAINT PK_ComponentInstance PRIMARY KEY (id)
 );
 
 CREATE TABLE ST_ComponentInstanceI18N (
@@ -63,7 +64,7 @@ CREATE TABLE ST_Instance_Data (
   componentId INT          NOT NULL,
   name        VARCHAR(100) NOT NULL,
   label       VARCHAR(100) NOT NULL,
-  value       VARCHAR(400)
+  val         VARCHAR(400)
 );
 
 CREATE TABLE SB_ContentManager_Instance

@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
@@ -140,7 +140,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
   }
 
   /**
-   * Removes all of the attendees that match the specified filter.
+   * Removes all the attendees that match the specified filter.
    * @param filter the predicate against which each attendee is filtered.
    * @return the updated attendees in this calendar component.
    */
@@ -159,7 +159,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
   }
 
   /**
-   * Is there any attendees in this calendar component?
+   * Are there any attendees in this calendar component?
    * @return true if there is no attendees in this calendar component, false otherwise.
    */
   public boolean isEmpty() {
@@ -249,7 +249,7 @@ public class AttendeeSet implements Iterable<Attendee>, Serializable {
   /**
    * Is this set of attendees containing a change from an action of participation status answer or
    * from an action of presence change?
-   * Yes, but only if is does not exist an add or a deletion of attendee.
+   * Yes, but only if it does not exist an add or a deletion of attendee.
    * <p>
    * Indeed, a participation answer or a presence status change must not imply modification of last
    * update date of entities.

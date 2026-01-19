@@ -29,12 +29,12 @@ import org.silverpeas.core.calendar.ComponentInstanceCalendars;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 import org.silverpeas.core.webapi.calendar.CalendarResourceURIs;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
@@ -42,7 +42,7 @@ import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalendarWebController>
+public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalendarWebController<?>>
     extends WebComponentRequestContext<T> {
 
   private ComponentInstanceCalendars componentInstanceCalendars;
@@ -80,7 +80,7 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
   /**
    * Gets the main calendar.
    * @return the main calendar linked to the instance.
-   * @throws WebApplicationException with {@link javax.ws.rs.core.Response.Status#NOT_FOUND} code if
+   * @throws WebApplicationException with {@link jakarta.ws.rs.core.Response.Status#NOT_FOUND} code if
    * no calendars exist for component instance.
    */
   public Calendar getMainCalendar() {
@@ -92,7 +92,7 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
    * Gets the calendar corresponding to the identifier contained into request as {@code
    * calendarId} parameter name.
    * @return a calendar.
-   * @throw WebApplicationException when calendarId is set but is not linked to the current user.
+   * @throws WebApplicationException when calendarId is set but is not linked to the current user.
    */
   public Temporal getOccurrenceStartDate() {
     String startDate = getRequest().getParameter("occurrenceStartDate");
@@ -110,7 +110,7 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
    * Gets the event occurrence corresponding to the identifier contained into request as
    * {@code occurrenceId} parameter name.
    * @return an event.
-   * @throw WebApplicationException when calendarId is set but is not linked to the current user.
+   * @throws WebApplicationException when calendarId is set but is not linked to the current user.
    */
   public CalendarEventOccurrence getCalendarEventOccurrenceById() {
     String occurrenceId = getPathVariables().get("occurrenceId");

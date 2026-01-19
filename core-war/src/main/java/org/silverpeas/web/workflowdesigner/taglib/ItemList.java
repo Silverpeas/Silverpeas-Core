@@ -31,7 +31,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
 import org.silverpeas.core.workflow.api.model.DataFolder;
 import org.silverpeas.core.workflow.api.model.Item;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;

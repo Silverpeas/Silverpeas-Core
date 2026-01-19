@@ -34,6 +34,7 @@ import java.lang.reflect.InvocationTargetException;
  * used. Because the use of tokens differ, their value (the atom) cannot follow the same pattern,
  * and therefore they have to be generated in the way that matches their use. It is why the tokens
  * differ by their type and their generation is related to their type.
+ * </p>
  *
  * @author mmoquillon
  */
@@ -58,7 +59,7 @@ public class TokenGeneratorProvider {
     try {
       Class<? extends TokenGenerator> generatorType = annotation.value();
       return generatorType.getDeclaredConstructor().newInstance();
-    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException ex) {
+    } catch (InstantiationException | InvocationTargetException ex) {
       throw new TokenGenerationException("Cannot instantiate the token generator mapped with "
           + "the token type " + type.getName(), ex);
     } catch (IllegalAccessException ex) {
@@ -67,6 +68,9 @@ public class TokenGeneratorProvider {
     } catch (NullPointerException ex) {
       throw new TokenGenerationException("No token generator mapped with the token type " + type.
           getName(), ex);
+    } catch (NoSuchMethodException ex) {
+      throw new TokenGenerationException("No default constructor for the token "
+          + "generator mapped with the token type " + type.getName(), ex);
     }
   }
 

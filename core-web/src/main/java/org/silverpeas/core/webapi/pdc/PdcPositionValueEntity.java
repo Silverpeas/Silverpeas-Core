@@ -28,9 +28,9 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * A PdC position value is a value of a position of a resource content on a given axis of the PdC. A
@@ -68,7 +68,7 @@ public class PdcPositionValueEntity extends PdcValueEntity {
         inAxis(value.getAxisId()),
         withTranslatedMeaningOf(value, inLanguage));
     String treeId = term.getTreeId();
-    if (isDefined(treeId) && Integer.valueOf(treeId) >= 0) {
+    if (isDefined(treeId) && Integer.parseInt(treeId) >= 0) {
       positionValue.setTreeId(treeId);
     }
     return positionValue;
@@ -167,7 +167,7 @@ public class PdcPositionValueEntity extends PdcValueEntity {
     }
     return "PdcPositionValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" +
         getTreeId() + ", meaning=" + getMeaning() +
-        ", synonyms=" + synonymArray.toString() + '}';
+        ", synonyms=" + synonymArray + '}';
   }
 
   private static String withId(String valueId) {
@@ -179,7 +179,7 @@ public class PdcPositionValueEntity extends PdcValueEntity {
   }
 
   private static int inAxis(String axisId) {
-    return Integer.valueOf(axisId);
+    return Integer.parseInt(axisId);
   }
 
   private static String withTranslatedMeaningOf(final ClassifyValue value, String inLanguage) {

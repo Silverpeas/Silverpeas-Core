@@ -47,7 +47,7 @@ public class PreviewBuilder {
     // Nothing to do
   }
 
-  protected class PreviewMock implements Preview {
+  protected static class PreviewMock implements Preview {
 
     private final String uriId;
     private final String fileName;

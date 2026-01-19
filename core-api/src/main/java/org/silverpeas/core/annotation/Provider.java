@@ -24,15 +24,11 @@
 
 package org.silverpeas.core.annotation;
 
+import jakarta.enterprise.inject.Stereotype;
+import jakarta.inject.Singleton;
 import org.silverpeas.kernel.annotation.Managed;
 
-import javax.enterprise.inject.Stereotype;
-import javax.inject.Singleton;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * This annotation is to tag a managed bean as being a provider of business objects. The way the
@@ -40,9 +36,10 @@ import java.lang.annotation.Target;
  * by the provider itself or they can come from the IoC container.
  * <p>
  * Beans annotated with this annotation are marked to be managed by the underlying IoC container and
- * to be singleton (there is only one single instance at a given time). If the bean declare another
- * life-cycle scope, then the new scope overrides the default one. Any providers of business objects
- * that don't have to be managed by the IoC container shouldn't be annotated with this annotation.
+ * to be singleton (there is only one single instance of the bean at a given time). If the bean
+ * declare another life-cycle scope, then the new scope overrides the default one. Any providers of
+ * business objects that don't have to be managed by the IoC container shouldn't be annotated with
+ * this annotation.
  * </p>
  * <p>
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can

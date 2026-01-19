@@ -40,14 +40,14 @@ import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.kernel.util.Mutable;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeDeclaredField;
 import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.hamcrest.MatcherAssert.assertThat;

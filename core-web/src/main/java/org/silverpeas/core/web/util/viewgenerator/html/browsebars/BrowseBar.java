@@ -38,43 +38,17 @@ import java.util.List;
  */
 public interface BrowseBar extends SimpleGraphicElement {
 
-  /**
-   * Method declaration
-   * @param domainName
-   *
-   */
   void setDomainName(String domainName);
 
-  /**
-   * Method declaration
-   * @param componentName
-   *
-   */
   void setComponentName(String componentName);
 
-  /**
-   * Method declaration
-   * @param componentName
-   * @param link
-   *
-   */
   void setComponentName(String componentName, String link);
 
-  /**
-   * Method declaration
-   * @param information
-   *
-   */
   void setExtraInformation(String information);
 
-  /**
-   * Method declaration
-   * @param path
-   *
-   */
   void setPath(String path);
 
-  void setI18N(I18NBean bean, String language);
+  void setI18N(I18NBean<?> bean, String language);
 
   void setI18N(String url, String language);
 
@@ -89,8 +63,8 @@ public interface BrowseBar extends SimpleGraphicElement {
   void setLook(LookHelper look);
 
   /**
-   * Print the browseBar in an html format.
-   * @return The html based line code
+   * Print the browseBar in HTML format.
+   * @return The HTML based line code
    */
   @Override
   String print();
@@ -99,13 +73,13 @@ public interface BrowseBar extends SimpleGraphicElement {
 
   /**
    * add given elements to existing elements
-   * @param elements to add to breadscrumb
+   * @param elements to add to breadcrumb
    */
   void addElements(List<BrowseBarElement> elements);
 
   /**
    * remove existing elements and add given elements
-   * @param elements to add to breadscrumb
+   * @param elements to add to breadcrumb
    */
   void setElements(List<BrowseBarElement> elements);
 

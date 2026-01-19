@@ -28,8 +28,9 @@
 package org.silverpeas.core.util;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.kernel.test.UnitTest;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,24 +42,25 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author ehugonnet
  */
-@UnitTest
+@EnableSilverTestEnv(context = JEETestContext.class)
 public class FileServerUtilsTest {
 
   @Test
   public void testGetAttachmentURL() {
-    String url = FileServerUtils.getAttachmentURL("myComponent12", "toto_le_beau.JPG", "18512", "");
+    String url = FileServerUtils.getAttachmentURL("myComponent12", "toto_le_beau.JPG", "18512", "en");
     assertNotNull(url);
-    assertEquals("/attached_file/componentId/myComponent12/attachmentId/18512/lang//name/toto_le_beau.JPG",
+    assertEquals(
+        "/attached_file/componentId/myComponent12/attachmentId/18512/lang/en/name/toto_le_beau.JPG",
         url);
     url = FileServerUtils.getAttachmentURL("myComponent12", "toto_le_beau.JPG", "18512", null);
     assertNotNull(url);
-    assertEquals("/attached_file/componentId/myComponent12/attachmentId/18512/lang/fr/name/toto_le_beau.JPG",
+    assertEquals(
+        "/attached_file/componentId/myComponent12/attachmentId/18512/lang/fr/name/toto_le_beau.JPG",
         url);
   }
 
   @Test
-  public void testGetUrlToTempDir()
-      throws Exception {
+  public void testGetUrlToTempDir() {
     String url =  FileServerUtils.getUrlToTempDir("hello_world.pdf");
     assertEquals("/silverpeas/TempFileServer/hello_world.pdf", url);
     url =  FileServerUtils.getUrlToTempDir("Mon œuvre.pdf");

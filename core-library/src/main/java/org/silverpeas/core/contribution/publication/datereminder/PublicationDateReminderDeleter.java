@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Deleter of date reminder related to publications.

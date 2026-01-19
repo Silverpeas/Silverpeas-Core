@@ -23,21 +23,21 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.jsp.JspWriter;
 import org.apache.ecs.html.A;
 import org.apache.ecs.html.Div;
 import org.apache.ecs.html.Input;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.file.FileItem;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -297,7 +297,8 @@ public abstract class AbstractForm implements Form {
    * @param pagesContext the page context.
    */
   @Override
-  public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
+  public List<String> update(List<FileItem> items, DataRecord record,
+      PagesContext pagesContext) {
     return update(items, record, pagesContext, true);
   }
 
@@ -311,7 +312,8 @@ public abstract class AbstractForm implements Form {
    * @param updateWysiwyg flag indicating if all of WYSIWYG data can be updated.
    */
   @Override
-  public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext,
+  public List<String> update(List<FileItem> items, DataRecord record,
+      PagesContext pagesContext,
       boolean updateWysiwyg) {
     List<String> attachmentIds = new ArrayList<>();
 
@@ -405,7 +407,8 @@ public abstract class AbstractForm implements Form {
    * @return true if one of the form field has no data.
    */
   @Override
-  public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
+  public boolean isEmpty(List<FileItem> items, DataRecord record,
+      PagesContext pagesContext) {
     boolean isEmpty = true;
     for (FieldTemplate fieldTemplate : fieldTemplates) {
       if (fieldTemplate != null) {
@@ -418,7 +421,8 @@ public abstract class AbstractForm implements Form {
     return isEmpty;
   }
 
-  private boolean checkFieldIsEmpty(final List<FileItem> items, final PagesContext pagesContext,
+  private boolean checkFieldIsEmpty(final List<FileItem> items,
+      final PagesContext pagesContext,
       boolean isEmpty, final FieldTemplate fieldTemplate) {
     FieldDisplayer<? extends Field> fieldDisplayer;
     String fieldType = fieldTemplate.getTypeName();
@@ -430,11 +434,12 @@ public abstract class AbstractForm implements Form {
       fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
       if (fieldDisplayer != null) {
         String itemName = fieldTemplate.getFieldName();
-        FileItem item = getParameter(items, itemName);
-        if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
+        var item = FileUploadUtil.getFile(items, itemName);
+        if (item != null && !item.isFormField() && StringUtil.isDefined(item.getFileName())) {
           isEmpty = false;
         } else {
-          String itemValue = getParameterValue(items, itemName, pagesContext.getEncoding());
+          String itemValue = FileUploadUtil.getParameter(items, itemName, null,
+              pagesContext.getEncoding());
           isEmpty = !StringUtil.isDefined(itemValue);
         }
       }
@@ -442,42 +447,6 @@ public abstract class AbstractForm implements Form {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return isEmpty;
-  }
-
-  /**
-   * Gets the value of the specified parameter from the specified items.
-   * @param items the items of the form embbeding multipart data.
-   * @param parameterName the name of the parameter.
-   * @param encoding the encoding at which the value must be in.
-   * @return the value of the specified parameter in the given encoding. or null if no such
-   * parameter is defined in this form.
-   * @throws UnsupportedEncodingException if the encoding at which the value should be in isn't
-   * supported.
-   */
-  private String getParameterValue(List<FileItem> items, String parameterName, String encoding)
-      throws UnsupportedEncodingException {
-    FileItem item = getParameter(items, parameterName);
-    if (item != null && item.isFormField()) {
-      return item.getString(encoding);
-    }
-    return null;
-  }
-
-  /**
-   * Gets the multipart data of the specified parameter.
-   * @param items the items of the form with all of the multipart data.
-   * @param parameterName the name of the parameter.
-   * @return the item corresponding to the specified parameter.
-   */
-  private FileItem getParameter(final List<FileItem> items, final String parameterName) {
-    FileItem fileItem = null;
-    for (FileItem item : items) {
-      if (parameterName.equals(item.getFieldName())) {
-        fileItem = item;
-        break;
-      }
-    }
-    return fileItem;
   }
 
   private TypeManager getTypeManager() {
@@ -558,7 +527,7 @@ public abstract class AbstractForm implements Form {
     Div div = new Div();
     div.setClass("buttonPanel");
     A a = new A();
-    a.addElement(Util.getString("form.skip.label", pageContext.language));
+    a.addElement(Util.getString("form.skip.label", pageContext.getLanguage()));
     a.setHref("#");
     a.setClass("ignoreForm");
     a.setOnClick(

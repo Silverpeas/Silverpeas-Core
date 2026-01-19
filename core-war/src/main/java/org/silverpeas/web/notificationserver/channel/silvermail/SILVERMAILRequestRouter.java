@@ -23,13 +23,15 @@
  */
 package org.silverpeas.web.notificationserver.channel.silvermail;
 
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.literal.NamedLiteral;
+import jakarta.inject.Inject;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSessionController> {
   private static final long serialVersionUID = -1666867964822716456L;
@@ -45,6 +47,9 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
    * useBean actions in the JSPs.
    */
   private static final String SESSION_BEAN_NAME = "SILVERMAIL";
+
+  @Inject
+  private Instance<SILVERMAILRequestHandler> handlers;
 
   public SILVERMAILSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
@@ -65,7 +70,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
     String function = extractFunctionName(action);
 
     // If we have an action parameter, obtain the RequestHandler that implements
-    // the action. This method will throw a exception if no handler is associated with the action.
+    // the action. This method will throw an exception if no handler is associated with the action.
     SILVERMAILRequestHandler requestHandler;
 
     try {
@@ -84,17 +89,18 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
   }
 
   /**
-   * Locate and return the RequestHandler instance for this action. Request handlers are managed
-   * by the {@link ServiceProvider} subsystem.
+   * Locate and return the RequestHandler instance for this action. Request handlers are managed by
+   * the {@link ServiceProvider} subsystem.
    */
-  private static SILVERMAILRequestHandler getHandlerInstance(String action)
+  private SILVERMAILRequestHandler getHandlerInstance(String action)
       throws SILVERMAILException {
-    try {
-      return ServiceProvider.getService(action);
-    } catch (SilverpeasRuntimeException e) {
-      final String handlerName = REQUEST_HANDLER_PACKAGE + "." + action;
-      throw new SILVERMAILException("No such request handler " + handlerName, e);
-    }
+    return handlers.select(NamedLiteral.of(action))
+        .stream()
+        .findAny()
+        .orElseThrow(() -> {
+          final String handlerName = REQUEST_HANDLER_PACKAGE + "." + action;
+          return new SILVERMAILException("No such request handler " + handlerName);
+        });
   }
 
   private static String extractFunctionName(String action) {

@@ -30,13 +30,13 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * User: Yohann Chastagnier

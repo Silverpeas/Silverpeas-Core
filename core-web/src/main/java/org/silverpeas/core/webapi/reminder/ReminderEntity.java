@@ -25,6 +25,10 @@
 package org.silverpeas.core.webapi.reminder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.reminder.DateTimeReminder;
@@ -32,10 +36,6 @@ import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.time.OffsetDateTime;
 
@@ -212,7 +212,7 @@ public class ReminderEntity implements WebEntity {
    * System data are not merged (id, creation date, update date, ...)
    * @param reminder the reminder which will get the new data.
    * @return the given reminder instance with merged data.
-   * @throw javax.ws.javax.ws.rs.WebApplicationException if given reminder does not exist.
+   * @throws jakarta.ws.rs.WebApplicationException if given reminder does not exist.
    */
   public Reminder mergeInto(Reminder reminder) {
     reminder.withText(getText());

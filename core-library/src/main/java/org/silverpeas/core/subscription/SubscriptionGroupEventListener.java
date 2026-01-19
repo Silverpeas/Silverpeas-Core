@@ -28,7 +28,7 @@ import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.admin.user.notification.GroupEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author mmoquillon

@@ -29,7 +29,7 @@ package org.silverpeas.web.notificationserver.channel.silvermail;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Interface to be implemented by objects that can process requests

@@ -28,7 +28,7 @@ import org.apache.ecs.xhtml.div;
 import org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPaneTag;
 import org.silverpeas.core.web.util.viewgenerator.html.buttons.ButtonTag;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import java.io.Serializable;
 
 import static java.lang.String.format;

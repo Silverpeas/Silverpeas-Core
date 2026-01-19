@@ -27,10 +27,10 @@ import com.sun.portal.container.ContainerLogger;
 import com.sun.portal.portletcontainer.invoker.ResponseProperties;
 import org.w3c.dom.Element;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -53,7 +53,7 @@ public class InvokerUtil {
   public static String MARKUP_HEADERS = "com.sun.portal.portletcontainer.markupHeaders";
 
   // Create a logger for this class
-  private static Logger logger = ContainerLogger.getLogger(InvokerUtil.class,
+  private static final Logger logger = ContainerLogger.getLogger(InvokerUtil.class,
       "org.silverpeas.portlets.PCCTXLogMessages");
 
   /**
@@ -84,7 +84,7 @@ public class InvokerUtil {
       session.removeAttribute(MARKUP_HEADERS);
       List<Element> markupHeadElements = responseProperties.getMarkupHeadElements();
       if (!markupHeadElements.isEmpty()) {
-        List<String> markupHeaders = new ArrayList<String>();
+        List<String> markupHeaders = new ArrayList<>();
         for (Element markupHeadElement : markupHeadElements) {
           String elementValue = convertElementToString(markupHeadElement);
           if (elementValue != null) {

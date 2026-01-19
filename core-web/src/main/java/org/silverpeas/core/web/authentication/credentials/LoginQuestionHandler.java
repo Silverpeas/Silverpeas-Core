@@ -29,7 +29,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user forgot his password and will be asked for his login question.

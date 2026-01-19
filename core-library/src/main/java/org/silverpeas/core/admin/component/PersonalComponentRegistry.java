@@ -23,18 +23,17 @@
  */
 package org.silverpeas.core.admin.component;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.SystemWrapper;
 
-import javax.inject.Singleton;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -62,7 +61,6 @@ import java.util.stream.Stream;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class PersonalComponentRegistry implements Initialization {
 
   private static final int MAX_DEPTH = 2;

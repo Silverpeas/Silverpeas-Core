@@ -35,9 +35,10 @@ import static java.util.Calendar.*;
 /**
  * WARNING: All the deprecated classes in this package contain failure in their handling of date
  * times (bad use of Timezone, etc.)
- *
+ * <p>
  * A date on a day of a month and in year. The time isn't represented here. Please refers to
  * DateTime to models also the time.
+ * </p>
  * @deprecated Use the java.time API
  */
 @Deprecated
@@ -228,10 +229,8 @@ public class Date extends AbstractDateTemporal<Date> {
     Date other;
     if (obj instanceof java.util.Date) {
       other = new Date((java.util.Date) obj);
-    } else if (getClass() != obj.getClass()) {
-      return false;
     } else {
-      other = (Date) obj;
+      return false;
     }
     return isEqualTo(other);
   }

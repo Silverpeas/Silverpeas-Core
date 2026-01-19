@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;

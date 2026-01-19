@@ -225,7 +225,7 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     JobManagerService jSTAT4 = new JobManagerService("34", "JSTAT4", LEVEL_OPERATION, webContext
         + getURL(CMP_SILVERSTATISTICSPEAS, null, null) + "ViewPDCAccess", null, false);
 
-    // l'administrateur à accès au tout
+    // l'administrateur a accès au tout
     String[] jDesignerFunctions = {jspp.getId(), jdp.getId(), jsp.getId()};
     jDesigner =
         new JobManagerService(DEFAULT_SERVICE_ID, "JD", LEVEL_SERVICE, null, jDesignerFunctions,
@@ -325,10 +325,10 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
   }
 
   // retourne les services de niveau level
-  // 0 => niveau Service
-  // 1 => opération
-  // 2 => action
-  // 3 => acteur
+  // 0 → niveau Service
+  // 1 → opération
+  // 2 → action
+  // 3 → acteur
   public JobManagerService[] getServices(int level) {
     List<JobManagerService> listServices = new ArrayList<>(services.size());
     for (JobManagerService jms : services.values()) {
@@ -360,7 +360,7 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
   }
 
   public void changeServiceActif(String idNewService) {
-    // mise a jour de l'id actif et de l'objet correspondant
+    // mise à jour de l'id actif et de l'objet correspondant
     if (this.idCurrentServiceActif != null) {
       // si = null, nous sommes dans la
       // première initialisation de idCurrentServiceActif reset du flag actif du service courant
@@ -371,7 +371,7 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     newService.setActive(true);
     this.idCurrentServiceActif = idNewService;
 
-    // initialisation du idCurrentOperationActif avec l'opération active
+    // initialisation du "idCurrentOperationActif" avec l'opération active
     // correspondant au nouveau service
     JobManagerService[] jms = this.getSubServices(newService);
     idCurrentOperationActif = null;
@@ -382,12 +382,9 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     }
 
     // contrôle si l'attribut idCurrentServiceActif à bien une valeur
-    // si oui=> le service courant à déjà été consulté et il existe bien
-    // une
-    // opération active
-    // si non => le service courant n'a pas encore été consulté et
-    // l'opération
-    // active est la valeur par defaut
+    // si oui → le service courant a déjà été consulté et il existe bien une opération active
+    // si non → le service courant n'a pas encore été consulté et l'opération active est la valeur
+    // par défaut
     if (idCurrentOperationActif == null) {
       JobManagerService currentOperation = services.get(newService.getDefaultIdSubService());
       currentOperation.setActive(true);

@@ -27,7 +27,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
@@ -52,7 +52,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "componentId", referencedColumnName = "id", nullable = false)
   private CalendarComponent component;
-  @OneToOne
+  @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
   @JoinColumn(name = "delegate", referencedColumnName = "id")
   private Attendee delegate;
   @Column(name = "participation", nullable = false)

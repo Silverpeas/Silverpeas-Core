@@ -26,14 +26,12 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Singleton;
 import java.util.Optional;
 
 /**
  * @author silveryocha
  */
 @Service
-@Singleton
 public class DefaultCalendarResourcePathProvider implements CalendarResourcePathProvider{
 
   @SuppressWarnings("unchecked")

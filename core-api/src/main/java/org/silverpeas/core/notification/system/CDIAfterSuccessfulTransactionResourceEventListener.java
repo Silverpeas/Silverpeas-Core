@@ -24,12 +24,11 @@
 
 package org.silverpeas.core.notification.system;
 
+import jakarta.enterprise.event.Observes;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.enterprise.event.Observes;
-
-import static javax.enterprise.event.TransactionPhase.AFTER_SUCCESS;
+import static jakarta.enterprise.event.TransactionPhase.AFTER_SUCCESS;
 
 /**
  * A synchronous event listener using the notification bus of CDI. This bus is based on the
@@ -70,7 +69,6 @@ public abstract class CDIAfterSuccessfulTransactionResourceEventListener<T exten
    * </p>
    * @see ResourceEventListener#dispatchEvent(ResourceEvent)
    * @param event an event.
-   * @throws Exception if the processing of the event fails.
    */
   public void onEvent(@Observes(during = AFTER_SUCCESS) T event) {
     Transaction.performInNew(() -> {

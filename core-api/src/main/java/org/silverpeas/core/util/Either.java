@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.util;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -34,6 +34,7 @@ import java.util.function.Function;
  * object of type U.
  * @author mmoquillon
  */
+@SuppressWarnings("unused")
 public class Either<T, U> {
 
   private final U right;

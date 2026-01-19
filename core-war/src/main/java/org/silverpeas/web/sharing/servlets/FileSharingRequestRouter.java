@@ -37,7 +37,7 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.sharing.control.FileSharingSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;

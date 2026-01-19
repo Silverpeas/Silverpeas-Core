@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.quota.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.quota.QuotaKey;
 import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
@@ -37,9 +38,15 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.util.Process;
 
-import javax.inject.Inject;
-
 /**
+ * Base implementation of the {@link QuotaService} interface. This implementation provides common
+ * behaviors for all implementations of the {@link QuotaService}s. Because it defines final methods
+ * to avoid their accidental overriden by child classes, the beans of the implementations cannot be
+ * proxified; so the normal lifecycle scopes predefined by the underlying IOc/IoD subsystem
+ * cannot be used. Instead, annotate the implementations with either
+ * {@link org.silverpeas.core.annotation.Bean} or, with any other bean annotations,
+ * {@link jakarta.inject.Singleton}.
+ *
  * @author Yohann Chastagnier
  */
 public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaService<T> {
@@ -115,14 +122,15 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
 
   /**
    * Private method to retrieve a Quota
+   *
    * @param key the key of the quota
    * @return the quota corresponding to the key if any, a new empty quota otherwise
    */
   private Quota getByQuotaKey(final T key) {
     Quota quota = null;
     if (key.isValid()) {
-        quota =
-            quotaRepository.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
+      quota =
+          quotaRepository.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
     }
     if (quota == null) {
       quota = new Quota();
@@ -164,11 +172,12 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    * <p>
    * The count of given quota MUST have been computed before calling this method.
    * </p>
+   *
    * @param quota the quota to verify.
    * @param countingOffset an offset to apply.
+   * @return a copied quota from the given one containing the count with the offset used by the
+   * verify treatment
    * @throws QuotaException when the quota is reached.
-   * @return a copied quota from the given one containing the count with the offset used by
-   * the verify treatment
    */
   protected final Quota verifyQuota(final Quota quota,
       final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
@@ -217,6 +226,7 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
 
   /**
    * Indicates if the type of quota is activated
+   *
    * @return true if activated, false otherwise
    */
   protected abstract boolean isActivated();

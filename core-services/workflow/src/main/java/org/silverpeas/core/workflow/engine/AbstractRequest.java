@@ -16,7 +16,7 @@ import org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl;
 import org.silverpeas.core.workflow.engine.instance.ProcessInstanceManagerImpl;
 import org.silverpeas.core.workflow.engine.instance.ProcessInstanceRepository;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Date;
 
 /**

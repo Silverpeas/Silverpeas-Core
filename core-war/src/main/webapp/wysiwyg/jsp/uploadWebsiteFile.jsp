@@ -32,13 +32,12 @@
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
-<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
-<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.http.HttpRequest"%>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button " %>
 <%@ page import="java.io.File" %>
@@ -46,7 +45,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController" %>
 <%@ page import="org.silverpeas.core.security.authorization.ForbiddenRuntimeException" %>
 <%@ page import="org.owasp.encoder.Encode" %>
-<%@ page import="org.silverpeas.kernel.logging.SilverLogger" %>
+<%@ page import="org.silverpeas.core.util.file.FileItem" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -54,7 +53,6 @@
   String m_context = URLUtil.getApplicationURL();
   String language = request.getParameter("Language");
   String thePath = request.getParameter("Path");
-  SilverLogger.getLogger(this).info("PATH IS " + thePath);
   String root = WysiwygController.getWebsiteRepository();
   if (!thePath.startsWith(root) || thePath.contains("..")) {
     throw new ForbiddenRuntimeException("Forbidden file upload attempt!");
@@ -66,15 +64,15 @@
   //Le cadre
   Board board = gef.getBoard();
 
-  //Icons
-  String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
-  HttpRequest httpRequest = HttpRequest.decorate(request);
-  if (httpRequest.isContentInMultipart()) {
-    FileItem fileItem = httpRequest.getSingleFile();
-    if (fileItem != null) {
-      String fichierName = FileUploadUtil.getFileName(fileItem);
-      File fichier = new File(thePath, fichierName);
-      FileUploadUtil.saveToFile(fichier, fileItem);
+    //Icons
+    String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
+    HttpRequest httpRequest = HttpRequest.decorate(request);
+    if (httpRequest.isContentInMultipart()) {
+	    FileItem fileItem = httpRequest.getSingleFile();
+	    if (fileItem != null) {
+			String fichierName = FileUploadUtil.getFileName(fileItem);
+			File fichier = new File(thePath, fichierName);
+			fileItem.saveTo(fichier);
 
       String urlPath = thePath.substring(thePath.indexOf("/website"));
 

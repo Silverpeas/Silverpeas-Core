@@ -52,7 +52,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private String componentLink = null;
   private String information = null;
   private String path = null;
-  private I18NBean i18nBean = null;
+  private I18NBean<?> i18nBean = null;
   private String language = null;
   private String url = null;
   private List<String> languages = null;
@@ -66,23 +66,9 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private boolean ignoreComponentLink = true;
   protected LookHelper look = null;
 
-  /**
-   * Constructor declaration
-   *
-   * @see
-   */
   public AbstractBrowseBar() {
   }
 
-  /**
-   * Constructor declaration
-   *
-   * @param domainName
-   * @param componentName
-   * @param information
-   * @param path
-   * @see
-   */
   public AbstractBrowseBar(String domainName, String componentName,
       String information, String path) {
     this.domainName = domainName;
@@ -91,78 +77,35 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     this.path = path;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param domainName
-   * @see
-   */
   @Override
   public void setDomainName(String domainName) {
     this.domainName = domainName;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getDomainName() {
     return domainName;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param componentName
-   * @see
-   */
   @Override
   public void setComponentName(String componentName) {
     this.componentName = componentName;
     componentLink = null;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param componentName
-   * @param link
-   * @see
-   */
   @Override
   public void setComponentName(String componentName, String link) {
     this.componentName = componentName;
     componentLink = link;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getComponentName() {
     return componentName;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getComponentLink() {
     return componentLink;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param information
-   * @see
-   */
   @Override
   public void setExtraInformation(String information) {
     this.information = information;
@@ -172,22 +115,10 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getExtraInformation() {
     return information;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param path
-   * @see
-   */
   @Override
   public void setPath(String path) {
     if (StringUtil.isDefined(path)) {
@@ -195,27 +126,15 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getPath() {
     return path;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   public String getIconsPath() {
     return GraphicElementFactory.getIconsPath();
   }
 
-  public I18NBean getI18NBean() {
+  public I18NBean<?> getI18NBean() {
     return i18nBean;
   }
 
@@ -252,7 +171,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   }
 
   @Override
-  public void setI18N(I18NBean bean, String language) {
+  public void setI18N(I18NBean<?> bean, String language) {
     i18nBean = bean;
     this.language = language;
   }
@@ -270,7 +189,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   }
 
   public boolean isI18N() {
-    return I18NHelper.isI18nContentActivated
+    return I18NHelper.isI18nContentActivated()
         && (getI18NBean() != null || getUrl() != null || getLanguages() != null);
   }
 

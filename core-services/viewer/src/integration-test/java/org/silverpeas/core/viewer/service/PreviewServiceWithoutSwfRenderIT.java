@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.viewer.model.Preview;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

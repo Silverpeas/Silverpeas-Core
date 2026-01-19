@@ -36,7 +36,7 @@ import org.silverpeas.core.webapi.util.UserEntity;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.web.test.ResourceGettingTest;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
@@ -80,7 +80,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
     user = User.getById("1");
     authToken = getTokenKeyOf(user);
     final String replacementId = "92b0fa2f-3287-4f99-a9b7-16424f82d607";
-    Replacement replacement = Replacement.get(replacementId)
+    Replacement<?> replacement = Replacement.get(replacementId)
         .orElseThrow(() -> new AssertionError("No replacement with id " + replacementId));
     resource = new ReplacementEntity(replacement);
   }

@@ -37,8 +37,8 @@ import java.util.List;
 public class AllComponentParameters {
 
   private final SilverpeasComponent component;
-  private LocalizedParameterList parameters;
-  private List<LocalizedGroupOfParameters> groupsOfParameters;
+  private final LocalizedParameterList parameters;
+  private final List<LocalizedGroupOfParameters> groupsOfParameters;
 
   public AllComponentParameters(SilverpeasComponent component, LocalizedParameterList parameters,
       List<LocalizedGroupOfParameters> groups) {

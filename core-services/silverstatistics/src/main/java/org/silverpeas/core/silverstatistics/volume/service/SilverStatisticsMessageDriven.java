@@ -26,32 +26,24 @@ package org.silverpeas.core.silverstatistics.volume.service;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.MessageDriven;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.TextMessage;
 import java.util.StringTokenizer;
 
 import static org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants.SEPARATOR;
 
-/**
- * Class declaration
- *
- * @author
- */
 @MessageDriven(activationConfig = {
-  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "jakarta.jms.Queue"),
   @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
   @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue =
       "jms/queue/statisticsQueue")}, description = "Message driven bean for statistics insertion")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SilverStatisticsMessageDriven implements MessageListener {
-
-  public SilverStatisticsMessageDriven() {
-  }
 
   /**
    * Insert statistics
@@ -66,7 +58,7 @@ public class SilverStatisticsMessageDriven implements MessageListener {
       if (stData.hasMoreTokens()) {
         String typeOfStats = stData.nextToken();
         if (typeOfStats.length() + SEPARATOR.length() < msg.length()) {
-          String stat = msg.substring(typeOfStats.length() + SEPARATOR.length(), msg.length());
+          String stat = msg.substring(typeOfStats.length() + SEPARATOR.length());
 
           getSilverStatistics().putStats(StatType.valueOf(typeOfStats), stat);
         } else {

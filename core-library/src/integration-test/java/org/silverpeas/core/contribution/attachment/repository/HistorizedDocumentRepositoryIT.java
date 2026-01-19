@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
+import jakarta.inject.Inject;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -34,28 +35,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.contribution.attachment.model.*;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControllerIT;
+import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.jcr.JCRSession;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
+import org.silverpeas.core.test.stub.StubbedWbeClientManager;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.jcr.JCRSession;
+import org.silverpeas.kernel.util.Pair;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
+import javax.jcr.*;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionManager;
@@ -63,15 +57,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
@@ -85,12 +71,20 @@ import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia73";
-  private final DocumentRepository documentRepository = new DocumentRepository();
+
+  @Inject
+  private I18n i18n;
+
+  @Inject
+  private DocumentRepository documentRepository;
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(HistorizedDocumentRepositoryIT.class)
-        .addJcrFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(WysiwygControllerIT.class)
+        .addClasses(StubbedWbeClientManager.class)
+        .addMavenDependencies("commons-beanutils:commons-beanutils")
+        .addAsResource("silverpeas-oak.properties")
+        .addAsResource("org/silverpeas/util/attachment/Attachment.properties")
         .build();
   }
 
@@ -3746,7 +3740,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       VersionHistory versionHistory =
           session.getWorkspace().getVersionManager().getVersionHistory(doc.getFullJcrPath());
       NodeIterator frozenNodeIt = versionHistory.getAllFrozenNodes();
-      DocumentConverter converter = new DocumentConverter();
+      DocumentConverter converter = new DocumentConverter(i18n);
       Version rootNode = versionHistory.getRootVersion();
       while (frozenNodeIt.hasNext()) {
         Node frozenNode = frozenNodeIt.nextNode();
@@ -3898,9 +3892,6 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       Node docNode = session.getNodeByIdentifier(doc.getId());
       assertThat(docNode, notNullValue());
       assertThat(DocumentConverter.isMixinApplied(docNode, MIX_VERSIONABLE), is(true));
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw e;
     }
   }
 

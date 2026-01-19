@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.core.viewer.model.DocumentView;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

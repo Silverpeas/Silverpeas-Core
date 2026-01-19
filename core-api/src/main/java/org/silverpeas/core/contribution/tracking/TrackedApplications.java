@@ -69,7 +69,7 @@ public class TrackedApplications {
   }
 
   public boolean isTracked(final String appId) {
-    String appName = SilverpeasComponentInstance.getComponentName(appId);
+    String appName = SilverpeasComponentInstance.getIdentity(appId).getComponentName();
     return apps != null && (this.apps[0].equals(ALL_APPS) || contains(apps, appName));
   }
 

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -103,16 +102,14 @@ public class SimpleDocumentMatcher extends BaseMatcher<SimpleDocument> {
         equals(other.getAttachment()))) {
       return false;
     }
-    return (document.getForbiddenDownloadForRoles() != null ||
-        other.getForbiddenDownloadForRoles() == null) &&
-        (document.getForbiddenDownloadForRoles() == null ||
-            other.getForbiddenDownloadForRoles() != null) &&
-        (document.getForbiddenDownloadForRoles() == null ||
-            other.getForbiddenDownloadForRoles() == null ||
-            document.getForbiddenDownloadForRoles().size() !=
-                other.getForbiddenDownloadForRoles().size() || CollectionUtils
-            .intersection(document.getForbiddenDownloadForRoles(),
-                other.getForbiddenDownloadForRoles()).size() ==
-            document.getForbiddenDownloadForRoles().size());
+    var forbiddenRoles = document.getForbiddenDownloadForRoles();
+    var otherForbiddenRoles = other.getForbiddenDownloadForRoles();
+    return (forbiddenRoles != null || otherForbiddenRoles == null) &&
+        (forbiddenRoles == null || otherForbiddenRoles != null) &&
+        (forbiddenRoles == null || forbiddenRoles.size() != otherForbiddenRoles.size() ||
+            forbiddenRoles.stream()
+                .distinct()
+                .filter(otherForbiddenRoles::contains)
+                .count() == forbiddenRoles.size());
   }
 }

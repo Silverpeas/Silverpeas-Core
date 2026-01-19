@@ -27,7 +27,7 @@ package org.silverpeas.core.web.mvc.route;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 /**
@@ -43,7 +43,7 @@ import java.net.URI;
  * </p>
  * Any application requiring to provide a specific rule for URL or URI to core services (indexation
  * for example) has to implement this interface and the implementation has to be qualified with the
- * {@link javax.inject.Named} annotation by a name satisfying the following convention
+ * {@link jakarta.inject.Named} annotation by a name satisfying the following convention
  * <code>[COMPONENT NAME]InstanceRoutingMap</code>. For example, for an application Kmelia,
  * the implementation must be qualified with <code>@Named("kmeliaInstanceRoutingMap")</code>
  * <p>

@@ -25,7 +25,7 @@
 /**
  * Provides an implementation of the
  * <a href="http://docs.oasis-open.org/cmis/CMIS/v1.1/os/CMIS-v1.1-os.html">CMIS v1.1 specification</a>
- * for Silverpeas. The implementation is based upon Apache Chemistry and it exposes a single CMIS
+ * for Silverpeas. The implementation is based upon Apache Chemistry, and it exposes a single CMIS
  * repository for the whole resources managed in Silverpeas.
  * @author mmoquillon
  */

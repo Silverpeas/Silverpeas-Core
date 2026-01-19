@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.rating.model;
 
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -37,9 +37,9 @@ public class ContributionRating implements Serializable {
 
   private static final long serialVersionUID = 5611801738147739307L;
 
-  private ContributionRatingPK pk;
+  private final ContributionRatingPK pk;
   private float ratingAverage = 0;
-  private Map<String, Integer> raterRatings = new HashMap<>();
+  private final Map<String, Integer> raterRatings = new HashMap<>();
 
   /**
    * Default constructor.
@@ -68,7 +68,7 @@ public class ContributionRating implements Serializable {
 
   /**
    * Gets the type of the contribution aimed by the rating.
-   * @return the type of a contribution.
+   * @return the type of contribution.
    */
   public String getContributionType() {
     return pk.getContributionType();
@@ -79,7 +79,7 @@ public class ContributionRating implements Serializable {
    * @return the average of all rater ratings.
    */
   public float getRatingAverage() {
-    if (ratingAverage == 0 && raterRatings.size() > 0) {
+    if (ratingAverage == 0 && !raterRatings.isEmpty()) {
       float sum = 0;
       for (Integer aRaterRating : raterRatings.values()) {
         sum += aRaterRating;
@@ -107,7 +107,7 @@ public class ContributionRating implements Serializable {
    * @return the rater rating instance of the specified rater. Null if no rating has been done by
    * the specified user.
    */
-  public RaterRating getRaterRating(UserDetail rater) {
+  public RaterRating getRaterRating(User rater) {
     Integer raterRatingValue =
         (rater != null && StringUtil.isDefined(rater.getId())) ? raterRatings.get(rater.getId()) :
             null;

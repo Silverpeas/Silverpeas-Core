@@ -31,8 +31,8 @@ import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ejb.Stateless;
-import javax.transaction.Transactional;
+import jakarta.ejb.Stateless;
+import jakarta.transaction.Transactional;
 
 /**
  * @author Yohann Chastagnier
@@ -51,11 +51,6 @@ public class DefaultEjbService implements EjbService {
     return null;
   }
 
-  /**
-   * Missing for tests the {@link Action} annotation.
-   * @param file
-   * @param destination
-   */
   @SimulationActionProcess(elementLister = InterceptorTestFileElementLister.class)
   // @Action(ActionType.DELETE)
   @Override

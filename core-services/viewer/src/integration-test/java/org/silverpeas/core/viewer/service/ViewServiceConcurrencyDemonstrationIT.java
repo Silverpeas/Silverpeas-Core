@@ -29,9 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.core.viewer.model.DocumentView;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedThreadFactory;
-import javax.inject.Inject;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedThreadFactory;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;

@@ -32,6 +32,7 @@ import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
+import jakarta.annotation.Resource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -41,10 +42,10 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.dao.PersonalizationMatcher;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.personalization.dao.PersonalizationRepositoryIT;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.time.ZoneId;
 
@@ -91,14 +92,11 @@ public class PersonalizationServiceIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(PersonalizationServiceIT.class)
-        .addAdministrationFeatures()
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.personalization");
-          warBuilder.addAsResource(
-              "org/silverpeas/personalization/settings/personalizationPeasSettings" +
-                  ".properties");
-            })
+    return LibCoreWarBuilder.onWarForTestClass(PersonalizationRepositoryIT.class)
+        .addStubbedUserAPI()
+        .addPackages(true, "org.silverpeas.core.personalization")
+        .addAsResource(
+            "org/silverpeas/personalization/settings/personalizationPeasSettings.properties")
         .build();
   }
 

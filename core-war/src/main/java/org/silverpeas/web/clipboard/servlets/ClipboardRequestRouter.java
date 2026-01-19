@@ -37,7 +37,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.clipboard.control.ClipboardSessionController;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Clipboard request router.
@@ -74,7 +74,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
    * destination page
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param clipboardSC The component Session Control, build and initialised.
+   * @param clipboardSC The component Session Control, build and initialized.
    * @param request the current request.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")

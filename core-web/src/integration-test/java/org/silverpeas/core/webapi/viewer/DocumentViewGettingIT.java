@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.DefaultViewService;
@@ -38,12 +42,9 @@ import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.core.webapi.attachment.SimpleDocumentEmbedMediaViewProvider;
 import org.silverpeas.web.test.ResourceGettingTest;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
 import java.io.File;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
@@ -60,6 +61,9 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
 
   static String ATTACHMENT_ID = "7";
 
+  @Inject
+  private SimpleDocumentEmbedMediaViewProvider provider;
+
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4WebCore.onWarForTestClass(DocumentViewGettingIT.class)
@@ -72,10 +76,10 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
 
   @Before
   public void setup() throws Exception {
-    ServiceProvider.getService(SimpleDocumentEmbedMediaViewProvider.class).init();
+    provider.init();
   }
 
-  @Singleton
+  @Service
   @Alternative
   @Priority(APPLICATION + 10)
   public static class StubbedDocumentViewService extends DefaultViewService {

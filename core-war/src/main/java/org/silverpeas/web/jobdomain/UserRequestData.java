@@ -31,7 +31,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.http.UnescapeHtml;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 import java.time.ZoneId;
 
 /**

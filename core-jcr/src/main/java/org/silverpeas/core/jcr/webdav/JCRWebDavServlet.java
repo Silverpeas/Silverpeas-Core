@@ -28,11 +28,11 @@ import org.apache.jackrabbit.server.CredentialsProvider;
 import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.jcr.Repository;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**

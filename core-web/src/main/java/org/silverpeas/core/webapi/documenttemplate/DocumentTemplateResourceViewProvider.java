@@ -24,17 +24,16 @@
 
 package org.silverpeas.core.webapi.documenttemplate;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.documenttemplate.DocumentTemplate;
 import org.silverpeas.core.documenttemplate.DocumentTemplateService;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.viewer.service.ViewerContext;
+import org.silverpeas.core.webapi.viewer.RegisteredResourceViewProvider;
 import org.silverpeas.core.webapi.viewer.ResourceView;
 import org.silverpeas.core.webapi.viewer.ResourceViewProvider;
-import org.silverpeas.core.webapi.viewer.ResourceViewProviderRegistry;
 
-import javax.inject.Inject;
 import java.util.Optional;
 
 /**
@@ -43,16 +42,10 @@ import java.util.Optional;
  * @author silveryocha
  */
 @Provider
-public class DocumentTemplateResourceViewProvider
-    implements ResourceViewProvider, Initialization {
+public class DocumentTemplateResourceViewProvider extends RegisteredResourceViewProvider {
 
   @Inject
   private DocumentTemplateService service;
-
-  @Override
-  public void init() {
-    ResourceViewProviderRegistry.get().addNewEmbedMediaProvider(this);
-  }
 
   @Override
   public Optional<ResourceView> getByIdAndLanguage(final String mediaId, final String language) {

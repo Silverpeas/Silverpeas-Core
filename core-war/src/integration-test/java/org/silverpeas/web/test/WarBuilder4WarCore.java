@@ -38,7 +38,7 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
-   * @param test the class of the test for which a war archive will be build.
+   * @param test the class of the test for which a war archive will be built.
    */
   protected <T> WarBuilder4WarCore(final Class<T> test) {
     super(test);
@@ -78,6 +78,6 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
 
   @Override
   protected Predicate<File> onLibsToInclude() {
-    return f -> !f.getName().startsWith("javax") && !f.getName().contains("hibernate");
+    return f -> !f.getName().startsWith("jakarta") && !f.getName().contains("hibernate");
   }
 }

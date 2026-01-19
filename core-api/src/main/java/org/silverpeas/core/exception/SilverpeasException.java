@@ -25,7 +25,7 @@ package org.silverpeas.core.exception;
 
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ejb.EJBException;
+import jakarta.ejb.EJBException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,10 +53,10 @@ public abstract class SilverpeasException extends org.silverpeas.kernel.Silverpe
   public static final int ERROR = 0x00000004;
   public static final int WARNING = 0x00000003;
   private static final long serialVersionUID = -981770983716177578L;
-  private int errorLevel = ERROR;
-  private Exception nested = null;
-  private String extraParams = "";
-  private String callingClass = "NoClass";
+  private final int errorLevel;
+  private final Exception nested;
+  private final String extraParams;
+  private final String callingClass;
 
   public SilverpeasException(Exception exception) {
     this("noClass", ERROR, "", null, exception);
@@ -253,6 +253,10 @@ public abstract class SilverpeasException extends org.silverpeas.kernel.Silverpe
     return extraParams;
   }
 
+  public String getCallingClass() {
+    return callingClass;
+  }
+
   // Specific methods
   // ----------------
   /**
@@ -265,7 +269,7 @@ public abstract class SilverpeasException extends org.silverpeas.kernel.Silverpe
    * Et plus si cette exception en imbrique d'autre.
    */
   public static Collection<Throwable> getChainedExceptions(Throwable e) {
-    List<Throwable> result = new ArrayList<Throwable>();
+    List<Throwable> result = new ArrayList<>();
     Throwable throwable = e;
     while (throwable != null) {
       result.add(throwable);

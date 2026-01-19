@@ -27,8 +27,8 @@ import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
 
 /**
  * An asynchronous event listener. Asynchronous events are carried by JMS and are collected by this

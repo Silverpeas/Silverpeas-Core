@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -111,7 +111,7 @@ public class PublicationsPickerField extends AbstractField {
    * Returns the string value of this field : aka the node path.
    */
   public String getValue() {
-    return getValue(I18NHelper.DEFAULT_LANGUAGE);
+    return getValue(I18n.get().getDefaultLanguage());
   }
 
   /**

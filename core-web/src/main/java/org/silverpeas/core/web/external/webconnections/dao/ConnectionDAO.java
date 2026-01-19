@@ -49,11 +49,11 @@ import java.util.Map;
 
 public class ConnectionDAO {
   private static final String SELECT_FROM = "select * from ";
-  private static String tableName = "SB_webConnections_info";
-  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+  private static final String tableName = "SB_webConnections_info";
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.external.webConnections.settings.webConnectionsSettings");
   // warning: the key code should be in hexadecimal!
-  private static String keyCode = settings.getString("keycode");
+  private static final String keyCode = settings.getString("keycode");
 
   /**
    * Return a connection for componentId and userId
@@ -87,7 +87,7 @@ public class ConnectionDAO {
    * @param con : Connection
    * @param connectionId : String the connection identifier
    * @return connection : ConnectionDetail
-   * @throws SQLException
+   * @throws SQLException SQL error
    */
   public ConnectionDetail getConnectionById(Connection con, String connectionId)
       throws SQLException {
@@ -113,10 +113,10 @@ public class ConnectionDAO {
    * @param con : Connection
    * @param connection : ConnectionDetail
    * @return the connectionId : String
-   * @throws SQLException
+   * @throws SQLException SQL error
    */
   public String createConnection(Connection con, ConnectionDetail connection) throws SQLException {
-    String id = "";
+    String id;
     PreparedStatement prepStmt = null;
     try {
       int newId = DBUtil.getNextId(tableName, "connectionId");
@@ -137,7 +137,7 @@ public class ConnectionDAO {
    * delete the connection corresponding to connectionId
    * @param con : Connection
    * @param connectionId : String the connection identifier
-   * @throws SQLException
+   * @throws SQLException SQL error
    */
   public void deleteConnection(Connection con, String connectionId) throws SQLException {
     PreparedStatement prepStmt = null;
@@ -157,7 +157,7 @@ public class ConnectionDAO {
    * @param connectionId : String
    * @param login : String
    * @param password : String
-   * @throws SQLException
+   * @throws SQLException SQL error
    */
   public void updateConnection(Connection con, String connectionId, String login, String password)
       throws SQLException {
@@ -186,11 +186,11 @@ public class ConnectionDAO {
    * @param con : Connection
    * @param userId : String the user identifier
    * @return connections : a list of ConnectionDetail
-   * @throws SQLException
+   * @throws SQLException SQL error
    */
   public List<ConnectionDetail> getConnectionsByUser(Connection con, String userId)
       throws SQLException {
-    ArrayList<ConnectionDetail> connections = null;
+    ArrayList<ConnectionDetail> connections;
     String query = SELECT_FROM + tableName + " where userId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -213,7 +213,7 @@ public class ConnectionDAO {
    * create the connection from the resultSet
    * @param rs : ResultSet
    * @return the connection : ConnectionDetail
-   * @throws SQLException
+   * @throws SQLException SQL error
    */
   protected ConnectionDetail getConnectionFrom(ResultSet rs) throws SQLException {
     ConnectionDetail connection = new ConnectionDetail();
@@ -245,7 +245,7 @@ public class ConnectionDAO {
    * @param prepStmt : PreparedStatement
    * @param id : int
    * @param connection : ConnectionDetail
-   * @throws SQLException
+   * @throws SQLException SQL error
    */
   private static void initParam(PreparedStatement prepStmt, int id, ConnectionDetail connection)
       throws SQLException {
@@ -270,7 +270,7 @@ public class ConnectionDAO {
    * return the encrypt String corresponding to the string cryptedString
    * @param text : String
    * @return the encrypt string : byte[]
-   * @throws CryptoException
+   * @throws CryptoException Encrypting error
    */
   private static byte[] getCryptString(String text) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
@@ -283,10 +283,10 @@ public class ConnectionDAO {
   }
 
   /**
-   * return the uncrypt string corresponding to the encrypt string cipherText
+   * return the encrypt string corresponding to the encrypt string cipherText
    * @param cipherText : byte[]
-   * @return the uncrypt string : String
-   * @throws CryptoException
+   * @return the encrypted string : String
+   * @throws CryptoException Encrypting error
    */
   private static String getUncryptString(byte[] cipherText) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
@@ -301,7 +301,7 @@ public class ConnectionDAO {
   /**
    * Deletes all connection data linked to the given component instance.
    * @param componentInstanceId the identifier of the component instance.
-   * @throws SQLException
+   * @throws SQLException SQL error
    */
   public void deleteByComponentInstanceId(final String componentInstanceId) throws SQLException {
     JdbcSqlQuery.deleteFrom(tableName).where("componentId = ?", componentInstanceId).execute();

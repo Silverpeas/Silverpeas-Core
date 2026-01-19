@@ -33,7 +33,9 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -54,6 +56,8 @@ import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
  * remove an user. However, it is possible to update an user...
  * @author tleroi
  */
+@Technical
+@Bean
 public class LDAPDriver extends AbstractDomainDriver {
 
   LDAPSynchroCache synchroCache = new LDAPSynchroCache();
@@ -474,7 +478,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public String createGroup(GroupDetail group) throws AdminException {
+  public String createGroup(GroupDetail group) {
     // Silverpeas doesn't modify the remote LDAP
     return null;
   }
@@ -506,7 +510,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public GroupDetail getGroupByName(String groupName) throws AdminException {
+  public GroupDetail getGroupByName(String groupName) {
     return null;
   }
 

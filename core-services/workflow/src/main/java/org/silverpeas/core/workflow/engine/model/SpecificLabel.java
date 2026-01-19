@@ -25,7 +25,7 @@ package org.silverpeas.core.workflow.engine.model;
 
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 /**
  * Class implementing the representation of the following elements of a Process Model:

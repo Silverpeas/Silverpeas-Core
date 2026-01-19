@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.upload;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 
 /**
  * @author Yohann Chastagnier

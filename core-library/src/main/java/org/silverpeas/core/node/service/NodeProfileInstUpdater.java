@@ -25,7 +25,7 @@
 package org.silverpeas.core.node.service;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -34,7 +34,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -179,7 +179,8 @@ public class NodeProfileInstUpdater {
 
     private boolean isGroupNotPlayedAnyRole(String groupId, String instanceId) {
       try {
-        int localId = ComponentInst.getComponentLocalId(instanceId);
+        int localId =
+            SilverpeasSharedComponentInstance.getIdentity(instanceId).getInstanceLocalId();
         return Stream.of(admin.getProfileIdsOfGroup(groupId))
             .map(this::getProfileInst)
             .filter(ProfileInst::isOnComponentInstance)

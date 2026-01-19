@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.importexport.ical.ical4j;
 
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
 import net.fortuna.ical4j.data.CalendarOutputter;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.TextList;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.ical4j.HtmlProperty;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
@@ -41,12 +39,9 @@ import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.importexport.EncodingException;
 import org.silverpeas.core.importexport.ical.ICalCodec;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,7 +52,7 @@ import java.util.Optional;
 /**
  * An iCal encoder/decoder by using the iCal4J library.
  */
-@Singleton
+@Bean
 public class ICal4JICalCodec implements ICalCodec {
 
   private final OffLineInetAddressHostInfo hostInfo = new OffLineInetAddressHostInfo();

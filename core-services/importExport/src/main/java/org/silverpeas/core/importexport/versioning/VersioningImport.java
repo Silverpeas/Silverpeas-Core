@@ -28,30 +28,22 @@ import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEventNotifier;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -241,7 +233,7 @@ public class VersioningImport {
     if (xmlContent != null) {
       xmlFormId = xmlContent.getName();
     }
-    SimpleAttachment attachment = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+    SimpleAttachment attachment = SimpleAttachment.builder(I18n.get().getDefaultLanguage())
         .setFilename(version.getLogicalName())
         .setTitle(document.getName())
         .setDescription(document.getDescription())

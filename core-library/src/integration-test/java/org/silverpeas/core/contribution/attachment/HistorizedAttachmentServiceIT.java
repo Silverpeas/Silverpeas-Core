@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -33,30 +34,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.contribution.attachment.repository.SimpleDocumentMatcher;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControllerIT;
+import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.scheduler.SchedulerInitializer;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
+import org.silverpeas.core.test.stub.StubbedWbeClientManager;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.jcr.JCRSession;
 
-import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -75,18 +69,19 @@ public class HistorizedAttachmentServiceIT extends JcrIntegrationIT {
   private static final String instanceId = "kmelia974";
   private SimpleDocumentPK existingFrDoc;
   private SimpleDocumentPK existingEnDoc;
-  private final DocumentRepository documentRepository = new DocumentRepository();
 
   @Inject
   private AttachmentService instance;
+  @Inject
+  private DocumentRepository documentRepository;
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(HistorizedAttachmentServiceIT.class)
-        .addJcrFeatures()
-        .addPublicationTemplateFeatures()
-        .addSchedulerFeatures()
-        .testFocusedOn(war -> war.addAsResource("LibreOffice.odt"))
+    return LibCoreWarBuilder.onFullWarForTestClass(WysiwygControllerIT.class)
+        .addClasses(StubbedWbeClientManager.class)
+        .addAsResource("silverpeas-oak.properties")
+        .addAsResource("LibreOffice.odt")
+        .addAsResource("org/silverpeas/util/attachment/Attachment.properties")
         .build();
   }
 
@@ -158,15 +153,7 @@ public class HistorizedAttachmentServiceIT extends JcrIntegrationIT {
         assertThat(out.toString(Charsets.UTF_8), is("This is a test"));
       }
       session.save();
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw e;
     }
-  }
-
-  @Test
-  public void emptyTest() {
-    assertThat(true, is(true));
   }
 
   @Test
@@ -883,8 +870,8 @@ public class HistorizedAttachmentServiceIT extends JcrIntegrationIT {
       documentPK = instance.createAttachment(document, content)
           .getPk();
       session.save();
-
     }
+
     // Simulate another call ... closing old session and opening a new one
     //noinspection unused
     try (JCRSession session = JCRSession.openSystemSession()) {
@@ -962,7 +949,7 @@ public class HistorizedAttachmentServiceIT extends JcrIntegrationIT {
           .build();
       SimpleDocument document1 = new HistorisedDocument(emptyId, foreignId, 10, attachment1);
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      SimpleDocumentPK id = new DocumentRepository().createDocument(session, document1);
+      SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
       documentRepository.storeContent(document1, content);
 
@@ -978,7 +965,7 @@ public class HistorizedAttachmentServiceIT extends JcrIntegrationIT {
           .build();
       SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5, attachment2);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document2);
+      id = documentRepository.createDocument(session, document2);
       document2.setPK(id);
       documentRepository.storeContent(document2, content);
 
@@ -994,7 +981,7 @@ public class HistorizedAttachmentServiceIT extends JcrIntegrationIT {
           .build();
       SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100, attachment3);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document3);
+      id = documentRepository.createDocument(session, document3);
       document3.setPK(id);
       documentRepository.storeContent(document3, content);
 
@@ -1011,7 +998,7 @@ public class HistorizedAttachmentServiceIT extends JcrIntegrationIT {
           .build();
       SimpleDocument document4 = new HistorisedDocument(emptyId, foreignId, 0, attachment4);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document4);
+      id = documentRepository.createDocument(session, document4);
       document4.setPK(id);
       documentRepository.storeContent(document4, content);
 

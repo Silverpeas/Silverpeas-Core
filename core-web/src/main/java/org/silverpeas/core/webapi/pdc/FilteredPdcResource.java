@@ -31,14 +31,14 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static org.silverpeas.kernel.logging.SilverLogger.getLogger;
@@ -46,9 +46,7 @@ import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC) filtered by some
- * criteria.
- *
- * For a description of the PdC, see the documentation on {@link PdcResource}.
+ * criteria. For a description of the PdC, see the documentation on {@link PdcResource}.
  */
 @WebService
 @Path(FilteredPdcResource.PATH)

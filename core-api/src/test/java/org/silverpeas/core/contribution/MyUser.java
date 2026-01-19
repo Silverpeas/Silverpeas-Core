@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.time.ZoneId;
 import java.util.Date;
 

@@ -29,10 +29,10 @@ import org.mockito.Mockito;
 import org.silverpeas.kernel.test.UnitTest;
 import org.silverpeas.core.util.Charsets;
 
-import javax.activation.DataHandler;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import jakarta.activation.DataHandler;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,14 +88,14 @@ public class MailContentTest {
   public void stringOtherContentTypeIndicated() throws Exception {
     MailContent mailContent = MailContent.of("mail content").withContentType(OTHER_TYPE);
     assertThat(mailContent.isHtml(), is(true));
-    assertContentAsOtherType(mailContent, "mail content");
+    assertContentAsOtherType(mailContent);
   }
 
   @Test
   public void stringContentHtmlExplicitlyNotIndicated() throws Exception {
     MailContent mailContent = MailContent.of("mail content").notHtml();
     assertThat(mailContent.isHtml(), is(false));
-    assertContentAsText(mailContent, "mail content");
+    assertContentAsText(mailContent);
   }
 
   @Test
@@ -125,11 +125,11 @@ public class MailContentTest {
   ASSERTION METHODS
    */
 
-  private void assertContentAsOtherType(final MailContent mailContent, String expectedContent)
+  private void assertContentAsOtherType(final MailContent mailContent)
       throws Exception {
     MimeMessage mimeMessageMock = mock(MimeMessage.class);
     mailContent.applyOn(mimeMessageMock);
-    verify(mimeMessageMock, times(1)).setContent(expectedContent, OTHER_TYPE);
+    verify(mimeMessageMock, times(1)).setContent("mail content", OTHER_TYPE);
     verify(mimeMessageMock, times(0)).setContent(Mockito.any(Multipart.class));
     verify(mimeMessageMock, times(0)).setText(anyString(), anyString());
   }
@@ -165,13 +165,13 @@ public class MailContentTest {
     assertThat(htmlHandler.getContent().toString(), is(expectedContent));
   }
 
-  private void assertContentAsText(final MailContent mailContent, String expectedContent)
+  private void assertContentAsText(final MailContent mailContent)
       throws Exception {
     MimeMessage mimeMessageMock = mock(MimeMessage.class);
     mailContent.applyOn(mimeMessageMock);
     verify(mimeMessageMock, times(0)).setContent(Mockito.any(), anyString());
     verify(mimeMessageMock, times(0)).setContent(Mockito.any(Multipart.class));
-    verify(mimeMessageMock, times(1)).setText(expectedContent, Charsets.UTF_8.name());
+    verify(mimeMessageMock, times(1)).setText("mail content", Charsets.UTF_8.name());
   }
 
   private void assertContentAsMultipart(final MailContent mailContent, Multipart expectedMultipart)

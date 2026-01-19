@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.calendar;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -34,17 +36,17 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.notification.AbstractNotifier;
 import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEvent;
-import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEvent;
 import org.silverpeas.core.calendar.notification.CalendarEventOccurrenceLifeCycleEvent;
-import org.silverpeas.core.calendar.notification.LifeCycleEventSubType;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.LibCoreWarBuilder;
+import org.silverpeas.core.test.subscription.ResourceSubscriptionServiceInitListener;
+import org.silverpeas.core.test.stub.StubbedComponentInstanceRoutingMapProviderByInstance;
+import org.silverpeas.core.test.stub.StubbedOrganizationController;
+import org.silverpeas.core.test.stub.UserImpl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,7 @@ import static org.hamcrest.Matchers.*;
  * <li>The participation of an attendee has been updated</li>
  * <li>The presence status of an attendee has been updated</li>
  * </ul>
+ *
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
@@ -87,9 +90,18 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(CalendarEventNotificationIT.class)
+    return LibCoreWarBuilder.onFullWarForTestClass(CalendarEventNotificationIT.class)
+        .addMavenDependencies("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer")
+        .addClasses(UserImpl.class,
+            StubbedComponentInstanceRoutingMapProviderByInstance.class,
+            StubbedOrganizationController.class)
+        .addWebListener(ResourceSubscriptionServiceInitListener.class)
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
+        .addAsResource("org/silverpeas/calendar/multilang")
+        .addAsResource("org/silverpeas/util/logging")
+        .addAsResource("org/silverpeas/calendar/settings")
+        .addAsResource("org/silverpeas/util/timezone.properties")
         .build();
   }
 
@@ -112,7 +124,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
    * Planning an event notifies the attendees about their participation in this event.
    */
   @Test
-  public void planninACalendarEventSendANotification() {
+  public void planningACalendarEventSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent.on(LocalDate.now())
         .createdBy(USER_ID)
@@ -335,10 +347,10 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   }
 
   /**
-   * In the case of an update, we first check the event's properties are modified to set the
-   * accordingly the notification action. Then we check the attendees are modified. In this case,
-   * we send a notification about a change in the attendance in the event. This behaviour is
-   * implemented by the attendee notification mechanism. We just simulate here this behaviour.
+   * In the case of an update, we first check the event's properties are modified to set accordingly
+   * the notification action. Then we check the attendees are modified. In this case, we send a
+   * notification about a change in the attendance in the event. This behavior is implemented by
+   * the attendee notification mechanism. We just simulate here this behavior.
    */
   @Bean
   @Singleton
@@ -374,11 +386,6 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
       if (after.isModifiedSince(before)) {
         notifAction = NotifAction.UPDATE;
       }
-
-      if (after.getAttendees().isNotSameAs(before.getAttendees())) {
-        AttendeeLifeCycleEventNotifier.notifyAttendees(LifeCycleEventSubType.SINGLE, after,
-            before.getAttendees(), after.getAttendees());
-      }
     }
 
     @Override
@@ -389,9 +396,9 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
 
   /**
    * In the case of an update, we first check the properties of the event's occurrence are modified
-   * to set the accordingly the notification action. Then we check the attendees are modified. In
-   * this case, we send a notification about a change in the attendance in the event. This behaviour
-   * is implemented by the attendee notification mechanism. We just simulate here this behaviour.
+   * to set accordingly the notification action. Then we check the attendees are modified. In
+   * this case, we send a notification about a change in the attendance in the event. This behavior
+   * is implemented by the attendee notification mechanism. We just simulate here this behavior.
    */
   @Bean
   @Singleton
@@ -422,11 +429,6 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
 
       if (after.isModifiedSince(before)) {
         notifAction = NotifAction.UPDATE;
-      }
-
-      if (after.getAttendees().isNotSameAs(before.getAttendees())) {
-        AttendeeLifeCycleEventNotifier.notifyAttendees(LifeCycleEventSubType.SINGLE, after,
-            before.getAttendees(), after.getAttendees());
       }
     }
 

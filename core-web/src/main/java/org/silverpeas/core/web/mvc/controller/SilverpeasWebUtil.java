@@ -37,9 +37,9 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
@@ -77,10 +77,12 @@ public class SilverpeasWebUtil {
   }
 
   /**
-   * Extract the space id and the component id.
+   * Extracts the navigation context from the incoming HTTP request: the space identifier, the
+   * component instance identifier, and the asked function.
    *
-   * @param request
-   * @return
+   * @param request the HTTP request.
+   * @return an array of three items: the first one is the space identifier, the second one is the
+   * component instance identifier, and the last one is the asked function.
    */
   public String[] getComponentId(HttpServletRequest request) {
     String spaceId;
@@ -91,21 +93,21 @@ public class SilverpeasWebUtil {
     if (pathInfo != null) {
       spaceId = null;
       pathInfo = pathInfo.substring(1); // remove first '/'
-      function = pathInfo.substring(pathInfo.indexOf('/') + 1, pathInfo.length());
+      function = pathInfo.substring(pathInfo.indexOf('/') + 1);
       if (pathInfo.startsWith("jsp")) {
-        // Pour les feuilles de styles, icones, ... + Pour les composants de
-        // l'espace personnel (non instanciables)
+        // no component instance for the css, icons, and any others assets
+        // no component instance also for the personal user space
         componentId = null;
       } else {
         // Get the space and component Ids
         // componentId extracted from the URL
-        // Old url (with WA..)
+        // Old url (with WA)
         if (pathInfo.contains("WA")) {
           String sAndCId = pathInfo.substring(0, pathInfo.indexOf('/'));
           // spaceId looks like WA17
           spaceId = sAndCId.substring(0, sAndCId.indexOf('_'));
           // componentId looks like kmelia123
-          componentId = sAndCId.substring(spaceId.length() + 1, sAndCId.length());
+          componentId = sAndCId.substring(spaceId.length() + 1);
         } else {
           componentId = pathInfo.substring(0, pathInfo.indexOf('/'));
         }
@@ -113,7 +115,7 @@ public class SilverpeasWebUtil {
         if ((function.startsWith("Main") || function.startsWith("searchResult") ||
             function.equalsIgnoreCase("searchresult") || function.startsWith("portlet") ||
             function.equals("GoToFilesTab")) &&
-            !PersonalComponentInstance.from(componentId).isPresent()) {
+            PersonalComponentInstance.from(componentId).isEmpty()) {
           ComponentInstLight component =
               getOrganisationController().getComponentInstLight(componentId);
           spaceId = component.getDomainFatherId();
@@ -138,8 +140,9 @@ public class SilverpeasWebUtil {
 
   /**
    * Gets the content language specified into the request.
-   * @param request
-   * @return
+   *
+   * @param request the incoming HTTP request.
+   * @return the ISO 639-1 code of a language.
    */
   public String getContentLanguage(HttpServletRequest request) {
     String contentLanguage = (String) request.getAttribute("ContentLanguage");
@@ -147,7 +150,7 @@ public class SilverpeasWebUtil {
       contentLanguage = request.getParameter("ContentLanguage");
     }
     if (StringUtil.isNotDefined(contentLanguage)) {
-      contentLanguage = I18NHelper.DEFAULT_LANGUAGE;
+      contentLanguage = I18NHelper.getDefaultLanguage();
     }
     if (StringUtil.isNotDefined(contentLanguage)) {
       MainSessionController mainSessionCtrl = getMainSessionController(request);
@@ -160,6 +163,7 @@ public class SilverpeasWebUtil {
 
   /**
    * Gets the user favorite language from elements of the given request.
+   *
    * @param request an instance of {@link HttpServletRequest}.
    * @return a string representing the favorite language of the user behind the session or the
    * language of WEB browser (or default language).

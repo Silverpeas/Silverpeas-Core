@@ -31,8 +31,8 @@ import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.PreparedDownload;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.time.ZoneId;

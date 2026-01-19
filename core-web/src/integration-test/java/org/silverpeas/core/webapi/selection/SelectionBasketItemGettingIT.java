@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.webapi.selection;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,14 +38,12 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.publication.service.DefaultPublicationService;
 import org.silverpeas.core.selection.SelectionBasket;
 import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.web.test.AuthId;
 import org.silverpeas.web.test.ResourceGettingTest;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -63,10 +64,13 @@ public class SelectionBasketItemGettingIT extends ResourceGettingTest {
 
   private String authToken;
   private User user;
+  @Inject
+  private DefaultPublicationService service;
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return SelectionBasketItemITContext.createTestArchiveForTest(SelectionBasketItemGettingIT.class);
+    return SelectionBasketItemITContext
+        .createTestArchiveForTest(SelectionBasketItemGettingIT.class);
   }
 
   @Before
@@ -95,8 +99,7 @@ public class SelectionBasketItemGettingIT extends ResourceGettingTest {
   public void gettingBasketContentWithOneSingleItem() {
     String sessionKey = authenticate(user);
 
-    Collection<PublicationDetail> publications = PublicationService.get()
-        .getAllPublications("toto1");
+    Collection<PublicationDetail> publications = service.getAllPublications("toto2");
     assertThat(publications.isEmpty(), is(false));
     PublicationDetail publication = publications.iterator().next();
     SelectionBasket.get().put(publication);
@@ -118,8 +121,7 @@ public class SelectionBasketItemGettingIT extends ResourceGettingTest {
   public void gettingBasketContent() {
     String sessionKey = authenticate(user);
 
-    Collection<PublicationDetail> publications = PublicationService.get()
-        .getAllPublications("toto1");
+    Collection<PublicationDetail> publications = service.getAllPublications("toto2");
     assertThat(publications.isEmpty(), is(false));
     publications.forEach(p -> SelectionBasket.get().put(p));
 
@@ -145,8 +147,7 @@ public class SelectionBasketItemGettingIT extends ResourceGettingTest {
     String sessionKey = authenticate(user);
 
     List<Contribution> contributions = new ArrayList<>();
-    contributions.addAll(PublicationService.get()
-        .getAllPublications("toto1"));
+    contributions.addAll(service.getAllPublications("toto2"));
     contributions.addAll(Calendar.getById("CAL_ID_1")
         .in(YearMonth.of(2011, Month.JULY))
         .getEvents());

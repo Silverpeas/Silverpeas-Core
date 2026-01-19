@@ -28,10 +28,10 @@ import java.io.Serializable;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.model.StateSetter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlIDREF;
 
 /**
  * Class implementing the representation of the &lt;set&gt; and &lt;unset&gt; elements of a Process

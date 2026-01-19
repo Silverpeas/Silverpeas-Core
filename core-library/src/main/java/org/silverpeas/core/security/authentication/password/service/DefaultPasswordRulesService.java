@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.password.service;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
@@ -34,8 +35,6 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.cache.model.ExternalCache;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
 import java.security.SecureRandom;
 import java.util.*;
 
@@ -44,7 +43,6 @@ import java.util.*;
  * @author  Yohann Chastagnier
  */
 @Service
-@Singleton
 public class DefaultPasswordRulesService implements PasswordRulesService {
   protected static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");

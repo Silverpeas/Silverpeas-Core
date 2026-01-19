@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.calendar;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,7 +102,7 @@ public class CategorySet implements Serializable {
    * @param categoryIds the identifiers of the categories to remove.
    */
   public void removeAll(final List<String> categoryIds) {
-    categories.removeAll(categoryIds);
+    categoryIds.forEach(categories::remove);
   }
 
   /**
@@ -129,7 +129,7 @@ public class CategorySet implements Serializable {
    */
   public String[] asArray() {
     List<String> categoryList = asList();
-    return categoryList.toArray(new String[categoryList.size()]);
+    return categoryList.toArray(new String[0]);
   }
 
   /**
@@ -173,7 +173,7 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Adds to this categories all those from the specified ones.
+   * Adds the categories from all those from the specified ones.
    * @param categories the categories to add.
    */
   public void addAllFrom(final CategorySet categories) {

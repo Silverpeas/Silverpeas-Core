@@ -28,15 +28,15 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.AsyncEvent;
+import jakarta.servlet.AsyncListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -311,27 +311,27 @@ public class SilverpeasAsyncContext extends AbstractServerEventContext<AsyncCont
     }
 
     @Override
-    public void onComplete(final AsyncEvent event) throws IOException {
+    public void onComplete(final AsyncEvent event) {
       context.markAsComplete(false);
       silverLogger.debug("Async context is completed ({0})", context);
     }
 
     @Override
-    public void onTimeout(final AsyncEvent event) throws IOException {
+    public void onTimeout(final AsyncEvent event) {
       context.markTimeoutAsReached();
       silverLogger.debug("Async context is timed out ({0})", context);
       context.complete();
     }
 
     @Override
-    public void onError(final AsyncEvent event) throws IOException {
+    public void onError(final AsyncEvent event) {
       context.markAsErrorOccurred();
       silverLogger.debug("Async context thrown an error ({0})", context);
       context.markAsComplete(false);
     }
 
     @Override
-    public void onStartAsync(final AsyncEvent event) throws IOException {
+    public void onStartAsync(final AsyncEvent event) {
       silverLogger.debug("Async context is starting ({0})", context);
     }
   }

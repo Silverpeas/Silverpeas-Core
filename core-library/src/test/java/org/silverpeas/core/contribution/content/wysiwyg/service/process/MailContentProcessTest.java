@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -47,14 +48,15 @@ import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.SettingBundleStub;
 
-import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.activation.FileDataSource;
+import jakarta.activation.URLDataSource;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -116,9 +118,9 @@ class MailContentProcessTest {
   @SuppressWarnings("unchecked")
   @BeforeEach
   void setup() throws Exception {
-    originalOdt = new File(getClass().getResource("/" + ODT_NAME).getPath());
+    originalOdt = new File(Objects.requireNonNull(getClass().getResource("/" + ODT_NAME)).getPath());
     assertThat(originalOdt.exists(), is(true));
-    originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
+    originalImage = new File(Objects.requireNonNull(getClass().getResource("/" + IMAGE_NAME)).getPath());
     assertThat(originalImage.exists(), is(true));
     originalImageWithResize100x =
         new File(originalImage.getParentFile(), "100x/" + IMAGE_NAME);
@@ -220,7 +222,7 @@ class MailContentProcessTest {
 
   private synchronized static String getContentOfDocumentNamed(final String name) {
     try {
-      return FileUtil.readFileToString(getDocumentNamed(name));
+      return FileUtil.readFileToString(Objects.requireNonNull(getDocumentNamed(name)));
     } catch (IOException e) {
       return null;
     }
@@ -229,6 +231,7 @@ class MailContentProcessTest {
   private synchronized static File getDocumentNamed(final String name) {
     final URL documentLocation = WysiwygContentTransformerTest.class.getResource(name);
     try {
+      Assertions.assertNotNull(documentLocation);
       return new File(documentLocation.toURI());
     } catch (URISyntaxException e) {
       return null;

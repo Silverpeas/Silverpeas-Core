@@ -27,8 +27,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.layout;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.tagext.BodyTagSupport;
 import java.util.ResourceBundle;
 
 import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralLocalizationBundle;

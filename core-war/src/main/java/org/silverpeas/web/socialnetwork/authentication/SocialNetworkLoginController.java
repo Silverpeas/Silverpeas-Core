@@ -28,23 +28,23 @@ import org.silverpeas.core.admin.user.UserRegistrationService;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.core.socialnetwork.connectors.AccessToken;
 import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
+import org.silverpeas.core.socialnetwork.connectors.UserProfile;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
-import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
-import org.springframework.social.connect.UserProfile;
 
-import javax.inject.Inject;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -121,7 +121,7 @@ public class SocialNetworkLoginController extends HttpServlet {
     ExternalAccount account =
         SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
 
-    // Verify that the user can login
+    // Verify that the user can log
     if (account != null && !verify(req, resp, account)) {
       return false;
     }
@@ -217,23 +217,15 @@ public class SocialNetworkLoginController extends HttpServlet {
   }
 
   private String getRedirectURL(SocialNetworkID networkId, HttpServletRequest request) {
-    StringBuilder redirectURL = new StringBuilder();
-    redirectURL.append(URLUtil.getFullApplicationURL(request));
-    redirectURL.append(
-        "/SocialNetworkLogin?command=backFromSocialNetworkAuthentication&networkId=");
-    redirectURL.append(networkId);
-    return redirectURL.toString();
+    return URLUtil.getFullApplicationURL(request) +
+        "/SocialNetworkLogin?command=backFromSocialNetworkAuthentication&networkId=" +
+        networkId;
   }
 
   private SocialNetworkConnector getSocialNetworkConnector(SocialNetworkID networkId) {
     return SocialNetworkService.getInstance().getSocialNetworkConnector(networkId);
   }
 
-  /**
-   * Get URL to invoke remote social network authentication
-   *
-   * @return
-   */
   private String getAuthenticateURL(SocialNetworkID networkId, HttpServletRequest request) {
     return getSocialNetworkConnector(networkId).buildAuthenticateUrl(getRedirectURL(networkId,
         request));

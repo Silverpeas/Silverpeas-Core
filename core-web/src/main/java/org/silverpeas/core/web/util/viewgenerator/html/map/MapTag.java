@@ -33,8 +33,8 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 import static org.silverpeas.core.admin.component.model.ComponentInstLight.getIcon;
 import static org.silverpeas.kernel.util.StringUtil.EMPTY;
@@ -174,7 +174,7 @@ public class MapTag extends TagSupport {
         megaMenuUL = "mega-menu";
       }
 
-      result.append("<li class=\"space "+hasMegaMenuLI+"\" id=\"space-").append(spaceInst.getId()).append("\">");
+      result.append("<li class=\"space ").append(hasMegaMenuLI).append("\" id=\"space-").append(spaceInst.getId()).append("\">");
       result.append(spaceHref).append(spaceInst.getName(language));
       result.append("</a>\n");
 
@@ -184,7 +184,7 @@ public class MapTag extends TagSupport {
       String subspaces = isSkipSubSpaces() ? EMPTY : printSubspaces(space, showHiddenComponents);
 
       if (StringUtil.isDefined(apps) || StringUtil.isDefined(subspaces)) {
-        result.append("<ul class=\"" + megaMenuUL + "\">");
+        result.append("<ul class=\"").append(megaMenuUL).append("\">");
 
         if (displayAppsFirst) {
           // Get apps
@@ -269,9 +269,8 @@ public class MapTag extends TagSupport {
         result.append(href).append(label).append("</a>\n");
 
         if (isMegaMenu() && StringUtil.isDefined(componentInst.getDescription(language))) {
-          result.append(
-              "<p class=\"megaMenu-appDescription\">" + componentInst.getDescription(language) +
-                  "</p>");
+          result.append("<p class=\"megaMenu-appDescription\">")
+              .append(componentInst.getDescription(language)).append("</p>");
         }
 
         result.append("</li>");

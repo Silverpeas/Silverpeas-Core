@@ -39,11 +39,11 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.core.UriBuilder;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -624,17 +624,19 @@ public class MassiveWebSecurityFilter implements Filter {
       }
 
       @Override
+      @NonNull
       public byte[] readAllBytes() throws IOException {
         return buffer.readAllBytes();
       }
 
       @Override
+      @NonNull
       public byte[] readNBytes(int len) throws IOException {
         return buffer.readNBytes(len);
       }
 
       @Override
-      public int readNBytes(byte[] b, int off, int len) throws IOException {
+      public int readNBytes(@NonNull byte[] b, int off, int len) throws IOException {
         return buffer.readNBytes(b, off, len);
       }
 

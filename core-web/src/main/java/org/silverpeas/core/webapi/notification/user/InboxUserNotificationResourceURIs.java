@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.web.SilverpeasWebResource;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static java.lang.String.valueOf;

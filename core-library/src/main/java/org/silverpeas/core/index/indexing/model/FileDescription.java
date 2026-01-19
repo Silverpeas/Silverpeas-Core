@@ -23,9 +23,11 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
+
 import java.io.File;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A FileDescription pack all the needed information to parse and index a file. We need : <UL>
@@ -49,21 +51,21 @@ public class FileDescription implements Serializable {
    * Set the new FileDescription with the given path, encoding, format and language. The path must
    * not be null.
    *
-   * @param path
-   * @param encoding
-   * @param format
-   * @param lang
+   * @param path the path of the file.
+   * @param encoding the encoding charset of the file content.
+   * @param format the file format.
+   * @param lang the ISO 639-1 code of the language in which the file content is written.
    */
   public FileDescription(String path, String encoding, String format, String lang) {
     this.path = path.replace('\\', File.separatorChar);
     this.encoding = encoding;
     this.format = format;
-    this.lang = I18NHelper.checkLanguage(lang);
+    this.lang = I18n.get().checkLanguage(lang);
   }
 
   /**
    * Return the file path
-   * @return
+   * @return the path of the file.
    */
   public String getPath() {
     return path;
@@ -71,7 +73,7 @@ public class FileDescription implements Serializable {
 
   /**
    * Return the file encoding
-   * @return
+   * @return the encoding charset of the file content.
    */
   public String getEncoding() {
     return encoding;
@@ -79,7 +81,7 @@ public class FileDescription implements Serializable {
 
   /**
    * Return the file format
-   * @return
+   * @return the format of the file.
    */
   public String getFormat() {
     return format;
@@ -87,7 +89,7 @@ public class FileDescription implements Serializable {
 
   /**
    * Return the file language
-   * @return
+   * @return the ISO 639-1 code of the language in which the content is written.
    */
   public String getLang() {
     return lang;
@@ -104,10 +106,10 @@ public class FileDescription implements Serializable {
 
     final FileDescription that = (FileDescription) o;
 
-    if (format != null ? !format.equals(that.format) : that.format != null) {
+    if (!Objects.equals(format, that.format)) {
       return false;
     }
-    if (lang != null ? !lang.equals(that.lang) : that.lang != null) {
+    if (!Objects.equals(lang, that.lang)) {
       return false;
     }
     return path.equals(that.path);

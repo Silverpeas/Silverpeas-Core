@@ -23,17 +23,19 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.silverpeas.core.socialnetwork.connectors.AccessToken;
 import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
-import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Map;
 
 import static org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes.LinkToSVP;
@@ -85,23 +87,10 @@ public class SocialNetworkHelper {
   }
 
   public void linkToSilverpeas(MyProfilSessionController mpsc, HttpServletRequest request) {
-    SocialNetworkID networkId = SocialNetworkID.valueOf(request.getParameter("networkId"));
-    SocialNetworkConnector connector = socialNetworkService.getSocialNetworkConnector(networkId);
-
-    AccessToken authorizationToken;
-    try {
-      authorizationToken =
-          connector.exchangeForAccessToken(request, getRedirectURL(networkId, request,
-              LinkToSVP));
-    } catch (SocialNetworkAuthorizationException e) {
-      request.setAttribute("errorMessage", "authorizationFailed");
-      return;
-    }
-
-    SocialNetworkService.getInstance().storeAuthorizationToken(request.getSession(true), networkId,
-        authorizationToken);
-    String profileId = connector.getUserProfileId(authorizationToken);
-    socialNetworkService.createExternalAccount(networkId, mpsc.getUserId(), profileId);
+    TokenNegociation negociation = negotiateAccessToken(request, LinkToSVP);
+    if (negociation == null) return;
+    String profileId = negociation.connector.getUserProfileId(negociation.token);
+    socialNetworkService.createExternalAccount(negociation.networkId, mpsc.getUserId(), profileId);
   }
 
   public void unlinkFromSilverpeas(MyProfilSessionController myProfilSC,
@@ -111,22 +100,42 @@ public class SocialNetworkHelper {
   }
 
   public void publishStatus(MyProfilSessionController myProfilSC, HttpServletRequest request) {
+    TokenNegociation negociation = negotiateAccessToken(request, PublishStatus);
+    if (negociation == null) return;
+
+    String status = myProfilSC.getUserFull(myProfilSC.getUserId()).getStatus();
+    negociation.connector.updateStatus(negociation.token, status);
+  }
+
+  private @Nullable TokenNegociation negotiateAccessToken(HttpServletRequest request,
+      MyProfileRoutes route) {
     SocialNetworkID networkId = SocialNetworkID.valueOf(request.getParameter("networkId"));
     SocialNetworkConnector connector = socialNetworkService.getSocialNetworkConnector(networkId);
 
     AccessToken authorizationToken;
     try {
       authorizationToken =
-          connector.exchangeForAccessToken(request, getRedirectURL(networkId, request,
-              PublishStatus));
+          connector.exchangeForAccessToken(request, getRedirectURL(networkId, request, route));
     } catch (SocialNetworkAuthorizationException e) {
       request.setAttribute("errorMessage", "authorizationFailed");
-      return;
+      return null;
     }
 
-    String status = myProfilSC.getUserFull(myProfilSC.getUserId()).getStatus();
     socialNetworkService.storeAuthorizationToken(request.getSession(true), networkId,
         authorizationToken);
-    connector.updateStatus(authorizationToken, status);
+    return new TokenNegociation(networkId, connector, authorizationToken);
+  }
+
+  private static class TokenNegociation {
+    public final SocialNetworkID networkId;
+    public final SocialNetworkConnector connector;
+    public final AccessToken token;
+
+    public TokenNegociation(SocialNetworkID networkId, SocialNetworkConnector connector,
+        AccessToken token) {
+      this.networkId = networkId;
+      this.connector = connector;
+      this.token = token;
+    }
   }
 }

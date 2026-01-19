@@ -24,9 +24,10 @@
 
 package org.silverpeas.cmis;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.cmis.walkers.*;
@@ -34,7 +35,10 @@ import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.admin.component.model.*;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -84,8 +88,6 @@ import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.LoggerLevel;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -253,12 +255,6 @@ public abstract class CMISEnvForTests {
     mockUserAuthorization();
 
     when(componentDataProvider.isWorkflow(anyString())).thenReturn(false);
-
-    when(componentInstanceProvider.getComponentName(anyString())).then(
-        (Answer<String>) invocation -> {
-          String appId = invocation.getArgument(0);
-          return ComponentInst.getComponentName(appId);
-        });
 
     when(waComponentRegistry.getWAComponent(startsWith("kmelia"))).then(m -> {
       final WAComponent kmelia = mock(WAComponent.class);
@@ -610,8 +606,8 @@ public abstract class CMISEnvForTests {
         AccessControlContext.class))).thenReturn(true);
   }
 
-  @BeforeAll
-  static void createOrganizationSchema() {
+  @BeforeEach
+  void createOrganizationSchema() {
     final String appType = "kmelia";
     //noinspection ConstantValue
     final int rootNodeId = Integer.parseInt(NodePK.ROOT_NODE_ID);
@@ -664,8 +660,8 @@ public abstract class CMISEnvForTests {
     organization.addFolder(rootNodeId, kmelia4.getId(), 1, "Home", "The root");
   }
 
-  @AfterAll
-  static void clearOrganizationSchema() {
+  @AfterEach
+  void clearOrganizationSchema() {
     organization.clear();
   }
 

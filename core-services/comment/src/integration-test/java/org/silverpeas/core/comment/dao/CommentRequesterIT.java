@@ -27,7 +27,6 @@
  */
 package org.silverpeas.core.comment.dao;
 
-import org.exparity.hamcrest.date.DateMatchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -53,7 +52,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.DateUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.Date;

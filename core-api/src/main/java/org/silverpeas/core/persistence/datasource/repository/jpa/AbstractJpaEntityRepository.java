@@ -37,11 +37,11 @@ import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -63,6 +63,7 @@ import static org.silverpeas.core.persistence.datasource.repository.PaginationCr
  * @param <T> the class name of the identifiable entity which is handled by the repository.
  * @author mmoquillon
  */
+@SuppressWarnings("SqlSourceToSinkFlow")
 public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity<T, ?>>
     implements EntityRepository<T> {
 
@@ -183,10 +184,10 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity<T,
   }
 
   /**
-   * Gets an entity from the specified query written in JPQL and with the specified parameters.
+   * Counts the number of entities that match the specified query with the given query parameters.
    * @param query the JPQL query.
    * @param parameters the parameters to apply to the query.
-   * @return the required entity if exists, null otherwise
+   * @return the number of entities matching the specified query.
    * @throws IllegalArgumentException if it exists more than one entity from the query result.
    */
   protected long countFromJpqlString(String query, NamedParameters parameters) {
@@ -515,7 +516,8 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity<T,
 
   private <U extends EntityIdentifier> SilverpeasList<T> getByIdentifiers(final Collection<U> ids) {
     SilverpeasList<T> entities = new SilverpeasArrayList<>(ids.size());
-    String selectQuery = "select a from " + getEntityClass().getName() + " a where a.id in :ids";
+    String selectQuery = "select a from " + getEntityClass().getSimpleName() +
+        " a where a.id in :ids";
     for (Collection<U> entityIds : split(new HashSet<>(ids))) {
       List<T> tmp = newNamedParameters().add("ids", entityIds)
           .applyTo(getEntityManager().createQuery(selectQuery, getEntityClass()))
@@ -532,11 +534,12 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity<T,
   private String toJPQLQuery(QueryCriteria criteria) {
     String query = criteria.clause().text();
     String queryInLowerCase = query.toLowerCase();
-    if (queryInLowerCase.startsWith("select")) {
-      query = query.substring(queryInLowerCase.indexOf("from"));
-    }
-    if (!queryInLowerCase.startsWith(FROM_CLAUSE)) {
-      query = FROM_CLAUSE + getEntityClass().getSimpleName() + " where " + query;
+    // strict JPQL: the query must starts with the select directive
+    if (!queryInLowerCase.startsWith("select")) {
+      if (!queryInLowerCase.startsWith(FROM_CLAUSE)) {
+        query = FROM_CLAUSE + getEntityClass().getSimpleName() + " a where " + query;
+      }
+      query = "select a " + query;
     }
     return query;
   }
@@ -578,7 +581,7 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity<T,
   private <U extends EntityIdentifier> long deleteByIdentifier(final Collection<U> ids) {
     long nbDeletes = 0;
     Query deleteQuery = getEntityManager().createQuery(
-        "delete from " + getEntityClass().getName() + " a where a.id in :ids");
+        "delete from " + getEntityClass().getSimpleName() + " a where a.id in :ids");
     for (Collection<U> entityIds : split(ids)) {
       nbDeletes += newNamedParameters().add("ids", entityIds).applyTo(deleteQuery).
           executeUpdate();

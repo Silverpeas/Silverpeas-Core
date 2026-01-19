@@ -28,7 +28,6 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -36,7 +35,6 @@ import java.util.List;
  * @author mmoquillon
  */
 @Repository
-@Singleton
 public class DefaultReminderRepository extends BasicJpaEntityRepository<Reminder>
     implements ReminderRepository {
   @Override

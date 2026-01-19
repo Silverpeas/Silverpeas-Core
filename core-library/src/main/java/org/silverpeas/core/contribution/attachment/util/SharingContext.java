@@ -29,7 +29,7 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -81,13 +81,14 @@ public class SharingContext implements Serializable {
 
   /**
    * URL looks like :
-   * http://localhost:8000/silverpeas/attached_file/componentId/kmelia144/attachmentId/7088b9d6
+   * <code>http://localhost:8000/silverpeas/attached_file/componentId/kmelia144/attachmentId</code>
+   * /7088b9d6
    * -ec5a-4a9c-8c0e-dcb77eed704e/lang/fr/name/Penguins.jpg
    * must be converted into :
-   * http://localhost:8000
+   * <code>http://localhost:8000</code>
    * /silverpeas/services/attachments/kmelia144/ca36bf15-8e52-4d53-8692-0090845ac409
    * /7088b9d6-ec5a-4a9c-8c0e-dcb77eed704e/Penguins.jpg
-   * @return
+   * @return the converted URL
    */
   private String convertURLToSharedOne(String url) {
     String[] parts = StringUtil.split(url, "/");
@@ -116,7 +117,7 @@ public class SharingContext implements Serializable {
           .path(attachment.getInstanceId())
           .path(getToken())
           .path(attachment.getId())
-          .path(URLEncoder.encode(attachment.getFilename(), StandardCharsets.UTF_8.name()))
+          .path(URLEncoder.encode(attachment.getFilename(), StandardCharsets.UTF_8))
           .build();
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);

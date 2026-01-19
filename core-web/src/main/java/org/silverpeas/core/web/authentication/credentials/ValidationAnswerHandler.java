@@ -29,8 +29,8 @@ import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.web.util.VolatileSecurityTokenSupplier;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user validates his answer to his login question.

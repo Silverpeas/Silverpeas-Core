@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.jstl.util.AbstractSetVarTagSupport;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * Simple tag to obtain the value of the parameter for the specified component.

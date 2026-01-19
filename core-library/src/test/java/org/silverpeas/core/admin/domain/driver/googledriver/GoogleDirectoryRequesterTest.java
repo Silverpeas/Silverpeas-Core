@@ -32,7 +32,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,7 +61,7 @@ class GoogleDirectoryRequesterTest {
     final User user = getRequester().user("108687024306775155320");
     assertThat(user, notNullValue());
     assertThat(user.getId(), is("108687024306775155320"));
-    final List<Map<String, String>> emails = (List) user.getEmails();
+    final List<Map<String, String>> emails = (List<Map<String, String>>) user.getEmails();
     assertThat(emails.stream().anyMatch(m -> m.get("address").equals("psc@silverpeas.org")),
         is(true));
   }

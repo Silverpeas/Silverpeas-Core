@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,15 +32,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.kernel.SilverpeasException;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.LoggerReaderRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.logging.Level;
 import org.silverpeas.kernel.util.SystemWrapper;
 
-import javax.inject.Inject;
-import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.text.MessageFormat;
 import java.util.Date;
@@ -79,9 +78,9 @@ public class ErrorAnnotationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(ErrorAnnotationIT.class)
-        .addAdministrationFeatures()
-        .addAsResource("org/silverpeas/util/logging/")
+    return LibCoreWarBuilder.onWarForTestClass(ErrorAnnotationIT.class)
+        .addStubbedUserAPI()
+        .addPackages(false, "org.silverpeas.core.util.logging")
         .build();
   }
 
@@ -155,7 +154,7 @@ public class ErrorAnnotationIT {
         MessageFormat.format(ErrorAnnotationProcessor.USER_DEFAULT_PATTERN, "Toto Rabbit",
             100, clazz, method);
     try {
-      // the log file can contains more than these two records as the tests can be ran several
+      // the log file can contain more than these two records as the tests can be running several
       // times.
       await().pollDelay(1, TimeUnit.SECONDS)
           .atMost(2, TimeUnit.SECONDS)
@@ -175,7 +174,7 @@ public class ErrorAnnotationIT {
   private void assertThatLogContainsTheExpectedRecordWith(String message) {
     String record = format(ErrorAnnotationProcessor.SYSTEM_CUSTOM_PATTERN, message);
     try {
-      // the log file can contains more than this record as the tests can be ran several
+      // the log file can contain more than this record as the tests can be running several
       // times.
       await().pollDelay(1, TimeUnit.SECONDS)
           .atMost(2, TimeUnit.SECONDS)

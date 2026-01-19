@@ -44,12 +44,6 @@ public class InterestCenterPeasRequestRouter
 
   private static final long serialVersionUID = -6581146192028464533L;
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return an InterestCenterSessionController
-   */
   public InterestCenterSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new InterestCenterSessionController(mainSessionCtrl, componentContext);
@@ -68,7 +62,7 @@ public class InterestCenterPeasRequestRouter
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param icSC The component Session Control, build and initialised.
+   * @param icSC The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")

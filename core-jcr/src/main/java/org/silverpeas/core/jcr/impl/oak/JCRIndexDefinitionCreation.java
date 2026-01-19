@@ -24,19 +24,18 @@
  */
 package org.silverpeas.core.jcr.impl.oak;
 
+import jakarta.inject.Inject;
 import org.apache.jackrabbit.oak.plugins.index.IndexUtils;
 import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.jcr.SilverpeasRepository;
 import org.silverpeas.core.jcr.util.SilverpeasJCRIndexation;
 import org.silverpeas.core.jcr.util.SilverpeasProperty;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -45,7 +44,6 @@ import java.util.Properties;
 
 @Technical
 @Service
-@Singleton
 public class JCRIndexDefinitionCreation implements SilverpeasJCRIndexation {
 
   private static final String JCR_INDEX = "/silverpeas-oak-index.properties";

@@ -38,7 +38,7 @@ import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,10 +61,10 @@ public class LookWebDelegate {
 
   /**
    * Gets the favorite value for the given space
-   * @param space
+   * @param space the space
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite feature
    * is disabled
-   * @return
+   * @return the user favorite value
    */
   public String getUserFavorite(final SpaceInstLight space, final boolean forceGettingFavorite) {
     String favorite = "false";
@@ -81,7 +81,7 @@ public class LookWebDelegate {
 
   /**
    * Adds a space to user favorites
-   * @param space
+   * @param space the space
    */
   public void addToUserFavorites(final SpaceInstLight space) {
     getUserFavoriteSpaceService().addUserFavoriteSpace(
@@ -90,8 +90,8 @@ public class LookWebDelegate {
   }
 
   /**
-   * Removess a space from user favorites
-   * @param space
+   * Removes a space from user favorites
+   * @param space the space
    */
   public void removeFromUserFavorites(final SpaceInstLight space) {
     getUserFavoriteSpaceService().removeUserFavoriteSpace(
@@ -101,7 +101,7 @@ public class LookWebDelegate {
 
   /**
    * Gets the right look.
-   * @param space
+   * @param space the space
    * @return the space style according to the space hierarchy
    */
   public String getLook(SpaceInstLight space) {
@@ -118,7 +118,7 @@ public class LookWebDelegate {
 
   /**
    * Gets the right URL wallpaper
-   * @return
+   * @return the URL
    */
   public String getWallpaper(final SpaceInstLight space) {
     final String wallpaper =
@@ -128,25 +128,17 @@ public class LookWebDelegate {
 
   /**
    * Gets the right URL CSS
-   * @return
+   * @return the URL
    */
   public String getCSS(final SpaceInstLight space) {
     final String css = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(String.valueOf(space.getLocalId()));
     return css == null ? "" : css;
   }
 
-  /**
-   * Gets the user display menu behaviour
-   * @return
-   */
   private UserMenuDisplay getUserMenuDisplay() {
     return getHelper().getDisplayUserMenu();
   }
 
-  /**
-   * Gets the favorite space of the user
-   * @return
-   */
   private List<UserFavoriteSpaceVO> getUserFavoriteSpaces() {
     if (userFavoriteSpaces == null) {
       userFavoriteSpaces =
@@ -155,13 +147,9 @@ public class LookWebDelegate {
     return userFavoriteSpaces;
   }
 
-  /**
-   * Gets the favorite space ids of the user
-   * @return
-   */
   private List<String> getUserFavoriteSpaceIds() {
     if (userFavoriteSpaceIds == null) {
-      userFavoriteSpaceIds = new ArrayList<String>();
+      userFavoriteSpaceIds = new ArrayList<>();
       for (final UserFavoriteSpaceVO favoriteUserSpace : getUserFavoriteSpaces()) {
         userFavoriteSpaceIds.add("" + favoriteUserSpace.getSpaceId());
       }
@@ -177,24 +165,11 @@ public class LookWebDelegate {
     userFavoriteSpaceIds = null;
   }
 
-  /**
-   * Easy way to instance the look service provider
-   * @param user
-   * @param userPreference
-   * @param request
-   * @return
-   */
   public static LookWebDelegate getInstance(final User user,
       final UserPreferences userPreference, final HttpServletRequest request) {
     return new LookWebDelegate(user, userPreference, request);
   }
 
-  /**
-   * Hidden constructor
-   * @param user
-   * @param userPreference
-   * @param request
-   */
   private LookWebDelegate(final User user, final UserPreferences userPreference,
       final HttpServletRequest request) {
     this.user = user;
@@ -210,7 +185,7 @@ public class LookWebDelegate {
 
   /**
    * Initializes from a specified request parameter the bookMark management
-   * @param request
+   * @param request the HTTP request
    */
   private void initializeUserMenuDisplay(final HttpServletRequest request) {
     UserMenuDisplay displayMode = getHelper().getDisplayUserMenu();
@@ -227,32 +202,18 @@ public class LookWebDelegate {
     getHelper().setDisplayUserMenu(displayMode);
   }
 
-  /**
-   * @return
-   */
   private User getUser() {
     return user;
   }
 
-  /**
-   * @return
-   */
   private String getUserId() {
     return getUser().getId();
   }
 
-  /**
-   * Gets the look helper
-   * @return
-   */
   public LookHelper getHelper() {
     return lookHelper;
   }
 
-  /**
-   * Gets the graphical element factory
-   * @return
-   */
   private GraphicElementFactory getGraphicalElements() {
     return gef;
   }

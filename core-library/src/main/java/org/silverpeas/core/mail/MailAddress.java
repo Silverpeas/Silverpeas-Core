@@ -26,8 +26,8 @@ package org.silverpeas.core.mail;
 import org.silverpeas.core.util.MailSettings;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 
 /**

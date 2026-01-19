@@ -23,9 +23,10 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
@@ -33,7 +34,6 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationPassw
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -115,7 +115,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
         AuthenticationResponse.Status.PASSWORD_TO_CHANGE_ON_FIRST_LOGIN;
     if (request != null) {
       String language = (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
-          getUser().getUserPreferences().getLanguage() : I18NHelper.DEFAULT_LANGUAGE;
+          getUser().getUserPreferences().getLanguage() : I18n.get().getDefaultLanguage();
       String message = error.getMessage(language);
       request.setAttribute("message", message);
       request.setAttribute("isThatUserMustFillEmailAddressOnFirstLogin",

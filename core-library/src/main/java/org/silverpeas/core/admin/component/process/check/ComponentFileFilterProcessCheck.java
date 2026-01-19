@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.admin.component.process.check;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.process.io.IOAccess;
@@ -39,8 +39,8 @@ import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.AbstractFileProcessCheck;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
 import java.util.Set;
@@ -48,7 +48,7 @@ import java.util.Set;
 /**
  * @author Yohann Chastagnier
  */
-@Service
+@Bean
 public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
 
   @Inject

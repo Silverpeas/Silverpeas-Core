@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.apache.commons.fileupload.FileItem;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -32,6 +31,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.ExplorerField;
 import org.silverpeas.core.contribution.content.form.field.PublicationsPickerField;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;

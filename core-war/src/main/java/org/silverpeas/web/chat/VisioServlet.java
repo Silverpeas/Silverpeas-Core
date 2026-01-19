@@ -28,9 +28,9 @@ import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
@@ -41,7 +41,7 @@ import static org.silverpeas.core.util.file.FileServerUtils.getImageURL;
  * This servlet permits to get more control over the initialization and the management of a visio
  * conference.
  * <p>
- *   For now, this servlet is compatible only with jitsi features.
+ *   For now, this servlet is compatible only with Jitsi features.
  * </p>
  * @author silveryocha
  */

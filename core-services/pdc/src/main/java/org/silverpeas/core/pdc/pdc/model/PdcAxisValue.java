@@ -29,10 +29,10 @@ import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -120,7 +120,6 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * @return an unmodifiable set of values that are children of this one. If this value is a leaf,
    * then an empty set is returned.
    */
-  @SuppressWarnings("JpaAttributeTypeInspection")
   public Set<PdcAxisValue> getChildValues() {
     try {
       Set<PdcAxisValue> children = new HashSet<>();

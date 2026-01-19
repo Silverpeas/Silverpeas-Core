@@ -35,10 +35,10 @@ import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TemporalConverter.Conversion;
 import org.silverpeas.core.date.TimeUnit;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;

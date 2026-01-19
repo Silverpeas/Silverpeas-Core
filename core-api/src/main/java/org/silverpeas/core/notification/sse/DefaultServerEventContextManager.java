@@ -24,10 +24,9 @@
 
 package org.silverpeas.core.notification.sse;
 
+import jakarta.annotation.PreDestroy;
 import org.silverpeas.core.annotation.Service;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +39,6 @@ import java.util.function.Supplier;
 import static java.text.MessageFormat.format;
 
 @Service
-@Singleton
 public class DefaultServerEventContextManager implements SilverpeasServerEventContextManager {
 
   final ReadWriteLock lock = new ReentrantReadWriteLock(true);

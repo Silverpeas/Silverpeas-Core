@@ -29,7 +29,7 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.web.session.UserSessionEvent;
 import org.silverpeas.core.web.token.SilverpeasWebTokenService;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 import static java.util.Optional.of;
 

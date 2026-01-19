@@ -40,18 +40,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Class declaration Get connections data from database
- *
- */
 public class JobDomainPeasDAO {
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   private static Connection getConnection() {
     try {
       return DBUtil.openConnection();
@@ -61,14 +51,6 @@ public class JobDomainPeasDAO {
     }
   }
 
-  /**
-   * Sélection des groupes à synchroniser en insert ou update de la table Domain<domainName>_Group
-   *
-   * @param domain
-   * @return Collection de Group
-   * @throws SQLException
-   * @see
-   */
   public static Collection<Group> selectGroupSynchroInsertUpdateTableDomain_Group(Domain domain)
       throws SQLException {
     String propDomainFileName = domain.getPropFileName();
@@ -77,7 +59,7 @@ public class JobDomainPeasDAO {
     AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
 
     // sélectionne les users dans Silverpeas
-    Collection<Group> listRes = new ArrayList<Group>();
+    Collection<Group> listRes = new ArrayList<>();
 
     String query = " SELECT g.id FROM Domain" + domainName
         + "_Group d, ST_Group g WHERE g.domainId = " + domain.getId()
@@ -104,14 +86,6 @@ public class JobDomainPeasDAO {
     return listRes; // Collection de Group
   }
 
-  /**
-   * Sélection des utilisateurs à synchroniser en insert ou update de la table
-   * Domain<domainName>_User
-   *
-   * @param domain
-   * @return Collection de UserFull
-   * @throws SQLException
-   */
   public static Collection<UserFull> selectUserSynchroInsertUpdateTableDomain_User(
       Domain domain) throws SQLException {
     String propDomainFileName = domain.getPropFileName();
@@ -120,7 +94,7 @@ public class JobDomainPeasDAO {
     AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
 
     // sélectionne les users dans Silverpeas
-    Collection<UserFull> listRes = new ArrayList<UserFull>();
+    Collection<UserFull> listRes = new ArrayList<>();
     UserFull userFull;
 
     String query = " SELECT u.id FROM Domain" + domainName
@@ -147,19 +121,12 @@ public class JobDomainPeasDAO {
     return listRes; // Collection de UserFull
   }
 
-  /**
-   * Sélection des utilisateurs à synchroniser en delete de la table Domain<domainName>_User
-   *
-   * @return Collection de UserDetail
-   * @throws SQLException
-   * @see
-   */
   public static Collection<UserDetail> selectUserSynchroDeleteTableDomain_User(Domain domain)
       throws SQLException {
     AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
 
     // sélectionne les users dans Silverpeas
-    Collection<UserDetail> listRes = new ArrayList<UserDetail>();
+    Collection<UserDetail> listRes = new ArrayList<>();
     PreparedStatement stmt = null;
     ResultSet resultSet = null;
     Connection myCon = getConnection();

@@ -23,18 +23,17 @@
  */
 package org.silverpeas.core.subscription.stub;
 
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
 import java.util.Optional;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest.GROUPID_WITH_ONE_USER;
 import static org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest.USERID_OF_GROUP_WITH_ONE_USER;
 
@@ -42,11 +41,9 @@ import static org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegra
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 @Alternative
 @Priority(APPLICATION + 10)
 public class StubbedOrganizationController extends DefaultOrganizationController {
-  private static final long serialVersionUID = -8307476470533272352L;
 
   @Override
   public ComponentInstLight getComponentInstLight(final String componentId) {

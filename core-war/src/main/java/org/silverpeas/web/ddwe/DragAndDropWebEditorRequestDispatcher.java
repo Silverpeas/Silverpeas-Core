@@ -30,7 +30,7 @@ import org.silverpeas.core.wbe.WbeFile;
 import org.silverpeas.core.wbe.WbeUser;
 import org.silverpeas.core.webapi.wbe.WbeFileEdition;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 import static java.text.MessageFormat.format;

@@ -23,7 +23,10 @@
  */
 package org.silverpeas.core.mylinks.service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mylinks.MyLinksRuntimeException;
 import org.silverpeas.core.mylinks.dao.CategoryDAO;
 import org.silverpeas.core.mylinks.dao.LinkDAO;
@@ -32,15 +35,12 @@ import org.silverpeas.core.mylinks.model.CategoryDetailComparator;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.model.LinkDetailComparator;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
-@Singleton
+@Service
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultMyLinksService implements MyLinksService, ComponentInstanceDeletion {
 

@@ -31,8 +31,6 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
-
 /**
  * Listener of the events on the deletion or on an update of a component instance. If the component
  * instance is deleted or if the subscription on the component instance is disabled, then remove all
@@ -40,7 +38,6 @@ import javax.inject.Singleton;
  * @author mmoquillon
  */
 @Bean
-@Singleton
 public class SubscriptionComponentInstEventListener
     extends AbstractProfiledResourceSubscriptionListener<ComponentInst, ComponentInstanceEvent> {
 

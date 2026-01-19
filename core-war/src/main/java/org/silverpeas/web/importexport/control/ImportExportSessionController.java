@@ -104,29 +104,20 @@ public class ImportExportSessionController extends AbstractAdminComponentSession
   }
 
   /**
-   * Export Pdf attachements of selected publications to a unique PDF. Useful for a single print or
+   * Export PDF attachements of selected publications to a unique PDF. Useful for a single print or
    * download.
    * @param itemsToExport : List<WAAttributeValuePair> contains ids of elements to export (objectId
    * and instanceId)
-   * @return
-   * @throws ImportExportException
+   * @return the report about the PDF export.
+   * @throws ImportExportException if the export fails.
    */
   public ExportPDFReport processExportPDF(List<WAAttributeValuePair> itemsToExport)
       throws ImportExportException {
     return importExport.processExportPDF(getUserDetail(), itemsToExport, rootPK);
   }
 
-  /**
-   * @param language
-   * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
-   * (objectId and instanceId)
-   * @param combination
-   * @param timeCriteria
-   * @return
-   * @throws ImportExportException
-   */
   public ExportReport processExportKmax(String language, List<WAAttributeValuePair> itemsToExport,
-      List combination, String timeCriteria, boolean useNamesForFolders) throws ImportExportException {
+      List<String> combination, String timeCriteria, boolean useNamesForFolders) throws ImportExportException {
     return importExport.processExportKmax(getUserDetail(),
         language, itemsToExport, combination, timeCriteria, useNamesForFolders);
   }

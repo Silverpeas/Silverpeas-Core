@@ -39,7 +39,7 @@ import org.silverpeas.web.silverstatistics.vo.CrossAxisStatsFilter;
 import org.silverpeas.web.silverstatistics.vo.CrossStatisticVO;
 import org.silverpeas.web.silverstatistics.vo.StatisticVO;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.List;
 
@@ -76,7 +76,7 @@ public class SilverStatisticsPeasRequestRouter extends
    *
    * @param function The entering request function (ex : "Main.jsp")
    * @param statsSC The component Session Control, build and initialised.
-   * @param request the incoming HTTP request
+   * @param request incoming request
    * @return The complete destination URL for a forward (ex: "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override

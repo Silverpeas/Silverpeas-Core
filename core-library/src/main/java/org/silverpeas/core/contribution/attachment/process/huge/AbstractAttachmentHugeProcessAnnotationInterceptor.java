@@ -31,8 +31,8 @@ import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;

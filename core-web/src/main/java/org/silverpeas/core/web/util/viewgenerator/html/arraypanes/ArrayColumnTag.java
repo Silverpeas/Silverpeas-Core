@@ -25,9 +25,9 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.el.LambdaExpression;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import jakarta.el.LambdaExpression;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.BodyTagSupport;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

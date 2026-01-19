@@ -33,13 +33,12 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
-import javax.inject.Inject;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.util.concurrent.Future;
 
@@ -48,7 +47,7 @@ import static org.hamcrest.Matchers.*;
 
 /**
  * Tests that the JDBC connection from a same or a graph of managed transactions is always the
- * same but it can be distinct from another transaction. In order to ensure the connection in a
+ * same, but it can be distinct from another transaction. In order to ensure the connection in a
  * stopped transaction isn't reused by another transaction, the transactional operations are
  * executed in different threads.
  * @author mmoquillon
@@ -69,8 +68,7 @@ public class TransactionConnectionIT extends AbstractTransactionIntegrationTest 
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return configureTestArchive(
-        WarBuilder4LibCore.onWarForTestClass(TransactionConnectionIT.class)).build();
+    return testArchiveFor(TransactionConnectionIT.class);
   }
 
   @Before
@@ -96,6 +94,7 @@ public class TransactionConnectionIT extends AbstractTransactionIntegrationTest 
     }
 
     TransactionTestService test = getTestService();
+    //noinspection resource
     test.transaction2(user);
 
     try (Connection connection = DBUtil.openConnection()) {

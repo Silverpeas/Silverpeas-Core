@@ -28,7 +28,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane;
 import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 import java.io.IOException;
 
 /**

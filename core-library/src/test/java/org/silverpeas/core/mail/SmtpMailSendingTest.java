@@ -24,12 +24,18 @@
 package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.base.GreenMailOperations;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.engine.MailSender;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
@@ -44,22 +50,11 @@ import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.LoggerLevel;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -74,10 +69,10 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
     SmtpMailSendingTest.StubbedSmtpMailSender.class})
 class SmtpMailSendingTest {
 
-  private final static String COMMON_FROM = "from@titi.org";
-  private final static String MALFORMED_FROM = "fromATtiti.org";
-  private final static String COMMON_TO = "to@toto.org";
-  private final static String MALFORMED_TO = "toATtoto.org";
+  private static final String COMMON_FROM = "from@titi.org";
+  private static final String MALFORMED_FROM = "fromATtiti.org";
+  private static final String COMMON_TO = "to@toto.org";
+  private static final String MALFORMED_TO = "toATtoto.org";
   private static final String HTML_PATTERN =
       "<!DOCTYPE html><html lang='fr' xml:lang='fr'><head>" + "<meta charset=\"utf-8\">" +
           "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, " +
@@ -413,10 +408,6 @@ class SmtpMailSendingTest {
   /**
    * Stubbed SMTP mail sender.
    */
-  @Service
-  @Singleton
-  @Alternative
-  @Priority(APPLICATION + 10)
   static class StubbedSmtpMailSender extends SmtpMailSender {
 
     public MailToSend currentMailToSend;

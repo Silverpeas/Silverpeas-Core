@@ -26,8 +26,8 @@ package org.silverpeas.core.annotation;
 
 import org.silverpeas.kernel.annotation.Managed;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Stereotype;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Stereotype;
 import java.lang.annotation.*;
 
 /**

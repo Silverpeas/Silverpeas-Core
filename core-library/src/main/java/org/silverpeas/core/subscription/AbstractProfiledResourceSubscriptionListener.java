@@ -24,10 +24,10 @@
 
 package org.silverpeas.core.subscription;
 
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
+import jakarta.inject.Inject;
+import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
-import javax.inject.Inject;
 import java.io.Serializable;
 
 /**
@@ -38,7 +38,7 @@ import java.io.Serializable;
  * @author mmoquillon
  */
 public abstract class AbstractProfiledResourceSubscriptionListener<R extends Serializable,
-    T extends ResourceEvent<R>> extends CDIResourceEventListener<T> {
+    T extends ResourceEvent<R>> extends CDIAfterSuccessfulTransactionResourceEventListener<T> {
 
   @Inject
   private SubscriptionService subscriptionService;

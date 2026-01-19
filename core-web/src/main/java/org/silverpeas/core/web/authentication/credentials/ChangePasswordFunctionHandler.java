@@ -32,9 +32,9 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Handler on functions implying a password change for a user.

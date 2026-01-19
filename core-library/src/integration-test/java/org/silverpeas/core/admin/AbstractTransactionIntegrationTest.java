@@ -23,28 +23,17 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 
 /**
  * @author silveryocha
  */
 abstract class AbstractTransactionIntegrationTest {
 
-  @SuppressWarnings("unchecked")
-  static WarBuilder4LibCore configureTestArchive(WarBuilder4LibCore warBuilder) {
-    return (WarBuilder4LibCore) warBuilder
-        .addAdministrationFeatures()
-        .addProcessFeatures()
-        .addPublicationTemplateFeatures()
-        .testFocusedOn(war -> {
-          war.addClasses(AbstractTransactionIntegrationTest.class);
-          war.addClasses(WarBuilder4LibCore.class);
-          war.addClasses(TransactionTestProcess.class);
-          war.addClasses(TransactionTestService.class);
-          war.addClasses(AbstractTransactionTestService.class);
-          war.addClasses(TransactionNotSingletonTestServiceImpl.class);
-          war.addClasses(TransactionCheckedException.class);
-        });
+  static WebArchive testArchiveFor(Class<? extends AbstractTransactionIntegrationTest> test) {
+    return LibCoreWarBuilder.onFullWarForTestClass(test)
+        .build();
   }
 
   abstract TransactionTestService getTestService();

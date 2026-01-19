@@ -29,8 +29,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user has committed change password form.

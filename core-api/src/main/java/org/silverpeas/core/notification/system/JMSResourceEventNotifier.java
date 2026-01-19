@@ -24,8 +24,8 @@
 package org.silverpeas.core.notification.system;
 
 
-import javax.jms.Destination;
-import javax.jms.JMSProducer;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSProducer;
 import java.io.Serializable;
 
 /**
@@ -57,6 +57,7 @@ public abstract class JMSResourceEventNotifier<R extends Serializable,
    * being the resource after the update (the result of the update).
    * @return a resource event.
    */
+  @SuppressWarnings("unchecked")
   protected abstract T createResourceEventFrom(final ResourceEvent.Type type, final R... resource);
 
   @Override
@@ -68,8 +69,13 @@ public abstract class JMSResourceEventNotifier<R extends Serializable,
     });
   }
 
+  @SafeVarargs
   @Override
-  public void notifyEventOn(final ResourceEvent.Type type, final R... resource) {
+  public final void notifyEventOn(final ResourceEvent.Type type, final R... resource) {
+    if (resource == null || resource.length > 3) {
+      throw new IllegalArgumentException(
+          "Resource state concerned by the event should exist and shouldn't exceed 3");
+    }
     notify(createResourceEventFrom(type, resource));
   }
 }

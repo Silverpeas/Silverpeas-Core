@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.viewer.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ToPDFConverter;
@@ -39,8 +40,6 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.model.TemporaryPreview;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,15 +50,14 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.silverpeas.core.util.CollectionUtil.asSet;
 import static org.silverpeas.core.util.ImageUtil.*;
 import static org.silverpeas.core.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
-import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Default implementation of the preview service.
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 public class DefaultPreviewService extends AbstractViewerService implements PreviewService {
 
   private static final String PROCESS_NAME = "PREVIEW";

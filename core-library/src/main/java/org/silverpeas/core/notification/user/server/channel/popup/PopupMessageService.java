@@ -26,7 +26,7 @@ package org.silverpeas.core.notification.user.server.channel.popup;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 /**
  * @author Yohann Chastagnier

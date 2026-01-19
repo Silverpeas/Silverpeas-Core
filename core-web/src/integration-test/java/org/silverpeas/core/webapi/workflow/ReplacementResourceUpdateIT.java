@@ -38,9 +38,9 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.web.test.ResourceUpdateTest;
 
-import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.time.LocalDate;
@@ -70,7 +70,7 @@ public class ReplacementResourceUpdateIT extends ResourceUpdateTest {
 
   private String authToken;
   private User user;
-  private Replacement replacement;
+  private Replacement<?> replacement;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -87,7 +87,7 @@ public class ReplacementResourceUpdateIT extends ResourceUpdateTest {
   }
 
   @Before
-  public void prepareTests() throws WorkflowException {
+  public void prepareTests() {
     user = User.getById("1");
     authToken = getTokenKeyOf(user);
     replacement = Replacement.get(REPLACEMENT_ID)

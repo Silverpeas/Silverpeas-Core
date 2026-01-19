@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.kernel.util.Pair;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,8 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class declaration Get connections data from database
- * @author
+ * Get connections data from database
  */
 public class SilverStatisticsPeasDAOConnexion {
 
@@ -93,14 +93,19 @@ public class SilverStatisticsPeasDAOConnexion {
   }
 
   /**
-   * donne les stats global pour l'enemble de tous les users cad 2 infos, la collection contient
-   * donc un seul element
-   * @param startDate
-   * @param endDate
-   * @return
-   * @throws SQLException
+   * Gets the global statistics for the whole users. The statistic is made up of 4 data:
+   * <ul>
+   *   <li>lib</li>
+   *   <li>connexion count</li>
+   *   <li>duration</li>
+   *   <li>identifier</li>
+   * </ul>
+   * @param startDate the start date of the statistics
+   * @param endDate the end date of the statistics
+   * @return a list of statistics.
+   * @throws SQLException if the statistics fetching fails.
    */
-  public static Collection<String[]> getStatsConnexionAllAll(String startDate, String endDate)
+  public static List<String[]> getStatsConnexionAllAll(String startDate, String endDate)
       throws SQLException {
     List<String[]> result = new ArrayList<>();
     try (final Connection myCon = DBUtil.openConnection();
@@ -120,19 +125,8 @@ public class SilverStatisticsPeasDAOConnexion {
   static LinkedHashMap<String, Long> prepareStatisticsArray(String dateBegin, String dateEnd)
       throws ParseException {
     LinkedHashMap<String, Long> result = new LinkedHashMap<>(48);
-    Calendar endDate = Calendar.getInstance();
-    endDate.setTime(DateUtil.parseISO8601Date(dateEnd));
-    endDate.set(Calendar.HOUR_OF_DAY, 0);
-    endDate.set(Calendar.MINUTE, 0);
-    endDate.set(Calendar.SECOND, 0);
-    endDate.set(Calendar.MILLISECOND, 0);
-
-    Calendar date = Calendar.getInstance();
-    date.setTime(DateUtil.parseISO8601Date(dateBegin));
-    date.set(Calendar.HOUR_OF_DAY, 0);
-    date.set(Calendar.MINUTE, 0);
-    date.set(Calendar.SECOND, 0);
-    date.set(Calendar.MILLISECOND, 0);
+    Calendar endDate = toCalendarDate(dateEnd);
+    Calendar date = toCalendarDate(dateBegin);
     while (date.before(endDate)) {
       result.put(DateUtil.formatAsISO8601Day(date.getTime()), 0L);
       date.add(Calendar.MONTH, 1);
@@ -141,14 +135,24 @@ public class SilverStatisticsPeasDAOConnexion {
     return result;
   }
 
-  static Collection[] convertStatisticsArray(LinkedHashMap<String, Long> statistics) {
+  private static Calendar toCalendarDate(String date) throws ParseException {
+    Calendar calendarDate = Calendar.getInstance();
+    calendarDate.setTime(DateUtil.parseISO8601Date(date));
+    calendarDate.set(Calendar.HOUR_OF_DAY, 0);
+    calendarDate.set(Calendar.MINUTE, 0);
+    calendarDate.set(Calendar.SECOND, 0);
+    calendarDate.set(Calendar.MILLISECOND, 0);
+    return calendarDate;
+  }
+
+  static Pair<List<String>, List<Long>> convertStatisticsArray(LinkedHashMap<String, Long> statistics) {
     List<String> dates = new ArrayList<>(statistics.size());
-    List<String> counts = new ArrayList<>(statistics.size());
+    List<Long> counts = new ArrayList<>(statistics.size());
     for (Map.Entry<String, Long> data : statistics.entrySet()) {
       dates.add(data.getKey());
-      counts.add(String.valueOf(data.getValue()));
+      counts.add(data.getValue());
     }
-    return new Collection[]{dates, counts};
+    return Pair.of(dates, counts);
   }
 
   static void addStatisticsToArray(Map<String, Long> statistics, String date, long value) {
@@ -157,13 +161,13 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Returns the number of distinct users connections per month.
-   * @param startDate
-   * @param endDate
+   * @param startDate the start date of the period
+   * @param endDate the end date of the period
    * @return the number of distinct users connections per month.
-   * @throws SQLException
-   * @throws ParseException
+   * @throws SQLException if the statistics fail to be fetched.
+   * @throws ParseException if the date cannot be correctly parsed
    */
-  public static Collection[] getStatsUser(String startDate, String endDate)
+  public static Pair<List<String>, List<Long>> getStatsUser(String startDate, String endDate)
       throws SQLException, ParseException {
     try (final Connection myCon = DBUtil.openConnection();
          final PreparedStatement stmt = myCon.prepareStatement(SELECT_GLOBAL_NB_USER)) {
@@ -175,13 +179,13 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Returns the total number of connections per month.
-   * @param startDate
-   * @param endDate
+   * @param startDate the start date of the period
+   * @param endDate the end date of the period
    * @return the total number of connections per month.
-   * @throws SQLException
-   * @throws ParseException
+   * @throws SQLException if the statistics fail to be fetched.
+   * @throws ParseException if the date cannot be correctly parsed
    */
-  public static Collection[] getStatsConnexion(String startDate, String endDate)
+  public static Pair<List<String>, List<Long>> getStatsConnexion(String startDate, String endDate)
       throws SQLException, ParseException {
     try (final Connection myCon = DBUtil.openConnection();
          final PreparedStatement stmt = myCon.prepareStatement(SELECT_GLOBAL_STATISTICS)) {
@@ -197,10 +201,10 @@ public class SilverStatisticsPeasDAOConnexion {
    * @param endDate the end date
    * @param idUser the user identifier
    * @return an array of date and number of connections of a user between startDate and endDate
-   * @throws SQLException
-   * @throws ParseException
+   * @throws SQLException if the statistics fail to be fetched.
+   * @throws ParseException if the date cannot be correctly parsed
    */
-  public static Collection[] getStatsUserConnexion(String startDate, String endDate, String idUser)
+  public static Pair<List<String>, List<Long>> getStatsUserConnexion(String startDate, String endDate, String idUser)
       throws SQLException, ParseException {
     try (final Connection myCon = DBUtil.openConnection();
          final PreparedStatement stmt = myCon.prepareStatement(SELECT_USER_NB_CONNECTION)) {
@@ -211,7 +215,8 @@ public class SilverStatisticsPeasDAOConnexion {
     }
   }
 
-  private static Collection[] fetchConnexionStatistics(final String startDate, final String endDate,
+  private static Pair<List<String>, List<Long>> fetchConnexionStatistics(final String startDate,
+      final String endDate,
       final PreparedStatement stmt) throws SQLException, ParseException {
     try (final ResultSet rs = stmt.executeQuery()) {
       LinkedHashMap<String, Long> statistics = prepareStatisticsArray(startDate, endDate);
@@ -231,9 +236,10 @@ public class SilverStatisticsPeasDAOConnexion {
    * @param groupId the group identifier
    * @return the group stats : group name, number of connexions, mean connexion time and group id
    * for all the groups.
-   * @throws SQLException
+   * @throws SQLException if the statistics fails to be fetched
    */
-  public static Collection[] getStatsGroupConnexion(String startDate, String endDate,
+  public static Pair<List<String>, List<Long>> getStatsGroupConnexion(String startDate,
+      String endDate,
       String groupId) throws SQLException, ParseException {
     LinkedHashMap<String, Long> result = prepareStatisticsArray(startDate, endDate);
     try (final Connection myCon = DBUtil.openConnection();
@@ -258,11 +264,11 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * Returns the groups stats : group name, number of connexions, mean connexion time and group id
    * for all the groups.
-   * @param dateBegin
-   * @param dateEnd
+   * @param dateBegin the start date of the period
+   * @param dateEnd the end date of the period
    * @return the group stats : group name, number of connexions, mean connexion time and group id
    * for all the groups.
-   * @throws SQLException
+   * @throws SQLException if the statistics fails to be fetched
    */
   public static Collection<String[]> getStatsConnexionGroupAll(String dateBegin, String dateEnd)
       throws SQLException {
@@ -277,12 +283,12 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * Returns the group stats : Group name, number of connexions, mean connexion time and group id
    * for all the users of a group.
-   * @param dateBegin .
-   * @param dateEnd .
-   * @param groupId .
+   * @param dateBegin the start date of the period
+   * @param dateEnd  the end date of the period
+   * @param groupId the unique identifier of the user group
    * @return the group stats : Group last name, number of connexions, mean connexion time and group
    * id for all the users of a group.
-   * @throws SQLException
+   * @throws SQLException if the statistics fails to be fetched
    */
   public static Collection<String[]> getStatsConnexionAllGroup(String dateBegin, String dateEnd,
       int groupId) throws SQLException {
@@ -320,11 +326,11 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * Returns the user stats : User last name, number of connexions, mean connexion time and user id
    * for all Silverpeas users.
-   * @param dateBegin
-   * @param dateEnd
+   * @param dateBegin the start date of the statistics
+   * @param dateEnd the end date of the statistics
    * @return the user stats : User last name, number of connexions, mean connexion time and user id
    * for all Silverpeas users.
-   * @throws SQLException
+   * @throws SQLException if the statistics fails to be fetched
    */
   public static Collection<String[]> getStatsConnexionUserAll(String dateBegin, String dateEnd)
       throws SQLException {
@@ -348,14 +354,13 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * Returns the user stats : User last name, number of connexions, mean connexion time and user
    * id.
-   * @param dateBegin
-   * @param dateEnd
-   * @param userId
-   * @return
-   * @throws SQLException
-   * @see
+   * @param dateBegin the start date of the statistics
+   * @param dateEnd the end date of the statistics
+   * @param userId the unique user identifier
+   * @return the list of statistics.
+   * @throws SQLException if the statistics fails to be fetched
    */
-  public static Collection<String[]> getStatsConnexionUser(String dateBegin, String dateEnd,
+  public static List<String[]> getStatsConnexionUser(String dateBegin, String dateEnd,
       int userId) throws SQLException {
     List<String[]> result = new ArrayList<>();
     try (final Connection myCon = DBUtil.openConnection();
@@ -378,7 +383,7 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * @return if no statistic exist return current year, else return a collection of years which are
    * loaded inside SB_Stat_ConnectionCumul table
-   * @throws SQLException
+   * @throws SQLException if the statistics fails to be fetched
    */
   public static Collection<String> getYears() throws SQLException {
     String selectQuery = "SELECT DISTINCT dateStat FROM SB_Stat_ConnectionCumul ORDER BY dateStat";
@@ -388,9 +393,7 @@ public class SilverStatisticsPeasDAOConnexion {
       LinkedHashSet<String> years = new LinkedHashSet<>();
       while (rs.next()) {
         String currentYear = extractYearFromDate(rs.getString("dateStat"));
-        if (!years.contains(currentYear)) {
-          years.add(currentYear);
-        }
+        years.add(currentYear);
       }
       if (years.isEmpty()) {
         years.add(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
@@ -403,17 +406,8 @@ public class SilverStatisticsPeasDAOConnexion {
     return date.substring(0, 4);
   }
 
-  /**
-   * @param startDate
-   * @param endDate
-   * @param min
-   * @param max
-   * @return
-   * @throws SQLException
-   * @throws ParseException
-   */
-  public static Collection[] getStatsUserFq(String startDate, String endDate, int min, int max)
-      throws SQLException, ParseException {
+  public static Pair<List<String>, List<Long>> getStatsUserFq(String startDate, String endDate,
+      int min, int max) throws SQLException, ParseException {
     try (Connection myCon = DBUtil.openConnection();
          PreparedStatement stmt = myCon.prepareStatement(SELECT_NB_USER_BY_USAGE)) {
       stmt.setString(1, startDate);
@@ -424,7 +418,8 @@ public class SilverStatisticsPeasDAOConnexion {
     }
   }
 
-  private static Collection[] fetchUserStatistics(final String startDate, final String endDate,
+  private static Pair<List<String>, List<Long>> fetchUserStatistics(final String startDate,
+      final String endDate,
       final PreparedStatement stmt) throws SQLException, ParseException {
     try (final ResultSet rs = stmt.executeQuery()) {
       LinkedHashMap<String, Long> statistics = prepareStatisticsArray(startDate, endDate);
@@ -435,12 +430,6 @@ public class SilverStatisticsPeasDAOConnexion {
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @throws SQLException
-   * @see
-   */
   static String[] buildConnectionStatistics(String name, long count, long duration, String id) {
     String[] stat = new String[4];
     stat[INDICE_LIB] = name;

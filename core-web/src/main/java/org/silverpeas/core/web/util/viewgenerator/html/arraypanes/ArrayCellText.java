@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.function.Function;
 
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;

@@ -26,7 +26,7 @@ package org.silverpeas.core.index.indexing.parser.tika;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.utils.XMLReaderUtils;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -39,8 +39,9 @@ import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
  *
  * @author mmoquillon
  */
-@Service
+@Bean
 public class TikaInitialization implements Initialization {
+
   @Override
   public void init() {
     final SettingBundle settingBundle =

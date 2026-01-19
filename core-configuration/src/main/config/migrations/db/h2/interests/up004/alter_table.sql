@@ -1,0 +1,1 @@
+ALTER TABLE SB_Interests_Axis ALTER COLUMN "value" RENAME TO val;

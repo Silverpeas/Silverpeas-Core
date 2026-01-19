@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -677,12 +677,13 @@ public class UserDetail implements User {
   @Override
   public int compareTo(User other) {
     Collator collator = Collator.getInstance();
-    String myLastName = getLastName().toLowerCase(I18NHelper.defaultLocale);
-    String otherLastName = other.getLastName().toLowerCase(I18NHelper.defaultLocale);
+    Locale defaultLocale = new Locale(I18n.get().getDefaultLanguage());
+    String myLastName = getLastName().toLowerCase(defaultLocale);
+    String otherLastName = other.getLastName().toLowerCase(defaultLocale);
     int result = collator.compare(myLastName, otherLastName);
     if (result == 0) {
-      String myFirstName = getFirstName().toLowerCase(I18NHelper.defaultLocale);
-      String otherFirstName = other.getFirstName().toLowerCase(I18NHelper.defaultLocale);
+      String myFirstName = getFirstName().toLowerCase(defaultLocale);
+      String otherFirstName = other.getFirstName().toLowerCase(defaultLocale);
       result = collator.compare(myFirstName, otherFirstName);
       if (result == 0) {
         String myId = getId();

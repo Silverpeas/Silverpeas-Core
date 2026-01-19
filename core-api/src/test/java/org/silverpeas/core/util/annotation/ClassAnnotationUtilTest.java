@@ -25,7 +25,7 @@ package org.silverpeas.core.util.annotation;
 
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.Table;
+import jakarta.persistence.Table;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -55,14 +55,14 @@ public class ClassAnnotationUtilTest {
 
   @Test
   public void getClassThatDeclaresTableAnnotationFromAbstractWikispeed() {
-    Class identifiedClass =
+    Class<?> identifiedClass =
         ClassAnnotationUtil.searchClassThatDeclaresAnnotation(Table.class, AbstractWikispeed.class);
     assertThat(identifiedClass, nullValue());
   }
 
   @Test
   public void getEngineParameterizedTypeFromAbstractHierarchy() {
-    Class engineType =
+    Class<?> engineType =
         ClassAnnotationUtil.searchParameterizedTypeFrom(Engine.class, AbstractWikispeed.class);
     assertThat(engineType, notNullValue());
     assertThat(engineType.getName(), is(ElectricEngine.class.getName()));
@@ -70,14 +70,14 @@ public class ClassAnnotationUtilTest {
 
   @Test
   public void getEngineParameterizedTypeFromInterfaceHierarchy() {
-    Class engineType = ClassAnnotationUtil.searchParameterizedTypeFrom(Engine.class, Wikispeed.class);
+    Class<?> engineType = ClassAnnotationUtil.searchParameterizedTypeFrom(Engine.class, Wikispeed.class);
     assertThat(engineType, notNullValue());
     assertThat(engineType.getName(), is(ElectricEngine.class.getName()));
   }
 
   @Test
   public void getModelParameterizedTypeFromAbstractHierarchy() {
-    Class engineType =
+    Class<?> engineType =
         ClassAnnotationUtil.searchParameterizedTypeFrom(Model.class, AbstractWikispeed.class);
     assertThat(engineType, notNullValue());
     assertThat(engineType.getName(), is(SedanModel.class.getName()));
@@ -85,7 +85,7 @@ public class ClassAnnotationUtilTest {
 
   @Test
   public void getModelParameterizedTypeFromInterfaceHierarchy() {
-    Class engineType = ClassAnnotationUtil.searchParameterizedTypeFrom(Model.class, Wikispeed.class);
+    Class<?> engineType = ClassAnnotationUtil.searchParameterizedTypeFrom(Model.class, Wikispeed.class);
     assertThat(engineType, notNullValue());
     assertThat(engineType.getName(), is(SedanModel.class.getName()));
   }

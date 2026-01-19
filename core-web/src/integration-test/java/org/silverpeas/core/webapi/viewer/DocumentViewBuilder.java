@@ -49,7 +49,7 @@ public class DocumentViewBuilder {
     // Nothing to do
   }
 
-  protected class DocumentViewMock implements DocumentView {
+  protected static class DocumentViewMock implements DocumentView {
 
     private final String uriId;
     private final String fileName;

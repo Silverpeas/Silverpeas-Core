@@ -27,11 +27,11 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 

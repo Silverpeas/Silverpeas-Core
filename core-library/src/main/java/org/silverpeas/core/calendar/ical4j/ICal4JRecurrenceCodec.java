@@ -42,8 +42,8 @@ import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.time.DayOfWeek;
 import java.time.temporal.Temporal;
 import java.util.Comparator;
@@ -122,12 +122,9 @@ public class ICal4JRecurrenceCodec {
     final Optional<Temporal> recurrenceEndDate = eventRecurrence.getRecurrenceEndDate();
     if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
       recurBuilder.count(eventRecurrence.getRecurrenceCount());
-    } else if (recurrenceEndDate.isPresent()) {
-      final Temporal endDate = recurrenceEndDate.get();
-      TemporalConverter.consumeByType(endDate,
-          date -> recurBuilder.until(iCal4JDateCodec.encode(date)),
-          dateTime -> recurBuilder.until(iCal4JDateCodec.encode(dateTime)));
-    }
+    } else recurrenceEndDate.ifPresent(endDate -> TemporalConverter.consumeByType(endDate,
+        date -> recurBuilder.until(iCal4JDateCodec.encode(date)),
+        dateTime -> recurBuilder.until(iCal4JDateCodec.encode(dateTime))));
     WeekDayList daysOfWeek = eventRecurrence.getDaysOfWeek()
         .stream()
         .sorted(Comparator.comparing(DayOfWeekOccurrence::dayOfWeek))

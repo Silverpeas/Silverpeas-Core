@@ -1,14 +1,15 @@
 package org.silverpeas.core.test.unit;
 
+import jakarta.enterprise.inject.spi.Bean;
 import org.silverpeas.kernel.ManagedBeanProvider;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.exception.MultipleCandidateException;
 import org.silverpeas.kernel.test.DependencyResolver;
 import org.silverpeas.kernel.test.util.SilverpeasReflectionException;
 
-import javax.annotation.Nonnull;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.annotation.Nonnull;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -81,6 +82,16 @@ public class SimpleJEEDependencyResolver extends DependencyResolver {
       // nothing to do
     }
 
+    @Override
+    public Handle<T> getHandle() {
+      return new HandleImpl<>(get());
+    }
+
+    @Override
+    public Iterable<? extends Handle<T>> handles() {
+      return Set.of(getHandle());
+    }
+
     @Nonnull
     @Override
     public Iterator<T> iterator() {
@@ -104,6 +115,35 @@ public class SimpleJEEDependencyResolver extends DependencyResolver {
 
     private Set<T> resolve() {
       return ManagedBeanProvider.getInstance().getAllManagedBeans(beansType);
+    }
+  }
+
+  private static class HandleImpl<T> implements Instance.Handle<T> {
+
+    private final T bean;
+
+    public HandleImpl(T bean) {
+      this.bean = bean;
+    }
+
+    @Override
+    public T get() {
+      return bean;
+    }
+
+    @Override
+    public Bean<T> getBean() {
+      return null;
+    }
+
+    @Override
+    public void destroy() {
+      // nothing to do for tests
+    }
+
+    @Override
+    public void close() {
+      // nothing to do for tests
     }
   }
 }

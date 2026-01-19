@@ -27,7 +27,7 @@ import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialRelationShipProvider;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +35,7 @@ import java.util.List;
  * @author Bensalem Nabil
  */
 @Provider
-public class SocialRelationShips implements SocialRelationShipProvider {
+public class SocialRelationShips implements SocialRelationShipProvider<SocialInformation> {
 
   @Inject
   private RelationShipService relationShipService;

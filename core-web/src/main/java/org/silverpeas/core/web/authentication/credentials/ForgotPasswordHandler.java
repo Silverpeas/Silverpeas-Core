@@ -32,7 +32,7 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ForgotPasswordHandler extends CredentialsFunctionFromLoginHandler {

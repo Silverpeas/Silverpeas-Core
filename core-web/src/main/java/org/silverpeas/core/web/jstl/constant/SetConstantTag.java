@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.jstl.constant;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 import org.silverpeas.core.web.jstl.constant.reflect.ClassConstantInspector;
 import org.silverpeas.core.web.jstl.util.AbstractSetVarTagSupport;

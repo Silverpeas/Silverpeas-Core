@@ -25,8 +25,8 @@ package org.silverpeas.core.annotation.constraint;
 
 import org.silverpeas.core.date.TemporalConverter;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -64,7 +64,7 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
       Temporal endDate = (Temporal) endDateField.get(object);
       isValid = startDate.getClass().equals(endDate.getClass());
       if (isValid) {
-        if (startDate instanceof LocalDate && endDate instanceof LocalDate) {
+        if (startDate instanceof LocalDate) {
           LocalDate startLocalDate = TemporalConverter.asLocalDate(startDate);
           LocalDate endLocalDate = TemporalConverter.asLocalDate(endDate);
           isValid = startLocalDate.isBefore(endLocalDate) || startLocalDate.isEqual(endLocalDate);

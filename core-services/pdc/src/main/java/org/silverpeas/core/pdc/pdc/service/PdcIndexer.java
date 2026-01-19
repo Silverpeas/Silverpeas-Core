@@ -23,12 +23,16 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import org.silverpeas.kernel.annotation.Technical;
 
+@Technical
+@Bean
 @Singleton
 public class PdcIndexer {
 

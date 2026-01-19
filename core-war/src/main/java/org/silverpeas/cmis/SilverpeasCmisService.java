@@ -45,7 +45,7 @@ import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.DocumentFile;
 import org.silverpeas.core.cmis.model.Space;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.EnumMap;

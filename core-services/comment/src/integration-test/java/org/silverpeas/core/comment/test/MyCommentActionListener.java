@@ -27,7 +27,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.comment.service.notification.CommentEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * The listener of actions on comments to use within the unit tests.

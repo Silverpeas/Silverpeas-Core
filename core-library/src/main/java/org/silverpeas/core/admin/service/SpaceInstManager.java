@@ -23,30 +23,25 @@
  */
 package org.silverpeas.core.admin.service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceI18NRow;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.service.cache.TreeCache;
-import org.silverpeas.core.admin.space.SpaceI18N;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.space.SpaceProfileInstManager;
+import org.silverpeas.core.admin.space.*;
 import org.silverpeas.core.admin.space.dao.SpaceDAO;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,7 +53,6 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Service
-@Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class SpaceInstManager {
 
@@ -75,6 +69,8 @@ public class SpaceInstManager {
   private TreeCache treeCache;
   @Inject
   private SpaceDAO spaceDAO;
+  @Inject
+  private I18n i18n;
 
   protected SpaceInstManager() {
   }
@@ -411,7 +407,7 @@ public class SpaceInstManager {
       SpaceI18N translation = new SpaceI18N(row.lang, row.name, row.description);
       space.addTranslation(translation);
 
-      if (I18NHelper.isI18nContentActivated) {
+      if (i18n.isEnabled()) {
         List<SpaceI18NRow> translations = organizationSchema.spaceI18N().getTranslations(row.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           SpaceI18NRow i18nRow = translations.get(t);
@@ -552,7 +548,7 @@ public class SpaceInstManager {
     if (changedSpace.lang != null) {
       if (oldSpace.lang == null) {
         // translation for the first time
-        oldSpace.lang = I18NHelper.DEFAULT_LANGUAGE;
+        oldSpace.lang = i18n.getDefaultLanguage();
       }
       if (!oldSpace.lang.equalsIgnoreCase(changedSpace.lang)) {
         SpaceI18NRow row = new SpaceI18NRow(changedSpace);

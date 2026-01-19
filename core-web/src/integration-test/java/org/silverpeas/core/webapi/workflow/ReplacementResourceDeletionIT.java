@@ -36,13 +36,14 @@ import org.silverpeas.core.webapi.util.UserEntity;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.web.test.ResourceDeletionTest;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration tests on the web service handling the replacements of users in a workflow.
+ *
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
@@ -79,39 +80,43 @@ public class ReplacementResourceDeletionIT extends ResourceDeletionTest {
   public void prepareTests() {
     user = User.getById("3");
     authToken = getTokenKeyOf(user);
-    Replacement replacement = Replacement.get(REPLACEMENT_ID)
+    Replacement<?> replacement = Replacement.get(REPLACEMENT_ID)
         .orElseThrow(() -> new AssertionError("No Replacement with id " + REPLACEMENT_ID));
     resource = new ReplacementEntity(replacement);
   }
 
   @Test
   public void theIncumbentDeletesOneOfHisReplacement() {
-    Response response = deleteAt(aResourceURI(), Response.class);
-    assertThat(response.getStatus(), is(STATUS_OK));
+    try (Response response = deleteAt(aResourceURI(), Response.class)) {
+      assertThat(response.getStatus(), is(STATUS_OK));
+    }
   }
 
   @Test
   public void theSubstituteDeletesOneOfTheReplacement() {
     user = User.getById("2");
     authToken = getTokenKeyOf(user);
-    Response response = deleteAt(aResourceURI(), Response.class);
-    assertThat(response.getStatus(), is(STATUS_OK));
+    try (Response response = deleteAt(aResourceURI(), Response.class)) {
+      assertThat(response.getStatus(), is(STATUS_OK));
+    }
   }
 
   @Test
   public void theSupervisorDeletesAReplacement() {
     user = User.getById(SUPERVISOR_ID);
     authToken = getTokenKeyOf(user);
-    Response response = deleteAt(aResourceURI(), Response.class);
-    assertThat(response.getStatus(), is(STATUS_OK));
+    try (Response response = deleteAt(aResourceURI(), Response.class)) {
+      assertThat(response.getStatus(), is(STATUS_OK));
+    }
   }
 
   @Test
   public void aNonConcernedUserDeletesAReplacement() {
     user = User.getById("1");
     authToken = getTokenKeyOf(user);
-    Response response = deleteAt(aResourceURI(), Response.class);
-    assertThat(response.getStatus(), is(STATUS_FORBIDDEN));
+    try (Response response = deleteAt(aResourceURI(), Response.class)) {
+      assertThat(response.getStatus(), is(STATUS_FORBIDDEN));
+    }
   }
 
   @Override
@@ -131,12 +136,12 @@ public class ReplacementResourceDeletionIT extends ResourceDeletionTest {
 
   @Override
   public String aResourceURI() {
-    return replacementUri(getExistingComponentInstances()[1], REPLACEMENT_ID);
+    return replacementUri(getExistingComponentInstances()[1]);
   }
 
   @Override
   public String anUnexistingResourceURI() {
-    return replacementUri(getExistingComponentInstances()[0], REPLACEMENT_ID);
+    return replacementUri(getExistingComponentInstances()[0]);
   }
 
   @Override
@@ -154,8 +159,9 @@ public class ReplacementResourceDeletionIT extends ResourceDeletionTest {
     return ReplacementEntity.class;
   }
 
-  private String replacementUri(final String workflowId, final String replacementId) {
-    return "workflow/" + workflowId + "/replacements/" + replacementId;
+  private String replacementUri(final String workflowId) {
+    return "workflow/" + workflowId + "/replacements/" +
+        ReplacementResourceDeletionIT.REPLACEMENT_ID;
   }
 }
   

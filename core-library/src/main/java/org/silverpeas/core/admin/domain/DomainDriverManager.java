@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.admin.domain;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.persistence.DomainRow;
 import org.silverpeas.core.admin.persistence.KeyStoreRow;
@@ -43,27 +45,19 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.kernel.util.Mutable;
-import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.logging.Level;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -80,7 +74,6 @@ import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
  * operation is performed.
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class DomainDriverManager extends AbstractDomainDriver {
 
@@ -93,7 +86,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   private GroupDAO groupDAO;
   @Inject
   private OrganizationSchema organizationSchema;
-  private final Map<String, DomainDriver> domainDriverInstances = new ConcurrentHashMap<>();
+  private final Map<String, DomainDriver> domainDriverInstances =
+      Collections.synchronizedMap(new WeakHashMap<>());
 
   protected DomainDriverManager() {
   }
@@ -119,7 +113,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail importUser(String userLogin) throws AdminException {
+  public UserDetail importUser(String userLogin) {
     return null;
   }
 
@@ -129,7 +123,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail synchroUser(String userId) throws AdminException {
+  public UserDetail synchroUser(String userId) {
     return null;
   }
 
@@ -176,7 +170,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public List<UserDetail> listUsers(final Collection<String> specificIds) throws AdminException {
+  public List<UserDetail> listUsers(final Collection<String> specificIds) {
     return emptyList();
   }
 
@@ -363,12 +357,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
+  public UserDetail[] getUsersByQuery(Map<String, String> query) {
     return new UserDetail[0];
   }
 
   @Override
-  public GroupDetail importGroup(String groupName) throws AdminException {
+  public GroupDetail importGroup(String groupName) {
     return null;
   }
 
@@ -378,7 +372,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public GroupDetail synchroGroup(String groupId) throws AdminException {
+  public GroupDetail synchroGroup(String groupId) {
     return null;
   }
 
@@ -538,7 +532,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public GroupDetail getGroupByName(String groupName) throws AdminException {
+  public GroupDetail getGroupByName(String groupName) {
     return null;
   }
 
@@ -815,35 +809,32 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public DomainDriver getDomainDriver(String domainId) throws AdminException {
     DomainDriver domainDriver;
     try {
-      domainDriver = domainDriverInstances.get(domainId);
-      if (domainDriver == null) {
-        // Get the domain information
-        DomainRow dr = getOrganizationSchema().domain().getDomain(idAsInt(domainId));
-        if (dr == null) {
-          throw new AdminException(unknown("driver for domain", domainId));
+      Function<String, DomainDriver> findDomainDriver = (String id) -> {
+        try {
+          DomainRow dr = getOrganizationSchema().domain().getDomain(idAsInt(id));
+          return dr == null ? null : getDomainDriver(id, dr);
+        } catch (SQLException e) {
+          throw new SilverpeasRuntimeException(failureOnGetting("driver of domain", domainId), e);
         }
-
-        // Get the driver class name
-        domainDriver = getDomainDriver(domainId, dr);
-
-        // Save DomainDriver instance
-        domainDriverInstances.put(domainId, domainDriver);
+      };
+      domainDriver = domainDriverInstances.computeIfAbsent(domainId, findDomainDriver);
+      if (domainDriver == null) {
+        throw new AdminException(unknown("driver for domain", domainId));
       }
-    } catch (SQLException e) {
-      throw new AdminException(failureOnGetting("driver of domain", domainId), e);
+    } catch (SilverpeasRuntimeException e) {
+      throw new AdminException(e.getMessage(), e);
     }
     return domainDriver;
   }
 
-  private DomainDriver getDomainDriver(final String domainId, final DomainRow dr) throws
-      AdminException {
+  private DomainDriver getDomainDriver(final String domainId, final DomainRow dr) {
     final DomainDriver domainDriver;
     try {
       domainDriver = DomainDriverProvider.getDriver(dr.className);
       domainDriver.init(idAsInt(domainId), dr.propFileName, dr.authenticationServer);
     } catch (ClassNotFoundException | IllegalAccessException | InstantiationException |
-        NoSuchMethodException | InvocationTargetException e) {
-      throw new AdminException(failureOnGetting("driver of domain", domainId), e);
+        NoSuchMethodException | InvocationTargetException | AdminException e) {
+      throw new SilverpeasRuntimeException(failureOnGetting("driver for domain", domainId), e);
     }
     return domainDriver;
   }

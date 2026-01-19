@@ -102,8 +102,8 @@ public class Filtering {
   }
 
   /**
-   * Gets the different properties to include with the object(s) to return. By default all the
-   * object(s)' properties are included.
+   * Gets the different properties to include with the object(s) to return. By default, all the
+   * object(s) properties are included.
    * @return a set of object's property identifiers that have to be set in the object(s) to return.
    * An empty list if all the object's properties have to be included with the object(s).
    */
@@ -112,7 +112,7 @@ public class Filtering {
   }
 
   /**
-   * Are the actions allowable to the object(s) to be included? No by default.
+   * Are the actions allowable to the object(s) to be included? No, by default.
    * @return true if the allowable actions have to be included with the object(s) to return. False
    * otherwise.
    */
@@ -122,7 +122,7 @@ public class Filtering {
 
   /**
    * Indicates whether the allowable actions have to be included with the object(s) to return.
-   * @param includeAllowableActions a boolean indicating whether the allowable actions has to be
+   * @param includeAllowableActions a boolean indicating whether the allowable actions have to be
    * included or not.
    * @return itself.
    */
@@ -137,16 +137,16 @@ public class Filtering {
    * is represented by:
    * </p>
    * <ul>
-   *  <li>’/’ for the root folder.</li>
+   *  <li>'/' for the root folder.</li>
    *  <li>All paths start with the root folder.</li>
-   *  <li>A set of the folder and object path segments separated by ’/’ in order of closest to the
+   *  <li>A set of the folder and object path segments separated by '/' in order of closest to the
    *    root.</li>
-   *  <li>Folder and object path segments are speciﬁed by pathSegment tokens which can be
+   *  <li>Folder and object path segments are specified by pathSegment tokens which can be
    *    retrieved by all services that take an includePathSegments parameter (for example
    *    getChildren).</li>
-   *  <li>A pathSegment token MUST not include a ’/’ character.
-   *    It is repository speciﬁc how a repository chooses the value for pathSegment.
-   *    Repositories might choose to use cmis:name or content stream ﬁlename for pathSegment
+   *  <li>A pathSegment token MUST not include a '/' character.
+   *    It is repository specific how a repository chooses the value for pathSegment.
+   *    Repositories might choose to use cmis:name or content stream filename for pathSegment
    *    token.</li>
    *  <li>The pathSegment token for each item MUST uniquely identify the item in the folder.</li>
    * </ul>
@@ -157,11 +157,11 @@ public class Filtering {
    * A path for an object may be calculated in the following way:
    * </p>
    * <ul>
-   *  <li>If the object is the root folder, the path is ’/’.</li>
+   *  <li>If the object is the root folder, the path is '/'.</li>
    *  <li>If the object is a direct child of the root folder, the path is the object’s pathSegment
-   *    preﬁxed by ’/’.</li>
+   *    prefixed by '/'.</li>
    *  <li>If the object is not a direct child of the root folder, the path is item’s parent folder
-   *    cmis:path property appended by ’/’ and the object’s pathSegment.</li>
+   *    cmis:path property appended by '/' and the object’s pathSegment.</li>
    * </ul>
    * @return true if the object's path segments have to be included with its description, false
    * otherwise.
@@ -176,16 +176,16 @@ public class Filtering {
    * is represented by:
    * </p>
    * <ul>
-   *  <li>’/’ for the root folder.</li>
+   *  <li>'/' for the root folder.</li>
    *  <li>All paths start with the root folder.</li>
-   *  <li>A set of the folder and object path segments separated by ’/’ in order of closest to the
+   *  <li>A set of the folder and object path segments separated by '/' in order of closest to the
    *    root.</li>
-   *  <li>Folder and object path segments are speciﬁed by pathSegment tokens which can be
+   *  <li>Folder and object path segments are specified by pathSegment tokens which can be
    *    retrieved by all services that take an includePathSegments parameter (for example
    *    getChildren).</li>
-   *  <li>A pathSegment token MUST not include a ’/’ character.
-   *    It is repository speciﬁc how a repository chooses the value for pathSegment.
-   *    Repositories might choose to use cmis:name or content stream ﬁlename for pathSegment
+   *  <li>A pathSegment token MUST not include a '/' character.
+   *    It is repository specific how a repository chooses the value for pathSegment.
+   *    Repositories might choose to use cmis:name or content stream filename for pathSegment
    *    token.</li>
    *  <li>The pathSegment token for each item MUST uniquely identify the item in the folder.</li>
    * </ul>
@@ -196,11 +196,11 @@ public class Filtering {
    * A path for an object may be calculated in the following way:
    * </p>
    * <ul>
-   *  <li>If the object is the root folder, the path is ’/’.</li>
+   *  <li>If the object is the root folder, the path is '/'.</li>
    *  <li>If the object is a direct child of the root folder, the path is the object’s pathSegment
-   *    preﬁxed by ’/’.</li>
+   *    prefixed by '/'.</li>
    *  <li>If the object is not a direct child of the root folder, the path is item’s parent folder
-   *    cmis:path property appended by ’/’ and the object’s pathSegment.</li>
+   *    cmis:path property appended by '/' and the object’s pathSegment.</li>
    * </ul>
    * @param includePathSegment a boolean indicating if the path segment of objects have to be
     * included with the data that describe them.
@@ -214,7 +214,8 @@ public class Filtering {
   /**
    * Gets how the relationships of an object have to be included.
    * @return an {@link IncludeRelationships} value indicating how the relationships of an object
-   * have to be included within its own data describing it. By default no relationships are included
+   * have to be included within its own data describing it. By default, no relationships are
+   * included
    * ({@link IncludeRelationships#NONE}
    */
   public IncludeRelationships getIncludeRelationships() {
@@ -243,7 +244,7 @@ public class Filtering {
   }
 
   /**
-   * Sets the types of the CMIS objects to include. By default all the file-able object types.
+   * Sets the types of the CMIS objects to include. By default, all the file-able object types.
    * This filtering rule is only taken into account with subtree navigation operations.
    * @param includeCmisObjectTypes an {@link IncludeCmisObjectTypes} value indicating what types
    * of file-able CMIS objects have to be taken into account.
@@ -255,7 +256,7 @@ public class Filtering {
   }
 
   /**
-   * Is the ACL about the object(s) to be included? No by default.
+   * Is the ACL about the object(s) to be included? No, by default.
    * @return true if the ACL has to be included with the object(s) to return. False
    * otherwise.
    */
@@ -276,7 +277,7 @@ public class Filtering {
 
   public enum IncludeCmisObjectTypes {
     ALL,
-    ONLY_FOLDERS;
+    ONLY_FOLDERS
   }
 }
   

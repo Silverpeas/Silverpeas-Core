@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin;
 
+import jakarta.inject.Inject;
 import org.apache.commons.lang3.time.DateUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,10 +32,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -42,26 +41,21 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
-import org.silverpeas.core.index.search.model.IndexSearcher;
-import org.silverpeas.core.index.search.model.ParseException;
-import org.silverpeas.core.index.search.model.SearchEngineException;
-import org.silverpeas.core.persistence.jdbc.AbstractTable;
-import org.silverpeas.core.security.token.exception.TokenException;
-import org.silverpeas.core.security.token.exception.TokenRuntimeException;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.calendar.notification.CalendarUserEventListener;
+import org.silverpeas.core.calendar.subscription.SubscriptionCalendarEventListener;
+import org.silverpeas.core.contribution.publication.subscription.SubscriptionPublicationEventListener;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateUserEventListener;
+import org.silverpeas.core.notification.user.client.NotificationUserEventListener;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.memory.MemoryData;
-import org.silverpeas.core.util.memory.MemoryUnit;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -84,27 +78,16 @@ public class UsersAndGroupsIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(UsersAndGroupsIT.class)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addSynchAndAsynchResourceEventFeatures()
-        .addIndexEngineFeatures()
-        .addSilverpeasUrlFeatures()
-        .addProcessFeatures()
-        .addPublicationTemplateFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(UsersAndGroupsIT.class)
+        // remove all code about user subscriptions and user event listening
+        .deletePackages(true, "org.silverpeas.core.subscription")
+        .deleteClasses(SubscriptionCalendarEventListener.class,
+            SubscriptionPublicationEventListener.class,
+            CalendarUserEventListener.class, PublicationTemplateUserEventListener.class,
+            NotificationUserEventListener.class)
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
         .addAsResource("org/silverpeas/core/admin/domain/driver")
         .addAsResource("org/silverpeas/index/search")
-        .addPackages(true, "org.silverpeas.core.index.search.model")
-        .addPackages(false, "org.silverpeas.core.admin.space.quota")
-        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
-        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
-        .addPackages(true, "org.silverpeas.core.notification.user")
-        .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
-            MemoryData.class, SpaceServiceProvider.class,
-            ParseException.class,
-            SearchEngineException.class, IndexSearcher.class, TokenException.class,
-            SearchEnginePropertiesManager.class, TokenRuntimeException.class, AbstractTable.class)
         .build();
   }
 
@@ -184,6 +167,8 @@ public class UsersAndGroupsIT {
     assertThat(user.isExpiredState(), is(false));
     assertThat(user.getStateSaveDate(), lessThan(now));
 
+    awaitUntil(1, MILLISECONDS); // to ensure the save date is greater than now with an accuracy
+    // of one second
     String newEmail = "ney@silverpeas.com";
     user.setEmailAddress(newEmail);
     user.setAccessLevel(UserAccessLevel.USER);
@@ -436,7 +421,8 @@ public class UsersAndGroupsIT {
       assertThat(returnRemoved.getState(), is(GroupState.REMOVED));
       assertThat(actual.getState(), is(GroupState.REMOVED));
       assertThat(returnRemoved.getStateSaveDate(), greaterThan(previous.getStateSaveDate()));
-      assertThat(actual.getStateSaveDate().getTime(), is(returnRemoved.getStateSaveDate().getTime()));
+      assertThat(actual.getStateSaveDate().getTime(),
+          is(returnRemoved.getStateSaveDate().getTime()));
       assertThat(returnRemoved.getSaveDate(), is(returnRemoved.getStateSaveDate()));
       assertThat(actual.getSaveDate().getTime(), is(returnRemoved.getSaveDate().getTime()));
     }
@@ -479,7 +465,8 @@ public class UsersAndGroupsIT {
       assertThat(returnRemoved.getState(), is(GroupState.VALID));
       assertThat(actual.getState(), is(GroupState.VALID));
       assertThat(returnRemoved.getStateSaveDate(), greaterThan(previous.getStateSaveDate()));
-      assertThat(actual.getStateSaveDate().getTime(), is(returnRemoved.getStateSaveDate().getTime()));
+      assertThat(actual.getStateSaveDate().getTime(),
+          is(returnRemoved.getStateSaveDate().getTime()));
       assertThat(returnRemoved.getSaveDate(), is(returnRemoved.getStateSaveDate()));
       assertThat(actual.getSaveDate().getTime(), is(returnRemoved.getSaveDate().getTime()));
     }
@@ -733,10 +720,9 @@ public class UsersAndGroupsIT {
   }
 
   /**
-   * Creating this structure from existing group1:
-   * - Group 1
-   * --- Sub Group Of 1
-   * ------ Sub Group Of Sub Group Of 1
+   * Creating this structure from existing group1: - Group 1 --- Sub Group Of 1 ------ Sub Group Of
+   * Sub Group Of 1
+   *
    * @throws AdminException if an error occurs
    */
   private List<GroupDetail> createSubGroupsAndGetSortedPath() throws AdminException {

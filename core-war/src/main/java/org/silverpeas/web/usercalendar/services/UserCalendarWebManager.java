@@ -24,14 +24,15 @@
 
 package org.silverpeas.web.usercalendar.services;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.kernel.util.Pair;
+
 import java.time.LocalDate;
 import java.util.List;
 

@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.process.management;
 
+import jakarta.annotation.Nonnull;
+import jakarta.transaction.Transactional;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.SilverpeasProcess;
 import org.silverpeas.core.process.check.ProcessCheck;
 import org.silverpeas.core.process.session.ProcessSession;
@@ -30,9 +33,6 @@ import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +41,7 @@ import java.util.Objects;
  * Default implementation of the <code>ProcessManagement</code> interface.
  * @author Yohann Chastagnier
  */
-@Singleton
+@Service
 public class DefaultProcessManagement implements ProcessManagement {
 
   private final ThreadLocal<LinkedList<InternalContext<?>>> parentFileTransactions =

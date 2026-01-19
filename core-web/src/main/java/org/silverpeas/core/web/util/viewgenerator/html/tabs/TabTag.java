@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.tabs;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 public class TabTag extends TagSupport {
 
@@ -45,7 +45,7 @@ public class TabTag extends TagSupport {
   }
 
   public void setSelected(String selected) {
-    this.selected = Boolean.valueOf(selected);
+    this.selected = Boolean.parseBoolean(selected);
   }
 
   public void setName(String name) { this.name = name; }

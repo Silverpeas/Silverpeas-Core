@@ -49,7 +49,7 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -68,7 +68,7 @@ import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.BufferedInputStream;
@@ -108,6 +108,8 @@ public class SimpleDocumentService
   private DocumentRepository repository;
   @Inject
   private AttachmentEventNotifier notificationService;
+  @Inject
+  private I18n i18n;
 
   private final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
@@ -147,7 +149,7 @@ public class SimpleDocumentService
 
   @Override
   public void deleteIndex(SimpleDocument document) {
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       deleteIndex(document, lang);
     }
   }
@@ -155,7 +157,7 @@ public class SimpleDocumentService
   @Override
   public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
     if (settings.getBoolean("attachment.index.separately", true)) {
-      String language = I18NHelper.checkLanguage(document.getLanguage());
+      String language = i18n.checkLanguage(document.getLanguage());
       String objectType = ATTACHMENT_TYPE + "_" + language;
       FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(document.getInstanceId(),
           objectType, document.getId(), document.getForeignId()));
@@ -197,7 +199,7 @@ public class SimpleDocumentService
   private void deleteIndex(SimpleDocument document, String lang) {
     String language = lang;
     if (language == null) {
-      language = I18NHelper.DEFAULT_LANGUAGE;
+      language = i18n.getDefaultLanguage();
     }
     String objectType = ATTACHMENT_TYPE + '_' + language;
     IndexEntryKey indexEntry = new IndexEntryKey(document.getInstanceId(), objectType,
@@ -208,10 +210,11 @@ public class SimpleDocumentService
   @Override
   public void unindexAttachmentsOfExternalObject(ResourceReference externalResource) {
     try (JCRSession session = JCRSession.openSystemSession()) {
+      String defaultLanguage = i18n.getDefaultLanguage();
       List<SimpleDocument> docs = repository.listDocumentsByForeignId(session, externalResource.
-          getInstanceId(), externalResource.getId(), I18NHelper.DEFAULT_LANGUAGE);
+          getInstanceId(), externalResource.getId(), defaultLanguage);
       for (SimpleDocument doc : docs) {
-        deleteIndex(doc, I18NHelper.DEFAULT_LANGUAGE);
+        deleteIndex(doc, defaultLanguage);
       }
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
@@ -307,7 +310,7 @@ public class SimpleDocumentService
       throws RepositoryException {
     repository.fillNodeName(session, document);
     repository.deleteDocument(session, document.getPk());
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       deleteIndex(document, lang);
     }
     if (document.isOpenOfficeCompatible()) {
@@ -708,7 +711,7 @@ public class SimpleDocumentService
   public boolean unlock(UnlockContext context) {
     try (JCRSession session = JCRSession.openSystemSession()) {
       boolean restorePreviousVersion = context.isForce();
-      String contentLanguage = I18NHelper.checkLanguage(context.getLang());
+      String contentLanguage = i18n.checkLanguage(context.getLang());
       SimpleDocument document = repository
           .findDocumentById(session, new SimpleDocumentPK(context.getAttachmentId()),
               contentLanguage);
@@ -850,7 +853,7 @@ public class SimpleDocumentService
       final String language = d.getAttachment().getLanguage();
       if (language.equals(lang)) {
         return "0";
-      } else if (I18NHelper.DEFAULT_LANGUAGE.equals(language)) {
+      } else if (i18n.isDefaultLanguage(language)) {
         return "1";
       }
       return language;
@@ -1026,7 +1029,7 @@ public class SimpleDocumentService
       // starts from the original files
       List<SimpleDocument> attachments = repository
           .listDocumentsByComponentIdAndType(session, componentId, DocumentType.attachment,
-              I18NHelper.DEFAULT_LANGUAGE);
+              i18n.getDefaultLanguage());
       for (SimpleDocument attachment : attachments) {
         if (attachment.isVersioned() != versioned) {
           repository.changeVersionState(session, attachment.getPk(), "");

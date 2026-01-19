@@ -32,17 +32,19 @@ import java.util.List;
 /**
  * Provider of calendar events shared with other users.
  */
-public interface SocialEventProvider extends SocialInformationProvider {
+public interface SocialEventProvider<T extends SocialInformation> extends SocialInformationProvider<T> {
 
-  static SocialEventProvider get() {
+  static SocialEventProvider<?> get() {
     return ServiceProvider.getService(SocialEventProvider.class);
   }
 
-  List<SocialInformation> getSocialInformationsList(String userId, String classification,
+  List<T> getSocialInformationsList(String userId,
+      String classification,
       Date begin, Date end);
 
-  List<SocialInformation> getLastSocialInformationsListOfMyContacts(String myId,
+  List<T> getLastSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end);
 
-  List<SocialInformation> getMyLastSocialInformationsList(String myId, Date begin, Date end);
+  List<T> getMyLastSocialInformationsList(String myId, Date begin,
+      Date end);
 }

@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.wbe;
 
+import jakarta.enterprise.inject.Instance;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
@@ -37,13 +38,10 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SilverpeasUserSession;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.Pair;
-import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -60,17 +58,19 @@ import static org.silverpeas.core.wbe.WbeLogger.logger;
 public class DefaultWbeHostManager implements WbeHostManager {
 
   private final WbeCache cache = new WbeCache();
-  private final List<WbeClientManager> clients = new ArrayList<>();
+  //private final List<WbeClientManager> clients = new ArrayList<>();
+  @Inject
+  private Instance<WbeClientManager> clients;
 
   private boolean enabled = true;
 
   protected DefaultWbeHostManager() {
   }
 
-  @PostConstruct
+  /*@PostConstruct
   protected void init() {
     clients.addAll(ServiceProvider.getAllServices(WbeClientManager.class));
-  }
+  }*/
 
   @Override
   public List<Pair<String, String>> getClientAdministrationAccesses(final String language) {

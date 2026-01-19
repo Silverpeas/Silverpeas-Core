@@ -24,15 +24,14 @@
 
 package org.silverpeas.cmis.walkers;
 
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.model.TypeId;
 
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -45,7 +44,7 @@ import java.util.Optional;
  * <p>
  * The CMIS objects tree is made up of branches whose nodes can be of several types. Each type
  * provides to the node some properties like, for example, the types of nodes it can have as
- * children. So, because walking the subtree rooted to a given node depends of the type of that
+ * children. So, because walking the subtree rooted to a given node depends on the type of that
  * node, it is required for each type of node to have a specific {@link
  * AbstractCmisObjectsTreeWalker} object. The selector responsibility is to find this walker and
  * then to delegate the method call to it.
@@ -54,7 +53,6 @@ import java.util.Optional;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class TreeWalkerSelector {
 
   @Inject

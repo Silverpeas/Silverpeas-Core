@@ -24,18 +24,13 @@
 
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 /**
  * @author Yohann Chastagnier

@@ -23,20 +23,14 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
+import jakarta.annotation.Resource;
+import jakarta.jms.Queue;
+import jakarta.jms.TextMessage;
 import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Resource;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.TextMessage;
-import javax.naming.NamingException;
-
-/**
- * @author
- */
 public final class SilverStatisticsSender {
 
   @Resource(lookup = "java:/jms/queue/statisticsQueue")
@@ -49,13 +43,7 @@ public final class SilverStatisticsSender {
   private SilverStatisticsSender() {
   }
 
-  /**
-   * @param typeOfStats the type of statistic to send
-   * @param message the message to send
-   * @throws JMSException
-   * @throws NamingException
-   */
-  public void send(StatType typeOfStats, String message) throws JMSException, NamingException {
+  public void send(StatType typeOfStats, String message) {
     JMSOperation.realize(context -> {
       TextMessage textMsg = context.createTextMessage();
       textMsg.setText(typeOfStats.toString() + SilverStatisticsConstants.SEPARATOR + message);

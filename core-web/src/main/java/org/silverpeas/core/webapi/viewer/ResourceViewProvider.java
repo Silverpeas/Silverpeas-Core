@@ -27,8 +27,8 @@ package org.silverpeas.core.webapi.viewer;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.webapi.media.EmbedMediaViewerResource;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;

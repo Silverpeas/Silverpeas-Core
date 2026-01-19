@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.chat.listeners;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -41,8 +42,6 @@ import org.silverpeas.core.chat.servers.DummyChatServer;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.WarBuilder4Chat;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
-
-import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -93,11 +92,7 @@ public class ChatGroupUserLinkEventListenerIT {
   @After
   public void cleanUpCache() {
     cache.clearCache();
-  }
-
-  @Test
-  public void emptyTest() {
-    assertThat(true, is(true));
+    server.clear();
   }
 
   @Test
@@ -110,7 +105,7 @@ public class ChatGroupUserLinkEventListenerIT {
     });
 
     final User user = User.getById(userId);
-    assertThat(server.wasExecuted("createUser", user), is(false));
+    assertThat(server.wasExecuted(DummyChatServer.CREATE_USER, user), is(false));
   }
 
   @Test
@@ -123,7 +118,7 @@ public class ChatGroupUserLinkEventListenerIT {
     });
 
     final User user = User.getById(userId);
-    assertThat(server.wasExecuted("createUser", user), is(true));
+    assertThat(server.wasExecuted(DummyChatServer.CREATE_USER, user), is(true));
   }
 
   private void doInTransaction(final MyFunction function) {

@@ -100,9 +100,9 @@ public interface ResourceEventListener<T extends ResourceEvent<?>> {
   }
 
   /**
-   * An event on the unlock of a resource has be listened. By default, this method does nothing.
+   * An event on the unlocking of a resource has be listened. By default, this method does nothing.
    *
-   * @param event the event on the unlock of a resource.
+   * @param event the event on the unlocking of a resource.
    */
   default void onUnlock(final T event) {
   }

@@ -25,7 +25,7 @@ package org.silverpeas.core.web.jstl.constant;
 
 import java.util.Map;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 import org.silverpeas.core.web.jstl.util.AbstractSetVarTagSupport;
 import org.silverpeas.core.web.jstl.constant.reflect.ClassConstantsMap;

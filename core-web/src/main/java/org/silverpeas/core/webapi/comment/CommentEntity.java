@@ -23,22 +23,21 @@
  */
 package org.silverpeas.core.webapi.comment;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.Date;
@@ -56,6 +55,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 public class CommentEntity implements WebEntity {
 
   private static final long serialVersionUID = 8023645204584179638L;
+  private final transient String language;
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -89,15 +89,16 @@ public class CommentEntity implements WebEntity {
   /**
    * Creates a new comment entity from the specified comment.
    * @param comment the comment to convert into a web entity.
+   * @param language the ISO 639-1 code of the language in which is written the comment.
    * @return the entity representing the specified comment.
    */
-  public static CommentEntity fromComment(final Comment comment) {
-    return new CommentEntity(comment);
+  public static CommentEntity fromComment(final Comment comment, final String language) {
+    return new CommentEntity(comment, language);
   }
 
   /**
    * Gets the comment business objet this entity represent.
-   * @return a comment instance.
+   * @return comment instance.
    */
   public Comment toComment() {
     CommentId commentId = new CommentId(getComponentId(), getId());
@@ -145,7 +146,7 @@ public class CommentEntity implements WebEntity {
   /**
    * Gets the identifier of the Silverpeas component instance to which the commented content
    * belongs.
-   * @return the silverpeas component instance identifier.
+   * @return the Silverpeas component instance identifier.
    */
   public String getComponentId() {
     return componentId;
@@ -201,11 +202,11 @@ public class CommentEntity implements WebEntity {
 
     //change values of creationDate and modificationDate according to language of the current user
     java.util.Date createDate =
-        decodeFromDisplayDate(getCreationDate(), I18NHelper.DEFAULT_LANGUAGE);
+        decodeFromDisplayDate(getCreationDate(), language);
     this.creationDate = encodeToDisplayDate(createDate, this.currentUserLanguage);
 
     java.util.Date updateDate =
-        decodeFromDisplayDate(getModificationDate(), I18NHelper.DEFAULT_LANGUAGE);
+        decodeFromDisplayDate(getModificationDate(), language);
     this.modificationDate = encodeToDisplayDate(updateDate, this.currentUserLanguage);
     return this;
   }
@@ -234,7 +235,8 @@ public class CommentEntity implements WebEntity {
     return indexed;
   }
 
-  protected CommentEntity(final Comment comment) {
+  protected CommentEntity(final Comment comment, final String language) {
+    this.language = language;
     this.componentId = comment.getIdentifier().getComponentInstanceId();
     this.id = comment.getIdentifier().getLocalId();
     this.resourceType = comment.getResourceType();
@@ -243,9 +245,9 @@ public class CommentEntity implements WebEntity {
     this.author = UserProfileEntity.fromUser(comment.getCreator());
     //we don't even know the language of the current user (the currentUserLanguage attribute has
     // not been yet initialized
-    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.DEFAULT_LANGUAGE);
+    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), language);
     this.modificationDate =
-        encodeToDisplayDate(comment.getLastUpdateDate(), I18NHelper.DEFAULT_LANGUAGE);
+        encodeToDisplayDate(comment.getLastUpdateDate(), language);
     this.indexed = comment.isIndexable();
   }
 
@@ -277,6 +279,7 @@ public class CommentEntity implements WebEntity {
   @SuppressWarnings("unused")
   protected CommentEntity() {
     // for JSON/XML serializer
+    language = "";
   }
 
   /**

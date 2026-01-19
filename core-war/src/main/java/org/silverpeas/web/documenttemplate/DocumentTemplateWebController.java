@@ -38,12 +38,12 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentControlle
 import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.silverpeas.core.io.upload.FileUploadManager.getUploadedFiles;
 import static org.silverpeas.core.util.file.FileUtil.isOpenOfficeCompatible;

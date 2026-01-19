@@ -34,7 +34,7 @@ import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.security.token.persistent.service.PersistentResourceTokenService;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 /**

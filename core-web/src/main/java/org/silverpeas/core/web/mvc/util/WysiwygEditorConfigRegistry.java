@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.web.mvc.util;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.util.WysiwygEditorConfig;
 
-import javax.inject.Singleton;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,10 +36,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * gather them in a single place in order to retrieve them later in any layer.
  * @author mmoquillon
  */
-@Singleton
+@Provider
 public class WysiwygEditorConfigRegistry {
 
-  private Map<String, WysiwygEditorConfig> configsPerComponents = new ConcurrentHashMap<>();
+  private final Map<String, WysiwygEditorConfig> configsPerComponents = new ConcurrentHashMap<>();
 
   protected WysiwygEditorConfigRegistry() {
     // default constructor

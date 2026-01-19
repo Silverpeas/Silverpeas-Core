@@ -33,15 +33,15 @@ import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -50,7 +50,7 @@ import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC).
- *
+ * <p>
  * The PdC is defined by a set of semantic axis that vehicle the business concepts and the
  * structures on which is based a given organization that uses the Silverpeas collaborative portal.
  * The values of an axis is thus made either of single terms (of the inherent concept or structure)
@@ -60,8 +60,9 @@ import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
  * for a given Silverpeas component instance. The instances of the model can be just a clone of the
  * model or a modified version by taking only some of the model's axis and by setting a different
  * origin value (among the possible values of the axis) for each chosen axis. Such PdCs are
- * identified by an unique URI in which the identifier of the Silverpeas component instance is
+ * identified by a unique URI in which the identifier of the Silverpeas component instance is
  * referenced.
+ * </p>
  */
 @WebService
 @Path(PdcResource.PATH)

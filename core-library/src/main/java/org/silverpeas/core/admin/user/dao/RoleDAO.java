@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

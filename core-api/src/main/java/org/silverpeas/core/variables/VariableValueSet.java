@@ -24,6 +24,7 @@
 package org.silverpeas.core.variables;
 
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -63,7 +64,7 @@ public class VariableValueSet implements Collection<VariableScheduledValue> {
   }
 
   @Override
-  public boolean containsAll(final Collection<?> c) {
+  public boolean containsAll(@NonNull final Collection<?> c) {
     return false;
   }
 
@@ -82,12 +83,12 @@ public class VariableValueSet implements Collection<VariableScheduledValue> {
   }
 
   @Override
-  public boolean removeAll(final Collection<?> c) {
+  public boolean removeAll(@NonNull final Collection<?> c) {
     return variable.values().removeAll(c);
   }
 
   @Override
-  public boolean retainAll(final Collection<?> c) {
+  public boolean retainAll(@NonNull final Collection<?> c) {
     return variable.values().retainAll(c);
   }
 
@@ -99,7 +100,7 @@ public class VariableValueSet implements Collection<VariableScheduledValue> {
   /**
    * Adds the specified variable value into the variable's values set and saves automatically the
    * set. This method can be invoked only with an already persisted variable otherwise a
-   * {@link javax.persistence.PersistenceException} will be thrown. Useful when just to add a new
+   * {@link jakarta.persistence.PersistenceException} will be thrown. Useful when just to add a new
    * value to the underlying variable for a given period.
    * @param value the value, defined in a given period, to add in this set.
    * @return the persisted variable value.
@@ -116,6 +117,7 @@ public class VariableValueSet implements Collection<VariableScheduledValue> {
    * @return a stream of variable values.
    */
   @Override
+  @NonNull
   public Stream<VariableScheduledValue> stream() {
     return variable.values().stream();
   }
@@ -193,17 +195,20 @@ public class VariableValueSet implements Collection<VariableScheduledValue> {
   }
 
   @Override
+  @NonNull
   public Iterator<VariableScheduledValue> iterator() {
     return variable.values().iterator();
   }
 
   @Override
+  @NonNull
   public Object[] toArray() {
     return variable.values().toArray();
   }
 
   @Override
-  public <T> T[] toArray(final T[] a) {
+  @NonNull
+  public <T> T[] toArray(@NonNull final T[] a) {
     return variable.values().toArray(a);
   }
 
@@ -213,6 +218,7 @@ public class VariableValueSet implements Collection<VariableScheduledValue> {
   }
 
   @Override
+  @NonNull
   public Spliterator<VariableScheduledValue> spliterator() {
     return variable.values().spliterator();
   }

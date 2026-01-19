@@ -29,7 +29,7 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author mmoquillon

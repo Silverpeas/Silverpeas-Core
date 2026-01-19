@@ -27,15 +27,15 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.kernel.test.UnitTest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.*;
 
 @UnitTest
 class SpaceInstTest {
 
   @Test
   void
-  testGetLocalId() throws Exception {
+  testGetLocalId() {
     SpaceInst spaceInst = new SpaceInst();
     assertThat(spaceInst.getLocalId(), is(-1));
   }

@@ -27,7 +27,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
- * This class manage the informations needed for job start page
+ * This class manage the information needed for job start page
  * @author c.bonin
  */
 public class JobStartPagePeasSettings {

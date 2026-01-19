@@ -37,9 +37,9 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +52,7 @@ import static org.silverpeas.core.importexport.control.RepositoriesTypeManager.h
 import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 
 /**
- * Servlet used whith the drag and drop applet to import non-versioned documents.
+ * Servlet used with the drag and drop applet to import non-versioned documents.
  */
 public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = 4084217276750892258L;

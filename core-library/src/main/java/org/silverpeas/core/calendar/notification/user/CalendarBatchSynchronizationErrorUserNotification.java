@@ -32,7 +32,7 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 import static org.silverpeas.core.util.URLUtil.getComponentInstanceURL;
 

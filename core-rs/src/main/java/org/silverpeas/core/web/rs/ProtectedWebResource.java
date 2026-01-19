@@ -26,7 +26,7 @@ package org.silverpeas.core.web.rs;
 
 import org.silverpeas.core.web.SilverpeasWebResource;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 /**
  * A protected Web resource is a Web resource in Silverpeas that can require the user to be
@@ -41,11 +41,11 @@ public interface ProtectedWebResource extends SilverpeasWebResource, WebAuthenti
   /**
    * Validates the authorization of the user to request this web service. For doing, the user must
    * have the rights to access the component instance that manages this web resource. If no such
-   * component instance exists, a Not Found HTTP error is thrown (status code 404). Otherwise the
+   * component instance exists, a Not Found HTTP error is thrown (status code 404). Otherwise, the
    * validation is delegated to the validation service by passing it the required information.
    * <p>
    * This method should be invoked for web service requiring an authorized access. For doing, the
-   * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
+   * authentication of the user must be first validated. Otherwise, the annotation Authorized can be
    * also used instead at class level for both authentication and authorization.
    * </p>
    * @see UserPrivilegeValidator

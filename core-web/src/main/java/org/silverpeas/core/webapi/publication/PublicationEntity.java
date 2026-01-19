@@ -42,9 +42,9 @@ import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -132,7 +132,7 @@ public class PublicationEntity implements WebEntity {
     this.pubDetail = publication;
     this.setUri(uri);
     this.setUpdateDate(publication.getLastUpdateDate());
-    this.creator = UserProfileEntity.fromUser((UserDetail) publication.getCreator());
+    this.creator = UserProfileEntity.fromUser(publication.getCreator());
     if (StringUtil.isDefined(publication.getUpdaterId())) {
       this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
     }
@@ -140,7 +140,7 @@ public class PublicationEntity implements WebEntity {
 
   public PublicationEntity withAttachments(Collection<SimpleDocument> attachmentDetails) {
     if (attachmentDetails != null && !attachmentDetails.isEmpty()) {
-      List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
+      List<AttachmentEntity> entities = new ArrayList<>(attachmentDetails.size());
       for (SimpleDocument attachment : attachmentDetails) {
         SimpleDocument document = attachment.getLastPublicVersion();
         if (document != null) {

@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.webapi.admin.scim.adaptation;
 
-import edu.psu.swe.scim.spec.protocol.data.PatchOperationPath;
+import org.apache.directory.scim.spec.patch.PatchOperationPath;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author silveryocha
@@ -38,11 +38,11 @@ public class SilverpeasPatchOperationPathAdapter extends XmlAdapter<String, Patc
     if (v == null) {
       return null;
     }
-    return new PatchOperationPath(v);
+    return PatchOperationPath.fromString(v);
   }
 
   @Override
-  public String marshal(PatchOperationPath v) throws Exception {
+  public String marshal(PatchOperationPath v) {
     if (v == null) {
       return null;
     }

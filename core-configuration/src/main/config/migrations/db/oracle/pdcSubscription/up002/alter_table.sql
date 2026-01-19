@@ -1,0 +1,1 @@
+ALTER TABLE SB_PDC_Subscription_Axis RENAME COLUMN value TO val;

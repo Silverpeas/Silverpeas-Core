@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.contribution.rating.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 
 /**
  * Represents the rating data associated to a rater.
- * The rater is represented by a {@link UserDetail}
- * @author: Yohann Chastagnier
+ * The rater is represented by a {@link User}
+ * @author Yohann Chastagnier
  */
 public class RaterRating {
 
-  private ContributionRating contributionRating;
-  private UserDetail rater;
+  private final ContributionRating contributionRating;
+  private final User rater;
   private int value;
   private boolean isRatingDone;
 
@@ -43,7 +43,7 @@ public class RaterRating {
    * associated.
    * @param rater the user that is the rater.
    */
-  RaterRating(ContributionRating contributionRating, UserDetail rater) {
+  RaterRating(ContributionRating contributionRating, User rater) {
     this.contributionRating = contributionRating;
     this.rater = rater;
     this.isRatingDone = false;
@@ -56,25 +56,25 @@ public class RaterRating {
    * @param rater the user that is the rater.
    * @param value the value of the rating of the rater.
    */
-  RaterRating(ContributionRating contributionRating, UserDetail rater, int value) {
+  RaterRating(ContributionRating contributionRating, User rater, int value) {
     this(contributionRating, rater);
     this.value = value;
     this.isRatingDone = true;
   }
 
   /**
-   * Gets the global informations about the rating.
-   * @return the global rating informations.
+   * Gets the global information about the rating.
+   * @return the global rating information.
    */
   public ContributionRating getRating() {
     return contributionRating;
   }
 
   /**
-   * Gets the {@link UserDetail} instance that represents the rater.
+   * Gets the {@link User} instance that represents the rater.
    * @return the rater of the current instance.
    */
-  public UserDetail getRater() {
+  public User getRater() {
     return rater;
   }
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
@@ -31,8 +32,6 @@ import org.silverpeas.core.socialnetwork.provider.SocialInformationProviderSwitc
 import org.silverpeas.core.socialnetwork.provider.SocialInformationProviderSwitcher.SocialInfoContext;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,23 +39,22 @@ import java.util.List;
  * @author Bensalem Nabil;
  */
 @Service
-@Singleton
 public class SocialInformationService {
 
   @Inject
   private SocialInformationProviderSwitcher switchInterface;
 
   /**
-   * get the List of social Information of my according the type of social information and the
-   * UserId
-   * @return: List<SocialInformation>
-   * @param socialInformationType
-   * @param userId
-   * @param classification
-   * @param period
+   * Gets the List of social information according their type and that were published by the
+   * specified user.
+   *
+   * @param socialInformationType the type of social information to get.
+   * @param userId the unique identifier of the user having published the social information.
+   * @param classification classification of the social information
+   * @param period the period in time the information was published.
+   * @return a list of the user's social information
    */
-
-  public List<SocialInformation> getSocialInformationsList(
+  public List<? extends SocialInformation> getSocialInformationsList(
       SocialInformationType socialInformationType, String userId,
       String classification, Period period) {
     try {
@@ -70,21 +68,21 @@ public class SocialInformationService {
   }
 
   /**
-   * get the List of social Information of my according the type of social information and the
-   * UserId
-   * @return: List<SocialInformation>
-   * @param socialInformationType
-   * @param myId
-   * @param myContactIds
-   * @param period
+   * Gets the List of social information according their type and that were published by the
+   * given contacts of the specified user.
+   *
+   * @param socialInformationType the type of social information to get.
+   * @param userId the unique identifier of the user related by the social information.
+   * @param contactIds a list with the unique identifiers of users
+   * @param period the period in time the information was published.
+   * @return a list of the user's social information
    */
-
-  public List<SocialInformation> getSocialInformationsListOfMyContact(
-      SocialInformationType socialInformationType, String myId,
-      List<String> myContactIds, Period period) {
+  public List<? extends SocialInformation> getSocialInformationsListOfMyContact(
+      SocialInformationType socialInformationType, String userId,
+      List<String> contactIds, Period period) {
     try {
-      final SocialInfoContext ctx = new SocialInfoContext(myId, period)
-        .withContactIds(myContactIds);
+      final SocialInfoContext ctx = new SocialInfoContext(userId, period)
+          .withContactIds(contactIds);
       return switchInterface.getSocialInformationsListOfMyContacts(socialInformationType, ctx);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex);

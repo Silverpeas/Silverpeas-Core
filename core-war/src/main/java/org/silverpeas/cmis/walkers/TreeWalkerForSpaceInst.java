@@ -24,6 +24,8 @@
 
 package org.silverpeas.cmis.walkers;
 
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
@@ -34,19 +36,11 @@ import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cmis.model.CmisFile;
-import org.silverpeas.core.cmis.model.CmisFilePath;
-import org.silverpeas.core.cmis.model.CmisFolder;
-import org.silverpeas.core.cmis.model.CmisObject;
-import org.silverpeas.core.cmis.model.Space;
-import org.silverpeas.core.cmis.model.TypeId;
+import org.silverpeas.core.cmis.model.*;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,12 +50,11 @@ import java.util.stream.Stream;
 /**
  * A {@link CmisObjectsTreeWalker} object that knows how to walk the subtree rooted to a
  * collaborative space in Silverpeas. It takes care of the virtual root node in the CMIS objects
- * tree that represents the virtual container of all of the root spaces in Silverpeas.
+ * tree that represents the virtual container of all the root spaces in Silverpeas.
  *
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
 
   @Inject

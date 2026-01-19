@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.util;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * @author mmoquillon

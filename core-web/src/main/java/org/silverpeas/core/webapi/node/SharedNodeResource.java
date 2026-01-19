@@ -29,8 +29,8 @@ import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 /**
  * A REST Web resource providing access to a node through sharing mode.

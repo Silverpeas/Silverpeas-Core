@@ -47,7 +47,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;

@@ -23,59 +23,52 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
-public abstract class AbstractNavigationContextListener<WEB_COMPONENT_REQUEST_CONTEXT extends
-    WebComponentRequestContext>
-    implements NavigationContextListener<WEB_COMPONENT_REQUEST_CONTEXT> {
+public abstract class AbstractNavigationContextListener<T extends WebComponentRequestContext<?>>
+    implements NavigationContextListener<T> {
 
   @Override
   public void navigationContextCleared(
-      final NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext) {
+      final NavigationContext<T> navigationContext) {
   }
 
   @Override
   public void navigationStepCreated(
-      final NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext) {
+      final NavigationContext<T> navigationContext) {
   }
 
   @Override
   public void navigationStepReset(
-      final NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext) {
+      final NavigationContext<T> navigationContext) {
   }
 
   @Override
   public void noNavigationStepPerformed(
-      final NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext) {
+      final NavigationContext<T> navigationContext) {
   }
 
   @Override
   public void navigationStepTrashed(
-      final NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>.NavigationStep trashedNavigationStep) {
+      final NavigationContext<T>.NavigationStep trashedNavigationStep) {
   }
 
   @Override
   public void navigationStepContextIdentifierSet(
-      final NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>.NavigationStep navigationStep,
+      final NavigationContext<T>.NavigationStep navigationStep,
       final String oldContextIdentifier) {
   }
 
   @Override
   public void navigationStepLabelSet(
-      final NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>.NavigationStep navigationStep,
+      final NavigationContext<T>.NavigationStep navigationStep,
       final String oldLabel) {
   }
 
-  /**
-   * Sets an attribute into the session.
-   * @param context
-   * @param name
-   * @param value
-   */
-  protected void setSessionAttribute(WEB_COMPONENT_REQUEST_CONTEXT context, String name,
+  protected void setSessionAttribute(T context, String name,
       Object value) {
     HttpSession session = context.getRequest().getSession(false);
     session.setAttribute(name, value);

@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.reminder;
 
-import org.silverpeas.core.annotation.Service;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.persistence.Transaction;
@@ -32,24 +34,27 @@ import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import static org.silverpeas.core.reminder.BackgroundReminderProcess.Constants.PROCESS_NAME_SUFFIX;
 
 /**
- * The process to send a notification to the user aimed by a reminder.
+ * The process working on reminders. Its goal is both to ensure the rescheduling of shedulable
+ * reminders and to send a notification to the user targeted by the reminder.
+ *
  * @author mmoquillon
  */
-@Service
+@Bean
 @Singleton
 public class ReminderProcess implements SchedulerEventListener {
 
-  @Inject
-  private ReminderRepository repository;
+  private final ReminderRepository repository;
 
   public static ReminderProcess get() {
     return ServiceProvider.getService(ReminderProcess.class);
+  }
+
+  @Inject
+  public ReminderProcess(ReminderRepository repository) {
+    this.repository = repository;
   }
 
   @Override
@@ -82,7 +87,8 @@ public class ReminderProcess implements SchedulerEventListener {
     final String reminderId = anEvent.getJobExecutionContext().getJobName();
     if (anEvent.isExceptionThrown()) {
       final Throwable throwable = anEvent.getJobThrowable();
-      SilverLogger.getLogger(this).error("The reminder " + reminderId + " firing failed", throwable);
+      SilverLogger.getLogger(this).error("The reminder " + reminderId + " firing failed",
+          throwable);
     } else {
       SilverLogger.getLogger(this).error("The reminder " + reminderId + " firing failed");
     }

@@ -23,11 +23,12 @@
  */
 package org.silverpeas.core.html;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -41,6 +42,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  *   By default, all {@link URLUtil.Permalink#getURLPrefix()} values are registered.
  * </p>
  */
+@Bean
 @Singleton
 public class PermalinkRegistry {
 

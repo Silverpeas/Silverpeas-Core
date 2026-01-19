@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Singleton;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
-
-import javax.enterprise.inject.Default;
-import javax.inject.Singleton;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * A volatile scheduler implementation using Quartz as scheduling backend. It wraps a Quartz
@@ -41,7 +41,8 @@ import javax.inject.Singleton;
  * scheduled again at the scheduler starting.
  */
 @Default
-@Service
+@Technical
+@Bean
 @Singleton
 public class VolatileQuartScheduler extends QuartzScheduler {
 

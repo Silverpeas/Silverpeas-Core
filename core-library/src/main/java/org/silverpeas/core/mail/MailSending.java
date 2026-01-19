@@ -26,7 +26,7 @@ package org.silverpeas.core.mail;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.util.MailSettings;
 
-import javax.mail.Multipart;
+import jakarta.mail.Multipart;
 import java.util.stream.Stream;
 
 /**

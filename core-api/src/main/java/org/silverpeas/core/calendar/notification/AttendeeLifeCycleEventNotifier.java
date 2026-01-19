@@ -74,11 +74,10 @@ public class AttendeeLifeCycleEventNotifier
     notify(new AttendeeLifeCycleEvent(planned, type, subType, attendees));
   }
 
-  public static void notifyAttendees(LifeCycleEventSubType subtype,
+  public void notifyAttendees(LifeCycleEventSubType subtype,
       final PlannedOnCalendar eventOrOccurrence, AttendeeSet before,
       AttendeeSet after) {
-    AttendeeLifeCycleEventNotifier notifier = AttendeeLifeCycleEventNotifier.get();
-    notifier.planned = eventOrOccurrence;
+    this.planned = eventOrOccurrence;
     Set<String> allIds = new HashSet<>();
     if (before != null) {
       before.forEach(a -> allIds.add(a.getId()));
@@ -91,13 +90,13 @@ public class AttendeeLifeCycleEventNotifier
       Attendee attendeeOnRight = after != null ? after.get(i).orElse(null) : null;
       if (attendeeOnLeft != null && attendeeOnRight != null) {
         if (areDifferent(attendeeOnLeft, attendeeOnRight)) {
-          notifier.notifyEventOn(ResourceEvent.Type.UPDATE, subtype, attendeeOnLeft,
+          notifyEventOn(ResourceEvent.Type.UPDATE, subtype, attendeeOnLeft,
               attendeeOnRight);
         }
       } else if (attendeeOnRight != null) {
-        notifier.notifyEventOn(ResourceEvent.Type.CREATION, subtype, attendeeOnRight);
+        notifyEventOn(ResourceEvent.Type.CREATION, subtype, attendeeOnRight);
       } else {
-        notifier.notifyEventOn(ResourceEvent.Type.DELETION, subtype, attendeeOnLeft);
+        notifyEventOn(ResourceEvent.Type.DELETION, subtype, attendeeOnLeft);
       }
     });
   }

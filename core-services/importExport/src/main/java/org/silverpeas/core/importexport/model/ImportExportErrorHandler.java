@@ -25,8 +25,8 @@ package org.silverpeas.core.importexport.model;
 
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
 
 /**
  * @author neysseri

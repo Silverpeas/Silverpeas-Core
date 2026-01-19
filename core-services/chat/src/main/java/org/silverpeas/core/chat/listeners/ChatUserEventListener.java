@@ -23,22 +23,21 @@
  */
 package org.silverpeas.core.chat.listeners;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.notification.UserEvent;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.kernel.annotation.Technical;
-
-import javax.inject.Inject;
 
 /**
  * Listen user modifications to clone them in Chat server
  * @author remipassmoilesel
  */
 @Technical
-@Service
+@Bean
 public class ChatUserEventListener extends CDIResourceEventListener<UserEvent> {
 
   @Inject

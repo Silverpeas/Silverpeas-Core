@@ -25,7 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.layout;
 
 import org.apache.ecs.xhtml.body;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.scriptContent;

@@ -30,10 +30,10 @@ import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 
 import javax.portlet.RenderRequest;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.jsp.PageContext;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -264,16 +264,16 @@ public interface ArrayPane extends SimpleGraphicElement {
 
   /**
    * Generic class to display a typical WA array table pane. A unique name identifier is to be used
-   * in html pages for this array specific actions (exemple : sort on a specific column)
+   * in HTML pages for this array specific actions (exemple : sort on a specific column)
    * @param name A unique name in the page to display
    */
   void init(String name, PageContext pageContext);
 
-  void init(String name, javax.servlet.ServletRequest request,
+  void init(String name, jakarta.servlet.ServletRequest request,
       HttpSession session);
 
   void init(String name, String url,
-      javax.servlet.ServletRequest request, HttpSession session);
+      jakarta.servlet.ServletRequest request, HttpSession session);
 
   /**
    * Add a new column to the table.
@@ -296,7 +296,7 @@ public interface ArrayPane extends SimpleGraphicElement {
   String getTitle();
 
   /**
-   * Set the array title, to be displayed on the first html table.
+   * Set the array title, to be displayed on the first HTML table.
    * @param title The title
    */
   void setTitle(String title);
@@ -328,8 +328,8 @@ public interface ArrayPane extends SimpleGraphicElement {
   void setColumnToSort(int columnNumber);
 
   /**
-   * Print the array line in an html format.
-   * @return The html code, representing the array pane
+   * Print the array line in an HTML format.
+   * @return The HTML code, representing the array pane
    */
   String print();
 
@@ -348,12 +348,12 @@ public interface ArrayPane extends SimpleGraphicElement {
   /**
    * change the routing address (the url of the page to which the column header refer) in the rare
    * cases when you may not want it to be derived from the calling page. This method is called by
-   * the constructor if you precise an url to the GraphicElementFactory.
+   * the constructor if you precise a url to the GraphicElementFactory.
    */
   void setRoutingAddress(String address);
 
   /**
-   * Get global array columns behaviour for sort. By default, all columns are sortable.
+   * Get global array columns behavior for sort. By default, all columns are sortable.
    * @return True, if the array is sortable, false if not.
    */
   boolean getSortable();
@@ -365,7 +365,7 @@ public interface ArrayPane extends SimpleGraphicElement {
   void setSortable(boolean sortable);
 
   /**
-   * Sets a Javascript function to call when one or more lines of the array are moved between them.
+   * Sets a JavaScript function to call when one or more lines of the array are moved between them.
    * @param callback a function to invoke.
    */
   void setLineMoveCallback(String callback);

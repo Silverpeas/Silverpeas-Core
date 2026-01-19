@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.web.util.VolatileSecurityTokenSupplier;
 import org.silverpeas.kernel.logging.SilverLogger;
+
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case: user has changed his password.

@@ -23,19 +23,14 @@
  */
 package org.silverpeas.core.subscription;
 
+import jakarta.annotation.PostConstruct;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants;
-import org.silverpeas.core.subscription.service.AbstractSubscription;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
-import org.silverpeas.core.subscription.service.NodeSubscription;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.service.*;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -51,7 +46,6 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
  * </p>
  */
 @Provider
-@Singleton
 public class SubscriptionFactory {
 
   private final Map<String, SubscriptionResourceType> registry = new ConcurrentHashMap<>();

@@ -42,6 +42,7 @@ import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -49,6 +50,7 @@ import java.util.stream.Stream;
 
 /**
  * This class permits to set up an integration test
+ *
  * @author Yohann Chastagnier
  */
 public abstract class WarBuilder<T extends WarBuilder<T>>
@@ -82,10 +84,11 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
-   * same packages of the specified test class. The war builder will include by default the
-   * following web servlet listeners: {@link SilverpeasLoggerInitializationListener} and
-   * {@link IIOProviderContextListener}.
-   * @param classOfTest the class of the test for which a war archive will be build.
+   * same packages of the specified test class if such resources exist. The war builder will include
+   * by default the following web servlet listeners: {@link SilverpeasLoggerInitializationListener}
+   * and {@link IIOProviderContextListener}.
+   *
+   * @param classOfTest the class of the test for which a war archive will be built.
    * @param <U> the type of the test.
    */
   protected <U> WarBuilder(Class<U> classOfTest) {
@@ -96,8 +99,14 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     String resourcePath = classOfTest.getPackage()
         .getName()
         .replace('.', '/');
-    logInfo("Adding resources from path: " + resourcePath);
-    war.addAsResource(resourcePath);
+    if (Files.exists(testCoreClassMavenTargetDirectoryRule.getResourceTestDirFile()
+            .toPath()
+            .resolve(resourcePath))) {
+      logInfo("Adding resources from path: " + resourcePath);
+      war.addAsResource(resourcePath);
+    } else {
+      logInfo("No such resources path: " + resourcePath);
+    }
     war.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
     logInfo("Adding initialization listener");
     addWebListener(SilverpeasLoggerInitializationListener.class);
@@ -111,6 +120,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * If the version isn't specified, then it is figured out from the <code>maven.properties</code>
    * file. A property <code>&lt;artifactId&gt;.version</code> is first looked for and if not found,
    * the silverpeas version is then used.
+   *
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
@@ -131,6 +141,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * file. A property <code>&lt;artifactId&gt;.version</code> is first looked for and if not found,
    * the silverpeas version is then used. The artifacts are then referenced in the persistence
    * descriptor so that the entities and repositories are taken in charge by the persistence layer.
+   *
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    * @throws IllegalArgumentException if no version is found for one of the specified Maven
@@ -150,6 +161,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * the pom.xml of the project. Each of the specified dependencies must be expressed in the
    * canonical form
    * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>
+   *
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
@@ -168,6 +180,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * the canonical form of the dependency, it is figured out from the
    * <code>maven.properties</code> file. A property <code>&lt;artifactId&gt;.version</code> is
    * first looked for and if not found, the silverpeas version is then used.
+   *
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
@@ -188,6 +201,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * the pom.xml of the project. Each of the specified dependencies must be expressed in the
    * canonical form
    * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>
+   *
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
@@ -212,6 +226,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
 
   /**
    * Adds the specified web servlet listener.
+   *
    * @param webListenerClass the class of the web listener to add.
    * @return the instance of the configurator.
    */
@@ -235,6 +250,12 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   @Override
   public WarBuilder<T> deleteClasses(final Class<?>... classes) {
     war.deleteClasses(classes);
+    return this;
+  }
+
+  @Override
+  public WarBuilder<T> deletePackages(boolean recursive, String... packages) {
+    war.deletePackages(recursive, packages);
     return this;
   }
 
@@ -285,6 +306,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * <li>The <b>META-INF/services/org.silverpeas.kernel.BeanContainer</b> service file to load
    * the CDI-based bean container,</li>
    * </ul>
+   *
    * @return the built WAR archive.
    */
   @Override
@@ -367,13 +389,14 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * Gets a predicate on libraries (represented each of them by a file) to indicate if a library is
    * accepted or not to be included among the dependencies of a WAR to build for integration tests
    * ran by Arquillian.
+   *
    * @return a predicate on a file (a given library)
    */
   protected Predicate<File> onLibsToInclude() {
-    return f -> !f.getName()
-        .startsWith("resteasy") && !f.getName()
-        .startsWith("javax") && !f.getName()
-        .contains("hibernate");
+    return f -> !f.getName().startsWith("resteasy")
+        && !f.getName().startsWith("jakarta")
+        && !f.getName().startsWith("javax")
+        && !f.getName().contains("hibernate");
   }
 
   private void logInfo(String info) {
@@ -383,6 +406,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
 
   /**
    * Applies the configuration that the test is focused on.
+   *
    * @param testFocus the instance of an anonymous implementation of {@link TestFocus} interface.
    * @return the instance of the war builder.
    */
@@ -394,8 +418,9 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   /**
    * Applies a configuration by using directly the {@link WebArchive} instance provided by the
    * ShrinkWrap API.
-   * @param onShrinkWrapWar the instance of an anonymous implementation of {@link
-   * org.silverpeas.core.test.WarBuilder.OnShrinkWrapWar} interface.
+   *
+   * @param onShrinkWrapWar the instance of an anonymous implementation of
+   * {@link org.silverpeas.core.test.WarBuilder.OnShrinkWrapWar} interface.
    * @return the instance of the war builder.
    */
   @Override

@@ -30,7 +30,7 @@ import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -115,7 +115,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
    */
   public GroupUserRoleRow[] getDirectGroupUserRolesOfUser(int userId) throws SQLException {
     List<GroupUserRoleRow> rows = getRows(SELECT_USER_GROUPUSERROLES, userId);
-    return rows.toArray(new GroupUserRoleRow[rows.size()]);
+    return rows.toArray(new GroupUserRoleRow[0]);
   }
 
   /**
@@ -123,7 +123,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
    */
   public GroupUserRoleRow[] getDirectGroupUserRolesOfGroup(int groupId) throws SQLException {
     List<GroupUserRoleRow> rows = getRows(SELECT_GROUP_GROUPUSERROLES, groupId);
-    return rows.toArray(new GroupUserRoleRow[rows.size()]);
+    return rows.toArray(new GroupUserRoleRow[0]);
   }
 
   /**

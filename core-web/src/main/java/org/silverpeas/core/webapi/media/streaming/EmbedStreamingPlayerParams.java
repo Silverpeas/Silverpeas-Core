@@ -27,7 +27,7 @@ import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 
 /**
  * This class contains the parameter values of a streaming service request.<br>

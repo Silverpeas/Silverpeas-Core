@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Optional;

@@ -27,8 +27,8 @@ package org.silverpeas.core.test.integration;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.initialization.SilverpeasServiceInitialization;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import java.util.function.Predicate;
 
 /**

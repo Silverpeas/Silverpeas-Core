@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.contribution.tracking;
 
-import org.silverpeas.core.admin.user.DefaultUserProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;

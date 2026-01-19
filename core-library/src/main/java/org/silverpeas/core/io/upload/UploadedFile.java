@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.io.upload;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -32,10 +31,11 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
@@ -171,7 +171,7 @@ public class UploadedFile {
       String contributionLanguage) {
 
     // Contribution language
-    String lang = I18NHelper.checkLanguage(contributionLanguage);
+    String lang = I18n.get().checkLanguage(contributionLanguage);
 
     // Title and description
     String theTitle = defaultStringIfNotDefined(getTitle());

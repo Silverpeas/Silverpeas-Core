@@ -29,7 +29,7 @@ import org.silverpeas.core.calendar.AbstractCalendarService;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * The service provided by the application Calendar. For tests.

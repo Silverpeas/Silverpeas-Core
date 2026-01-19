@@ -27,10 +27,10 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -61,17 +61,11 @@ public class UsersAndGroupsRoleEntity extends AbstractTypeEntity {
   private String label;
 
   @XmlElement(defaultValue = "")
-  private Collection<URI> users = new LinkedHashSet<URI>();
+  private Collection<URI> users = new LinkedHashSet<>();
 
   @XmlElement(defaultValue = "")
-  private Collection<URI> groups = new LinkedHashSet<URI>();
+  private Collection<URI> groups = new LinkedHashSet<>();
 
-  /**
-   * Creates a new entity.
-   * @param role
-   * @param label
-   * @return
-   */
   public static UsersAndGroupsRoleEntity createFrom(SilverpeasRole role, String label) {
     return new UsersAndGroupsRoleEntity(role, label);
   }
@@ -135,11 +129,6 @@ public class UsersAndGroupsRoleEntity extends AbstractTypeEntity {
     return this;
   }
 
-  /**
-   * Instantiating a new web entity
-   * @param role
-   * @param label
-   */
   private UsersAndGroupsRoleEntity(SilverpeasRole role, String label) {
     this();
     this.role = role;

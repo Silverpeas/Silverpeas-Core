@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.webapi.calendar;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
@@ -59,11 +58,13 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import org.silverpeas.kernel.util.Pair;
+
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -696,13 +697,13 @@ public class CalendarWebManager {
     Map<String, List<CalendarEventOccurrence>> result =
         new CalendarEventInternalParticipationView(users)
             .apply(entities.stream().distinct().collect(Collectors.toList()));
-    final String currentUserId = currentUserAndComponentInstanceId.getRight().getId();
+    final String currentUserId = currentUserAndComponentInstanceId.getSecond().getId();
     if (result.containsKey(currentUserId)) {
       List<CalendarEventOccurrence> currentUserOccurrences = result.get(currentUserId);
       // Remove occurrence associated to given user when he is the creator
       currentUserOccurrences.removeIf(calendarEventOccurrence -> {
         CalendarEvent event = calendarEventOccurrence.getCalendarEvent();
-        return currentUserAndComponentInstanceId.getLeft()
+        return currentUserAndComponentInstanceId.getFirst()
             .contains(event.getCalendar().getComponentInstanceId()) &&
             event.getCreator().getId().equals(currentUserId);
       });

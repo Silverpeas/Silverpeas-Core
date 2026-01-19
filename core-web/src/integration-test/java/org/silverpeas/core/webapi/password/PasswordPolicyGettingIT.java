@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

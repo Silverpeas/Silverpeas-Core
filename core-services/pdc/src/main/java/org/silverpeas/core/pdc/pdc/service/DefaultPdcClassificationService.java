@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.kernel.exception.NotSupportedException;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverpeasContentManager;
@@ -33,17 +35,9 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
-import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.model.PdcRuntimeException;
+import org.silverpeas.core.pdc.pdc.model.*;
+import org.silverpeas.kernel.exception.NotSupportedException;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +52,6 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  */
 @Service
 @Transactional
-@Singleton
 public class DefaultPdcClassificationService
     implements PdcClassificationService, ComponentInstanceDeletion {
 
@@ -139,10 +132,10 @@ public class DefaultPdcClassificationService
    * Gets the predefined classification on the PdC that was set for any new contents managed in the
    * specified component instance. This method is for the component instances that don't support the
    * categorization.
-   *
+   * <p>
    * In the case no predefined classification is set for the whole component instance, a none
    * classification is then returned.
-   *
+   * </p>
    * @param instanceId the unique identifier of the Silverpeas component instance.
    * @return a predefined classification on the PdC ready to be used to classify a content published
    * within the component instance or an empty classification.
@@ -162,11 +155,11 @@ public class DefaultPdcClassificationService
    * already exists for the node (if any) and the component instance to which this classification is
    * related, then it is replaced by the specified one. If the specified classification is empty
    * (all positions were deleted), then it is deleted and the NONE_CLASSIFICATION is sent back.
-   *
+   * <p>
    * The node (if any) and the component instance for which this classification has to be saved are
-   * indicated by the specified classification itself. If no node is refered by it, then the
+   * indicated by the specified classification itself. If no node is referred by it, then the
    * predefined classification will serv for the whole component instance.
-   *
+   * </p>
    * @param classification either the saved predefined classification or NONE_CLASSIFICATION.
    * @return the classification on the PdC that was saved.
    */
@@ -267,7 +260,8 @@ public class DefaultPdcClassificationService
    * Otherwise, the silverpeas content id is get or created by using the right implementation of
    * {@link SilverpeasContentManager}.<br>
    * If no implementation exists, and so that no silverpeas content id can be get or created, a
-   * {@link NotSupportedException} is thrown because the process is in a case where no classification
+   * {@link NotSupportedException} is thrown because the process is in a case where no
+   * classification
    * should be used.
    * </p>
    * @param contribution a contribution.
@@ -294,9 +288,10 @@ public class DefaultPdcClassificationService
    * Some values come to be removed from the PdC. Triggers the update of all concerned
    * classifications taken in charge by this service (for instance, only the predefined
    * classifications).
-   *
+   * <p>
    * For each value, according to its level in the hierarchical tree representing the PdC's axis,
-   * the correct update behaviour is selected for a given classification:
+   * the correct update behavior is selected for a given classification:
+   * </p>
    * <ul>
    * <li>The value is a root one of the axis: the value is removed from any positions of the
    * classification. If the position is empty (it has no values) it is then removed. If the
@@ -326,8 +321,9 @@ public class DefaultPdcClassificationService
   /**
    * An axis comes to be removed from the PdC. Triggers the update of all concerned classifications
    * taken in charge by this service (for instance, only the predefined classifications).
-   *
+   * <p>
    * The classifications are updated as following:
+   * </p>
    * <ul>
    * <li>For each position the values related to the axis are removed.</li>
    * <li>If a position is empty, it is removed.<li>

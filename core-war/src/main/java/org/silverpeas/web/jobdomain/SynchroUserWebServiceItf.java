@@ -31,24 +31,24 @@ import org.silverpeas.core.admin.user.model.UserFull;
 
 /**
  * Interface de definition des webServices pour la synchronisation des utilisateurs d'un domaine
- * @c.bonin
+ * @author c.bonin
  */
 public interface SynchroUserWebServiceItf {
-  public void startConnection();
+  void startConnection();
 
-  public void endConnection();
+  void endConnection();
 
-  public String insertUpdateDomainWebService(String idDomain, String nameDomain);
+  String insertUpdateDomainWebService(String idDomain, String nameDomain);
 
-  public String insertUpdateListGroupWebService(String idDomain,
+  String insertUpdateListGroupWebService(String idDomain,
       String nameDomain, Collection<Group> listGroupToInsertUpdate);
 
-  public String deleteListGroupWebService(String idDomain,
+  String deleteListGroupWebService(String idDomain,
       Collection<String> listGroupToInsertUpdate);
 
-  public String insertUpdateListUserWebService(String idDomain,
+  String insertUpdateListUserWebService(String idDomain,
       Collection<UserFull> listUserToInsertUpdate, Collection<Group> listGroupToInsertUpdate);
 
-  public String deleteListUserWebService(String idDomain,
+  String deleteListUserWebService(String idDomain,
       Collection<UserDetail> listUserToDelete);
 }

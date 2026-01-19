@@ -33,7 +33,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -83,12 +83,12 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
         request.setAttribute("listTerms", new ArrayList<Value>());
         destination = "/thesaurusPeas/jsp/thesaurus.jsp";
       } else if (function.equals("SetVoca")) {
-        long idVoca = new Long(request.getParameter("idVoca")).longValue();
+        long idVoca = Long.parseLong(request.getParameter("idVoca"));
         scc.getVocabulary(idVoca);
         request.setAttribute("listVoca", scc.getListVoca());
         request.setAttribute("listAxis", scc.getListAxis());
         request.setAttribute("listTerms", scc.getAxisTerms());
-        request.setAttribute("idVoca", new Long(idVoca).toString());
+        request.setAttribute("idVoca", Long.toString(idVoca));
         if (scc.getCurrentAxis() != null) {
           request.setAttribute("idAxis", scc.getCurrentAxis().getAxisHeader()
               .getPK().getId());
@@ -183,7 +183,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
 
       } else if (function.equals("UserAssignments")) {
         scc.setUserPanelJargons();
-        Collection<Jargon> listJargons = new ArrayList<Jargon>();
+        Collection<Jargon> listJargons = new ArrayList<>();
         listJargons.addAll(scc.getUserSelectedJargons());
         listJargons.addAll(scc.getUserSelectedNewJargons());
         request.setAttribute("listJargons", listJargons);
@@ -191,7 +191,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
 
       } else if (function.equals("UserAssignmentsBack")) {
         scc.setJargons();
-        Collection<Jargon> listJargons = new ArrayList<Jargon>();
+        Collection<Jargon> listJargons = new ArrayList<>();
         listJargons.addAll(scc.getUserSelectedJargons());
         listJargons.addAll(scc.getUserSelectedNewJargons());
         request.setAttribute("listJargons", listJargons);
@@ -208,10 +208,10 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
 
       } else if (function.equals("SaveAssignVoca")) {
 
-        long idVoca = new Long(request.getParameter("idVoca")).longValue();
+        long idVoca = Long.parseLong(request.getParameter("idVoca"));
         int nbConflict = scc.assignVocabulary(idVoca);
         if (nbConflict > 0) {
-          request.setAttribute("idVoca", new Long(idVoca).toString());
+          request.setAttribute("idVoca", Long.toString(idVoca));
 
           if (nbConflict == 1) {
             destination = "/thesaurusPeas/jsp/validateAssignVoca.jsp";
@@ -239,14 +239,14 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
         }
       } else if (function.equals("CreateNewJargonsVoca")) {
 
-        long idVoca = new Long(request.getParameter("idVoca")).longValue();
+        long idVoca = Long.parseLong(request.getParameter("idVoca"));
         scc.createNewJargons(idVoca);
         request.setAttribute("urlToReload", "UserAssignmentsBack");
         destination = "/thesaurusPeas/jsp/closeWindow.jsp";
 
       } else if (function.equals("CreateJargonsVoca")) {
 
-        long idVoca = new Long(request.getParameter("idVoca")).longValue();
+        long idVoca = Long.parseLong(request.getParameter("idVoca"));
         scc.createJargons(idVoca);
         request.setAttribute("urlToReload", "UserAssignmentsBack");
         destination = "/thesaurusPeas/jsp/closeWindow.jsp";

@@ -1,3 +1,9 @@
+CREATE TABLE IF NOT EXISTS persons (
+    id BIGINT PRIMARY KEY,
+    firstName VARCHAR(30),
+    lastName VARCHAR(30)
+);
+
 CREATE TABLE IF NOT EXISTS test_persons (
   id             VARCHAR(40) PRIMARY KEY NOT NULL,
   firstName      VARCHAR(30)             NOT NULL,

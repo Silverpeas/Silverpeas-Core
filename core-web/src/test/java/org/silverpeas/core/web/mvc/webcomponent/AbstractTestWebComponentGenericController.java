@@ -27,7 +27,7 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;

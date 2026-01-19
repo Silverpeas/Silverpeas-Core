@@ -31,12 +31,12 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.media.MediaDefinitionEntity;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;

@@ -50,15 +50,14 @@ public class SilverStatisticsPeasDAOConnexionEmptyIT {
       .loadInitialDataSetFrom("test-stats-connections-empty-dataset.sql");
 
   @Before
-  public void generalSetUp() throws Exception {
+  public void generalSetUp() {
   }
 
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4WarCore.onWarForTestClass(SilverStatisticsPeasDAOConnexionEmptyIT.class)
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "org.silverpeas.web.silverstatistics");
-        }).build();
+        .testFocusedOn(warBuilder ->
+            warBuilder.addPackages(true, "org.silverpeas.web.silverstatistics")).build();
   }
 
   public SilverStatisticsPeasDAOConnexionEmptyIT() {

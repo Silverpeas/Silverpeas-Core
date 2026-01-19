@@ -30,7 +30,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
-import javax.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspTagException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;

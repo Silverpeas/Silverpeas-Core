@@ -36,7 +36,6 @@ import java.util.List;
 
 /**
  * Class declaration Get cumul datas from database to access
- * @author
  */
 public class SilverStatisticsPeasDAO {
   private static final String STATS_GET_LIST_PUBLI_ACCESS =
@@ -68,21 +67,17 @@ public class SilverStatisticsPeasDAO {
   }
 
   /**
-   * Method tranform a resultset into Access Publication Value Object
-   * @param rs
-   * @return
-   * @throws SQLException
+   * Transform a resultset into Access Publication Value Object
+   * @param rs result set
+   * @return a list of {@link AccessPublicationVO} instances.
+   * @throws SQLException if the transformation fails.
    */
   private static List<AccessPublicationVO> getPublicationAccess(ResultSet rs) throws SQLException {
     List<AccessPublicationVO> list = new ArrayList<>();
-    String componentId = "";
-    String objectId = "";
-    int nbAccess = 0;
-
     while (rs.next()) {
-      componentId = rs.getString(1);
-      objectId = rs.getString(2);
-      nbAccess = rs.getInt(3);
+      String componentId = rs.getString(1);
+      String objectId = rs.getString(2);
+      int nbAccess = rs.getInt(3);
       ResourceReference resourceReference = new ResourceReference(objectId, componentId);
       AccessPublicationVO accessVO = new AccessPublicationVO(resourceReference, nbAccess);
       list.add(accessVO);

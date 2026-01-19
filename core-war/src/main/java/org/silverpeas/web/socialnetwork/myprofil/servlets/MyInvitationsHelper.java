@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 

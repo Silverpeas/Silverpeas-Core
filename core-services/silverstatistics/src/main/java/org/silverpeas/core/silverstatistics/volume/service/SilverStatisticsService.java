@@ -34,7 +34,6 @@ import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsRuntimeException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -42,7 +41,6 @@ import java.util.List;
 import static org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants.SEPARATOR;
 
 @Service
-@Singleton
 public class SilverStatisticsService implements SilverStatistics {
 
   private final StatisticsConfig myStatsConfig;

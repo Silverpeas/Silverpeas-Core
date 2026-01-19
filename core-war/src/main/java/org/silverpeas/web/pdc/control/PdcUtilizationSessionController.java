@@ -28,7 +28,6 @@ import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -44,8 +43,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
   private PdcManager pdcManager = null;
 
   // PDC field manager.
-  private final PdcFieldTemplateManager pdcFieldTemplateManager =
-      ServiceProvider.getService(PdcFieldTemplateManager.class);
+  private final PdcFieldTemplateManager pdcFieldTemplateManager = new PdcFieldTemplateManager();
 
   public PdcUtilizationSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String l10nBundle, String iconBundle) {

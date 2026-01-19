@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.popup;
 
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.persistence.jdbc.LongText;
@@ -30,8 +31,6 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Map;
 
@@ -39,7 +38,6 @@ import java.util.Map;
  * @author dblot
  */
 @Service
-@Singleton
 public class DefaultPopupMessageService implements PopupMessageService {
 
   private static final String COMMUNICATION_PREFIX = "COMMUNICATION";
@@ -148,7 +146,7 @@ public class DefaultPopupMessageService implements PopupMessageService {
       // CBO : UPDATE
       if (COMMUNICATION_PREFIX.equals(notifMsg.getComment())) {
         pmb.setBody(notifMsg.getComment() +
-            Integer.toString(LongText.addLongText(notifMsg.getMessage())));
+            LongText.addLongText(notifMsg.getMessage()));
       } else {
         pmb.setBody(Integer.toString(LongText.addLongText(notifMsg.getMessage())));
       }

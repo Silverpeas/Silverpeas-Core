@@ -28,7 +28,7 @@ import org.silverpeas.core.node.notification.NodeEvent;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Listener of notifications about some events that can have an impact on the PdC or on the

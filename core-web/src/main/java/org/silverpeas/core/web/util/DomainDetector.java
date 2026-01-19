@@ -26,26 +26,26 @@ package org.silverpeas.core.web.util;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class DomainDetector {
 
-  private static SettingBundle domainSettings =
+  private static final SettingBundle domainSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.authentication.settings.domainSettings");
 
   /**
    * Return domain id according to server URL and settings file
-   * @param request
+   * @param request the incoming HTTP request
    * @return domainId if according rule is present in settings file, null otherwise
    */
   public static String getDomainId(HttpServletRequest request) {
     String requestURL = request.getRequestURL().toString();
-    String serverName = requestURL.substring(requestURL.indexOf("//") + 2, requestURL.length());
+    String serverName = requestURL.substring(requestURL.indexOf("//") + 2);
     serverName = serverName.substring(0, serverName.indexOf("/"));
-    if (serverName.indexOf(":") != -1) {
+    if (serverName.contains(":")) {
       serverName = serverName.substring(0, serverName.indexOf(":"));
     }
-    if (serverName.indexOf(".") != -1) {
+    if (serverName.contains(".")) {
       serverName = serverName.substring(0, serverName.indexOf("."));
     }
     return domainSettings.getString(serverName.toLowerCase(), null);

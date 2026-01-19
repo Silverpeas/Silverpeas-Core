@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 /**
  * This interface is dedicated to be applied on {@link PlannableOnCalendar} implementations. It qualifies

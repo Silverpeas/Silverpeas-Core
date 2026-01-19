@@ -33,7 +33,7 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.notificationuser.Notification;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.Optional;
 
 import static org.silverpeas.core.ui.DisplayI18NHelper.getLanguages;

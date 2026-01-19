@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.portlets.portal;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
@@ -34,59 +34,59 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
  */
 public interface PortletWindowData {
 
-  public void init(HttpServletRequest request,
+  void init(HttpServletRequest request,
       PortletRegistryContext portletRegistryContext, String portletWindowName)
       throws PortletRegistryException;
 
-  public String getPortletName();
+  String getPortletName();
 
-  public String getPortletWindowName();
+  String getPortletWindowName();
 
-  public String getTitle();
+  String getTitle();
 
-  public CharSequence getContent();
+  CharSequence getContent();
 
-  public boolean isView();
+  boolean isView();
 
-  public String getViewURL();
+  String getViewURL();
 
-  public boolean isEdit();
+  boolean isEdit();
 
-  public String getEditURL();
+  String getEditURL();
 
-  public boolean isHelp();
+  boolean isHelp();
 
-  public String getHelpURL();
+  String getHelpURL();
 
-  public boolean isNormalized();
+  boolean isNormalized();
 
-  public String getNormalizedURL();
+  String getNormalizedURL();
 
-  public boolean isMaximized();
+  boolean isMaximized();
 
-  public String getMaximizedURL();
+  String getMaximizedURL();
 
-  public boolean isMinimized();
+  boolean isMinimized();
 
-  public String getMinimizedURL();
+  String getMinimizedURL();
 
-  public String getCurrentMode();
+  String getCurrentMode();
 
-  public String getCurrentWindowState();
+  String getCurrentWindowState();
 
-  public boolean isRemove();
+  boolean isRemove();
 
-  public String getRemoveURL();
+  String getRemoveURL();
 
-  public boolean isThin();
+  boolean isThin();
 
-  public boolean isThick();
+  boolean isThick();
 
-  public String getWidth();
+  String getWidth();
 
-  public Integer getRowNumber();
+  Integer getRowNumber();
 
-  public String getSpaceId();
+  String getSpaceId();
 
-  public void setSpaceId(String spaceId);
+  void setSpaceId(String spaceId);
 }

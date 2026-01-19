@@ -23,13 +23,15 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.OrientationOption;
 import org.silverpeas.core.jcr.JCRSession;
@@ -62,7 +64,6 @@ import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
-import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 
 /**
@@ -75,14 +76,19 @@ import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 public class DocumentRepository {
 
   private static final String SIMPLE_DOCUMENT_ALIAS = "SimpleDocuments";
-  final DocumentConverter converter;
 
-  public DocumentRepository() {
-    this(new DocumentConverter());
+  @Inject
+  private I18n i18n;
+
+  private DocumentConverter converter;
+
+  protected DocumentRepository() {
+    // to be used only through the IoD container
   }
 
-  protected DocumentRepository(final DocumentConverter converter) {
-    this.converter = converter;
+  @PostConstruct
+  private void setUpDocumentConverter() {
+    this.converter = new DocumentConverter(i18n);
   }
 
   private void prepareComponentAttachments(String instanceId, String folder)
@@ -251,7 +257,7 @@ public class DocumentRepository {
       targetDoc.setUpdatedBy(null);
       targetDoc.computeNodeName();
       pk = createDocument(session, targetDoc);
-      if (I18NHelper.isI18nContentEnabled()) {
+      if (i18n.isEnabled()) {
         addAttachmentInSupportedLanguages(session, document, targetDoc);
       }
       checkin(session, targetDoc, false);
@@ -290,12 +296,12 @@ public class DocumentRepository {
   private SimpleDocument searchDocumentWithUpdatedContent(final Session session,
       final SimpleDocument doc) throws RepositoryException {
     SimpleDocument updated = doc;
-    if (I18NHelper.isI18nContentEnabled()) {
+    if (i18n.isEnabled()) {
       // One language content is aimed by a version. So the first step here is to search the
       // language content updated.
       Set<String> checkedLanguages = new HashSet<>();
       checkedLanguages.add(doc.getLanguage());
-      for (String language : I18NHelper.getAllSupportedLanguages()) {
+      for (String language : i18n.getSupportedLanguageCodes()) {
         if (!checkedLanguages.contains(language)) {
           SimpleDocument temp = findDocumentById(session, doc.getPk(), language);
           if (temp != null && !checkedLanguages.contains(temp.getLanguage()) &&
@@ -315,7 +321,7 @@ public class DocumentRepository {
     // The first version can have several language contents.
     Set<String> checkedLanguages = new HashSet<>();
     checkedLanguages.add(targetDoc.getLanguage());
-    for (String language : I18NHelper.getAllSupportedLanguages()) {
+    for (String language : i18n.getSupportedLanguageCodes()) {
       if (!checkedLanguages.contains(language)) {
         HistorisedDocument temp = (HistorisedDocument) findDocumentById(session, document.getPk(),
             language);
@@ -509,7 +515,7 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       }
 
-      final SimpleDocument origin = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
+      final SimpleDocument origin = converter.fillDocument(documentNode, i18n.getDefaultLanguage());
       if (versionedNode) {
         VersionHistory history = session.getWorkspace()
             .getVersionManager()
@@ -524,10 +530,11 @@ public class DocumentRepository {
 
         removeHistory(history);
 
-        final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
+        final SimpleDocument target =
+            converter.fillDocument(documentNode, i18n.getDefaultLanguage());
         moveMultilangContent(origin, target);
         File currentDocumentDir = new File(
-            target.getDirectoryPath(DEFAULT_LANGUAGE)).getParentFile();
+            target.getDirectoryPath(i18n.getDefaultLanguage())).getParentFile();
         final Optional<File[]> files = ofNullable(currentDocumentDir.getParentFile().listFiles());
         final File[] safeContents = files.orElseGet(() -> {
           SilverLogger.getLogger(this)
@@ -547,7 +554,8 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_VERSIONABLE);
-        final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
+        final SimpleDocument target =
+            converter.fillDocument(documentNode, i18n.getDefaultLanguage());
         VersionManager versionManager = documentNode.getSession()
             .getWorkspace()
             .getVersionManager();
@@ -658,7 +666,7 @@ public class DocumentRepository {
     while (iter.hasNext()) {
       final Node node = iter.nextNode();
       if (!iter.hasNext()) {
-        return converter.convertNode(node, DEFAULT_LANGUAGE);
+        return converter.convertNode(node, i18n.getDefaultLanguage());
       }
     }
     return null;
@@ -1073,7 +1081,7 @@ public class DocumentRepository {
     Node docNode = session.getNodeByIdentifier(pk.getId());
     String language = lang;
     if (!StringUtil.isDefined(language)) {
-      language = DEFAULT_LANGUAGE;
+      language = i18n.getDefaultLanguage();
     }
     SimpleDocument document = converter.fillDocument(docNode, language);
     return new BufferedInputStream(
@@ -1380,7 +1388,7 @@ public class DocumentRepository {
   public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone)
       throws RepositoryException {
     Node originalNode = session.getNodeByIdentifier(attachment.getId());
-    Set<String> existingAttachments = new HashSet<>(I18NHelper.getNumberOfLanguages());
+    Set<String> existingAttachments = new HashSet<>();
     for (Node child : new NodeIterable(originalNode.getNodes())) {
       existingAttachments.add(child.getName());
     }

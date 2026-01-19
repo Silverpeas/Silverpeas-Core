@@ -37,8 +37,8 @@ import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.Address;
+import jakarta.mail.internet.InternetAddress;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -183,20 +183,13 @@ public class MSGExtractor implements MailExtractor {
     return null;
   }
 
-  /**
-   * Gets readable string from RTF text.
-   *
-   * @param rtfText
-   * @return
-   * @throws Exception
-   */
   private String getRtfText(String rtfText) {
     try {
       ByteArrayOutputStream htmlText = new ByteArrayOutputStream();
       DocumentFormatConverterProvider.getToHTMLConverter().convert(
           new ByteArrayInputStream(rtfText.getBytes(Charsets.UTF_8)), inFormat(rtf), htmlText,
           inFormat(html));
-      return htmlText.toString(StandardCharsets.UTF_8.name());
+      return htmlText.toString(StandardCharsets.UTF_8);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Cannot convert RTF to HTML", e);
     }

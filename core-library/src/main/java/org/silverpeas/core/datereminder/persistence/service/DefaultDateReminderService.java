@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.datereminder.persistence.service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
-import org.silverpeas.core.datereminder.persistence.repository
-    .PersistentResourceDateReminderRepository;
+import org.silverpeas.core.datereminder.persistence.repository.PersistentResourceDateReminderRepository;
 import org.silverpeas.core.persistence.EntityReference;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Date;
 
@@ -43,7 +41,6 @@ import java.util.Date;
  * @author Cécile Bonin
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultDateReminderService implements PersistentDateReminderService {
 
@@ -55,7 +52,7 @@ public class DefaultDateReminderService implements PersistentDateReminderService
    * @see PersistentDateReminderService#get(EntityReference)
    */
   @Override
-  public PersistentResourceDateReminder get(final EntityReference resource) {
+  public PersistentResourceDateReminder get(final EntityReference<?> resource) {
     return bind(dateReminderRepository.getByTypeAndResourceId(resource.getType(), resource.getId()));
   }
 
@@ -65,7 +62,7 @@ public class DefaultDateReminderService implements PersistentDateReminderService
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public PersistentResourceDateReminder create(EntityReference resource,
+  public PersistentResourceDateReminder create(EntityReference<?> resource,
       DateReminderDetail dateReminderDetail) throws DateReminderException {
     PersistentResourceDateReminder dateReminder = new PersistentResourceDateReminder();
     dateReminder.setResource(resource);
@@ -74,8 +71,7 @@ public class DefaultDateReminderService implements PersistentDateReminderService
     // Validating
     dateReminder.validate();
 
-    PersistentResourceDateReminder savedDateReminder = dateReminderRepository.save(dateReminder);
-    return savedDateReminder;
+    return dateReminderRepository.save(dateReminder);
   }
 
   /**
@@ -84,7 +80,8 @@ public class DefaultDateReminderService implements PersistentDateReminderService
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public PersistentResourceDateReminder set(EntityReference resource, DateReminderDetail dateReminderDetail)
+  public PersistentResourceDateReminder set(EntityReference<?> resource,
+      DateReminderDetail dateReminderDetail)
       throws DateReminderException {
     PersistentResourceDateReminder dateReminder = get(resource);
     dateReminder.setDateReminder(dateReminderDetail);
@@ -92,8 +89,7 @@ public class DefaultDateReminderService implements PersistentDateReminderService
     // Validating
     dateReminder.validate();
 
-    PersistentResourceDateReminder savedDateReminder = dateReminderRepository.save(dateReminder);
-    return savedDateReminder;
+    return dateReminderRepository.save(dateReminder);
   }
 
   /**
@@ -101,7 +97,7 @@ public class DefaultDateReminderService implements PersistentDateReminderService
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public void remove(final EntityReference resource) {
+  public void remove(final EntityReference<?> resource) {
     final PersistentResourceDateReminder dateReminder = get(resource);
     if (dateReminder.exists()) {
       dateReminderRepository.delete(dateReminder);
@@ -114,7 +110,7 @@ public class DefaultDateReminderService implements PersistentDateReminderService
    * NoneDateReminder that is an instance of a PersistentResourceDateReminder class, otherwise the dateReminder is simply
    * returned.
    *
-   * @param dateReminder the date reminder to bind to a non null <code>PersistentResourceDateReminder</code> instance.
+   * @param dateReminder the date reminder to bind to a non-null <code>PersistentResourceDateReminder</code> instance.
    * @return a non null instance of PersistentResourceDateReminder class
    */
   private PersistentResourceDateReminder bind(final PersistentResourceDateReminder dateReminder) {
@@ -129,7 +125,6 @@ public class DefaultDateReminderService implements PersistentDateReminderService
    */
   @Override
   public Collection<PersistentResourceDateReminder> listAllDateReminderMaturing(Date deadLine) {
-    Collection<PersistentResourceDateReminder> listResourceDateReminder = dateReminderRepository.getByDeadLine(deadLine);
-    return listResourceDateReminder;
+    return dateReminderRepository.getByDeadLine(deadLine);
   }
 }

@@ -23,24 +23,19 @@
  */
 package org.silverpeas.core.contribution.publication.social;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialPublicationProvider;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Provider
-public class SocialPublications implements SocialPublicationProvider {
+public class SocialPublications implements SocialPublicationProvider<SocialInformationPublication> {
 
   @Inject
   private PublicationService publicationService;
@@ -49,10 +44,9 @@ public class SocialPublications implements SocialPublicationProvider {
   }
 
 
-  @SuppressWarnings("unchecked")
   @Override
-  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
-    return (List) getPublicationService().getAllPublicationsWithStatusbyUserid(userId, begin, end);
+  public List<SocialInformationPublication> getSocialInformationList(String userId, Date begin, Date end) {
+    return getPublicationService().getAllPublicationsWithStatusbyUserid(userId, begin, end);
   }
 
   private PublicationService getPublicationService() {
@@ -60,9 +54,8 @@ public class SocialPublications implements SocialPublicationProvider {
   }
 
 
-  @SuppressWarnings("unchecked")
   @Override
-  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+  public List<SocialInformationPublication> getSocialInformationListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) {
     // getting all components allowed to me
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
@@ -79,7 +72,7 @@ public class SocialPublications implements SocialPublicationProvider {
             end);
 
     // Even if the data has been found by filtering on instanceIds that the user can access, it
-    // could exists more precise right rules to apply.
+    // could exist more precise right rules to apply.
     Iterator<SocialInformationPublication> socialPublicationIt = socialPublications.iterator();
     while (socialPublicationIt.hasNext()) {
       SocialInformationPublication socialPublication = socialPublicationIt.next();
@@ -94,6 +87,6 @@ public class SocialPublications implements SocialPublicationProvider {
         socialPublicationIt.remove();
       }
     }
-    return (List) socialPublications;
+    return socialPublications;
   }
 }

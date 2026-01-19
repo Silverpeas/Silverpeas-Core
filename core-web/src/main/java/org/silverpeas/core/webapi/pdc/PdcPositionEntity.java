@@ -35,12 +35,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Web representation of the position of a Silverpeas's resource in the classification plan
@@ -120,7 +120,7 @@ public class PdcPositionEntity implements WebEntity {
     }
     int positionId = -1;
     if (isDefined(id)) {
-      positionId = Integer.valueOf(id);
+      positionId = Integer.parseInt(id);
     }
     return new ClassifyPosition(positionId, classifyValues);
   }
@@ -194,7 +194,7 @@ public class PdcPositionEntity implements WebEntity {
       uriAsStr = getURI().toString();
     }
     return "PdcPositionEntity{id=" + getId() + ", uri=" + uriAsStr + ", values="
-        + valueArray.toString() + "}";
+        + valueArray + "}";
   }
 
   private static List<PdcPositionValueEntity> fromClassifyValues(final List<ClassifyValue> values,
@@ -239,7 +239,7 @@ public class PdcPositionEntity implements WebEntity {
     final String positionPath = "/" + positionId;
     final String query = baseURI.getRawQuery();
     if (!isDefined(query)) {
-      this.uri = URI.create(baseURI.toString() + positionPath);
+      this.uri = URI.create(baseURI + positionPath);
     } else {
       String requestURI = baseURI.toString();
       this.uri = URI.create(requestURI.substring(0, requestURI.lastIndexOf("?")) + positionPath

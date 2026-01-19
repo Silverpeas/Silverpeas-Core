@@ -29,8 +29,8 @@ import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;

@@ -26,7 +26,7 @@ package org.silverpeas.core.node.notification;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * An event about a change on a node.

@@ -23,21 +23,16 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,18 +48,12 @@ public class NotificationSender implements java.io.Serializable {
   private final int instanceId;
 
   /**
-   * Default constructor
-   */
-  protected NotificationSender() {
-    this(null);
-  }
-
-  /**
    * Constructor for a standard component
    * @param instanceId the instance Id of the calling's component
    */
   public NotificationSender(final String instanceId) {
-    this.instanceId = ComponentInst.getComponentLocalId(instanceId);
+    this.instanceId = instanceId == null ? -1 :
+        SilverpeasSharedComponentInstance.getIdentity(instanceId).getInstanceLocalId();
     notificationManager = NotificationManager.get();
   }
 
@@ -141,16 +130,14 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   private String getDefaultLanguage(final String senderId, final Collection<String> languages) {
-    final String defaultLanguage;
+    String defaultLanguage = I18n.get().getDefaultLanguage();
     String senderLanguage = "";
     if (StringUtil.isDefined(senderId)) {
       senderLanguage = User.getById(senderId).getUserPreferences().getLanguage();
     }
     if (languages.contains(senderLanguage)) {
       defaultLanguage = senderLanguage;
-    } else if (languages.contains(I18NHelper.DEFAULT_LANGUAGE)) {
-      defaultLanguage = I18NHelper.DEFAULT_LANGUAGE;
-    } else {
+    } else if (!languages.contains(defaultLanguage)) {
       defaultLanguage = languages.iterator().next();
     }
     return defaultLanguage;
@@ -221,7 +208,10 @@ public class NotificationSender implements java.io.Serializable {
     if (instanceId != -1) {
       params.setComponentInstance(instanceId);
     } else {
-      params.setComponentInstance(ComponentInst.getComponentLocalId(metaData.getComponentId()));
+      var localId = StringUtil.isDefined(metaData.getComponentId()) ?
+          SilverpeasSharedComponentInstance.getIdentity(metaData.getComponentId())
+              .getInstanceLocalId() : -1;
+      params.setComponentInstance(localId);
     }
     String sender = metaData.getSender();
     if (aMediaType == BuiltInNotifAddress.BASIC_POPUP.getId()) {

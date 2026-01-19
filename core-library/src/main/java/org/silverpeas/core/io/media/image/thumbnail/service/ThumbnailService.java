@@ -27,7 +27,7 @@ import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailReference;
 
-import javax.ejb.Local;
+import jakarta.ejb.Local;
 import java.util.List;
 import java.util.Set;
 

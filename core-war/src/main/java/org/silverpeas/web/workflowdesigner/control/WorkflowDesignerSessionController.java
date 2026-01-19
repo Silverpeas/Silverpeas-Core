@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.workflowdesigner.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.component.model.LocalizedProfile;
 import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
@@ -36,6 +35,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
@@ -91,6 +91,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   public static final String DESCRIPTIONS = "descriptions";
   public static final String LABELS = "labels";
   private static final String CONTEXT_DELIMS = "/[]";
+  private final String defaultLanguage;
   private ProcessModel processModel; // The process model being edited.
   private String processModelFileName; // we have to store the file path as
   // well, since it is not included in
@@ -112,6 +113,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
         "org.silverpeas.workflowdesigner.multilang.workflowDesignerBundle",
         "org.silverpeas.workflowdesigner.settings.workflowDesignerIcons",
         "org.silverpeas.workflowdesigner.settings.workflowDesigner");
+    defaultLanguage = I18NHelper.getDefaultLanguage();
   }
 
   /**
@@ -130,7 +132,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-   * Create a new ProcessModel descriptor that is not yet saved in a XML file.
+   * Create a new ProcessModel descriptor that is not yet saved in an XML file.
    *
    * @return ProcessModel object
    */
@@ -167,7 +169,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-   * Save the currently cached process model in a XML file
+   * Save the currently cached process model in an XML file
    *
    * @throws WorkflowDesignerException when the saving goes wrong...
    */
@@ -768,7 +770,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
     if (strContext == null) {
       return null;
     }
-    // Initialise the reference object
+    // Initialize the reference object
     if (strParticipant == null) {
       reference.setParticipant(null);
     } else {
@@ -839,7 +841,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       // So if an object with the same attributes has been found ('check')
       // it should be the object that is being modified, just that the attribute
       // values did not change.
-      // Therefore we compare all the attributes with their initial values.
+      // Therefore, we compare all the attributes with their initial values.
       //
       if (check != null
           && !((strParticipantOriginal == null && strParticipant == null ||
@@ -949,7 +951,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       if (check == null) {
         processModel.getActionsEx().addAction(source);
       } else {
-        // If a 'action' element with the same name as the new element
+        // If an 'action' element with the same name as the new element
         // already exists we have a problem...
         //
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateAction",
@@ -957,7 +959,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       }
     } else // Existing object
     {
-      // If a 'action' element with the same name as the element's new name
+      // If an 'action' element with the same name as the element's new name
       // already exists we have a problem...
       //
       if (check != null && !strNameOriginal.equals(source.getName())) {
@@ -1035,7 +1037,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
         Integer.parseInt(strContext.substring(strContext.lastIndexOf(
             '/') + 1));
 
-    // If it's a new object the 'Consequences' may not yet exits
+    // If it's a new object the 'Consequences' may not yet exist
     //
     if (consequences == null) {
       consequences = action.createConsequences();
@@ -1074,7 +1076,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       }
 
       // Update the consequence attributes
-      // get the consequence by number, replace it with the source one, updating
+      // get the consequence matching the number, replace it with the source one, updating
       // the source...
       //
       consequence = consequences.getConsequenceList().set(idxConsequence, source);
@@ -1096,7 +1098,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       Action action = findAction(strContext);
       Consequences consequences = action.getConsequences();
 
-      // Move the consequence within the consequences collection
+      // Move the consequence in the consequences collection
       //
       if (consequences != null) {
         Consequence consequence = consequences.getConsequenceList().remove(iConsequence);
@@ -1211,7 +1213,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
         //
         processModel.getForms().addForm(source);
       } else {
-        // If an 'Form' element with the same name as the new element
+        // If a 'Form' element with the same name as the new element
         // already exists we have a problem...
         //
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateForm",
@@ -1225,7 +1227,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       // So if an object with the same attributes has been found ('check')
       // it should be the object that is being modified, just that the attribute
       // values did not change.
-      // Therefore we compare all the attributes with their initial values.
+      // Therefore, we compare all the attributes with their initial values.
       //
       if (check != null && (check.getRole() == null && source.getRole() == null // the
           // "check's"
@@ -1281,7 +1283,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
             strRoleName = astrElements[2];
           }
 
-          // Check if the form is no referenced in actions
+          // Check if the form is not referenced in actions
           //
           if (processModel.getActionsEx() != null) {
             Iterator<Action> iterAction = processModel.getActionsEx().iterateAction();
@@ -1364,7 +1366,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
       if (check == null) {
         form.addInput(source);
       } else {
-        // If a 'input' element with the same item/value as the new element
+        // If an 'input' element with the same item/value as the new element
         // already exists we have a problem...
         //
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateInput",
@@ -1619,7 +1621,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
 
             // If the next token is not a keyword, must be the optional role
             // name
-            // eg. forms[form-name,role-name]/titles
+            // e.g. forms[form-name,role-name]/titles
             //
             if (!TITLES.equals(strElement) && !INPUTS.equals(strElement)) {
               form = processModel.getForms().getForm(strFormName, strElement);
@@ -2301,7 +2303,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
         }
       } catch (RuntimeException e) {
         // Thrown when no token was found where expected
-        // or the number coludn't to be interpreted,
+        // or the number couldn't to be interpreted,
         // or the index is out of bounds
         throw new WorkflowDesignerException(
             "WorkflowDesignerSessionController.setQualifiedUsers",
@@ -2408,7 +2410,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
    * Find the Consequence specified by the context
    *
    * @param strContext the context
-   * @return an Consequence object or <code>null</code>
+   * @return a Consequence object or <code>null</code>
    */
   public Consequence findConsequence(String strContext)
       throws WorkflowException {
@@ -2464,7 +2466,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
   }
 
   /**
-   * Returns names of available languages as configured in the properties, localised for the current
+   * Returns names of available languages as configured in the properties, localized for the current
    * user
    *
    * @param fDefault if <code>true</code> the 'default' option shall be included
@@ -2848,7 +2850,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
 
   private String getSureLanguage(String language) {
     if (language.equalsIgnoreCase("default")) {
-      return I18NHelper.DEFAULT_LANGUAGE;
+      return defaultLanguage;
     }
     return I18NHelper.checkLanguage(language);
   }
@@ -2857,8 +2859,8 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
     Profile profile = new Profile();
     profile.setName("supervisor");
     final String supervisorLabel = getSettings().getString("componentDescriptor.supervisor");
-    profile.putLabel(I18NHelper.DEFAULT_LANGUAGE, supervisorLabel);
-    profile.putHelp(I18NHelper.DEFAULT_LANGUAGE, supervisorLabel);
+    profile.putLabel(defaultLanguage, supervisorLabel);
+    profile.putHelp(defaultLanguage, supervisorLabel);
     return profile;
   }
 
@@ -2898,7 +2900,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
    */
   public void uploadProcessModel(FileItem model)
       throws WorkflowDesignerException {
-    String name = model.getName();
+    String name = model.getFileName();
     if (name != null) {
       name = name.substring(name.lastIndexOf(File.separator) + 1);
       name = replaceSpecialChars(name);
@@ -2917,7 +2919,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
 
       // upload du fichier
       try {
-        model.write(modelFile);
+        model.saveTo(modelFile);
       } catch (Exception e) {
         throw new WorkflowDesignerException(
             "WorkflowDesignerSessionController.uploadProcessModel()",
@@ -2949,7 +2951,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
     return FileServerUtils.replaceInvalidPathChars(toParse);
   }
 
-  private static class LocalizedWAComponentRegistry {
+  private class LocalizedWAComponentRegistry {
     private final WAComponent component;
     private final Map<String, LocalizedWAComponent> registry = new HashMap<>();
 
@@ -2962,7 +2964,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
     }
 
     LocalizedWAComponent getDefault() {
-      return getByLanguage(I18NHelper.DEFAULT_LANGUAGE);
+      return getByLanguage(defaultLanguage);
     }
   }
 }

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.authentication.credentials;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * An handler of a function to perform against the credentials of a user.

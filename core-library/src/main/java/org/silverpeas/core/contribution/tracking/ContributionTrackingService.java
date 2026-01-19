@@ -35,8 +35,8 @@ import org.silverpeas.core.contribution.ContributionSettings;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.stream.Stream;
 
@@ -73,7 +73,7 @@ public class ContributionTrackingService
   public void update(final Contribution before, final Contribution after) {
     runIfTrackingEnabled(() -> {
       TrackedActionType type = modifHandler.isMinorModification()
-          .map(m -> Boolean.TRUE.equals(m) ?
+          .map(m -> m ?
               TrackedActionType.MINOR_UPDATE :
               TrackedActionType.MAJOR_UPDATE)
           .orElse(TrackedActionType.UPDATE);

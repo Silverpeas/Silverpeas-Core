@@ -33,7 +33,6 @@ import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Singleton;
 import java.util.stream.Stream;
 
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
@@ -46,7 +45,6 @@ import static org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class OpenOfficeService implements Initialization {
 
   private static final SettingBundle settings = getSettingBundle("org.silverpeas.converter" +

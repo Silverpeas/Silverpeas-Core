@@ -29,11 +29,11 @@
  */
 package org.silverpeas.core.pdc.pdc.importexport;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement
@@ -53,16 +53,10 @@ public class AxisType {
     // This constructor is necessary with JAXB
   }
 
-  /**
-   * @return
-   */
   public int getId() {
     return id;
   }
 
-  /**
-   * @param i
-   */
   public void setId(int i) {
     id = i;
   }

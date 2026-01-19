@@ -34,8 +34,8 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Inject;
-import java.rmi.RemoteException;
+import jakarta.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -64,15 +64,9 @@ public class CoordinateImportExport {
 
   }
 
-  /**
-   * @param componentId
-   * @param axisPath (/0/1024/1043,/0/1036,/0/1040)
-   * @return coordinateId
-   * @throws CoordinateRuntimeException
-   */
   public int addPositions(String componentId, String axisPath) {
     List<String> combination = getArrayCombination(axisPath);
-    int coordinateId = 0;
+    int coordinateId;
     NodePK axisPK = new NodePK("toDefine", componentId);
     CoordinatePK coordinatePK = new CoordinatePK("unknown", axisPK);
     try {
@@ -107,14 +101,6 @@ public class CoordinateImportExport {
     return coordinateId;
   }
 
-  /**
-   * Get a node by its name.
-   *
-   * @param name
-   * @param nodeRootId
-   * @param componentId
-   * @return
-   */
   public NodeDetail getNodeDetailByName(String name, int nodeRootId, String componentId) {
     try {
       return getNodeService().getDetailByNameAndFatherId(
@@ -124,32 +110,17 @@ public class CoordinateImportExport {
     }
   }
 
-  /**
-   * Get ArrayList of valuePath (/xx/yyy, /xx/yyy/zzzz/ to arrayList with /xx/yy then /xx/yyy/zzzz)
-   *
-   * @param valuePath
-   * @return ArrayList
-   */
   private List<String> getArrayCombination(String valuePath) {
     StringTokenizer st = new StringTokenizer(valuePath, ",");
     List<String> combination = new ArrayList<>();
     while (st.hasMoreTokens()) {
       String axisValue = st.nextToken();
-      axisValue = axisValue.substring(axisValue.lastIndexOf('/') + 1, axisValue.length());
+      axisValue = axisValue.substring(axisValue.lastIndexOf('/') + 1);
       combination.add(axisValue);
     }
     return combination;
   }
 
-  /**
-   * Get ArrayList of valuePath labels (/xx/yyy, /xx/yyy/zzzz/ to arrayList with Axe1 > value15 then
-   * Axe2 > value5)
-   *
-   * @param combination
-   * @param componentId
-   * @return a List of displayName: Axe1 > value15
-   * @throws RemoteException
-   */
   public List<String> getCombinationLabels(List<String> combination, String componentId) {
     List<String> coordinatesLabels = new ArrayList<>();
     for (String position : combination) {
@@ -178,26 +149,18 @@ public class CoordinateImportExport {
     return getNodeService().getPath(nodePk);
   }
 
-  /**
-   * Get axis of the component
-   *
-   * @param componentId
-   * @return
-   */
   public List<NodeDetail> getAxis(String componentId) {
     SettingBundle nodeSettings = ResourceLocator.getSettingBundle(NODE_SETTINGS_PATH);
     String sortField = nodeSettings.getString(SORT_FIELD, NODE_PATH_DEFAULT_VALUE);
     String sortOrder = nodeSettings.getString(SORT_ORDER, "asc");
     List<NodeDetail> axis = new ArrayList<>();
     try {
-      List headers = getAxisHeaders(componentId);
-      NodeDetail header = null;
-      for (int h = 0; h < headers.size(); h++) {
-        header = (NodeDetail) headers.get(h);
+      List<NodeDetail> headers = getAxisHeaders(componentId);
+      for (NodeDetail nodeDetail : headers) {
         // Do not get hidden nodes (Basket and unclassified)
-        if (!NodeDetail.STATUS_INVISIBLE.equals(header.getStatus())) // get content of this axis
+        if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus())) // get content of this axis
         {
-          axis.addAll(getNodeService().getSubTree(header.getNodePK(), sortField + " " + sortOrder));
+          axis.addAll(getNodeService().getSubTree(nodeDetail.getNodePK(), sortField + " " + sortOrder));
         }
       }
     } catch (Exception e) {
@@ -206,12 +169,6 @@ public class CoordinateImportExport {
     return axis;
   }
 
-  /**
-   * Get axis header with Children
-   *
-   * @param componentId
-   * @return
-   */
   public List<NodeDetail> getAxisHeadersWithChildren(String componentId,
       boolean includeUnclassified,
       boolean takeAxisInChildrenList) {
@@ -238,14 +195,7 @@ public class CoordinateImportExport {
     return axis;
   }
 
-  /**
-   * Get children of an axis
-   *
-   * @param nodePK
-   * @param takeAxisInChildrenList
-   * @return
-   */
-  public List getAxisChildren(NodePK nodePK, boolean takeAxisInChildrenList) {
+  public List<NodeDetail> getAxisChildren(NodePK nodePK, boolean takeAxisInChildrenList) {
     SettingBundle nodeSettings = ResourceLocator.getSettingBundle(NODE_SETTINGS_PATH);
     String sortField = nodeSettings.getString(SORT_FIELD, NODE_PATH_DEFAULT_VALUE);
     String sortOrder = nodeSettings.getString(SORT_ORDER, "asc");
@@ -261,10 +211,6 @@ public class CoordinateImportExport {
     }
   }
 
-  /**
-   * @param componentId
-   * @return
-   */
   public List<NodeDetail> getAxisHeaders(String componentId) {
     try {
       return getNodeService().getHeadersByLevel(new NodePK("useless", componentId), 2);
@@ -273,12 +219,6 @@ public class CoordinateImportExport {
     }
   }
 
-  /**
-   * Add position top the axis
-   *
-   * @param position , ComponentId
-   * @return nodePK
-   */
   public NodeDetail addPosition(NodeDetail position, String axisId, String componentId) {
     position.getNodePK().setComponentName(componentId);
     position.setCreationDate(new Date());
@@ -291,9 +231,6 @@ public class CoordinateImportExport {
     }
   }
 
-  /**
-   * Get node Detail
-   */
   public NodeDetail getNodeHeader(NodePK pk) {
     try {
       return getNodeService().getHeader(pk);
@@ -302,51 +239,26 @@ public class CoordinateImportExport {
     }
   }
 
-  /**
-   * Get node Detail
-   *
-   * @param id
-   * @param componentId
-   * @return
-   */
   public NodeDetail getNodeHeader(String id, String componentId) {
     NodePK pk = new NodePK(id, componentId);
     return getNodeHeader(pk);
   }
 
-  /**
-   * @return CoordinatesService layer
-   * @throws CoordinateRuntimeException
-   */
   private CoordinatesService getCoordinatesService() {
     return coordinatesService;
   }
 
-  /**
-   * @return l'EJB NodeBm
-   */
   private NodeService getNodeService() {
     return nodeService;
   }
 
-  /**
-   * Generate index files with combination
-   *
-   * @param filesNames
-   * @param nodeIds
-   * @param cur
-   * @param loop
-   * @param nTuple
-   * @param prefixeId
-   * @return
-   */
   public List<String> coupleIds(List<String> filesNames, List<String> nodeIds, int cur, int loop,
       int nTuple, String prefixeId, int nbAxis) {
     for (int i = cur; i < nodeIds.size(); i++) {
       String terme = nodeIds.get(i);
       String tmp;
       if (prefixeId == null) {
-        tmp = "" + terme;
+        tmp = terme;
       } else {
         tmp = prefixeId + "-" + terme;
       }

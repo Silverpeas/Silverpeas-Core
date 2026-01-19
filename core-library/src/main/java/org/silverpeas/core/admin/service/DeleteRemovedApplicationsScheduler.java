@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.admin.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.SchedulingInitializer;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 
 import static org.silverpeas.core.admin.AdminSettings.*;
@@ -42,7 +42,7 @@ import static org.silverpeas.core.util.DateUtil.toLocalDate;
  *
  * @author mmoquillon
  */
-@Service
+@Bean
 public class DeleteRemovedApplicationsScheduler extends SchedulingInitializer {
 
   protected static final String JOB_NAME = "DeleteRemovedApplicationsJob";

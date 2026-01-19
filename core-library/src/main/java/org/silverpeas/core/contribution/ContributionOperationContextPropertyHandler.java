@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution;
 
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler of a property of the context of an operation implying a contribution.

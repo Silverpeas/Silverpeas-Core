@@ -33,9 +33,9 @@ import org.silverpeas.core.util.JSONCodec.JSONObject;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -54,10 +54,10 @@ public class IFrameAjaxTransportUtil {
   }
 
   /**
-   * Packaging an Web Application Exception as JSon String and then as HTML to be performed by
+   * Packaging a Web Application Exception as JSon String and then as HTML to be performed by
    * IFrame Ajax Transport Javascript Plugin.
-   * @param wae
-   * @return
+   * @param wae web exception
+   * @return a wrapped web exception
    */
   public static WebApplicationException createWebApplicationExceptionWithJSonErrorInHtmlContainer(
       WebApplicationException wae) {
@@ -74,10 +74,10 @@ public class IFrameAjaxTransportUtil {
   }
 
   /**
-   * Packaging an object as JSon String and then as HTML to be performed by IFrame Ajax Transport
-   * Javascript Plugin.
-   * @param object
-   * @return
+   * Packaging an object as JSON String and then as HTML to be performed by IFrame Ajax Transport
+   * JavaScript Plugin.
+   * @param object the object to package as JSON
+   * @return the JSON
    */
   public static String packObjectToJSonDataWithHtmlContainer(Object object) {
     String json = StringUtil.EMPTY;
@@ -88,10 +88,10 @@ public class IFrameAjaxTransportUtil {
   }
 
   /**
-   * Packaging an object list as JSon String and then as HTML to be performed by IFrame Ajax
-   * Transport Javascript Plugin.
-   * @param objects
-   * @return
+   * Packaging an object list as JSON String and then as HTML to be performed by IFrame Ajax
+   * Transport JavaScript Plugin.
+   * @param objects a list of objects
+   * @return the JSON
    */
   public static String packObjectToJSonDataWithHtmlContainer(List<Object> objects) {
     String jsonArray = StringUtil.EMPTY;
@@ -102,10 +102,10 @@ public class IFrameAjaxTransportUtil {
   }
 
   /**
-   * Packaging a JSon object as HTML to be performed by IFrame Ajax Transport Javascript
+   * Packaging a JSON object as HTML to be performed by IFrame Ajax Transport JavaScript
    * Plugin.
    * @param jsonObjectBuilder a dynamic builder of a JSON object.
-   * @return
+   * @return the JSON
    */
   public static String packJSonObjectWithHtmlContainer(
       UnaryOperator<JSONObject> jsonObjectBuilder) {
@@ -121,10 +121,10 @@ public class IFrameAjaxTransportUtil {
   }
 
   /**
-   * Packaging a JSon object list as HTML to be performed by IFrame Ajax Transport Javascript
+   * Packaging a JSON object list as HTML to be performed by IFrame Ajax Transport JavaScript
    * Plugin.
    * @param jsonArrayBuilder a dynamic builder of a JSON array of JSON objects.
-   * @return
+   * @return the JSON
    */
   public static String packJSonArrayWithHtmlContainer(
       UnaryOperator<JSONArray> jsonArrayBuilder) {
@@ -143,9 +143,9 @@ public class IFrameAjaxTransportUtil {
   }
 
   /**
-   * Packaging a JSon string as HTML to be performed by IFrame Ajax Transport Javascript Plugin.
-   * @param jsonString
-   * @return
+   * Packaging a JSON string as HTML to be performed by IFrame Ajax Transport JavaScript Plugin.
+   * @param jsonString the JSON
+   * @return the HTML
    */
   protected static String packJSonDataWithHtmlContainer(String jsonString) {
     ElementContainer xhtmlcontainer = new ElementContainer();

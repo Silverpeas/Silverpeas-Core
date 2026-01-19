@@ -23,20 +23,20 @@
  */
 package org.silverpeas.core.index.search.model;
 
+import jakarta.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,9 +48,9 @@ import java.util.StringTokenizer;
  * An interactive search to propose queries matching some results the user is expecting.
  *
  */
-@Singleton
+@Service
 public class DidYouMeanSearcher {
-  private List<SpellChecker> spellCheckers = null;
+  private List<SpellChecker> spellCheckers;
   private String query = null;
   private final File uploadIndexDir;
   @Inject
@@ -58,7 +58,7 @@ public class DidYouMeanSearcher {
   @Inject
   private IndexManager indexManager;
 
-  private DidYouMeanSearcher() {
+  DidYouMeanSearcher() {
     spellCheckers = new ArrayList<>();
     uploadIndexDir =  new File(IndexFileManager.getIndexUpLoadPath());
   }
@@ -167,10 +167,6 @@ public class DidYouMeanSearcher {
 
   }
 
-  /**
-   * @param currentSentence
-   * @param currentToken
-   */
   private void getSuffixOperator(StringBuilder currentSentence, String currentToken,
       boolean originalString) {
     if (currentToken.endsWith("*")) {
@@ -182,10 +178,6 @@ public class DidYouMeanSearcher {
     }
   }
 
-  /**
-   * @param currentSentence
-   * @param currentToken
-   */
   private void getPrefixOperator(StringBuilder currentSentence, String currentToken,
       boolean originalString) {
     if (currentToken.startsWith("-")) {

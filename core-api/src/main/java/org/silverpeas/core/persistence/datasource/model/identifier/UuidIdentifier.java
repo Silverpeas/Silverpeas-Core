@@ -23,74 +23,39 @@
  */
 package org.silverpeas.core.persistence.datasource.model.identifier;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
+import jakarta.persistence.Embeddable;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.util.UUID;
 
 /**
+ * Unique identifier as a UUID.
+ *
  * @author Yohann Chastagnier
  */
 @Embeddable
-public class UuidIdentifier implements EntityIdentifier {
+public class UuidIdentifier extends BaseEntityIdentifier<String> {
   private static final long serialVersionUID = -5065891079478751580L;
 
-  @Column(name = "id", columnDefinition = "varchar(40)", length = 40)
-  private String id;
-
   public static UuidIdentifier from(String value) {
-    return new UuidIdentifier().fromString(value);
-  }
-
-  public String getId() {
-    return id;
+    return new UuidIdentifier().setFromString(value);
   }
 
   @Override
-  public String asString() {
-    return id;
-  }
-
-  @Override
-  public UuidIdentifier fromString(final String id) {
-    this.id = id;
+  public UuidIdentifier setFromString(final String id) {
+    setId(id);
     return this;
   }
 
   /**
    * Generates a new UUID.
+   *
    * @param parameters some parameters to set up the identifier generation. They aren't taken into
    * account.
    * @return a new UUID.
    */
   @Override
-  public UuidIdentifier generateNewId(String ... parameters) {
-    id = UUID.randomUUID().toString();
+  public UuidIdentifier generateNewValue(String... parameters) {
+    setId(UUID.randomUUID().toString());
     return this;
-  }
-
-  @Override
-  public int hashCode() {
-    return new HashCodeBuilder().append(getId()).toHashCode();
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final UuidIdentifier other = (UuidIdentifier) obj;
-    return new EqualsBuilder().append(getId(), other.getId()).isEquals();
-  }
-
-  @Override
-  public String toString() {
-    return asString();
   }
 }

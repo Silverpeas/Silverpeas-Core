@@ -31,8 +31,8 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.HttpMethod;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.HttpMethod;
 import java.net.URI;
 import java.util.Map;
 
@@ -65,7 +65,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
   void verifyingWebComponentControllerInitialize() throws Exception {
     ComponentContext componentContext = mock(ComponentContext.class);
     when(componentContext.getCurrentComponentId()).thenReturn("componentName26");
-    TestResult testResult = onDefaultController().defaultRequest().perform();
+    TestResult<?> testResult = onDefaultController().defaultRequest().perform();
     assertThat(testResult.router.getSessionControlBeanName(),
         is("TestWebComponentControllerIdentifier"));
     assertThat(testResult.router.createComponentSessionController(mock(MainSessionController.class),
@@ -74,7 +74,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
   void doGetOnRequestRouterWithRedirectToInternalJsp() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest().perform();
+    TestResult<?> testResult = onDefaultController().defaultRequest().perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathNotFound(testResult);
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
@@ -88,7 +88,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
   void doPostOnRequestRouterWithRedirectToInternal() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("create").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -98,7 +98,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
   void doPutOnRequestRouterWithRedirectToInternalWithRedirectTo() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.PUT)
             .changeSuffixPathWith("update").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -108,7 +108,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
   void doDeleteOnRequestRouter() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.DELETE)
             .changeSuffixPathWith("delete").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -142,7 +142,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     });
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void lowerAccessRoleSuccess() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -159,7 +158,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
   void lowerAccessRoleWithUserThatHasNotEnoughRights() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
             .perform();
@@ -172,7 +171,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
   void lowerAccessRoleButWrongHttpMethod() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.GET)
             .changeSuffixPathWith("lowerRoleAccess").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -180,7 +179,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void lowerRoleAccessRedirectToInternalJspOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -192,7 +190,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/componentName/jsp/error.jsp");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void lowerRoleAccessRedirectToInternalOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -204,7 +201,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/componentName/error");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void lowerRoleAccessRedirectToOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -266,7 +262,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     });
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void oneIvokationBefore() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -280,7 +275,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(0));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void twoIvokationsBefore() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -294,7 +288,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(0));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void oneIvokationAfter() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -308,7 +301,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(1));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void threeIvokationsAfter() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -321,7 +313,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(3));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void threeIvokationsBeforeAndFourAfter() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -335,7 +326,6 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(4));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void navigateToHtmlEditor() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
@@ -419,10 +409,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     });
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void oneVariableSimple() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/view").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
@@ -433,10 +422,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables, hasEntry("anResourceId", "myVariableValue_123"));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void oneVariableComplex() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-myVariableValue_123-test/").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
@@ -447,10 +435,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables, hasEntry("anResourceId", "myVariableValue_123"));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void oneVariableComplex2() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/wysiwyg/resourceId-_123-test")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -462,10 +449,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables, hasEntry("anResourceId", "_123"));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void oneVariableRegexpCheckOk() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-123-otherTest").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
@@ -476,7 +462,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables, hasEntry("anResourceId", "123"));
   }
 
-  private void verifyPathFound(final TestResult testResult) {
+  private void verifyPathFound(final TestResult<?> testResult) {
     AbstractTestWebComponentGenericController.LocalizationBundle4Test bundle4Test =
         (AbstractTestWebComponentGenericController.LocalizationBundle4Test) testResult
             .requestContext
@@ -484,7 +470,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     bundle4Test.verifyNbCallOf("GML.url.path.notFound", 0);
   }
 
-  private void verifyPathNotFound(final TestResult testResult) {
+  private void verifyPathNotFound(final TestResult<?> testResult) {
     AbstractTestWebComponentGenericController.LocalizationBundle4Test bundle4Test =
         (AbstractTestWebComponentGenericController.LocalizationBundle4Test) testResult
             .requestContext
@@ -492,10 +478,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     bundle4Test.verifyNbCallOf("GML.url.path.notFound", 1);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void oneVariableRegexpCheckOk2() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/wysiwyg/resourceId-_123-test")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -507,10 +492,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables, hasEntry("anResourceId", "_123"));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void twoVariablesRegexpCheckOk() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-123-test/id26/view").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
@@ -522,10 +506,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables, hasEntry("otherId", "id26"));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void sameVariableName() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_123/review").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
@@ -536,10 +519,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables, hasEntry("anResourceId", "myVariableValue_123"));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void sameVariableNameButNotSameValues() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_124/review").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
@@ -549,10 +531,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables.size(), is(0));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void redirectToInternalJspWithVariable() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/report").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
@@ -560,10 +541,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
         "/componentName/jsp/pushed.jsp?action=anAction&otherId=id26");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void redirectToInternalWithVariable() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/123/push/26/report")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -571,10 +551,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/componentName/123/pushed?action=anAction&otherId=26");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void redirectToWithVariable() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/report/123/push/26")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -582,10 +561,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/123/pushed?action=anAction&otherId=26");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void redirectToWithVariableButSeveralValuesForSameVariable() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/redirect/report/123/push/26/SameVariableSevralValues").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
@@ -595,10 +573,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables.size(), is(0));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void producesByReturningEntity() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/produces/entity")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -606,10 +583,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyNoNavigation(testResult);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void producesByReturningString() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/produces/string")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -617,10 +593,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyNoNavigation(testResult);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void producesByHandlingResponseManually() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/produces/manually")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -628,10 +603,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyNoNavigation(testResult);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void webApplicationException412() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("webApplicationException412")
             .perform();
     verify(testResult.requestContext.getResponse(), times(1))
@@ -640,30 +614,27 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void specialControllerInheritance() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onController(TestWebComponentSpecialInheritanceController.class).defaultRequest().perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathNotFound(testResult);
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void variableConcurrencyVariableMethodNotFound() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/variables/concurrencyWithStatics/").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathNotFound(testResult);
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void variableConcurrencyVariable() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/variables/concurrencyWithStatics/dynamicPath/").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/variableWay");
@@ -673,10 +644,9 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(variables, hasEntry("variablePath", "dynamicPath"));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void variableConcurrencyStatic() throws Exception {
-    TestResult testResult = onDefaultController().defaultRequest()
+    TestResult<?> testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/variables/concurrencyWithStatics/staticPath").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/staticWay");
@@ -687,7 +657,7 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
   void navigationContextManagement() throws Exception {
-    TestResult testResult =
+    TestResult<?> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("Main").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");

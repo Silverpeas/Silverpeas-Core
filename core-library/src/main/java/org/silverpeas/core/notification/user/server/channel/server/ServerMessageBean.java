@@ -26,17 +26,17 @@ package org.silverpeas.core.notification.user.server.channel.server;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
 @Table(name = "ST_ServerMessage")
 @NamedQuery(name = "findByUserIdAndSessionId",
-    query = "select m from ServerMessageBean m where m.id in (select min(s.id) from " +
+    query = "select m from ServerMessageBean m where m.id.id in (select min(s.id.id) from " +
         "ServerMessageBean s where s.userId=:userId and s.sessionId=:sessionId)")
 @NamedQuery(name = "deleteByUserIdAndSessionId",
     query = "delete from ServerMessageBean m where m.userId = :userId and m.sessionId = :sessionId")

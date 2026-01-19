@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.annotation.Provider;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 

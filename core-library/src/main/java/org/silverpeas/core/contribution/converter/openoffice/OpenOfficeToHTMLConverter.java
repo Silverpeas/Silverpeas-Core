@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ToHTMLConverter;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.io.File;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.html;

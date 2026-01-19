@@ -85,7 +85,8 @@ public class ContributionLocalizationBundle {
     LocalizationBundle main = ResourceLocator
         .getLocalizationBundle("org.silverpeas.contribution.multilang.contribution", language);
     final String componentName = SilverpeasComponentInstance
-        .getComponentName(contribution.getIdentifier().getComponentInstanceId());
+        .getIdentity(contribution.getIdentifier().getComponentInstanceId())
+        .getComponentName();
     final Optional<LocalizationBundle> specific = ResourceLocator.getOptionalLocalizationBundle(
         "org.silverpeas." + componentName.toLowerCase() + ".multilang.contribution", language);
     return new ContributionLocalizationBundle(contribution, main, specific.orElse(null));

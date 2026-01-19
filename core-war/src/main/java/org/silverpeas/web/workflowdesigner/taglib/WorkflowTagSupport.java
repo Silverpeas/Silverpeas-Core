@@ -28,7 +28,7 @@ import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
 
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 /**
  * Common properties of all the tag defined for the workflow web pages.

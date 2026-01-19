@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.personalization.service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
@@ -34,9 +36,6 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.List;
 
 
@@ -44,7 +43,6 @@ import java.util.List;
  * Class declaration
  */
 @Service
-@Singleton
 @Transactional
 public class DefaultPersonalizationService implements PersonalizationService {
 

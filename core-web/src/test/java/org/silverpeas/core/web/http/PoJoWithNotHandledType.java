@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.web.http;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 import java.math.BigDecimal;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class PoJoWithNotHandledType {
 

@@ -25,6 +25,8 @@ package org.silverpeas.core.admin.domain;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -35,14 +37,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.domain.exception.*;
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.DataSetTest;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -121,17 +120,10 @@ public class SQLDomainServiceIT extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SQLDomainServiceIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
-        .addFileRepositoryFeatures()
-        .addAdministrationFeatures()
-        .addPublicationTemplateFeatures()
-        .addClasses(FileServerUtils.class)
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.admin.domain");
-          warBuilder.addAsResource("org/silverpeas/domains/templateDomainSQL.properties");
-        }).build();
+    return LibCoreWarBuilder.onFullWarForTestClass(SQLDomainServiceIT.class)
+        .addAsResource("org/silverpeas/core/admin/domain/driver")
+        .addAsResource("org/silverpeas/domains/templateDomainSQL.properties")
+        .build();
   }
 
   @Before

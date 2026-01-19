@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.viewer.service;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
@@ -32,28 +33,27 @@ import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.DocumentInfo;
 import org.silverpeas.core.util.PdfUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.viewer.flexpaper.TemporaryFlexPaperView;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.model.TemporaryPdfView;
 import org.silverpeas.core.viewer.util.JsonPdfUtil;
 import org.silverpeas.core.viewer.util.SwfUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 
 import static java.util.Optional.of;
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
 import static org.silverpeas.core.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
+ * Default service to generate a document view from the content of a contribution.
+ *
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 public class DefaultViewService extends AbstractViewerService implements ViewService {
 
   private static final String PROCESS_NAME = "VIEW";
@@ -82,7 +82,8 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#getDocumentView(java.lang.String, java.io.File)
+   * @see org.silverpeas.core.viewer.service.ViewService#getDocumentView(java.lang.String, java
+   * .io.File)
    */
   @Override
   public DocumentView getDocumentView(final ViewerContext viewerContext) {
@@ -153,6 +154,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
 
   /**
    * Convert into PDF
+   *
    * @param source the file source.
    * @return a {@link File} instance referencing a PDF file.
    */

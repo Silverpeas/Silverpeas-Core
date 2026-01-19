@@ -30,8 +30,8 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 /**
@@ -50,6 +50,6 @@ public class GoToTopic extends GoTo {
 
     setGefSpaceId(req, componentId);
     String gotoURL = URLUtil.getURL(null, componentId) + node.getURL();
-    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8.name());
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 }

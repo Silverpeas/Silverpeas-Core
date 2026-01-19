@@ -33,19 +33,13 @@ import org.silverpeas.core.node.coordinates.model.CoordinateRuntimeException;
 import org.silverpeas.core.node.coordinates.persistence.CoordinatesDAO;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Class declaration
- *
- * @author
- * @version %I%, %G%
- */
 @Service
 @Transactional
 public class DefaultCoordinatesService implements CoordinatesService, ComponentInstanceDeletion {
@@ -61,16 +55,6 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     }
   }
 
-  /**
-   * Used only by the specific job'peas SmallAds This method must not be used by an another Job'peas
-   * Instead, you must use getCoordinatesByFatherPaths()
-   *
-   * @param fatherIds
-   * @param pk
-   * @return
-   * @
-   *
-   */
   @Override
   public Collection<String> getCoordinatesByFatherIds(List<Integer> fatherIds, CoordinatePK pk) {
     Connection con = getConnection();
@@ -98,15 +82,6 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param pk
-   * @param coordinatePoints
-   * @return
-   * @
-   *
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public int addCoordinate(CoordinatePK pk, List<CoordinatePoint> coordinatePoints) {
@@ -121,14 +96,6 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param pk
-   * @param coordinates
-   * @
-   *
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void deleteCoordinates(CoordinatePK pk, List<String> coordinates) {
@@ -165,15 +132,6 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param coordinateIds
-   * @param pk
-   * @return
-   * @
-   *
-   */
   @Override
   public List<Coordinate> getCoordinatesByCoordinateIds(List<String> coordinateIds, CoordinatePK pk) {
 
@@ -187,14 +145,6 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param pk
-   * @param point
-   * @
-   *
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void addPointToAllCoordinates(CoordinatePK pk, CoordinatePoint point) {
@@ -209,15 +159,6 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param pk
-   * @param nodeId
-   * @return
-   * @
-   *
-   */
   @Override
   public Collection<String> getCoordinateIdsByNodeId(CoordinatePK pk, String nodeId) {
     Connection con = getConnection();

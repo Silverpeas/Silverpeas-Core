@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -49,13 +49,6 @@ public class WebConnectionsRequestRouter extends
     return "webConnections";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   public WebConnectionsSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new WebConnectionsSessionController(mainSessionCtrl, componentContext);
@@ -66,14 +59,14 @@ public class WebConnectionsRequestRouter extends
    * destination page
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param webConnectionsSC The component Session Control, build and initialised.
-   * @param request
+   * @param webConnectionsSC The component Session Control, build and initialized.
+   * @param request the HTTP request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, WebConnectionsSessionController webConnectionsSC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
     String rootDest = "/webConnections/jsp/";
 
     try {
@@ -123,8 +116,7 @@ public class WebConnectionsRequestRouter extends
         destination = getDestination("Redirect", webConnectionsSC, request);
       } else if ("ViewConnections".equals(function)) {
         // liste des connexions de l'utilisateur
-        List<ConnectionDetail> connections = (List<ConnectionDetail>) webConnectionsSC
-            .getConnectionsByUser();
+        List<ConnectionDetail> connections = webConnectionsSC.getConnectionsByUser();
         request.setAttribute("Connections", connections);
         destination = rootDest + "viewConnections.jsp";
       } else if ("EditConnection".equals(function)) {
@@ -166,7 +158,7 @@ public class WebConnectionsRequestRouter extends
     ComponentInst inst = getOrganizationController().getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("URL");
-    Hashtable<String, String> param = new Hashtable<String, String>();
+    Hashtable<String, String> param = new Hashtable<>();
     String nameLogin = inst.getParameterValue("login");
     param.put(nameLogin, login);
     String namePassword = inst.getParameterValue("password");
@@ -183,7 +175,6 @@ public class WebConnectionsRequestRouter extends
     connection.setParam(param);
     connection.setUserId(webConnectionsSC.getUserId());
     connection.setComponentName(componentName);
-    connection.setNewWindow(StringUtil.getBooleanValue(inst.getParameterValue("openNewWindow")));
     connection.setMethod(inst.getParameterValue("method"));
   }
 

@@ -23,13 +23,16 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import javax.inject.Qualifier;
+import jakarta.inject.Qualifier;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
+ * Annotation to mark a persistence technical or business object as being based upon JPA.
+ *
  * @author mmoquillon
  */
 @Qualifier

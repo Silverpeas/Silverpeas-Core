@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.notification.NotificationException;
@@ -38,19 +38,19 @@ import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-@Service
+@Bean
 public class ScheduledReservedFile implements Initialization {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";

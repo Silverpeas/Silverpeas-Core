@@ -32,10 +32,10 @@ import org.silverpeas.core.variables.Variable;
 import org.silverpeas.core.variables.VariableScheduledValue;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
-import javax.persistence.PersistenceException;
-import javax.transaction.Transactional;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.persistence.PersistenceException;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;

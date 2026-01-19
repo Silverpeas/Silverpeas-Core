@@ -26,7 +26,7 @@ package org.silverpeas.core.web.rs.aspect;
 import org.silverpeas.core.web.rs.ProtectedWebResource;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 
-import javax.interceptor.InterceptorBinding;
+import jakarta.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

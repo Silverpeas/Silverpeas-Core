@@ -28,7 +28,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.util.WysiwygEditorConfig;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 

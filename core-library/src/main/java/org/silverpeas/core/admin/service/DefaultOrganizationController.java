@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
@@ -33,7 +34,10 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.SilverpeasArrayList;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -41,8 +45,6 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,7 +54,6 @@ import static java.util.Collections.emptyMap;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
 
 @Service
-@Singleton
 public class DefaultOrganizationController implements OrganizationController {
 
   @Inject

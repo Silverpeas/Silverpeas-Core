@@ -50,7 +50,7 @@ package org.silverpeas.core.calendar.notification;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Notification event about changes in the life-cycle of one or several event occurrences.

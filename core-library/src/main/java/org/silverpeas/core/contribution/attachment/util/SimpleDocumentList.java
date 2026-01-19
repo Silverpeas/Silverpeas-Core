@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.attachment.util;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
@@ -40,15 +40,12 @@ import static org.silverpeas.core.contribution.attachment.util.AttachmentSetting
 
 /**
  * This list provides some additional useful behaviors around simple documents.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * @param <T> the type of simple document that the list contains.
  */
 public class SimpleDocumentList<T extends SimpleDocument>
     extends ArrayList<T> {
   private static final long serialVersionUID = 4986827710138035170L;
-
-  private static final String[] ALL_LANGUAGES_BY_PRIORITY =
-      I18NHelper.getAllSupportedLanguages().toArray(new String[I18NHelper.getNumberOfLanguages()]);
 
   private String queryLanguage = null;
   private boolean youngestToOldestAddSorted = false;
@@ -90,12 +87,12 @@ public class SimpleDocumentList<T extends SimpleDocument>
   /**
    * Removes from the current list all documents which content is in an other language than the one
    * returned by {@link #getQueryLanguage()}.
-   * If {@link #getQueryLanguage()} returns null or an unknown languague, nothing is done.
+   * If {@link #getQueryLanguage()} returns null or an unknown language, nothing is done.
    * @return itself.
    */
   public SimpleDocumentList<T> removeLanguageFallbacks() {
     if (!isEmpty()) {
-      String language = I18NHelper.checkLanguage(getQueryLanguage());
+      String language = I18n.get().checkLanguage(getQueryLanguage());
       if (language.equals(getQueryLanguage())) {
         removeIf(document -> !language.equals(document.getLanguage()));
       }
@@ -108,7 +105,7 @@ public class SimpleDocumentList<T extends SimpleDocument>
    * By default, if no language priority is given, then the language priority of the platform is
    * taken into account. If a language priority is specified, then the language priorities of the
    * platform are overridden.
-   * @param languageOrderedByPriority manual language priority definition ​​from the highest to the
+   * @param languageOrderedByPriority manual language priority definition from the highest to the
    * lowest.
    * @return itself.
    */
@@ -135,7 +132,7 @@ public class SimpleDocumentList<T extends SimpleDocument>
    * </p>
    * @return true if the list is sorted manually (and so the list is ordered on order document
    * data), false otherwise.
-   * @throw IllegalStateException if documents of the list are not linked to a same foreignId.
+   * @throws IllegalStateException if documents of the list are not linked to a same foreignId.
    */
   protected boolean isManuallySorted() {
     boolean manuallySorted = false;
@@ -192,36 +189,37 @@ public class SimpleDocumentList<T extends SimpleDocument>
   private class LanguageAndLastUpdateComparator extends AbstractComplexComparator<T> {
     private static final long serialVersionUID = 4826457857348422450L;
 
-    private Map<String, Integer> languagePriorityCache = new HashMap<>(I18NHelper.getNumberOfLanguages());
-    private final ORDER_BY[] orderBies;
+    private final Map<String, Integer> languagePriorityCache = new HashMap<>();
+    private final ORDER_BY[] orderBy;
 
     /**
      * Default constructor.
-     * @param languageOrderedByPriority languages ​​from the highest to the lowest.
-     * @param orderBies the order by directives.
+     * @param languageOrderedByPriority languages from the highest to the lowest.
+     * @param orderBy the order by directives.
      */
     private LanguageAndLastUpdateComparator(final String[] languageOrderedByPriority,
-        ORDER_BY... orderBies) {
+        ORDER_BY... orderBy) {
       super();
-      this.orderBies = orderBies;
-      if (ArrayUtil.contains(orderBies, ORDER_BY.LANGUAGE_PRIORITY_DESC)) {
-        for (String language : ALL_LANGUAGES_BY_PRIORITY) {
+      this.orderBy = orderBy;
+      var allLanguagesByPriority = I18n.get().getSupportedLanguageCodes();
+      if (ArrayUtil.contains(orderBy, ORDER_BY.LANGUAGE_PRIORITY_DESC)) {
+        for (String language : allLanguagesByPriority) {
           languagePriorityCache
-              .put(language, (languagePriorityCache.size() + ALL_LANGUAGES_BY_PRIORITY.length + 1));
+              .put(language, (languagePriorityCache.size() + allLanguagesByPriority.size() + 1));
         }
         int i = 0;
         for (String language : languageOrderedByPriority) {
           languagePriorityCache.put(language, i++);
         }
         languagePriorityCache
-            .put(null, (languagePriorityCache.size() + ALL_LANGUAGES_BY_PRIORITY.length + 1));
+            .put(null, (languagePriorityCache.size() + allLanguagesByPriority.size() + 1));
       }
     }
 
     @Override
     protected ValueBuffer getValuesToCompare(final T simpleDocument) {
       ValueBuffer valueBuffer = new ValueBuffer();
-      for (ORDER_BY orderBy : orderBies) {
+      for (ORDER_BY orderBy : orderBy) {
         switch (orderBy) {
           case LANGUAGE_PRIORITY_DESC:
             valueBuffer.append(getLanguagePriorityIndex(simpleDocument), orderBy.isAscending());

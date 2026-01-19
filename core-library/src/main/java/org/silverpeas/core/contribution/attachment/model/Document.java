@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
@@ -32,8 +31,8 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.CoreContributionType;
 import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.model.LocalizedAttachment;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Date;
@@ -161,7 +160,7 @@ public class Document implements I18nContribution, LocalizedAttachment {
   public List<SimpleDocument> getAllTranslations() {
     AttachmentService service = AttachmentService.get();
     SimpleDocumentPK pk = new SimpleDocumentPK(id.getLocalId(), id.getComponentInstanceId());
-    return I18NHelper.getLanguages()
+    return I18n.get().getSupportedLanguageCodes()
         .stream()
         .map(l -> service.searchDocumentById(pk, l))
         .collect(Collectors.toList());
@@ -192,12 +191,13 @@ public class Document implements I18nContribution, LocalizedAttachment {
   }
 
   private SimpleDocument selectTranslation(final String language) {
-    String lang = StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
+    I18n i18n = I18n.get();
+    String lang = StringUtil.isDefined(language) ? language : i18n.getDefaultLanguage();
     AttachmentService service = AttachmentService.get();
     SimpleDocumentPK pk = new SimpleDocumentPK(id.getLocalId(), id.getComponentInstanceId());
     SimpleDocument document = service.searchDocumentById(pk, lang);
     if (document == null) {
-      return I18NHelper.getLanguages()
+      return i18n.getSupportedLanguageCodes()
           .stream()
           .map(l -> service.searchDocumentById(pk, l))
           .filter(Objects::nonNull)

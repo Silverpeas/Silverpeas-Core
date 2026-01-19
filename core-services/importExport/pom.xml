@@ -31,13 +31,13 @@
   <parent>
     <groupId>org.silverpeas.core</groupId>
     <artifactId>services</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
   <artifactId>silverpeas-core-importexport</artifactId>
   <packaging>jar</packaging>
-  <name>Silverpeas ImportExport Service ${project.version}</name>
+  <name>Silverpeas ImportExport Engine ${project.version}</name>
 
   <dependencies>
     <dependency>

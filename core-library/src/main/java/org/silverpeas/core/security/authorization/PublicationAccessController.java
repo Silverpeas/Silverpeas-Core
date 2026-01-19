@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -36,20 +38,11 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.MemoizedBooleanSupplier;
 import org.silverpeas.core.util.MemoizedSupplier;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;

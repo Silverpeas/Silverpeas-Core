@@ -25,7 +25,6 @@ package org.silverpeas.core.web.external.webconnections.model;
 
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 public interface WebConnectionsInterface {
@@ -35,49 +34,48 @@ public interface WebConnectionsInterface {
   }
 
   /**
-   * get the connection corresponding to componentId and userId
-   * @param componentId : String
-   * @param userId : String
-   * @return connection : ConnectionDetail
+   * Get the connection corresponding to componentId and userId
+   * @param componentId  unique identifier of a component instance.
+   * @param userId unique identifier of a user
+   * @return connection details of the connection
    */
-  public ConnectionDetail getWebConnection(String componentId, String userId);
+  ConnectionDetail getWebConnection(String componentId, String userId);
 
   /**
-   * get the connection corresponding to connectionId
-   * @param connectionId : String
-   * @param userId : String
-   * @return connection : ConnectionDetail
+   * Get the connection corresponding to connectionId
+   * @param connectionId  unique identifier of a connection.
+   * @param userId unique identifier of a user
+   * @return connection details of the connection
    */
-  public ConnectionDetail getWebConnectionById(String connectionId, String userId);
+  ConnectionDetail getWebConnectionById(String connectionId, String userId);
 
   /**
-   * create a new connection
-   * @param connection : ConnectionDetail
+   * Create a new connection
+   * @param connection details of the connection
    */
-  public void createWebConnection(ConnectionDetail connection);
+  void createWebConnection(ConnectionDetail connection);
 
   /**
-   * delete the connection corresponding to connectionId
-   * @param connectionId : String
-   * @param userId : String
+   * Delete the connection corresponding to connectionId
+   * @param connectionId unique identifier of a connection
+   * @param userId unique identifier of a user
    */
-  public void deleteWebConnection(String connectionId, String userId);
+  void deleteWebConnection(String connectionId, String userId);
 
   /**
-   * update the connection corresponding to connectionId, with login and password
-   * @param connectionId : String
-   * @param login : String
-   * @param password : String
-   * @param userId : String
+   * Update the connection corresponding to connectionId, with login and password
+   * @param connectionId unique identifier of a connection
+   * @param login a user login
+   * @param password a user password
+   * @param userId a unique identifier of the user
    */
-  public void updateWebConnection(String connectionId, String login, String password, String userId);
+  void updateWebConnection(String connectionId, String login, String password, String userId);
 
   /**
-   * get all connections for the user corresponding to userId
+   * Get all connections for the user corresponding to userId
    * @param userId : String
-   * @return a list of ConnectionDetail
-   * @throws RemoteException
+   * @return a list of details of connections
    */
-  public List<ConnectionDetail> listWebConnectionsOfUser(String userId) throws RemoteException;
+  List<ConnectionDetail> listWebConnectionsOfUser(String userId);
 
 }

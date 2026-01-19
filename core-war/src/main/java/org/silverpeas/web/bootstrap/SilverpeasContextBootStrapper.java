@@ -29,21 +29,17 @@ import org.silverpeas.kernel.util.SystemWrapper;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import java.security.GeneralSecurityException;
 
 public class SilverpeasContextBootStrapper implements ServletContextListener {
-
-  @Override
-  public void contextDestroyed(ServletContextEvent sce) {
-  }
 
   /**
    * Loads the system settings from the systemSettings.properties and apply the corresponding
    * configuration. It is mainly used to perform the proxy and SSL setting up.
    *
-   * @param sce
+   * @param sce context event
    */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
@@ -67,7 +63,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
   /**
    * Adding SilverpeasSSLSocketFactory as the SSLSocketFactory for all mail protocoles.
    *
-   * @throws GeneralSecurityException
+   * @throws GeneralSecurityException if the registering of the SSL socket factory fails.
    */
   void registerSSLSocketFactory() throws GeneralSecurityException {
     SystemWrapper.getInstance().setProperty("mail.imap.ssl.enable", "true");

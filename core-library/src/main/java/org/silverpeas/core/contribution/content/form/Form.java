@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.jsp.JspWriter;
+import org.silverpeas.core.util.file.FileItem;
 
-import javax.servlet.jsp.JspWriter;
 import java.util.List;
 
 /**

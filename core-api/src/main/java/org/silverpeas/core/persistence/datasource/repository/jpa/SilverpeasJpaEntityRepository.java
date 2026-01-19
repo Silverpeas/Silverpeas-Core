@@ -25,21 +25,23 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 /**
  * A repository of Silverpeas {@link org.silverpeas.core.persistence.datasource.model.Entity}
  * objects using JPA as persistence backend.
- *
+ * <p>
  * This repository takes in charge the creation and the update properties of the entity from the
  * requester (whether there is a user behind the repository operation).
- *
+ * </p>
+ * <p>
  * All repositories that using JPA for managing the persistence of their entities that satisfy
- * the {@link org.silverpeas.core.persistence.datasource.model.Entity} interface should extends
+ * the {@link org.silverpeas.core.persistence.datasource.model.Entity} interface should extend
  * this repository and provides the business operations related to the persistence of their
  * entities. If the different parts of an entity are persisted into several data source
  * beside a SQL-based one, then this repository should be used within a delegation of JPA related
  * operations.
+ * </p>
  * @param <E> the class name of the entity which is handled by the repository.
  * @author Yohann Chastagnier
  */

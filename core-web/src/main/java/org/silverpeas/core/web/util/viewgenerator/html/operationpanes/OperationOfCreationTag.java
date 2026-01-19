@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 public class OperationOfCreationTag extends OperationTag {
   private static final long serialVersionUID = 1L;

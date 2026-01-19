@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,13 +32,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.LoggerReaderRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.kernel.logging.Level;
 import org.silverpeas.kernel.util.SystemWrapper;
 
-import javax.inject.Inject;
 import java.io.UncheckedIOException;
 import java.text.MessageFormat;
 import java.util.Date;
@@ -75,9 +75,9 @@ public class LogAnnotationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(LogAnnotationIT.class)
-        .addAdministrationFeatures()
-        .addAsResource("org/silverpeas/util/logging/")
+    return LibCoreWarBuilder.onWarForTestClass(ErrorAnnotationIT.class)
+        .addStubbedUserAPI()
+        .addPackages(false, "org.silverpeas.core.util.logging")
         .build();
   }
 
@@ -144,7 +144,7 @@ public class LogAnnotationIT {
         MessageFormat.format(LogAnnotationProcessor.USER_DEFAULT_BEFORE_PATTERN, "Toto Rabbit",
             100, clazz, method);
     try {
-      // the log file can contains more than these two records as the tests can be ran several
+      // the log file can contain more than these two records as the tests can be running several
       // times.
       awaitUntil(2, TimeUnit.SECONDS);
       final List<String> lines = IOUtils.readLines(loggerReaderRule.getReader());
@@ -159,7 +159,7 @@ public class LogAnnotationIT {
   private void assertThatLogContainsTheExpectedRecordWith(String message, long recordsCount) {
     String record = format(LogAnnotationProcessor.SYSTEM_BEFORE_PATTERN, message);
     try {
-      // the log file can contains more than this record as the tests can be ran several
+      // the log file can contain more than this record as the tests can be running several
       // times.
       awaitUntil(2, TimeUnit.SECONDS);
       final List<String> lines = IOUtils.readLines(loggerReaderRule.getReader());

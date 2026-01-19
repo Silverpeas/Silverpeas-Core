@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import jakarta.servlet.jsp.tagext.BodyTagSupport;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;

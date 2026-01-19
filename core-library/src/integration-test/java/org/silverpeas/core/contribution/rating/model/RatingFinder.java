@@ -23,37 +23,29 @@
  */
 package org.silverpeas.core.contribution.rating.model;
 
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.util.ServiceProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.silverpeas.core.annotation.Repository;
 
-import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
+ * Finder of ratings in database.
+ *
  * @author mmoquillon
  */
-@Singleton
+@Repository
 public class RatingFinder {
 
   @PersistenceContext
   private EntityManager entityManager;
 
-  private static RatingFinder getInstance() {
-    return ServiceProvider.getService(RatingFinder.class);
+  @SuppressWarnings("SqlSourceToSinkFlow")
+  public List<Rating> getSomeByQuery(String query) {
+    return entityManager.createQuery(query, Rating.class).getResultList();
   }
 
-  public static List<Rating> getSomeByQuery(String query) {
-    return getInstance().entityManager.createQuery(query, Rating.class).getResultList();
-  }
-
-  public static Rating getById(int id) {
-    return getInstance().entityManager.find(Rating.class, UniqueIntegerIdentifier.from(id));
-  }
-
-  public static long count() {
-    return getInstance().entityManager.createQuery("select count(r) from Rating r",
-        Long.class).getSingleResult();
+  public long count() {
+    return entityManager.createQuery("select count(r) from Rating r", Long.class).getSingleResult();
   }
 }

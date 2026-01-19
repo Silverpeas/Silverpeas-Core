@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -87,14 +87,6 @@ public class DefaultCommentServiceIT {
   @After
   public void tearDown() {
     listener.reset();
-  }
-
-  /**
-   * Empty test just to check all is ok before any test running.
-   */
-  @Test
-  public void emptyTest() {
-    assertThat(true, is(true));
   }
 
   /**

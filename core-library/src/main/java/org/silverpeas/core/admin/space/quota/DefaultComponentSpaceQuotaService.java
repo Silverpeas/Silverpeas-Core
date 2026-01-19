@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.admin.space.quota;
 
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import jakarta.inject.Singleton;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-
-import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
@@ -60,7 +59,7 @@ public class DefaultComponentSpaceQuotaService
    * @see QuotaService#getCurrentCount(QuotaKey)
    */
   @Override
-  public long getCurrentCount(final ComponentSpaceQuotaKey key) throws QuotaException {
+  public long getCurrentCount(final ComponentSpaceQuotaKey key) {
 
     // Initializing the counting result
     long currentCount = 0;

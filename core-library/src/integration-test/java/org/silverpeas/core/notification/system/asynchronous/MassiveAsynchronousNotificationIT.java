@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedThreadFactory;
+import jakarta.inject.Inject;
 import org.awaitility.core.ThrowingRunnable;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -32,19 +35,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.notification.system.GenericTestResource;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.notification.system.TestResource;
-import org.silverpeas.core.notification.system.TestResourceEvent;
-import org.silverpeas.core.notification.system.TestResourceEventBucket;
+import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
+import org.silverpeas.core.notification.system.*;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.TestStatisticRule;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedThreadFactory;
-import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -55,8 +52,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Integration test on the asynchronous mode of the Silverpeas API Notification.
@@ -80,20 +77,16 @@ public class MassiveAsynchronousNotificationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore
-        .onWarForTestClass(MassiveAsynchronousNotificationIT.class)
-        .addSubscriptionFeatures()
-        .testFocusedOn((war) -> {
-          WarBuilder4LibCore warBuilder = ((WarBuilder4LibCore) war);
-          warBuilder.addSynchAndAsynchResourceEventFeatures();
-          warBuilder.addClasses(TestResource.class, TestResourceEvent.class,
-              GenericTestResource.class,
-              TestResourceEventBucket.class, JMSQueueTestResourceEventNotifier.class,
-              JMSQueueTestResourceEventListener.class, JMSTopicTestResourceEventNotifier.class,
-              JMSTopicTestResourceEventListener.class, JMSTopicTestResourceEventListener2.class,
-              UserSubscriptionNotificationSendingHandler.class);
-          warBuilder.addAsWebInfResource("test-jms.xml", "test-jms.xml");
-        }).build();
+    return LibCoreWarBuilder.onWarForTestClass(MassiveAsynchronousNotificationIT.class)
+        .addClasses(TestResource.class, TestResourceEvent.class,
+            GenericTestResource.class,
+            TestResourceEventBucket.class,
+            UserSubscriptionNotificationSendingHandler.class,
+            ContributionOperationContextPropertyHandler.class)
+        .addAsResource(
+            "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties")
+        .addAsWebInfResource("test-jms.xml", "test-jms.xml")
+        .build();
   }
 
   @Before
@@ -129,7 +122,7 @@ public class MassiveAsynchronousNotificationIT {
     }
 
     WaitDuration wait = new WaitDuration(nbSend);
-    wait.awaitUntil(() -> assertThatEventIsWellReceived(3, registeredEventsBeforeSend,
+    wait.awaitUntil(() -> assertThatEventIsWellReceived(registeredEventsBeforeSend,
             additionalParameter));
   }
 
@@ -161,7 +154,7 @@ public class MassiveAsynchronousNotificationIT {
 
     WaitDuration wait = new WaitDuration(nbSend);
     wait.awaitUntil(() ->
-        assertThatEventIsWellReceived(3, registeredEventsBeforeSend, additionalParameter));
+        assertThatEventIsWellReceived(registeredEventsBeforeSend, additionalParameter));
   }
 
   public JMSQueueTestResourceEventNotifier getQueueNotifier() {
@@ -191,19 +184,10 @@ public class MassiveAsynchronousNotificationIT {
     return additionalParameter;
   }
 
-  private Duration delay(int nbSend) {
-    return Duration.of(2000 + (nbSend * 10), ChronoUnit.MILLIS);
-  }
-
-  private Duration timeout(int nbSend) {
-    return Duration.of(3000 + (nbSend * 10), ChronoUnit.MILLIS);
-  }
-
-  private void assertThatEventIsWellReceived(int nbListeners,
-      Collection<TestResourceEvent> expectedEvents,
+  private void assertThatEventIsWellReceived(Collection<TestResourceEvent> expectedEvents,
       final ADDITIONAL_PARAMETER additionalParameter) {
     assertThat(bucket.isEmpty(), is(false));
-    assertThat(bucket.getContent().size(), is(nbListeners * expectedEvents.size()));
+    assertThat(bucket.getContent().size(), is(3 * expectedEvents.size()));
     for (TestResourceEvent expectedEvent : expectedEvents) {
       assertThat(bucket.getContent().contains(expectedEvent), is(true));
     }

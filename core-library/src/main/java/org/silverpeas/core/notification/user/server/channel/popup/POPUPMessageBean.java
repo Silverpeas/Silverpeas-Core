@@ -26,17 +26,17 @@ package org.silverpeas.core.notification.user.server.channel.popup;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
 @Table(name = "ST_PopupMessage")
 @NamedQuery(name = "findByUserId",
-    query = "select m from POPUPMessageBean m where m.id in (select min(p.id) FROM " +
+    query = "select m from POPUPMessageBean m where m.id.id in (select min(p.id.id) FROM " +
         "POPUPMessageBean p WHERE p.userId = :userId)")
 @NamedQuery(name = "deleteByUserIdAndSenderId",
     query = "delete from POPUPMessageBean m where m.userId = :userId and m.senderId = :senderId")

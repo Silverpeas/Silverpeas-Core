@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -43,17 +45,10 @@ import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.silverpeas.core.util.CollectionUtil.findNextRupture;
 
@@ -61,7 +56,6 @@ import static org.silverpeas.core.util.CollectionUtil.findNextRupture;
  * A ProcessInstanceManager implementation
  */
 @Service
-@Singleton
 public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManager {
 
   private static final String MODEL_ID_CRITERION = "I.modelId = ?";
@@ -74,14 +68,13 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   private ProcessInstanceRepository repository;
 
   @Override
-  public List<ProcessInstance> getProcessInstances(String peasId, User user, String role)
+  public List<ProcessInstanceImpl> getProcessInstances(String peasId, User user, String role)
       throws WorkflowException {
     return getProcessInstances(peasId, user, role, null, null);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public List<ProcessInstance> getProcessInstances(String peasId, User user, String role,
+  public List<ProcessInstanceImpl> getProcessInstances(String peasId, User user, String role,
       String[] userRoles, String[] userGroupIds) throws WorkflowException {
 
     final SilverpeasList<ProcessInstanceImpl> instances;
@@ -105,12 +98,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           .and("(intUser.userId = ?", user.getUserId());
       if (ArrayUtil.isNotEmpty(userRoles)) {
         select
-          .or("intUser.usersRole").in(userRoles);
+          .or("intUser.usersRole").in((Object[]) userRoles);
       }
       if (ArrayUtil.isNotEmpty(userGroupIds)) {
         select
           .or("(intUser.groupId is not null")
-          .and("intUser.groupId").in(userGroupIds)
+          .and("intUser.groupId").in((Object[]) userGroupIds)
           .addSqlPart(")");
       }
       select
@@ -126,12 +119,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           .and("(wkUser.userId = ?", user.getUserId());
       if (ArrayUtil.isNotEmpty(userRoles)) {
         select
-          .or("wkUser.usersRole").in(userRoles);
+          .or("wkUser.usersRole").in((Object[]) userRoles);
       }
       if (ArrayUtil.isNotEmpty(userGroupIds)) {
         select
           .or("(wkUser.groupId is not null")
-          .and("wkUser.groupId").in(userGroupIds)
+          .and("wkUser.groupId").in((Object[]) userGroupIds)
           .addSqlPart(")");
       }
       select
@@ -179,7 +172,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
               historyStep.setActionDate(new Date(r.getTimestamp(i++).getTime()));
               historyStep.setResolvedState(r.getString(i++));
               historyStep.setResultingState(r.getString(i++));
-              historyStep.setActionStatus(ActionStatus.from(r.getInt(i)));
+              historyStep.setActionStatus(Objects.requireNonNull(ActionStatus.from(r.getInt(i))));
               findNextRupture(ruptureContext, p -> p.getInstanceId().equals(instanceId))
                   .ifPresent(p -> p.addHistoryStep(historyStep));
               return null;
@@ -205,7 +198,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
             }));
       }
 
-      return (List) instances;
+      return instances;
     } catch (SQLException se) {
       throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstances",
           "EX_ERR_GET_INSTANCES", "sql query : " + select.getSqlQuery(), se);
@@ -216,7 +209,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * Get the process instances for a given instance id
    * @param instanceId id of searched instance
    * @return the searched process instance
-   * @throws WorkflowException
+   * @throws WorkflowException if the process instance cannot be fetched.
    */
   @Override
   public ProcessInstance getProcessInstance(String instanceId) throws WorkflowException {
@@ -232,12 +225,10 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * Creates a new process instance
    * @param modelId model id
    * @return the new ProcessInstance object
-   * @throws WorkflowException
    */
   @Override
   @Transactional
-  public synchronized ProcessInstance createProcessInstance(String modelId)
-      throws WorkflowException {
+  public synchronized ProcessInstance createProcessInstance(String modelId) {
     ProcessInstanceImpl instance = new ProcessInstanceImpl();
     instance.setModelId(modelId);
     repository.save(instance);
@@ -245,21 +236,21 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   }
 
   /**
-   * Removes a new process instance
+   * Removes the process instance
    * @param instanceId instance id
-   * @throws WorkflowException
+   * @throws WorkflowException if the process instance cannot be removed
    */
   @Override
   @Transactional
   public void removeProcessInstance(String instanceId) throws WorkflowException {
-    ProcessInstance instance = repository.getById(instanceId);
+    ProcessInstanceImpl instance = repository.getById(instanceId);
 
     // Delete forms data associated with this instance
     removeProcessInstanceData(instance);
 
     WorkflowHub.getErrorManager().removeErrorsOfInstance(instanceId);
 
-    repository.delete((ProcessInstanceImpl) instance);
+    repository.delete(instance);
   }
 
   public void removeProcessInstanceData(ProcessInstance instance) throws WorkflowException {
@@ -299,9 +290,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   @Transactional
   public void lock(ProcessInstance instance, State state, User user) throws WorkflowException {
-    ProcessInstance copyInstance = repository.getById(instance.getInstanceId());
+    ProcessInstanceImpl copyInstance = repository.getById(instance.getInstanceId());
     copyInstance.lock(state, user);
-    repository.save((ProcessInstanceImpl) copyInstance);
+    repository.save(copyInstance);
   }
 
   /**
@@ -311,9 +302,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   @Transactional
   public void unlock(ProcessInstance instance, State state, User user) throws WorkflowException {
-    ProcessInstance copyInstance = repository.getById(instance.getInstanceId());
+    ProcessInstanceImpl copyInstance = repository.getById(instance.getInstanceId());
     copyInstance.unLock(state, user);
-    repository.save((ProcessInstanceImpl) copyInstance);
+    repository.save(copyInstance);
   }
 
   /**
@@ -333,14 +324,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     return new ActorImpl(user, roleName, state);
   }
 
-  /**
-   * Get the list of process instances for which timeout date is over
-   * @return an array of ProcessInstance objects
-   * @throws WorkflowException
-   */
-  @SuppressWarnings("unchecked")
   @Override
-  public SilverpeasList<ProcessInstance> getTimeOutProcessInstances() throws WorkflowException {
+  public SilverpeasList<ProcessInstanceImpl> getTimeOutProcessInstances() throws WorkflowException {
     try {
       JdbcSqlQuery query = JdbcSqlQuery
           .select("instanceid")
@@ -348,7 +333,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           .where("timeoutDate < ? ", new Timestamp((new Date()).getTime()));
       List<String> ids = query.execute(row -> String.valueOf(row.getInt(1)));
       Set<String> instanceIds = new HashSet<>(ids);
-      return (SilverpeasList) repository.getById(instanceIds);
+      return repository.getById(instanceIds);
     } catch (SQLException se) {
       throw new WorkflowException("ProcessInstanceManagerImpl.getTimeOutProcessInstances",
           "EX_ERR_GET_TIMEOUT_INSTANCES", se);

@@ -23,21 +23,21 @@
  */
 package org.silverpeas.core.importexport.ical;
 
+import jakarta.inject.Inject;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.importexport.NoDataToExportException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.Writer;
 import java.util.function.Supplier;
 
 /**
  * An exporter of calendar events into a file in the iCal format.
  */
-@Singleton
+@Bean
 public class ICalExporter implements Exporter<ExportableCalendar> {
 
   private final ICalCodec iCalCodec;

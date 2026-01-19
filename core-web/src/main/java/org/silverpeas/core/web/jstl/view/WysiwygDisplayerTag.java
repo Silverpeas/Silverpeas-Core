@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.web.jstl.view;
 
-import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.TagSupport;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
 import java.util.Iterator;
 
 /**
@@ -93,8 +93,8 @@ public class WysiwygDisplayerTag extends TagSupport {
       String content = WysiwygController.loadForReadOnly(getComponentId(), getObjectId(),
           currentLang);
       //if content not found in specified language, check other ones
-      if (!StringUtil.isDefined(content) && I18NHelper.isI18nContentActivated) {
-        Iterator<String> languages = I18NHelper.getLanguages().iterator();
+      if (!StringUtil.isDefined(content) && I18NHelper.isI18nContentActivated()) {
+        Iterator<String> languages = I18NHelper.getAllSupportedLanguages().iterator();
         while (languages.hasNext() && !StringUtil.isDefined(content)) {
           currentLang = languages.next();
           content = WysiwygController.loadForReadOnly(getComponentId(), getObjectId(), currentLang);

@@ -23,15 +23,11 @@
  */
 package org.silverpeas.core.annotation;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Stereotype;
 import org.silverpeas.kernel.annotation.Managed;
 
-import javax.enterprise.inject.Stereotype;
-import javax.inject.Singleton;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * This annotation is to tag an object as being a repository of business objects. A repository is an
@@ -39,8 +35,8 @@ import java.lang.annotation.Target;
  * used data source and the mechanism to access them.
  * <p>
  * Beans annotated with this annotation are marked to be managed by the underlying IoC container and
- * to be singleton (there is only one single instance at a given time). If the bean declare another
- * life-cycle scope, then the new scope overrides the default one.
+ * their life will be scoped to the current user request processing (one instance per user request).
+ * If the bean declare another life-cycle scope, then the new scope overrides the default one.
  * </p>
  * <p>
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
@@ -53,7 +49,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Managed
-@Singleton
+@ApplicationScoped
 @Stereotype
 public @interface Repository {
 }

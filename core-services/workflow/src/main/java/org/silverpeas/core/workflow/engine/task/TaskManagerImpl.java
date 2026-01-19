@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.workflow.engine.task;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.task.Task;
@@ -41,9 +39,11 @@ import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.notification.UserNotificationBuilder;
 import org.silverpeas.core.workflow.engine.user.UserImpl;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 /**
  * The workflow engine services relate to task management.
  */
-@Singleton
+@Service
 public class TaskManagerImpl extends AbstractTaskManager {
 
   private static final String MULTILANG_BUNDLE =
@@ -156,7 +156,6 @@ public class TaskManagerImpl extends AbstractTaskManager {
 
   /**
    * Notify user that an action has been done
-   * @throws WorkflowException
    */
   @Override
   public void notifyActor(Task task, User sender, Actor user, String text, boolean linkDisabled)

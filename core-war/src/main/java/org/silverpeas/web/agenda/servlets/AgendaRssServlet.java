@@ -39,27 +39,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class AgendaRssServlet extends RssServlet {
+public class AgendaRssServlet extends RssServlet<JournalHeader> {
 
   private static final long serialVersionUID = -1303827067989958404L;
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#isComponentRss(java.lang.String)
-   */
+  @Override
   public boolean isComponentRss(String userIdAgenda) {
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#isComponentAvailable(java.lang.String,
-   * java.lang.String)
-   */
+  @Override
   public boolean isComponentAvailable(String userIdAgenda, String currentUserId) {
     return true;
   }
 
+  @Override
   public String getChannelTitle(String userId) {
     UserDetail user = UserDetail.getById(userId);
     UserPreferences preferences = user.getUserPreferences();
@@ -69,10 +63,7 @@ public class AgendaRssServlet extends RssServlet {
     return message.getStringWithParams("agenda.userAgenda", user.getLastName());
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getListElements(java.lang.String, int)
-   */
+  @Override
   public Collection<JournalHeader> getListElements(String userIdAgenda, int nbReturned)
       throws RemoteException {
     try {
@@ -82,12 +73,8 @@ public class AgendaRssServlet extends RssServlet {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
-   */
-  public String getElementTitle(Object element, String currentUserId) {
-    JournalHeader event = (JournalHeader) element;
+  @Override
+  public String getElementTitle(JournalHeader event, String currentUserId) {
     String name = event.getName();
     if (event.getClassification().isPrivate()
         && !event.getDelegatorId().equals(currentUserId)) {
@@ -101,22 +88,10 @@ public class AgendaRssServlet extends RssServlet {
     return name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementLink(java.lang.Object, java.lang.String)
-   */
-  public String getElementLink(Object element, String currentUserId) {
-    JournalHeader event = (JournalHeader) element;
+  @Override
+  public String getElementLink(JournalHeader event, String currentUserId) {
     String eventUrl = URLUtil.getApplicationURL()
-        + "/Ragenda/jsp/journal.jsp?Action=Update&JournalId=" + event.getId(); // par
-    // défaut,
-    // lien
-    // sur
-    // l'événement
-    // en
-    // lui-meme
-    // URL eventUrl = new
-    // URL(getServerURL()+URLUtil.getApplicationURL()+"/Journal/"+event.getId());
+        + "/Ragenda/jsp/journal.jsp?Action=Update&JournalId=" + event.getId();
     if (event.getClassification().isPrivate()
         && !event.getDelegatorId().equals(currentUserId)) {
       // lien sur le calendrier à la date de l'événement
@@ -127,13 +102,8 @@ public class AgendaRssServlet extends RssServlet {
     return eventUrl;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementDescription(java.lang.Object,
-   * java.lang.String)
-   */
-  public String getElementDescription(Object element, String currentUserId) {
-    JournalHeader event = (JournalHeader) element;
+  @Override
+  public String getElementDescription(JournalHeader event, String currentUserId) {
     String description = event.getDescription();
     if (event.getClassification().isPrivate()
         && !event.getDelegatorId().equals(currentUserId)) {
@@ -142,16 +112,12 @@ public class AgendaRssServlet extends RssServlet {
     return description;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementDate(java.lang.Object)
-   */
-  public Date getElementDate(Object element) {
-    JournalHeader event = (JournalHeader) element;
+  @Override
+  public Date getElementDate(JournalHeader event) {
     Calendar calElement = GregorianCalendar.getInstance();
     calElement.setTime(event.getStartDate());
     String hourMinute = event.getStartHour(); // hh:mm
-    if (hourMinute != null && hourMinute.trim().length() > 0) {
+    if (hourMinute != null && !hourMinute.trim().isEmpty()) {
       int hour = Integer.parseInt(hourMinute.substring(0, 2));
       int minute = Integer.parseInt(hourMinute.substring(3));
       calElement.set(Calendar.HOUR_OF_DAY, hour);
@@ -163,8 +129,8 @@ public class AgendaRssServlet extends RssServlet {
     return calElement.getTime();
   }
 
-  public String getElementCreatorId(Object element) {
-    JournalHeader event = (JournalHeader) element;
+  @Override
+  public String getElementCreatorId(JournalHeader event) {
     return event.getDelegatorId();
   }
 }

@@ -43,8 +43,8 @@ import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.CollectionUtil;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;

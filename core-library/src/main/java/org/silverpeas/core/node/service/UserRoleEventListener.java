@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.user.notification.role.UserRoleEvent;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 /**
  * Listeners of events about changes in a user role of one or more component instances. When such a

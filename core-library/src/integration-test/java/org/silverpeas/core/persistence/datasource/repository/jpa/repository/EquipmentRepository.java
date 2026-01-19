@@ -27,13 +27,10 @@ import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
 
-import javax.inject.Singleton;
-
 /**
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
 @Repository
-@Singleton
 public class EquipmentRepository extends SilverpeasJpaEntityRepository<Equipment> {
 }

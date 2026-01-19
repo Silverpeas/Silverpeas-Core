@@ -26,9 +26,9 @@ package org.silverpeas.core.webapi.admin.scim;
 
 import org.silverpeas.core.web.rs.SilverpeasRequestContext;
 
-import javax.enterprise.context.RequestScoped;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The SCIM request context which handles the domain identifier data in addition to the data
@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author silveryocha
  */
 @RequestScoped
-class ScimRequestContext extends SilverpeasRequestContext {
+public class ScimRequestContext extends SilverpeasRequestContext {
 
   private String domainId;
 

@@ -23,29 +23,24 @@
  */
 package org.silverpeas.core.mail.engine;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.mail.ReceiverMailAddressSet;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.MailSettings;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Singleton;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * This is the SMTP implementation of the {@link MailSender} interface.
@@ -53,7 +48,6 @@ import java.util.Properties;
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 public class SmtpMailSender implements MailSender {
 
   /**

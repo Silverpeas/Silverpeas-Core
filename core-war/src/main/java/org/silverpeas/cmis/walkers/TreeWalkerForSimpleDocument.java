@@ -24,6 +24,7 @@
 
 package org.silverpeas.cmis.walkers;
 
+import jakarta.inject.Inject;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
@@ -38,7 +39,6 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PartialContentStre
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.util.CmisProperties;
-import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -49,12 +49,7 @@ import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.DocumentFile;
 import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.model.Document;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -64,17 +59,10 @@ import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
@@ -91,7 +79,6 @@ import java.util.stream.Stream;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
 
   @Inject

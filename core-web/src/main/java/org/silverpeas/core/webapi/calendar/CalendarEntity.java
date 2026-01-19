@@ -25,18 +25,18 @@
 package org.silverpeas.core.webapi.calendar;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -231,7 +231,7 @@ public class CalendarEntity implements WebEntity {
    * System data are not merged (id, creation date, update date, ...)
    * @param calendar the calendar which will get the new data.
    * @return the given calendar instance with merged data.
-   * @throw javax.ws.javax.ws.rs.WebApplicationException if given calendar does not exist.
+   * @throws WebApplicationException if given calendar does not exist.
    */
   public Calendar merge(Calendar calendar) {
     calendar.setTitle(getTitle());

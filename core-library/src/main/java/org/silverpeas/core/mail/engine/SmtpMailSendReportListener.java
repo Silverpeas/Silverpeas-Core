@@ -26,9 +26,9 @@ package org.silverpeas.core.mail.engine;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.mail.Address;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
+import jakarta.mail.Address;
+import jakarta.mail.event.TransportEvent;
+import jakarta.mail.event.TransportListener;
 import java.text.MessageFormat;
 
 /**

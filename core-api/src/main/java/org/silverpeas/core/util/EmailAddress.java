@@ -26,8 +26,8 @@ package org.silverpeas.core.util;
 
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import java.util.regex.Pattern;
 
 /**
@@ -54,7 +54,7 @@ public class EmailAddress {
     try {
       return new InternetAddress(address);
     } catch (AddressException e) {
-      // should never occurs
+      // should never occur
       throw new SilverpeasRuntimeException(e);
     }
   }
@@ -64,13 +64,13 @@ public class EmailAddress {
    * <p> Returns <tt>true</tt> only if
    * <ul>
    * <li><tt>aEmailAddress</tt> can successfully construct an
-   * {@link javax.mail.internet.InternetAddress}</li>
+   * {@link jakarta.mail.internet.InternetAddress}</li>
    * <li>when parsed with "@" as delimiter, <tt>aEmailAddress</tt> contains two tokens which
    * satisfy</li>
    * </ul>
    * <p>
    * The second condition arises since local email addresses, simply of the form "<tt>albert</tt>",
-   * for example, are valid for {@link javax.mail.internet.InternetAddress}, but almost always
+   * for example, are valid for {@link jakarta.mail.internet.InternetAddress}, but almost always
    * undesired.
    *
    * @param address the address to be validated

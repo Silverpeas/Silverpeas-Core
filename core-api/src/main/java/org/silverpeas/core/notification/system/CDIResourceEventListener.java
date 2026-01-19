@@ -25,7 +25,7 @@ package org.silverpeas.core.notification.system;
 
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 /**
  * A synchronous event listener using the notification bus of CDI. This bus is based on the
@@ -62,7 +62,6 @@ public abstract class CDIResourceEventListener<T extends ResourceEvent<?>>
    * </p>
    * @see ResourceEventListener#dispatchEvent(ResourceEvent)
    * @param event an event.
-   * @throws Exception if the processing of the event fails.
    */
   public void onEvent(@Observes T event) {
     dispatchEvent(event);

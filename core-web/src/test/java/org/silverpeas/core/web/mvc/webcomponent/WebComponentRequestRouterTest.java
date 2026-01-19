@@ -51,13 +51,13 @@ import org.silverpeas.core.web.session.SessionManager;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
@@ -88,7 +88,7 @@ public abstract class WebComponentRequestRouterTest {
 
   @BeforeEach
   public void setUp(@TestManagedMock SilverpeasComponentInstanceProvider provider) {
-    when(provider.getComponentName(any())).thenReturn("componentName");
+    //when(provider.getComponentName(any())).thenReturn("componentName");
     user = new UserDetail();
     user.setId("400");
     WebComponentManager.managedWebComponentRouters.clear();

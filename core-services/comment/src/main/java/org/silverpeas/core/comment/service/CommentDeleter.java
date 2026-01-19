@@ -31,7 +31,7 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.model.Contribution;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Deleter of comments relative to a contribution that has been deleted.

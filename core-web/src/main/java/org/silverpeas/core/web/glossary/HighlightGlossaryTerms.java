@@ -32,7 +32,7 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -76,7 +76,7 @@ public class HighlightGlossaryTerms {
       Axis axis = pdc.getAxisDetail(axisId);
       if (axis != null) {
         glossary = axis.getValues();
-        Collections.sort(glossary, new TermComparator());
+        glossary.sort(new TermComparator());
       }
     } catch (PdcException pdcEx) {
       SilverLogger.getLogger(this).warn(pdcEx);
@@ -111,7 +111,7 @@ public class HighlightGlossaryTerms {
     Matcher matcher = pattern.matcher(content);
     int lastBeginIndex = 0;
     while (matcher.find()) {
-      sb.append(content.substring(lastBeginIndex, matcher.start(groupName)));
+      sb.append(content, lastBeginIndex, matcher.start(groupName));
       String realTerm = matcher.group(groupName);
       sb.append(format(template, realTerm));
       lastBeginIndex = matcher.end(groupName);

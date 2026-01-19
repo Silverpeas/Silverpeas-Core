@@ -24,7 +24,6 @@
 package org.silverpeas.web.importexport.control;
 
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.thread.ManagedThreadPool;
 
@@ -71,8 +70,7 @@ public abstract class ExportTask implements Runnable {
   @Override
   public final void run() {
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
-        .newSessionCache(this.toAwake.getUserDetail());
+    CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(this.toAwake.getUserDetail());
     doExport();
   }
 

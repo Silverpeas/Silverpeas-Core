@@ -29,13 +29,13 @@
   <parent>
     <groupId>org.silverpeas.core</groupId>
     <artifactId>services</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
   <artifactId>silverpeas-core-search</artifactId>
   <packaging>jar</packaging>
-  <name>Silverpeas Search Service ${project.version}</name>
+  <name>Silverpeas Search Engine ${project.version}</name>
   <description>
     Provides business services to search through plain-text indexes and/or taxonomy.
   </description>

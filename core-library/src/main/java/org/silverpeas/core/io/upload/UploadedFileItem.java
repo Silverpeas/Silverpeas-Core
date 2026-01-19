@@ -24,16 +24,18 @@
 
 package org.silverpeas.core.io.upload;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.james.mime4j.Charsets;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUtil;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
@@ -41,17 +43,36 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
  * Converts an {@link UploadedFile} into a usable {@link FileItem} instance.
  * @author silveryocha
  */
-public class UploadedFileItem extends DiskFileItem {
+public class UploadedFileItem implements FileItem {
 
-  private UploadedFile uploadedFile;
+  private final UploadedFile uploadedFile;
 
   UploadedFileItem(final UploadedFile uploadedFile) {
-    super(EMPTY, EMPTY, false, EMPTY, 0, null);
     this.uploadedFile = uploadedFile;
   }
 
   @Override
-  public String getName() {
+  public boolean isFormField() {
+    return false;
+  }
+
+  @Override
+  public String getFieldName() {
+    return EMPTY;
+  }
+
+  @Override
+  public String getContent(Charset charset) {
+    return new String(read(), charset);
+  }
+
+  @Override
+  public String getContent() {
+    return new String(read(), Charsets.UTF_8);
+  }
+
+  @Override
+  public String getFileName() {
     return uploadedFile.getFile().getName();
   }
 
@@ -62,18 +83,7 @@ public class UploadedFileItem extends DiskFileItem {
 
   @Override
   public String getContentType() {
-    return FileUtil.getMimeType(getName());
-  }
-
-  @Override
-  public byte[] get() {
-    byte[] fileData = new byte[(int) getSize()];
-    try (InputStream fis = new FileInputStream(uploadedFile.getFile())) {
-      IOUtils.readFully(fis, fileData);
-    } catch (IOException e) {
-      fileData = null;
-    }
-    return fileData;
+    return FileUtil.getMimeType(getFileName());
   }
 
   @Override
@@ -82,7 +92,24 @@ public class UploadedFileItem extends DiskFileItem {
   }
 
   @Override
-  public OutputStream getOutputStream() throws IOException {
-    return new FileOutputStream(uploadedFile.getFile());
+  public void saveTo(File file) throws IOException {
+    FileUtils.copyInputStreamToFile(getInputStream(), file);
+  }
+
+  @Override
+  public void delete() throws IOException {
+    if (uploadedFile.getFile().exists()) {
+      Files.delete(uploadedFile.getFile().toPath());
+    }
+  }
+
+  private byte[] read() {
+    byte[] fileData = new byte[(int) getSize()];
+    try (InputStream fis = new FileInputStream(uploadedFile.getFile())) {
+      IOUtils.readFully(fis, fileData);
+    } catch (IOException e) {
+      fileData = null;
+    }
+    return fileData;
   }
 }

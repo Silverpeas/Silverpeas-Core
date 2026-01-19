@@ -23,22 +23,19 @@
  */
 package org.silverpeas.core.web.chat.listeners;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.ChatUsersRegistration;
 import org.silverpeas.core.security.authentication.UserAuthenticationListener;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * This listener handles the chat initialization.<br>
  * Just after a successful user authentication, doing some stuffs about the chat.
  */
 @Service
-@Singleton
 public class ChatUserAuthenticationListener implements UserAuthenticationListener {
 
   private static final String CHAT_ATTRIBUTE = "Silverpeas.Chat";

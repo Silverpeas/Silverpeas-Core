@@ -31,24 +31,18 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author frageade
- * @version
  */
-
 public class FormTextArea extends FormLine {
 
   private int cols;
   private int rows;
   private int nbCharMax;
 
-  /**
-   * Constructor declaration
-   *
-   */
   public FormTextArea() {
     super();
     setName("newFormTextArea");
@@ -60,12 +54,6 @@ public class FormTextArea extends FormLine {
     setDBEntry(true);
   }
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   *
-   */
   public FormTextArea(String nam, String val) {
     super(nam, val);
     setLabel(nam);
@@ -76,13 +64,6 @@ public class FormTextArea extends FormLine {
     setDBEntry(true);
   }
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   * @param lab
-   *
-   */
   public FormTextArea(String nam, String val, String lab) {
     super(nam, val);
     setLabel(lab);
@@ -93,15 +74,6 @@ public class FormTextArea extends FormLine {
     setDBEntry(true);
   }
 
-  /**
-   * Constructor declaration
-   * @param nam
-   * @param val
-   * @param lab
-   * @param nbcols
-   * @param nbrows
-   *
-   */
   public FormTextArea(String nam, String val, String lab, int nbcols, int nbrows) {
     super(nam, val);
     setLabel(lab);
@@ -112,38 +84,18 @@ public class FormTextArea extends FormLine {
     setDBEntry(true);
   }
 
-  /**
-   * Method declaration
-   * @param nbcols
-   *
-   */
   public void setCols(int nbcols) {
     cols = nbcols;
   }
 
-  /**
-   * Method declaration
-   * @param nbrows
-   *
-   */
   public void setRows(int nbrows) {
     rows = nbrows;
   }
 
-  /**
-   * Method declaration
-   * @param nb
-   *
-   */
   public void setNbCharMax(int nb) {
     nbCharMax = nb;
   }
 
-  /**
-   * Method declaration
-   * @param nbcols
-   *
-   */
   public void setCols(String nbcols) {
     if (nbcols != null) {
       try {
@@ -153,11 +105,6 @@ public class FormTextArea extends FormLine {
     }
   }
 
-  /**
-   * Method declaration
-   * @param nbrows
-   *
-   */
   public void setRows(String nbrows) {
     if (nbrows != null) {
       try {
@@ -167,11 +114,6 @@ public class FormTextArea extends FormLine {
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String print() {
     String retour =
         "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
@@ -185,14 +127,6 @@ public class FormTextArea extends FormLine {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @param nam
-   * @param url
-   * @param pc
-   * @return
-   *
-   */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
 
@@ -215,11 +149,6 @@ public class FormTextArea extends FormLine {
     return fpw;
   }
 
-  /**
-   * Method declaration
-   * @param req
-   *
-   */
   public void getConfigurationByRequest(HttpServletRequest req) {
     setLabel(req.getParameter("configuratorLabelValue"));
     setCols(req.getParameter("configuratorNbCols"));
@@ -227,11 +156,6 @@ public class FormTextArea extends FormLine {
     setValue(req.getParameter("configuratorDefaultValue"));
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String printDemo() {
     String retour =
         "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
@@ -245,35 +169,25 @@ public class FormTextArea extends FormLine {
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"textarea\">";
 
     retour = retour + "\n<name>" + name + "</name>";
     retour = retour + "\n<label>" + label + "</label>";
     retour = retour + "\n<value>" + value + "</value>";
-    retour = retour + "\n<rows>" + String.valueOf(rows) + "</rows>";
-    retour = retour + "\n<cols>" + String.valueOf(cols) + "</cols>";
-    retour = retour + "\n<size>" + String.valueOf(nbCharMax) + "</size>";
+    retour = retour + "\n<rows>" + rows + "</rows>";
+    retour = retour + "\n<cols>" + cols + "</cols>";
+    retour = retour + "\n<size>" + nbCharMax + "</size>";
     retour = retour + "\n<dbtype>" + DBType + "</dbtype>";
     retour = retour + "\n</field>";
     return retour;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   public String getDBColumnCreationRequest() {
     String result = id + " " + DBType;
 
     if (DBType.equals("character varying")) {
-      result = result + "(" + String.valueOf(nbCharMax) + ")";
+      result = result + "(" + nbCharMax + ")";
     }
     if (mandatory) {
       result = result + " NOT NULL, ";

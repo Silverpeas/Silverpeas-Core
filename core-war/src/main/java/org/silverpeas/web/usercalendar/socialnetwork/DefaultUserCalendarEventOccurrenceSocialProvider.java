@@ -40,9 +40,9 @@ import org.silverpeas.core.webapi.calendar.CalendarResourceURIs;
 import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 import org.silverpeas.web.usercalendar.UserCalendarSettings;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -60,7 +60,7 @@ import static java.time.OffsetDateTime.ofInstant;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Collections.singleton;
 import static java.util.stream.Stream.empty;
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.admin.component.model.PersonalComponentInstance.from;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
@@ -76,7 +76,8 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 @Provider
 @Alternative
 @Priority(APPLICATION + 10)
-public class DefaultUserCalendarEventOccurrenceSocialProvider implements SocialEventProvider {
+public class DefaultUserCalendarEventOccurrenceSocialProvider
+    implements SocialEventProvider<SocialInformation> {
 
   private static final String USER_CALENDAR_COMPONENT_NAME = UserCalendarSettings.COMPONENT_NAME;
   private static final String NEXT_EVENT_TYPE = SocialInformationType.EVENT.toString();
@@ -130,7 +131,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProvider implements SocialE
   /**
    * Centralization of the getting of data.
    * @param requesterId the identifier of the user processing the request.
-   * @param aimedUserIds the user identifiers for which the occurrences MUST be be searched for.
+   * @param aimedUserIds the user identifiers for which the occurrences MUST be searched for.
    * @param visibilityFilter an optional visibility filter.
    * @param begin the start date of the time window to request.
    * @param end the end date of the time window to request.
@@ -143,7 +144,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProvider implements SocialE
       boolean getNext) {
     final Optional<PersonalComponent> userCalendarComponent = PersonalComponent
         .getByName(USER_CALENDAR_COMPONENT_NAME);
-    if (!userCalendarComponent.isPresent()) {
+    if (userCalendarComponent.isEmpty()) {
       return empty();
     }
     final CalendarWebManager calendarWebManager = getCalendarWebManager();
@@ -181,7 +182,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProvider implements SocialE
       streamResult = streamResult.filter(onVisibility(visibilityFilter));
     }
     if (aimedUserIds.stream().anyMatch(i -> !String.valueOf(i).equals(requesterId))) {
-      // Updated value is hacked. Not super good, but for now, no refactoring at this level.
+      // Updated value is hacked. Not good, but for now, no refactoring at this level.
       // Here, if true (default value) this data means that the calendar occurrence is a personal
       // one of requester.
       final String componentIdOfRequester = from(requester, userCalendarComponent.orElse(null)).getId();

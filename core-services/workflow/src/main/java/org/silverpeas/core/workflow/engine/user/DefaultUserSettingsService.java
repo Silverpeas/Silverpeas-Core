@@ -1,18 +1,17 @@
 package org.silverpeas.core.workflow.engine.user;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,7 +20,6 @@ import java.util.concurrent.ConcurrentMap;
  * Created by Nicolas on 30/05/2017.
  */
 @Service
-@Singleton
 public class DefaultUserSettingsService implements UserSettingsService {
 
   public static final String FIELD_TEXT = "field {0}";

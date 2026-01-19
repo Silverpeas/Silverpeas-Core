@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.media.video.ffmpeg;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
@@ -36,6 +37,7 @@ import java.io.File;
  * This class extract 5 thumbnails from a video file using FFmpeg
  * @author ebonnet
  */
+@Bean
 public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
 
   @Override

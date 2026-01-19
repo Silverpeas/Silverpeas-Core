@@ -23,41 +23,32 @@
  */
 package org.silverpeas.core.node.service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.dao.NodeDAO;
 import org.silverpeas.core.node.dao.NodeI18NDAO;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodeI18NDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodePath;
-import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.node.model.*;
 import org.silverpeas.core.node.notification.NodeEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.kernel.annotation.Cacheable;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static org.silverpeas.core.node.model.NodeDetail.NO_RIGHTS_DEPENDENCY;
 
@@ -68,8 +59,8 @@ import static org.silverpeas.core.node.model.NodeDetail.NO_RIGHTS_DEPENDENCY;
  * @author Nicolas Eysseric
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
+@Cacheable
 public class DefaultNodeService implements NodeService, ComponentInstanceDeletion {
 
   /**
@@ -84,6 +75,8 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   private NodeDeletion nodeDeletion;
   @Inject
   private NodeEventNotifier notifier;
+  @Inject
+  private I18n i18n;
 
   @Override
   @Transactional
@@ -381,7 +374,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       String defaultLanguage = oldNodeDetail.getLanguage();
       if (defaultLanguage == null) {
         // translation for the first time
-        nd.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
+        nd.setLanguage(i18n.getDefaultLanguage());
         defaultLanguage = nd.getLanguage();
       }
 
@@ -560,7 +553,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
     if (node.getLanguage() == null) {
       // translation for the first time
-      node.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
+      node.setLanguage(i18n.getDefaultLanguage());
     }
     try {
       NodePK newNodePK = save(node);
@@ -576,7 +569,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * Create a new Node object
    *
    * @param nd the NodeDetail which contains data
-   * @param fatherDetail the PK of the user who have create this node
+   * @param fatherDetail the PK of the user who have created this node
    * @return the NodePK of the new Node
    * @see NodeDetail
    * @since 1.0
@@ -592,7 +585,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       nd.setFatherPK(fatherDetail.getNodePK());
       if (nd.getLanguage() == null) {
         // translation for the first time
-        nd.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
+        nd.setLanguage(i18n.getDefaultLanguage());
       }
       NodePK newNodePK = save(nd);
       NodeDetail newNode = getDetail(newNodePK);
@@ -631,7 +624,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * Updates the node referred by the identifier of the specified node with the attributes of the
    * given node. Children of the node aren't processed.
    *
-   * @param detail the node with which its counter part in the data source has to be updated.
+   * @param detail the node with which its counterpart in the data source has to be updated.
    */
   private void updateNodeDetail(NodeDetail detail) {
     Connection con = getConnection();
@@ -649,7 +642,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * Updates the specified node got directly from the database with the attributes of the another
    * node. Children of the node aren't processed.
    *
-   * @param nodeToUpdate the node to update. It must represents the current state of the node and
+   * @param nodeToUpdate the node to update. It must represent the current state of the node and
    * as such it has to be provided from the database.
    * @param newState the new state of the node.
    * @return the updated node.

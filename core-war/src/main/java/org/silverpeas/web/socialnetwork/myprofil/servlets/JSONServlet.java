@@ -31,9 +31,9 @@ import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 

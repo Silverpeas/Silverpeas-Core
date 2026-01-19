@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.content;
 
 import org.silverpeas.core.util.MemoizedSupplier;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import java.util.Objects;
 import java.util.function.Supplier;
 

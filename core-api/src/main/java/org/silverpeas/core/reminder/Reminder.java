@@ -39,15 +39,15 @@ import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.filter.Filter;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
@@ -331,7 +331,8 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
       if (isPersisted() && isScheduledWith(scheduler)) {
         scheduler.unscheduleJob(getJobName());
       }
-      Reminder me = ReminderRepository.get().save(this);
+      ReminderRepository repository = ReminderRepository.get();
+      Reminder me = repository.save(this);
       JobTrigger trigger = JobTrigger.triggerAt(triggeringDateTime);
       scheduler.scheduleJob(me.getJobName(), trigger, ReminderProcess.get());
       return (T) me;

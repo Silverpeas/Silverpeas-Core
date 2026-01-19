@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.comment.service.notification;
 
+import org.hamcrest.CustomMatcher;
+import org.hamcrest.Matcher;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentUserNotification;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.template.SilverpeasTemplate;
+
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import org.hamcrest.CustomMatcher;
-import org.hamcrest.Matcher;
 
 /**
  * This class is a utility one that gather all matchers on NotificationMetaData objects and that
@@ -66,7 +67,7 @@ public final class NotificationMatchers {
     public boolean matches(Object item) {
       Comment expectedComment = (Comment) item;
       Map<String, SilverpeasTemplate> templates = notif.getTemplateContents();
-      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      List<String> languages = I18NHelper.getAllSupportedLanguages();
       for (String language : languages) {
         SilverpeasTemplate template = templates.get(language);
         if (template == null) {

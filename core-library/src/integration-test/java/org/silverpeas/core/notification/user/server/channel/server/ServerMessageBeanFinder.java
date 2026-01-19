@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.notification.user.server.channel.server;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
  * @author mmoquillon
  */
-@Singleton
+@Bean
 public class ServerMessageBeanFinder {
 
   @PersistenceContext
@@ -44,6 +44,7 @@ public class ServerMessageBeanFinder {
     return ServiceProvider.getService(ServerMessageBeanFinder.class);
   }
 
+  @SuppressWarnings("SqlSourceToSinkFlow")
   public static List<ServerMessageBean> getSomeByQuery(String query) {
     return getInstance().entityManager.createQuery(query, ServerMessageBean.class).getResultList();
   }

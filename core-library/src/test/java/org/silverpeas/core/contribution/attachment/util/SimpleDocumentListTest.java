@@ -23,17 +23,13 @@
  */
 package org.silverpeas.core.contribution.attachment.util;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,18 +39,9 @@ import java.util.stream.IntStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class SimpleDocumentListTest {
-
-  @Inject
-  I18n i18n;
-
-  @BeforeEach
-  void setDefaultI18nLanguage() {
-    when(i18n.getDefaultLanguage()).thenReturn("fr");
-  }
 
   @Test
   void removeLanguageFallbacksOnEmptyList() {

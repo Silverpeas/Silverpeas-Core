@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.user;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
@@ -45,9 +47,6 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -56,7 +55,6 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnAdding;
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
 @Service
-@Singleton
 public class UserRegistrationServiceLegacy implements UserRegistrationService {
 
   @Inject

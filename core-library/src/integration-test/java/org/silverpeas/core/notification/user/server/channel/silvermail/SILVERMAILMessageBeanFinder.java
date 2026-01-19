@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
  * @author mmoquillon
  */
-@Singleton
+@Bean
 public class SILVERMAILMessageBeanFinder {
 
   @PersistenceContext
@@ -42,10 +42,6 @@ public class SILVERMAILMessageBeanFinder {
 
   private static SILVERMAILMessageBeanFinder getInstance() {
     return ServiceProvider.getService(SILVERMAILMessageBeanFinder.class);
-  }
-
-  public static List<SILVERMAILMessageBean> getSomeByQuery(String query) {
-    return getInstance().entityManager.createQuery(query, SILVERMAILMessageBean.class).getResultList();
   }
 
   public static SILVERMAILMessageBean getById(long id) {

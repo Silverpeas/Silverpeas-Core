@@ -27,17 +27,14 @@ import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class QaptchaServlet extends HttpServlet {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = -3745690351420954550L;
   private static final String QAPTCHA_KEY = "qaptcha_key";
 

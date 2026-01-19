@@ -43,9 +43,9 @@ import org.silverpeas.core.web.http.RequestFile;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.*;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -54,8 +54,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static java.util.Optional.ofNullable;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.web.attachment.SimpleDocumentUploadData.decode;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;

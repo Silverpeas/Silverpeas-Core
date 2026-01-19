@@ -26,7 +26,7 @@ package org.silverpeas.web.usercalendar.notification;
 
 import org.silverpeas.core.web.calendar.notification.AbstractCalendarInstanceManualUserNotification;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * @author silveryocha

@@ -48,7 +48,7 @@ public interface PersistentResourceTokenService {
    * @return a token persisted for the specified resource.
    * @throws TokenException if an unexpected error occurs while initializing a token.
    */
-  PersistentResourceToken initialize(EntityReference resource) throws TokenException;
+  PersistentResourceToken initialize(EntityReference<?> resource) throws TokenException;
 
   /**
    * Gets the token of the resource referred by the specified {@link EntityReference}. If no token
@@ -58,7 +58,7 @@ public interface PersistentResourceTokenService {
    * @return either the token associated with the specified resource or NoneToken if no such token
    * exists.
    */
-  PersistentResourceToken get(final EntityReference resource);
+  PersistentResourceToken get(final EntityReference<?> resource);
 
   /**
    * Gets the token with the specified value from the data source. If no token exists with a such
@@ -74,7 +74,7 @@ public interface PersistentResourceTokenService {
    *
    * @param resource the resource for which the token has to be removed.
    */
-  void remove(final EntityReference resource);
+  void remove(final EntityReference<?> resource);
 
   /**
    * Removes quietly the specified token.

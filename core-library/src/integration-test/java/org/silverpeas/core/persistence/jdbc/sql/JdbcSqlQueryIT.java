@@ -26,6 +26,8 @@ package org.silverpeas.core.persistence.jdbc.sql;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Insert;
 import com.ninja_squad.dbsetup.operation.Operation;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedThreadFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -34,11 +36,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -61,17 +61,17 @@ import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 public class JdbcSqlQueryIT {
 
   public static final Operation TABLES_CREATION = Operations
-      .sql("CREATE TABLE a_table (id int8 PRIMARY KEY NOT NULL , value varchar(50) NOT NULL)");
+      .sql("CREATE TABLE a_table (id int8 PRIMARY KEY NOT NULL, val varchar(50) NOT NULL)");
   public static final Operation TABLE_SET_UP;
 
   private final static long NB_ROW_AT_BEGINNING = 100L;
 
   static {
-    Insert.Builder insertBulider = Operations.insertInto("a_table").columns("id", "value");
+    Insert.Builder insertBuilder = Operations.insertInto("a_table").columns("id", "val");
     for (long l = 0; l < NB_ROW_AT_BEGINNING; l++) {
-      insertBulider.values(l, "value_" + l);
+      insertBuilder.values(l, "value_" + l);
     }
-    TABLE_SET_UP = insertBulider.build();
+    TABLE_SET_UP = insertBuilder.build();
   }
 
   @Resource
@@ -83,9 +83,7 @@ public class JdbcSqlQueryIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(JdbcSqlQueryIT.class)
-        .addCommonBasicUtilities()
-        .addSilverpeasExceptionBases()
+    return LibCoreWarBuilder.onWarForTestClass(JdbcSqlQueryIT.class)
         .build();
   }
 
@@ -222,7 +220,7 @@ public class JdbcSqlQueryIT {
     assertThat(countAll().from("a_table").execute(), is(NB_ROW_AT_BEGINNING));
     assertThat(countAll().from("a_table").where("id != ?", 8).execute(),
         is(NB_ROW_AT_BEGINNING - 1));
-    assertThat(countAll().from("a_table").where("id != ?", 8).and("LENGTH(value) <= ?", 7).execute(),
+    assertThat(countAll().from("a_table").where("id != ?", 8).and("LENGTH(val) <= ?", 7).execute(),
         is(9L));
   }
 
@@ -274,7 +272,7 @@ public class JdbcSqlQueryIT {
   @Test
   public void selectUsingTwoAppendParametersAndAppendListOfParameters() throws SQLException {
     JdbcSqlQuery sqlQuery = select("*").from("a_table").where("id = ?", 26)
-      .or("LENGTH(value) <= ?", 7)
+      .or("LENGTH(val) <= ?", 7)
       .or("id").in(38, 39, 40);
     List<Pair<Long, String>> rows = sqlQuery.execute(new TableResultProcess());
     assertThat(rows, hasSize(14));
@@ -289,7 +287,7 @@ public class JdbcSqlQueryIT {
 
   private static class TableResultProcess implements SelectResultRowProcess<Pair<Long, String>> {
     private int rowIndex = 0;
-    private boolean assertion;
+    private final boolean assertion;
 
     TableResultProcess() {
       this(true);
@@ -314,7 +312,7 @@ public class JdbcSqlQueryIT {
 
   @Test
   public void selectWithOffsetAndLimitAll() throws SQLException {
-    List<Pair<Long, String>> rows = select("*").from("a_table").where("value like ?", "%0")
+    List<Pair<Long, String>> rows = select("*").from("a_table").where("val like ?", "%0")
         .orderBy("id desc").execute(new TableResultProcess());
     assertThat(rows, hasSize(10));
     assertThat(rows.get(0).getRight(), is("value_90"));
@@ -322,7 +320,7 @@ public class JdbcSqlQueryIT {
 
     int resultLimit = 5;
 
-    rows = select("*").from("a_table").where("value like ?", "%0").orderBy("id desc")
+    rows = select("*").from("a_table").where("val like ?", "%0").orderBy("id desc")
         .configure(config -> config.withResultLimit(resultLimit)).execute(new TableResultProcess());
 
     assertThat(rows, hasSize(resultLimit));
@@ -331,7 +329,7 @@ public class JdbcSqlQueryIT {
 
     int offset = 2;
 
-    rows = select("*").from("a_table").where("value like ?", "%0").orderBy("id desc")
+    rows = select("*").from("a_table").where("val like ?", "%0").orderBy("id desc")
         .configure(config -> config.withOffset(offset))
         .configure(config -> config.withResultLimit(resultLimit)).execute(new TableResultProcess(false));
 
@@ -345,7 +343,7 @@ public class JdbcSqlQueryIT {
     assertThat(getTableLines(), hasSize(100));
     JdbcSqlQuery insertSqlQuery = JdbcSqlQuery.insertInto("a_table");
     insertSqlQuery.withInsertParam("id", 200);
-    insertSqlQuery.withInsertParam("value", "value_200_inserted");
+    insertSqlQuery.withInsertParam("val", "value_200_inserted");
     Transaction.performInOne(() -> {
       long insertCount = insertSqlQuery.execute();
       assertThat(insertCount, is(1L));
@@ -362,15 +360,15 @@ public class JdbcSqlQueryIT {
     assertThat(getTableLines().get(38), is("38@value_38"));
 
     JdbcSqlQuery firstInsertSqlQuery = update("a_table");
-    firstInsertSqlQuery.withUpdateParam("value", "value_26_updated");
+    firstInsertSqlQuery.withUpdateParam("val", "value_26_updated");
     firstInsertSqlQuery.where("id = ?", 26);
 
     JdbcSqlQuery secondInsertSqlQuery = update("a_table");
-    secondInsertSqlQuery.withUpdateParam("value", "value_38_updated");
+    secondInsertSqlQuery.withUpdateParam("val", "value_38_updated");
     secondInsertSqlQuery.where("id = ?", 38);
 
     JdbcSqlQuery thirdInsertSqlQuery = update("a_table");
-    thirdInsertSqlQuery.withUpdateParam("value", "value_200_updated");
+    thirdInsertSqlQuery.withUpdateParam("val", "value_200_updated");
     thirdInsertSqlQuery.where("id = ?", 200);
 
     Transaction.performInOne(() -> {
@@ -392,15 +390,15 @@ public class JdbcSqlQueryIT {
     assertThat(getTableLines().get(38), is("38@value_38"));
 
     JdbcSqlQuery firstInsertSqlQuery = update("a_table");
-    firstInsertSqlQuery.withUpdateParam("value", "value_26_updated");
+    firstInsertSqlQuery.withUpdateParam("val", "value_26_updated");
     firstInsertSqlQuery.where("id = ?", 26);
 
     JdbcSqlQuery secondInsertSqlQuery = update("a_table");
-    secondInsertSqlQuery.withUpdateParam("value", "value_38_updated");
+    secondInsertSqlQuery.withUpdateParam("val", "value_38_updated");
     secondInsertSqlQuery.where("id = ?", 38);
 
     JdbcSqlQuery thirdInsertSqlQuery = update("a_table");
-    thirdInsertSqlQuery.withUpdateParam("value", "value_200_updated");
+    thirdInsertSqlQuery.withUpdateParam("val", "value_200_updated");
     thirdInsertSqlQuery.where("id = ?", 200);
 
     Transaction.performInOne(() -> {
@@ -422,7 +420,7 @@ public class JdbcSqlQueryIT {
   public void deleteRows() {
     assertThat(getTableLines(), hasSize(100));
     Transaction.performInOne(() -> {
-      long deleteCount = deleteFrom("a_table").where("LENGTH(value) <= ?", 7).execute();
+      long deleteCount = deleteFrom("a_table").where("LENGTH(val) <= ?", 7).execute();
       assertThat(deleteCount, is(10L));
       return null;
     });

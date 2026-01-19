@@ -31,12 +31,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.core.subscription.service.DefaultResourceSubscriptionService;
-import org.silverpeas.core.subscription.service.PKSubscription;
-import org.silverpeas.core.subscription.service.PKSubscriptionResource;
-import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
-import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.subscription.service.*;
+import org.silverpeas.core.subscription.stub.StubbedNodeService;
+import org.silverpeas.core.subscription.stub.StubbedOrganizationController;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -96,16 +94,10 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AbstractCommonSubscriptionIntegrationTest.class)
-        .addSilverpeasExceptionBases()
-        .addAdministrationFeatures()
-        .addIndexEngineFeatures()
-        .addWysiwygFeatures()
-        .addPublicationTemplateFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(AbstractCommonSubscriptionIntegrationTest.class)
+        .addClasses(StubbedNodeService.class, StubbedOrganizationController.class)
         .addAsResource(DATASET_XML_SCRIPT.substring(1))
-        .testFocusedOn(war -> war
-            .addPackages(true, "org.silverpeas.core.node", "org.silverpeas.core.subscription")
-            .addAsResource("node-create-database.sql"))
+        .addAsResource("node-create-database.sql")
         .build();
   }
 

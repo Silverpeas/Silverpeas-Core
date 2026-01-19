@@ -33,15 +33,15 @@ import org.silverpeas.core.web.rs.annotation.Authenticated;
 import org.silverpeas.core.web.token.SilverpeasWebTokenService;
 import org.silverpeas.core.web.token.SilverpeasWebTokenService.WebToken;
 
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**

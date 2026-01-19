@@ -23,34 +23,33 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -66,17 +65,20 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(WysiwygControllerIT.class)
-        .addJcrFeatures()
-        .addWysiwygFeatures()
+    return LibCoreWarBuilder.onFullWarForTestClass(WysiwygControllerIT.class)
         .addAsResource(DATABASE_CREATION_SCRIPT)
         .addAsResource(DATASET_SCRIPT)
+        .addAsResource("silverpeas-oak.properties")
+        .addAsResource("org/silverpeas/util/attachment/Attachment.properties")
         .build();
   }
 
   private static WysiwygManager getWysiwygController() {
     return WysiwygController.getManager();
   }
+
+  @Inject
+  private I18n i18n;
 
   /**
    * Test of finNode method, of class WysiwygController.
@@ -217,7 +219,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of copy method, of class WysiwygController.
    */
   @Test
-  public void testCopyDocumentsBetweenTwoResourcesWithSourceContent() throws Exception {
+  public void testCopyDocumentsBetweenTwoResourcesWithSourceContent() {
     String componentId = "blog974";
     String messageId = "18";
     SimpleDocument image = createImageContent(componentId, messageId);
@@ -251,13 +253,12 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of copy method, of class WysiwygController.
    */
   @Test
-  public void testCopyWysiwygThatExistsOnlyInEN() throws Exception {
+  public void testCopyWysiwygThatExistsOnlyInEN() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content_FileServer_ComponentId=blog974";
-    String userId = USER_ID;
     String language = "en";
-    WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
+    WysiwygController.save(expectedContent, componentId, messageId, USER_ID, language, false);
 
     ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(0));
@@ -299,7 +300,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of copy method, of class WysiwygController.
    */
   @Test
-  public void testCopyWysiwygFRENNoImageInJcr() throws Exception {
+  public void testCopyWysiwygFRENNoImageInJcr() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent =
@@ -365,7 +366,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of copy method, of class WysiwygController.
    */
   @Test
-  public void testCopyWysiwygFRENWithImageInJcr() throws Exception {
+  public void testCopyWysiwygFRENWithImageInJcr() {
     String componentId = "blog974";
     String messageId = "18";
     SimpleDocument image = createImageContent(componentId, messageId);
@@ -392,9 +393,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listWysiwygs(resourceDestTestPK), hasSize(0));
 
     // One image
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -420,11 +421,11 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listImages(resourceSrcTestPK), hasSize(1));
     SimpleDocumentList<SimpleDocument> copiedImages = listImages(resourceDestTestPK);
     assertThat(copiedImages, hasSize(1));
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"),
@@ -463,7 +464,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(frWysiwygFile, "");
+    FileUtils.write(frWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(frWysiwygFile.length(), is(0L));
 
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
@@ -477,9 +478,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(wysiwygs, hasSize(0));
 
     // One image
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -505,11 +506,11 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listImages(resourceSrcTestPK), hasSize(1));
     SimpleDocumentList<SimpleDocument> copiedImages = listImages(resourceDestTestPK);
     assertThat(copiedImages, hasSize(1));
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"),
@@ -550,13 +551,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(frWysiwygFile, "");
+    FileUtils.write(frWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(frWysiwygFile.length(), is(0L));
     // Empty EN wysiwyg ...
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
 
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
@@ -570,9 +571,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(wysiwygs, hasSize(0));
 
     // One image
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -592,9 +593,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listWysiwygsWithNoLanguageFallback(resourceDestTestPK, "de"), hasSize(0));
 
     // No image copied
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -608,13 +609,12 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of move method, of class WysiwygController.
    */
   @Test
-  public void testMoveWysiwygThatExistsOnlyInEN() throws Exception {
+  public void testMoveWysiwygThatExistsOnlyInEN() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content_FileServer_ComponentId=blog974";
-    String userId = USER_ID;
     String language = "en";
-    WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
+    WysiwygController.save(expectedContent, componentId, messageId, USER_ID, language, false);
 
     ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(0));
@@ -654,7 +654,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of move method, of class WysiwygController.
    */
   @Test
-  public void testMoveWysiwygFRENNoImageInJcr() throws Exception {
+  public void testMoveWysiwygFRENNoImageInJcr() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent =
@@ -716,7 +716,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of move method, of class WysiwygController.
    */
   @Test
-  public void testMoveWysiwygFRENWithImageInJcr() throws Exception {
+  public void testMoveWysiwygFRENWithImageInJcr() {
     String componentId = "blog974";
     String messageId = "18";
     SimpleDocument image = createImageContent(componentId, messageId);
@@ -743,9 +743,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listWysiwygs(resourceDestTestPK), hasSize(0));
 
     // One image
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -768,10 +768,10 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listWysiwygsWithNoLanguageFallback(resourceDestTestPK, "de"), hasSize(0));
 
     // One image
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang), hasSize(0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is(""));
@@ -808,7 +808,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(frWysiwygFile, "");
+    FileUtils.write(frWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(frWysiwygFile.length(), is(0L));
 
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
@@ -822,9 +822,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(wysiwygs, hasSize(0));
 
     // One image
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -847,10 +847,10 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listWysiwygsWithNoLanguageFallback(resourceDestTestPK, "de"), hasSize(0));
 
     // One image
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang), hasSize(0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is(""));
@@ -887,13 +887,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(frWysiwygFile, "");
+    FileUtils.write(frWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(frWysiwygFile.length(), is(0L));
     // Empty EN wysiwyg ...
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
 
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
@@ -907,9 +907,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(wysiwygs, hasSize(0));
 
     // One image
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -928,10 +928,10 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listWysiwygsWithNoLanguageFallback(resourceDestTestPK, "de"), hasSize(0));
 
     // Images moved
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : i18n.getSupportedLanguageCodes()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang), hasSize(0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
+          hasSize(i18n.getDefaultLanguage().equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is(""));
@@ -944,13 +944,12 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of load method, of class WysiwygController.
    */
   @Test
-  public void testLoadWysiwygThatExistsOnlyInEN() throws Exception {
+  public void testLoadWysiwygThatExistsOnlyInEN() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content";
-    String userId = USER_ID;
     String language = "en";
-    WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
+    WysiwygController.save(expectedContent, componentId, messageId, USER_ID, language, false);
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -965,7 +964,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of load method, of class WysiwygController.
    */
   @Test
-  public void testLoadWysiwygThatDoesNotExist() throws Exception {
+  public void testLoadWysiwygThatDoesNotExist() {
     String componentId = "blog974";
     String messageId = "18";
     // Jcr State
@@ -985,7 +984,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
   public void testLoadLegacyFRWysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    createLegacyWysiwygContent(componentId, messageId, "fr", "<mark>LegacyContent");
+    createLegacyWysiwygContent(componentId, messageId, "<mark>LegacyContent");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1004,7 +1003,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
   public void testLoadLegacyEmptyFRWysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1023,7 +1022,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1046,13 +1045,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
+    createLegacyWysiwygContent(componentId, messageId, "LegacyContent");
     // Empty EN wysiwyg ...
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1071,13 +1070,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Empty EN wysiwyg ...
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1092,7 +1091,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of load method, of class WysiwygController.
    */
   @Test
-  public void testLoadWysiwygForDisplayOnly() throws Exception {
+  public void testLoadWysiwygForDisplayOnly() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1117,7 +1116,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of load method, of class WysiwygController.
    */
   @Test
-  public void testLoadWysiwyg() throws Exception {
+  public void testLoadWysiwyg() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1156,13 +1155,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(frWysiwygFile, "");
+    FileUtils.write(frWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(frWysiwygFile.length(), is(0L));
     // Empty EN wysiwyg ...
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(1));
@@ -1177,13 +1176,12 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of haveGotWysiwygToDisplay method, of class WysiwygController.
    */
   @Test
-  public void testHavegotwysiwygtodisplayWysiwygThatExistsOnlyInEN() throws Exception {
+  public void testHaveGotWysiwygToDisplayWysiwygThatExistsOnlyInEN() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content";
-    String userId = USER_ID;
     String language = "en";
-    WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
+    WysiwygController.save(expectedContent, componentId, messageId, USER_ID, language, false);
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1198,7 +1196,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of haveGotWysiwygToDisplay method, of class WysiwygController.
    */
   @Test
-  public void testHavegotwysiwygtodisplayWysiwygThatDoesNotExist() throws Exception {
+  public void testHavegotwysiwygtodisplayWysiwygThatDoesNotExist() {
     String componentId = "blog974";
     String messageId = "18";
     // Jcr State
@@ -1218,7 +1216,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
   public void testHavegotwysiwygtodisplayLegacyFRWysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    createLegacyWysiwygContent(componentId, messageId, "fr", "<mark>LegacyContent");
+    createLegacyWysiwygContent(componentId, messageId, "<mark>LegacyContent");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1237,7 +1235,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
   public void testHavegotwysiwygtodisplayLegacyEmptyFRWysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1256,7 +1254,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1279,13 +1277,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
+    createLegacyWysiwygContent(componentId, messageId, "LegacyContent");
     // Empty EN wysiwyg ...
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1305,13 +1303,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Empty EN wysiwyg ...
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1326,7 +1324,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of haveGotWysiwygToDisplay method, of class WysiwygController.
    */
   @Test
-  public void testHavegotwysiwygtodisplayWysiwyg() throws Exception {
+  public void testHavegotwysiwygtodisplayWysiwyg() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1365,13 +1363,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(frWysiwygFile, "");
+    FileUtils.write(frWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(frWysiwygFile.length(), is(0L));
     // Empty EN wysiwyg ...
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(1));
@@ -1386,13 +1384,12 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of haveGotWysiwyg method, of class WysiwygController.
    */
   @Test
-  public void testHavegotwysiwygWysiwygThatExistsOnlyInEN() throws Exception {
+  public void testHavegotwysiwygWysiwygThatExistsOnlyInEN() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content";
-    String userId = USER_ID;
     String language = "en";
-    WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
+    WysiwygController.save(expectedContent, componentId, messageId, USER_ID, language, false);
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1407,7 +1404,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of haveGotWysiwyg method, of class WysiwygController.
    */
   @Test
-  public void testHavegotwysiwygWysiwygThatDoesNotExist() throws Exception {
+  public void testHavegotwysiwygWysiwygThatDoesNotExist() {
     String componentId = "blog974";
     String messageId = "18";
     // Jcr State
@@ -1427,7 +1424,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
   public void testHavegotwysiwygLegacyFRWysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    createLegacyWysiwygContent(componentId, messageId, "fr", "<mark>LegacyContent");
+    createLegacyWysiwygContent(componentId, messageId, "<mark>LegacyContent");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1446,7 +1443,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
   public void testHavegotwysiwygLegacyEmptyFRWysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1465,7 +1462,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Jcr State
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1488,13 +1485,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
+    createLegacyWysiwygContent(componentId, messageId, "LegacyContent");
     // Empty EN wysiwyg ...
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1513,13 +1510,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
-    createLegacyWysiwygContent(componentId, messageId, "fr", "");
+    createLegacyWysiwygContent(componentId, messageId, "");
     // Empty EN wysiwyg ...
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
@@ -1534,7 +1531,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of haveGotWysiwyg method, of class WysiwygController.
    */
   @Test
-  public void testHavegotwysiwygWysiwyg() throws Exception {
+  public void testHavegotwysiwygWysiwyg() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1573,13 +1570,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(frWysiwygFile, "");
+    FileUtils.write(frWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(frWysiwygFile.length(), is(0L));
     // Empty EN wysiwyg ...
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
-    FileUtils.write(enWysiwygFile, "");
+    FileUtils.write(enWysiwygFile, "", StandardCharsets.UTF_8);
     assertThat(enWysiwygFile.length(), is(0L));
     // Jcr State
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(1));
@@ -1590,16 +1587,16 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(WysiwygController.haveGotWysiwyg(componentId, messageId, "en"), is(false));
   }
 
-  private void createLegacyWysiwygContent(String componentId, String resourceId, String language,
+  private void createLegacyWysiwygContent(String componentId, String resourceId,
       String content) throws Exception {
     File legacyWysiwyg = FileUtils
         .getFile(FileRepositoryManager.getAbsolutePath(componentId), "Attachment", "wysiwyg",
-            resourceId + "wysiwyg_" + language + ".txt");
-    FileUtils.write(legacyWysiwyg, content);
+            resourceId + "wysiwyg_" + "fr" + ".txt");
+    FileUtils.write(legacyWysiwyg, content, StandardCharsets.UTF_8);
   }
 
   private SimpleDocument createImageContent(String componentId, String resourceId) {
-    SimpleAttachment attachment = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+    SimpleAttachment attachment = SimpleAttachment.builder(i18n.getDefaultLanguage())
         .setFilename("imageFileName")
         .setTitle("imageTitle")
         .setDescription("imageDescription")
@@ -1619,7 +1616,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of createFileAndAttachment method, of class WysiwygController.
    */
   @Test
-  public void testCreateWysiwyg() throws Exception {
+  public void testCreateWysiwyg() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1628,7 +1625,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
     assertThat(wysiwygs, hasSize(0));
-    assertThat(WysiwygController.load(componentId, messageId, language), isEmptyString());
+    assertThat(WysiwygController.load(componentId, messageId, language), is(emptyString()));
     WysiwygController.createFileAndAttachment(expectedContent, resourceTestPK, userId, language);
     String content = WysiwygController.load(componentId, messageId, language);
     assertThat(content, is(expectedContent));
@@ -1680,7 +1677,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of save method, of class WysiwygController.
    */
   @Test
-  public void testSaveWysiwyg() throws Exception {
+  public void testSaveWysiwyg() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1689,7 +1686,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
     assertThat(wysiwygs, hasSize(0));
-    assertThat(WysiwygController.load(componentId, messageId, language), isEmptyString());
+    assertThat(WysiwygController.load(componentId, messageId, language), is(emptyString()));
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     String content = WysiwygController.load(componentId, messageId, language);
     assertThat(content, is(expectedContent));
@@ -1715,7 +1712,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of save method, of class WysiwygController.
    */
   @Test
-  public void testSaveEmptyWysiwyg() throws Exception {
+  public void testSaveEmptyWysiwyg() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "";
@@ -1738,7 +1735,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of save method, of class WysiwygController.
    */
   @Test
-  public void testSaveWysiwygThenUpdateIt() throws Exception {
+  public void testSaveWysiwygThenUpdateIt() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1768,7 +1765,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of save method, of class WysiwygController.
    */
   @Test
-  public void testSaveWysiwygThenUpdateItWithEmptyOne() throws Exception {
+  public void testSaveWysiwygThenUpdateItWithEmptyOne() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1809,8 +1806,8 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     SimpleAttachment rightFrAttachment = getJcr().defaultFRContent();
     rightFrAttachment.setFilename("foreignId_A_wysiwyg_fr.txt");
     SimpleDocument rightFrWrongEn =
-        createWysiwygForTest(instanceId_1, "foreignId_A", rightFrAttachment, "contentFR");
-    addWysiwygForTest(rightFrWrongEn, "en", "contentEN");
+        createWysiwygForTest(instanceId_1, rightFrAttachment);
+    addWysiwygForTest(rightFrWrongEn);
     SimpleDocument rightFrWrongEn_fr =
         getJcr().assertContent(rightFrWrongEn.getId(), "fr", "contentFR");
     SimpleDocument rightFrWrongEn_en =
@@ -1839,7 +1836,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     SimpleAttachment rightFrAttachment = getJcr().defaultFRContent();
     rightFrAttachment.setFilename("foreignId_A_wysiwyg_fr.txt");
     SimpleDocument rightFrWrongEn =
-        createWysiwygForTest(instanceId_1, "foreignId_A", rightFrAttachment, "contentFR");
+        createWysiwygForTest(instanceId_1, rightFrAttachment);
     SimpleDocument rightFrWrongEn_fr =
         getJcr().assertContent(rightFrWrongEn.getId(), "fr", "contentFR");
     SimpleDocument rightFrWrongEn_en = getJcr().assertContent(rightFrWrongEn.getId(), "en", null);
@@ -1860,7 +1857,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
    * Test of save method, of class WysiwygController.
    */
   @Test
-  public void testSaveVersionedWysiwygThenUpdateItWithEmptyOne() throws Exception {
+  public void testSaveVersionedWysiwygThenUpdateItWithEmptyOne() {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
@@ -1917,8 +1914,10 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     InputStream resultIn =
         WysiwygControllerIT.class.getResourceAsStream("move_result.txt");
     try {
-      String content = IOUtils.toString(in);
-      String result = IOUtils.toString(resultIn);
+      Assert.assertNotNull(in);
+      String content = IOUtils.toString(in, StandardCharsets.UTF_8);
+      Assert.assertNotNull(resultIn);
+      String result = IOUtils.toString(resultIn, StandardCharsets.UTF_8);
       SimpleDocumentPK oldPk =
           new SimpleDocumentPK("dd99f10b-0640-40d3-9ef4-8b84d29a7c85", "kmelia1");
       oldPk.setOldSilverpeasId(34L);
@@ -1939,8 +1938,10 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     InputStream resultIn =
         WysiwygControllerIT.class.getResourceAsStream("move_out_result.txt");
     try {
-      String content = IOUtils.toString(in);
-      String result = IOUtils.toString(resultIn);
+      Assert.assertNotNull(in);
+      String content = IOUtils.toString(in, StandardCharsets.UTF_8);
+      Assert.assertNotNull(resultIn);
+      String result = IOUtils.toString(resultIn, StandardCharsets.UTF_8);
       SimpleDocumentPK oldPk =
           new SimpleDocumentPK("359d2924-b6c6-461c-a459-2eef38f12c3c", "kmelia1");
       oldPk.setOldSilverpeasId(34L);
@@ -1955,30 +1956,21 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     }
   }
 
-  protected SimpleDocument addWysiwygForTest(SimpleDocument document, String language,
-      final String emptyContent) throws Exception {
-    String content = emptyContent;
+  protected SimpleDocument addWysiwygForTest(SimpleDocument document) throws Exception {
+    String content = "contentEN";
     if (StringUtil.isNotDefined(content)) {
-      if (content != null && content.isEmpty()) {
-        content = "";
-      } else {
-        content = language + "_content_" + document.getInstanceId() + "_" + document.getForeignId();
-      }
+      content = "en" + "_content_" + document.getInstanceId() + "_" + document.getForeignId();
     }
-    return getJcr().updateAttachmentForTest(document, language, content);
+    return getJcr().updateAttachmentForTest(document, "en", content);
   }
 
-  protected SimpleDocument createWysiwygForTest(String instanceId, String foreignId,
-      SimpleAttachment attachment, final String emptyContent) throws Exception {
-    String content = emptyContent;
+  protected SimpleDocument createWysiwygForTest(String instanceId,
+      SimpleAttachment attachment) throws Exception {
+    String content = "contentFR";
     if (StringUtil.isNotDefined(content)) {
-      if (content != null && content.isEmpty()) {
-        content = "";
-      } else {
-        content = attachment.getLanguage() + "_content_" + instanceId + "_" + foreignId;
-      }
+      content = attachment.getLanguage() + "_content_" + instanceId + "_" + "foreignId_A";
     }
-    SimpleDocument wysiwyg = getJcr().defaultDocument(instanceId, foreignId);
+    SimpleDocument wysiwyg = getJcr().defaultDocument(instanceId, "foreignId_A");
     wysiwyg.setDocumentType(DocumentType.wysiwyg);
     if (StringUtil.isNotDefined(attachment.getFilename())) {
       attachment.setFilename("wysiwyg.txt");

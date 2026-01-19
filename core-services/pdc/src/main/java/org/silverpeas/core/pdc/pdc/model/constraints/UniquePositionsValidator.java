@@ -28,8 +28,8 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * The validator associated with the {@link UniquePositions} constraint.
@@ -40,12 +40,8 @@ public class UniquePositionsValidator implements
     ConstraintValidator<UniquePositions, Set<PdcPosition>> {
 
   @Override
-  public void initialize(UniquePositions constraintAnnotation) {
-  }
-
-  @Override
   public boolean isValid(Set<PdcPosition> pdcPositions, ConstraintValidatorContext context) {
-    List<PdcPosition> positions = new ArrayList<PdcPosition>(pdcPositions);
+    List<PdcPosition> positions = new ArrayList<>(pdcPositions);
     for (int p = 0; p < positions.size(); p++) {
       PdcPosition currentPosition = positions.get(p);
       for (int i = 0; i < positions.size(); i++) {

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserRegistrationService;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -31,17 +30,18 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,6 +59,8 @@ public class RegisterHandler extends CredentialsFunctionHandler {
   private UserRegistrationService userRegistrationService;
   @Inject
   private PublicationTemplateManager publicationTemplateManager;
+  @Inject
+  private I18n i18n;
 
   @Override
   public String getFunction() {
@@ -108,14 +110,14 @@ public class RegisterHandler extends CredentialsFunctionHandler {
   }
 
   private PagesContext getTemplateContext(String userId) {
-    return PagesContext.getDirectoryContext(userId, userId, I18NHelper.DEFAULT_LANGUAGE);
+    return PagesContext.getDirectoryContext(userId, userId, i18n.getDefaultLanguage());
   }
 
   private void saveAvatar(HttpRequest request, String nameAvatar) {
     List<FileItem> parameters = request.getFileItems();
     FileItem file = FileUploadUtil.getFile(parameters, "avatar");
-    if (file != null && StringUtil.isDefined(file.getName())) {
-      String extension = FileRepositoryManager.getFileExtension(file.getName());
+    if (file != null && StringUtil.isDefined(file.getFileName())) {
+      String extension = FileRepositoryManager.getFileExtension(file.getFileName());
       if (extension != null && extension.equalsIgnoreCase("jpeg")) {
         extension = "jpg";
       }

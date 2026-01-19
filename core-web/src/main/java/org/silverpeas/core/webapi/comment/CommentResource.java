@@ -24,6 +24,7 @@
 package org.silverpeas.core.webapi.comment;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.comment.model.Comment;
@@ -37,16 +38,16 @@ import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
 
 /**
  * A REST Web resource representing a given comment. It is a web service that provides access to
@@ -70,6 +71,8 @@ public class CommentResource extends RESTWebService {
 
   @Inject
   private PublicationService publicationService;
+  @Inject
+  private I18n i18n;
 
   @Override
   protected String getResourceBasePath() {
@@ -291,7 +294,8 @@ public class CommentResource extends RESTWebService {
    * @return the corresponding comment entity.
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
-    return CommentEntity.fromComment(comment).withURI(commentURI)
+    return CommentEntity.fromComment(comment, i18n.getDefaultLanguage())
+        .withURI(commentURI)
         .withCurrentUserLanguage(getUserPreferences().getLanguage());
   }
 

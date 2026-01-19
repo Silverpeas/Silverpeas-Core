@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.io.file;
 
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.util.URLUtil;
 
 import java.io.File;
 import java.util.Arrays;
@@ -79,7 +79,7 @@ public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor 
       String contentLanguage =
           from(attachmentLink).withDirectives(regexps(ATTACHMENT_LANG_FROM_LINK_PATTERNS, 1))
               .extractUnique();
-      contentLanguage = I18NHelper.checkLanguage(contentLanguage);
+      contentLanguage = I18n.get().checkLanguage(contentLanguage);
 
       // Getting the attachment
       SimpleDocumentPK sdPK = new SimpleDocumentPK(attachmentId);

@@ -37,7 +37,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +73,9 @@ public class LinkCategoryDAOIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4MyLinks.onWarForTestClass(LinkCategoryDAOIT.class).build();
+    return WarBuilder4MyLinks.onWarForTestClass(LinkCategoryDAOIT.class)
+        .addAsResource("org/silverpeas/core/mylinks/dao/" + DATASET_XML_SCRIPT)
+        .build();
   }
 
   @BeforeEach

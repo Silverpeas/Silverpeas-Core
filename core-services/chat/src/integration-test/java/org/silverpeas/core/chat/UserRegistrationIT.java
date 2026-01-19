@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.chat;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,12 +32,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.chat.servers.ChatServer;
+import org.silverpeas.core.admin.user.GroupManager;
+import org.silverpeas.core.admin.user.UserManager;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
+import org.silverpeas.core.chat.servers.DummyChatServer;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.WarBuilder4Chat;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
-
-import javax.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -56,10 +59,18 @@ public class UserRegistrationIT {
   public DbSetupRule dbSetupRule =
       DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT).loadInitialDataSetFrom(DATASET_SCRIPT);
 
-  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject
   @DefaultChatServer
-  private ChatServer server;
+  private DummyChatServer server;
+
+  @Inject
+  private ChatUsersRegistration registration;
+
+  @Inject
+  private UserManager userManager;
+
+  @Inject
+  private GroupManager groupManager;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -70,11 +81,30 @@ public class UserRegistrationIT {
   @Before
   public void setUp() {
     assertThat(server, notNullValue());
+    assertThat(registration, notNullValue());
+    assertThat(userManager, is(notNullValue()));
+    Transaction.performInOne(() -> {
+      String groupId = "3";
+      User user1 = User.getById("1");
+      User user2 = User.getById("2");
+      groupManager.addUserInGroup(user1.getId(), groupId);
+      groupManager.addUserInGroup(user2.getId(), groupId);
+      return null;
+    });
   }
 
   @Test
-  public void emptyTest() {
-    assertThat(true, is(true));
+  public void registerUser() {
+    User user = getUser("1");
+    User contact = getUser("2");
+    registration.registerUser(user);
+
+    assertThat(server.wasExecuted(DummyChatServer.CREATE_USER, user, contact), is(true));
+    assertThat(server.wasExecuted(DummyChatServer.CREATE_RELATION_SHIP, user, contact), is(true));
+  }
+
+  private User getUser(String userId) {
+    return Transaction.performInNew(() -> userManager.getUserDetail(userId));
   }
 }
   

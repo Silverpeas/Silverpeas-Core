@@ -32,9 +32,9 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.sharing.security.ShareableVersionDocument;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import java.util.Date;
 
 /**

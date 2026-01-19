@@ -35,9 +35,10 @@ import java.util.TimeZone;
 /**
  * WARNING: All the deprecated classes in this package contain failure in their handling of date
  * times (bad use of Timezone, etc.)
- *
+ * <p>
  * A datetime, expressed in a given timezone. If no timezone is specified explicitly, then
  * the one of the JVM is used by default.
+ * </p>
  * @deprecated Use the java.time API
  */
 @Deprecated
@@ -189,10 +190,8 @@ public class DateTime extends AbstractDateTemporal<DateTime> {
     DateTime other;
     if (obj instanceof java.util.Date) {
       other = new DateTime((java.util.Date) obj);
-    } else if (getClass() != obj.getClass()) {
-      return false;
     } else {
-      other = (DateTime) obj;
+      return false;
     }
     return isEqualTo(other);
   }

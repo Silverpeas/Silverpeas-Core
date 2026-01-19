@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.user.server.channel.server;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -32,15 +33,15 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessageBeanRepositoryIT;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(Arquillian.class)
 public class ServerMessageBeanRepositoryIT {
@@ -67,11 +68,9 @@ public class ServerMessageBeanRepositoryIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(ServerMessageBeanRepositoryIT.class)
-        .addAdministrationFeatures()
-        .addClasses(ServerMessageBeanFinder.class)
-        .testFocusedOn(
-            war -> war.addClasses(ServerMessageBean.class, ServerMessageBeanRepository.class))
+    return LibCoreWarBuilder.onFullWarForTestClass(SILVERMAILMessageBeanRepositoryIT.class)
+        .addAsResource(TABLE_CREATION.substring(1))
+        .addPackages(false, "org.silverpeas.core.notification.user.server.channel.server")
         .build();
   }
 
