@@ -71,11 +71,36 @@ jobs:
         # Download Coverity tools if not cached
         if [ ! -f "cov-analysis-linux64.tar.gz" ]; then
           echo "Downloading Coverity analysis tools..."
-          # Note: Replace this URL with your actual Coverity download location
-          # This typically requires authentication with your Coverity server
-          wget --auth-no-challenge --user="${COVERITY_USERNAME}" --password="${COVERITY_PASSWORD}" \
-            "${COVERITY_URL}/downloadFile.htm?fn=cov-analysis-linux64.tar.gz" \
-            -O cov-analysis-linux64.tar.gz
+          echo "Using Coverity server: ${COVERITY_URL}"
+          
+          # Construct the full download URL
+          DOWNLOAD_URL="${COVERITY_URL}/downloadFile.htm?fn=cov-analysis-linux64.tar.gz"
+          echo "Download URL: ${DOWNLOAD_URL}"
+          
+          # Download with authentication
+          if ! wget --auth-no-challenge \
+                  --user="${COVERITY_USERNAME}" \
+                  --password="${COVERITY_PASSWORD}" \
+                  --no-check-certificate \
+                  --timeout=300 \
+                  --tries=3 \
+                  "${DOWNLOAD_URL}" \
+                  -O cov-analysis-linux64.tar.gz; then
+            echo "Failed to download Coverity tools from: ${DOWNLOAD_URL}"
+            echo "Please verify:"
+            echo "1. COVERITY_URL is set correctly (should include https://)"
+            echo "2. COVERITY_USERNAME and COVERITY_PASSWORD are valid"
+            echo "3. Your Coverity server is accessible from GitHub Actions"
+            exit 1
+          fi
+          
+          # Verify download
+          if [ ! -f "cov-analysis-linux64.tar.gz" ] || [ ! -s "cov-analysis-linux64.tar.gz" ]; then
+            echo "Download failed or file is empty"
+            exit 1
+          fi
+          
+          echo "Download completed successfully"
         fi
         
         # Extract and setup tools
