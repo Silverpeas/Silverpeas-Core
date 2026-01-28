@@ -73,34 +73,101 @@ jobs:
           echo "Downloading Coverity analysis tools..."
           echo "Using Coverity server: ${COVERITY_URL}"
           
-          # Construct the full download URL
-          DOWNLOAD_URL="${COVERITY_URL}/downloadFile.htm?fn=cov-analysis-linux64.tar.gz"
-          echo "Download URL: ${DOWNLOAD_URL}"
+          # First try to authenticate and get session token
+          echo "Authenticating with Coverity server..."
           
-          # Download with authentication
-          if ! wget --auth-no-challenge \
-                  --user="${COVERITY_USERNAME}" \
-                  --password="${COVERITY_PASSWORD}" \
-                  --no-check-certificate \
-                  --timeout=300 \
-                  --tries=3 \
-                  "${DOWNLOAD_URL}" \
-                  -O cov-analysis-linux64.tar.gz; then
-            echo "Failed to download Coverity tools from: ${DOWNLOAD_URL}"
-            echo "Please verify:"
-            echo "1. COVERITY_URL is set correctly (should include https://)"
-            echo "2. COVERITY_USERNAME and COVERITY_PASSWORD are valid"
-            echo "3. Your Coverity server is accessible from GitHub Actions"
-            exit 1
+          # Method 1: Try curl with form-based login (most common for Coverity Connect)
+          SESSION_COOKIE=$(mktemp)
+          LOGIN_URL="${COVERITY_URL}/j_spring_security_check"
+          
+          if curl -s -c "$SESSION_COOKIE" \
+                  -d "j_username=${COVERITY_USERNAME}" \
+                  -d "j_password=${COVERITY_PASSWORD}" \
+                  -X POST \
+                  --insecure \
+                  "${LOGIN_URL}" > /dev/null 2>&1; then
+            
+            echo "Successfully authenticated with session cookie"
+            DOWNLOAD_URL="${COVERITY_URL}/downloadFile.htm?fn=cov-analysis-linux64.tar.gz"
+            
+            # Download using session cookie
+            if curl -s -b "$SESSION_COOKIE" \
+                    --insecure \
+                    --connect-timeout 300 \
+                    --max-time 1800 \
+                    -L \
+                    "${DOWNLOAD_URL}" \
+                    -o cov-analysis-linux64.tar.gz; then
+              echo "Download completed successfully using session authentication"
+            else
+              echo "Failed to download with session cookie, trying alternative method..."
+              rm -f cov-analysis-linux64.tar.gz
+              
+              # Method 2: Try direct download with basic auth and different headers
+              if curl -s -u "${COVERITY_USERNAME}:${COVERITY_PASSWORD}" \
+                      --insecure \
+                      --connect-timeout 300 \
+                      --max-time 1800 \
+                      -L \
+                      -H "Accept: application/octet-stream" \
+                      -H "User-Agent: Coverity-Analysis-Download" \
+                      "${DOWNLOAD_URL}" \
+                      -o cov-analysis-linux64.tar.gz; then
+                echo "Download completed successfully using basic authentication"
+              else
+                echo "Both authentication methods failed"
+                rm -f "$SESSION_COOKIE"
+                exit 1
+              fi
+            fi
+            
+            rm -f "$SESSION_COOKIE"
+          else
+            echo "Session authentication failed, trying basic auth..."
+            
+            # Fallback: Try wget with basic auth
+            DOWNLOAD_URL="${COVERITY_URL}/downloadFile.htm?fn=cov-analysis-linux64.tar.gz"
+            
+            if ! wget --http-user="${COVERITY_USERNAME}" \
+                    --http-password="${COVERITY_PASSWORD}" \
+                    --no-check-certificate \
+                    --timeout=300 \
+                    --tries=3 \
+                    "${DOWNLOAD_URL}" \
+                    -O cov-analysis-linux64.tar.gz; then
+              echo "Failed to download Coverity tools from: ${DOWNLOAD_URL}"
+              echo "Authentication failed with both session and basic auth methods."
+              echo ""
+              echo "Please verify:"
+              echo "1. COVERITY_URL is correct: ${COVERITY_URL}"
+              echo "2. COVERITY_USERNAME and COVERITY_PASSWORD are valid"
+              echo "3. Your account has download permissions"
+              echo "4. The Coverity server is accessible from GitHub Actions"
+              echo ""
+              echo "Common solutions:"
+              echo "- Check if your Coverity server uses SSO/SAML (requires different approach)"
+              echo "- Verify the analysis tools are available for download"
+              echo "- Consider using pre-downloaded tools from artifacts or cache"
+              exit 1
+            fi
           fi
           
           # Verify download
           if [ ! -f "cov-analysis-linux64.tar.gz" ] || [ ! -s "cov-analysis-linux64.tar.gz" ]; then
             echo "Download failed or file is empty"
+            ls -la cov-analysis-linux64.tar.gz 2>/dev/null || echo "File does not exist"
             exit 1
           fi
           
-          echo "Download completed successfully"
+          # Check file type to ensure it's actually a tar.gz file
+          if ! file cov-analysis-linux64.tar.gz | grep -q "gzip compressed"; then
+            echo "Downloaded file is not a valid gzip archive:"
+            file cov-analysis-linux64.tar.gz
+            head -c 500 cov-analysis-linux64.tar.gz
+            exit 1
+          fi
+          
+          echo "Download and verification completed successfully"
         fi
         
         # Extract and setup tools
