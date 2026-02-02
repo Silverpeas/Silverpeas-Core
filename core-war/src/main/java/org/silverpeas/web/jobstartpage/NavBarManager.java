@@ -208,14 +208,15 @@ public class NavBarManager {
   // --------------------
 
   /**
-   * Gets the availables spaces children of the current space of Silverpeas.
+   * Gets the available spaces children of the current space of Silverpeas.
    * @return an unmodifiable collection of spaces.
    */
   public Collection<DisplaySorted> getAvailableSubSpaces() {
     if (currentSpaceId == null) {
       return emptyList();
     }
-    return unmodifiableSortedSet(subSpaces.getSorted());
+    // to avoid the iteration of the set while being modified
+    return Collections.unmodifiableSet(new TreeSet<>(subSpaces.getSorted()));
   }
 
   public String getCurrentSubSpaceId() {
