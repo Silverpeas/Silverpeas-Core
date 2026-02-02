@@ -160,13 +160,11 @@ public class NavBarJsonEncoder {
         controller.getSpaceId());
     jsonObject.putJSONArray("spaces", a -> {
       var subspaces = controller.getSubSpaces();
-      synchronized (subspaces) {
-        subspaces.stream()
-            .filter(s -> s.getParentId().equals(parentId))
-            .filter(DisplaySorted::isVisible)
-            .map(s -> Pair.of(s, false))
-            .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
-      }
+      subspaces.stream()
+          .filter(s -> s.getParentId().equals(parentId))
+          .filter(DisplaySorted::isVisible)
+          .map(s -> Pair.of(s, false))
+          .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
       return a;
     });
   }
