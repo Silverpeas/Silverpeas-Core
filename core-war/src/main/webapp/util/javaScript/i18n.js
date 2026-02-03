@@ -22,7 +22,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 function showFieldTranslation(fieldId, varName) {
-  var fieldValue = window[varName];
+  const fieldValue = window[varName];
   if (typeof fieldValue === "string")  {
     document.getElementById(fieldId).value = fieldValue;
     document.getElementById("delTranslationLink").style.display = 'inline';
