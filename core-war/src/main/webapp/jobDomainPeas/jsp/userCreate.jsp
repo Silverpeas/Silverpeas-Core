@@ -24,35 +24,8 @@
 
 --%>
 <%@ page import="org.silverpeas.core.notification.user.client.NotificationManagerSettings" %>
-<%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.CollectionUtil" %>
-
-<%--
-
-    Copyright (C) 2000 - 2024 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
---%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -95,6 +68,13 @@
   browseBar.setComponentName(getDomainLabel(domObject, resource),
       "domainContent?Iddomain=" + domObject.getId());
   browseBar.setPath(groupsPath);
+
+  String checkedAdmin = userObject.isAccessAdmin()?"checked":"";
+  String checkedPdcManager = userObject.isAccessPdcManager()?"checked":"";
+  String checkedDomainManager = userObject.isAccessDomainManager()?"checked":"";
+  String checkedUser = userObject.isAccessUser()?"checked":"";
+  String checkedGuest = userObject.isAccessGuest()?"checked":"";
+
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -309,89 +289,78 @@ out.println(window.printBefore());
 			<label class="txtlibform"><fmt:message key="GML.eMail"/></label>
 			<div class="champs">
 				<% if (action.equals("userMS")) { %>
-		<%=userObject.getEmailAddress()%>
-		<% } else { %>
-                  <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99"
-			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getEmailAddress())%>" />
-                <% } %>
+      		<%=userObject.getEmailAddress()%>
+		  <% } else { %>
+          <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99" value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getEmailAddress())%>" />
+      <% } %>
 			</div>
 		</div>
-		<!--Rights-->
+
 	<div class="field" id="form-row-rights">
 			<label class="txtlibform"><fmt:message key="JDP.userRights"/></label>
 			<div class="champs">
-				<% if (currentUser.isAccessAdmin()) { %>
-                  <input type="radio" name="userAccessLevel" value="ADMINISTRATOR" <%
-                    if (userObject.isAccessAdmin()) {
-                      out.print("checked");
-                    } %>/>&nbsp;<%=resource.getString("GML.administrateur") %><br/>
-                  <input type="radio" name="userAccessLevel" value="PDC_MANAGER" <%
-                    if (userObject.isAccessPdcManager()) {
-                      out.print("checked");
-                    } %>/>&nbsp;<%=resource.getString("GML.kmmanager") %><br/>
-                <% } %>
-                <% if (currentUser.isAccessAdmin() || currentUser.isAccessDomainManager()) { %>
-                  <input type="radio" name="userAccessLevel" value="DOMAIN_ADMINISTRATOR" <%
-                    if (userObject.isAccessDomainManager()) {
-                      out.print("checked");
-                    } %>/>&nbsp;<%=resource.getString("GML.domainManager") %><br/>
-                  <input type="radio" name="userAccessLevel" value="USER" <%
-                    if (userObject.isAccessUser() || UserAccessLevel.UNKNOWN.equals(userObject.getAccessLevel())) {
-                      out.print("checked");
-                    } %>/>&nbsp;<%=resource.getString("GML.user") %><br/>
-                  <input type="radio" name="userAccessLevel" value="GUEST" <%
-                    if (userObject.isAccessGuest()) {
-                      out.print("checked");
-                    } %>/>&nbsp;<%=resource.getString("GML.guest") %>
-                <% } else { %>
-			  <input type="hidden" name="userAccessLevel" value="USER"/><fmt:message key="GML.user" />
-                <% } %>
+        <c:if test="${currentUser.accessAdmin}">
+          <input type="radio" name="userAccessLevel" value="ADMINISTRATOR" <%=checkedAdmin%>/>&nbsp;<%=resource.getString("GML.administrateur") %><br/>
+          <input type="radio" name="userAccessLevel" value="PDC_MANAGER" <%=checkedPdcManager%>/>&nbsp;<%=resource.getString("GML.kmmanager") %><br/>
+          <input type="radio" name="userAccessLevel" value="DOMAIN_ADMINISTRATOR" <%=checkedDomainManager%>/>&nbsp;<%=resource.getString("GML.domainManager") %><br/>
+          <input type="radio" name="userAccessLevel" value="USER" <%=checkedUser%>/>&nbsp;<%=resource.getString("GML.user") %><br/>
+          <input type="radio" name="userAccessLevel" value="GUEST" <%=checkedGuest%>/>&nbsp;<%=resource.getString("GML.guest") %>
+        </c:if>
+
+        <c:if test="${currentUser.accessDomainManager}">
+          <input type="radio" name="userAccessLevel" value="ADMINISTRATOR" <%=checkedAdmin%>/>&nbsp;<%=resource.getString("GML.administrateur") %><br/>
+          <c:if test="${not userObject.accessAdmin}">
+            <input type="radio" name="userAccessLevel" value="DOMAIN_ADMINISTRATOR" <%=checkedDomainManager%>/>&nbsp;<%=resource.getString("GML.domainManager") %><br/>
+            <input type="radio" name="userAccessLevel" value="USER" <%=checkedUser%>/>&nbsp;<%=resource.getString("GML.user") %><br/>
+            <input type="radio" name="userAccessLevel" value="GUEST" <%=checkedGuest%>/>&nbsp;<%=resource.getString("GML.guest") %>
+          </c:if>
+        </c:if>
 			</div>
 		</div>
-		<% if (userObject.isPasswordAvailable()) { %>
-		<!--Password Silverpeas ?-->
-	<div class="field" id="form-row-passwordsp">
-			<label class="txtlibform"><fmt:message key="JDP.silverPassword"/></label>
-			<div class="champs">
-				<input type="checkbox" name="userPasswordValid" id="userPasswordValid" value="true"
-				<%
-                 if (userObject.isPasswordValid() || userCreation) {
-                   out.print("checked");
-                 } %> onclick="selectUnselect()"/>&nbsp;<fmt:message key="GML.yes" />
-			</div>
-		</div>
-		<!--Password-->
-	<div class="field" id="form-row-password">
-			<label class="txtlibform"><fmt:message key="GML.password"/></label>
-			<div class="champs">
-				<input type="password" autocomplete="new-password" name="userPassword" id="userPasswordId" size="50" maxlength="32" value=""/>
-			</div>
-		</div>
-		<!--Password again-->
-	<div class="field" id="form-row-passwordAgain">
-			<label class="txtlibform"><fmt:message key="GML.passwordAgain"/></label>
-			<div class="champs">
-				<input type="password" autocomplete="new-password" name="userPasswordAgain" id="userPasswordAgainId" size="50" maxlength="32" value=""/>
-			</div>
-		</div>
-		<!--Send Email-->
-	<div class="field" id="sendEmailTRid">
-			<label class="txtlibform"><fmt:message key="JDP.sendEmail"/></label>
-			<div class="champs">
-				<input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />
-				&nbsp;<fmt:message key="GML.yes" /> <br/>
-			</div>
-		</div>
-    <div class="field" id="form-row-extra-message">
-      <label class="txtlibform"><fmt:message key="JDP.sendEmail.message"/></label>
-      <div class="champs">
-        <fmt:message key="JDP.sendEmail.message.help" var="extraMessageHelp"/>
-        <textarea rows="3" cols="50" name="extraMessage" placeholder="${extraMessageHelp}"></textarea>
+    <c:if test="${userObject.passwordAvailable}">
+      <!--Password Silverpeas ?-->
+    <div class="field" id="form-row-passwordsp">
+        <label class="txtlibform"><fmt:message key="JDP.silverPassword"/></label>
+        <div class="champs">
+          <input type="checkbox" name="userPasswordValid" id="userPasswordValid" value="true"
+          <%
+                   if (userObject.isPasswordValid() || userCreation) {
+                     out.print("checked");
+                   } %> onclick="selectUnselect()"/>&nbsp;<fmt:message key="GML.yes" />
+        </div>
       </div>
-    </div>
+      <!--Password-->
+    <div class="field" id="form-row-password">
+        <label class="txtlibform"><fmt:message key="GML.password"/></label>
+        <div class="champs">
+          <input type="password" autocomplete="new-password" name="userPassword" id="userPasswordId" size="50" maxlength="32" value=""/>
+        </div>
+      </div>
+      <!--Password again-->
+    <div class="field" id="form-row-passwordAgain">
+        <label class="txtlibform"><fmt:message key="GML.passwordAgain"/></label>
+        <div class="champs">
+          <input type="password" autocomplete="new-password" name="userPasswordAgain" id="userPasswordAgainId" size="50" maxlength="32" value=""/>
+        </div>
+      </div>
+      <!--Send Email-->
+    <div class="field" id="sendEmailTRid">
+        <label class="txtlibform"><fmt:message key="JDP.sendEmail"/></label>
+        <div class="champs">
+          <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />
+          &nbsp;<fmt:message key="GML.yes" /> <br/>
+        </div>
+      </div>
+      <div class="field" id="form-row-extra-message">
+        <label class="txtlibform"><fmt:message key="JDP.sendEmail.message"/></label>
+        <div class="champs">
+          <fmt:message key="JDP.sendEmail.message.help" var="extraMessageHelp"/>
+          <textarea rows="3" cols="50" name="extraMessage" placeholder="${extraMessageHelp}"></textarea>
+        </div>
+      </div>
+    </c:if>
 
-        <% }
-
+        <%
         //in case of group manager, the added user must be set to one group
         //if user manages only once group, user will be added to it
         //else if he manages several groups, manager chooses one group
