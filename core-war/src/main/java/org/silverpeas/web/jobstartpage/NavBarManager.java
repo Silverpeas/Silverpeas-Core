@@ -32,6 +32,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
@@ -40,7 +41,6 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.of;
 
 public class NavBarManager {
-  // Constants used by urlFactory
 
   private UserDetail user = null;
   private AdminController adminCtrl = null;
@@ -150,11 +150,26 @@ public class NavBarManager {
   // ----------------
 
   /**
-   * Gets the availables spaces of Silverpeas.
+   * Gets the available spaces of Silverpeas.
+   *
    * @return an unmodifiable collection of spaces.
    */
-  public Collection<DisplaySorted> getAvailableSpaces() {
-    return unmodifiableSortedSet(spaces.getSorted());
+  private Collection<DisplaySorted> getAvailableSpaces() {
+    return spaces.getSorted();
+  }
+
+  /**
+   * Applies on the available root spaces in Silverpeas the specified operation. The root spaces are
+   * passed as a {@link Stream} to allow only read operations. The stream traverse is synchronized
+   * to avoid any concurrent access exception.
+   *
+   * @param operation the operation to apply on each root space of Silverpeas.
+   */
+  public void applyOnAvailableRootSpaces(Consumer<Stream<DisplaySorted>> operation) {
+    var rootSpaces = getAvailableSpaces();
+    synchronized (rootSpaces) {
+      operation.accept(rootSpaces.stream());
+    }
   }
 
   public String getCurrentSpaceId() {
@@ -168,7 +183,7 @@ public class NavBarManager {
   public boolean setCurrentSpace(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
     currentSpaceId = spaceId;
-    // Reset the selected sub space
+    // Reset the selected subspace
     currentSubSpaceId = null;
     subSpaceComponents.clear();
     if (StringUtil.isDefined(currentSpaceId) && getSpaceCache(currentSpaceId) == null) {
@@ -194,7 +209,9 @@ public class NavBarManager {
   }
 
   /**
-   * Gets the availables component instances in the current space of Silverpeas.
+   * Gets the available component instances in the current space of Silverpeas. All access to the
+   * returned collection must be to be synchronized.
+   *
    * @return an unmodifiable collection of component instances.
    */
   public Collection<DisplaySorted> getAvailableSpaceComponents() {
@@ -204,19 +221,49 @@ public class NavBarManager {
     return unmodifiableSortedSet(spaceComponents.getSorted());
   }
 
+  /**
+   * Applies on the available component instances of the current root space in Silverpeas the
+   * specified operation. The component instances are passed as a {@link Stream} to allow only read
+   * operations. The stream traverse is synchronized to avoid any concurrent access exception.
+   *
+   * @param operation the operation to apply on each component instances of Silverpeas.
+   */
+  public void applyOnAvailableSpaceComponents(Consumer<Stream<DisplaySorted>> operation) {
+    var components = getAvailableSpaceComponents();
+    synchronized (components) {
+      operation.accept(components.stream());
+    }
+  }
+
   // Sub-Spaces functions
   // --------------------
 
   /**
-   * Gets the available spaces children of the current space of Silverpeas.
+   * Gets the available spaces children of the current space of Silverpeas. All access to the
+   * returned collection must be to be synchronized.
+   *
    * @return an unmodifiable collection of spaces.
    */
-  public Collection<DisplaySorted> getAvailableSubSpaces() {
+  private Collection<DisplaySorted> getAvailableSubSpaces() {
     if (currentSpaceId == null) {
       return emptyList();
     }
     // to avoid the iteration of the set while being modified
-    return Collections.unmodifiableSet(new TreeSet<>(subSpaces.getSorted()));
+    return unmodifiableSortedSet(subSpaces.getSorted());
+  }
+
+  /**
+   * Applies on the available subspaces of the current space of Silverpeas the specified operation.
+   * The subspaces are passed as a {@link Stream} to allow only read operations. The stream traverse
+   * is synchronized
+   *
+   * @param operation the operation to apply on each subspace of the current space.
+   */
+  public void applyOnAvailableSubSpaces(Consumer<Stream<DisplaySorted>> operation) {
+    var subspaces = getAvailableSubSpaces();
+    synchronized (subspaces) {
+      operation.accept(subspaces.stream());
+    }
   }
 
   public String getCurrentSubSpaceId() {
@@ -245,14 +292,29 @@ public class NavBarManager {
   }
 
   /**
-   * Gets the availables component instances in the current subspace of Silverpeas.
+   * Gets the available component instances in the current subspace of Silverpeas.
+   *
    * @return an unmodifiable collection of component instances.
    */
-  public Collection<DisplaySorted> getAvailableSubSpaceComponents() {
+  private Collection<DisplaySorted> getAvailableSubSpaceComponents() {
     if (currentSubSpaceId == null) {
       return emptyList();
     }
     return subSpaceComponents.getSorted();
+  }
+
+  /**
+   * Applies on the available component instances of the current subspace in Silverpeas the
+   * specified operation. The component instances are passed as a {@link Stream} to allow only read
+   * operations. The stream traverse is synchronized to avoid any concurrent access exception.
+   *
+   * @param operation the operation to apply on each component instances of Silverpeas.
+   */
+  public void applyOnAvailableSubspaceComponents(Consumer<Stream<DisplaySorted>> operation) {
+    var components = getAvailableSubSpaceComponents();
+    synchronized (components) {
+      operation.accept(components.stream());
+    }
   }
 
   protected DisplaySorted getSpaceCache(String spaceId) {
@@ -352,6 +414,11 @@ public class NavBarManager {
         });
   }
 
+  /**
+   * A cache of displayable nodes. It is used to speed the rendering of the Silverpeas
+   * organizational resources tree for a given user by avoiding reloading the whole tree each time
+   * the tree has to be rendered in the GUI.
+   */
   private static class DisplaySortedCache {
 
     private final SortedSet<DisplaySorted> sortedData = synchronizedSortedSet(new TreeSet<>());
