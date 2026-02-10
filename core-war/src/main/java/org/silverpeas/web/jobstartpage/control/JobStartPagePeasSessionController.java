@@ -62,14 +62,16 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Pair;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.jobstartpage.*;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class JobStartPagePeasSessionController extends AbstractAdminComponentSessionController {
 
@@ -132,7 +134,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
 
   // method du spaceInst
   public SpaceInst getSpaceInstById() {
-    if (!StringUtil.isDefined(getManagedSpaceId())) {
+    if (!isDefined(getManagedSpaceId())) {
       return null;
     }
     return adminController.getSpaceInstById("WA" + getManagedSpaceId());
@@ -174,7 +176,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
 
   public void setSpaceId(String spaceUserId) {
     String spaceId = spaceUserId;
-    if (StringUtil.isDefined(spaceId)) {
+    if (isDefined(spaceId)) {
       List<SpaceInstLight> path =
           ServiceProvider.getService(AdminController.class).getPathToSpace(spaceId, true);
       if (path.size() > 1) {
@@ -206,24 +208,38 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     return m_NavBarMgr.getCurrentSpaceId();
   }
 
-  public Collection<DisplaySorted> getSpaces() {
-    return m_NavBarMgr.getAvailableSpaces();
+  /**
+   * Applies the specified operation on the stream of root spaces in Silverpeas.
+   * @param operation the operation to apply.
+   */
+  public void applyOnRootSpaces(Consumer<Stream<DisplaySorted>> operation) {
+    m_NavBarMgr.applyOnAvailableRootSpaces(operation);
   }
 
-  public Collection<DisplaySorted> getSpaceComponents() {
-    return m_NavBarMgr.getAvailableSpaceComponents();
+  /**
+   * Applies the specified operation on the stream of component instances that are in the current
+   * space in Silverpeas.
+   * @param operation the operation to apply.
+   */
+  public void applyOnSpaceComponents(Consumer<Stream<DisplaySorted>> operation) {
+    if (isDefined(getSubSpaceId())) {
+      m_NavBarMgr.applyOnAvailableSubspaceComponents(operation);
+    } else {
+      m_NavBarMgr.applyOnAvailableSpaceComponents(operation);
+    }
   }
 
   public String getSubSpaceId() {
     return m_NavBarMgr.getCurrentSubSpaceId();
   }
 
-  public Collection<DisplaySorted> getSubSpaces() {
-    return m_NavBarMgr.getAvailableSubSpaces();
-  }
-
-  public Collection<DisplaySorted> getSubSpaceComponents() {
-    return m_NavBarMgr.getAvailableSubSpaceComponents();
+  /**
+   * Applies the specified operation on the stream of the subspaces of the current space in
+   * Silverpeas.
+   * @param operation the operation to apply.
+   */
+  public void applyOnSubSpaces(Consumer<Stream<DisplaySorted>> operation) {
+    m_NavBarMgr.applyOnAvailableSubSpaces(operation);
   }
 
   public void setSpaceMaintenance(String spaceId, boolean mode) {
@@ -379,7 +395,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     }
     newSpace.setCreatorUserId(getUserId());
     String sSpaceInstId = addSpaceInst(newSpace);
-    if (StringUtil.isDefined(sSpaceInstId)) {
+    if (isDefined(sSpaceInstId)) {
       if (spaceint1 != null) {
         // on est en creation de sous-espace
         setSubSpaceId(sSpaceInstId);
@@ -397,7 +413,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
 
   public String addSpaceInst(SpaceInst spaceInst) {
     String res = adminController.addSpaceInst(spaceInst);
-    if (StringUtil.isDefined(res)) {
+    if (isDefined(res)) {
       // Finally refresh the cache
       m_NavBarMgr.addSpaceInCache(res);
     }
@@ -432,7 +448,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     processExternalElementsOfSpaceAppearance(items);
 
     String selectedLook = FileUploadUtil.getParameter(items, "SelectedLook");
-    if (!StringUtil.isDefined(selectedLook)) {
+    if (!isDefined(selectedLook)) {
       selectedLook = null;
     }
 
@@ -449,7 +465,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
       isDisplaySpaceFirst = false;
     } else {
       String spacePosition = FileUploadUtil.getParameter(items, "SpacePosition");
-      isDisplaySpaceFirst = !(StringUtil.isDefined(spacePosition)
+      isDisplaySpaceFirst = !(isDefined(spacePosition)
           && "2".equalsIgnoreCase(spacePosition));
     }
     // Set new space position VO
@@ -475,7 +491,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
 
   private void processSpaceWallpaper(List<FileItem> items, String path) throws Exception {
     FileItem file = FileUploadUtil.getFile(items, "wallPaper");
-    if (file != null && StringUtil.isDefined(file.getName())) {
+    if (file != null && isDefined(file.getName())) {
       String extension = FileRepositoryManager.getFileExtension(file.getName());
       if (extension != null && extension.equalsIgnoreCase("jpeg")) {
         extension = "jpg";
@@ -497,7 +513,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
 
   private void processSpaceCSS(List<FileItem> items, String path) throws Exception {
     FileItem file = FileUploadUtil.getFile(items, "css");
-    if (file != null && StringUtil.isDefined(file.getName())) {
+    if (file != null && isDefined(file.getName())) {
       // Remove previous file
       File css = new File(path, SilverpeasLook.SPACE_CSS + ".css");
       if (css.exists()) {
@@ -514,7 +530,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     // Component space quota
     if (isAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated) {
       try {
-        if (StringUtil.isDefined(componentSpaceQuotaMaxCount)) {
+        if (isDefined(componentSpaceQuotaMaxCount)) {
           spaceInst.setComponentSpaceQuotaMaxCount(Integer.parseInt(componentSpaceQuotaMaxCount));
         }
         SpaceServiceProvider.getComponentSpaceQuotaService().initialize(
@@ -528,7 +544,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     // Data storage quota
     if (isAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated) {
       try {
-        if (StringUtil.isDefined(dataStorageQuotaMaxCount)) {
+        if (isDefined(dataStorageQuotaMaxCount)) {
           spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
               Long.parseLong(dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
         }
@@ -591,7 +607,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     RightRecover rightRecover = AdministrationServiceProvider.getRightRecoveringService();
     if (spaceId == null) {
       rightRecover.recoverRights();
-    } else if (StringUtil.isDefined(spaceId)) {
+    } else if (isDefined(spaceId)) {
       rightRecover.recoverSpaceRights(spaceId);
     }
   }
@@ -772,7 +788,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   private void setParameterValues(ParameterList parameters) {
-    if (StringUtil.isDefined(getManagedInstanceId())) {
+    if (isDefined(getManagedInstanceId())) {
       ComponentInst componentInst = getComponentInst(getManagedInstanceId());
       if (componentInst != null) {
         parameters.setValues(componentInst.getParameters());
@@ -861,18 +877,25 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     adminController.deleteComponentInst(getUserDetail(), sInstanceId, definitiveDelete);
   }
 
-  // ArrayList de ProfileInst dont l'id est vide ou pas
-  // role non cree : id vide - name - label (identique à name)
-  // role cree : id non vide - name - label
-  public List<ProfileInst> getAllProfiles(ComponentInst m_FatherComponentInst) {
+  /**
+   * Gets all the possible access right profiles for the specified component instance.
+   * @param componentInst a component instance
+   * @return a list of {@link ProfileInst} instances with as properties:
+   * <ul>
+   *   <li>The role isn't yet defined: the id is empty and the label is identique to the
+   *   predefined profile name (the name of the role);</li>
+   *   <li>The role is defined: the id, name and label are all set</li>
+   * </ul>
+   */
+  public List<ProfileInst> getAllProfiles(ComponentInst componentInst) {
     ArrayList<ProfileInst> alShowProfile = new ArrayList<>();
-    String sComponentName = m_FatherComponentInst.getName();
+    String sComponentName = componentInst.getName();
     // profils dispo
     String[] asAvailProfileNames = adminController.getAllProfilesNames(sComponentName);
     for (String profileName : asAvailProfileNames) {
       boolean bFound = false;
 
-      ProfileInst profile = m_FatherComponentInst.getProfileInst(profileName);
+      ProfileInst profile = componentInst.getProfileInst(profileName);
       if (profile != null) {
         bFound = true;
         setProfileLabel(sComponentName, profileName, profile);
@@ -893,18 +916,18 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   private void setProfileLabel(String sComponentName, String profileName, ProfileInst profile) {
     String label = adminController.getProfileLabelByName(sComponentName, profileName,
         getLanguage());
-    if (!StringUtil.isDefined(label)) {
+    if (!isDefined(label)) {
       label = adminController.getProfileLabelByName(sComponentName, profileName,
           DisplayI18NHelper.getDefaultLanguage());
     }
-    if (StringUtil.isDefined(label)) {
+    if (isDefined(label)) {
       profile.setLabel(label);
     }
   }
 
   public ProfileInst getProfile(String sProfileId, String sProfileName,
       String sProfileLabel) {
-    if (StringUtil.isDefined(sProfileId)) {
+    if (isDefined(sProfileId)) {
       return adminController.getProfileInst(sProfileId);
     }
     ProfileInst res = new ProfileInst();
@@ -978,7 +1001,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     selection.setHostPath(hostPath);
 
     String hostUrl = compoURL + "EffectiveUpdateInstanceProfile";
-    if (!StringUtil.isDefined(profileId)) { // creation
+    if (!isDefined(profileId)) { // creation
       hostUrl = compoURL + "EffectiveCreateInstanceProfile";
     }
     selection.setGoBackURL(hostUrl);
@@ -997,7 +1020,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     profile.setUsers(Arrays.asList(userIds));
     profile.setGroups(Arrays.asList(groupIds));
 
-    if (!StringUtil.isDefined(profile.getId())) {
+    if (!isDefined(profile.getId())) {
       profile.setComponentFatherId(getComponentLocalId(getManagedInstanceId()));
       // Add the profile
       adminController.addProfileInst(profile, getUserId());
@@ -1137,7 +1160,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
       pasteDetail.setToSpaceId(getManagedSpaceId());
       String sComponentId = adminController.copyAndPasteComponent(pasteDetail);
       // Adding ok
-      if (StringUtil.isDefined(sComponentId)) {
+      if (isDefined(sComponentId)) {
         setManagedInstanceId(sComponentId);
         refreshCurrentSpaceCache();
       }
@@ -1156,8 +1179,8 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     try {
       pasteDetail.setToSpaceId(getManagedSpaceId());
       String newSpaceId = adminController.copyAndPasteSpace(pasteDetail);
-      if (StringUtil.isDefined(newSpaceId)) {
-        if (StringUtil.isDefined(getManagedSpaceId())) {
+      if (isDefined(newSpaceId)) {
+        if (isDefined(getManagedSpaceId())) {
           refreshCurrentSpaceCache();
         } else {
           m_NavBarMgr.addSpaceInCache(newSpaceId);
@@ -1184,7 +1207,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     if (isSpaceInMaintenance(getManagedSpaceId())) {
       return JobStartPagePeasSessionController.MAINTENANCE_THISSPACE;
     }
-    // check if a parent is is maintenance
+    // check if a parent is maintenance
     List<SpaceInstLight> spaces = getOrganisationController().getPathToSpace(getManagedSpaceId());
     for (SpaceInstLight space : spaces) {
       if (isSpaceInMaintenance(space.getId())) {

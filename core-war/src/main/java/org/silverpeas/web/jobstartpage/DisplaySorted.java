@@ -23,9 +23,15 @@
  */
 package org.silverpeas.web.jobstartpage;
 
+import org.silverpeas.kernel.annotation.NonNull;
+
 import java.util.Comparator;
 import java.util.Objects;
 
+/**
+ * A node in a tree to be rendered in the GUI. It represents an organizational resource in
+ * Silverpeas like a space or a component instance.
+ */
 public class DisplaySorted implements Comparable<DisplaySorted> {
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_COMPONENT = 1;
@@ -45,7 +51,7 @@ public class DisplaySorted implements Comparable<DisplaySorted> {
   private boolean visible = true;
 
   @Override
-  public int compareTo(DisplaySorted other) {
+  public int compareTo(@NonNull DisplaySorted other) {
     return COMPARATOR.compare(this, other);
   }
 

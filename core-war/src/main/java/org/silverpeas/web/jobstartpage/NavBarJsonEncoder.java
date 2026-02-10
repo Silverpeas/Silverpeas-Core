@@ -30,13 +30,11 @@ import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
-import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -72,7 +70,7 @@ public class NavBarJsonEncoder {
    *  <li><strong>currentRootSpace</strong>: the data of current root space if any, undefined
    *  otherwise</li>
    *  <li><strong>spacePath</strong>: an array representing the space path to the current
-   *  sub-space</li>
+   *  subspace</li>
    *  <li><strong>spaces</strong>: an array of current spaces</li>
    *  <li><strong>applications</strong>: an array of current application instances</li>
    * </ul>
@@ -97,16 +95,13 @@ public class NavBarJsonEncoder {
    * @param jsonObject the JSON object to fill.
    */
   private void encodeRootSpaces(final JSONObject jsonObject) {
-    jsonObject.putJSONArray("rootSpaces", a -> {
-      var spaces = controller.getSpaces();
-      synchronized (spaces) {
-        spaces.stream()
-            .filter(DisplaySorted::isVisible)
-            .map(s -> Pair.of(s, true))
-            .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
-      }
-      return a;
-    });
+    controller.applyOnRootSpaces(spaces ->
+        jsonObject.putJSONArray("rootSpaces", a -> {
+          spaces.filter(DisplaySorted::isVisible)
+              .map(s -> Pair.of(s, true))
+              .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
+          return a;
+        }));
   }
 
   /**
@@ -125,7 +120,7 @@ public class NavBarJsonEncoder {
   }
 
   /**
-   * Encodes if any the full path to the current sub-space.
+   * Encodes if any the full path to the current subspace.
    *
    * @param jsonObject the JSON object to fill.
    */
@@ -158,15 +153,14 @@ public class NavBarJsonEncoder {
   private void encodeSpaces(final JSONObject jsonObject) {
     final String parentId = defaultStringIfNotDefined(controller.getSubSpaceId(),
         controller.getSpaceId());
-    jsonObject.putJSONArray("spaces", a -> {
-      var subspaces = controller.getSubSpaces();
-      subspaces.stream()
-          .filter(s -> s.getParentId().equals(parentId))
-          .filter(DisplaySorted::isVisible)
-          .map(s -> Pair.of(s, false))
-          .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
-      return a;
-    });
+    controller.applyOnSubSpaces(subspaces ->
+        jsonObject.putJSONArray("spaces", a -> {
+          subspaces.filter(s -> s.getParentId().equals(parentId))
+              .filter(DisplaySorted::isVisible)
+              .map(s -> Pair.of(s, false))
+              .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
+          return a;
+        }));
   }
 
   /**
@@ -191,22 +185,15 @@ public class NavBarJsonEncoder {
    * @param jsonObject the JSON object to fill.
    */
   private void encodeApplications(final JSONObject jsonObject) {
-    final Collection<DisplaySorted> applications = isDefined(controller.getSubSpaceId()) ?
-        controller.getSubSpaceComponents() :
-        controller.getSpaceComponents();
-    if (isNotEmpty(applications)) {
-      jsonObject.putJSONArray("applications", a -> {
-        synchronized (applications) {
-          applications.stream()
-              .filter(DisplaySorted::isVisible)
+    controller.applyOnSpaceComponents(applications ->
+        jsonObject.putJSONArray("applications", a -> {
+          applications.filter(DisplaySorted::isVisible)
               .forEach(i -> a.addJSONObject(so -> so
                   .put(ID, i.getId())
                   .put(NAME, i.getTypeName())
                   .put(LABEL, i.getName())));
-        }
-        return a;
-      });
-    }
+          return a;
+        }));
   }
 
   /**
@@ -218,21 +205,13 @@ public class NavBarJsonEncoder {
   private void encodeCurrentComponentInstance(final JSONObject jsonObject) {
     final String currentApplicationId = controller.getManagedInstanceId();
     if (isDefined(currentApplicationId)) {
-      final Collection<DisplaySorted> applications = isDefined(controller.getSubSpaceId()) ?
-          controller.getSubSpaceComponents() :
-          controller.getSpaceComponents();
-      if (isNotEmpty(applications)) {
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (applications) {
-          applications.stream()
-              .filter(a -> currentApplicationId.equals(a.getId()))
+      controller.applyOnSpaceComponents(applications ->
+          applications.filter(a -> currentApplicationId.equals(a.getId()))
               .findFirst()
               .ifPresent(a -> jsonObject.putJSONObject("currentApplication", o -> o
                   .put(ID, a.getId())
                   .put(NAME, a.getTypeName())
-                  .put(LABEL, a.getName())));
-        }
-      }
+                  .put(LABEL, a.getName()))));
     }
   }
 
