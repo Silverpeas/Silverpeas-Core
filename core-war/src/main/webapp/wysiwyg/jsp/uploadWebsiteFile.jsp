@@ -38,13 +38,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
 <%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button "%>
 <%@ page import="java.io.File" %>
 <%@ page import="org.silverpeas.core.util.file.FileUploadUtil" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.kernel.logging.SilverLogger" %>
+<%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -63,22 +65,54 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     HttpRequest httpRequest = HttpRequest.decorate(request);
     if (httpRequest.isContentInMultipart())
     {
-	    FileItem fileItem = httpRequest.getSingleFile();
-	    if (fileItem != null)
-	    {
-			String fichierName = FileUploadUtil.getFileName(fileItem);
-			File fichier = new File(thePath, fichierName);
-			FileUploadUtil.saveToFile(fichier, fileItem);
-
-			String urlPath = thePath.substring(thePath.indexOf("/website"));
-
-			%>
-			<script language="javascript">
-				window.opener.document.getElementById('txtUrl').value='<%=WebEncodeHelper.javaStringToJsString(urlPath+'/'+fichierName)%>';
-				window.close();
-			</script>
-			<%
-	    }
+        FileItem fileItem = httpRequest.getSingleFile();
+        if (fileItem != null)
+        {
+            try {
+                // Validate the path to prevent path traversal attacks
+                if (thePath == null || !thePath.contains("/website")) {
+                    throw new SecurityException("Invalid path: path must contain '/website'");
+                }
+                
+                // Get the website repository from WysiwygController
+                String websiteRepository = WysiwygController.getWebsiteRepository();
+                
+                // Ensure the path is within the allowed website repository
+                File allowedRoot = new File(websiteRepository);
+                File requestedPath = new File(thePath);
+                
+                // Check if the requested path is within the allowed website repository
+                if (!requestedPath.getCanonicalPath().startsWith(allowedRoot.getCanonicalPath())) {
+                    throw new SecurityException("Security violation: attempted path traversal");
+                }
+                
+                // Process the upload with the validated path
+                String fichierName = FileUploadUtil.getFileName(fileItem);
+                File fichier = new File(requestedPath, fichierName);
+                
+                // Ensure the final destination is still within the allowed website repository
+                if (!fichier.getCanonicalPath().startsWith(allowedRoot.getCanonicalPath())) {
+                    throw new SecurityException("Security violation: destination file outside allowed path");
+                }
+                
+                FileUploadUtil.saveToFile(fichier, fileItem);
+                
+                String urlPath = thePath.substring(thePath.indexOf("/website"));
+                %>
+                <script language="javascript">
+                    window.opener.document.getElementById('txtUrl').value='<%=WebEncodeHelper.javaStringToJsString(urlPath+'/'+fichierName)%>';
+                    window.close();
+                </script>
+                <%
+            } catch (Exception e) {
+                SilverLogger.getLogger("wysiwyg").error("Error during file upload", e);
+                %>
+                <script language="javascript">
+                    alert("<%=WebEncodeHelper.javaStringToJsString(message.getString("Error") + ": " + e.getMessage())%>");
+                </script>
+                <%
+            }
+        }
     }
 %>
 <view:script src="/util/javaScript/checkForm.js"/>
