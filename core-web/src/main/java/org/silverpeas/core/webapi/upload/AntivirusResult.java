@@ -1,8 +1,10 @@
 package org.silverpeas.core.webapi.upload;
 
 public class AntivirusResult {
-    private boolean safe, error;
-    private String virusName, errorMessage;
+    private boolean safe;
+    private boolean error;
+    private String virusName;
+    private String errorMessage;
 
     public boolean isSafe() {
         return safe;
