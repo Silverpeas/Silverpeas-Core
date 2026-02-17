@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2000 - 2026 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package org.silverpeas.core.web.filter;
 
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -15,8 +38,24 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * Servlet {@link Filter} responsible for injecting the Matomo tracking script
+ * into generated JSP pages.
+ * <p>
+ * The script is dynamically built using a Silverpeas template and enriched with
+ * contextual information such as the current user, space and component identifiers.
+ * </p>
+ * <p>
+ * The injection is performed just before the closing {@code </body>} tag of the HTML response.
+ * </p>
+ */
 public class MatomoInjectionFilter implements Filter {
 
+
+    // HTML closing body tag used as injection point.
+    public static final String BODY = "</body>";
+
+    // Configuration settings related to Matomo integration.
     private SettingBundle settings;
 
     @Override
@@ -30,30 +69,33 @@ public class MatomoInjectionFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
+        // If Matomo tracking is disabled, continue without wrapping the response.
         if (!settings.getBoolean("matomo.enable")) {
             chain.doFilter(request, response);
             return;
         }
 
         HttpServletRequest httpReq = (HttpServletRequest) request;
-        HttpServletResponse httpResp = (HttpServletResponse) response;
+        String path = httpReq.getRequestURI();
 
-       String path = httpReq.getRequestURI();
-
+        // Only process JSP pages and ignore specific technical pages.
         if (!path.contains(".jsp") || path.endsWith("Idle.jsp")) {
             chain.doFilter(request, response);
             return;
         }
 
+        // Wrap the response to capture the generated HTML content.
         CharResponseWrapper responseWrapper = new CharResponseWrapper((HttpServletResponse) response);
         chain.doFilter(request, responseWrapper);
 
+        // Inject the Matomo script just before the closing </body> tag if present.
         String originalContent = responseWrapper.toString();
-        if (originalContent.contains("</body>")) {
+        if (originalContent.contains(BODY)) {
             String matomoScript = buildMatomoScript((HttpServletRequest) request);
-            originalContent = originalContent.replace("</body>", matomoScript + "</body>");
+            originalContent = originalContent.replace(BODY, matomoScript + BODY);
         }
 
+        // Write the modified content back to the original response output stream.
         byte[] bytes = originalContent.getBytes(response.getCharacterEncoding());
         response.setContentLength(bytes.length);
         response.getOutputStream().write(bytes);
@@ -104,6 +146,10 @@ public class MatomoInjectionFilter implements Filter {
         return componentId;
     }
 
+    /**
+     * Wrapper used to capture the response output as a character stream
+     * in order to modify it before sending it to the client.
+     */
     private static class CharResponseWrapper extends HttpServletResponseWrapper {
         private final CharArrayWriter charWriter = new CharArrayWriter();
         private PrintWriter writer;
