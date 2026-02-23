@@ -11,7 +11,7 @@ CKEDITOR.editorConfig = function( config )
   config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.imageUploadUrl = 'activated';
-  config.extraPlugins = 'userzoom,identitycard,autolink,video,html5audio,imageresizerowandcolumn,variables,listblock,floatpanel,richcombo,mediaofcontribution,imagebank,filebank';
+  config.extraPlugins = 'userzoom,identitycard,autolink,video,html5audio,imageresizerowandcolumn,variables,listblock,floatpanel,richcombo,mediaofcontribution,imagebank,filebank,emoji';
   config.allowedContent = true;
   config.toolbarCanCollapse = true;
   config.disableNativeSpellChecker = false;
@@ -32,7 +32,7 @@ CKEDITOR.editorConfig = function( config )
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
     { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
     { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
-    { name: 'insert',      items : [ 'Image','mediaofcontribution','imagebank','Video','Html5audio','Iframe','filebank','Table','HorizontalRule','Smiley','SpecialChar','PageBreak', 'identitycard', 'userzoom', 'variables' ] },
+    { name: 'insert',      items : [ 'Image','mediaofcontribution','imagebank','Video','Html5audio','Iframe','filebank','Table','HorizontalRule','EmojiPanel','SpecialChar','PageBreak', 'identitycard', 'userzoom', 'variables' ] },
     '/',
     { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
     { name: 'colors',      items : [ 'TextColor','BGColor' ] },
@@ -42,7 +42,7 @@ CKEDITOR.editorConfig = function( config )
   config.toolbar_Light = [
     { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
     { name: 'links',       items : [ 'Link','Unlink' ] },
-    { name: 'insert',      items : [ 'Table','HorizontalRule','Smiley','SpecialChar', 'identitycard', 'userzoom', 'variables' ] },
+    { name: 'insert',      items : [ 'Table','HorizontalRule','EmojiPanel','SpecialChar', 'identitycard', 'userzoom', 'variables' ] },
     '/',
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
     { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
