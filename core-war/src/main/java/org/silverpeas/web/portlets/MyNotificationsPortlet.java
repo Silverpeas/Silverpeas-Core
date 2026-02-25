@@ -80,13 +80,11 @@ public class MyNotificationsPortlet extends GenericPortlet implements FormNames 
 
   @Override
   public void processAction(ActionRequest request, ActionResponse response) throws PortletException {
-    RenderParameters reqParams = request.getRenderParameters();
-    MutableRenderParameters resParams = response.getRenderParameters();
-    resParams.setValue(ACTION_PARAMETER_NAME, reqParams.getValue(ACTION_PARAMETER_NAME));
-    resParams.setValue(COLUMN_PARAMETER_NAME, reqParams.getValue(COLUMN_PARAMETER_NAME));
-    resParams.setValue(ITEMS_PER_PAGE_PARAM, reqParams.getValue(ITEMS_PER_PAGE_PARAM));
-    resParams.setValue(INDEX_PARAMETER_NAME, reqParams.getValue(INDEX_PARAMETER_NAME));
-    resParams.setValue(TARGET_PARAMETER_NAME, reqParams.getValue(TARGET_PARAMETER_NAME));
+    response.setRenderParameter(ACTION_PARAMETER_NAME, request.getParameter(ACTION_PARAMETER_NAME));
+    response.setRenderParameter(COLUMN_PARAMETER_NAME, request.getParameter(COLUMN_PARAMETER_NAME));
+    response.setRenderParameter(ITEMS_PER_PAGE_PARAM, request.getParameter(ITEMS_PER_PAGE_PARAM));
+    response.setRenderParameter(INDEX_PARAMETER_NAME, request.getParameter(INDEX_PARAMETER_NAME));
+    response.setRenderParameter(TARGET_PARAMETER_NAME, request.getParameter(TARGET_PARAMETER_NAME));
     response.setPortletMode(PortletMode.VIEW);
   }
 

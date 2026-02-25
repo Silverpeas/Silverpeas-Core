@@ -61,7 +61,7 @@ public class IFramePortlet extends SilverpeasEditablePortlet {
   @Override
   protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
       throws PortletException {
-    String url = request.getRenderParameters().getValue("url");
+    String url = request.getParameter("url");
 
     // Check if it is a number
     // store preference

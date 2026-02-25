@@ -90,7 +90,7 @@ public class ComponentInstancePortlet extends SilverpeasEditablePortlet {
   @Override
   protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
       throws PortletException {
-    String instanceId = request.getRenderParameters().getValue(PREFINSTANCEID);
+    String instanceId = request.getParameter(PREFINSTANCEID);
 
     // store preference
     PortletPreferences pref = request.getPreferences();

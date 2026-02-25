@@ -99,9 +99,7 @@ public class SpaceResponsiblesPortlet extends SilverpeasEditablePortlet {
   @Override
   protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
       throws PortletException {
-
-    String displayOnlySpaceManagers = request.getRenderParameters()
-        .getValue("displayOnlySpaceManagers");
+    String displayOnlySpaceManagers = request.getParameter("displayOnlySpaceManagers");
 
     // store preference
     PortletPreferences pref = request.getPreferences();

@@ -25,11 +25,10 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 
-import javax.portlet.RenderParameters;
 import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -40,9 +39,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
+import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
-import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 
 /**
  * The ArrayPane interface gives us the skeleton for all funtionnalities we need to display typical
@@ -97,9 +96,7 @@ public interface ArrayPane extends SimpleGraphicElement {
   static <O> O getOrderByFrom(final RenderRequest renderRequest,
       final Map<Integer, Pair<O, O>> orderByColumnIndex, final String defaultArrayPaneName) {
     final Map<String, String> parameters = new HashMap<>();
-    RenderParameters renderParameters = renderRequest.getRenderParameters();
-    renderParameters.getNames().forEach(name ->
-        parameters.put(name, renderParameters.getValue(name)));
+    renderRequest.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
     final HttpServletRequest request = getHttpServletRequest(renderRequest);
     return getOrderByFrom(request, parameters, orderByColumnIndex, defaultArrayPaneName);
   }
@@ -185,9 +182,7 @@ public interface ArrayPane extends SimpleGraphicElement {
   static PaginationPage getPaginationPageFrom(RenderRequest renderRequest,
       final String defaultArrayPaneName) {
     final Map<String, String> parameters = new HashMap<>();
-    RenderParameters renderParameters = renderRequest.getRenderParameters();
-    renderParameters.getNames().forEach(name ->
-        parameters.put(name, renderParameters.getValue(name)));
+    renderRequest.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
     final HttpServletRequest request = getHttpServletRequest(renderRequest);
     return getPaginationPageFrom(request, parameters, defaultArrayPaneName);
   }

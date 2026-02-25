@@ -26,7 +26,10 @@ package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.web.portlets.FormNames;
 
-import javax.portlet.*;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.GenericPortlet;
+import javax.portlet.PortletException;
 
 /**
  * A portlet in Silverpeas that is editable by the user. It provides common behaviors for such
@@ -51,14 +54,13 @@ public abstract class SilverpeasEditablePortlet extends GenericPortlet implement
   @Override
   public void processAction(ActionRequest request, ActionResponse response)
       throws PortletException {
-    RenderParameters parameters = request.getRenderParameters();
-    if (parameters.getValue(SUBMIT_FINISHED) != null) {
+    if (request.getParameter(SUBMIT_FINISHED) != null) {
       //
       // handle "finished" button on edit page
       // return to view mode
       //
       processEditFinishedAction(request, response);
-    } else if (parameters.getValue(SUBMIT_CANCEL) != null) {
+    } else if (request.getParameter(SUBMIT_CANCEL) != null) {
       //
       // handle "cancel" button on edit page
       // return to view mode

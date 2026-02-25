@@ -94,8 +94,7 @@ public class MyNewsFeedPortlet extends SilverpeasEditablePortlet {
   @Override
   protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
       throws PortletException {
-
-    String notDisplayMyActivity = request.getRenderParameters().getValue("notDisplayMyActivity");
+    String notDisplayMyActivity = request.getParameter("notDisplayMyActivity");
 
     // store preference
     PortletPreferences pref = request.getPreferences();

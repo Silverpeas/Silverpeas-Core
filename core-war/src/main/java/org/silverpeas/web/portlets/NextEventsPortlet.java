@@ -91,7 +91,8 @@ public class NextEventsPortlet extends SilverpeasEditablePortlet {
   @Override
   protected void processEditFinishedAction(ActionRequest request, ActionResponse response)
       throws PortletException {
-    String nbItems = request.getRenderParameters().getValue(TEXTBOX_NB_ITEMS);
+
+    String nbItems = request.getParameter(TEXTBOX_NB_ITEMS);
 
     // Check if it is a number
     try {
@@ -118,7 +119,7 @@ public class NextEventsPortlet extends SilverpeasEditablePortlet {
       response.setPortletMode(PortletMode.VIEW);
 
     } catch (NumberFormatException e) {
-      response.getRenderParameters().setValue(ERROR_BAD_VALUE, "true");
+      response.setRenderParameter(ERROR_BAD_VALUE, "true");
       response.setPortletMode(PortletMode.EDIT);
     }
   }
