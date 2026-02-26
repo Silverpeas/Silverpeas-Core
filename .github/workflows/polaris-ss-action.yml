@@ -2,10 +2,6 @@
 # https://github.com/marketplace/actions/black-duck-security-scan
 name: polaris-ss-action
 on:
-  push:
-    branches: [ main, master, develop, stage, release ]
-  pull_request:
-    branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
   polaris:
