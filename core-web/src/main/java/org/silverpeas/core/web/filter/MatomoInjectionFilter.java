@@ -23,11 +23,15 @@
  */
 package org.silverpeas.core.web.filter;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +41,8 @@ import javax.servlet.http.HttpSession;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 /**
  * Servlet {@link Filter} responsible for injecting the Matomo tracking script
@@ -52,8 +58,8 @@ import java.io.PrintWriter;
 public class MatomoInjectionFilter implements Filter {
 
 
-    // HTML closing body tag used as injection point.
-    public static final String BODY = "</body>";
+    // HTML closing tag used as injection point.
+    public static final String SCRIPT = "</script>";
 
     // Configuration settings related to Matomo integration.
     private SettingBundle settings;
@@ -77,9 +83,10 @@ public class MatomoInjectionFilter implements Filter {
 
         HttpServletRequest httpReq = (HttpServletRequest) request;
         String path = httpReq.getRequestURI();
+        String bodyPartJSP = settings.getString("bodypart.jsp");
 
         // Only process JSP pages and ignore specific technical pages.
-        if (!path.contains(".jsp") || path.endsWith("Idle.jsp")) {
+        if (!path.contains(bodyPartJSP)) {
             chain.doFilter(request, response);
             return;
         }
@@ -90,9 +97,9 @@ public class MatomoInjectionFilter implements Filter {
 
         // Inject the Matomo script just before the closing </body> tag if present.
         String originalContent = responseWrapper.toString();
-        if (originalContent.contains(BODY)) {
+        if (originalContent.contains(SCRIPT)) {
             String matomoScript = buildMatomoScript((HttpServletRequest) request);
-            originalContent = originalContent.replace(BODY, matomoScript + BODY);
+            originalContent = originalContent.replace(SCRIPT, SCRIPT + matomoScript);
         }
 
         // Write the modified content back to the original response output stream.
@@ -104,16 +111,35 @@ public class MatomoInjectionFilter implements Filter {
     private String buildMatomoScript(HttpServletRequest request) {
 
         String userId = getCurrentUserId(request);
-        String spaceId = getCurrentSpaceId(request);
-        String componentId = getCurrentComponentId(request);
+        String spaceId = request.getParameter("SpaceId");
+        String componentId = request.getParameter("ComponentId");
 
         SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnCore("statistics");
-        template.setAttribute("spaceId", spaceId);
+        String spaceName = "";
+        if (StringUtil.isDefined(spaceId)) {
+            try { spaceName = Administration.get().getSpaceInstLightById(spaceId).getName(); } catch (Exception e) {}
+        }
+        template.setAttribute("spaceId", spaceName + " (" + spaceId + ")");
+        String componentName = "";
+        if (StringUtil.isDefined(componentId)) {
+            try {componentName = Administration.get().getComponentInstLight(componentId).getName();} catch (Exception e) {}
+        }
         template.setAttribute("componentId", componentId);
         template.setAttribute("userId", userId);
+
+        if (StringUtil.isDefined(componentId)) {
+            template.setAttribute("virtualPage", "/silverpeas/Component/" + componentId);
+        } else if (StringUtil.isDefined(spaceId)) {
+            template.setAttribute("virtualPage", "/silverpeas/Space/" + componentId);
+        }
         template.setAttribute("matomoUrl", settings.getString("matomo.url"));
         template.setAttribute("siteId", settings.getString("matomo.siteId"));
         return template.applyFileTemplate("matomo");
+    }
+
+    private String safe(Supplier<String> supplier) {
+        try { return supplier.get(); }
+        catch (Exception e) { return ""; }
     }
 
     public String getCurrentUserId(HttpServletRequest request) {
@@ -122,14 +148,6 @@ public class MatomoInjectionFilter implements Filter {
         if (helper != null) userId = helper.getUserId();
         return userId;
     }
-
-    public String getCurrentSpaceId(HttpServletRequest request) {
-        String spaceId = "";
-        LookHelper helper = getLookHelper(request);
-        if (helper != null) spaceId = helper.getSpaceId();
-        return spaceId;
-    }
-
     private LookHelper getLookHelper(HttpServletRequest request) {
         if (request == null) return null;
         HttpSession session = request.getSession(false);
@@ -137,13 +155,6 @@ public class MatomoInjectionFilter implements Filter {
         Object attr = session.getAttribute("Silverpeas_LookHelper");
         if (attr == null) return  null;
         return (LookHelper) attr;
-    }
-
-    public String getCurrentComponentId(HttpServletRequest request) {
-        String componentId = "";
-        LookHelper helper = getLookHelper(request);
-        if (helper != null) componentId = helper.getSpaceId();
-        return componentId;
     }
 
     /**
