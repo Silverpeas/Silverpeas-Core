@@ -26,6 +26,9 @@ package org.silverpeas.core.web.filter;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.web.look.LookHelper;
@@ -86,9 +89,13 @@ public class MatomoInjectionFilter implements Filter {
         String bodyPartJSP = settings.getString("bodypart.jsp");
 
         // Only process JSP pages and ignore specific technical pages.
+
+        TrackableContent content = getTrackageContent(httpReq);
         if (!path.contains(bodyPartJSP)) {
-            chain.doFilter(request, response);
-            return;
+            if (!content.isContent()) {
+                chain.doFilter(request, response);
+                return;
+            }
         }
 
         // Wrap the response to capture the generated HTML content.
@@ -98,7 +105,7 @@ public class MatomoInjectionFilter implements Filter {
         // Inject the Matomo script just before the closing </body> tag if present.
         String originalContent = responseWrapper.toString();
         if (originalContent.contains(SCRIPT)) {
-            String matomoScript = buildMatomoScript((HttpServletRequest) request);
+            String matomoScript = buildMatomoScript((HttpServletRequest) request, content);
             originalContent = originalContent.replace(SCRIPT, SCRIPT + matomoScript);
         }
 
@@ -108,38 +115,75 @@ public class MatomoInjectionFilter implements Filter {
         response.getOutputStream().write(bytes);
     }
 
-    private String buildMatomoScript(HttpServletRequest request) {
+    private TrackableContent getTrackageContent(HttpServletRequest httpReq) {
+        String path = httpReq.getRequestURI();
+        TrackableContent content = new TrackableContent();
+        content.setContent(false);
 
-        String userId = getCurrentUserId(request);
-        String spaceId = request.getParameter("SpaceId");
-        String componentId = request.getParameter("ComponentId");
+        if (path.contains("ViewPublication")) {
+            content.setContentType("Publication");
+            content.setContent(true);
+            content.setContentId(httpReq.getParameter("PubId"));
+            PublicationDetail pub = PublicationService.get().getDetail(new PublicationPK(content.getContentId()));
+            content.setContentName(pub.getTitle());
+            content.setPermalink(pub.getPermalink());
+        } else if (path.contains("/Rquickinfo/") && path.contains("/View")) {
+            content.setContentType("News");
+            content.setContent(true);
+            content.setContentId(httpReq.getParameter("Id"));
+            // TODO : set name and permalink if move ton Silverpeas-Component
+        }
 
-        SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnCore("statistics");
-        String spaceName = "";
-        if (StringUtil.isDefined(spaceId)) {
-            try { spaceName = Administration.get().getSpaceInstLightById(spaceId).getName(); } catch (Exception e) {}
-        }
-        template.setAttribute("spaceId", spaceName + " (" + spaceId + ")");
-        String componentName = "";
-        if (StringUtil.isDefined(componentId)) {
-            try {componentName = Administration.get().getComponentInstLight(componentId).getName();} catch (Exception e) {}
-        }
-        template.setAttribute("componentId", componentId);
-        template.setAttribute("userId", userId);
-
-        if (StringUtil.isDefined(componentId)) {
-            template.setAttribute("virtualPage", "/silverpeas/Component/" + componentId);
-        } else if (StringUtil.isDefined(spaceId)) {
-            template.setAttribute("virtualPage", "/silverpeas/Space/" + componentId);
-        }
-        template.setAttribute("matomoUrl", settings.getString("matomo.url"));
-        template.setAttribute("siteId", settings.getString("matomo.siteId"));
-        return template.applyFileTemplate("matomo");
+        return content;
     }
 
-    private String safe(Supplier<String> supplier) {
-        try { return supplier.get(); }
-        catch (Exception e) { return ""; }
+    private String buildMatomoScript(HttpServletRequest request, TrackableContent content) {
+
+        String userId = getCurrentUserId(request);
+        SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnCore("statistics");
+        template.setAttribute("matomoUrl", settings.getString("matomo.url"));
+        template.setAttribute("siteId", settings.getString("matomo.siteId"));
+
+        if (content.isContent()) {
+            template.setAttribute("space", "");
+            template.setAttribute("component", "");
+            template.setAttribute("userId", userId);
+            template.setAttribute("content", content.getContentType() + "_" + content.getContentName() + "_" + content.getContentId());
+            template.setAttribute("virtualPage", content.getPermalink());
+
+            String script = template.applyFileTemplate("matomo");
+            script = script.replace("<script>", "<script>if (!document.body.dataset.matomoExecuted) {document.body.dataset.matomoExecuted = 'true';");
+            script = script.replace("</script>", "}</script>");
+            return script;
+        } else {
+            String spaceId = request.getParameter("SpaceId");
+            String componentId = request.getParameter("ComponentId");
+            String spaceName = "";
+            if (StringUtil.isDefined(spaceId)) {
+                try {
+                    spaceName = Administration.get().getSpaceInstLightById(spaceId).getName();
+                } catch (Exception e) {
+                }
+            }
+            template.setAttribute("space", spaceName + "_" + componentId);
+            String componentName = "";
+            if (StringUtil.isDefined(componentId)) {
+                try {
+                    componentName = Administration.get().getComponentInstLight(componentId).getName();
+                } catch (Exception e) {
+                }
+            }
+            template.setAttribute("component", componentName + "_" + componentId);
+            template.setAttribute("userId", userId);
+            template.setAttribute("content", "");
+
+            if (StringUtil.isDefined(componentId)) {
+                template.setAttribute("virtualPage", "/silverpeas/Component/" + componentId);
+            } else if (StringUtil.isDefined(spaceId)) {
+                template.setAttribute("virtualPage", "/silverpeas/Space/" + componentId);
+            }
+                return template.applyFileTemplate("matomo");
+        }
     }
 
     public String getCurrentUserId(HttpServletRequest request) {
@@ -183,4 +227,52 @@ public class MatomoInjectionFilter implements Filter {
         }
     }
 
+    private class TrackableContent {
+        private boolean content;
+        private String contentId;
+        private String contentName;
+        private String contentType;
+
+        private String permalink;
+
+        public boolean isContent() {
+            return content;
+        }
+
+        public void setContent(boolean content) {
+            this.content = content;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getContentName() {
+            return contentName;
+        }
+
+        public void setContentName(String contentName) {
+            this.contentName = contentName;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public String getPermalink() {
+            return permalink;
+        }
+
+        public void setPermalink(String permalink) {
+            this.permalink = permalink;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+    }
 }
