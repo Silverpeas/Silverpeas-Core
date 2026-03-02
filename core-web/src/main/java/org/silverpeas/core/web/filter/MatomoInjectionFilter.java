@@ -23,9 +23,7 @@
  */
 package org.silverpeas.core.web.filter;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -44,8 +42,6 @@ import javax.servlet.http.HttpSession;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 
 /**
  * Servlet {@link Filter} responsible for injecting the Matomo tracking script
@@ -62,7 +58,9 @@ public class MatomoInjectionFilter implements Filter {
 
 
     // HTML closing tag used as injection point.
-    public static final String SCRIPT = "</script>";
+    public static final String START_TAG_SCRIPT = "<script>";
+    public static final String END_TAG_SCRIPT = "</script>";
+    public static final String VIRTUAL_PAGE = "virtualPage";
 
     // Configuration settings related to Matomo integration.
     private SettingBundle settings;
@@ -91,11 +89,12 @@ public class MatomoInjectionFilter implements Filter {
         // Only process JSP pages and ignore specific technical pages.
 
         TrackableContent content = getTrackageContent(httpReq);
-        if (!path.contains(bodyPartJSP)) {
-            if (!content.isContent()) {
-                chain.doFilter(request, response);
-                return;
-            }
+        boolean isBodyPart = path.contains(bodyPartJSP);
+        boolean isTrackableContent = content.isContent();
+
+        if (!isBodyPart && !isTrackableContent) {
+            chain.doFilter(request, response);
+            return;
         }
 
         // Wrap the response to capture the generated HTML content.
@@ -104,9 +103,9 @@ public class MatomoInjectionFilter implements Filter {
 
         // Inject the Matomo script just before the closing </body> tag if present.
         String originalContent = responseWrapper.toString();
-        if (originalContent.contains(SCRIPT)) {
+        if (originalContent.contains(END_TAG_SCRIPT)) {
             String matomoScript = buildMatomoScript((HttpServletRequest) request, content);
-            originalContent = originalContent.replace(SCRIPT, SCRIPT + matomoScript);
+            originalContent = originalContent.replace(END_TAG_SCRIPT, END_TAG_SCRIPT + matomoScript);
         }
 
         // Write the modified content back to the original response output stream.
@@ -149,11 +148,11 @@ public class MatomoInjectionFilter implements Filter {
             template.setAttribute("component", "");
             template.setAttribute("userId", userId);
             template.setAttribute("content", content.getContentType() + "_" + content.getContentName() + "_" + content.getContentId());
-            template.setAttribute("virtualPage", content.getPermalink());
+            template.setAttribute(VIRTUAL_PAGE, content.getPermalink());
 
             String script = template.applyFileTemplate("matomo");
-            script = script.replace("<script>", "<script>if (!document.body.dataset.matomoExecuted) {document.body.dataset.matomoExecuted = 'true';");
-            script = script.replace("</script>", "}</script>");
+            script = script.replace(START_TAG_SCRIPT, START_TAG_SCRIPT + "if (!document.body.dataset.matomoExecuted) {document.body.dataset.matomoExecuted = 'true';");
+            script = script.replace(END_TAG_SCRIPT, "}" + END_TAG_SCRIPT);
             return script;
         } else {
             String spaceId = request.getParameter("SpaceId");
@@ -163,6 +162,7 @@ public class MatomoInjectionFilter implements Filter {
                 try {
                     spaceName = Administration.get().getSpaceInstLightById(spaceId).getName();
                 } catch (Exception e) {
+                    // empty name
                 }
             }
             template.setAttribute("space", spaceName + "_" + componentId);
@@ -171,6 +171,7 @@ public class MatomoInjectionFilter implements Filter {
                 try {
                     componentName = Administration.get().getComponentInstLight(componentId).getName();
                 } catch (Exception e) {
+                    // empty name
                 }
             }
             template.setAttribute("component", componentName + "_" + componentId);
@@ -178,9 +179,9 @@ public class MatomoInjectionFilter implements Filter {
             template.setAttribute("content", "");
 
             if (StringUtil.isDefined(componentId)) {
-                template.setAttribute("virtualPage", "/silverpeas/Component/" + componentId);
+                template.setAttribute(VIRTUAL_PAGE, "/silverpeas/Component/" + componentId);
             } else if (StringUtil.isDefined(spaceId)) {
-                template.setAttribute("virtualPage", "/silverpeas/Space/" + componentId);
+                template.setAttribute(VIRTUAL_PAGE, "/silverpeas/Space/" + componentId);
             }
                 return template.applyFileTemplate("matomo");
         }
