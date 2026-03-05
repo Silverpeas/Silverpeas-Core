@@ -12,7 +12,9 @@
       _paq.push(['setCustomDimension', 3, '$content$']);
       _paq.push(['setUserId', 'user-$userId$']);
 
+      _paq.push(['setDocumentTitle', '$title$']);
       _paq.push(['setCustomUrl', '$virtualPage$']);
+      _paq.push(['enableHeartBeatTimer']);
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
 

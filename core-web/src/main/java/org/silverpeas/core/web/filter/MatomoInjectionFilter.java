@@ -147,7 +147,8 @@ public class MatomoInjectionFilter implements Filter {
             template.setAttribute("space", "");
             template.setAttribute("component", "");
             template.setAttribute("userId", userId);
-            template.setAttribute("content", content.getContentType() + "_" + content.getContentName() + "_" + content.getContentId());
+            template.setAttribute("content", content.getContentType() + "_" + content.getContentId());
+            template.setAttribute("title", content.getContentName());
             template.setAttribute(VIRTUAL_PAGE, content.getPermalink());
 
             String script = template.applyFileTemplate("matomo");
@@ -161,27 +162,30 @@ public class MatomoInjectionFilter implements Filter {
             if (StringUtil.isDefined(spaceId)) {
                 try {
                     spaceName = Administration.get().getSpaceInstLightById(spaceId).getName();
+                    template.setAttribute("space", spaceId);
+                    template.setAttribute("title", spaceName);
                 } catch (Exception e) {
                     // empty name
                 }
             }
-            template.setAttribute("space", spaceName + "_" + componentId);
+
             String componentName = "";
             if (StringUtil.isDefined(componentId)) {
                 try {
                     componentName = Administration.get().getComponentInstLight(componentId).getName();
+                    template.setAttribute("component",  componentId);
+                    template.setAttribute("title", componentName);
                 } catch (Exception e) {
                     // empty name
                 }
             }
-            template.setAttribute("component", componentName + "_" + componentId);
             template.setAttribute("userId", userId);
             template.setAttribute("content", "");
 
             if (StringUtil.isDefined(componentId)) {
                 template.setAttribute(VIRTUAL_PAGE, "/silverpeas/Component/" + componentId);
             } else if (StringUtil.isDefined(spaceId)) {
-                template.setAttribute(VIRTUAL_PAGE, "/silverpeas/Space/" + componentId);
+                template.setAttribute(VIRTUAL_PAGE, "/silverpeas/Space/" + spaceId);
             }
                 return template.applyFileTemplate("matomo");
         }
