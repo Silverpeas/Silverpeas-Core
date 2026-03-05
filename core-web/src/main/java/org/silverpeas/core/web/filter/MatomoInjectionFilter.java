@@ -61,6 +61,7 @@ public class MatomoInjectionFilter implements Filter {
     public static final String START_TAG_SCRIPT = "<script>";
     public static final String END_TAG_SCRIPT = "</script>";
     public static final String VIRTUAL_PAGE = "virtualPage";
+    public static final String TITLE = "title";
 
     // Configuration settings related to Matomo integration.
     private SettingBundle settings;
@@ -130,7 +131,7 @@ public class MatomoInjectionFilter implements Filter {
             content.setContentType("News");
             content.setContent(true);
             content.setContentId(httpReq.getParameter("Id"));
-            // TODO : set name and permalink if move ton Silverpeas-Component
+            content.setPermalink(path);
         }
 
         return content;
@@ -148,7 +149,7 @@ public class MatomoInjectionFilter implements Filter {
             template.setAttribute("component", "");
             template.setAttribute("userId", userId);
             template.setAttribute("content", content.getContentType() + "_" + content.getContentId());
-            template.setAttribute("title", content.getContentName());
+            template.setAttribute(TITLE, content.getContentName());
             template.setAttribute(VIRTUAL_PAGE, content.getPermalink());
 
             String script = template.applyFileTemplate("matomo");
@@ -163,7 +164,7 @@ public class MatomoInjectionFilter implements Filter {
                 try {
                     spaceName = Administration.get().getSpaceInstLightById(spaceId).getName();
                     template.setAttribute("space", spaceId);
-                    template.setAttribute("title", spaceName);
+                    template.setAttribute(TITLE, spaceName);
                 } catch (Exception e) {
                     // empty name
                 }
@@ -174,7 +175,7 @@ public class MatomoInjectionFilter implements Filter {
                 try {
                     componentName = Administration.get().getComponentInstLight(componentId).getName();
                     template.setAttribute("component",  componentId);
-                    template.setAttribute("title", componentName);
+                    template.setAttribute(TITLE, componentName);
                 } catch (Exception e) {
                     // empty name
                 }
