@@ -132,20 +132,8 @@ public class PdcSearchRequestRouterHelper {
       queryParameters.setFolder(request.getParameter(QueryParameters.PARAM_FOLDER));
     }
 
-    String paramNbResToDisplay = request.getParameter("nbRes");
-    if (StringUtil.isDefined(paramNbResToDisplay)) {
-      int nbResToDisplay = Integer.parseInt(paramNbResToDisplay);
-      pdcSC.setNbResToDisplay(nbResToDisplay);
-    }
-    String paramSortRes = request.getParameter("sortRes");
-    if (StringUtil.isDefined(paramSortRes)) {
-      int sortRes = Integer.parseInt(paramSortRes);
-      pdcSC.setSortType(sortRes);
-    }
-    String paramSortOrder = request.getParameter("sortOrder");
-    if (StringUtil.isDefined(paramSortOrder)) {
-      pdcSC.setSortOrder(paramSortOrder);
-    }
+    setResultParameters(pdcSC, request.getParameter("nbRes"),
+        request.getParameter("sortRes"), request.getParameter("sortOrder"));
 
     // Set component search type
     pdcSC.setDataType(request.getParameter("dataType"));
@@ -296,6 +284,21 @@ public class PdcSearchRequestRouterHelper {
         SilverLogger.getLogger(PdcSearchRequestRouterHelper.class)
             .error("Error when marking result {0} as read", new String[] {sId}, e);
       }
+    }
+  }
+
+  static void setResultParameters(PdcSearchSessionController pdcSC, String nbRes, String sortRes2,
+      String sortOrder) {
+    if (StringUtil.isDefined(nbRes)) {
+      int nbResToDisplay = Integer.parseInt(nbRes);
+      pdcSC.setNbResToDisplay(nbResToDisplay);
+    }
+    if (StringUtil.isDefined(sortRes2)) {
+      int sortRes = Integer.parseInt(sortRes2);
+      pdcSC.setSortType(sortRes);
+    }
+    if (StringUtil.isDefined(sortOrder)) {
+      pdcSC.setSortOrder(sortOrder);
     }
   }
 }

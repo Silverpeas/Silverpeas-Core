@@ -140,20 +140,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         destination = getDestinationForResults(pdcSC);
       } else if ("SortResults".equals(function)) {
 
-        String paramNbResToDisplay = request.getParameter("nbRes");
-        if (StringUtil.isDefined(paramNbResToDisplay)) {
-          int nbResToDisplay = Integer.parseInt(paramNbResToDisplay);
-          pdcSC.setNbResToDisplay(nbResToDisplay);
-        }
-        String paramSortRes = request.getParameter("sortRes");
-        if (StringUtil.isDefined(paramSortRes)) {
-          int sortRes = Integer.parseInt(paramSortRes);
-          pdcSC.setSortType(sortRes);
-        }
-        String paramSortOrder = request.getParameter("sortOrder");
-        if (StringUtil.isDefined(paramSortOrder)) {
-          pdcSC.setSortOrder(paramSortOrder);
-        }
+        PdcSearchRequestRouterHelper.setResultParameters(pdcSC, request.getParameter("nbRes"),
+            request.getParameter("sortRes"), request.getParameter("sortOrder"));
 
         setDefaultDataToNavigation(true, request, pdcSC);
 
