@@ -68,7 +68,7 @@ public class AjaxActionServlet extends HttpServlet {
   private static final String ACTION_ADD_SPACE = "addSpace";
   private static final String ACTION_REMOVE_SPACE = "removeSpace";
   private static final String ACTION_GET_FRAME = "getFrame";
-  private static final String DEFAULT_JSP_FRAM = "silverpeas-main.jsp";
+  private static final String DEFAULT_JSP_FRAME = "silverpeas-main.jsp";
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) {
@@ -100,10 +100,6 @@ public class AjaxActionServlet extends HttpServlet {
     }
   }
 
-  /**
-   * @param req
-   * @return JSON action result
-   */
   private String addSpace(HttpServletRequest req) {
     // Get current session
     HttpSession session = req.getSession(true);
@@ -113,7 +109,7 @@ public class AjaxActionServlet extends HttpServlet {
     // Retrieve space identifier parameter
     String spaceId = req.getParameter("SpaceId");
 
-    String json = "";
+    String json;
     if (StringUtil.isDefined(spaceId) && StringUtil.isDefined(userId)) {
       // Retrieve all sub space identifier
       ArrayList<String> addedSubSpaceIds = getSubSpaceIdentifiers(userId, spaceId);
@@ -140,10 +136,6 @@ public class AjaxActionServlet extends HttpServlet {
     return json;
   }
 
-  /**
-   * @param listSpaces
-   * @return JSONArray of list of spaces
-   */
   private UnaryOperator<JSONArray> getJSONSpaces(
       List<String> listSpaces) {
     return (jsonSpaces -> {
@@ -154,34 +146,18 @@ public class AjaxActionServlet extends HttpServlet {
     });
   }
 
-  /**
-   * @param spaceId
-   * @return
-   */
   private ArrayList<String> getParentSpaceIds(String spaceId) {
     ArrayList<String> parentSpaceIds = new ArrayList<>();
     return getParentSpaceOfFavoriteSpace(spaceId, parentSpaceIds);
   }
 
-  /**
-   * @param userId
-   * @param spaceId
-   * @return sub space identifiers of current space id given in parameter
-   */
   private ArrayList<String> getSubSpaceIdentifiers(String userId, String spaceId) {
     ArrayList<String> addedSubSpaceIds = new ArrayList<>();
     addSubSpace(spaceId, userId, addedSubSpaceIds);
     return addedSubSpaceIds;
   }
 
-  /**
-   * addSubSpace add all sub space into user favorite spaces
-   * @param spaceId
-   * @param userId
-   * @param addedSpaceIds
-   * @return
-   */
-  private List<String> addSubSpace(String spaceId, String userId, ArrayList<String> addedSpaceIds) {
+  private void addSubSpace(String spaceId, String userId, ArrayList<String> addedSpaceIds) {
     SpaceInstLight space = organisationController.getSpaceInstLightById(spaceId);
     if (userFavoriteSpaceService.addUserFavoriteSpace(
         new UserFavoriteSpaceVO(Integer.parseInt(userId), space.getLocalId()))) {
@@ -192,13 +168,8 @@ public class AjaxActionServlet extends HttpServlet {
     for (String subSpaceId : subSpaceIds) {
       addSubSpace(subSpaceId, userId, addedSpaceIds);
     }
-    return addedSpaceIds;
   }
 
-  /**
-   * @param req
-   * @return JSON action result
-   */
   private String removeSpace(HttpServletRequest req) {
     // Get current session
     HttpSession session = req.getSession(true);
@@ -210,7 +181,7 @@ public class AjaxActionServlet extends HttpServlet {
 
     // Retrieve space identifier parameter
     String spaceId = req.getParameter("SpaceId");
-    String json = "";
+    String json;
     if (StringUtil.isDefined(spaceId) && StringUtil.isDefined(userId)) {
       SpaceInstLight spaceInst = organisationController.getSpaceInstLightById(spaceId);
       // Retrieve all the subspace identifier and status in order to display the right status
@@ -254,12 +225,6 @@ public class AjaxActionServlet extends HttpServlet {
     return jsonRslt;
   }
 
-  /**
-   * @param userId
-   * @param listUFS
-   * @param parentSpaceIds
-   * @return
-   */
   private UnaryOperator<JSONArray> buildParentJA(String userId,
       List<UserFavoriteSpaceVO> listUFS, ArrayList<String> parentSpaceIds) {
     return (resultJA -> {
@@ -285,18 +250,10 @@ public class AjaxActionServlet extends HttpServlet {
     });
   }
 
-  /**
-   * @param req the HttpServletRequest request
-   * @return "Action" request parameter
-   */
   private String getAction(HttpServletRequest req) {
     return req.getParameter("Action");
   }
 
-  /**
-   * @param spaceId
-   * @return true if current space is a sub space from a user favorite space, false else if
-   */
   private ArrayList<String> getParentSpaceOfFavoriteSpace(String spaceId,
       ArrayList<String> parentSpaceIds) {
     SpaceInst curSpaceInst = organisationController.getSpaceInstById(spaceId);
@@ -314,10 +271,6 @@ public class AjaxActionServlet extends HttpServlet {
     return parentSpaceIds;
   }
 
-  /**
-   * @param req the current HttpServletRequest
-   * @return JSON action result
-   */
   private String getFrame(HttpServletRequest req) {
     HttpSession session = req.getSession(true);
     GraphicElementFactory gef =
@@ -327,7 +280,7 @@ public class AjaxActionServlet extends HttpServlet {
     String lookName = req.getParameter("LookName");
     String resource = gef.getLookSettings().getString(lookName);
     SettingBundle specificSettings = ResourceLocator.getSettingBundle(resource);
-    final String mainFrame = specificSettings.getString("FrameJSP", DEFAULT_JSP_FRAM);
+    final String mainFrame = specificSettings.getString("FrameJSP", DEFAULT_JSP_FRAME);
 
     // Declare JSon result object
     return JSONCodec.encodeObject(jsonRslt -> jsonRslt.put("frame", mainFrame).put(SUCCESS, true));

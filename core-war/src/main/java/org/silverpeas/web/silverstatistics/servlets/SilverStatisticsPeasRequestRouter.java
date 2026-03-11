@@ -45,10 +45,6 @@ import java.util.List;
 
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
-/**
- * Class declaration
- * @author
- */
 public class SilverStatisticsPeasRequestRouter extends
     AdminComponentRequestRouter<SilverStatisticsPeasSessionController> {
 
@@ -58,13 +54,6 @@ public class SilverStatisticsPeasRequestRouter extends
   private static final String PDC_FUNCTION = "(?i)^.*(pdc).*$";
   private static final String SPACE_MANAGER_FUNCTION = "(?i)^.*(access|volume).*$";
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public SilverStatisticsPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -87,15 +76,14 @@ public class SilverStatisticsPeasRequestRouter extends
    *
    * @param function The entering request function (ex : "Main.jsp")
    * @param statsSC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   * @param request the incoming HTTP request
+   * @return the complete destination URL for a forward (ex: "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getAdminDestination(String function, SilverStatisticsPeasSessionController statsSC,
       HttpRequest request) {
-    String destination = "";
-    UserAccessLevel userProfile = statsSC.getUserProfile();
+    String destination;
+    UserAccessLevel userProfile = statsSC.getUserAccessLevel();
     if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)
         || UserAccessLevel.SPACE_ADMINISTRATOR.equals(userProfile)) {
       request.setAttribute("UserProfile", userProfile);
@@ -202,13 +190,13 @@ public class SilverStatisticsPeasRequestRouter extends
           }
         } else if ("1".equals(hostStatDetail))// Groups
         {
-          if (filterType.equals("")) // no filter
+          if (filterType.isEmpty()) // no filter
           {
             request.setAttribute("ResultData", statsSC
                 .getStatsConnexionGroupAll(hostDateBegin, hostDateEnd));
 
             String entiteId = request.getParameter("EntiteId");
-            PeriodChart userChart = null;
+            PeriodChart userChart;
             if (entiteId != null) {
               // graphiques
               userChart =
@@ -237,7 +225,7 @@ public class SilverStatisticsPeasRequestRouter extends
 
             String entiteId = request.getParameter("EntiteId");
 
-            PeriodChart userChart = null;
+            PeriodChart userChart;
             if (entiteId != null) {
               // graphiques
               userChart = statsSC.getUserConnectionsUserChart(hostDateBegin, hostDateEnd, entiteId);
@@ -292,7 +280,7 @@ public class SilverStatisticsPeasRequestRouter extends
       } else if (function.startsWith("ValidateViewFrequence")) {
         // save request param
         String hostMonthBegin = request.getParameter("MonthBegin");
-        if (hostMonthBegin != null && !hostMonthBegin.equals("")) {
+        if (hostMonthBegin != null && !hostMonthBegin.isEmpty()) {
           statsSC.setMonthBegin(request.getParameter("MonthBegin"));
           statsSC.setYearBegin(request.getParameter("YearBegin"));
           statsSC.setMonthEnd(request.getParameter("MonthEnd"));
@@ -541,9 +529,6 @@ public class SilverStatisticsPeasRequestRouter extends
         request.setAttribute("YearBegin", statsSC.getFormYearConnection(statsSC.getYearBegin()));
         request.setAttribute("MonthEnd", statsSC.getFormMonth(statsSC.getMonthEnd()));
         request.setAttribute("YearEnd", statsSC.getFormYearConnection(statsSC.getYearEnd()));
-        // Add setter on PDC
-        // request.setAttribute("PrimaryAxis", statsSC.getPrimaryAxis());
-        // request.setAttribute("StatsData", statsSC.getAxisStats(statsFilter));
 
         destination = getDestination("ValidateViewPDCAccess", statsSC, request);
       } else if (function.startsWith("ValidateViewPDCAccess")) {
@@ -607,8 +592,8 @@ public class SilverStatisticsPeasRequestRouter extends
         String yearEnd = statsSC.getYearEnd();
 
         // Retrieve selected axis from request
-        Integer firstAxisId = NumberUtils.toInt(request.getParameter("FirstAxis"), 0);
-        Integer secondAxisId = NumberUtils.toInt(request.getParameter("SecondAxis"), 0);
+        int firstAxisId = NumberUtils.toInt(request.getParameter("FirstAxis"), 0);
+        int secondAxisId = NumberUtils.toInt(request.getParameter("SecondAxis"), 0);
 
         // Initialize cross axis stats filter
         CrossAxisStatsFilter axisStatsFilter =
@@ -643,7 +628,7 @@ public class SilverStatisticsPeasRequestRouter extends
   @Override
   protected boolean checkUserAuthorization(final String function,
       final SilverStatisticsPeasSessionController componentSC) {
-    return actionAccessController.hasRightAccess(function, componentSC.getUserProfile());
+    return actionAccessController.hasRightAccess(function, componentSC.getUserAccessLevel());
   }
 
   /**
@@ -666,7 +651,7 @@ public class SilverStatisticsPeasRequestRouter extends
   private void saveConnectionParam(HttpServletRequest request,
       SilverStatisticsPeasSessionController statsSC) {
     String hostMonthBegin = request.getParameter("MonthBegin");
-    if (hostMonthBegin != null && !hostMonthBegin.equals("")) {
+    if (hostMonthBegin != null && !hostMonthBegin.isEmpty()) {
       statsSC.setMonthBegin(request.getParameter("MonthBegin"));
       statsSC.setYearBegin(request.getParameter("YearBegin"));
       statsSC.setMonthEnd(request.getParameter("MonthEnd"));
@@ -698,7 +683,7 @@ public class SilverStatisticsPeasRequestRouter extends
   private void saveAccessVolumeParam(HttpServletRequest request,
       SilverStatisticsPeasSessionController statsSC) {
     String hostMonthBegin = request.getParameter("MonthBegin");
-    if (hostMonthBegin != null && !hostMonthBegin.equals("")) {
+    if (hostMonthBegin != null && !hostMonthBegin.isEmpty()) {
       statsSC.setAccessMonthBegin(request.getParameter("MonthBegin"));
       statsSC.setAccessYearBegin(request.getParameter("YearBegin"));
       statsSC.setAccessFilterLibGroup(request.getParameter("FilterLibGroup"));

@@ -5,7 +5,6 @@ INSERT INTO st_accesslevel (id, name)
 VALUES ('U', 'User'),
        ('A', 'Administrator'),
        ('G', 'Guest'),
-       ('R', 'Removed'),
        ('K', 'KMManager'),
        ('D', 'DomainManager');
 
