@@ -75,13 +75,16 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
   @Inject
   private CommentService commentService;
 
+  @Inject
+  private ApplicationServiceProvider serviceProvider;
+
   @Override
-  public void onCreation(final CommentEvent event) throws Exception {
+  public void onCreation(final CommentEvent event) {
     Comment comment = event.getTransition().getAfter();
     String componentInstanceId = comment.getComponentInstanceId();
     if (isDefined(componentInstanceId)) {
-      Optional<ApplicationService> mayBeService = ApplicationServiceProvider.get()
-          .getApplicationServiceById(componentInstanceId);
+      Optional<ApplicationService> mayBeService =
+          serviceProvider.getApplicationServiceById(componentInstanceId);
       mayBeService.ifPresent(service -> {
         try {
           ContributionIdentifier contributionId = ContributionIdentifier.from(
@@ -118,7 +121,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    * @param commentAuthorId the identifier of the author of the comment that is concerned by the
    * notification.
    * @param contribution the content that was commented by the specified comment.
-   * @return a list with the identifier of the interested users.
+   * @return a set with the identifier of the interested users.
    */
   private Set<String> getInterestedUsers(final String commentAuthorId, Contribution contribution) {
     Set<String> interestedUsers = new LinkedHashSet<>();

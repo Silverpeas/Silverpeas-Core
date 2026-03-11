@@ -48,7 +48,8 @@ public enum UserAccessLevel {
   DOMAIN_ADMINISTRATOR("D"),
 
   /**
-   * The user is an administrator of spaces.
+   * The user is an administrator of spaces. This access level is a virtual one used in
+   * Silverpeas in some administrative context to filter more accurately the role of the user.
    */
   SPACE_ADMINISTRATOR("S"),
 

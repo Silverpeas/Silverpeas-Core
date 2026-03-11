@@ -84,10 +84,6 @@ import java.util.List;
 import static org.silverpeas.kernel.bundle.ResourceLocator.getGeneralLocalizationBundle;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
-/**
- * Class declaration
- * @author
- */
 public class SilverStatisticsPeasSessionController extends AbstractAdminComponentSessionController {
   private static final long serialVersionUID = -8394342857531676676L;
 
@@ -119,8 +115,8 @@ public class SilverStatisticsPeasSessionController extends AbstractAdminComponen
   /**
    * current stats list
    */
-  private List<String[]> currentStats = new ArrayList<>();
-  private List<String[]> path = new ArrayList<>();
+  private final List<String[]> currentStats = new ArrayList<>();
+  private final List<String[]> path = new ArrayList<>();
   private Collection<String> yearsConnection = null;
   private Collection<String> yearsAccess = null;
   private Collection<String> yearsVolume = null;
@@ -147,13 +143,6 @@ public class SilverStatisticsPeasSessionController extends AbstractAdminComponen
     }
   }
 
-  /**
-   * Initializes a new collection of years from the one given as parameter.
-   * If the given one does not exist or is empty, then the returned collection is filled with the
-   * year of the current date.
-   * @param yearsFromStatistics
-   * @return a never null collection of years as string.
-   */
   private Collection<String> initYears(Collection<String> yearsFromStatistics) {
     Collection<String> result = new LinkedHashSet<>();
     if (yearsFromStatistics != null) {
@@ -183,7 +172,8 @@ public class SilverStatisticsPeasSessionController extends AbstractAdminComponen
     return isAccessGranted(null, null, true);
   }
 
-  public UserAccessLevel getUserProfile() {
+  @Override
+  public UserAccessLevel getUserAccessLevel() {
     if (getUserDetail().isAccessAdmin()) {
       return getUserDetail().getAccessLevel();
     }
@@ -211,9 +201,6 @@ public class SilverStatisticsPeasSessionController extends AbstractAdminComponen
     return c;
   }
 
-  /**
-   * @return
-   */
   private String formatDate(String date) {// date au format AAAA-MM-JJ -> Mois
     // AAAA
     String dateFormate = "";

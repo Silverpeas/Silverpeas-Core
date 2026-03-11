@@ -80,7 +80,6 @@ ALTER TABLE ST_AccessLevel ADD CONSTRAINT UN_AccessLevel_1 UNIQUE (name);
 INSERT INTO ST_AccessLevel (id, name) VALUES ('U', 'User');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('A', 'Administrator');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('G', 'Guest');
-INSERT INTO ST_AccessLevel (id, name) VALUES ('R', 'Removed');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('K', 'KMManager');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('D', 'DomainManager');
 

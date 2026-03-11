@@ -1,7 +1,6 @@
 insert into ST_AccessLevel(id, name) values ('U', 'User');
 insert into ST_AccessLevel(id, name) values ('A', 'Administrator');
 insert into ST_AccessLevel(id, name) values ('G', 'Guest');
-insert into ST_AccessLevel(id, name) values ('R', 'Removed');
 insert into ST_AccessLevel(id, name) values ('K', 'KMManager');
 insert into ST_AccessLevel(id, name) values ('D', 'DomainManager');
 
