@@ -15,7 +15,6 @@ INSERT INTO st_domain (id, name, propFilename, className, authenticationServer, 
 INSERT INTO st_accesslevel (id, name) VALUES ('U', 'User');
 INSERT INTO st_accesslevel (id, name) VALUES ('A', 'Administrator');
 INSERT INTO st_accesslevel (id, name) VALUES ('G', 'Guest');
-INSERT INTO st_accesslevel (id, name) VALUES ('R', 'Removed');
 INSERT INTO st_accesslevel (id, name) VALUES ('K', 'KMManager');
 INSERT INTO st_accesslevel (id, name) VALUES ('D', 'DomainManager');
 

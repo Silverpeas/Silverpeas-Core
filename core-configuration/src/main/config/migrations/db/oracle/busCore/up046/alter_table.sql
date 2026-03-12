@@ -1,5 +1,3 @@
-ALTER TABLE ST_Space
-ADD isCommunity INT DEFAULT(0) NOT NULL;
+UPDATE ST_User SET accessLevel = 'U' WHERE accessLevel = 'R';
 
-ALTER TABLE ST_Group
-ADD spaceId VARCHAR(500) NULL;
+DELETE FROM ST_AccessLevel WHERE id = 'R';

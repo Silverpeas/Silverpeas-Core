@@ -1,5 +1,3 @@
-ALTER TABLE ST_Space
-ADD COLUMN isCommunity SMALLINT DEFAULT(0) NOT NULL;
+UPDATE ST_User SET accessLevel = 'U' WHERE accessLevel = 'R';
 
-ALTER TABLE ST_Group
-ADD COLUMN spaceId VARCHAR(500) NULL;
+DELETE FROM ST_AccessLevel WHERE id = 'R';

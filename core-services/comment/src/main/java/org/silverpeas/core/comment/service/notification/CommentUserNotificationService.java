@@ -75,13 +75,16 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
   @Inject
   private CommentService commentService;
 
+  @Inject
+  private ApplicationServiceProvider serviceProvider;
+
   @Override
   public void onCreation(final CommentEvent event) {
     Comment comment = event.getTransition().getAfter();
     String componentInstanceId = comment.getComponentInstanceId();
     if (isDefined(componentInstanceId)) {
-      Optional<ApplicationService> mayBeService = ApplicationServiceProvider.get()
-          .getApplicationServiceById(componentInstanceId);
+      Optional<ApplicationService> mayBeService =
+          serviceProvider.getApplicationServiceById(componentInstanceId);
       mayBeService.ifPresent(service -> {
         try {
           ContributionIdentifier contributionId = ContributionIdentifier.from(
