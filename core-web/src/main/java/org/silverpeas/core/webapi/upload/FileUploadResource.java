@@ -36,12 +36,15 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.webapi.antivirus.AntivirusClient;
+import org.silverpeas.core.webapi.antivirus.AntivirusClientProvider;
+import org.silverpeas.core.webapi.antivirus.AntivirusResult;
+import org.silverpeas.core.webapi.antivirus.ClamavClient;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
-import xyz.capybara.clamav.ClamavClient;
 import xyz.capybara.clamav.commands.scan.result.ScanResult;
 
 import javax.inject.Inject;
@@ -77,6 +80,9 @@ public class FileUploadResource extends RESTWebService {
 
   @Inject
   private ComponentAccessControl componentAccessController;
+
+  @Inject
+  private AntivirusClientProvider antivirusProvider;
 
   /**
    * Performs some verifications before starting a file upload.
@@ -203,11 +209,15 @@ public class FileUploadResource extends RESTWebService {
     if (scanResult.isSafe()) return;
 
     String message;
-    if (scanResult.isError() && !settings.getBoolean("antivirus.allow-unverified-files", true)) {
-      message = MessageFormat.format(bundle.getString("antivirus.scan.unavailable"), fileData.getName());
-      SilverLogger.getLogger(this).warn(message);
-      MessageNotifier.addError(message);
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    if (scanResult.isError()) {
+      if (settings.getBoolean("antivirus.allow-unverified-files", true)) {
+        return;
+      } else {
+        message = MessageFormat.format(bundle.getString("antivirus.scan.unavailable"), fileData.getName());
+        SilverLogger.getLogger(this).warn(message);
+        MessageNotifier.addError(message);
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+      }
     } else {
       message = MessageFormat.format(bundle.getString("antivirus.scan.infected"),
               fileData.getName(), scanResult.getVirusName());
@@ -215,6 +225,7 @@ public class FileUploadResource extends RESTWebService {
       MessageNotifier.addError(message);
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
     }
+
   }
 
   /**
@@ -229,37 +240,9 @@ public class FileUploadResource extends RESTWebService {
    * @return an AntivirusResult containing the scan outcome
    */
   public AntivirusResult checkVirus(InputStream file, SettingBundle settings) {
-    AntivirusResult result = new AntivirusResult();
-
-    // If antivirus is disabled, consider the file safe and return immediately
-    if (!settings.getBoolean("antivirus.enable", false)) {
-      result.setSafe(true);
-      return result;
-    }
-
-    ClamavClient client = new ClamavClient(
-            settings.getString("antivirus.host", "localhost"),
-            settings.getInteger("antivirus.port", 3310)
-    );
-
-    ScanResult scanResult = client.scan(file);
-    String scanOutput = scanResult.toString();
-
-    result.setSafe(false);
-    if (scanOutput.contains("FOUND")) {
-      // Virus found
-      String virusName = scanOutput.substring(scanOutput.indexOf(": ") + 2, scanOutput.indexOf(" FOUND"));
-      result.setSafe(false);
-      result.setVirusName(virusName);
-    } else if (scanOutput.contains("OK")) {
-      // No virus detected
-      result.setSafe(true);
-    } else {
-      result.setError(true);
-      result.setErrorMessage(scanOutput);
-    }
-
-    return result;
+    Optional<AntivirusClient> antivirus = antivirusProvider.getAntivirusClient();
+    return antivirus.map(a -> a.checkVirus(file, settings))
+            .orElseGet(() -> AntivirusResult.safeResult());
   }
 
   /**

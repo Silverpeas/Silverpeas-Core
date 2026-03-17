@@ -1,10 +1,19 @@
-package org.silverpeas.core.webapi.upload;
+package org.silverpeas.core.webapi.antivirus;
+
+import org.apache.ecs.wml.A;
 
 public class AntivirusResult {
     private boolean safe;
     private boolean error;
     private String virusName;
     private String errorMessage;
+
+    public static AntivirusResult safeResult() {
+        AntivirusResult safeResult = new AntivirusResult();
+        safeResult.setError(false);
+        safeResult.setSafe(true);
+        return safeResult;
+    }
 
     public boolean isSafe() {
         return safe;
