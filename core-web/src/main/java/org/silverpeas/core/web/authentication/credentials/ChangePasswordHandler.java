@@ -66,7 +66,7 @@ public class ChangePasswordHandler extends ChangePasswordFunctionHandler {
           + "&DomainId=" + domainId;
     } catch (Exception e) {
       SilverLogger.getLogger(this)
-          .error("change password error with login {0}", new String[]{login}, e);
+          .error("change password error with login {0}. Error: {1}", login, e.getMessage());
       return "/Login";
     }
   }

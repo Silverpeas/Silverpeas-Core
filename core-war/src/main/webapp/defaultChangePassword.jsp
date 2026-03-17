@@ -102,11 +102,12 @@
         </p>
         <c:if test="${isEmailAddress}">
           <p>
-            <label><span><fmt:message key="authentication.email.label" bundle="${authenticationBundle}"/></span><input type="text" name="emailAddress" id="emailAddress" value="${emailAddress}"/></label>
+            <label><span><fmt:message key="authentication.email.label"
+                                      bundle="${authenticationBundle}"/></span><input type="text" name="emailAddress" id="emailAddress" value="${emailAddress}"/></label>
           </p>
         </c:if>
-        <input type="hidden" name="login" value="${param.Login}"/>
-        <input type="hidden" name="domainId" value="${param.DomainId}"/>
+        <input type="hidden" name="login" value="${fn:escapeXml(param.Login)}"/>
+        <input type="hidden" name="domainId" value="${fn:escapeXml(param.DomainId)}"/>
 
         <div class="submit">
           <p>
