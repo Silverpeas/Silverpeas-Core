@@ -26,7 +26,6 @@ package org.silverpeas.core.web.mvc.controller;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -36,15 +35,15 @@ import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -74,6 +73,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   private String iconFile = null;
   private SettingBundle settings = null;
   private String settingsFile = null;
+  private OrganizationController organizationController;
 
   public AbstractComponentSessionController(MainSessionController controller,
       String spaceId, String componentId) {
@@ -151,7 +151,10 @@ public abstract class AbstractComponentSessionController implements ComponentSes
 
   @Override
   public OrganizationController getOrganisationController() {
-    return OrganizationControllerProvider.getOrganisationController();
+    if (organizationController == null) {
+      organizationController = OrganizationController.get();
+    }
+    return organizationController;
   }
 
   /**
