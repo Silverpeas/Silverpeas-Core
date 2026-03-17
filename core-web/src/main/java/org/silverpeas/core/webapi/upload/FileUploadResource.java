@@ -39,13 +39,11 @@ import org.silverpeas.core.web.rs.annotation.Authenticated;
 import org.silverpeas.core.webapi.antivirus.AntivirusClient;
 import org.silverpeas.core.webapi.antivirus.AntivirusClientProvider;
 import org.silverpeas.core.webapi.antivirus.AntivirusResult;
-import org.silverpeas.core.webapi.antivirus.ClamavClient;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
-import xyz.capybara.clamav.commands.scan.result.ScanResult;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -210,9 +208,7 @@ public class FileUploadResource extends RESTWebService {
 
     String message;
     if (scanResult.isError()) {
-      if (settings.getBoolean("antivirus.allow-unverified-files", true)) {
-        return;
-      } else {
+      if (!settings.getBoolean("antivirus.allow-unverified-files", true)) {
         message = MessageFormat.format(bundle.getString("antivirus.scan.unavailable"), fileData.getName());
         SilverLogger.getLogger(this).warn(message);
         MessageNotifier.addError(message);
@@ -225,7 +221,6 @@ public class FileUploadResource extends RESTWebService {
       MessageNotifier.addError(message);
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
     }
-
   }
 
   /**
@@ -242,7 +237,7 @@ public class FileUploadResource extends RESTWebService {
   public AntivirusResult checkVirus(InputStream file, SettingBundle settings) {
     Optional<AntivirusClient> antivirus = antivirusProvider.getAntivirusClient();
     return antivirus.map(a -> a.checkVirus(file, settings))
-            .orElseGet(() -> AntivirusResult.safeResult());
+            .orElseGet(AntivirusResult::safeResult);
   }
 
   /**
