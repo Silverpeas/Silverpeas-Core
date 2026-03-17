@@ -25,35 +25,30 @@ package org.silverpeas.core.webapi.password;
 
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
+import org.silverpeas.core.security.authentication.password.service.PasswordRulesService;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.core.web.rs.UserPrivilegeValidation;
-import org.silverpeas.core.web.rs.annotation.Authenticated;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.inject.Inject;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import static org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider.getPasswordRulesService;
-
 /**
- * A REST Web resource giving gallery data.
+ * A REST Web resource about the actual policy on the passwords for the running Silverpeas.
+ *
  * @author Yohann Chastagnier
  */
 @WebService
 @Path(PasswordResourceURIs.PASSWORD_BASE_URI)
-@Authenticated
 public class PasswordResource extends AbstractPasswordResource {
   protected static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
   protected static int nbMatchingCombinedRules =
       settings.getInteger("password.combination.nbMatchingRules", 0);
+
+  @Inject
+  private PasswordRulesService service;
 
   @Override
   protected String getResourceBasePath() {
@@ -61,29 +56,10 @@ public class PasswordResource extends AbstractPasswordResource {
   }
 
   /**
-   * User authentication is not necessary for this WEB Service. The authentication processing is
-   * used here to identify the user behind the call if possible.
-   * @param validation the validation instance to use.
-   * @throws WebApplicationException if an error occurs
-   */
-  @Override
-  public void validateUserAuthentication(final UserPrivilegeValidation validation)
-      throws WebApplicationException {
-    try {
-      super.validateUserAuthentication(validation);
-    } catch (WebApplicationException wae) {
-      if (Response.Status.UNAUTHORIZED.getStatusCode() != wae.getResponse().getStatus()) {
-        throw wae;
-      }
-    }
-  }
-
-  /**
-   * Gets the JSON representation of password policy.
-   * If it doesn't exist, a 404 HTTP code is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         photo.
+   * Gets the JSON representation of password policy. If it doesn't exist, a 404 HTTP code is
+   * returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
+   *
+   * @return the response to the HTTP GET request with the JSON representation of the asked photo.
    */
   @GET
   @Path(PasswordResourceURIs.PASSWORD_POLICY_URI_PART)
@@ -92,11 +68,11 @@ public class PasswordResource extends AbstractPasswordResource {
     try {
       final PasswordPolicyEntity passwordPolicy = PasswordPolicyEntity
           .createFrom(nbMatchingCombinedRules,
-              getPasswordRulesService().getExtraRuleMessage(getLanguage()));
-      for (final PasswordRule rule : getPasswordRulesService().getRequiredRules()) {
+              service.getExtraRuleMessage(getLanguage()));
+      for (final PasswordRule rule : service.getRequiredRules()) {
         passwordPolicy.addRule(asWebEntity(rule));
       }
-      for (final PasswordRule rule : getPasswordRulesService().getCombinedRules()) {
+      for (final PasswordRule rule : service.getCombinedRules()) {
         passwordPolicy.addCombinedRule(asWebEntity(rule));
       }
       return passwordPolicy;
@@ -108,12 +84,11 @@ public class PasswordResource extends AbstractPasswordResource {
   }
 
   /**
-   * Gets the JSON representation of a list of errors catched by a password checking. The returned
-   * list contains names of rules which are not verified.
-   * If it doesn't exist, a 404 HTTP code is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         photo.
+   * Gets the JSON representation of a list of errors caught by a password checking. The returned
+   * list contains names of rules which are not verified. If it doesn't exist, a 404 HTTP code is
+   * returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
+   *
+   * @return the response to the HTTP GET request with the JSON representation of the asked photo.
    */
   @POST
   @Path(
@@ -121,6 +96,6 @@ public class PasswordResource extends AbstractPasswordResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public PasswordCheckEntity checking(final PasswordEntity password) {
-    return asWebEntity(getPasswordRulesService().check(password.getValue()));
+    return asWebEntity(service.check(password.getValue()));
   }
 }

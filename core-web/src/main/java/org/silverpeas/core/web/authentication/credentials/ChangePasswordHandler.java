@@ -23,18 +23,21 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
- * Navigation case : user has changed his password.
+ * Navigation case: user has changed his password.
  * @author ehugonnet
  */
 @Service
 public class ChangePasswordHandler extends ChangePasswordFunctionHandler {
+
+  @Inject
+  private VolatileSecurityToken token;
 
   @Override
   public String getFunction() {
@@ -47,9 +50,13 @@ public class ChangePasswordHandler extends ChangePasswordFunctionHandler {
     String domainId = request.getParameter("DomainId");
     String password = request.getParameter("password");
     String checkId = request.getParameter("checkId");
+    String token1 = request.getParameter("token1");
+    String token2 = request.getParameter("token2");
     try {
       // Reset password.
       assertPasswordHasBeenCorrectlyChecked(checkId, password);
+      token.consume(token1, token2);
+
       AuthenticationCredential credential = AuthenticationCredential
           .newWithAsLogin(login)
           .withAsDomainId(domainId);

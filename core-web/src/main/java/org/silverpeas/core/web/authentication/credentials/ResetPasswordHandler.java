@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
@@ -31,6 +32,7 @@ import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.core.security.authentication.password.service.PasswordRulesService;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 
 import javax.inject.Inject;
@@ -44,6 +46,9 @@ public class ResetPasswordHandler extends CredentialsFunctionHandler {
 
   @Inject
   private AuthenticationService authenticator;
+
+  @Inject
+  PasswordRulesService passwordRulesService;
 
   @Override
   public String getFunction() {
@@ -61,7 +66,7 @@ public class ResetPasswordHandler extends CredentialsFunctionHandler {
     }
     try {
       if (userId != null) {
-        final String password = PasswordRulesServiceProvider.getPasswordRulesService().generate();
+        final String password = passwordRulesService.generate();
         final ForgottenPasswordMailParameters parameters = initializeParameters(userId);
         final UserFull user = getUserFull(request, userId);
         resetPassword(userId, password, user);
