@@ -26,8 +26,12 @@ package org.silverpeas.core.web.authentication.credentials;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
+import org.silverpeas.core.security.token.TokenGeneratorProvider;
+import org.silverpeas.core.security.token.synchronizer.SynchronizerToken;
+import org.silverpeas.core.security.token.synchronizer.SynchronizerTokenGenerator;
 import org.silverpeas.kernel.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -36,6 +40,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Service
 public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler {
+
+  @Inject
+  private VolatileSecurityToken token;
 
   @Override
   public String getFunction() {
@@ -61,6 +68,9 @@ public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler
       }
 
       if (answer.equals(userDetail.getLoginAnswer())) {
+        var tokens = token.generate();
+        request.setAttribute("token1", tokens.getFirst());
+        request.setAttribute("token2", tokens.getSecond());
         return getGeneral().getString("userResetPasswordPage");
       } else {
         // Invalid answer.

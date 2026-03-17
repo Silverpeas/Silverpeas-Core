@@ -103,6 +103,8 @@
     </div>
     <input type="hidden" name="Login" value="<%=userDetail.getLogin()%>"/>
     <input type="hidden" name="DomainId" value="<%=userDetail.getDomainId()%>"/>
+    <input type="hidden" name="token1" value="${requestScope.token1}"/>
+    <input type="hidden" name="token2" value="${requestScope.token2}"/>
   </div>
 </form>
 <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadingPromise"/>
