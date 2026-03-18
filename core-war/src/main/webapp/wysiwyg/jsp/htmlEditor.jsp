@@ -33,7 +33,6 @@
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
 <%@ page import="org.silverpeas.kernel.util.StringUtil" %>
@@ -41,6 +40,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.WysiwygException" %>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController" %>
 <%@ page import="org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
@@ -165,6 +165,7 @@
     if (returnUrl == null) {
       returnUrl = (String) request.getAttribute("ReturnUrl");
     }
+    returnUrl = Encode.forJavaScript(returnUrl);
     session.setAttribute("WYSIWYG_ReturnUrl", returnUrl);
 
     browseInformation = request.getParameter("BrowseInfo");
@@ -325,7 +326,7 @@
     CKEDITOR.instances.editor1.updateElement();
     jQuery(document.recupHtml).submit();
     $deferred.then(function() {
-      location.href = '<%=WebEncodeHelper.javaStringToJsString(returnUrl)%>';
+      location.href = '<%=returnUrl%>';
     });
   }
 
