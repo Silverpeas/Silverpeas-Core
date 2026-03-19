@@ -27,7 +27,9 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -47,13 +49,15 @@ import static org.silverpeas.core.admin.service.OrganizationControllerProvider.g
 
 /**
  * A session of files and folders uploads. Each file is saved in a temporary folder in the server
- * whose the name is derived from the session identifier. A user in Silverpeas can upload one or
- * several files. For latter, in order to avoid to process each file one by one, the {@link
- * UploadSession} is a way to identify a set of uploaded files to process in a whole.
+ * and for which the name is derived from the session identifier. A user in Silverpeas can upload
+ * one or several files. For latter, in order to avoid to process each file one by one, the
+ * {@link UploadSession} is a way to identify a set of uploaded files to process in a whole.
  * <p>
- * The different treatments which use this mechanism must use all the services provided by {@link
- * FileUploadManager} and {@link UploadedFile} in order to save definitely the uploaded files.
+ * The different treatments which use this mechanism must use all the services provided by
+ * {@link FileUploadManager} and {@link UploadedFile} in order to save definitely the uploaded
+ * files.
  * </p>
+ *
  * @author Yohann Chastagnier
  */
 public class UploadSession {
@@ -75,6 +79,7 @@ public class UploadSession {
 
   /**
    * Sets the identifier of the component instance associated with the files uploads session.
+   *
    * @param componentInstanceId the unique identifier of an existing component instance.
    */
   public UploadSession forComponentInstanceId(final String componentInstanceId) {
@@ -85,6 +90,7 @@ public class UploadSession {
   /**
    * Indicates if the current user is authorized to perform this files upload session in the context
    * of the given component instance.
+   *
    * @param componentInstanceId the unique identifier of a component instance.
    */
   public boolean isUserAuthorized(final String componentInstanceId) {
@@ -96,6 +102,7 @@ public class UploadSession {
 
   /**
    * Gets the session identifier.
+   *
    * @return a string.
    */
   public String getId() {
@@ -104,6 +111,7 @@ public class UploadSession {
 
   /**
    * Gets the component instance identifier if any.
+   *
    * @return a string.
    */
   public String getComponentInstanceId() {
@@ -113,6 +121,7 @@ public class UploadSession {
   /**
    * Gets the parameter value of a component instance. The component instance is the one set in this
    * session. If no component instance identifier has been set, then nothing is done.
+   *
    * @return a string that represents the parameter value or an empty value if either the component
    * instance identifier is unknown or the parameter is not defined for the component instance.
    */
@@ -132,6 +141,7 @@ public class UploadSession {
 
   /**
    * Indicates if the upload session has been physically performed.
+   *
    * @return true if it is, false otherwise.
    */
   private boolean isHandledOnFileSystem() {
@@ -150,8 +160,9 @@ public class UploadSession {
   }
 
   /**
-   * Removes from the upload session the file identified by the given identifier.
-   * If the file path is currently in writing mode, nothing is removed.
+   * Removes from the upload session the file identified by the given identifier. If the file path
+   * is currently in writing mode, nothing is removed.
+   *
    * @param fullPath the path of the file into the session.
    * @return true of removed has been effective, false otherwise.
    */
@@ -170,6 +181,7 @@ public class UploadSession {
    * Gets the file that was or will be uploaded within this session and located at the specified
    * path relative the root folder of this session. If the file path is currently in writing mode,
    * the {@link UploadSessionFile#getServerFile()} of the returned instance is null.
+   *
    * @param fullPath the path of the file relative to the root folder of the session.
    * @return the {@link UploadSessionFile} instance at the specified relative path.
    */
@@ -179,8 +191,9 @@ public class UploadSession {
   }
 
   /**
-   * Gets the root folder on the server of the files upload session.<br>
-   * If the folder does not yet exist, then it is created.
+   * Gets the root folder on the server of the files upload session.<br> If the folder does not yet
+   * exist, then it is created.
+   *
    * @return a {@link File} that represents the upload session folder.
    */
   public File getRootFolder() {
@@ -189,11 +202,10 @@ public class UploadSession {
   }
 
   /**
-   * Gets the {@link File} list (so file or folder) from the root folder on the server of the
-   * upload
-   * session.<br>
-   * If the folder does not yet exist, then it is created.
-   * @return a list of {@link File} from the root folder provided by {@link #getRootFolder()}.
+   * Gets the {@link File} list (so file or folder) from the root folder on the server of the upload
+   * session.<br> If the folder does not yet exist, then it is created.
+   *
+   * @return an array of {@link File} from the root folder provided by {@link #getRootFolder()}.
    */
   public File[] getRootFolderFiles() {
     File[] files = getRootFolder().listFiles();
@@ -208,7 +220,7 @@ public class UploadSession {
    */
   private synchronized void initialize() {
     if (!isHandledOnFileSystem()) {
-      uploadSessionFolder = new File(FileRepositoryManager.getTemporaryPath(), uploadSessionId);
+      initUploadSessionFolder();
       if (!uploadSessionFolder.exists()) {
         boolean created = uploadSessionFolder.mkdirs();
         if (!created) {
@@ -216,6 +228,19 @@ public class UploadSession {
               .warn("The root folder of the session " + uploadSessionId + " cannot be created!");
         }
       }
+    }
+  }
+
+  private void initUploadSessionFolder() {
+    try {
+      String tempDirectory = FileRepositoryManager.getTemporaryPath();
+      uploadSessionFolder = new File(tempDirectory, uploadSessionId);
+      if (!uploadSessionFolder.getCanonicalPath().startsWith(tempDirectory)) {
+        throw new ForbiddenRuntimeException(
+            "Attempt to bypass the temporary directory while uploading a file!");
+      }
+    } catch (IOException e) {
+      throw new SilverpeasRuntimeException(e.getMessage());
     }
   }
 
@@ -235,6 +260,7 @@ public class UploadSession {
   /**
    * Initializes an instance from a request (if not created, a new one will be created if
    * necessary).
+   *
    * @param request an http servlet request.
    * @return a new initialized instance.
    */
@@ -249,6 +275,7 @@ public class UploadSession {
   /**
    * Initializes an instance from a session id (if not created, a new one will be created if
    * necessary).
+   *
    * @param uploadSessionId an existing, or not, upload session id.
    * @return a new initialized instance.
    */
@@ -262,8 +289,9 @@ public class UploadSession {
   }
 
   /**
-   * Creates a new upload session identifier if the given one is not defined.
-   * Returns the given one if it is defined.
+   * Creates a new upload session identifier if the given one is not defined. Returns the given one
+   * if it is defined.
+   *
    * @param uploadSessionId a files upload session identifier.
    * @return either the specified session identifier or a new one.
    */
@@ -274,6 +302,7 @@ public class UploadSession {
 
   /**
    * Gets the upload session corresponding to the given identifier if any.
+   *
    * @param uploadSessionId an upload session identifier.
    * @return an upload session instance if any, null otherwise.
    */
@@ -285,6 +314,7 @@ public class UploadSession {
   /**
    * Registers the identifier of the specified session in the session cache in order to clean the
    * session's root folder in case of a user disconnection during a file upload.
+   *
    * @param uploadSession a files upload session.
    */
   @SuppressWarnings("unchecked")
@@ -306,6 +336,7 @@ public class UploadSession {
   /**
    * Removes the identifier of the specified session from the session cache in order to clean the
    * session's root folder and all of its temporary allocated resources.
+   *
    * @param uploadSession a files upload session.
    */
   @SuppressWarnings("unchecked")
@@ -322,6 +353,7 @@ public class UploadSession {
 
   /**
    * Clears the upload sessions still attached to a user session.
+   *
    * @param sessionInfo the session of a user.
    */
   @SuppressWarnings("unchecked")
@@ -333,8 +365,9 @@ public class UploadSession {
           UploadSession.from(uploadSessionId).clear();
         } catch (NegativeArraySizeException e) {
           SilverLogger.getLogger(UploadSession.class).error(
-              "On jSessionId={0}, with {1} uploadSessionIds (user {2})",
-              new Object[]{sessionInfo.getSessionId(), String.valueOf(sessionIds.size()), sessionInfo.getUserDetail().getId()},
+              "On session id={0}, with {1} upload session Ids (user {2})",
+              new Object[]{sessionInfo.getSessionId(), String.valueOf(sessionIds.size()),
+                  sessionInfo.getUserDetail().getId()},
               e);
         } catch (Exception e) {
           SilverLogger.getLogger(UploadSession.class).silent(e);
