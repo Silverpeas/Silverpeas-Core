@@ -25,15 +25,17 @@ package org.silverpeas.core.security.token;
 
 /**
  * A generator of tokens.
- *
+ * <p>
  * A token isn't simply just an atom or a symbol. It has a type that is related to the way it is
- * used. Because the use of tokens differ, their value (the atom) cannot follow the same pattern and
- * therefore they have to be generated in the way that matches their use. It is why the tokens
+ * used. Because the use of tokens differ, their value (the atom) cannot follow the same pattern,
+ * and therefore they have to be generated in the way that matches their use. It is why the tokens
  * differ by their type and each type of token has their own generator.
- *
+ * </p>
+ * <p>
  * As a generator is mapped with a token type, it is expected that such generator is indicated by
- * the annotation {@link org.silverpeas.core.security.token.annotation.TokenGenerator} with a token class
- * declaration.
+ * the annotation {@link org.silverpeas.core.security.token.annotation.TokenGenerator} with a token
+ * class declaration.
+ * </p>
  *
  * @author mmoquillon
  */

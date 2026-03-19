@@ -38,9 +38,10 @@ import java.util.UUID;
 
 /**
  * A generator of synchronizer tokens.
- *
+ * <p>
  * The generation of the token is based upon a random key and the generation can be altered by
  * passing it some input parameters.
+ * </p>
  */
 public class SynchronizerTokenGenerator implements TokenGenerator {
 
@@ -51,13 +52,14 @@ public class SynchronizerTokenGenerator implements TokenGenerator {
    *
    * @param parameters the parameter for adding entropy in the token generation. Only String-value
    * parameters are taken into account.
-   * @return a new token. The length of the token is at least of 48 characters. It can be more
-   * longer by passing parameters with a value of more than 48 characters.
+   * @return a new token. The length of the token is at least of 48 characters. It can be longer by
+   * passing parameters with a value of more than 48 characters.
    */
+  @SuppressWarnings("unchecked")
   @Override
   public SynchronizerToken generate(final TokenGenerationParameter... parameters) {
     final List<String> alterators = new ArrayList<>(parameters.length);
-    String value = compute(new Iterator<String>() {
+    String value = compute(new Iterator<>() {
       int i = 0;
 
       @Override

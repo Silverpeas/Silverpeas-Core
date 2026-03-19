@@ -46,14 +46,15 @@ public class PersistentResourceTokenGenerator implements TokenGenerator {
 
   /**
    * @param parameters both the identifier and the type of the resource the token to generate has to
-   * be belong.
+   * be belonged.
    */
+  @SuppressWarnings("unchecked")
   @Override
   public PersistentResourceToken generate(TokenGenerationParameter... parameters) {
-    EntityReference ref = null;
-    for (TokenGenerationParameter parameter : parameters) {
+    EntityReference<?> ref = null;
+    for (TokenGenerationParameter<?> parameter : parameters) {
       if (RESOURCE_PARAM.equals(parameter.key())) {
-        ref = (EntityReference) parameter.value();
+        ref = (EntityReference<?>) parameter.value();
         break;
       }
     }

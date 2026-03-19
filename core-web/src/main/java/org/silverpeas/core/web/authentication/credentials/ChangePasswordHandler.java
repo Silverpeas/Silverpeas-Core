@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.web.util.VolatileSecurityTokenSupplier;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
@@ -37,7 +38,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 public class ChangePasswordHandler extends ChangePasswordFunctionHandler {
 
   @Inject
-  private VolatileSecurityToken token;
+  private VolatileSecurityTokenSupplier tokenSupplier;
 
   @Override
   public String getFunction() {
@@ -55,7 +56,7 @@ public class ChangePasswordHandler extends ChangePasswordFunctionHandler {
     try {
       // Reset password.
       assertPasswordHasBeenCorrectlyChecked(checkId, password);
-      token.consume(token1, token2);
+      tokenSupplier.consume(token1, token2);
 
       AuthenticationCredential credential = AuthenticationCredential
           .newWithAsLogin(login)

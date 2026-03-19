@@ -23,12 +23,14 @@
  */
 package org.silverpeas.web.token;
 
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.security.token.Token;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.token.TokenSettingTemplate;
 import org.silverpeas.core.web.token.TokenSettingTemplate.Parameter;
+import org.silverpeas.core.web.util.VolatileSecurityTokenSupplier;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
@@ -55,6 +57,9 @@ public class ProtectedWebPageUpdater extends HttpServlet {
   @Inject
   private SynchronizerTokenService tokenService;
 
+  @Inject
+  private VolatileSecurityTokenSupplier tokenSupplier;
+
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    *
@@ -67,11 +72,18 @@ public class ProtectedWebPageUpdater extends HttpServlet {
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
     response.setContentType("application/javascript");
     try(PrintWriter out = response.getWriter()) {
+      String key = request.getParameter("tkn1");
+      String value = request.getParameter("tkn2");
+      tokenSupplier.consume(key, value);
+
       String script = applyTemplate(new TokenSettingTemplate(), request);
       out.println(script);
     } catch (IOException e) {
       SilverLogger.getLogger(this).error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    } catch (ForbiddenRuntimeException e) {
+      SilverLogger.getLogger(this).error(e.getMessage());
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
   }
 
