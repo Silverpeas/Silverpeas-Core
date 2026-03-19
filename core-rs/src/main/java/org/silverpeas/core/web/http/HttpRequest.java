@@ -489,7 +489,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
-   * Get a parameter value as a Integer.
+   * Get a parameter value as an Integer.
    *
    * @param parameterName the name of the parameter.
    * @return the value of the parameter as an integer.

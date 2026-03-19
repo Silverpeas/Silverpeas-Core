@@ -46,17 +46,15 @@ public class FileUploadData {
   static final String X_UPLOAD_SESSION = "X-UPLOAD-SESSION";
   static final String X_FULL_PATH = "X-FULL-PATH";
 
-  private String uploadSessionId;
-  private String fullPath;
-  private String name;
-  private String componentInstanceId;
+  private final String uploadSessionId;
+  private final String fullPath;
+  private final String name;
+  private final String componentInstanceId;
 
-  /**
-   * Hidden constructor.
-   */
   private FileUploadData(String uploadSessionId, String fullPath,
       final String componentInstanceId) {
-    if (isDefined(fullPath) && fullPath.contains("..")) {
+    if ((isDefined(fullPath) && fullPath.contains("..")) ||
+        (isDefined(uploadSessionId) && uploadSessionId.contains(".."))) {
       SilverLogger.getLogger("silverpeas.core.security")
           .error("Path Traversal attack detected at {0}", LocalDateTime.now().toString());
       throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -95,7 +93,7 @@ public class FileUploadData {
     if (StringUtil.isNotDefined(brutFullPath)) {
       brutFullPath = "";
     }
-    String fullPath = URLDecoder.decode(brutFullPath, Charsets.UTF_8.name());
+    String fullPath = URLDecoder.decode(brutFullPath, Charsets.UTF_8);
     fullPath = StringUtil.normalize(fullPath);
     return new FileUploadData(request.getHeader(X_UPLOAD_SESSION), fullPath,
         request.getHeader(X_COMPONENT_INSTANCE_ID));
