@@ -23,126 +23,133 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.URLUtil"%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@page import="org.silverpeas.core.util.URLUtil" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@page import="org.apache.commons.fileupload.FileItem"%>
-<%@ page import="org.silverpeas.core.web.http.HttpRequest"%>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
-<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
-<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@page import="org.apache.commons.fileupload.FileItem" %>
+<%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button "%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button " %>
 <%@ page import="java.io.File" %>
 <%@ page import="org.silverpeas.core.util.file.FileUploadUtil" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController" %>
+<%@ page import="org.silverpeas.core.security.authorization.ForbiddenRuntimeException" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+<%@ page import="org.silverpeas.kernel.logging.SilverLogger" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
-        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    String m_context = URLUtil.getApplicationURL();
-	String language = request.getParameter("Language");
-	String thePath = request.getParameter("Path");
-    LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
-        language);
+      GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+  String m_context = URLUtil.getApplicationURL();
+  String language = request.getParameter("Language");
+  String thePath = request.getParameter("Path");
+  SilverLogger.getLogger(this).info("PATH IS " + thePath);
+  String root = WysiwygController.getWebsiteRepository();
+  if (!thePath.startsWith(root) || thePath.contains("..")) {
+    throw new ForbiddenRuntimeException("Forbidden file upload attempt!");
+  }
 
-    //Le cadre
-    Board board = gef.getBoard();
+  LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
+      language);
 
-    //Icons
-    String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
-    HttpRequest httpRequest = HttpRequest.decorate(request);
-    if (httpRequest.isContentInMultipart())
-    {
-	    FileItem fileItem = httpRequest.getSingleFile();
-	    if (fileItem != null)
-	    {
-			String fichierName = FileUploadUtil.getFileName(fileItem);
-			File fichier = new File(thePath, fichierName);
-			FileUploadUtil.saveToFile(fichier, fileItem);
+  //Le cadre
+  Board board = gef.getBoard();
 
-			String urlPath = thePath.substring(thePath.indexOf("/website"));
+  //Icons
+  String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
+  HttpRequest httpRequest = HttpRequest.decorate(request);
+  if (httpRequest.isContentInMultipart()) {
+    FileItem fileItem = httpRequest.getSingleFile();
+    if (fileItem != null) {
+      String fichierName = FileUploadUtil.getFileName(fileItem);
+      File fichier = new File(thePath, fichierName);
+      FileUploadUtil.saveToFile(fichier, fileItem);
 
-			%>
-			<script language="javascript">
-				window.opener.document.getElementById('txtUrl').value='<%=WebEncodeHelper.javaStringToJsString(urlPath+'/'+fichierName)%>';
-				window.close();
-			</script>
-			<%
-	    }
+      String urlPath = thePath.substring(thePath.indexOf("/website"));
+
+%>
+<script language="javascript">
+  window.opener.document.getElementById('txtUrl').value ="<%=Encode.forJavaScript(urlPath+'/'+fichierName)%>";
+  window.close();
+</script>
+<%
     }
+  }
 %>
 <view:script src="/util/javaScript/checkForm.js"/>
-	<script type="text/javascript">
-		function isCorrect(nom) {
-		if (nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
-		        nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || nom.indexOf("'")>-1 ||
-		        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
-		        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("^")>-1 ||
-		        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || /*nom.indexOf("�")>-1 ||*/
-		        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
-		        nom.indexOf("�")>-1) {
-		    }
-		    return true;
-	     }
-	    function B_VALIDER_ONCLICK() {
-	        if (checkString(document.descriptionFile.fichier, "<%=message.getString("ErreurmPrefix")+message.getString("FichierUpload")+message.getString("ErreurmSuffix")%>")) {
-	            var file = document.descriptionFile.fichier.value;
-	            var indexPoint = file.lastIndexOf(".");
-	            var ext = file.substring(indexPoint + 1);
-	            if (ext.toLowerCase() != "gif" && ext.toLowerCase()!= "jpg" &&
-				ext.toLowerCase() != "bmp" && ext.toLowerCase() != "png" &&
-				ext.toLowerCase() != "pcd" && ext.toLowerCase() != "tga" &&
-				ext.toLowerCase() != "tif" && ext.toLowerCase() != "swf")
-	            {
-			notyError("<%=message.getString("ErreurFichierUpload")%>");
-	            }
-	            else if (!isCorrect(file))
-	            {
-				// verif caract�res speciaux contenus dans le nom du fichier
-			notyError("<%=message.getString("NameFile")%> <%=message.getString("MustNotContainSpecialChar")%>\n<%=WebEncodeHelper.javaStringToJsString(message.getString("Char7"))%>\n");
-	            }
-	            else
-		        {
-			document.descriptionFile.submit();
-	            }
-	       }
-	    }
-	</script>
+<script type="text/javascript">
+  function isCorrect(nom) {
+    if (nom.indexOf("&") > -1 || nom.indexOf(";") > -1 || nom.indexOf("+") > -1 ||
+        nom.indexOf("%") > -1 || nom.indexOf("#") > -1 || nom.indexOf("'") > -1 ||
+        nom.indexOf("�") > -1 || nom.indexOf("�") > -1 || nom.indexOf("�") > -1 ||
+        nom.indexOf("�") > -1 || nom.indexOf("�") > -1 || nom.indexOf("^") > -1 ||
+        nom.indexOf("�") > -1 || nom.indexOf("�") > -1 || /*nom.indexOf("�")>-1 ||*/
+        nom.indexOf("�") > -1 || nom.indexOf("�") > -1 || nom.indexOf("�") > -1 ||
+        nom.indexOf("�") > -1) {
+    }
+    return true;
+  }
+
+  function B_VALIDER_ONCLICK() {
+    if (checkString(document.descriptionFile.fichier, "<%=message.getString("ErreurmPrefix")+message.getString("FichierUpload")+message.getString("ErreurmSuffix")%>")) {
+      const file = document.descriptionFile.fichier.value;
+      const indexPoint = file.lastIndexOf(".");
+      const ext = file.substring(indexPoint + 1);
+      if (ext.toLowerCase() !== "gif" && ext.toLowerCase() !== "jpg" &&
+          ext.toLowerCase() !== "bmp" && ext.toLowerCase() !== "png" &&
+          ext.toLowerCase() !== "pcd" && ext.toLowerCase() !== "tga" &&
+          ext.toLowerCase() !== "tif" && ext.toLowerCase() !== "swf") {
+        notyError("<%=message.getString("ErreurFichierUpload")%>");
+      } else if (!isCorrect(file)) {
+        // verif caract�res speciaux contenus dans le nom du fichier
+        notyError("<%=message.getString("NameFile")%> <%=message.getString("MustNotContainSpecialChar")%>\n<%=Encode.forJavaScript(message.getString("Char7"))%>\n");
+      } else {
+        document.descriptionFile.submit();
+      }
+    }
+  }
+</script>
 
 <% out.println(board.printBefore()); %>
 
-	  <form name="descriptionFile" action="uploadFile.jsp" method="post" enctype="multipart/form-data">
-		<table>
-	    <tr>
-	        <td class="txtlibform"><%=message.getString("FichierUpload")%> : </td>
-	        <td valign="top">&nbsp;<input type="file" name="fichier" size="50"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt=""/></td>
-	    </tr>
-        <tr>
-            <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt=""/> : <%=message.getString("RequiredField")%>)</td>
-        </tr>
-        </table>
-	</form>
-  <%
+<form name="descriptionFile" action="uploadFile.jsp" method="post" enctype="multipart/form-data">
+  <table>
+    <tr>
+      <td class="txtlibform"><%=message.getString("FichierUpload")%> :</td>
+      <td>&nbsp;<input type="file" name="fichier" size="50"/>&nbsp;<img src="<%=mandatoryField%>"
+                                                                                     width="5"
+                                                                                     height="5"
+                                                                                     alt=""/></td>
+    </tr>
+    <tr>
+      <td colspan="2">(<img src="<%=mandatoryField%>" width="5" height="5" alt=""/>
+        : <%=message.getString("RequiredField")%>)
+      </td>
+    </tr>
+  </table>
+</form>
+<%
   out.println(board.printAfter());
 
-	//fin du code
-	ButtonPane buttonPane = gef.getButtonPane();
-	Button validerButton = (Button) gef.getFormButton(message.getString("Valider"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
-	buttonPane.addButton(validerButton);
+  //fin du code
+  ButtonPane buttonPane = gef.getButtonPane();
+  Button validerButton = gef.getFormButton(message.getString("Valider"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
+  buttonPane.addButton(validerButton);
 
-  String bodyPart ="<center><br/>";
+  String bodyPart = "<center><br/>";
   bodyPart += buttonPane.print();
-  bodyPart +="</center>";
-	out.println(bodyPart);
+  bodyPart += "</center>";
+  out.println(bodyPart);
 
- %>
+%>

@@ -22,34 +22,55 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.authentication.credentials;
+package org.silverpeas.core.web.util;
 
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.security.token.TokenGeneratorProvider;
 import org.silverpeas.core.security.token.synchronizer.SynchronizerToken;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.cache.model.ExternalCache;
 import org.silverpeas.kernel.cache.service.ApplicationCacheAccessor;
 import org.silverpeas.kernel.util.Pair;
 
+import javax.inject.Singleton;
+
 /**
- * Volatile token to secure some explicit credential modification. Such token must be generated
- * first to prepare the credential modification. It has to be then checked before the modification
- * is applied in order to ensure the modification request comes from a valid source.
+ * Supplier of volatile tokens used to secure some sensible functions. Such tokens must be generated
+ * first before any function execution; usually for the web page exposing the sensible function, in
+ * order to be sent with the sensible function request. Then, the token has to be verified before
+ * the sensible function invocation. The verification consumes the token if valid. Otherwise, a
+ * forbidden exception is thrown. The volatile security token is made up of a pair of two values,
+ * strongly tied: the unique identifier of the token and its value.
  *
  * @author mmoquillon
  */
-@Service
-public class VolatileSecurityToken {
+@Technical
+@Bean
+@Singleton
+public class VolatileSecurityTokenSupplier {
 
   // 10mn
   private final static int TIME_TO_LIVE = 600;
   private final ExternalCache cache = ApplicationCacheAccessor.getInstance().getCache();
 
   /**
+   * Gets a supplier of volatile security tokens. This method is dedicated to only non IoC managed
+   * beans. For IoC managed beans, use the IoD mechanism as this one is more efficient.
+   *
+   * @return a {@link VolatileSecurityTokenSupplier} instance.
+   */
+  public static VolatileSecurityTokenSupplier get() {
+    return Provider.getInstance().getSupplier();
+  }
+
+  /**
    * Generates and stores a new token for 10mn.
-   * @return a mapping between the unique identifier of the token and its value.
+   *
+   * @return the pair of strongly tied token values. The first value is the unique identifier of the
+   * token and the second value is the associated value.
    */
   public Pair<String, String> generate() {
     var generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
@@ -61,6 +82,7 @@ public class VolatileSecurityToken {
    * Consumes the specified token with the given value. If no token exists with the specified
    * identifier or if the token doesn't match with the specified token value, then a
    * {@link ForbiddenRuntimeException} is thrown, otherwise the token is consumed (id est deleted).
+   *
    * @param tokenId the unique identifier of a token.
    * @param value the value of the token.
    * @throws ForbiddenRuntimeException if the verification fails.
@@ -74,6 +96,24 @@ public class VolatileSecurityToken {
       throw new ForbiddenRuntimeException("The security token doesn't match!");
     }
     cache.remove(tokenId);
+  }
+
+  private static class Provider {
+
+    private static final Provider instance = new Provider();
+
+    private VolatileSecurityTokenSupplier supplier;
+
+    public static Provider getInstance() {
+      return instance;
+    }
+
+    public VolatileSecurityTokenSupplier getSupplier() {
+      if (supplier == null) {
+        supplier = ServiceProvider.getService(VolatileSecurityTokenSupplier.class);
+      }
+      return supplier;
+    }
   }
 }
   

@@ -30,7 +30,6 @@ import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.date.TimeUnit;
@@ -41,18 +40,20 @@ import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.util.SystemWrapper;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.look.LayoutConfiguration;
 import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.util.VolatileSecurityTokenSupplier;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 import org.silverpeas.core.web.util.viewgenerator.html.pdc.BaseClassificationPdCTag;
 import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.cache.model.SimpleCache;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.util.SystemWrapper;
 
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -71,11 +72,11 @@ import static org.silverpeas.core.notification.user.UserNotificationServerEvent.
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.*;
 import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
-import static org.silverpeas.kernel.util.StringUtil.EMPTY;
-import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer.bundleVariableName;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer.settingVariableName;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -941,9 +942,14 @@ public class JavascriptPluginInclusion {
    */
   static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
+      VolatileSecurityTokenSupplier tokenSupplier = VolatileSecurityTokenSupplier.get();
+      var token = tokenSupplier.generate();
+
       xhtml.addElement(new script().setType(JAVASCRIPT_TYPE)
-          .setSrc(JAVASCRIPT_PATH + SILVERPEAS_TOKENIZING + "?_=" + System.currentTimeMillis()));
+          .setSrc(JAVASCRIPT_PATH + SILVERPEAS_TOKENIZING + "?tkn1=" + token.getFirst() +
+                  "&tkn2=" + token.getSecond() + "&_=" + System.currentTimeMillis()));
     }
+
     String setTokensCondition = "if(typeof setTokens === 'function')";
     String sb = "function applyTokenSecurity(targetContainerSelector){" + setTokensCondition +
         "{setTokens(targetContainerSelector);}}" +
