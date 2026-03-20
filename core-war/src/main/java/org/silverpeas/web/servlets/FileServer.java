@@ -25,6 +25,7 @@ package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.content.LinkUrlDataSource;
 import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
@@ -32,14 +33,14 @@ import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.activation.FileDataSource;
 import javax.inject.Inject;
@@ -58,8 +59,8 @@ import static java.util.Collections.singletonList;
 import static org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner.extractUrlParameters;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
-import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.file.FileServerUtils.*;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 public class FileServer extends AbstractFileSender {
 
@@ -68,27 +69,42 @@ public class FileServer extends AbstractFileSender {
   @Inject
   private OrganizationController organizationController;
 
-  @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res) {
-    doPost(req, res);
-  }
+  @Inject
+  private StatisticService statistics;
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) {
+    res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+  }
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     try {
       final Map<String, String> params = HttpRequest.decorate(req).getParameterSimpleMap();
       final String componentId = params.get(COMPONENT_ID_PARAMETER);
+      if (StringUtil.isNotDefined(componentId)) {
+        res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
+
       final HttpSession session = req.getSession(true);
       final MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
           MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
+      if (mainSessionCtrl == null) {
+        var generalSettings = ResourceLocator.getGeneralSettingBundle();
         SilverLogger.getLogger(this)
             .warn("Session timeout after {1}. New session id: {0}", session.getId(),
-                ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
-        res.sendRedirect(URLUtil.getApplicationURL() +
-            ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
+                generalSettings.getString("sessionTimeout"));
+        res.sendRedirect(URLUtil.getApplicationURL() + generalSettings.getString("sessionTimeout"));
         return;
       }
+      if (!isUserAllowed(mainSessionCtrl, componentId)) {
+        SilverLogger.getLogger(this).warn("Component instance {0}: access forbidden for user {1}",
+            componentId, mainSessionCtrl.getUserId());
+        res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        return;
+      }
+
       final SilverpeasFile file = getSilverpeasFile(params);
       sendFile(req, res, file);
       final String archiveIt = params.get(ARCHIVE_IT_PARAMETER);
@@ -109,35 +125,32 @@ public class FileServer extends AbstractFileSender {
     final String componentId = params.get(COMPONENT_ID_PARAMETER);
     final String mimeType = params.get(MIME_TYPE_PARAMETER);
     final String dirType = params.get(DIR_TYPE_PARAMETER);
-    final String typeUpload = params.get(TYPE_UPLOAD_PARAMETER);
     final String size = params.get(SIZE_PARAMETER);
-    String sourceFile = params.get(SOURCE_FILE_PARAMETER);
-    if (StringUtil.isDefined(size)) {
-      sourceFile = size + File.separatorChar + sourceFile;
-    }
+    String sourceFile = StringUtil.isDefined(size) ?
+        size + File.separatorChar + params.get(SOURCE_FILE_PARAMETER) :
+        params.get(SOURCE_FILE_PARAMETER);
+
     SilverpeasFileDescriptor descriptor =
-        new SilverpeasFileDescriptor(componentId).fileName(sourceFile).mimeType(mimeType);
-    if (typeUpload != null) {
-      descriptor.absolutePath();
-    } else {
-      if (dirType != null) {
-        if (dirType.equals(
-            ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp"))) {
-          descriptor = descriptor.temporaryFile();
-        }
-      } else {
-        String directory = params.get(DIRECTORY_PARAMETER);
-        descriptor = descriptor.parentDirectory(directory);
+        new SilverpeasFileDescriptor(componentId)
+            .fileName(sourceFile)
+            .mimeType(mimeType);
+    if (dirType != null) {
+      if (dirType.equals(
+          ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp"))) {
+        descriptor = descriptor.temporaryFile();
       }
+    } else {
+      String directory = params.get(DIRECTORY_PARAMETER);
+      descriptor = descriptor.parentDirectory(directory);
     }
+
     return SilverpeasFileProvider.getFile(descriptor);
   }
 
   private void addStatistic(final String userId, final String nodeId,
       final ResourceReference pubPK) {
     try {
-      StatisticService statisticService = StatisticService.get();
-      statisticService.addStat(userId, pubPK, 1, "Publication");
+      statistics.addStat(userId, pubPK, 1, "Publication");
     } catch (Exception ex) {
       SilverLogger.getLogger(this)
           .error("Cannot write statistics about publication " + pubPK + " in node " + nodeId, ex);
@@ -147,18 +160,13 @@ public class FileServer extends AbstractFileSender {
   // check if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller, String componentId) {
     boolean isAllowed;
-    if (componentId == null) {
-      // Personal space
+    if ("yes".equalsIgnoreCase(
+        controller.getComponentParameterValue(componentId, "publicFiles"))) {
+      // Case of file contained in a component used as a file storage
       isAllowed = true;
     } else {
-      if ("yes".equalsIgnoreCase(
-          controller.getComponentParameterValue(componentId, "publicFiles"))) {
-        // Case of file contained in a component used as a file storage
-        isAllowed = true;
-      } else {
-        isAllowed =
-            organizationController.isComponentAvailableToUser(componentId, controller.getUserId());
-      }
+      isAllowed =
+          organizationController.isComponentAvailableToUser(componentId, controller.getUserId());
     }
     return isAllowed;
   }
@@ -169,6 +177,7 @@ public class FileServer extends AbstractFileSender {
         "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
   }
 
+  @Bean
   @Singleton
   public static class ImageUrlToDataSourceScanner implements LinkUrlDataSourceScanner {
 
@@ -191,6 +200,7 @@ public class FileServer extends AbstractFileSender {
     }
   }
 
+  @Bean
   @Singleton
   public static class ImageUrlAccordingToHtmlSizeDirectiveTranslator extends
       ImageUrlAccordingToHtmlSizeDirective.SrcWithSizeParametersTranslator {

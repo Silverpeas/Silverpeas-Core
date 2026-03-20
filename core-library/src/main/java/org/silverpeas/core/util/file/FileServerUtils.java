@@ -32,12 +32,9 @@ import org.silverpeas.core.i18n.I18NHelper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author NEY
- * @version
  */
 public class FileServerUtils {
 
@@ -48,28 +45,12 @@ public class FileServerUtils {
   public static final String DIR_TYPE_PARAMETER = "DirType";
   public static final String USER_ID_PARAMETER = "UserId";
   public static final String MIME_TYPE_PARAMETER = "MimeType";
-  public static final String TYPE_UPLOAD_PARAMETER = "TypeUpload";
   public static final String NODE_ID_PARAMETER = "NodeId";
   public static final String PUBLICATION_ID_PARAMETER = "PubId";
   public static final String SIZE_PARAMETER = "Size";
 
   private static final SettingBundle lookSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-
-  /**
-   * Replace chars that have special meanings in url by their http substitute.
-   *
-   * @param toParse the string which chars that have special meanings in url by their http
-   * substitute.
-   * @return a string without url meaning chars.
-   */
-  public static String replaceSpecialChars(String toParse) {
-    String newLogicalName = toParse.replace("#", "%23");
-    newLogicalName = newLogicalName.replace("%", "%25");
-    newLogicalName = newLogicalName.replace("&", "%26");
-    newLogicalName = newLogicalName.replace(";", "%3B");
-    return newLogicalName;
-  }
 
   /**
    * Replace accented chars from a string.
@@ -101,27 +82,6 @@ public class FileServerUtils {
     newLogicalName = newLogicalName.replace('â', 'a');
     newLogicalName = newLogicalName.replace('°', '_');
     return newLogicalName;
-  }
-
-  /**
-   * Return the full url to access an attachment from web site
-   *
-   *
-   * @param componentId
-   * @param logicalName
-   * @param physicalName
-   * @param mimeType
-   * @param subDirectory
-   * @return
-   */
-  public static String getWebUrl(String componentId, String logicalName, String physicalName,
-      String mimeType, String subDirectory) {
-    StringBuilder url = new StringBuilder();
-    String newLogicalName = URLEncoder.encodePathParamValue(logicalName);
-    url.append(newLogicalName).append("?ComponentId=").append(componentId).
-        append("&SourceFile=").append(physicalName).append("&MimeType=").append(
-        mimeType).append("&Directory=").append(subDirectory);
-    return url.toString();
   }
 
   public static String getUrl(String componentId, String logicalName) {
@@ -161,7 +121,7 @@ public class FileServerUtils {
       language = I18NHelper.DEFAULT_LANGUAGE;
     }
     url.append("/attached_file/").append("componentId/").append(URLEncoder.encodePathSegment(
-        componentId)).append("/attachmentId/").append(URLEncoder.encodePathSegment(attachmentId)).
+            componentId)).append("/attachmentId/").append(URLEncoder.encodePathSegment(attachmentId)).
         append("/lang/").append(URLEncoder.encodePathSegment(language)).append("/name/").
         append(newLogicalName);
     return url.toString();
@@ -173,14 +133,15 @@ public class FileServerUtils {
    * Each image uploaded in Silverpeas are kept with their original size. From them, a set of
    * resized images are computed. This method is to get the URL of the resized version of an
    * uploaded image.
+   *
    * @param originalImageURL the URL of the original, non-resized, image.
    * @param sizeParams the size of the image to get. The size can be specified either a key in the
    * {@code org.silverpeas.lookAndFeel.generalLook} bundle or as a dimension. The keys of the
-   * properties indicating an image size are always prefixed by the 'image.size' term. The
-   * dimension of an image must be in the form of WIDTHxHEIGHT with WIDTH the width in pixels of
+   * properties indicating an image size are always prefixed by the 'image.size' term. The dimension
+   * of an image must be in the form of <code>WIDTHxHEIGHT</code> with WIDTH the width in pixels of
    * the image and HEIGHT the height in pixels of the image. WIDTH or HEIGHT can be omitted but the
-   * 'x' character is required. If null, empty or or not well formed, the original image URL is
-   * then returned.
+   * 'x' character is required. If null, empty or not well-formed, the original image URL is then
+   * returned.
    * @return the URL of the image with the specified size.
    */
   public static String getImageURL(String originalImageURL, String sizeParams) {
@@ -212,29 +173,9 @@ public class FileServerUtils {
     return resizedImagePath;
   }
 
-  public static String getAliasURL(String componentId, String logicalName, String attachmentId) {
-    StringBuilder url = new StringBuilder();
-    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
-    url.append(getApplicationContext()).append("/AliasFileServer/").append(newLogicalName).
-        append("?ComponentId=").append(componentId).append("&AttachmentId=").
-        append(attachmentId);
-    return url.toString();
-  }
-
-  public static Map<String, String> getMappedUrl(String spaceId, String componentId,
-      String logicalName, String physicalName, String mimeType, String subDirectory) {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put("SpaceId", spaceId);
-    parameters.put("ComponentId", componentId);
-    parameters.put("SourceFile", physicalName);
-    parameters.put("MimeType", mimeType);
-    parameters.put("Directory", subDirectory);
-    return parameters;
-  }
-
-  public static String getUrl(String componentId, String name, String mimeType, String subDirectory) {
-    String url = getUrl(componentId, name, name, mimeType, subDirectory);
-    return url;
+  public static String getUrl(String componentId, String name, String mimeType,
+      String subDirectory) {
+    return getUrl(componentId, name, name, mimeType, subDirectory);
   }
 
   public static String getUrl(String logicalName, String physicalName, String componentId) {
@@ -255,9 +196,10 @@ public class FileServerUtils {
     }
     String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
-        "?ComponentId=").append(componentId).append("&UserId=").append(userId).
+            "?ComponentId=").append(componentId).append("&UserId=").append(userId).
         append("&SourceFile=").append(URLEncoder.encodePathParamValue(physicalName)).append(
-        "&MimeType=").append(mimeType).append("&ArchiveIt=").append(archiveItStr).append("&PubId=").
+            "&MimeType=").append(mimeType).append("&ArchiveIt=").append(archiveItStr).append(
+                "&PubId=").
         append(pubId).append("&NodeId=").append(nodeId).append("&Directory=").append(subDirectory);
     return url.toString();
   }
