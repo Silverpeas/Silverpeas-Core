@@ -51,6 +51,15 @@ public class FileServerUtils {
 
   private static final SettingBundle lookSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
+  private static final String FILE_SERVER = "/FileServer/";
+  private static final String COMPONENT_ID = "?ComponentId=";
+  private static final String SOURCE_FILE = "&SourceFile=";
+  private static final String MIME_TYPE = "&MimeType=";
+  private static final String DIRECTORY = "&Directory=";
+  private static final String URL_PATH_SEP = "/";
+
+  protected FileServerUtils() {
+  }
 
   /**
    * Replace accented chars from a string.
@@ -87,8 +96,8 @@ public class FileServerUtils {
   public static String getUrl(String componentId, String logicalName) {
     StringBuilder url = new StringBuilder();
     String newLogicalName = URLEncoder.encodePathSegment(logicalName);
-    url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
-        "?ComponentId=").append(componentId);
+    url.append(getApplicationContext()).append(FILE_SERVER).append(newLogicalName).append(
+        COMPONENT_ID).append(componentId);
     return url.toString();
   }
 
@@ -96,9 +105,9 @@ public class FileServerUtils {
       String mimeType, String subDirectory) {
     StringBuilder url = new StringBuilder();
     String newLogicalName = URLEncoder.encodePathSegment(logicalName);
-    url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
-        "?ComponentId=").append(componentId).append("&SourceFile=").append(physicalName).append(
-        "&MimeType=").append(mimeType).append("&Directory=").append(subDirectory);
+    url.append(getApplicationContext()).append(FILE_SERVER).append(newLogicalName).append(
+        COMPONENT_ID).append(componentId).append(SOURCE_FILE).append(physicalName).append(
+        MIME_TYPE).append(mimeType).append(DIRECTORY).append(subDirectory);
     return url.toString();
   }
 
@@ -107,8 +116,8 @@ public class FileServerUtils {
     StringBuilder url = new StringBuilder();
     String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/OnlineFileServer/").append(newLogicalName).
-        append("?ComponentId=").append(componentId).append("&SourceFile=").append(physicalName).
-        append("&MimeType=").append(mimeType).append("&Directory=").append(subDirectory);
+        append(COMPONENT_ID).append(componentId).append(SOURCE_FILE).append(physicalName).
+        append(MIME_TYPE).append(mimeType).append(DIRECTORY).append(subDirectory);
     return url.toString();
   }
 
@@ -145,29 +154,29 @@ public class FileServerUtils {
    * @return the URL of the image with the specified size.
    */
   public static String getImageURL(String originalImageURL, String sizeParams) {
-    String resizedImagePath = originalImageURL;
-    String size = sizeParams;
-    if (StringUtil.isDefined(originalImageURL) && StringUtil.isDefined(sizeParams)) {
-      if (sizeParams.startsWith("image.size.")) {
-        size = lookSettings.getString(sizeParams);
-      }
-      if (StringUtil.isDefined(size) && size.length() > 1 && size.contains("x")) {
-        // image handled by the old FileServer service
-        if (originalImageURL.contains("/FileServer/") ||
-            originalImageURL.contains("/GalleryInWysiwyg/")) {
-          resizedImagePath = originalImageURL + "&Size=" + size;
-        } else {
-          int lastSepIndex = originalImageURL.lastIndexOf("/");
-          if (originalImageURL.contains("/attached_file/")) {
-            // asks for an image attached to a contribution (a form, a WYSIWYG, ...)
-            size = "size/" + size;
-            lastSepIndex = originalImageURL.substring(0, lastSepIndex).lastIndexOf("/");
+    if (StringUtil.isNotDefined(originalImageURL) || StringUtil.isNotDefined(sizeParams)) {
+      return originalImageURL;
+    }
 
-          }
-          resizedImagePath = (lastSepIndex == -1 ? size + "/" + originalImageURL :
-              originalImageURL.substring(0, lastSepIndex + 1) + size +
-                  originalImageURL.substring(lastSepIndex));
+    String resizedImagePath = originalImageURL;
+    String size = sizeParams.startsWith("image.size.") ? lookSettings.getString(sizeParams) :
+        sizeParams;
+    if (StringUtil.isDefined(size) && size.length() > 1 && size.contains("x")) {
+      // image handled by the old FileServer service
+      if (originalImageURL.contains(FILE_SERVER) ||
+          originalImageURL.contains("/GalleryInWysiwyg/")) {
+        resizedImagePath = originalImageURL + "&Size=" + size;
+      } else {
+        int lastSepIndex = originalImageURL.lastIndexOf(URL_PATH_SEP);
+        if (originalImageURL.contains("/attached_file/")) {
+          // asks for an image attached to a contribution (a form, a WYSIWYG, ...)
+          size = "size/" + size;
+          lastSepIndex = originalImageURL.substring(0, lastSepIndex).lastIndexOf(URL_PATH_SEP);
+
         }
+        resizedImagePath = (lastSepIndex == -1 ? size + URL_PATH_SEP + originalImageURL :
+            originalImageURL.substring(0, lastSepIndex + 1) + size +
+                originalImageURL.substring(lastSepIndex));
       }
     }
     return resizedImagePath;
@@ -183,24 +192,6 @@ public class FileServerUtils {
     String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/SilverCrawlerFileServer/").append(newLogicalName).append(
         "?SourceFile=").append(physicalName).append("&TypeUpload=link&ComponentId=").append(componentId);
-    return url.toString();
-  }
-
-  public static String getUrl(String componentId, String userId, String logicalName,
-      String physicalName, String mimeType, boolean archiveIt, int pubId, int nodeId,
-      String subDirectory) {
-    StringBuilder url = new StringBuilder();
-    char archiveItStr = 'N';
-    if (archiveIt) {
-      archiveItStr = 'Y';
-    }
-    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
-    url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
-            "?ComponentId=").append(componentId).append("&UserId=").append(userId).
-        append("&SourceFile=").append(URLEncoder.encodePathParamValue(physicalName)).append(
-            "&MimeType=").append(mimeType).append("&ArchiveIt=").append(archiveItStr).append(
-                "&PubId=").
-        append(pubId).append("&NodeId=").append(nodeId).append("&Directory=").append(subDirectory);
     return url.toString();
   }
 
@@ -241,7 +232,7 @@ public class FileServerUtils {
 
   public static String getApplicationContext() {
     String applicationContext = URLUtil.getApplicationURL();
-    if (applicationContext.endsWith("/")) {
+    if (applicationContext.endsWith(FileServerUtils.URL_PATH_SEP)) {
       applicationContext = applicationContext.substring(0, applicationContext.length() - 1);
     }
     return applicationContext;

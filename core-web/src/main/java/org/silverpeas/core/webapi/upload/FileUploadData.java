@@ -24,14 +24,13 @@
 package org.silverpeas.core.webapi.upload;
 
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
 
@@ -85,10 +84,8 @@ public class FileUploadData {
    * Initializes an instance from the request directly. (OCTET STREAM UPLOAD)
    * @param request the current http request.
    * @return a new initialized instance.
-   * @throws UnsupportedEncodingException on encoding error.
    */
-  public static FileUploadData from(HttpServletRequest request)
-      throws UnsupportedEncodingException {
+  public static FileUploadData from(HttpServletRequest request) {
     String brutFullPath = request.getHeader(X_FULL_PATH);
     if (StringUtil.isNotDefined(brutFullPath)) {
       brutFullPath = "";
