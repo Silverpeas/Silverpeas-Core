@@ -691,6 +691,7 @@ public class JobStartPagePeasRequestRouter extends
       switch (destination) {
         case "/jobStartPagePeas/jsp/jobStartPageNav.jsp":
           request.setAttribute(CURRENT_SPACE_ID_ATTR, jobStartPageSC.getSpaceId());
+          request.setAttribute("CurrentSubSpaceId", jobStartPageSC.getSubSpaceId());
           break;
         case "/jobStartPagePeas/jsp/jobStartPageNav.json":
           destination = sendJson(NavBarJsonEncoder.with(jobStartPageSC).encode());
@@ -754,6 +755,8 @@ public class JobStartPagePeasRequestRouter extends
           request.setAttribute("ProfileHelp", profileHelp);
 
           request.setAttribute(SCOPE_ATTR, jobStartPageSC.getScope());
+          break;
+        default:
           break;
       }
     } catch (Exception e) {
