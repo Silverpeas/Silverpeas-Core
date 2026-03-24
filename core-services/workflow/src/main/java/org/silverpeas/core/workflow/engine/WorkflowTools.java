@@ -64,29 +64,39 @@ class WorkflowTools {
 
     // Check for actions "redone"
     checkReDoStates(instance, event, states, resolvedStateName);
+    SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - checkReDoStates ok");
 
     // Check for questions with no response sent from the resolved state
     checkQuestions(instance, resolvedStateName);
+    SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - checkQuestions ok");
 
     // Compute eligibility for states
     states = setEligibleStates(instance, oldActiveStates, eligibleStates);
+    SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - states {0}",states);
 
     try {
       // Saving data of step and process instance
+      SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - event {0} ",event);
       if (event.getDataRecord() != null) {
+        SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - event.getDataRecord() {0} ",event.getDataRecord());
         instance.saveActionRecord(step, event.getDataRecord());
       }
+      SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - saveActionRecord OK");
 
       // removes eligibility of resolved state
       // and removes the resolved state from active state list
       if (unactivateResolvedState && event.getResolvedState() != null) {
         eligibleStates.remove(event.getResolvedState().getName());
+        SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - eligibleStates.remove OK");
       }
 
       // Retrieves action's consequences
       Action action = model.getAction(event.getActionName());
+      SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - action {0}",action);
       Consequences consequences = action.getConsequences();
+      SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - consequences {0}",consequences);
       List<Consequence> matchingConsequences = getMatchingConsequences(instance, consequences);
+      SilverLogger.getLogger(WorkflowTools.class).info("WorkflowTools.processAction() - matchingConsequences {0}",matchingConsequences);
       for (Consequence consequence : matchingConsequences) {
         // Find first consequence according to comparisons
         Objects.requireNonNull(consequence);
