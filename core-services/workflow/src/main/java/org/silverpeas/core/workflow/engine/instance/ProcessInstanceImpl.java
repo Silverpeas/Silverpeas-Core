@@ -817,12 +817,17 @@ public class ProcessInstanceImpl
     // special case : wysiwyg, check if data has been put into file and not kept in value field
     try {
       // first update data folder
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - actionData {0}",actionData.toString());
       checkWysiwygData(step, actionData);
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - checkWysiwygData OK");
       updateFolder(actionData);
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - updateFolder OK");
 
       // then save action record
       updateWysiwygDataWithStepId(step, actionData);
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - updateWysiwygDataWithStepId OK");
       step.setActionRecord(actionData);
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - step.setActionRecord OK");
     } catch (FormException e) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FORM_CREATE_FAILED",
           INSTANCEID_PARAM + getId(), e);
@@ -839,18 +844,26 @@ public class ProcessInstanceImpl
    */
   private void checkWysiwygData(HistoryStep step, DataRecord actionData)
       throws WorkflowException, FormException {
+
     String actionName = step.getAction();
+    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - actionName {0}",actionName);
     Form form = getProcessModel().getActionForm(actionName);
+    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - Form {0}",form);
     RecordTemplate template = form.toRecordTemplate(step.getUserRoleName(), "");
+    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - template {0}",template);
     String[] fieldNames = actionData.getFieldNames();
+    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - fieldNames: {0} Longueur: {1]",fieldNames, fieldNames.length);
 
     for (String fieldName : fieldNames) {
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - Field {0}",fieldName);
       Field updatedField = actionData.getField(fieldName);
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - FieldType {0}",updatedField.getTypeName());
       if (updatedField == null) {
         SilverLogger.getLogger(this)
             .error("Cannot retrieve field {0} for instance id {1}", fieldName, getId());
       }
       FieldTemplate tmpl = template.getFieldTemplate(fieldName);
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - FieldTemplate {0}",tmpl);
 
       if ("wysiwyg".equals(tmpl.getDisplayerName()) && updatedField != null &&
           !updatedField.isNull() &&

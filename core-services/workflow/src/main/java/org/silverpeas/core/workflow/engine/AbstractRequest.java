@@ -109,16 +109,18 @@ public abstract class AbstractRequest
       // Do workflow stuff
       try {
         boolean removeInstance = processEvent(processInstance, step.getId());
+        SilverLogger.getLogger(this).info("processProcessInstance() - removeInstance = {0}",removeInstance);
         if (removeInstance) {
           // remove data associated to forms and tasks
           ((ProcessInstanceManagerImpl) instanceManager).removeProcessInstance(id);
         } else {
+          SilverLogger.getLogger(this).info("processProcessInstance() - save");
           getProcessInstanceRepository().save(processInstance);
         }
       } catch (WorkflowException we) {
+        SilverLogger.getLogger(this).error("processProcessInstance() - Error",we);
         saveError(processInstance, event, we);
-
-        throw new WorkflowException("WorkflowEngineThread.process", we.getMessage(), we);
+      throw new WorkflowException("WorkflowEngineThread.process", we.getMessage(), we);
       }
 
       return null;
