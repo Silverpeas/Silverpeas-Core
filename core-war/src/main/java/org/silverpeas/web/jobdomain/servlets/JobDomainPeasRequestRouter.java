@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.User;
@@ -777,6 +778,7 @@ public class JobDomainPeasRequestRouter extends
           DomainDriver domainDriver =
               domainDriverManager.getDomainDriver(jobDomainSC.getTargetDomain().getId());
           UserFull newUser = new UserFull(domainDriver);
+          newUser.setAccessLevel(UserAccessLevel.USER); // user by default
           newUser.setPasswordAvailable(true);
 
           request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
