@@ -248,7 +248,6 @@ public class NavBarManager {
     if (currentSpaceId == null) {
       return emptyList();
     }
-    // to avoid the iteration of the set while being modified
     return unmodifiableSortedSet(subSpaces.getSorted());
   }
 
@@ -259,10 +258,10 @@ public class NavBarManager {
    *
    * @param operation the operation to apply on each subspace of the current space.
    */
-  public void applyOnAvailableSubSpaces(Consumer<Stream<DisplaySorted>> operation) {
+  public void applyOnAvailableSubSpaces(Consumer<Collection<DisplaySorted>> operation) {
     var subspaces = getAvailableSubSpaces();
     synchronized (subspaces) {
-      operation.accept(subspaces.stream());
+      operation.accept(subspaces);
     }
   }
 

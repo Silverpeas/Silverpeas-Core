@@ -155,10 +155,13 @@ public class NavBarJsonEncoder {
         controller.getSpaceId());
     controller.applyOnSubSpaces(subspaces ->
         jsonObject.putJSONArray("spaces", a -> {
-          subspaces.filter(s -> s.getParentId().equals(parentId))
-              .filter(DisplaySorted::isVisible)
-              .map(s -> Pair.of(s, false))
-              .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
+          // Java stream is here avoided because there is unexpected ConcurrentModificationException
+          // while browsing the subspaces!
+          for (var subspace: subspaces) {
+            if (subspace.getParentId().equals(parentId) && subspace.isVisible()) {
+              a.addJSONObject(o -> encodeSpace(Pair.of(subspace, false), o));
+            }
+          }
           return a;
         }));
   }

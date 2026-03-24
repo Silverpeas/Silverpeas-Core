@@ -238,7 +238,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
    * Silverpeas.
    * @param operation the operation to apply.
    */
-  public void applyOnSubSpaces(Consumer<Stream<DisplaySorted>> operation) {
+  public void applyOnSubSpaces(Consumer<Collection<DisplaySorted>> operation) {
     m_NavBarMgr.applyOnAvailableSubSpaces(operation);
   }
 
