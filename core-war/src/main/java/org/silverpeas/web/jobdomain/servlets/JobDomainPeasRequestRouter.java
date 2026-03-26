@@ -24,6 +24,7 @@
 package org.silverpeas.web.jobdomain.servlets;
 
 import org.apache.commons.fileupload.FileItem;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
@@ -41,7 +42,6 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.util.Mutable;
@@ -56,7 +56,6 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.web.jobdomain.JobDomainPeasException;
-import org.silverpeas.web.jobdomain.JobDomainSettings;
 import org.silverpeas.web.jobdomain.UserRequestData;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
@@ -524,17 +523,17 @@ public class JobDomainPeasRequestRouter extends
               jobDomainSC.checkGroupAccessGranted(parentGroupId, false);
             }
             boolean refresh = jobDomainSC.createGroup(parentGroupId,
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter(GROUP_NAME_PARAM)),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupRule")));
+                Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)),
+                Encode.forHtml(request.getParameter("groupDescription")),
+                Encode.forHtml(request.getParameter("groupRule")));
             bHaveToRefreshDomain.set(refresh);
           });
         } else if (function.startsWith("groupUpdate")) {
           jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
             boolean refresh = jobDomainSC.modifyGroup(groupId,
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter(GROUP_NAME_PARAM)),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupRule")));
+                Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)),
+                Encode.forHtml(request.getParameter("groupDescription")),
+                Encode.forHtml(request.getParameter("groupRule")));
             bHaveToRefreshDomain.set(refresh);
           });
         } else if (function.startsWith("groupAddRemoveUsers")) {
@@ -568,8 +567,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupImport")) {
           jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () ->
                   bHaveToRefreshDomain.set(jobDomainSC.importGroup(
-                      WebEncodeHelper.htmlStringToJavaString(
-                          request.getParameter(GROUP_NAME_PARAM)))));
+                      Encode.forHtml(request.getParameter(GROUP_NAME_PARAM)))));
         } else if ("groupManagersView".equals(function)) {
           List<List<?>> groupManagers = jobDomainSC.getGroupManagers();
           request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
@@ -687,9 +685,9 @@ public class JobDomainPeasRequestRouter extends
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_SQL_CREATE_FCT)) {
             String newDomainId = jobDomainSC.createSQLDomain(
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter(DOMAIN_NAME_PARAM)),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter(DOMAIN_DESCRIPTION_PARAM)),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter(SILVERPEAS_SERVER_URL_PARAM)),
+                Encode.forHtml(request.getParameter(DOMAIN_NAME_PARAM)),
+                Encode.forHtml(request.getParameter(DOMAIN_DESCRIPTION_PARAM)),
+                Encode.forHtml(request.getParameter(SILVERPEAS_SERVER_URL_PARAM)),
                 request.getParameter(USER_DOMAIN_QUOTA_MAX_COUNT_PARAM));
             request.setAttribute(IDDOMAIN_PARAM, newDomainId);
             destination = GO_BACK_DEST;
@@ -703,9 +701,9 @@ public class JobDomainPeasRequestRouter extends
           } else if (function.startsWith("domainSQLModify")) {
             jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
               String modifiedDomainId = jobDomainSC.modifySQLDomain(
-                  WebEncodeHelper.htmlStringToJavaString(request.getParameter(DOMAIN_NAME_PARAM)),
-                  WebEncodeHelper.htmlStringToJavaString(request.getParameter(DOMAIN_DESCRIPTION_PARAM)),
-                  WebEncodeHelper.htmlStringToJavaString(request.getParameter(SILVERPEAS_SERVER_URL_PARAM)),
+                  Encode.forHtml(request.getParameter(DOMAIN_NAME_PARAM)),
+                  Encode.forHtml(request.getParameter(DOMAIN_DESCRIPTION_PARAM)),
+                  Encode.forHtml(request.getParameter(SILVERPEAS_SERVER_URL_PARAM)),
                   request.getParameter(USER_DOMAIN_QUOTA_MAX_COUNT_PARAM));
               request.setAttribute(IDDOMAIN_PARAM, modifiedDomainId);
             });
@@ -808,6 +806,7 @@ public class JobDomainPeasRequestRouter extends
                   jobDomainSC.getString("JDP.userAdd") + "..."));
           request.setAttribute(MIN_LENGTH_LOGIN_ATTR, jobDomainSC.getMinLengthLogin());
           request.setAttribute(CURRENT_USER_ATTR, jobDomainSC.getUserDetail());
+          destination = USER_CREATE_DEST;
         } else if (function.startsWith("displayUsersCsvImport")) {
           request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
@@ -824,7 +823,6 @@ public class JobDomainPeasRequestRouter extends
                   jobDomainSC.getString("JDP.userUpdate") + "..."));
           request.setAttribute(MIN_LENGTH_LOGIN_ATTR, jobDomainSC.getMinLengthLogin());
           request.setAttribute(CURRENT_USER_ATTR, jobDomainSC.getUserDetail());
-
           destination = USER_CREATE_DEST;
         } else if (function.startsWith("displayUserMS")) {
           request.setAttribute(ADMIN_TOKEN,  jobDomainSC.generateToken());
@@ -835,7 +833,6 @@ public class JobDomainPeasRequestRouter extends
                   jobDomainSC.getString("JDP.userUpdate") + "..."));
           request.setAttribute(MIN_LENGTH_LOGIN_ATTR, jobDomainSC.getMinLengthLogin());
           request.setAttribute(CURRENT_USER_ATTR, jobDomainSC.getUserDetail());
-
           destination = USER_CREATE_DEST;
         } else if (function.startsWith(DISPLAY_USER_IMPORT_FCT)) {
           request.setAttribute(ADMIN_TOKEN,  jobDomainSC.generateToken());
@@ -1182,14 +1179,12 @@ public class JobDomainPeasRequestRouter extends
   }
 
   private Domain request2Domain(HttpRequest request) {
-    String name = WebEncodeHelper.htmlStringToJavaString(request.getParameter(DOMAIN_NAME_PARAM));
-    String desc = WebEncodeHelper.htmlStringToJavaString(request.getParameter(
-        DOMAIN_DESCRIPTION_PARAM));
-    String driver = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver"));
-    String properties = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties"));
-    String authent = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainAuthentication"));
-    String url = WebEncodeHelper.htmlStringToJavaString(request.getParameter(
-        SILVERPEAS_SERVER_URL_PARAM));
+    String name = Encode.forHtml(request.getParameter(DOMAIN_NAME_PARAM));
+    String desc = Encode.forHtml(request.getParameter(DOMAIN_DESCRIPTION_PARAM));
+    String driver = Encode.forHtml(request.getParameter("domainDriver"));
+    String properties = Encode.forHtml(request.getParameter("domainProperties"));
+    String authent = Encode.forHtml(request.getParameter("domainAuthentication"));
+    String url = Encode.forHtml(request.getParameter(SILVERPEAS_SERVER_URL_PARAM));
 
     Domain domain = new Domain();
     domain.setName(name);
