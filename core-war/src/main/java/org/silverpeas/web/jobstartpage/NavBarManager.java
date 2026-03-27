@@ -154,7 +154,7 @@ public class NavBarManager {
    *
    * @return an unmodifiable collection of spaces.
    */
-  private Collection<DisplaySorted> getAvailableSpaces() {
+  private SortedSet<DisplaySorted> getAvailableSpaces() {
     return spaces.getSorted();
   }
 
@@ -165,10 +165,13 @@ public class NavBarManager {
    *
    * @param operation the operation to apply on each root space of Silverpeas.
    */
-  public void applyOnAvailableRootSpaces(Consumer<Stream<DisplaySorted>> operation) {
+  public void applyOnAvailableRootSpaces(Consumer<Collection<DisplaySorted>> operation) {
+    TreeSet<DisplaySorted> rootSpacesCopy;
     var rootSpaces = getAvailableSpaces();
     synchronized (rootSpaces) {
-      operation.accept(rootSpaces.stream());
+      // the copy construction use iterators, then the original tree set has to be synchronized
+      rootSpacesCopy = new TreeSet<>(rootSpaces);
+      operation.accept(rootSpacesCopy);
     }
   }
 
@@ -212,13 +215,13 @@ public class NavBarManager {
    * Gets the available component instances in the current space of Silverpeas. All access to the
    * returned collection must be to be synchronized.
    *
-   * @return an unmodifiable collection of component instances.
+   * @return a sorted set with the component instances in the current space.
    */
-  public Collection<DisplaySorted> getAvailableSpaceComponents() {
+  private SortedSet<DisplaySorted> getAvailableSpaceComponents() {
     if (currentSpaceId == null) {
-      return emptyList();
+      return emptySortedSet();
     }
-    return unmodifiableSortedSet(spaceComponents.getSorted());
+    return spaceComponents.getSorted();
   }
 
   /**
@@ -228,10 +231,13 @@ public class NavBarManager {
    *
    * @param operation the operation to apply on each component instances of Silverpeas.
    */
-  public void applyOnAvailableSpaceComponents(Consumer<Stream<DisplaySorted>> operation) {
+  public void applyOnAvailableSpaceComponents(Consumer<Collection<DisplaySorted>> operation) {
+    SortedSet<DisplaySorted> componentsCopy;
     var components = getAvailableSpaceComponents();
     synchronized (components) {
-      operation.accept(components.stream());
+      // the copy construction use iterators, then the original tree set has to be synchronized
+      componentsCopy = new TreeSet<>(components);
+      operation.accept(componentsCopy);
     }
   }
 
@@ -242,14 +248,13 @@ public class NavBarManager {
    * Gets the available spaces children of the current space of Silverpeas. All access to the
    * returned collection must be to be synchronized.
    *
-   * @return an unmodifiable collection of spaces.
+   * @return a sorted set with the subspaces of the current space.
    */
-  private Collection<DisplaySorted> getAvailableSubSpaces() {
+  private SortedSet<DisplaySorted> getAvailableSubSpaces() {
     if (currentSpaceId == null) {
-      return emptyList();
+      return emptySortedSet();
     }
-    // to avoid the iteration of the set while being modified
-    return unmodifiableSortedSet(subSpaces.getSorted());
+    return subSpaces.getSorted();
   }
 
   /**
@@ -259,11 +264,14 @@ public class NavBarManager {
    *
    * @param operation the operation to apply on each subspace of the current space.
    */
-  public void applyOnAvailableSubSpaces(Consumer<Stream<DisplaySorted>> operation) {
+  public void applyOnAvailableSubSpaces(Consumer<Collection<DisplaySorted>> operation) {
+    TreeSet<DisplaySorted> subspacesCopy;
     var subspaces = getAvailableSubSpaces();
     synchronized (subspaces) {
-      operation.accept(subspaces.stream());
+      // the copy construction use iterators, then the original tree set has to be synchronized
+      subspacesCopy = new TreeSet<>(subspaces);
     }
+    operation.accept(subspacesCopy);
   }
 
   public String getCurrentSubSpaceId() {
@@ -310,10 +318,13 @@ public class NavBarManager {
    *
    * @param operation the operation to apply on each component instances of Silverpeas.
    */
-  public void applyOnAvailableSubspaceComponents(Consumer<Stream<DisplaySorted>> operation) {
+  public void applyOnAvailableSubspaceComponents(Consumer<Collection<DisplaySorted>> operation) {
+    TreeSet<DisplaySorted> subspaceComponentsCopy;
     var components = getAvailableSubSpaceComponents();
     synchronized (components) {
-      operation.accept(components.stream());
+      // the copy construction use iterators, then the original tree set has to be synchronized
+      subspaceComponentsCopy = new TreeSet<>(components);
+      operation.accept(subspaceComponentsCopy);
     }
   }
 

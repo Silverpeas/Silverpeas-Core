@@ -68,7 +68,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -85,16 +84,16 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
 
   private final AdminController adminController;
   private int scope = SCOPE_BACKOFFICE;
-  private final NavBarManager m_NavBarMgr = new NavBarManager();
-  private String m_ManagedSpaceId = null;
-  private boolean m_isManagedSpaceRoot = true;
-  private Selection selection = null;
-  private String m_ManagedInstanceId = null;
-  private ProfileInst m_ManagedProfile = null;
-  private ProfileInst m_ManagedInheritedProfile = null;
+  private final transient NavBarManager navBarManager = new NavBarManager();
+  private String managedSpaceId = null;
+  private boolean isManagedSpaceRoot = true;
+  private transient Selection selection = null;
+  private String managedInstanceId = null;
+  private ProfileInst managedProfile = null;
+  private ProfileInst managedInheritedProfile = null;
   // Space sort buffers
-  private SpaceInst[] m_BrothersSpaces = new SpaceInst[0];
-  private ComponentInst[] m_BrothersComponents = new ComponentInst[0];
+  private SpaceInst[] siblingSpaces = new SpaceInst[0];
+  private ComponentInst[] siblingComponents = new ComponentInst[0];
   private final CommunityFactory communityFactory;
 
   public JobStartPagePeasSessionController(MainSessionController mainSessionCtrl,
@@ -126,8 +125,8 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
 
   // Init at first entry
   public void init(final boolean force) {
-    if (force || !m_NavBarMgr.hasBeenInitialized()) {
-      m_NavBarMgr.initWithUser(this, getUserDetail());
+    if (force || !navBarManager.hasBeenInitialized()) {
+      navBarManager.initWithUser(this, getUserDetail());
     }
   }
 
@@ -147,13 +146,13 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   public void setManagedSpaceId(String sId, boolean isManagedSpaceRoot) {
     String spaceId = getShortSpaceId(sId);
     checkAccessGranted(spaceId, null, true);
-    m_ManagedSpaceId = spaceId;
-    m_isManagedSpaceRoot = isManagedSpaceRoot;
+    managedSpaceId = spaceId;
+    this.isManagedSpaceRoot = isManagedSpaceRoot;
 
   }
 
   public String getManagedSpaceId() {
-    return m_ManagedSpaceId;
+    return managedSpaceId;
   }
 
   public DisplaySorted getManagedSpace() {
@@ -161,16 +160,16 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   public DisplaySorted getManagedSpace(String spaceId) {
-    return m_NavBarMgr.getSpace(spaceId);
+    return navBarManager.getSpace(spaceId);
   }
 
   public boolean isManagedSpaceRoot() {
-    return m_isManagedSpaceRoot;
+    return isManagedSpaceRoot;
   }
 
   // methods set
   public void setSubSpaceId(String subSpaceId) {
-    if (m_NavBarMgr.setCurrentSubSpace(subSpaceId)) {
+    if (navBarManager.setCurrentSubSpace(subSpaceId)) {
       setManagedSpaceId(subSpaceId, false);
     } else {
       setManagedSpaceId(getSpaceId(), true);
@@ -187,7 +186,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
         spaceId = path.get(0).getId();
       }
     }
-    if (m_NavBarMgr.setCurrentSpace(spaceId)) {
+    if (navBarManager.setCurrentSpace(spaceId)) {
       setManagedSpaceId(spaceId, true);
     } else {
       setManagedSpaceId(null, true);
@@ -209,15 +208,15 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
 
   @Override
   public String getSpaceId() {
-    return m_NavBarMgr.getCurrentSpaceId();
+    return navBarManager.getCurrentSpaceId();
   }
 
   /**
    * Applies the specified operation on the stream of root spaces in Silverpeas.
    * @param operation the operation to apply.
    */
-  public void applyOnRootSpaces(Consumer<Stream<DisplaySorted>> operation) {
-    m_NavBarMgr.applyOnAvailableRootSpaces(operation);
+  public void applyOnRootSpaces(Consumer<Collection<DisplaySorted>> operation) {
+    navBarManager.applyOnAvailableRootSpaces(operation);
   }
 
   /**
@@ -225,16 +224,16 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
    * space in Silverpeas.
    * @param operation the operation to apply.
    */
-  public void applyOnSpaceComponents(Consumer<Stream<DisplaySorted>> operation) {
+  public void applyOnSpaceComponents(Consumer<Collection<DisplaySorted>> operation) {
     if (isDefined(getSubSpaceId())) {
-      m_NavBarMgr.applyOnAvailableSubspaceComponents(operation);
+      navBarManager.applyOnAvailableSubspaceComponents(operation);
     } else {
-      m_NavBarMgr.applyOnAvailableSpaceComponents(operation);
+      navBarManager.applyOnAvailableSpaceComponents(operation);
     }
   }
 
   public String getSubSpaceId() {
-    return m_NavBarMgr.getCurrentSubSpaceId();
+    return navBarManager.getCurrentSubSpaceId();
   }
 
   /**
@@ -242,8 +241,8 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
    * Silverpeas.
    * @param operation the operation to apply.
    */
-  public void applyOnSubSpaces(Consumer<Stream<DisplaySorted>> operation) {
-    m_NavBarMgr.applyOnAvailableSubSpaces(operation);
+  public void applyOnSubSpaces(Consumer<Collection<DisplaySorted>> operation) {
+    navBarManager.applyOnAvailableSubSpaces(operation);
   }
 
   public void setSpaceMaintenance(String spaceId, boolean mode) {
@@ -251,12 +250,12 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   public void refreshCurrentSpaceCache() {
-    m_NavBarMgr.resetSpaceCache(getManagedSpaceId());
+    navBarManager.resetSpaceCache(getManagedSpaceId());
   }
 
   public void setManagedInstanceId(String sId) {
     checkAccessGranted(null, sId, true);
-    m_ManagedInstanceId = sId;
+    managedInstanceId = sId;
     setScope(SCOPE_BACKOFFICE);
   }
 
@@ -266,22 +265,22 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   public String getManagedInstanceId() {
-    return m_ManagedInstanceId;
+    return managedInstanceId;
   }
 
   public void setManagedProfile(ProfileInst sProfile) {
-    m_ManagedProfile = sProfile;
+    managedProfile = sProfile;
 
     if (sProfile != null) {
-      m_ManagedInheritedProfile = adminController.getComponentInst(
+      managedInheritedProfile = adminController.getComponentInst(
           getManagedInstanceId()).getInheritedProfileInst(sProfile.getName());
     } else {
-      m_ManagedInheritedProfile = null;
+      managedInheritedProfile = null;
     }
   }
 
   public ProfileInst getManagedProfile() {
-    return m_ManagedProfile;
+    return managedProfile;
   }
 
   public String getManagedProfileHelp(String componentName) {
@@ -291,7 +290,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   }
 
   public ProfileInst getManagedInheritedProfile() {
-    return m_ManagedInheritedProfile;
+    return managedInheritedProfile;
   }
 
   public Boolean isProfileEditable() {
@@ -339,18 +338,18 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
       return new SpaceInst[0];
     }
     if (isNew) {
-      m_BrothersSpaces = new SpaceInst[sids.length];
+      siblingSpaces = new SpaceInst[sids.length];
     } else {
-      m_BrothersSpaces = new SpaceInst[sids.length - 1];
+      siblingSpaces = new SpaceInst[sids.length - 1];
     }
     j = 0;
     for (String sid : sids) {
       if (isNew || !sid.equals(currentSpaceId)) {
-        m_BrothersSpaces[j++] = adminController.getSpaceInstById(sid);
+        siblingSpaces[j++] = adminController.getSpaceInstById(sid);
       }
     }
-    Arrays.sort(m_BrothersSpaces, Comparator.comparing(SpaceInst::getOrderNum));
-    return m_BrothersSpaces;
+    Arrays.sort(siblingSpaces, Comparator.comparing(SpaceInst::getOrderNum));
+    return siblingSpaces;
   }
 
   public void setSpacePlace(String idSpaceBefore) {
@@ -358,15 +357,15 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     int i;
     SpaceInst theSpace = getSpaceInstById();
 
-    for (i = 0; i < m_BrothersSpaces.length; i++) {
-      if (idSpaceBefore.equals(m_BrothersSpaces[i].getId())) {
+    for (i = 0; i < siblingSpaces.length; i++) {
+      if (idSpaceBefore.equals(siblingSpaces[i].getId())) {
         theSpace.setOrderNum(orderNum);
         adminController.updateSpaceOrderNum(theSpace.getId(), orderNum);
         orderNum++;
       }
-      if (m_BrothersSpaces[i].getOrderNum() != orderNum) {
-        m_BrothersSpaces[i].setOrderNum(orderNum);
-        adminController.updateSpaceOrderNum(m_BrothersSpaces[i].getId(), orderNum);
+      if (siblingSpaces[i].getOrderNum() != orderNum) {
+        siblingSpaces[i].setOrderNum(orderNum);
+        adminController.updateSpaceOrderNum(siblingSpaces[i].getId(), orderNum);
       }
       orderNum++;
     }
@@ -375,9 +374,9 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
       adminController.updateSpaceOrderNum(theSpace.getId(), orderNum);
     }
     if (!theSpace.isRoot()) {
-      m_NavBarMgr.resetSpaceCache(theSpace.getDomainFatherId());
+      navBarManager.resetSpaceCache(theSpace.getDomainFatherId());
     } else {
-      m_NavBarMgr.resetAllCache();
+      navBarManager.resetAllCache();
     }
   }
 
@@ -441,7 +440,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     String res = adminController.addSpaceInst(spaceInst);
     if (isDefined(res)) {
       // Finally refresh the cache
-      m_NavBarMgr.addSpaceInCache(res);
+      navBarManager.addSpaceInCache(res);
     }
     return res;
   }
@@ -620,7 +619,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
       String res = adminController.deleteSpaceInstById(getUserDetail(), spaceint1.getId(),
           definitiveDelete);
 
-      m_NavBarMgr.removeSpaceInCache(res);
+      navBarManager.removeSpaceInCache(res);
       if (isManagedSpaceRoot()) {
         setManagedSpaceId(null, true);
       } else {
@@ -743,7 +742,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     adminController.restoreSpaceFromBasket(spaceId);
 
     // Display restored space in navBar
-    m_NavBarMgr.resetAllCache();
+    navBarManager.resetAllCache();
   }
 
   public void deleteSpaceInBin(String spaceId) {
@@ -767,24 +766,24 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
       return new ComponentInst[0];
     }
     if (isNew) {
-      m_BrothersComponents = new ComponentInst[arc.size()];
+      siblingComponents = new ComponentInst[arc.size()];
     } else {
-      m_BrothersComponents = new ComponentInst[arc.size() - 1];
+      siblingComponents = new ComponentInst[arc.size() - 1];
     }
     int j = 0;
     for (ComponentInst theComponent : arc) {
       if (isNew || !theComponent.getId().equals(getManagedInstanceId())) {
-        m_BrothersComponents[j++] = theComponent;
+        siblingComponents[j++] = theComponent;
       }
     }
-    Arrays.sort(m_BrothersComponents, Comparator.comparing(ComponentInst::getOrderNum));
-    return m_BrothersComponents;
+    Arrays.sort(siblingComponents, Comparator.comparing(ComponentInst::getOrderNum));
+    return siblingComponents;
   }
 
   public void setComponentPlace(String idComponentBefore) {
     adminController
-        .setComponentPlace(getManagedInstanceId(), idComponentBefore, m_BrothersComponents);
-    m_NavBarMgr.resetSpaceCache(getManagedSpaceId());
+        .setComponentPlace(getManagedInstanceId(), idComponentBefore, siblingComponents);
+    navBarManager.resetSpaceCache(getManagedSpaceId());
   }
 
   public List<LocalizedWAComponent> getAllLocalizedComponents() {
@@ -1127,10 +1126,10 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
         }
       }
       if (refreshCache) {
-        m_NavBarMgr.resetAllCache();
+        navBarManager.resetAllCache();
       }
     } catch (Exception e) {
-      m_NavBarMgr.resetAllCache();
+      navBarManager.resetAllCache();
       throw new JobStartPagePeasException(e);
     }
     clipboardPasteDone();
@@ -1205,7 +1204,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
         if (isDefined(getManagedSpaceId())) {
           refreshCurrentSpaceCache();
         } else {
-          m_NavBarMgr.addSpaceInCache(newSpaceId);
+          navBarManager.addSpaceInCache(newSpaceId);
         }
       }
     } catch (Exception e) {
