@@ -97,7 +97,8 @@ public class NavBarJsonEncoder {
   private void encodeRootSpaces(final JSONObject jsonObject) {
     controller.applyOnRootSpaces(spaces ->
         jsonObject.putJSONArray("rootSpaces", a -> {
-          spaces.filter(DisplaySorted::isVisible)
+          spaces.stream()
+              .filter(DisplaySorted::isVisible)
               .map(s -> Pair.of(s, true))
               .forEach(p -> a.addJSONObject(so -> encodeSpace(p, so)));
           return a;
@@ -190,7 +191,8 @@ public class NavBarJsonEncoder {
   private void encodeApplications(final JSONObject jsonObject) {
     controller.applyOnSpaceComponents(applications ->
         jsonObject.putJSONArray("applications", a -> {
-          applications.filter(DisplaySorted::isVisible)
+          applications.stream()
+              .filter(DisplaySorted::isVisible)
               .forEach(i -> a.addJSONObject(so -> so
                   .put(ID, i.getId())
                   .put(NAME, i.getTypeName())
@@ -209,7 +211,8 @@ public class NavBarJsonEncoder {
     final String currentApplicationId = controller.getManagedInstanceId();
     if (isDefined(currentApplicationId)) {
       controller.applyOnSpaceComponents(applications ->
-          applications.filter(a -> currentApplicationId.equals(a.getId()))
+          applications.stream()
+              .filter(a -> currentApplicationId.equals(a.getId()))
               .findFirst()
               .ifPresent(a -> jsonObject.putJSONObject("currentApplication", o -> o
                   .put(ID, a.getId())
