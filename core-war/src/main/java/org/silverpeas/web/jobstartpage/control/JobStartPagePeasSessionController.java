@@ -176,8 +176,7 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
   public void setSpaceId(String spaceUserId) {
     String spaceId = spaceUserId;
     if (isDefined(spaceId)) {
-      List<SpaceInstLight> path =
-          ServiceProvider.getService(AdminController.class).getPathToSpace(spaceId, true);
+      List<SpaceInstLight> path = adminController.getPathToSpace(spaceId, true);
       if (path.size() > 1) {
         spaceId = path.get(0).getId();
       }
