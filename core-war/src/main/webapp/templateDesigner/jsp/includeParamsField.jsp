@@ -97,9 +97,12 @@ if (field != null) {
 
 	var errorMsg = "";
     var errorNb = 0;
+	let isSubmitting = false;
 
 	function sendData() {
+		if (isSubmitting) return false;
 		if (isCorrectForm()) {
+			isSubmitting = true;
 			<% if (field != null && !field.isUsedAsFacet()) { %>
 				if ($("#UsedAsFacet").is(':checked')) {
 					alert("<%=resource.getString("templateDesigner.facet.warning")%>");
