@@ -35,5 +35,5 @@ import java.io.InputStream;
  */
 public interface AntivirusClient {
     public String getName();
-    public AntivirusResult checkVirus(InputStream file, SettingBundle settings);
+    public AntivirusResult checkVirus(InputStream file);
 }

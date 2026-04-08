@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.antivirus;
 
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import xyz.capybara.clamav.commands.scan.result.ScanResult;
 
@@ -39,21 +40,28 @@ import java.io.InputStream;
 @Named
 @ApplicationScoped
 public class ClamavClient implements AntivirusClient {
+
+    private SettingBundle settings;
+
     @Override
     public String getName() {
         return "clamav";
     }
 
     @Override
-    public AntivirusResult checkVirus(InputStream file, SettingBundle settings) {
+    public AntivirusResult checkVirus(InputStream file) {
         AntivirusResult result = new AntivirusResult();
+
+        if (settings == null) {
+            settings = ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Antivirus");
+        }
 
         xyz.capybara.clamav.ClamavClient client = new xyz.capybara.clamav.ClamavClient(
                 settings.getString("clamav.host", "localhost"),
                 settings.getInteger("clamav.port", 3310)
         );
 
-        ScanResult scanResult = null;
+        ScanResult scanResult;
         try {
             scanResult = client.scan(file);
         } catch (Exception e) {
