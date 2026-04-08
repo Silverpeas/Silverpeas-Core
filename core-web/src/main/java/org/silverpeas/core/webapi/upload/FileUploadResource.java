@@ -182,7 +182,7 @@ public class FileUploadResource extends RESTWebService {
       FileUploadData fileUploadData = FileUploadData.from(getHttpServletRequest());
 
       // Virus scan
-      AntivirusResult scanResult = checkVirus(new ByteArrayInputStream(fileBytes), settings);
+      AntivirusResult scanResult = checkVirus(new ByteArrayInputStream(fileBytes));
       handleScanResult(scanResult, fileUploadData, settings, bundle);
 
       // Proceed with upload
@@ -231,12 +231,11 @@ public class FileUploadResource extends RESTWebService {
    * the file is safe, infected, or if an error occurred.</p>
    *
    * @param file the InputStream of the file to scan
-   * @param settings antivirus configuration settings (host, port, enable flag)
    * @return an AntivirusResult containing the scan outcome
    */
-  public AntivirusResult checkVirus(InputStream file, SettingBundle settings) {
+  public AntivirusResult checkVirus(InputStream file) {
     Optional<AntivirusClient> antivirus = antivirusProvider.getAntivirusClient();
-    return antivirus.map(a -> a.checkVirus(file, settings))
+    return antivirus.map(a -> a.checkVirus(file))
             .orElseGet(AntivirusResult::safeResult);
   }
 
