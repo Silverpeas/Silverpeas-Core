@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.webapi.antivirus;
 
-import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.io.InputStream;
 
