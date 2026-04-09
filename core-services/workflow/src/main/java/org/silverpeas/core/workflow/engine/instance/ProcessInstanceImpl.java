@@ -28,14 +28,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.DataRecordUtil;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
@@ -45,34 +38,25 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.kernel.util.Mutable;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.instance.Actor;
-import org.silverpeas.core.workflow.api.instance.HistoryStep;
+import org.silverpeas.core.workflow.api.instance.*;
 import org.silverpeas.core.workflow.api.instance.Participant;
-import org.silverpeas.core.workflow.api.instance.ProcessInstance;
-import org.silverpeas.core.workflow.api.instance.Question;
-import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.*;
+import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.datarecord.LazyProcessInstanceDataRecord;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceDataRecord;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
+import javax.persistence.*;
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -128,12 +112,12 @@ public class ProcessInstanceImpl
   @Column
   private int errorStatus = 0;
   /**
-   * Flag that indicates if this instance is in an active state for a long long time
+   * Flag that indicates if this instance is in an active state for a long time
    */
   @Column
   private int timeoutStatus = 0;
   /**
-   * the model Id
+   * the model id
    */
   @Column
   private String modelId = null;
@@ -253,7 +237,7 @@ public class ProcessInstanceImpl
     if (timeOutActions != null) {
       for (TimeOutAction timeOutAction : timeOutActions) {
         if (timeOutAction.getOrder() == order) {
-          // Check if an item has been mapped to timeoutdate
+          // Check if an item has been mapped to a timeout date
           Item dateItem = timeOutAction.getDateItem();
           if (dateItem != null) {
             timeOutDate = parseTimeOutFromDateField(dateItem);
@@ -287,7 +271,7 @@ public class ProcessInstanceImpl
     String delay = timeOutAction.getDelay();
 
     if (StringUtil.isDefined(delay) && !StringUtils.isNumeric(delay)) {
-      char unit = delay.charAt(delay.length()-1);
+      char unit = delay.charAt(delay.length() - 1);
       final int delayAsInt = Integer.parseInt(delay.substring(0, delay.length() - 1));
       switch (unit) {
         case 'm':
@@ -310,7 +294,7 @@ public class ProcessInstanceImpl
     } else {
       SilverLogger.getLogger(this)
           .warn(
-              "Bad delay format {0} in the computation of the timout date for instance id" + " {1}",
+              "Bad delay format {0} in the computation of the timeout date for instance id {1}",
               delay, getId());
     }
     return timeOutDate;
@@ -318,6 +302,7 @@ public class ProcessInstanceImpl
 
   /**
    * Adds a state active for this instance
+   *
    * @param state the name of state to be activated
    * @param timeOutDate a timeout datetime.
    */
@@ -326,7 +311,7 @@ public class ProcessInstanceImpl
     activeState.setProcessInstance(this);
     activeState.setTimeoutDate(timeOutDate);
 
-    // if this active state is add in a "question" context, it must be marked as
+    // if this active state is added in a "question" context, it must be marked as
     // in back status for a special treatment
     if (this.currentStep != null && this.currentStep.getAction().equals(QUESTION_ACTION)) {
       activeState.setBackStatus(true);
@@ -348,6 +333,7 @@ public class ProcessInstanceImpl
 
   /**
    * Set a state inactive for this instance
+   *
    * @param state The name of state to be deactivated
    */
   private void removeActiveState(String state) {
@@ -431,7 +417,8 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Add an user in the working user list
+   * Add a user in the working user list
+   *
    * @param user user to add
    * @param state name of state for which the user can make an action
    * @param role role name under which the user can make an action
@@ -441,7 +428,7 @@ public class ProcessInstanceImpl
         workingUsers);
   }
 
-  private <T extends RolePlayer>  void addRolePlayer(String actionName, User user,
+  private <T extends RolePlayer> void addRolePlayer(String actionName, User user,
       String state, String role, String groupId, Supplier<T> playerSupplier, Set<T> players) {
     T player = playerSupplier.get();
     if (user != null) {
@@ -472,7 +459,8 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Remove an user from the working user list
+   * Remove a user from the working user list
+   *
    * @param user user to remove
    * @param state name of state for which the user could make an action
    * @param role role name under which the user could make an action
@@ -483,7 +471,7 @@ public class ProcessInstanceImpl
         workingUsers);
   }
 
-  private <T extends RolePlayer>  void removeRolePlayer(String actionName,
+  private <T extends RolePlayer> void removeRolePlayer(String actionName,
       User user, String state, String role, Supplier<T> playerSupplier, Set<T> players) {
     T player = playerSupplier.get();
     if (user != null) {
@@ -519,7 +507,8 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Add an user in the interested user list
+   * Add a user in the interested user list
+   *
    * @param user user to add
    * @param state the name of state for which the user is interested
    * @param role role name under which the user is interested
@@ -542,6 +531,7 @@ public class ProcessInstanceImpl
 
   /**
    * Add a question to this instance
+   *
    * @param question the question to add
    */
   public void addQuestion(Question question) {
@@ -697,7 +687,7 @@ public class ProcessInstanceImpl
           setField(fieldName, updatedField);
         }
       } catch (FormException e) {
-        // the field i is not updated (unknown in the action context)
+        // the field is not updated (unknown in the action context)
       }
     }
   }
@@ -814,20 +804,24 @@ public class ProcessInstanceImpl
 
   @Override
   public void saveActionRecord(HistoryStep step, DataRecord actionData) throws WorkflowException {
-    // special case : wysiwyg, check if data has been put into file and not kept in value field
+    // special case: WYSIWYG, check if data has been put into file and not kept in value field
     try {
       // first update data folder
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - actionData {0}",actionData.toString());
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - actionData {0}"
+          , actionData.toString());
       checkWysiwygData(step, actionData);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - checkWysiwygData OK");
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - " +
+                                        "checkWysiwygData OK");
       updateFolder(actionData);
       SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - updateFolder OK");
 
       // then save action record
       updateWysiwygDataWithStepId(step, actionData);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - updateWysiwygDataWithStepId OK");
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - " +
+                                        "updateWysiwygDataWithStepId OK");
       step.setActionRecord(actionData);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - step.setActionRecord OK");
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.saveActionRecord() - step" +
+                                        ".setActionRecord OK");
     } catch (FormException e) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FORM_CREATE_FAILED",
           INSTANCEID_PARAM + getId(), e);
@@ -835,8 +829,9 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Parse fields values and check ones that have wysiwyg renderer. In case of new process instance,
+   * Parse fields values and check ones that have WYSIWYG renderer. In case of new process instance,
    * txt files may not have been created yet. if yes, value must start with "xmlWysiwygField_"
+   *
    * @param step a step in the history of this process instance.
    * @param actionData the data of the action related by the step.
    * @throws WorkflowException if an error occurs with the workflow.
@@ -844,27 +839,25 @@ public class ProcessInstanceImpl
    */
   private void checkWysiwygData(HistoryStep step, DataRecord actionData)
       throws WorkflowException, FormException {
-
     String actionName = step.getAction();
-    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - actionName {0}",actionName);
+    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - actionName {0}",
+        actionName);
     Form form = getProcessModel().getActionForm(actionName);
-    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - Form {0}",form);
+    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - Form {0}", form);
     RecordTemplate template = form.toRecordTemplate(step.getUserRoleName(), "");
-    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - template {0}",template);
+    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - template {0}",
+        template);
     String[] fieldNames = actionData.getFieldNames();
-    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - fieldNames: {0} Longueur: {1]",fieldNames, fieldNames.length);
+    SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - fieldNames: {0} " +
+                                      "Longueur: {1]", fieldNames, fieldNames.length);
 
     for (String fieldName : fieldNames) {
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - Field {0}",fieldName);
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - Field {0}",
+          fieldName);
       Field updatedField = actionData.getField(fieldName);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - FieldType {0}",updatedField.getTypeName());
-      if (updatedField == null) {
-        SilverLogger.getLogger(this)
-            .error("Cannot retrieve field {0} for instance id {1}", fieldName, getId());
-      }
       FieldTemplate tmpl = template.getFieldTemplate(fieldName);
-      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - FieldTemplate {0}",tmpl);
-
+      SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - FieldTemplate " +
+                                        "{0}", tmpl);
       if ("wysiwyg".equals(tmpl.getDisplayerName()) && updatedField != null &&
           !updatedField.isNull() &&
           !updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
@@ -881,8 +874,9 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Parse fields values and check ones that have wysiwyg renderer. In case of new process instance,
+   * Parse fields values and check ones that have WYSIWYG renderer. In case of new process instance,
    * txt files may not have been created yet. if yes, value must start with "xmlWysiwygField_"
+   *
    * @param step a step in the history of this process instance.
    * @param actionData the data of the action related by the step.
    * @throws WorkflowException if an error occurs with the workflow.
@@ -968,6 +962,7 @@ public class ProcessInstanceImpl
 
   /**
    * Returns the most recent step where an action was performed on the given state.
+   *
    * @param stateName name of state for which we want the most recent step
    * @return the most recent step
    */
@@ -1147,6 +1142,7 @@ public class ProcessInstanceImpl
 
   /**
    * Locks this instance for the given instance and state
+   *
    * @param state state that have to be locked
    * @param user the locking user
    */
@@ -1192,6 +1188,7 @@ public class ProcessInstanceImpl
 
   /**
    * Un-locks this instance for the given instance and state
+   *
    * @param state state that have to be un-locked
    * @param user the current locking user
    */
@@ -1255,6 +1252,7 @@ public class ProcessInstanceImpl
 
   /**
    * Set the lock Admin status of this instance
+   *
    * @param locked true is this instance is locked by admin
    */
   public void setLockedByAdmin(boolean locked) {
@@ -1395,7 +1393,8 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Add a undo step in history
+   * Add an undo step in history
+   *
    * @param action action description
    * @param params params concatenated as "param1##param2...paramN"
    */
@@ -1421,6 +1420,7 @@ public class ProcessInstanceImpl
 
   /**
    * Undo all atomic operations that had occurred for a given historyStep
+   *
    * @param historyStep the historyStep when the atomic operations had occurred
    * @throws WorkflowException if an error occurs.
    */
@@ -1471,7 +1471,7 @@ public class ProcessInstanceImpl
     if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
           INSTANCEID_PARAM + getId() + ", method removeInterestedUser - found:" + st.countTokens() +
-              INSTEAD_OF_2_OR_3);
+          INSTEAD_OF_2_OR_3);
     }
 
     String userId = (st.countTokens() == 3) ? st.nextToken() : null;
@@ -1486,7 +1486,7 @@ public class ProcessInstanceImpl
     if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
           INSTANCEID_PARAM + getId() + ", method addInterestedUser - found:" + st.countTokens() +
-              INSTEAD_OF_2_OR_3);
+          INSTEAD_OF_2_OR_3);
     }
 
     String userId = (st.countTokens() == 3) ? st.nextToken() : null;
@@ -1503,7 +1503,7 @@ public class ProcessInstanceImpl
     if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
           INSTANCEID_PARAM + getId() + ", method removeWorkingUser - found:" + st.countTokens() +
-              INSTEAD_OF_2_OR_3);
+          INSTEAD_OF_2_OR_3);
     }
 
     String userId = (st.countTokens() == 3) ? st.nextToken() : null;
@@ -1520,7 +1520,7 @@ public class ProcessInstanceImpl
     if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
           INSTANCEID_PARAM + getId() + ", method addWorkingUser - found:" + st.countTokens() +
-              INSTEAD_OF_2_OR_3);
+          INSTEAD_OF_2_OR_3);
     }
 
     String userId = (st.countTokens() == 3) ? st.nextToken() : null;
@@ -1604,6 +1604,7 @@ public class ProcessInstanceImpl
 
   /**
    * Search for the step with given id
+   *
    * @param stepId the search step id
    * @throws WorkflowException if an error occurs during the search.
    */
@@ -1727,6 +1728,7 @@ public class ProcessInstanceImpl
 
   /**
    * Add active state to the process instance
+   *
    * @param activeState state to add.
    */
   public void addActiveState(ActiveState activeState) {
@@ -1784,11 +1786,11 @@ public class ProcessInstanceImpl
         int theTimeoutStatus = activeState.getTimeoutStatus();
 
         // then parse all timeoutAction to return the right one (the one with order =
-        // timeoutstatus+1)
+        // timeout status +1)
         State state = getProcessModel().getState(activeState.getState());
         SilverLogger.getLogger(this).debug(() -> activeState.getProcessInstance() != null ?
             "getTimeOutAction - State = " + activeState.getState() +
-                " - instanceId " + activeState.getProcessInstance().getInstanceId() :
+            " - instanceId " + activeState.getProcessInstance().getInstanceId() :
             "No process instance in active state");
         TimeOutAction[] actions = state.getTimeOutActions();
         Mutable<ActionAndState> foundActionAndState = Mutable.empty();
@@ -1800,7 +1802,7 @@ public class ProcessInstanceImpl
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Unable to getTimeoutAction for this state {0} id={1}",
-              activeState.getState(), activeState.getId());
+          activeState.getState(), activeState.getId());
     }
     return Optional.empty();
   }
@@ -1836,6 +1838,7 @@ public class ProcessInstanceImpl
    *   <li>performing manually the data fetching after the process instance load</li>
    * </ul>
    * Second option is chosen.
+   *
    * @return itself.
    */
   @SuppressWarnings("ResultOfMethodCallIgnored")
