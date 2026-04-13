@@ -46,17 +46,18 @@ import static org.mockito.Mockito.when;
  * @author ehugonnet
  */
 @UnitTest
-public class I18NHelperTest {
+class I18NHelperTest {
 
   @BeforeAll
-  public static void setUpI18n() {
+  static void setUpI18n() {
     I18n i18n = new I18n();
     TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
+    feeder.removeAllManagedBeans();
     feeder.manageBean(i18n, I18n.class);
   }
 
   @AfterAll
-  public static void releaseI18n() {
+  static void releaseI18n() {
     TestManagedBeanFeeder feeder = new TestManagedBeanFeeder();
     feeder.removeAllManagedBeans();
   }
@@ -65,7 +66,7 @@ public class I18NHelperTest {
    * Test of getLanguageLabel method, of class I18NHelper.
    */
   @Test
-  public void testGetLanguageLabel() {
+  void testGetLanguageLabel() {
     String code = "fr";
     String userLanguage = "en";
     String label = I18NHelper.getLanguageLabel(code, userLanguage);
@@ -82,7 +83,7 @@ public class I18NHelperTest {
    * Test of getAllSupportedLanguages method, of class I18NHelper.
    */
   @Test
-  public void testGetAllSupportedLanguages() {
+  void testGetAllSupportedLanguages() {
     List<String> supportedLanguages = I18NHelper.getAllSupportedLanguages();
     assertThat(supportedLanguages, containsInAnyOrder("en", "fr", "de"));
   }
@@ -91,7 +92,7 @@ public class I18NHelperTest {
    * Test of isDefaultLanguage method, of class I18NHelper.
    */
   @Test
-  public void testIsDefaultLanguage() {
+  void testIsDefaultLanguage() {
     String language = "en";
     boolean result = I18NHelper.isDefaultLanguage(language);
     assertThat(result, is(false));
@@ -107,7 +108,7 @@ public class I18NHelperTest {
    * Test of checkLanguage method, of class I18NHelper.
    */
   @Test
-  public void testCheckLanguage() {
+  void testCheckLanguage() {
     String language = "";
     String result = I18NHelper.checkLanguage(language);
     assertThat(result, is("fr"));
@@ -123,7 +124,7 @@ public class I18NHelperTest {
    * Test of getHTMLLinks method, of class I18NHelper.
    */
   @Test
-  public void testGetHTMLLinksForCurrentLanguageByUrl() {
+  void testGetHTMLLinksForCurrentLanguageByUrl() {
     String url = "https://www.google.fr";
     String currentLanguage = "fr";
     String result = I18NHelper.getHTMLLinks(url, currentLanguage);
@@ -153,7 +154,7 @@ public class I18NHelperTest {
    * Test of getHTMLLinks method, of class I18NHelper.
    */
   @Test
-  public void testGetHTMLLinksForLanguages() {
+  void testGetHTMLLinksForLanguages() {
     List<String> languages = Arrays.asList("fr", "en");
     String currentLanguage = "fr";
     String result = I18NHelper.getHTMLLinks(languages, currentLanguage);
@@ -167,7 +168,7 @@ public class I18NHelperTest {
    * Test of getHTMLLinks method, of class I18NHelper.
    */
   @Test
-  public void testGetHTMLLinksForI18NBeanAndCurrentLanguage() {
+  void testGetHTMLLinksForI18NBeanAndCurrentLanguage() {
     @SuppressWarnings("rawtypes") I18NBean bean = mock(I18NBean.class);
     BeanTranslation tradFR = new BeanTranslation();
     tradFR.setId("1");
@@ -195,7 +196,7 @@ public class I18NHelperTest {
    * Test of getFormLine method, of class I18NHelper.
    */
   @Test
-  public void testGetFormLine() {
+  void testGetFormLine() {
     MultiSilverpeasBundle resources = mock(MultiSilverpeasBundle.class);
     when(resources.getString("GML.language")).thenReturn("Langue");
     when(resources.getLanguage()).thenReturn("fr");

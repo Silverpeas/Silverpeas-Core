@@ -45,7 +45,6 @@ public class JEETestContext extends SilverTestEnvContext {
 
   private final I18n i18n = mock(I18n.class);
   private final UserProvider userProvider = mock(UserProvider.class);
-
   private final GroupProvider groupProvider = mock(GroupProvider.class);
 
   @Override
