@@ -23,20 +23,21 @@
  */
 package org.silverpeas.core.contribution.template.publication;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import static java.io.File.separatorChar;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -44,11 +45,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans(PublicationTemplateManager.class)
-public class PublicationTemplateImplTest {
+@TestManagedMocks(OrganizationController.class)
+class PublicationTemplateImplTest {
+
   private static final char SEPARATOR = separatorChar;
 
   @Test
-  public void testGetRecordTemplateSimple() throws Exception {
+  void testGetRecordTemplateSimple() throws Exception {
     String xmlFileName = "template" + SEPARATOR + "data.xml";
     // Pay attention to not declare org.silverpeas.core.contribution.content.form.displayers.PdcPositionsFieldDisplayer
     // inside types.properties cause this class is not available inside silverpeas-core project
@@ -64,8 +67,7 @@ public class PublicationTemplateImplTest {
   }
 
   @Test
-  @Disabled
-  public void testTemplateVisibilityOnApplications() throws Exception {
+  void testTemplateVisibilityOnApplications() throws Exception {
     // template.xml is only applicable to component kmelia
     GlobalContext globalContext = new GlobalContext("WA1");
     globalContext.setComponentName("kmelia");
@@ -80,8 +82,7 @@ public class PublicationTemplateImplTest {
   }
 
   @Test
-  @Disabled
-  public void testTemplateVisibilityOnInstances() throws Exception {
+  void testTemplateVisibilityOnInstances() throws Exception {
     // template.xml is only applicable to only both instances
     GlobalContext globalContext = new GlobalContext("WA1");
     globalContext.setComponentName("webPages");
