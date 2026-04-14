@@ -31,6 +31,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.i18n.I18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.Translation;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -134,8 +135,9 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return GraphicElementFactory.getIconsPath();
   }
 
-  public I18NBean<?> getI18NBean() {
-    return i18nBean;
+  public <T extends Translation> I18NBean<T> getI18NBean() {
+    //noinspection unchecked
+    return (I18NBean<T>) i18nBean;
   }
 
   public String getLanguage() {

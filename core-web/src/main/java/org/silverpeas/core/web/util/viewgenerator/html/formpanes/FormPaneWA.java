@@ -41,6 +41,10 @@ import jakarta.servlet.jsp.PageContext;
  */
 public class FormPaneWA extends FormPane {
 
+  private static final String TR = "\n</tr>";
+  private static final String A_HREF = "<a href=\"";
+  private static final String SUPPRIMER = "Supprimer";
+
   /**
    * Generic class to display a typical WA form pane.
    * @param nam form name
@@ -72,7 +76,7 @@ public class FormPaneWA extends FormPane {
       result.append("\n<table cellpadding=0 cellspacing=0 border=0>");
       for (i = 0; i < formLines.size(); i++) {
         result.append("\n<tr>")
-            .append(formLines.get(i).print()).append("\n</tr>");
+            .append(formLines.get(i).print()).append(TR);
       }
       result.append("\n</table>");
     }
@@ -82,7 +86,7 @@ public class FormPaneWA extends FormPane {
       result.append("\n<table cellpadding=0 cellspacing=0 border=0>");
       for (i = 0; i < formActionButtons.size(); i++) {
         result.append("\n<tr>")
-            .append(formActionButtons.get(i).print()).append("\n</tr>");
+            .append(formActionButtons.get(i).print()).append(TR);
       }
       result.append("\n</table>");
     }
@@ -139,13 +143,13 @@ public class FormPaneWA extends FormPane {
     retour = retour + "\n<input type=\"text\" name=\"formName\" value=\""
         + displayName + "\">";
     retour = retour + "\n</td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr bgcolor=\"#999999\">";
     retour =
         retour
             +
             "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr>";
     retour = retour
         + "\n<td width=\"52%\" align=\"right\">&nbsp;<span class=\"txtnote\">"
@@ -155,13 +159,13 @@ public class FormPaneWA extends FormPane {
         + "\n<textarea name=\"formDescription\" cols=\"45\" rows=\"6\" wrap=VIRTUAL>"
         + description + "</textarea>";
     retour = retour + "\n</font></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr bgcolor=\"#999999\">";
     retour =
         retour
             +
             "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr>";
     retour = retour
         + "\n<td width=\"52%\" align=\"right\"><span class=\"txtnote\">"
@@ -174,18 +178,18 @@ public class FormPaneWA extends FormPane {
     }
     retour = retour + "onClick=\"javascript:addReply();\">";
     retour = retour + "\n</td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr bgcolor=\"#999999\">";
     retour =
         retour
             +
             "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr>";
     retour = retour
         + "\n<td colspan=\"2\" class=\"couleurCadreInterieur\"><span class=\"titremodule\">&nbsp;"
         + message.getString("EditorMode") + "</span></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr>";
     retour = retour
         + "\n<td width=\"52%\" align=\"right\">&nbsp;<span class=\"txtnote\">"
@@ -215,13 +219,13 @@ public class FormPaneWA extends FormPane {
       retour = retour + " disabled ";
     }
     retour = retour + ">\n</span></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr bgcolor=\"#999999\">";
     retour =
         retour
             +
             "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     if (reply) {
       retour = retour + "\n<tr>";
       retour = retour
@@ -245,19 +249,19 @@ public class FormPaneWA extends FormPane {
         retour = retour + " checked";
       }
       retour = retour + ">\n</span></td>";
-      retour = retour + "\n</tr>";
+      retour = retour + TR;
     }
     retour = retour + "\n<tr bgcolor=\"#999999\">";
     retour =
         retour
             +
             "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr>";
     retour = retour
         + "\n<td colspan=\"2\" class=\"couleurCadreInterieur\"><span class=\"titremodule\">&nbsp;"
         + message.getString("UserMode") + "</span></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr>";
     retour = retour
         + "\n<td width=\"52%\" align=\"right\">&nbsp;<span class=\"txtnote\">"
@@ -280,13 +284,13 @@ public class FormPaneWA extends FormPane {
       retour = retour + " checked";
     }
     retour = retour + ">\n</span></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr bgcolor=\"#999999\">";
     retour =
         retour
             +
             "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr>";
     retour = retour
         + "\n<td width=\"52%\" align=\"right\">&nbsp;<span class=\"txtnote\">"
@@ -316,13 +320,13 @@ public class FormPaneWA extends FormPane {
     }
     retour = retour + "onClick=\"javascript:clickUtilEnvoiDemandes();\">";
     retour = retour + "\n</span></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n<tr bgcolor=\"#999999\">";
     retour =
         retour
             +
             "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     if (reply) {
       retour = retour + "\n<tr>";
       retour = retour
@@ -346,14 +350,14 @@ public class FormPaneWA extends FormPane {
         retour = retour + " checked";
       }
       retour = retour + ">\n</span></td>";
-      retour = retour + "\n</tr>";
+      retour = retour + TR;
     }
     retour = retour + "\n<tr bgcolor=\"#999999\">";
     retour =
         retour
             +
             "\n<td colspan=\"2\" valign=\"top\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
-    retour = retour + "\n</tr>";
+    retour = retour + TR;
     retour = retour + "\n</FORM>";
     retour = retour + "\n</table>";
     retour = retour + "\n<!--  -->";
@@ -382,11 +386,11 @@ public class FormPaneWA extends FormPane {
         if (formHiddenFields.get(i).isLocked()) {
           result.append("&nbsp;");
         } else {
-          result.append("<a href=\"").append(trueActionPage).append("&action=")
+          result.append(A_HREF).append(trueActionPage).append("&action=")
               .append(deleteActionCode);
           result.append("&params=")
               .append(formHiddenFields.get(i).getName()).append("\">")
-              .append(message.getString("Supprimer")).append("</a>");
+              .append(message.getString(SUPPRIMER)).append("</a>");
         }
         result.append("\n</td>\n</tr>");
       }
@@ -403,10 +407,10 @@ public class FormPaneWA extends FormPane {
         if (formLines.get(i).isLocked()) {
           result.append("&nbsp;");
         } else {
-          result.append("<a href=\"").append(trueActionPage).append("&action=")
+          result.append(A_HREF).append(trueActionPage).append("&action=")
               .append(deleteActionCode);
           result.append("&params=").append(formLines.get(i).getName())
-              .append("\">").append(message.getString("Supprimer")).append("</a>");
+              .append("\">").append(message.getString(SUPPRIMER)).append("</a>");
         }
         result.append("\n</td>\n</tr>");
       }
@@ -423,10 +427,10 @@ public class FormPaneWA extends FormPane {
         if (formActionButtons.get(i).isLocked()) {
           result.append("&nbsp;");
         } else {
-          result.append("<a href=\"").append(trueActionPage).append("&action=")
+          result.append(A_HREF).append(trueActionPage).append("&action=")
               .append(deleteActionCode);
           result.append("&params=").append(formActionButtons.get(i).getName())
-              .append("\">").append(message.getString("Supprimer")).append("</a>");
+              .append("\">").append(message.getString(SUPPRIMER)).append("</a>");
         }
         result.append("\n</td>\n</tr>");
       }

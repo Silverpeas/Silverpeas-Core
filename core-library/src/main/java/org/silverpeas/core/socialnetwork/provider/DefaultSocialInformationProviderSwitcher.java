@@ -176,6 +176,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
             .collect(Collectors.toList()));
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public List<? extends SocialInformation> getSocialInformationsList(
       SocialInformationType socialInformationType, SocialInfoContext context) {
@@ -186,6 +187,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public List<? extends SocialInformation> getSocialInformationsListOfMyContacts(
       SocialInformationType socialInformationType, SocialInfoContext context) {

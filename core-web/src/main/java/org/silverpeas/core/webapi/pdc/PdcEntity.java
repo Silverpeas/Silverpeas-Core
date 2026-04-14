@@ -63,7 +63,7 @@ public class PdcEntity implements WebEntity {
    * @param usedAxis the axis to use in the PdC.
    * @param inLanguage the language in which the PdC's terms should be translated.
    * @param atURI the URI at which the PdC can be found.
-   * @param withThesaurus the thesaurus to use with this PdC. The thesaurus will be use to set the
+   * @param withThesaurus the thesaurus to use with this PdC. The thesaurus will be used to set the
    * synonyms of each value of the different PdC's axis. NoThesaurus if the user has no thesaurus
    * configured.
    * @return the web representation of a PdC.

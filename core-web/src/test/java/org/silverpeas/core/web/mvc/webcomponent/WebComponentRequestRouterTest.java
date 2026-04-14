@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.UriBuilder;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.internal.stubbing.answers.Returns;
@@ -32,16 +39,9 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.kernel.test.annotations.TestManagedBeans;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.kernel.test.annotations.TestManagedMocks;
-import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -50,14 +50,13 @@ import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.core.web.session.SessionManager;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.kernel.cache.model.SimpleCache;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.HttpMethod;
-import jakarta.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
@@ -88,7 +87,6 @@ public abstract class WebComponentRequestRouterTest {
 
   @BeforeEach
   public void setUp(@TestManagedMock SilverpeasComponentInstanceProvider provider) {
-    //when(provider.getComponentName(any())).thenReturn("componentName");
     user = new UserDetail();
     user.setId("400");
     WebComponentManager.managedWebComponentRouters.clear();
@@ -239,11 +237,11 @@ public abstract class WebComponentRequestRouterTest {
       CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       if (sessionCache != null) {
         // Session cache is not trashed
-        ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).setCurrentSessionCache(
+        CacheAccessorProvider.getSessionCacheAccessor().setCurrentSessionCache(
             sessionCache);
       } else {
         // Putting a current requester for the next actions of this test.
-        ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
+        CacheAccessorProvider.getSessionCacheAccessor().newSessionCache(user);
       }
 
       WebComponentRequestRouter<?, ?> routerInstance =
@@ -277,16 +275,16 @@ public abstract class WebComponentRequestRouterTest {
   }
 
   private static class PrintWriter4Test extends PrintWriter {
-    ByteArrayOutputStream baos;
+    ByteArrayOutputStream output;
 
     PrintWriter4Test(final ByteArrayOutputStream out) {
       super(out);
-      baos = out;
+      output = out;
     }
 
     @Override
     public String toString() {
-      return baos.toString();
+      return output.toString();
     }
   }
 }

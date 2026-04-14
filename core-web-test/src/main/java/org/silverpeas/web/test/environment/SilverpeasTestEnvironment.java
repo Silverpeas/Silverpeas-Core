@@ -24,7 +24,6 @@
 package org.silverpeas.web.test.environment;
 
 import jakarta.inject.Inject;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;

@@ -85,7 +85,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   @Inject
   private MandatoryQuestionChecker mandatoryQuestionChecker;
 
-  private final SilverLogger logger = SilverLogger.getLogger(this);
+  private final transient SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
    * Ask for an authentication for the user behind the incoming HTTP request from a form.

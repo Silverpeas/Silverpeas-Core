@@ -31,7 +31,6 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * This class represents contribution classified on taxonomy
@@ -49,11 +48,6 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   private String thumbnailURL = "";
   private String userId = "";
   private String type = "";
-
-  /**
-   * list of XML form fields used to sort results
-   */
-  private final Map<String, String> sortableXMLFormFields = null;
 
   /* following attributes are exclusively used by taglibs */
   private String spaceId = "";
@@ -163,14 +157,6 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
 
   public void setThumbnailURL(String thumbnailURL) {
     this.thumbnailURL = thumbnailURL;
-  }
-
-  /**
-   * gets the list of Sortable fields if the content is a form XML
-   * @return the sortableXMLFormFields
-   */
-  public Map<String, String> getSortableXMLFormFields() {
-    return sortableXMLFormFields;
   }
 
 }

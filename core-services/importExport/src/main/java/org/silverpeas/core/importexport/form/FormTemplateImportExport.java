@@ -38,7 +38,6 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 

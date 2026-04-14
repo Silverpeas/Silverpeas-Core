@@ -51,7 +51,7 @@ class PersonalComponentRegistryTest {
   private PersonalComponentRegistry registry;
 
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() {
     // Tested registry
     registry = new PersonalComponentRegistry();
     registry.init();

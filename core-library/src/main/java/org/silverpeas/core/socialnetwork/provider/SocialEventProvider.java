@@ -32,9 +32,11 @@ import java.util.List;
 /**
  * Provider of calendar events shared with other users.
  */
-public interface SocialEventProvider<T extends SocialInformation> extends SocialInformationProvider<T> {
+public interface SocialEventProvider<T extends SocialInformation>
+    extends SocialInformationProvider<T> {
 
-  static SocialEventProvider<?> get() {
+  static <U extends SocialInformation> SocialEventProvider<U> get() {
+    //noinspection unchecked
     return ServiceProvider.getService(SocialEventProvider.class);
   }
 

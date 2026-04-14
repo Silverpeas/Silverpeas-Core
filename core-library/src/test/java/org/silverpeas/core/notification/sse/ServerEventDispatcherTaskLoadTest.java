@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.sse;
 
-import jakarta.enterprise.context.Dependent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -69,12 +68,12 @@ import static org.hamcrest.Matchers.*;
  * Built for development purpose.
  * @author Yohann Chastagnier
  */
-public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTaskTest {
+class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTaskTest {
 
-  private final static int NB_REG_THREAD = 10;
-  private final static int NB_REG_BY_THREAD = 100;
-  private final static int NB_EVT_THREAD = 10;
-  private final static int NB_EVT_BY_THREAD = 300;
+  private static final int NB_REG_THREAD = 10;
+  private static final int NB_REG_BY_THREAD = 100;
+  private static final int NB_EVT_THREAD = 10;
+  private static final int NB_EVT_BY_THREAD = 300;
 
   @RegisterExtension
   static SettingBundleStub settings = new SettingBundleStub(
@@ -90,7 +89,7 @@ public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispat
   @BeforeEach
   @AfterEach
   // parameters injected by weld
-  public void bucketSetup(@TestManagedBean TestServerEventBucket bucket,
+  void bucketSetup(@TestManagedBean TestServerEventBucket bucket,
       @TestManagedBean DefaultServerEventNotifier sseNotifier) {
     this.defaultServerEventNotifier = sseNotifier;
     this.bucket = bucket;
@@ -192,7 +191,7 @@ public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispat
 
   private static class TestServerEventLoadNormal extends AbstractServerEventTest {
 
-    private final static ServerEvent.ServerEventName EVENT_NAME = () -> "EVENT_LOAD_NORMAL";
+    private static final ServerEvent.ServerEventName EVENT_NAME = () -> "EVENT_LOAD_NORMAL";
 
     @Override
     public ServerEvent.ServerEventName getName() {
@@ -203,7 +202,7 @@ public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispat
   private static class TestServerEventLoadStoreLastOnly extends AbstractServerEventTest
       implements StoreLastOnly {
 
-    private final static ServerEvent.ServerEventName EVENT_NAME = () -> "EVENT_LOAD_STORE_LAST_ONLY";
+    private static final ServerEvent.ServerEventName EVENT_NAME = () -> "EVENT_LOAD_STORE_LAST_ONLY";
 
     @Override
     public ServerEvent.ServerEventName getName() {
@@ -214,7 +213,7 @@ public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispat
   private static class TestServerEventLoadSendAveryAmount extends AbstractServerEventTest
       implements SendEveryAmountOfTime {
 
-    private final static ServerEvent.ServerEventName EVENT_NAME = () -> "EVENT_LOAD_SEND_EVERY_AMOUNT";
+    private static final ServerEvent.ServerEventName EVENT_NAME = () -> "EVENT_LOAD_SEND_EVERY_AMOUNT";
     private boolean marked = false;
 
     @Override
@@ -236,7 +235,7 @@ public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispat
   private static class TestServerEventLoadIgnoreStoring extends AbstractServerEventTest
       implements IgnoreStoring {
 
-    private final static ServerEvent.ServerEventName EVENT_NAME = () -> "EVENT_LOAD_IGNORE_STORING";
+    private static final ServerEvent.ServerEventName EVENT_NAME = () -> "EVENT_LOAD_IGNORE_STORING";
 
     @Override
     public ServerEvent.ServerEventName getName() {
@@ -245,7 +244,7 @@ public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispat
   }
 
   private static class TestBuilder {
-    final private ServerEventDispatcherTaskLoadTest test;
+    private final ServerEventDispatcherTaskLoadTest test;
 
     private Supplier<AbstractServerEvent> eventSupplier = () -> null;
 
@@ -360,7 +359,6 @@ public class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispat
     }
   }
 
-  @Dependent
   public static class VolatileScheduler4Test implements Scheduler {
 
     private ScheduledExecutorService scheduledExecutor;

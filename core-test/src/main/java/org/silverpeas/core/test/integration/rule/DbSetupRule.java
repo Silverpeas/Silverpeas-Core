@@ -99,7 +99,7 @@ public class DbSetupRule implements TestRule {
    */
   public static DbSetupRule createTablesFrom(String... sqlScripts) {
     Logger.getLogger(DbSetupRule.class.getName())
-        .info("Load database scripts: " + String.join("\n\t", sqlScripts));
+        .info(() -> "Load database scripts: " + String.join("\n\t", sqlScripts));
     Objects.requireNonNull(sqlScripts);
     return new DbSetupRule(sqlScripts);
   }
@@ -123,7 +123,7 @@ public class DbSetupRule implements TestRule {
    */
   public DbSetupRule loadInitialDataSetFrom(String... sqlScripts) {
     Logger.getLogger(this.getClass().getName())
-        .info("Load dataset scripts: " + String.join("\n\t", sqlScripts));
+        .info(() -> "Load dataset scripts: " + String.join("\n\t", sqlScripts));
     sqlInsertScripts = sqlScripts;
     return this;
   }

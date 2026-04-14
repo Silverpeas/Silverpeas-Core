@@ -23,17 +23,16 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.component.WAComponentRegistry;
-
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.util.*;
 
 /**
  * <p>
- * WAComponent stands for Web Application Component and it represents an application that is
+ * WAComponent stands for Web Application Component, and it represents an application that is
  * available in Silverpeas and that can be instantiated to a {@link ComponentInst} object into
  * collaborative spaces ({@link org.silverpeas.core.admin.space.model.Space}). The instances of
  * these applications can be then accessed by the users in Silverpeas according to their access
@@ -83,7 +82,6 @@ public class WAComponent extends AbstractSilverpeasComponent {
   @XmlElementWrapper(name = "parameters")
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
-  private transient final I18n i18n = I18n.get();
 
   /**
    * Gets the WAComponent object with the specified name.
@@ -164,7 +162,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
    * @param label a localized label.
    */
   public void putLabel(final String language, final String label) {
-    getLabel().put(i18n.checkLanguage(language), label);
+    getLabel().put(I18NHelper.checkLanguage(language), label);
   }
 
   /**
@@ -185,7 +183,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
    * @param description a localized description.
    */
   public void putDescription(final String language, final String description) {
-    getDescription().put(i18n.checkLanguage(language), description);
+    getDescription().put(I18NHelper.checkLanguage(language), description);
   }
 
   /**
@@ -205,7 +203,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
    * @param suite a localized suite.
    */
   public void putSuite(final String language, final String suite) {
-    getSuite().put(i18n.checkLanguage(language), suite);
+    getSuite().put(I18NHelper.checkLanguage(language), suite);
   }
 
   /**

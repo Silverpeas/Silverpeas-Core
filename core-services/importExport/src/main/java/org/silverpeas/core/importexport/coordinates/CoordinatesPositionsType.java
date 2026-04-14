@@ -53,8 +53,7 @@ public class CoordinatesPositionsType {
   }
 
   public boolean getCreateEnable() {
-    boolean createEnable = false;
-    return createEnable;
+    return false;
   }
 
 }

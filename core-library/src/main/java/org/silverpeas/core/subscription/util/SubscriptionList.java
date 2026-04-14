@@ -29,7 +29,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import jakarta.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.silverpeas.core.subscription.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
 

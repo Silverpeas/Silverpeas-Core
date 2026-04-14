@@ -24,7 +24,6 @@
 package org.silverpeas.core.admin.space.quota;
 
 import jakarta.inject.Singleton;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.annotation.Service;

@@ -58,7 +58,7 @@ import static org.silverpeas.core.wbe.WbeLogger.logger;
 public class DefaultWbeHostManager implements WbeHostManager {
 
   private final WbeCache cache = new WbeCache();
-  //private final List<WbeClientManager> clients = new ArrayList<>();
+  
   @Inject
   private Instance<WbeClientManager> clients;
 
@@ -66,11 +66,6 @@ public class DefaultWbeHostManager implements WbeHostManager {
 
   protected DefaultWbeHostManager() {
   }
-
-  /*@PostConstruct
-  protected void init() {
-    clients.addAll(ServiceProvider.getAllServices(WbeClientManager.class));
-  }*/
 
   @Override
   public List<Pair<String, String>> getClientAdministrationAccesses(final String language) {

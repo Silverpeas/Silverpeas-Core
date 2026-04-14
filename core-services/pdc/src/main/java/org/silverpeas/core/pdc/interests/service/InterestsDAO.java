@@ -41,18 +41,21 @@ import java.util.List;
 
 public class InterestsDAO {
 
+  private InterestsDAO() {
+  }
+
   /**
    * Interest_Center_Axes table name
    */
-  public final static String INTERESTS_AXES_TABLE_NAME = "SB_Interests_Axis";
+  public static final String INTERESTS_AXES_TABLE_NAME = "SB_Interests_Axis";
   /**
-   * Date format pattern constatnt. This patters is used in db operations
+   * Date format pattern constant. This pattern is used in db operations
    */
-  public final static String DATE_FORMAT = "yyyy/MM/dd";
+  public static final String DATE_FORMAT = "yyyy/MM/dd";
   /**
    * getInterestsByUserId sql query constant
    */
-  public final static String GET_IC_BY_USERID_QUERY =
+  public static final String GET_IC_BY_USERID_QUERY =
       "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
       + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM SB_Interests a WHERE a.ownerId = ? ";
 
@@ -83,7 +86,7 @@ public class InterestsDAO {
   /**
    * getInterestsByPK sql query constant
    */
-  public final static String GET_IC_BY_PK_QUERY =
+  public static final String GET_IC_BY_PK_QUERY =
       "SELECT id, name, criteria, workSpaceId, peasId, "
       + "authorId, afterDate, beforeDate, ownerId FROM SB_Interests WHERE id = ? ";
 
@@ -162,7 +165,7 @@ public class InterestsDAO {
   /**
    * createInterests sql query constant
    */
-  public final static String CREATE_IC_QUERY =
+  public static final String CREATE_IC_QUERY =
       "INSERT  INTO SB_Interests (id, name, criteria, workSpaceId, peasId, authorId, "
       + "afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
@@ -233,7 +236,7 @@ public class InterestsDAO {
   /**
    * updateInterests sql query constant
    */
-  public final static String UPDATE_IC_QUERY =
+  public static final String UPDATE_IC_QUERY =
       "UPDATE SB_Interests SET name = ?, criteria = ?, workSpaceId = ?, peasId = ?, "
       + "authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
 
@@ -298,7 +301,7 @@ public class InterestsDAO {
   /**
    * removeInterestsById sql query constant
    */
-  public final static String REMOVE_IC_BY_PKS_LIST_QUERY =
+  public static final String REMOVE_IC_BY_PKS_LIST_QUERY =
       "DELETE FROM SB_Interests WHERE id = ?";
 
   /**
@@ -331,7 +334,7 @@ public class InterestsDAO {
   /**
    * loadPdcContext sql query constant
    */
-  public final static String LOAD_PDC_PK_QUERY = "SELECT a.axisId, a.val "
+  public static final String LOAD_PDC_PK_QUERY = "SELECT a.axisId, a.val "
       + "  FROM " + INTERESTS_AXES_TABLE_NAME + " a WHERE a.icId = ? ";
 
   /**
@@ -370,7 +373,7 @@ public class InterestsDAO {
   /**
    * appendPdcContext sql query constant
    */
-  public final static String CREATE_PDC_CONTEXT_QUERY = "INSERT  INTO "
+  public static final String CREATE_PDC_CONTEXT_QUERY = "INSERT  INTO "
       + INTERESTS_AXES_TABLE_NAME + " ( "
       + " id, icId, axisId, val) VALUES (?, ?, ?, ?) ";
 
@@ -386,13 +389,14 @@ public class InterestsDAO {
           "root.EX_CONNECTION_OPEN_FAILED");
     }
     if (pdcContext == null) {
-      return null;
+      return new int[0];
     }
     PreparedStatement prepStmt = null;
     int[] generatedPKs;
 
     try {
       prepStmt = con.prepareStatement(CREATE_PDC_CONTEXT_QUERY);
+      prepStmt.setInt(2, icId);
       generatedPKs = new int[pdcContext.size()];
 
       for (int i = 0; i < pdcContext.size(); i++) {
@@ -407,7 +411,6 @@ public class InterestsDAO {
         }
 
         prepStmt.setInt(1, newId);
-        prepStmt.setInt(2, icId);
         prepStmt.setInt(3, criteria.getAxisId());
         prepStmt.setString(4, criteria.getValue());
 
@@ -449,7 +452,7 @@ public class InterestsDAO {
   /**
    * removePdcContext sql query constant
    */
-  public final static String REMOVE_IC_CONTEXT_QUERY = "delete from "
+  public static final String REMOVE_IC_CONTEXT_QUERY = "delete from "
       + INTERESTS_AXES_TABLE_NAME + " where icId = ?";
 
   /**

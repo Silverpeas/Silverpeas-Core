@@ -47,7 +47,7 @@ if (response.isCommitted() == false) {
 <%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil" %>
 <%@ page import="java.io.PrintWriter" %>
 <%@ page import="org.silverpeas.core.security.authorization.ForbiddenRuntimeException" %>
-<%@ page import="javax.ws.rs.WebApplicationException" %>
+<%@ page import="jakarta.ws.rs.WebApplicationException" %>
 <%@ page import="org.silverpeas.kernel.logging.SilverLogger" %>
 <%@ page import="org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet" %>
 <%@ page import="org.silverpeas.kernel.exception.NotFoundException" %>

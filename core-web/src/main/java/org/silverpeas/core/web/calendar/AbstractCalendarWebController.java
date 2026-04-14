@@ -112,6 +112,8 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
               LocalDate.parse(context.getRequest().getParameter("timeWindowDate").split("T")[0]);
           getCalendarTimeWindowContext().setReferenceDay(Date.valueOf(date));
           break;
+        default:
+          break;
       }
     }
     return getCalendarTimeWindowContext();

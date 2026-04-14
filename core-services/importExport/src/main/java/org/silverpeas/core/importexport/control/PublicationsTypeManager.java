@@ -51,7 +51,6 @@ import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.model.PublicationType;
 import org.silverpeas.core.importexport.publication.PublicationContentType;
-import org.silverpeas.core.importexport.report.ExportPDFReport;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.importexport.report.HtmlExportPublicationGenerator;
 import org.silverpeas.core.importexport.report.ImportReportManager;
@@ -469,9 +468,8 @@ public class PublicationsTypeManager {
     }
   }
 
-  public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport,
-      UserDetail userDetail, List<WAAttributeValuePair> listItemsToExport, String exportPath,
-      boolean useNameForFolders, NodePK rootPK) throws ImportExportException, IOException {
+  public List<AttachmentDetail> processPDFExport(UserDetail userDetail,
+      List<WAAttributeValuePair> listItemsToExport, String exportPath, NodePK rootPK) {
     AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     List<AttachmentDetail> result = new ArrayList<>();
 

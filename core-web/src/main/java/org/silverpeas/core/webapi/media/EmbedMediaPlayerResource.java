@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.webapi.media;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 

@@ -80,7 +80,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = -3241648887903159985L;
   private static final String ADMIN_ROLE = "admin";
   private static final String SPACE_ID = "SpaceId";
-  private ServletContext context;
+  private transient ServletContext context;
   private static final Logger logger = Logger.getLogger("org.silverpeas.web.portlets.portal",
       "org.silverpeas.portlets.PCDLogMessages");
 

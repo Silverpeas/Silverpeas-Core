@@ -500,7 +500,7 @@ public class ImportExport extends AbstractExportProcess {
     try {
       // création des répertoires avec le nom des thèmes et des publications
       final List<AttachmentDetail> pdfList = pubTypeManager
-          .processPDFExport(report, userDetail, itemsToExport, fileExportDir.getPath(), true,
+          .processPDFExport(userDetail, itemsToExport, fileExportDir.getPath(),
               rootPK);
       final List<HashMap<String, Object>> master = new ArrayList<>();
       if (!pdfList.isEmpty()) {

@@ -49,11 +49,11 @@ import java.util.Map;
 
 public class ConnectionDAO {
   private static final String SELECT_FROM = "select * from ";
-  private static final String tableName = "SB_webConnections_info";
+  private static final String TABLE_NAME = "SB_webConnections_info";
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.external.webConnections.settings.webConnectionsSettings");
   // warning: the key code should be in hexadecimal!
-  private static final String keyCode = settings.getString("keycode");
+  private static final String KEYCODE = settings.getString("keycode");
 
   /**
    * Return a connection for componentId and userId
@@ -65,7 +65,7 @@ public class ConnectionDAO {
   public ConnectionDetail getConnection(Connection con, String componentId, String userId)
       throws SQLException {
     ConnectionDetail connection = null;
-    String query = SELECT_FROM + tableName + " where componentId = ? and userId = ? ";
+    String query = SELECT_FROM + TABLE_NAME + " where componentId = ? and userId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -92,7 +92,7 @@ public class ConnectionDAO {
   public ConnectionDetail getConnectionById(Connection con, String connectionId)
       throws SQLException {
     ConnectionDetail connection = null;
-    String query = SELECT_FROM + tableName + " where connectionId = ? ";
+    String query = SELECT_FROM + TABLE_NAME + " where connectionId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -119,11 +119,11 @@ public class ConnectionDAO {
     String id;
     PreparedStatement prepStmt = null;
     try {
-      int newId = DBUtil.getNextId(tableName, "connectionId");
+      int newId = DBUtil.getNextId(TABLE_NAME, "connectionId");
       id = String.valueOf(newId);
-      String query = "INSERT INTO " + tableName +
-          " (connectionId, userId, componentId, paramLogin, paramPassword) " +
-          "VALUES (?,?,?,?,?)";
+      String query = "INSERT INTO " + TABLE_NAME +
+                     " (connectionId, userId, componentId, paramLogin, paramPassword) " +
+                     "VALUES (?,?,?,?,?)";
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, connection);
       prepStmt.executeUpdate();
@@ -142,7 +142,7 @@ public class ConnectionDAO {
   public void deleteConnection(Connection con, String connectionId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      String query = "delete from " + tableName + " where connectionId = ? ";
+      String query = "delete from " + TABLE_NAME + " where connectionId = ? ";
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(connectionId));
       prepStmt.executeUpdate();
@@ -164,7 +164,7 @@ public class ConnectionDAO {
     PreparedStatement prepStmt = null;
     try {
       String query =
-          "update " + tableName + " set paramLogin = ? , paramPassword = ? where connectionId = ? ";
+          "update " + TABLE_NAME + " set paramLogin = ? , paramPassword = ? where connectionId = ? ";
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, login);
       byte[] crypPassword;
@@ -191,7 +191,7 @@ public class ConnectionDAO {
   public List<ConnectionDetail> getConnectionsByUser(Connection con, String userId)
       throws SQLException {
     ArrayList<ConnectionDetail> connections;
-    String query = SELECT_FROM + tableName + " where userId = ? ";
+    String query = SELECT_FROM + TABLE_NAME + " where userId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -276,9 +276,9 @@ public class ConnectionDAO {
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.BLOWFISH);
     try {
-      return blowfish.encrypt(text, CipherKey.aKeyFromHexText(keyCode));
+      return blowfish.encrypt(text, CipherKey.aKeyFromHexText(KEYCODE));
     } catch (ParseException e) {
-      throw new CryptoException("The key isn't in hexadecimal: '" + keyCode + "'", e);
+      throw new CryptoException("The key isn't in hexadecimal: '" + KEYCODE + "'", e);
     }
   }
 
@@ -292,9 +292,9 @@ public class ConnectionDAO {
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.BLOWFISH);
     try {
-      return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(keyCode));
+      return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(KEYCODE));
     } catch (ParseException e) {
-      throw new CryptoException("The key isn't in hexadecimal: '" + keyCode + "'", e);
+      throw new CryptoException("The key isn't in hexadecimal: '" + KEYCODE + "'", e);
     }
   }
 
@@ -304,6 +304,6 @@ public class ConnectionDAO {
    * @throws SQLException SQL error
    */
   public void deleteByComponentInstanceId(final String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.deleteFrom(tableName).where("componentId = ?", componentInstanceId).execute();
+    JdbcSqlQuery.deleteFrom(TABLE_NAME).where("componentId = ?", componentInstanceId).execute();
   }
 }

@@ -27,7 +27,6 @@ package org.silverpeas.core.test;
 import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.i18n.*;
-import org.silverpeas.core.notification.sse.ServerEventDispatcherTaskLoadTest;
 import org.silverpeas.core.reminder.DefaultReminderRepository;
 import org.silverpeas.core.reminder.ReminderIT;
 import org.silverpeas.core.test.integration.DataSourceProvider;
@@ -115,9 +114,7 @@ public class LibCoreWarBuilder extends WarBuilder<LibCoreWarBuilder> {
             "org.silverpeas.core.test.office",
             "org.silverpeas.core.test.subscription")
         .deleteClasses(ReminderIT.StubbedPersonalizationService.class, StubbedWbeHostManager.class,
-            StubbedWbeClientManager.class, ServerEventDispatcherTaskLoadTest.class,
-            ServerEventDispatcherTaskLoadTest.VolatileScheduler4Test.class,
-            DataSourceProvider.class)
+            StubbedWbeClientManager.class, DataSourceProvider.class)
         // add the required dependencies as declared in the pom.xml
         .addMavenDependencies("javax.jcr:jcr")
         .addMavenDependencies("org.apache.jackrabbit:jackrabbit-jcr-server:jar:jakarta:2.22.2")

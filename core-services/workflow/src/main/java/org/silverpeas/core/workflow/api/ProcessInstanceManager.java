@@ -38,25 +38,26 @@ import java.util.List;
 public interface ProcessInstanceManager {
 
   /**
-   * Get the list of process instances for a given peas Id, user and role.
+   * Get the list of process instances for a given peas identifier, user and role.
    * @param peasId id of processManager instance
    * @param user user for whom the process instance list is
    * @param role role name of the user for whom the process instance list is (useful when user has
    * different roles)
-   * @return an array of ProcessInstance objects
+   * @return a list of ProcessInstance objects
    */
-  List<? extends ProcessInstance> getProcessInstances(String peasId, User user, String role)
+  <T extends ProcessInstance> List<T> getProcessInstances(String peasId, User user, String role)
       throws WorkflowException;
 
   /**
-   * Get the list of process instances for a given peas Id, user and role, and user's roles.
+   * Get the list of process instances for a given peas identifier, user and role, and user's roles.
    * @param peasId id of processManager instance
    * @param user user for whom the process instance list is
    * @param role role name of the user for whom the process instance list is (useful when user has
-   * @param userRoles all role names that user has for this component instance different roles)
-   * @return an array of ProcessInstance objects
+   * different roles)
+   * @param userRoles all role names that user has for this component instance
+   * @return a list of ProcessInstance objects
    */
-  List<? extends ProcessInstance> getProcessInstances(String peasId, User user, String role,
+  <T extends ProcessInstance> List<T> getProcessInstances(String peasId, User user, String role,
       String[] userRoles, String[] groupIds) throws WorkflowException;
 
   /**
@@ -78,8 +79,9 @@ public interface ProcessInstanceManager {
 
   /**
    * Get the list of process instances for which timeout date is over
-   * @return an array of ProcessInstance objects
-   * @throws WorkflowException
+   * @return a paginated list of ProcessInstance objects
+   * @throws WorkflowException if an error occurs while getting the process instances in timeout.
    */
-  SilverpeasList<? extends ProcessInstance> getTimeOutProcessInstances() throws WorkflowException;
+  <T extends ProcessInstance> SilverpeasList<T> getTimeOutProcessInstances()
+      throws WorkflowException;
 }
