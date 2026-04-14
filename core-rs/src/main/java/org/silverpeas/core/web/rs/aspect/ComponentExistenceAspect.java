@@ -61,14 +61,13 @@ public class ComponentExistenceAspect {
       } catch (Exception ignore) {
         // ignore the exception
       }
-      if (isDefined(instanceId)) {
-        if (PersonalComponentInstance.from(instanceId).isEmpty() &&
+      if (isDefined(instanceId) && PersonalComponentInstance.from(instanceId).isEmpty() &&
             !controller.isComponentExist(instanceId) &&
             !controller.isToolAvailable(instanceId) &&
             !controller.isAdminTool(instanceId)) {
           throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-      }
+
     }
     return context.proceed();
   }

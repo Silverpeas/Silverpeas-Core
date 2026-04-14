@@ -51,6 +51,7 @@ public class FileUploadTag extends TagSupport {
   public static final String FILE_UPLOAD_CONTEXT = FILE_UPLOAD_ATT + "@FileUploadContext@";
 
   public static final String DEFAULT_FILE_UPLOAD_ID = "fileUpload";
+  private static final String NUMBER = "@number@";
 
   private boolean fieldset = false;
   private String title = "";
@@ -59,7 +60,7 @@ public class FileUploadTag extends TagSupport {
   private boolean dragAndDropDisplay = true;
   private String jqueryFormSelector = "";
   private Integer nbFileLimit = 0;
-  private FileUploadContext fileUploadContext = null;
+  private transient FileUploadContext fileUploadContext = null;
 
   public boolean isFieldset() {
     return fieldset;
@@ -165,47 +166,47 @@ public class FileUploadTag extends TagSupport {
           URLUtil.getApplicationURL() + "/util/javaScript/silverpeas-fileUpload.js");
       xhtmlcontainer.addElement(jsPlugin);
       String jQueryStart = "jQuery(document).ready(function(){jQuery('.fileUpload-tag').fileUpload({" +
-          "multiple:" + isMultiple() +
-          ",infoInputs:" + isInfoInputs() +
-          ",dragAndDropDisplay:" + isDragAndDropDisplay() +
-          ",jqueryFormSelector:\"" + getJqueryFormSelector() +
-          "\",nbFileLimit:" + getNbFileLimit() +
-          ",labels:{" +
-          "browse:\"" +
-          fileUploadContext.generalBundle.getString("GML.upload.choose.browse") +
-          "\",chooseFile:\"" +
-          fileUploadContext.generalBundle.getString("GML.upload.choose.file") +
-          "\",chooseFiles:\"" +
-          fileUploadContext.generalBundle.getString("GML.upload.choose.files") +
-          "\",dragAndDropFile:\"" +
-          fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.file") +
-          "\",dragAndDropFiles:\"" +
-          fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.files") +
-          "\",sendingFile:\"" +
-          fileUploadContext.generalBundle.getStringWithParams("GML.upload.sending.file", "@name@") +
-          "\",sendingFiles:\"" +
-          fileUploadContext.generalBundle
-              .getStringWithParams("GML.upload.sending.files", "@number@") +
-          "\",sendingWaitingWarning:\"" +
-          fileUploadContext.generalBundle.getString("GML.upload.warning") +
-          "\",limitFileWarning:\"" +
-          fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit") +
-          "\",limitFilesWarning:\"" +
-          fileUploadContext.generalBundle
-              .getStringWithParams("GML.upload.warning.files.limit", "@number@") +
-          "\",limitFileReached:\"" +
-          fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit.reached") +
-          "\",limitFilesReached:\"" +
-          fileUploadContext.generalBundle
-              .getStringWithParams("GML.upload.warning.files.limit.reached", "@number@") +
-          "\",title:\"" +
-          fileUploadContext.generalBundle.getString("GML.title") +
-          "\",description:\"" +
-          fileUploadContext.generalBundle.getString("GML.description") +
-          "\",deleteFile:\"" +
-          fileUploadContext.generalBundle.getString("GML.delete") +
-          "\"}" +
-          "});});";
+                           "multiple:" + isMultiple() +
+                           ",infoInputs:" + isInfoInputs() +
+                           ",dragAndDropDisplay:" + isDragAndDropDisplay() +
+                           ",jqueryFormSelector:\"" + getJqueryFormSelector() +
+                           "\",nbFileLimit:" + getNbFileLimit() +
+                           ",labels:{" +
+                           "browse:\"" +
+                           fileUploadContext.generalBundle.getString("GML.upload.choose.browse") +
+                           "\",chooseFile:\"" +
+                           fileUploadContext.generalBundle.getString("GML.upload.choose.file") +
+                           "\",chooseFiles:\"" +
+                           fileUploadContext.generalBundle.getString("GML.upload.choose.files") +
+                           "\",dragAndDropFile:\"" +
+                           fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.file") +
+                           "\",dragAndDropFiles:\"" +
+                           fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.files") +
+                           "\",sendingFile:\"" +
+                           fileUploadContext.generalBundle.getStringWithParams("GML.upload.sending.file", "@name@") +
+                           "\",sendingFiles:\"" +
+                           fileUploadContext.generalBundle
+              .getStringWithParams("GML.upload.sending.files", NUMBER) +
+                           "\",sendingWaitingWarning:\"" +
+                           fileUploadContext.generalBundle.getString("GML.upload.warning") +
+                           "\",limitFileWarning:\"" +
+                           fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit") +
+                           "\",limitFilesWarning:\"" +
+                           fileUploadContext.generalBundle
+              .getStringWithParams("GML.upload.warning.files.limit", NUMBER) +
+                           "\",limitFileReached:\"" +
+                           fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit.reached") +
+                           "\",limitFilesReached:\"" +
+                           fileUploadContext.generalBundle
+              .getStringWithParams("GML.upload.warning.files.limit.reached", NUMBER) +
+                           "\",title:\"" +
+                           fileUploadContext.generalBundle.getString("GML.title") +
+                           "\",description:\"" +
+                           fileUploadContext.generalBundle.getString("GML.description") +
+                           "\",deleteFile:\"" +
+                           fileUploadContext.generalBundle.getString("GML.delete") +
+                           "\"}" +
+                           "});});";
       script startJsPlugin =
           new script().setType("text/javascript").addElement(jQueryStart);
       xhtmlcontainer.addElement(startJsPlugin);

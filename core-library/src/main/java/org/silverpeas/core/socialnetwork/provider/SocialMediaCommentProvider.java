@@ -31,7 +31,8 @@ import org.silverpeas.core.util.ServiceProvider;
  */
 public interface SocialMediaCommentProvider<T extends SocialInformation> extends SocialInformationProvider<T> {
 
-  static SocialMediaCommentProvider<?> get() {
+  static <U extends SocialInformation> SocialMediaCommentProvider<U> get() {
+    //noinspection unchecked
     return ServiceProvider.getService(SocialMediaCommentProvider.class);
   }
 

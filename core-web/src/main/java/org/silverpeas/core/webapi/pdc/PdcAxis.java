@@ -28,25 +28,29 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.Value;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
- * An axis of the classification plan (named PdC). A PdC axis is defined by an identifier and it is
+ * An axis of the classification plan (named PdC). A PdC axis is defined by an identifier, and it is
  * made up of a set of values. An axis in the PdC generally defines a concept (a meaning) or a
- * categorization of contents in Silverpeas. An axis of the PdC is a tree whose the leaves are the
- * values. The axis can have several branches, each of them representing then an hierarchic semantic
+ * categorization of contents in Silverpeas. An axis of the PdC is a tree whose leaves are the
+ * values. The axis can have several branches, each of them representing then a hierarchic semantic
  * tree carrying a refinement of a meaning (of a value). For example, the values in the concept
  * 'geography' can be a tree in which each geographic area are divided into countries -> regions or
  * states -> departments or regions -> towns.
  */
 @XmlRootElement
-public class PdcAxis {
+public class PdcAxis implements Serializable {
 
   public static final int PRIMARY_AXIS = 0;
   public static final int SECONDARY_AXIS = 1;
@@ -119,11 +123,10 @@ public class PdcAxis {
         : SECONDARY_AXIS);
     List<PdcAxisValueEntity> theAxisValues =
         fromValues(axis.getValues(), andOriginValue, inLanguage, withThesaurus);
-    PdcAxis pdcAxis = new PdcAxis(axis.getAxisHeader().getPK().getId(), axis.getAxisHeader().
+    return new PdcAxis(axis.getAxisHeader().getPK().getId(), axis.getAxisHeader().
         getName(inLanguage)).
         ofType(axisType).
         withAsPdcAxisValues(theAxisValues, andOriginValue);
-    return pdcAxis;
   }
 
   /**
@@ -240,19 +243,16 @@ public class PdcAxis {
     if (this.mandatory != other.mandatory) {
       return false;
     }
-    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+    if (!Objects.equals(this.name, other.name)) {
       return false;
     }
-    if ((this.originValue == null) ? (other.originValue != null)
-        : !this.originValue.equals(other.originValue)) {
+    if (!Objects.equals(this.originValue, other.originValue)) {
       return false;
     }
-    if ((this.invariantValue == null) ? (other.invariantValue != null)
-        : !this.invariantValue.equals(other.invariantValue)) {
+    if (!Objects.equals(this.invariantValue, other.invariantValue)) {
       return false;
     }
-    return !(this.values != other.values && (this.values == null || !this.values.equals(
-        other.values)));
+    return Objects.equals(this.values, other.values);
   }
 
   @Override

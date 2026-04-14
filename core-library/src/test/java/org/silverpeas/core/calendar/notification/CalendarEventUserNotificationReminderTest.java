@@ -127,17 +127,17 @@ class CalendarEventUserNotificationReminderTest {
   private Period currentPeriod;
 
   @BeforeAll
-  public static void setTimeZone() {
+  static void setTimeZone() {
     TimeZone.setDefault(TimeZone.getTimeZone(UTC_ZONE_ID));
   }
 
   @AfterAll
-  public static void restoreTimeZone() {
+  static void restoreTimeZone() {
     TimeZone.setDefault(DEFAULT_TIMEZONE);
   }
 
   @BeforeEach
-  public void setup(@TestManagedMock UserProvider userProvider, @TestManagedMock
+  void setup(@TestManagedMock UserProvider userProvider, @TestManagedMock
       ComponentInstanceRoutingMapProviderByInstance componentInstanceRoutingMapProviderByInstance,
       @TestManagedMock ComponentInstanceRoutingMapProvider componentInstanceRoutingMapProvider,
       @TestManagedMock SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider,
@@ -149,8 +149,6 @@ class CalendarEventUserNotificationReminderTest {
     when(componentInstance.getName()).thenReturn(COMPONENT_NAME);
     when(silverpeasComponentInstanceProvider.getById(INSTANCE_ID)).thenReturn(
         Optional.of(componentInstance));
-    /*when(silverpeasComponentInstanceProvider.getComponentName(INSTANCE_ID)).thenReturn(
-        "componentNameTest");*/
 
     when(componentInstanceRoutingMapProviderByInstance.getByInstanceId(INSTANCE_ID)).thenReturn(
         componentInstanceRoutingMapProvider);
@@ -679,7 +677,7 @@ class CalendarEventUserNotificationReminderTest {
   private String getContent(final UserNotification userNotification, final String language) {
     return userNotification.getNotificationMetaData()
         .getContent(language)
-        .replaceAll("<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->", "");
+        .replace("<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->", "");
   }
 
   private String getTitle(final UserNotification userNotification, final String language) {

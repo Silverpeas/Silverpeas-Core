@@ -43,10 +43,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author ehugonnet
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
-public class FileServerUtilsTest {
+class FileServerUtilsTest {
 
   @Test
-  public void testGetAttachmentURL() {
+  void testGetAttachmentURL() {
     String url = FileServerUtils.getAttachmentURL("myComponent12", "toto_le_beau.JPG", "18512", "en");
     assertNotNull(url);
     assertEquals(
@@ -60,7 +60,7 @@ public class FileServerUtilsTest {
   }
 
   @Test
-  public void testGetUrlToTempDir() {
+  void testGetUrlToTempDir() {
     String url =  FileServerUtils.getUrlToTempDir("hello_world.pdf");
     assertEquals("/silverpeas/TempFileServer/hello_world.pdf", url);
     url =  FileServerUtils.getUrlToTempDir("Mon œuvre.pdf");
@@ -70,7 +70,7 @@ public class FileServerUtilsTest {
   }
 
   @Test
-  public void replaceAccentChars() {
+  void replaceAccentChars() {
     String allInput = "²1&234567890°+=})]à@ç\\_`è-|[({'#\"~é?,.;:!§ù%*µ¤$£";
     String resInput = "²1&234567890_+=})]a@c\\_`e-|[({'#\"~e?,.;:!§u%*µ¤$£";
     Map<String, String> expectedResultMapping = new HashMap<>();

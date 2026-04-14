@@ -31,7 +31,8 @@ import org.silverpeas.core.util.ServiceProvider;
  */
 public interface SocialStatusProvider<T extends SocialInformation> extends SocialInformationProvider<T> {
 
-  static SocialStatusProvider<?> get() {
+  static <U extends SocialInformation> SocialStatusProvider<U> get() {
+    //noinspection unchecked
     return ServiceProvider.getService(SocialStatusProvider.class);
   }
 }

@@ -27,12 +27,14 @@ package org.silverpeas.core.socialnetwork.provider;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * All the available providers of social information.
  * @author mmoquillon
  */
+@SuppressWarnings("unchecked")
 @Technical
 @Bean
 public class SocialInformationProviders {
@@ -65,64 +67,64 @@ public class SocialInformationProviders {
    * Gets a provider of social events.
    * @return {@link SocialEventProvider} object.
    */
-  public SocialEventProvider<?> getSocialEventsProvider() {
-    return socialEventProviders.get();
+  public <T extends SocialInformation> SocialEventProvider<T> getSocialEventsProvider() {
+    return (SocialEventProvider<T>) socialEventProviders.get();
   }
 
   /**
    * Gets a provider of medias (images and videos) authored in a user social network.
    * @return {@link SocialMediaProvider} object.
    */
-  public SocialMediaProvider<?> getSocialMediaProvider() {
-    return socialMediaProviders.get();
+  public <T extends SocialInformation> SocialMediaProvider<T> getSocialMediaProvider() {
+    return (SocialMediaProvider<T>) socialMediaProviders.get();
   }
 
   /**
    * Gets a provider of comments on social medias authored in a user social network.
    * @return {@link SocialMediaCommentProvider} object.
    */
-  public SocialMediaCommentProvider<?> getSocialMediaCommentProvider() {
-    return socialMediaCommentProviders.get();
+  public <T extends SocialInformation> SocialMediaCommentProvider<T> getSocialMediaCommentProvider() {
+    return (SocialMediaCommentProvider<T>) socialMediaCommentProviders.get();
   }
 
   /**
    * Gets a provider of publications authored in a user social network.
    * @return {@link SocialPublicationProvider} object.
    */
-  public SocialPublicationProvider<?> getSocialPublicationProvider() {
-    return socialPublicationProviders.get();
+  public <T extends SocialInformation> SocialPublicationProvider<T> getSocialPublicationProvider() {
+    return (SocialPublicationProvider<T>) socialPublicationProviders.get();
   }
 
   /**
    * Gets a provider of comments on publications authored in a user social network.
    * @return {@link SocialPublicationCommentProvider} object.
    */
-  public SocialPublicationCommentProvider<?> getSocialPublicationCommentProvider() {
-    return socialPublicationCommentProviders.get();
+  public <T extends SocialInformation> SocialPublicationCommentProvider<T> getSocialPublicationCommentProvider() {
+    return (SocialPublicationCommentProvider<T>) socialPublicationCommentProviders.get();
   }
 
   /**
    * Gets a provider of comments on news published in a user social network.
    * @return {@link SocialNewsCommentProvider} object.
    */
-  public SocialNewsCommentProvider<?> getSocialNewsCommentProvider() {
-    return socialNewsCommentProviders.get();
+  public <T extends SocialInformation> SocialNewsCommentProvider<T> getSocialNewsCommentProvider() {
+    return (SocialNewsCommentProvider<T>) socialNewsCommentProviders.get();
   }
 
   /**
    * Gets a provider of status of users.
    * @return {@link SocialStatusProvider} object.
    */
-  public SocialStatusProvider<?> getSocialStatusProvider() {
-    return socialStatusProviders.get();
+  public <T extends SocialInformation> SocialStatusProvider<T> getSocialStatusProvider() {
+    return (SocialStatusProvider<T>) socialStatusProviders.get();
   }
 
   /**
    * Gets provider of user relationships.
    * @return {@link SocialRelationShipProvider} object.
    */
-  public SocialRelationShipProvider<?> getSocialRelationShipProvider() {
-    return socialRelationShipProviders.get();
+  public <T extends SocialInformation> SocialRelationShipProvider<T> getSocialRelationShipProvider() {
+    return (SocialRelationShipProvider<T>) socialRelationShipProviders.get();
   }
 }
   

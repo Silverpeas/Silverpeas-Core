@@ -47,7 +47,7 @@ public class ExportServlet extends HttpServlet {
 
   private static final String TYPE_ARRAYPANE = "ArrayPane";
 
-  private final HtmlCleaner cleaner = new HtmlCleaner();
+  private final transient HtmlCleaner cleaner = new HtmlCleaner();
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {

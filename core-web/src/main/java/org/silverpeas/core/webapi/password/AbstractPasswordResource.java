@@ -80,6 +80,7 @@ public abstract class AbstractPasswordResource extends RESTWebService {
    * handled at this level.
    * @return the language code
    */
+  @Override
   protected String getLanguage() {
     final String language;
     if (getUser() != null) {

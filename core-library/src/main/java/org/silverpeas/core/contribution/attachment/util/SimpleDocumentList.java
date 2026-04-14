@@ -85,7 +85,7 @@ public class SimpleDocumentList<T extends SimpleDocument>
   }
 
   /**
-   * Removes from the current list all documents which content is in an other language than the one
+   * Removes from the current list all documents which content is in another language than the one
    * returned by {@link #getQueryLanguage()}.
    * If {@link #getQueryLanguage()} returns null or an unknown language, nothing is done.
    * @return itself.
@@ -127,7 +127,7 @@ public class SimpleDocumentList<T extends SimpleDocument>
    * </p>
    * <p>
    *   In other words, it means that the documents MUST be ordered from lowest to greatest order
-   *   index ({@link SimpleDocument#getOrder()}) when calling this method. Otherwise the result
+   *   index ({@link SimpleDocument#getOrder()}) when calling this method. Otherwise, the result
    *   is not consistent.
    * </p>
    * @return true if the list is sorted manually (and so the list is ordered on order document
@@ -190,7 +190,7 @@ public class SimpleDocumentList<T extends SimpleDocument>
     private static final long serialVersionUID = 4826457857348422450L;
 
     private final Map<String, Integer> languagePriorityCache = new HashMap<>();
-    private final ORDER_BY[] orderBy;
+    private final ORDER_BY[] orderBys;
 
     /**
      * Default constructor.
@@ -200,7 +200,7 @@ public class SimpleDocumentList<T extends SimpleDocument>
     private LanguageAndLastUpdateComparator(final String[] languageOrderedByPriority,
         ORDER_BY... orderBy) {
       super();
-      this.orderBy = orderBy;
+      this.orderBys = orderBy;
       var allLanguagesByPriority = I18n.get().getSupportedLanguageCodes();
       if (ArrayUtil.contains(orderBy, ORDER_BY.LANGUAGE_PRIORITY_DESC)) {
         for (String language : allLanguagesByPriority) {
@@ -219,7 +219,7 @@ public class SimpleDocumentList<T extends SimpleDocument>
     @Override
     protected ValueBuffer getValuesToCompare(final T simpleDocument) {
       ValueBuffer valueBuffer = new ValueBuffer();
-      for (ORDER_BY orderBy : orderBy) {
+      for (ORDER_BY orderBy : orderBys) {
         switch (orderBy) {
           case LANGUAGE_PRIORITY_DESC:
             valueBuffer.append(getLanguagePriorityIndex(simpleDocument), orderBy.isAscending());

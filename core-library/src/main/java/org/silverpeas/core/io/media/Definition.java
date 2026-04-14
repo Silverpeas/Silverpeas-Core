@@ -26,11 +26,14 @@ package org.silverpeas.core.io.media;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serializable;
+
 /**
- * A container to handle resolution informations.
- * @author: Yohann Chastagnier
+ * A container to handle resolution information.
+ *
+ * @author Yohann Chastagnier
  */
-public class Definition {
+public class Definition implements Serializable {
 
   public static final Definition NULL = of(0, 0);
 
@@ -43,7 +46,8 @@ public class Definition {
 
   /**
    * Gets an instance with width and height set to zero.
-   * @return
+   *
+   * @return a new empty {@link Definition} instance.
    */
   public static Definition fromZero() {
     return new Definition(0, 0);
@@ -51,33 +55,37 @@ public class Definition {
 
   /**
    * Gets an instance initialized with given sizes.
-   * @param width
-   * @param height
-   * @return
+   *
+   * @param width the width of a visual media
+   * @param height the height of a visual media
+   * @return a new visual media definition
    */
   public static Definition of(final int width, final int height) {
     return new Definition(width, height);
   }
 
   /**
-   * Indicates if one one dimension is defined.
-   * @return
+   * Indicates whether one dimension is defined.
+   *
+   * @return true if this definition isn't empty.
    */
   public boolean isDefined() {
     return isWidthDefined() || isHeightDefined();
   }
 
   /**
-   * Indicates if width is defined.
-   * @return
+   * Indicates whether width is defined.
+   *
+   * @return true if the width property is defined.
    */
   public boolean isWidthDefined() {
     return getWidth() > 0;
   }
 
   /**
-   * Indicates if height is defined.
-   * @return
+   * Indicates whether height is defined.
+   *
+   * @return true if the height property is defined.
    */
   public boolean isHeightDefined() {
     return getHeight() > 0;
@@ -85,7 +93,8 @@ public class Definition {
 
   /**
    * Gets the width.
-   * @return
+   *
+   * @return the width in pixels.
    */
   public int getWidth() {
     return width;
@@ -93,7 +102,8 @@ public class Definition {
 
   /**
    * Sets the width.
-   * @param width
+   *
+   * @param width the width in pixels.
    */
   public Definition widthOf(final int width) {
     this.width = width;
@@ -102,7 +112,8 @@ public class Definition {
 
   /**
    * Gets the height.
-   * @return
+   *
+   * @return the height in pixels.
    */
   public int getHeight() {
     return height;
@@ -110,7 +121,8 @@ public class Definition {
 
   /**
    * Sets the height.
-   * @param height
+   *
+   * @param height the height in pixels.
    */
   public Definition heightOf(final int height) {
     this.height = height;

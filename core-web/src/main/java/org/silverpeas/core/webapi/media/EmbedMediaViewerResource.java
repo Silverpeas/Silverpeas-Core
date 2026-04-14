@@ -23,13 +23,15 @@
  */
 package org.silverpeas.core.webapi.media;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.kernel.cache.model.Cache;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.ViewService;
@@ -37,22 +39,15 @@ import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 import org.silverpeas.core.webapi.viewer.ResourceView;
+import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
 import java.nio.file.Paths;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
 import static org.silverpeas.core.viewer.model.ViewerSettings.pdfViewerEditionToolsEnabled;
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.viewer.ResourceViewProvider.getAuthorizedResourceView;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A common service to view resources with an embed viewer.

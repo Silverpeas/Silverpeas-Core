@@ -49,13 +49,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
-public class RequestParameterDecoderTest {
+class RequestParameterDecoderTest {
 
-  private final Date TODAY = DateUtil.getNow();
+  private final Date today = DateUtil.getNow();
   private HttpRequest httpRequestMock;
 
   @BeforeEach
-  public void setup() throws ParseException {
+  void setup() throws ParseException {
     httpRequestMock = mock(HttpRequest.class);
 
     when(httpRequestMock.getParameter(anyString())).then(invocation -> {
@@ -84,14 +84,15 @@ public class RequestParameterDecoderTest {
             return "false";
           case "anEnum":
             return EnumWithoutCreationAnnotation.VALUE_A.name();
+          default:
+            return null;
         }
       }
       return null;
     });
     when(httpRequestMock.getParameterAsRequestFile(anyString())).then(invocation -> {
       String parameterName = (String) invocation.getArguments()[0];
-      if (StringUtil.isDefined(parameterName)) {
-        if (parameterName.equals("aRequestFile")) {
+      if (StringUtil.isDefined(parameterName) && parameterName.equals("aRequestFile")) {
           FileItem fileItem = mock(FileItem.class);
           when(fileItem.getFileName()).thenReturn("fileName");
           when(fileItem.getSize()).thenReturn(26L);
@@ -99,16 +100,15 @@ public class RequestParameterDecoderTest {
           when(fileItem.getInputStream()).thenReturn(FileUtils.openInputStream(getImageResource()));
           return new RequestFile(fileItem);
         }
-      }
+
       return null;
     });
     when(httpRequestMock.getParameterAsDate(anyString())).then(invocation -> {
       String parameterName = (String) invocation.getArguments()[0];
-      if (StringUtil.isDefined(parameterName)) {
-        if (parameterName.equals("aDate")) {
-          return TODAY;
+      if (StringUtil.isDefined(parameterName) && parameterName.equals("aDate")) {
+          return today;
         }
-      }
+
       return null;
     });
     when(httpRequestMock.getParameterValues(anyString())).then((Answer<String[]>) invocation -> {
@@ -131,7 +131,7 @@ public class RequestParameterDecoderTest {
   }
 
   @Test
-  public void decode() throws Exception {
+  void decode() throws Exception {
     PoJo result = RequestParameterDecoder.decode(httpRequestMock, PoJo.class);
     assertThat(result.getaStringWithoutAnnotation(), nullValue());
     try {
@@ -154,7 +154,7 @@ public class RequestParameterDecoderTest {
     assertThat(result.getaBoolean(), is(true));
     assertThat(result.isaPrimitiveBoolean(), is(false));
     assertThat(result.getaDateNotInParameter(), nullValue());
-    assertThat(result.getaDate(), is(TODAY));
+    assertThat(result.getaDate(), is(today));
     assertThat(result.getAnEnumNotInParameter(), nullValue());
     assertThat(result.getAnEnum(), is(EnumWithoutCreationAnnotation.VALUE_A));
     assertThat(result.getAnUriNotInParameter(), nullValue());
@@ -165,7 +165,7 @@ public class RequestParameterDecoderTest {
   }
 
   @Test
-  public void decodeWithNotHandledType() {
+  void decodeWithNotHandledType() {
     assertThrows(RuntimeException.class,
         () -> RequestParameterDecoder.decode(httpRequestMock, PoJoWithNotHandledType.class));
   }

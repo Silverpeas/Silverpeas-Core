@@ -41,10 +41,10 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
  */
 public interface SocialInformationProviderSwitcher {
 
-  List<? extends SocialInformation> getSocialInformationsList(SocialInformationType socialInformationType,
-      SocialInfoContext context) ;
+  <T extends SocialInformation> List<T> getSocialInformationsList(
+      SocialInformationType socialInformationType, SocialInfoContext context) ;
 
-  List<? extends SocialInformation> getSocialInformationsListOfMyContacts(
+  <T extends SocialInformation> List<T> getSocialInformationsListOfMyContacts(
       SocialInformationType socialInformationType, SocialInfoContext context);
 
   class SocialInfoContext {

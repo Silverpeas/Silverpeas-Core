@@ -56,11 +56,14 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
  */
 public class DriverUtil {
 
+  private DriverUtil() {
+  }
+
   private static final Logger logger = Logger.getLogger("org.silverpeas.web.portlets.portal",
       "org.silverpeas.portlets.PCDLogMessages");
-  private static final int renderParameterPrefixLength =
+  private static final int RENDER_PARAMETER_PREFIX_LENGTH =
       PortletContainerConstants.RENDER_PARAM_PREFIX.length();
-  private static final int scopedAttributesPrefixLength =
+  private static final int SCOPED_ATTRIBUTES_PREFIX_LENGTH =
       PortletContainerConstants.SCOPED_ATTRIBUTES_PREFIX.length();
 
   public static void init(HttpServletRequest request) {
@@ -215,9 +218,9 @@ public class DriverUtil {
       while (attrNames.hasMoreElements()) {
         attrName = attrNames.nextElement();
         int index = attrName.indexOf(PortletContainerConstants.RENDER_PARAM_PREFIX);
-        removeAttribute(session, undeployedPortlets, attrName, index, renderParameterPrefixLength);
+        removeAttribute(session, undeployedPortlets, attrName, index, RENDER_PARAMETER_PREFIX_LENGTH);
         index = attrName.indexOf(PortletContainerConstants.SCOPED_ATTRIBUTES_PREFIX);
-        removeAttribute(session, undeployedPortlets, attrName, index, scopedAttributesPrefixLength);
+        removeAttribute(session, undeployedPortlets, attrName, index, SCOPED_ATTRIBUTES_PREFIX_LENGTH);
       }
       // Remove PortletWindowData Object for the undeployed portlets from the session
       removePortletWindowData(session, undeployedPortlets);

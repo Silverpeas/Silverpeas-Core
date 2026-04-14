@@ -54,7 +54,6 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
@@ -731,8 +730,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return publicationService;
   }
 
-  public String getSpaceHomePage(String spaceId, HttpServletRequest request)
-      throws UnsupportedEncodingException {
+  public String getSpaceHomePage(String spaceId, HttpServletRequest request) {
     final SpaceHomepageProxy spaceStruct = SpaceHomepageProxyManager.get()
         .getProxyOf(getOrganisationController().getSpaceInstById(spaceId));
     // Page d'accueil de l'espace = Composant

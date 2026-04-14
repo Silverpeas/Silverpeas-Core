@@ -305,7 +305,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private WysiwygContent content;
 
   @Transient
-  private CalendarEventRepository repository;
+  private transient CalendarEventRepository repository;
 
   /**
    * Constructs a new calendar event that spawns to the specified period of time.
@@ -839,10 +839,10 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public CalendarEvent planOn(final Calendar calendar) {
     CalendarEvent event = Transaction.performInOne(() -> {
       if (!isPersisted()) {
-        CalendarEventRepository repository = getRepository();
+        CalendarEventRepository evtRepository = getRepository();
         setCalendar(calendar);
         normalize();
-        CalendarEvent savedEvent = repository.save(this);
+        CalendarEvent savedEvent = evtRepository.save(this);
         savedEvent.getContent().ifPresent(WysiwygContent::save);
         return savedEvent;
       }
@@ -1227,8 +1227,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private void deleteFromPersistence() {
     if (isPersisted()) {
       Transaction.getTransaction().perform(() -> {
-        CalendarEventRepository repository = getRepository();
-        repository.delete(this);
+        CalendarEventRepository evtRepository = getRepository();
+        evtRepository.delete(this);
         WysiwygContent.deleteAllContents(this);
         return null;
       });
@@ -1238,9 +1238,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private CalendarEvent updateIntoPersistence() {
     if (getNativeId() != null) {
       return Transaction.getTransaction().perform(() -> {
-        CalendarEventRepository repository = getRepository();
+        CalendarEventRepository evtRepository = getRepository();
         getContent().filter(WysiwygContent::isModified).ifPresent(WysiwygContent::save);
-        return repository.save(this);
+        return evtRepository.save(this);
       });
     }
     return this;
@@ -1248,9 +1248,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   private long deleteAllOccurrencesFromPersistence() {
     return Transaction.performInOne(() -> {
-      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      List<CalendarEventOccurrence> occurrences = repository.getAllByEvent(this);
-      repository.delete(occurrences);
+      CalendarEventOccurrenceRepository evtRepository = CalendarEventOccurrenceRepository.get();
+      List<CalendarEventOccurrence> occurrences = evtRepository.getAllByEvent(this);
+      evtRepository.delete(occurrences);
       return occurrences.size();
     });
   }

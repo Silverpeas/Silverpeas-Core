@@ -23,21 +23,14 @@
  */
 package org.silverpeas.core.web.mvc.route;
 
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestedBean;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-
-import jakarta.servlet.http.HttpServletRequest;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -49,7 +42,7 @@ import static org.mockito.Mockito.when;
  * @author ehugonnet
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
-public class ComponentRequestRouterTest {
+class ComponentRequestRouterTest {
 
   @TestManagedMock
   private OrganizationController mockedOrganizationController;
@@ -57,34 +50,9 @@ public class ComponentRequestRouterTest {
   @TestedBean
   private SilverpeasWebUtil util;
 
-  @BeforeEach
-  public void setup() {
-    //noinspection unused
-    ComponentRequestRouter<?> router = new ComponentRequestRouter<>() {
-
-      private static final long serialVersionUID = 2578618196722321170L;
-
-      @Override
-      public String getDestination(String function, ComponentSessionController componentSC, HttpRequest request) {
-        return "destination";
-      }
-
-      @Override
-      public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl,
-          ComponentContext componentContext) {
-        return new AbstractComponentSessionController(mainSessionCtrl, componentContext) {
-        };
-      }
-
-      @Override
-      public String getSessionControlBeanName() {
-        return "mytests";
-      }
-    };
-  }
 
   @Test
-  public void testGetComponentId() {
+  void testGetComponentId() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     when(request.getPathInfo()).thenReturn("/mytests2/ListeContacts");
     when(request.getRequestURI()).thenReturn("/silverpeas/Rmytests/mytests2/ListeContacts");

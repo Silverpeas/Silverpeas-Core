@@ -84,7 +84,7 @@ public class WebApplicationExceptionSilverpeasMapper
   @XmlAccessorType(XmlAccessType.PROPERTY)
   private static class ErrorMessage {
     private String status;
-    private String errorMessage;
+    private String msg;
 
     @XmlElement
     public String getStatus() {
@@ -97,11 +97,11 @@ public class WebApplicationExceptionSilverpeasMapper
 
     @XmlElement
     public String getErrorMessage() {
-      return errorMessage;
+      return msg;
     }
 
     public void setErrorMessage(String errorMessage) {
-      this.errorMessage = errorMessage;
+      this.msg = errorMessage;
     }
   }
 }

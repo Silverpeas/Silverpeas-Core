@@ -54,6 +54,9 @@ public class NodeI18NDAO {
   private static final String INSERT_TRANSLATION = "INSERT INTO " + TABLENAME + " VALUES (?, ?, ?, ?, ?)";
   private static final String UPDATE_TRANSLATION = "UPDATE " + TABLENAME + " SET lang = ?, nodeName =  ?, nodeDescription = ?  WHERE id = ?";
 
+  private NodeI18NDAO() {
+  }
+
   /**
    * Deletes all translations of publications linked to the component instance represented by the
    * given identifier.

@@ -44,7 +44,6 @@ import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 
 import jakarta.servlet.jsp.JspException;
-import jakarta.servlet.jsp.JspTagException;
 import jakarta.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.util.HashMap;

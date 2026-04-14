@@ -54,7 +54,7 @@ public class SocialInformationService {
    * @param period the period in time the information was published.
    * @return a list of the user's social information
    */
-  public List<? extends SocialInformation> getSocialInformationsList(
+  public <T extends SocialInformation> List<T> getSocialInformationsList(
       SocialInformationType socialInformationType, String userId,
       String classification, Period period) {
     try {
@@ -77,7 +77,7 @@ public class SocialInformationService {
    * @param period the period in time the information was published.
    * @return a list of the user's social information
    */
-  public List<? extends SocialInformation> getSocialInformationsListOfMyContact(
+  public <T extends SocialInformation> List<T> getSocialInformationsListOfMyContact(
       SocialInformationType socialInformationType, String userId,
       List<String> contactIds, Period period) {
     try {

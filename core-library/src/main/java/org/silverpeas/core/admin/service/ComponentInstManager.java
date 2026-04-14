@@ -138,12 +138,12 @@ public class ComponentInstManager {
 
       // duplicates existing translations
       Map<String, ComponentI18N> translations = componentInst.getTranslations();
-      for (Map.Entry<String, ComponentI18N> i18n : translations.entrySet()) {
-        if (!i18n.getKey().equals(newInstance.lang)) {
+      for (Map.Entry<String, ComponentI18N> i18nBean : translations.entrySet()) {
+        if (!i18nBean.getKey().equals(newInstance.lang)) {
           // default language stored in main table must not be stored in i18n table
-          ComponentI18N translation = i18n.getValue();
+          ComponentI18N translation = i18nBean.getValue();
           ComponentInstanceI18NRow row =
-              new ComponentInstanceI18NRow(newInstance.id, i18n.getKey(), translation.getName(),
+              new ComponentInstanceI18NRow(newInstance.id, i18nBean.getKey(), translation.getName(),
               translation.getDescription());
           organizationSchema.instanceI18N().createTranslation(row);
         }

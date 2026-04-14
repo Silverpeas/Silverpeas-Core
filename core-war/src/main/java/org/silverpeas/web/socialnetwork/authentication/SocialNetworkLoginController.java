@@ -59,7 +59,7 @@ public class SocialNetworkLoginController extends HttpServlet {
 
   @Inject
   private UserRegistrationService userRegistrationService;
-  private RegistrationSettings registrationSettings = null;
+  private transient RegistrationSettings registrationSettings = null;
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {

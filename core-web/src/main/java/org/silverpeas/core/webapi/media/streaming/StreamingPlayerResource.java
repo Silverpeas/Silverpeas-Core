@@ -23,25 +23,24 @@
  */
 package org.silverpeas.core.webapi.media.streaming;
 
-import org.jboss.resteasy.plugins.providers.html.View;
-import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.io.media.Definition;
-import org.silverpeas.core.web.rs.RESTWebService;
-
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.resteasy.plugins.providers.html.View;
+import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.io.media.Definition;
+import org.silverpeas.core.web.rs.RESTWebService;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
-import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.web.http.RequestParameterDecoder.decode;
 import static org.silverpeas.core.webapi.media.streaming.StreamingProviderDataEntity.from;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * A common service to play external streaming into an embed context.

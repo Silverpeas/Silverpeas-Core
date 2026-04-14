@@ -55,6 +55,7 @@ public abstract class AbstractMessageResource extends RESTWebService {
    * handled at this level.
    * @return the language code
    */
+  @Override
   protected String getLanguage() {
     if (getUser() != null) {
       return getUserPreferences().getLanguage();
