@@ -32,6 +32,8 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -55,9 +57,9 @@ public class NavBarManager {
 
   public void resetSpaceCache(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
-    DisplaySorted elmt = getSpaceCache(spaceId);
-    if (elmt != null) {
-      elmt.copy(buildSpaceObject(spaceId));
+    DisplaySorted elt = getSpaceCache(spaceId);
+    if (elt != null) {
+      elt.copy(buildSpaceObject(spaceId));
       if (spaceId.equals(currentSpaceId)) {
         setCurrentSpace(currentSpaceId);
       } else if (spaceId.equals(currentSubSpaceId)) {
@@ -69,10 +71,10 @@ public class NavBarManager {
   public void addSpaceInCache(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
     manageableSpaces.add(spaceId);
-    DisplaySorted newElmt = buildSpaceObject(spaceId);
-    if (newElmt != null) {
-      if (newElmt.getType() == DisplaySorted.TYPE_SPACE) {
-        spaces.put(spaceId, newElmt);
+    DisplaySorted newElt = buildSpaceObject(spaceId);
+    if (newElt != null) {
+      if (newElt.getType() == DisplaySorted.TYPE_SPACE) {
+        spaces.put(spaceId, newElt);
       } else {
         // Sub Space case
         setCurrentSpace(currentSpaceId);
@@ -82,8 +84,8 @@ public class NavBarManager {
 
   public void removeSpaceInCache(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
-    Optional<DisplaySorted> elmt = ofNullable(getSpaceCache(spaceId));
-    elmt.ifPresent(e -> {
+    Optional<DisplaySorted> elt = ofNullable(getSpaceCache(spaceId));
+    elt.ifPresent(e -> {
       if (e.getType() == DisplaySorted.TYPE_SPACE) {
         removeRootSpaceInCache(spaceId);
       } else {
@@ -166,14 +168,12 @@ public class NavBarManager {
    * @param operation the operation to apply on each root space of Silverpeas.
    */
   public void applyOnAvailableRootSpaces(Consumer<Collection<DisplaySorted>> operation) {
-    TreeSet<DisplaySorted> rootSpacesCopy;
     var rootSpaces = getAvailableSpaces();
     synchronized (rootSpaces) {
-      // the copy construction use iterators, then the original tree set has to be synchronized
-      rootSpacesCopy = new TreeSet<>(rootSpaces);
-      operation.accept(rootSpacesCopy);
+      operation.accept(rootSpaces);
     }
   }
+
 
   public String getCurrentSpaceId() {
     return currentSpaceId;
@@ -232,12 +232,9 @@ public class NavBarManager {
    * @param operation the operation to apply on each component instances of Silverpeas.
    */
   public void applyOnAvailableSpaceComponents(Consumer<Collection<DisplaySorted>> operation) {
-    SortedSet<DisplaySorted> componentsCopy;
     var components = getAvailableSpaceComponents();
     synchronized (components) {
-      // the copy construction use iterators, then the original tree set has to be synchronized
-      componentsCopy = new TreeSet<>(components);
-      operation.accept(componentsCopy);
+      operation.accept(components);
     }
   }
 
@@ -265,13 +262,10 @@ public class NavBarManager {
    * @param operation the operation to apply on each subspace of the current space.
    */
   public void applyOnAvailableSubSpaces(Consumer<Collection<DisplaySorted>> operation) {
-    TreeSet<DisplaySorted> subspacesCopy;
     var subspaces = getAvailableSubSpaces();
     synchronized (subspaces) {
-      // the copy construction use iterators, then the original tree set has to be synchronized
-      subspacesCopy = new TreeSet<>(subspaces);
+      operation.accept(subspaces);
     }
-    operation.accept(subspacesCopy);
   }
 
   public String getCurrentSubSpaceId() {
@@ -319,12 +313,9 @@ public class NavBarManager {
    * @param operation the operation to apply on each component instances of Silverpeas.
    */
   public void applyOnAvailableSubspaceComponents(Consumer<Collection<DisplaySorted>> operation) {
-    TreeSet<DisplaySorted> subspaceComponentsCopy;
     var components = getAvailableSubSpaceComponents();
     synchronized (components) {
-      // the copy construction use iterators, then the original tree set has to be synchronized
-      subspaceComponentsCopy = new TreeSet<>(components);
-      operation.accept(subspaceComponentsCopy);
+      operation.accept(components);
     }
   }
 
@@ -392,14 +383,14 @@ public class NavBarManager {
   }
 
   protected boolean isAdminOfSpace(SpaceInstLight spaceInst) {
-    boolean valret = manageableSpaces.contains(String.valueOf(spaceInst.getLocalId())) ||
+    boolean result = manageableSpaces.contains(String.valueOf(spaceInst.getLocalId())) ||
         manageableSpaces.contains(getShortSpaceId(spaceInst.getFatherId()));
     SpaceInstLight parcSpaceInst = spaceInst;
-    while (!valret && !parcSpaceInst.isRoot()) {
+    while (!result && !parcSpaceInst.isRoot()) {
       parcSpaceInst = adminCtrl.getSpaceInstLight(parcSpaceInst.getFatherId());
-      valret = manageableSpaces.contains(String.valueOf(parcSpaceInst.getLocalId()));
+      result = manageableSpaces.contains(String.valueOf(parcSpaceInst.getLocalId()));
     }
-    return valret;
+    return result;
   }
 
   protected Stream<DisplaySorted> createComponentObjects(SpaceInst spaceInst) {
@@ -434,6 +425,7 @@ public class NavBarManager {
 
     private final SortedSet<DisplaySorted> sortedData = synchronizedSortedSet(new TreeSet<>());
     private final Map<String, DisplaySorted> cache = synchronizedMap(new HashMap<>());
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     DisplaySortedCache() {
       super();
@@ -469,7 +461,12 @@ public class NavBarManager {
      * @return sorted instances.
      */
     public SortedSet<DisplaySorted> getSorted() {
-      return sortedData;
+      lock.readLock().lock();
+      try {
+        return new TreeSet<>(sortedData);
+      } finally {
+        lock.readLock().unlock();
+      }
     }
 
     /**
@@ -496,8 +493,13 @@ public class NavBarManager {
      * @param data the data to set into cache.
      */
     public synchronized void set(final Stream<DisplaySorted> data) {
-      clear();
-      data.forEach(d -> put(d.getId(), d));
+      lock.writeLock().lock();
+      try {
+        sortedData.clear();
+        data.forEach(d -> put(d.getId(), d));
+      } finally {
+        lock.writeLock().unlock();
+      }
     }
   }
 }
