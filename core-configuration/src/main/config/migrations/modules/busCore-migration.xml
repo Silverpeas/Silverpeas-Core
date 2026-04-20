@@ -96,7 +96,6 @@
 
   <upgrade fromVersion="047">
     <script name="alter_table.sql" type="sql"/>
-    <script name="convertCommunityGroupsAndSpaces.groovy" type="groovy"/>
   </upgrade>
 
 </migration>
