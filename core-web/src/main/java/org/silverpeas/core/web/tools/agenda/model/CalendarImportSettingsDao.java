@@ -28,7 +28,7 @@ import org.silverpeas.core.util.ServiceProvider;
 
 public interface CalendarImportSettingsDao {
 
-  public static CalendarImportSettingsDao getInstance() {
+  static CalendarImportSettingsDao getInstance() {
     return ServiceProvider.getService(CalendarImportSettingsDao.class);
   }
 
@@ -38,14 +38,14 @@ public interface CalendarImportSettingsDao {
    * @return CalendarImportSettings object containing user settings
    * @see org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings
    */
-  public CalendarImportSettings getUserSettings(String userId);
+  CalendarImportSettings getUserSettings(String userId);
 
   /**
    * Save synchronisation user settings
    * @param settings CalendarImportSettings object containing user settings
    * @see org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings
    */
-  public void saveUserSettings(CalendarImportSettings settings)
+  void saveUserSettings(CalendarImportSettings settings)
       throws AgendaException;
 
   /**
@@ -53,7 +53,7 @@ public interface CalendarImportSettingsDao {
    * @param settings CalendarImportSettings object containing user settings
    * @see org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings
    */
-  public void updateUserSettings(CalendarImportSettings settings)
+  void updateUserSettings(CalendarImportSettings settings)
       throws AgendaException;
 
 }

@@ -34,9 +34,9 @@ import org.apache.jackrabbit.oak.spi.security.SecurityConfiguration;
 import org.apache.jackrabbit.oak.spi.security.SecurityProvider;
 import org.apache.jackrabbit.oak.spi.security.authentication.AuthenticationConfiguration;
 import org.apache.jackrabbit.oak.spi.security.authorization.AuthorizationConfiguration;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -68,21 +68,21 @@ public class SilverpeasSecurityProvider implements SecurityProvider {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public ConfigurationParameters getParameters(@Nullable final String name) {
     return ConfigurationParameters.EMPTY;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Iterable<? extends SecurityConfiguration> getConfigurations() {
     return Set.of(authenticationConfig, authorizationConfig);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  @Nonnull
-  public <T> T getConfiguration(@Nonnull final Class<T> configClass) {
+  @NonNull
+  public <T> T getConfiguration(@NonNull final Class<T> configClass) {
     if (AuthenticationConfiguration.class == configClass) {
       return (T) authenticationConfig;
     } else if (AuthorizationConfiguration.class == configClass) {
@@ -92,7 +92,7 @@ public class SilverpeasSecurityProvider implements SecurityProvider {
     }
   }
 
-  private <T extends SecurityConfiguration> T initDefaultConfiguration(@Nonnull T config) {
+  private <T extends SecurityConfiguration> T initDefaultConfiguration(@NonNull T config) {
     if (config instanceof ConfigurationBase) {
       ConfigurationBase cfg = (ConfigurationBase) config;
       cfg.setRootProvider(rootProvider);

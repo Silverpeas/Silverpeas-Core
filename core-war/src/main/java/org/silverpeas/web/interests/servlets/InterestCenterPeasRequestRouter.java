@@ -104,7 +104,7 @@ public class InterestCenterPeasRequestRouter
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
 

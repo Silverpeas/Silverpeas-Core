@@ -30,9 +30,9 @@
   response.setHeader("Pragma", "no-cache");
   response.setHeader("Cache-control", "no-cache");
 %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/chat" prefix="chatTags" %>
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="org.silverpeas.kernel.util.StringUtil" %>

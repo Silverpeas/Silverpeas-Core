@@ -26,11 +26,13 @@ package org.silverpeas.core.silverstatistics.volume.service;
 import jakarta.annotation.Resource;
 import jakarta.jms.Queue;
 import jakarta.jms.TextMessage;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.util.ServiceProvider;
 
+@Bean
 public final class SilverStatisticsSender {
 
   @Resource(lookup = "java:/jms/queue/statisticsQueue")

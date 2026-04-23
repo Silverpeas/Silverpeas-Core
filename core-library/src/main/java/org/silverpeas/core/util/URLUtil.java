@@ -96,6 +96,7 @@ public class URLUtil {
   public static final int URL_VERSION = 9;
   public static final int URL_MEDIA = 10;
   public static final int URL_NEWSLETTER = 11;
+  public static final int URL_CONTRIBUTION = 12;
   private static final String CURRENT_SERVER_URL_CACHE_KEY =
       URLUtil.class.getSimpleName() + ".currentServerURL";
   private static final String CURRENT_LOCAL_SERVER_URL_CACHE_KEY =
@@ -457,7 +458,8 @@ public class URLUtil {
     QUESTION(URL_QUESTION, "/Question/"),
     FORUM_MESSAGE(URL_MESSAGE, "/ForumsMessage/"),
     MEDIA(URL_MEDIA, "/Media/"),
-    NEWSLETTER(URL_NEWSLETTER, "/Newsletter/");
+    NEWSLETTER(URL_NEWSLETTER, "/Newsletter/"),
+    CONTRIBUTION(URL_CONTRIBUTION, "/Contribution/");
     private final int type;
     private final String urlPrefix;
 

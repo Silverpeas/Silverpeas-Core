@@ -26,9 +26,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
-<%@ taglib prefix="vies" uri="http://www.silverpeas.com/tld/viewGenerator" %>
+<%@ taglib prefix="vies" uri="silverpeas.tags.viewGenerator" %>
 <%
     QualifiedUsers           qualifiedUsers = (QualifiedUsers)request.getAttribute( "QualifiedUsers" );
     Boolean                  fDisplayRoleSelector = (Boolean)request.getAttribute( "RoleSelector" ),

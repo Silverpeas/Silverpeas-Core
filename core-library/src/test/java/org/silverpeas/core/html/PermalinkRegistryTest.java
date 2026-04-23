@@ -70,7 +70,7 @@ class PermalinkRegistryTest {
     for (final String permalinkPart : PERMALINK_PARTS) {
       assertPermalinkPart(permalinkPart, true);
     }
-    assertPermalinkPart(CONTRIBUTION_PERMALINK_PART, false);
+    assertPermalinkPart(CONTRIBUTION_PERMALINK_PART, true);
   }
 
   @Test

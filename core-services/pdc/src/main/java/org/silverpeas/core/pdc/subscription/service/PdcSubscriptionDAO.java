@@ -27,11 +27,11 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
+import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionRuntimeException;
-import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,75 +39,56 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PdcSubscriptionDAO {
 
-  public final static String PDC_SUBSRIPTION_TABLE_NAME = "SB_PDC_Subscription";
-  public final static String PDC_SUBSRIPTION_AXIS_TABLE_NAME = "SB_PDC_Subscription_Axis";
-  public static final String GET_SUBSCRIPTION_BY_USERID_QUERY = "SELECT id, name, ownerId "
-      + " FROM " + PDC_SUBSRIPTION_TABLE_NAME + " WHERE ownerId = ? ";
+  private PdcSubscriptionDAO() {
+    /* This utility class should not be instantiated */
+  }
 
-  public static List<PdcSubscription> getPDCSubscriptionByUserId(Connection conn, int userId)
+  private static final String PD_SUBSCRIPTION_TABLE_NAME = "SB_PDC_Subscription";
+  private static final String PD_SUBSCRIPTION_AXIS_TABLE_NAME = "SB_PDC_Subscription_Axis";
+  private static final String GET_SUBSCRIPTION_BY_USERID_QUERY =
+      "SELECT id, name, ownerId " + " FROM " + PD_SUBSCRIPTION_TABLE_NAME + " WHERE ownerId = ? ";
+
+  public static List<PdcSubscription> getPDCSubscriptionByUserId(@NonNull Connection conn,
+      int userId)
       throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.getPDCSubscriptionByUserId",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
+    Objects.requireNonNull(conn);
     if (userId < 0) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.getPDCSubscriptionByUserId",
-          SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
+      throw new PdcSubscriptionRuntimeException("No valid user specified for the PdC " +
+                                                "subscription: " + userId);
     }
     List<PdcSubscription> result = new ArrayList<>();
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = conn.prepareStatement(GET_SUBSCRIPTION_BY_USERID_QUERY);
+    try (PreparedStatement prepStmt = conn.prepareStatement(GET_SUBSCRIPTION_BY_USERID_QUERY)) {
       prepStmt.setInt(1, userId);
-
-      rs = prepStmt.executeQuery();
-
-      while (rs.next()) {
-        PdcSubscription sc = getSubScFromRS(rs);
-        sc.setPdcContext(getCriteriasBySubscriptionID(conn, sc.getId()));
-        result.add(sc);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          PdcSubscription sc = getSubScFromRS(rs);
+          sc.setPdcContext(getCriteriaBySubscriptionID(conn, sc.getId()));
+          result.add(sc);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-
     return result;
   }
-  public static final String GET_ALL_SUBSCRIPTIONS_QUERY = "SELECT id, name, ownerId FROM "
-      + PDC_SUBSRIPTION_TABLE_NAME;
 
-  public static List<PdcSubscription> getAllPDCSubscriptions(Connection conn)
+  public static final String GET_ALL_SUBSCRIPTIONS_QUERY =
+      "SELECT id, name, ownerId FROM " + PD_SUBSCRIPTION_TABLE_NAME;
+
+  public static List<PdcSubscription> getAllPDCSubscriptions(@NonNull Connection conn)
       throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.getAllPDCSubscriptions",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
+    Objects.requireNonNull(conn);
     List<PdcSubscription> result = new ArrayList<>();
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = conn.prepareStatement(GET_ALL_SUBSCRIPTIONS_QUERY);
-
-      rs = prepStmt.executeQuery();
-
+    try (PreparedStatement prepStmt = conn.prepareStatement(GET_ALL_SUBSCRIPTIONS_QUERY);
+         ResultSet rs = prepStmt.executeQuery()) {
       while (rs.next()) {
         PdcSubscription sc = getSubScFromRS(rs);
-        sc.setPdcContext(getCriteriasBySubscriptionID(conn, sc.getId()));
+        sc.setPdcContext(getCriteriaBySubscriptionID(conn, sc.getId()));
         result.add(sc);
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-
     return result;
   }
 
@@ -116,354 +97,221 @@ public class PdcSubscriptionDAO {
     return new PdcSubscription(rs.getInt("id"), rs
         .getString("name"), null, rs.getInt("ownerId"));
   }
-  public final static String GET_CRITERIAS_BY_SC_ID_QUERY =
+
+  private static final String GET_CRITERIA_BY_SC_ID_QUERY =
       "SELECT id, pdcSubscriptionId, axisId, val FROM "
-      + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE pdcSubscriptionId = ? ";
+      + PD_SUBSCRIPTION_AXIS_TABLE_NAME + " WHERE pdcSubscriptionId = ? ";
 
-  private static List<Criteria> getCriteriasBySubscriptionID(Connection conn,
+  private static List<Criteria> getCriteriaBySubscriptionID(@NonNull Connection conn,
       int scId) throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.getCriteriasBySubscriptionID",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
     List<Criteria> result = new ArrayList<>();
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
     if (scId < 0) {
       return result;
     }
 
-    try {
-      prepStmt = conn.prepareStatement(GET_CRITERIAS_BY_SC_ID_QUERY);
+    try (PreparedStatement prepStmt = conn.prepareStatement(GET_CRITERIA_BY_SC_ID_QUERY)) {
       prepStmt.setInt(1, scId);
-
-      rs = prepStmt.executeQuery();
-
-      while (rs.next()) {
-        Criteria sc = getSCFromRS(rs);
-        result.add(sc);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          Criteria sc = getSCFromRS(rs);
+          result.add(sc);
+        }
       }
-
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-
     return result;
   }
 
   private static Criteria getSCFromRS(ResultSet rs) throws SQLException,
       PdcSubscriptionRuntimeException {
-    return new Criteria(rs.getInt("axisId"), rs.getString("value"));
+    return new Criteria(rs.getInt("axisId"), rs.getString("val"));
   }
-  public static final String GET_SUBSCRIPTION_BY_ID_QUERY = "SELECT id, name, ownerId FROM "
-      + PDC_SUBSRIPTION_TABLE_NAME + " WHERE id = ? ";
 
-  public static PdcSubscription getPDCSubsriptionById(Connection conn, int id)
+  public static final String GET_SUBSCRIPTION_BY_ID_QUERY =
+      "SELECT id, name, ownerId FROM " + PD_SUBSCRIPTION_TABLE_NAME + " WHERE id = ? ";
+
+  public static PdcSubscription getPdcSubscriptionById(@NonNull Connection conn, int id)
       throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.PDCSubsriptionById",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
+    Objects.requireNonNull(conn);
     if (id < 0) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.PDCSubsriptionById",
-          SilverpeasException.ERROR, "root.EX_WRONG_PK");
+      throw new PdcSubscriptionRuntimeException("The subscription identifier is invalid: " + id);
     }
     PdcSubscription result = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = conn.prepareStatement(GET_SUBSCRIPTION_BY_ID_QUERY);
+    try (PreparedStatement prepStmt = conn.prepareStatement(GET_SUBSCRIPTION_BY_ID_QUERY)) {
       prepStmt.setInt(1, id);
-
-      rs = prepStmt.executeQuery();
-
-      if (rs.next()) {
-        result = getSubScFromRS(rs);
-        result
-            .setPdcContext(getCriteriasBySubscriptionID(conn, result.getId()));
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        if (rs.next()) {
+          result = getSubScFromRS(rs);
+          result.setPdcContext(getCriteriaBySubscriptionID(conn, result.getId()));
+        }
       }
-
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return result;
   }
-  public final static String CREATE_PDCSUBSCR_QUERY = "INSERT INTO "
-      + PDC_SUBSRIPTION_TABLE_NAME + " (id, name, ownerId ) VALUES (?, ?, ?)";
 
-  public static int createPDCSubscription(Connection conn,
-      PdcSubscription subscription) throws PdcSubscriptionRuntimeException,
+  private static final String CREATE_PDC_SUBSCRIPTION_QUERY =
+      "INSERT INTO " + PD_SUBSCRIPTION_TABLE_NAME + " (id, name, ownerId ) VALUES (?, ?, ?)";
+
+  public static int createPDCSubscription(@NonNull Connection conn,
+      @NonNull PdcSubscription subscription) throws PdcSubscriptionRuntimeException,
       SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.createPDCSubscription",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
-    if (subscription == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.createPDCSubscription",
-          SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
-    }
-    PreparedStatement prepStmt = null;
+    Objects.requireNonNull(conn);
+    Objects.requireNonNull(subscription);
+
     int newId;
-
     try {
-      newId = DBUtil.getNextId(PDC_SUBSRIPTION_TABLE_NAME, "id");
+      newId = DBUtil.getNextId(PD_SUBSCRIPTION_TABLE_NAME, "id");
     } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.createPDCSubscription",
-          SilverpeasException.ERROR, "root.EX_GET_NEXTID_FAILED",
-          PDC_SUBSRIPTION_TABLE_NAME, e);
+      throw new PdcSubscriptionRuntimeException(e);
     }
 
-    try {
-      prepStmt = conn.prepareStatement(CREATE_PDCSUBSCR_QUERY);
-
+    try (PreparedStatement prepStmt = conn.prepareStatement(CREATE_PDC_SUBSCRIPTION_QUERY)) {
       prepStmt.setInt(1, newId);
       prepStmt.setString(2, subscription.getName());
       prepStmt.setInt(3, subscription.getOwnerId());
 
-      int rownum = prepStmt.executeUpdate();
-      if (rownum < 1) {
-        throw new PdcSubscriptionRuntimeException(
-            "PdcSubscriptionDAO.createPDCSubscription",
-            SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-            subscription);
+      int count = prepStmt.executeUpdate();
+      if (count < 1) {
+        throw new PdcSubscriptionRuntimeException("Fail to save subscription " + subscription);
       }
 
       List<? extends Criteria> ctx = subscription.getPdcContext();
       if (ctx != null && !ctx.isEmpty()) {
-        createSearchCriterias(conn, ctx, newId);
+        createSearchCriteria(conn, ctx, newId);
       }
-
-    } finally {
-      DBUtil.close(prepStmt);
     }
 
     return newId;
   }
-  public final static String CREATE_PDC_SEARCHCRITERIA_QUERY = "INSERT INTO "
-      + PDC_SUBSRIPTION_AXIS_TABLE_NAME
-      + " (id, pdcSubscriptionId, axisId, val) VALUES (?, ?, ?, ?)";
 
-  private static void createSearchCriterias(Connection conn,
-      List<? extends Criteria> searchCriterias, int subscriptionId)
+  public static final String CREATE_PDC_SEARCH_CRITERIA_QUERY =
+      "INSERT INTO " + PD_SUBSCRIPTION_AXIS_TABLE_NAME +
+      " (id, pdcSubscriptionId, axisId, val) VALUES (?, ?, ?, ?)";
+
+  private static void createSearchCriteria(@NonNull Connection conn,
+      @NonNull List<? extends Criteria> searchCriteria, int subscriptionId)
       throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.createSearchCriterias",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
-    if (searchCriterias == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.createSearchCriterias",
-          SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
-    }
-    if (searchCriterias.isEmpty()) {
+    if (searchCriteria.isEmpty()) {
       return;
     }
 
-    PreparedStatement prepStmt = null;
     int newId;
-
-    try {
-      prepStmt = conn.prepareStatement(CREATE_PDC_SEARCHCRITERIA_QUERY);
-
-      for (Criteria sc : searchCriterias) {
+    try (PreparedStatement prepStmt = conn.prepareStatement(CREATE_PDC_SEARCH_CRITERIA_QUERY)) {
+      prepStmt.setInt(2, subscriptionId);
+      for (Criteria sc : searchCriteria) {
         try {
-          newId = DBUtil.getNextId(PDC_SUBSRIPTION_AXIS_TABLE_NAME, "id");
+          newId = DBUtil.getNextId(PD_SUBSCRIPTION_AXIS_TABLE_NAME, "id");
         } catch (Exception e) {
-          throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionDAO.createSearchCriterias",
-              SilverpeasException.ERROR, "root.EX_GET_NEXTID_FAILED",
-              PDC_SUBSRIPTION_AXIS_TABLE_NAME, e);
+          throw new PdcSubscriptionRuntimeException(e);
         }
-
         prepStmt.setInt(1, newId);
-        prepStmt.setInt(2, subscriptionId);
         prepStmt.setInt(3, sc.getAxisId());
         prepStmt.setString(4, sc.getValue());
 
-        int rownum = prepStmt.executeUpdate();
-        if (rownum < 1) {
-          throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionDAO.createSearchCriterias",
-              SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-              sc);
+        int count = prepStmt.executeUpdate();
+        if (count < 1) {
+          throw new PdcSubscriptionRuntimeException("Fail to save criteria " + sc);
         }
       }
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
-  public final static String UPDATE_PDC_SUBSCR_QUERY = "UPDATE "
-      + PDC_SUBSRIPTION_TABLE_NAME
-      + " SET name = ? , ownerId = ? WHERE id = ? ";
 
-  public static void updatePDCSubscription(Connection conn,
-      PdcSubscription subscription) throws PdcSubscriptionRuntimeException,
+  public static final String UPDATE_PDC_SUBSCRIPTION_QUERY =
+      "UPDATE " + PD_SUBSCRIPTION_TABLE_NAME + " SET name = ? , ownerId = ? WHERE id = ?";
+
+  public static void updatePDCSubscription(@NonNull Connection conn,
+      @NonNull PdcSubscription subscription) throws PdcSubscriptionRuntimeException,
       SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.updatePDCSubscription",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
-    if (subscription == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.updatePDCSubscription",
-          SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
-    }
-    PreparedStatement prepStmt = null;
+    Objects.requireNonNull(conn);
+    Objects.requireNonNull(subscription);
 
-    try {
-      prepStmt = conn.prepareStatement(UPDATE_PDC_SUBSCR_QUERY);
+    try (PreparedStatement prepStmt = conn.prepareStatement(UPDATE_PDC_SUBSCRIPTION_QUERY)) {
       prepStmt.setString(1, subscription.getName());
       prepStmt.setInt(2, subscription.getOwnerId());
       prepStmt.setInt(3, subscription.getId());
 
-      int rownum = prepStmt.executeUpdate();
-      if (rownum < 1) {
-        throw new PdcSubscriptionRuntimeException(
-            "PdcSubscriptionDAO.updatePDCSubscription",
-            SilverpeasException.ERROR, "root.EX_RECORD_UPDATE_FAILED",
-            subscription);
+      int count = prepStmt.executeUpdate();
+      if (count < 1) {
+        throw new PdcSubscriptionRuntimeException("Fail to save subscription " + subscription);
       }
 
       List<? extends Criteria> ctx = subscription.getPdcContext();
-      removeSearchCriterias(conn, subscription.getId());
+      removeSearchCriteria(conn, subscription.getId());
       if (ctx != null && !ctx.isEmpty()) {
-        createSearchCriterias(conn, ctx, subscription.getId());
+        createSearchCriteria(conn, ctx, subscription.getId());
       }
-
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
-  public final static String REMOVE_SUBSCR_BYID_QUERY = "delete from "
-      + PDC_SUBSRIPTION_TABLE_NAME + " where id = ? ";
 
-  public static void removePDCSubscriptionById(Connection conn, int id)
+  public static final String REMOVE_SUBSCRIPTION_BY_ID_QUERY =
+      "delete from " + PD_SUBSCRIPTION_TABLE_NAME + " where id = ? ";
+
+  public static void removePDCSubscriptionById(@NonNull Connection conn, int id)
       throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.removePDCSubscriptionById",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
+    Objects.requireNonNull(conn);
     if (id < 0) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.removePDCSubscriptionById",
-          SilverpeasException.ERROR, "root.EX_WRONG_PK");
+      throw new PdcSubscriptionRuntimeException("Invalid subscription identifier: " + id);
     }
-    PreparedStatement prepStmt = null;
 
-    try {
-      prepStmt = conn.prepareStatement(REMOVE_SUBSCR_BYID_QUERY);
-
+    try (PreparedStatement prepStmt = conn.prepareStatement(REMOVE_SUBSCRIPTION_BY_ID_QUERY)) {
       prepStmt.setInt(1, id);
 
-      int rownum = prepStmt.executeUpdate();
-      removeSearchCriterias(conn, id);
+      int count = prepStmt.executeUpdate();
+      removeSearchCriteria(conn, id);
 
-      if (rownum < 1) {
-        throw new PdcSubscriptionRuntimeException(
-            "PdcSubscriptionDAO.removePDCSubscriptionById",
-            SilverpeasException.ERROR, "root.EX_RECORD_NOTFOUND", String
-            .valueOf(id));
+      if (count < 1) {
+        throw new PdcSubscriptionRuntimeException("Fail to remove subscription " + id);
       }
 
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
-  public final static String REMOVE_SCS_QUERY = "delete from "
-      + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " where pdcSubscriptionId = ? ";
 
-  private static void removeSearchCriterias(Connection conn, int subscrID)
+  public static final String REMOVE_SCS_QUERY =
+      "delete from " + PD_SUBSCRIPTION_AXIS_TABLE_NAME + " where pdcSubscriptionId = ? ";
+
+  private static void removeSearchCriteria(Connection conn, int subscriptionId)
       throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.removeSearchCriterias",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
-    if (subscrID < 0) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.removeSearchCriterias",
-          SilverpeasException.ERROR, "root.EX_WRONG_PK");
-    }
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = conn.prepareStatement(REMOVE_SCS_QUERY);
-      prepStmt.setInt(1, subscrID);
-
+    try (PreparedStatement prepStmt = conn.prepareStatement(REMOVE_SCS_QUERY)) {
+      prepStmt.setInt(1, subscriptionId);
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
-  public static void removePDCSubscriptionById(Connection conn, int[] ids)
+  public static void removePDCSubscriptionById(@NonNull Connection conn,
+      @NonNull int[] ids)
       throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.removePDCSubscriptionById",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
-    if (ids == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.removePDCSubscriptionById",
-          SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
-    }
-
+    Objects.requireNonNull(conn);
+    Objects.requireNonNull(ids);
     for (int id : ids) {
       removePDCSubscriptionById(conn, id);
     }
   }
-  public final static String FIND_SUBSCRIPTION_BY_AXIS_QUERY = "SELECT pdcSubscriptionId FROM "
-      + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE axisId = ? ";
 
-  public static List<PdcSubscription> getPDCSubscriptionByUsedAxis(Connection conn,
-      int axisId) throws PdcSubscriptionRuntimeException, SQLException {
-    if (conn == null) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis",
-          SilverpeasException.ERROR, "root.EX_NO_CONNECTION");
-    }
+  public static final String FIND_SUBSCRIPTION_BY_AXIS_QUERY =
+      "SELECT pdcSubscriptionId FROM " + PD_SUBSCRIPTION_AXIS_TABLE_NAME + " WHERE axisId = ? ";
+
+  public static List<PdcSubscription> getPDCSubscriptionByUsedAxis(
+      @NonNull Connection conn, int axisId) throws PdcSubscriptionRuntimeException, SQLException {
+    Objects.requireNonNull(conn);
     if (axisId < 0) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis",
-          SilverpeasException.ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
+      throw new PdcSubscriptionRuntimeException("Invalid PdC axis identifier: " + axisId);
     }
     List<PdcSubscription> result = new ArrayList<>();
-
     List<Integer> ids = new ArrayList<>();
 
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = conn.prepareStatement(FIND_SUBSCRIPTION_BY_AXIS_QUERY);
+    try (PreparedStatement prepStmt = conn.prepareStatement(FIND_SUBSCRIPTION_BY_AXIS_QUERY)) {
       prepStmt.setInt(1, axisId);
-      rs = prepStmt.executeQuery();
-
-      while (rs.next()) {
-        Integer subscrId = rs.getInt(1);
-        if (!ids.contains(subscrId)) {
-          ids.add(subscrId);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          Integer subscriptionId = rs.getInt(1);
+          if (!ids.contains(subscriptionId)) {
+            ids.add(subscriptionId);
+          }
+        }
+        for (Integer subscriptionId : ids) {
+          PdcSubscription subscription = getPdcSubscriptionById(conn, subscriptionId);
+          result.add(subscription);
         }
       }
-
-      for (Integer subscrId : ids) {
-        PdcSubscription subscription = getPDCSubsriptionById(conn, subscrId);
-        result.add(subscription);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
 
     return result;

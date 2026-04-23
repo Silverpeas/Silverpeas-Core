@@ -26,7 +26,7 @@
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <%!
@@ -271,10 +271,11 @@ out.println(tabbedPane.print());
 <fieldset class="skinFieldset">
 	<legend class="without-img"><img src="<%=m_ComponentIcon%>" class="componentIcon" alt=""/>&nbsp;<%=m_JobPeas%></legend>
 
-  <% if (I18NHelper.isI18nContentEnabled()) { %>
+  <% if (I18NHelper.isI18nContentActivated()) { %>
   <ul class="fields">
     <li class="field">
-      <label for="<%=I18NHelper.HTMLSelectObjectName%>" class="txtlibform"><%=resource.getString("GML.language")%></label>
+      <label for="<%=I18NHelper.HTML_SELECT_OBJECT_NAME%>"
+             class="txtlibform"><%=resource.getString("GML.language")%></label>
       <div class="champs">
         <%=I18NHelper.getHTMLSelectObject(resource.getLanguage(), compoInst, translation) %>
       </div>

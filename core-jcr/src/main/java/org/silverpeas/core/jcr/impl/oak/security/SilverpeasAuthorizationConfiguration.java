@@ -40,8 +40,8 @@ import org.apache.jackrabbit.oak.spi.security.authorization.AuthorizationConfigu
 import org.apache.jackrabbit.oak.spi.security.authorization.permission.PermissionProvider;
 import org.apache.jackrabbit.oak.spi.security.authorization.restriction.RestrictionProvider;
 import org.apache.jackrabbit.oak.stats.StatisticsProvider;
+import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.jcr.security.AccessControlManager;
 import java.security.Principal;
 import java.util.Set;
@@ -61,17 +61,17 @@ public class SilverpeasAuthorizationConfiguration extends ConfigurationBase
   private final AuthorizationMonitor monitor =
       new AuthorizationMonitorImpl(StatisticsProvider.NOOP);
 
-  public SilverpeasAuthorizationConfiguration(@Nonnull SecurityProvider securityProvider) {
+  public SilverpeasAuthorizationConfiguration(@NonNull SecurityProvider securityProvider) {
     super(securityProvider, securityProvider.getParameters(NAME));
   }
 
   @Override
-  public @Nonnull MountInfoProvider getMountInfoProvider() {
+  public @NonNull MountInfoProvider getMountInfoProvider() {
     return mountInfoProvider;
   }
 
   @Override
-  public @Nonnull AuthorizationMonitor getMonitor() {
+  public @NonNull AuthorizationMonitor getMonitor() {
     return monitor;
   }
 
@@ -82,10 +82,10 @@ public class SilverpeasAuthorizationConfiguration extends ConfigurationBase
    * @param namePathMapper the mapper between JCR name and JCR implementation name.
    * @return nothing. Throws an {@link UnsupportedOperationException} exception if invoked.
    */
-  @Nonnull
+  @NonNull
   @Override
-  public AccessControlManager getAccessControlManager(@Nonnull Root root,
-      @Nonnull NamePathMapper namePathMapper) {
+  public AccessControlManager getAccessControlManager(@NonNull Root root,
+      @NonNull NamePathMapper namePathMapper) {
     throw new UnsupportedOperationException();
   }
 
@@ -94,7 +94,7 @@ public class SilverpeasAuthorizationConfiguration extends ConfigurationBase
    * restrictions is an extension of Oak to the existing JCR access control management.
    * @return nothing. Throws an {@link UnsupportedOperationException} exception if invoked.
    */
-  @Nonnull
+  @NonNull
   @Override
   public RestrictionProvider getRestrictionProvider() {
     throw new UnsupportedOperationException();
@@ -110,10 +110,10 @@ public class SilverpeasAuthorizationConfiguration extends ConfigurationBase
    * @return a {@link PermissionProvider} object whose goal is to delegate the permission resolution
    * to the authorization engine of Silverpeas.
    */
-  @Nonnull
+  @NonNull
   @Override
-  public PermissionProvider getPermissionProvider(@Nonnull Root root, @Nonnull String workspaceName,
-      @Nonnull Set<Principal> principals) {
+  public PermissionProvider getPermissionProvider(@NonNull Root root, @NonNull String workspaceName,
+      @NonNull Set<Principal> principals) {
     if (PermissionUtil.isAdminOrSystem(principals, getParameters())) {
       return new AllPermissionProviderImpl(root, this);
     }

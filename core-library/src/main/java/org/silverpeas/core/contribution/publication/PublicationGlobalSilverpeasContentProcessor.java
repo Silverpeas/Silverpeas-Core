@@ -23,18 +23,17 @@
  */
 package org.silverpeas.core.contribution.publication;
 
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager.ContributionWrapper;
+import jakarta.inject.Inject;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractGlobalSilverContentProcessor;
+import org.silverpeas.core.contribution.contentcontainer.content.ManagedContribution;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailReference;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,9 +49,9 @@ public abstract class PublicationGlobalSilverpeasContentProcessor extends
   private ThumbnailService thumbnailService;
 
   @Override
-  public Stream<GlobalSilverContent> asGlobalSilverContent(List<SilverContentInterface> silverContents) {
+  public Stream<GlobalSilverContent> asGlobalSilverContent(List<ManagedContribution> silverContents) {
     final Map<String, PublicationDetail> indexedPublications = silverContents.stream()
-        .map(c -> (PublicationDetail) ((ContributionWrapper) c).getWrappedInstance())
+        .map(c -> (PublicationDetail) c.getWrappedContribution())
         .collect(toMap(PublicationDetail::getId, p -> p));
     final Set<ThumbnailReference> thumbnailReferences = indexedPublications.values().stream()
         .map(p -> new ThumbnailReference(p.getId(), p.getComponentInstanceId(), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE))

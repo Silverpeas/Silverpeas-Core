@@ -23,22 +23,22 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ManagedContribution;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 
-import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.URLUtil.getSearchResultURL;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 public class PdcResourceClassificationUserNotification
-    extends AbstractPdcSubscriptionUserNotification<SilverContentInterface>
+    extends AbstractPdcSubscriptionUserNotification<ManagedContribution>
     implements UserSubscriptionNotificationBehavior {
 
   public PdcResourceClassificationUserNotification(PdcSubscription pdcSubscription,
-      SilverContentInterface silverContent) {
+      ManagedContribution silverContent) {
     super(pdcSubscription, silverContent);
   }
 
@@ -49,8 +49,8 @@ public class PdcResourceClassificationUserNotification
 
   @Override
   protected boolean isSendImmediately() {
-    /**
-     * TODO for now, pdc notifications can not be handled by delayed notification mechanism. When
+    /*
+     * For now, pdc notifications can not be handled by delayed notification mechanism. When
      * it will be the case, don't forget to remove this overridden method
      */
     return true;
@@ -58,35 +58,28 @@ public class PdcResourceClassificationUserNotification
 
   @Override
   protected String getComponentInstanceId() {
-    return getResource().getInstanceId();
+    return getResource().getComponentInstanceId();
   }
 
   @Override
   protected String getSender() {
-    return getResource().getCreatorId();
+    return getResource().getCreator().getId();
   }
 
   @Override
-  protected void performBuild(final SilverContentInterface silverContent) {
+  protected void performBuild(final ManagedContribution silverContent) {
     String lang = getUserLanguage(getPdcSubscription().getOwnerId());
     LocalizationBundle resources = getBundle(lang);
 
-    final StringBuilder message = new StringBuilder(150);
-
-    message.append(resources.getString("Subscription"));
-    message.append(getPdcSubscription().getName());
-    message.append("\n");
-
-    message.append(resources.getString("DocumentName"));
-    message.append(silverContent.getName(lang));
-    message.append("\n");
+    String message = resources.getString("Subscription") + getPdcSubscription().getName() +
+      "\n" + resources.getString("DocumentName") + silverContent.getName(lang) + "\n";
 
     getNotificationMetaData().setTitle(resources.getString("standartMessage"));
-    getNotificationMetaData().setContent(message.toString());
+    getNotificationMetaData().setContent(message);
   }
 
   @Override
-  protected void performNotificationResource(final SilverContentInterface silverContent,
+  protected void performNotificationResource(final ManagedContribution silverContent,
       final NotificationResourceData notificationResourceData) {
 
     // If the resource is not a SilvepeasContent implementation, id and type are filled here.
@@ -102,7 +95,7 @@ public class PdcResourceClassificationUserNotification
   }
 
   @Override
-  protected String getResourceURL(final SilverContentInterface silverContent) {
+  protected String getResourceURL(final ManagedContribution silverContent) {
     return defaultStringIfNotDefined(getSearchResultURL(silverContent), null);
   }
 }

@@ -32,8 +32,8 @@
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
 
 <c:set var="dataTypes" value="${requestScope.ComponentSearchType}"></c:set>
 

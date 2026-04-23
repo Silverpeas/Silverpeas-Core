@@ -23,16 +23,19 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.DataFolder;
@@ -40,31 +43,24 @@ import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.model.Forms;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.util.WorkflowUtil;
+import org.silverpeas.kernel.annotation.Cacheable;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Singleton;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A ProcessModelManager implementation
  */
-@Singleton
+@Service
+@Cacheable
 public class ProcessModelManagerImpl implements ProcessModelManager {
 
   private static final String SELECT_QUERY =
@@ -83,7 +79,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   private JAXBContext jaxbContext = null;
 
   @PostConstruct
-  private void setup() {
+  void setup() {
     try {
       jaxbContext = JAXBContext.newInstance(ProcessModelImpl.class);
     } catch (JAXBException e) {
@@ -145,7 +141,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   }
 
   /**
-   * Get a ProcessModel from its modelId. Retrieves the xml descriptor filename from the model Id
+   * Get a ProcessModel from its modelId. Retrieves the xml descriptor filename from the model id
    * and load abstract process model information in ProcessModel object
    * @param modelId model id
    * @return ProcessModel object
@@ -193,8 +189,8 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * Create a ProcessModel from xml descriptor filename. Generate an id for this model and load
    * abstract process model information in ProcessModel object
-   * @param processFileName xml descriptor filename.
-   * @param peasId Id of processManager instance (peas).
+   * @param processFileName XML descriptor filename.
+   * @param peasId id of processManager instance (peas).
    * @return ProcessModel object
    */
   @Override
@@ -299,7 +295,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
   /**
    * load a process model definition from xml file to java objects
-   * @param processFileName the xml file name that contains process model definition
+   * @param processFileName the XML file name that contains process model definition
    * @return a ProcessModel object
    */
   @Override
@@ -330,7 +326,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
   /**
    * Saves a process model definition from java objects to an XML file
-   * @param processFileName the xml file name that contains process model definition
+   * @param processFileName the XML file name that contains process model definition
    * @param process A processModel object to be saved
    * @throws WorkflowException when something goes wrong
    */
@@ -409,7 +405,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   }
 
   /**
-   * Put the given process model in the the cache.
+   * Put the given process model in the cache.
    */
   private void cacheProcessModel(String modelId, ProcessModel model) {
     synchronized (models) {

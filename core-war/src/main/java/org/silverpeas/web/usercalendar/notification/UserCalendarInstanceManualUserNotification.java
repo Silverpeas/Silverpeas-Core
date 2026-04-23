@@ -24,6 +24,7 @@
 
 package org.silverpeas.web.usercalendar.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.calendar.notification.AbstractCalendarInstanceManualUserNotification;
 
 import jakarta.inject.Named;
@@ -31,6 +32,7 @@ import jakarta.inject.Named;
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 public class UserCalendarInstanceManualUserNotification
     extends AbstractCalendarInstanceManualUserNotification {}

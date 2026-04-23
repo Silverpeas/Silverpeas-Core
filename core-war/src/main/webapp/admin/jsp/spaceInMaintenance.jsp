@@ -27,7 +27,7 @@
 
 <%@ include file="importFrameSet.jsp" %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%
   String userId = m_MainSessionCtrl.getUserId();

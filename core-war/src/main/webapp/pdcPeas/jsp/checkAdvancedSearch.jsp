@@ -65,7 +65,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="javax.servlet.jsp.JspWriter"%>
+<%@ page import="jakarta.servlet.jsp.JspWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.text.NumberFormat"%>
 
@@ -176,7 +176,7 @@ String troncatePath(String completPath, ArrayList list, boolean isLinked, int wi
 * Cette methode construit le chemin complet pour acceder a une valeur
 * @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas etre nulle
 * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
-* @param withLastNode - 0 si l'on veut afficher le chemin complet de la valeur selectionnee.
+* @param withLastValue - 0 si l'on veut afficher le chemin complet de la valeur selectionnee.
 *                       1 si l'on ne souhaite afficher que le chemin complet sans la valeur selectionne
 * @return completPath - le chemin fabrique
 */

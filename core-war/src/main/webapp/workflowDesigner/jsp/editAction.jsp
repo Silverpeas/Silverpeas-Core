@@ -27,7 +27,7 @@
 
 <%@ include file="check.jsp" %>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%
     Action          action = (Action)request.getAttribute("Action");

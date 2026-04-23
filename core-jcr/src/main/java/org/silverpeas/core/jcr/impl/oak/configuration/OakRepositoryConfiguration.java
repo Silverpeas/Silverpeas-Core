@@ -25,7 +25,8 @@
 
 package org.silverpeas.core.jcr.impl.oak.configuration;
 
-import javax.annotation.Nonnull;
+import org.silverpeas.kernel.annotation.NonNull;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +86,7 @@ public class OakRepositoryConfiguration {
     }
   }
 
-  private OakRepositoryConfiguration(@Nonnull Properties props) {
+  private OakRepositoryConfiguration(@NonNull Properties props) {
     Objects.requireNonNull(props, "The configuration of the Oak repository shouldn't be null");
     this.storage = StorageType.fromValue(props.getProperty("storage"));
     this.segmentNodeStore = new SegmentNodeStoreConfiguration(props);

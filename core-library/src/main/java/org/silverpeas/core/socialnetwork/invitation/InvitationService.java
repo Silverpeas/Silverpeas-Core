@@ -23,11 +23,12 @@
  */
 package org.silverpeas.core.socialnetwork.invitation;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipDao;
@@ -35,8 +36,6 @@ import org.silverpeas.core.socialnetwork.relationship.RelationShipEventNotifier;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -62,7 +61,7 @@ public class InvitationService {
   public static final int RELATIONSHIP_ALREADY_EXISTING = -2;
 
   /**
-   * Predefined status code for a non existing invitation at invitation acceptance.
+   * Predefined status code for a non-existing invitation at invitation acceptance.
    */
   public static final int INVITATION_NOT_EXISTING = -1;
 
@@ -85,6 +84,7 @@ public class InvitationService {
 
   /**
    * send invitation
+   *
    * @param invitation an Invitation object
    * @return the following integer value
    * <ul>
@@ -93,8 +93,9 @@ public class InvitationService {
    * <li>the id of invitation if the adding has been done successfully</li>
    * </ul>
    */
+  @Transactional
   public int invite(Invitation invitation) {
-    int newId = Transaction.performInOne(() -> saveInvitation(invitation));
+    int newId = saveInvitation(invitation);
     if (newId != INVITATION_ALREADY_EXISTING && newId != RELATIONSHIP_ALREADY_EXISTING) {
       notifyGuest(invitation);
     }
@@ -124,6 +125,7 @@ public class InvitationService {
 
   /**
    * ignore this invitation
+   *
    * @param id the invitation identifier to ignore (delete)
    */
   @Transactional
@@ -137,14 +139,16 @@ public class InvitationService {
 
   /**
    * accept invitation between sender and receiver and create the relationship
+   *
    * @param idInvitation invitation identifier
    * @return -1 if this Invitation not exists, -2 if the RelationShip already exists, else the id of
    * RelationShip if the action has been done successfully
    */
+  @Transactional
   public int acceptInvitation(int idInvitation) {
 
     Pair<Pair<Integer, Invitation>, Pair<RelationShip, RelationShip>> result =
-        Transaction.performInOne(() -> saveAcceptInvitation(idInvitation));
+        saveAcceptInvitation(idInvitation);
 
     final int resultAcceptInvitation = result.getLeft().getLeft();
     if (resultAcceptInvitation > 0) {
@@ -206,6 +210,7 @@ public class InvitationService {
 
   /**
    * return all my invitations sent
+   *
    * @param userId the user identifier
    * @return a list of invitations
    */
@@ -249,6 +254,7 @@ public class InvitationService {
 
   /**
    * Deletes all the invitations both sent and received of the specified user.
+   *
    * @param userId the unique identifier of the user.
    */
   @Transactional

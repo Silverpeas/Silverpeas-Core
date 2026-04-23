@@ -99,8 +99,12 @@ public class WAComponent extends AbstractSilverpeasComponent {
    * @return optionally a WAComponent object related to the component instance.
    */
   public static Optional<WAComponent> getByInstanceId(String componentInstanceId) {
-    return getByName(
-        SilverpeasSharedComponentInstance.getIdentity(componentInstanceId).getComponentName());
+    if (SilverpeasSharedComponentInstance.Identity.isValid(componentInstanceId)) {
+      return getByName(
+          SilverpeasSharedComponentInstance.getIdentity(componentInstanceId).getComponentName());
+    } else {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -109,6 +113,15 @@ public class WAComponent extends AbstractSilverpeasComponent {
    */
   public static Collection<WAComponent> getAll() {
     return WAComponentRegistry.get().getAllWAComponents().values();
+  }
+
+  /**
+   * Is the specified identifier refers an instance of a Silverpeas web application.
+   * @param componentInstanceId the unique identifier of a Silverpeas component.
+   * @return true if the identifier refers a shared component instance. False otherwise.
+   */
+  public static boolean isInstance(String componentInstanceId) {
+    return SilverpeasSharedComponentInstance.Identity.isValid(componentInstanceId);
   }
 
   /**

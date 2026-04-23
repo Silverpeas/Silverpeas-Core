@@ -62,10 +62,6 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
    */
   private static final long serialVersionUID = 2678199573554487425L;
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#doEndTag()
-   */
   @Override
   public int doEndTag() throws JspException {
     try {
@@ -119,10 +115,6 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
     return EVAL_PAGE;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
-   */
   @Override
   public int doStartTag() throws JspException {
     return EVAL_BODY_INCLUDE;

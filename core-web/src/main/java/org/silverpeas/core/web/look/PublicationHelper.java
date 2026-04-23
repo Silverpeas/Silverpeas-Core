@@ -33,6 +33,10 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import java.util.List;
 
 /**
+ * Helper in look to retrieve publications to display in space homepage. Any implementation has to
+ * provide a default constructor because such constructor is looked for by retrospection by some
+ * callers.
+ *
  * @author ehugonnet
  */
 public interface PublicationHelper {
@@ -43,8 +47,9 @@ public interface PublicationHelper {
 
   /**
    * Get the last publications of a space updated since a specified date.
+   *
    * @param spaceId the id of the space.
-   * @param since the number of days to be taken into account. If 0 or negativ, no limit is taken.
+   * @param since the number of days to be taken into account. If 0 or negative, no limit is taken.
    * @param nbPublis the max number of publications returned.
    * @return the last publications of a space updated since a specified date.
    */

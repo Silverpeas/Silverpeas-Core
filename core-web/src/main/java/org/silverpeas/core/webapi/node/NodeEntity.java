@@ -29,6 +29,7 @@ import org.silverpeas.core.i18n.BeanTranslation;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
 
@@ -53,16 +54,17 @@ public class NodeEntity implements WebEntity {
   @XmlElement(defaultValue = "folder")
   private NodeType type = NodeType.FOLDER;
   @XmlElement
-  private NodeEntity[] children;
+  private List<NodeEntity> children;
   @XmlElement(required = true)
   private NodeAttrEntity attr;
   @XmlElement
-  private NodeTranslationEntity[] translations;
+  private List<NodeTranslationEntity> translations;
   @XmlElement
   private NodeStateEntity state = new NodeStateEntity();
   @XmlElement(defaultValue = "")
   private URI childrenURI;
 
+  @SuppressWarnings("unused")
   public NodeEntity() {
   }
 
@@ -70,7 +72,7 @@ public class NodeEntity implements WebEntity {
    * Creates a new node entity from the specified node.
    *
    * @param highestComponentUserRole the highest component user role from which code are computed.
-   * @param node the node to entitify.
+   * @param node the node from which a web entity has to be created.
    * @return the entity representing the specified node.
    */
   public static NodeEntity fromNodeDetail(final SilverpeasRole highestComponentUserRole,
@@ -130,7 +132,7 @@ public class NodeEntity implements WebEntity {
           new NodeTranslationEntity(translation.getId(), translation.getLanguage(), node);
       translationEntities.add(translationEntity);
     }
-    this.translations = translationEntities.toArray(new NodeTranslationEntity[0]);
+    this.translations = translationEntities;
 
     // set children data
     setChildrenURI(getChildrenURI(uri));
@@ -142,7 +144,7 @@ public class NodeEntity implements WebEntity {
         childEntity.setChildrenURI(getChildrenURI(childURI));
         entities.add(childEntity);
       }
-      children = entities.toArray(new NodeEntity[0]);
+      children = entities;
     }
   }
 
@@ -151,7 +153,7 @@ public class NodeEntity implements WebEntity {
       return new URI(parentURI + "/" + childId);
     } catch (URISyntaxException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
   }
 
@@ -160,15 +162,15 @@ public class NodeEntity implements WebEntity {
       return new URI(uri);
     } catch (URISyntaxException ex) {
       SilverLogger.getLogger(NodeEntity.class).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
   }
 
-  public void setChildren(NodeEntity[] children) {
-    this.children = children.clone();
+  public void setChildren(List<NodeEntity> children) {
+    this.children = new ArrayList<>(children);
   }
 
-  public NodeEntity[] getChildren() {
+  public List<NodeEntity> getChildren() {
     return children;
   }
 
@@ -214,19 +216,15 @@ public class NodeEntity implements WebEntity {
       return new URI(uri + "/children");
     } catch (URISyntaxException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
   }
 
-  public URI getChildrenURI() {
-    return childrenURI;
+  public final void setTranslations(List<NodeTranslationEntity> translations) {
+    this.translations = (translations != null ? new ArrayList<>(translations) : null);
   }
 
-  public final void setTranslations(NodeTranslationEntity[] translations) {
-    this.translations = (translations != null ? translations.clone() : null);
-  }
-
-  public NodeTranslationEntity[] getTranslations() {
+  public List<NodeTranslationEntity> getTranslations() {
     return translations;
   }
 

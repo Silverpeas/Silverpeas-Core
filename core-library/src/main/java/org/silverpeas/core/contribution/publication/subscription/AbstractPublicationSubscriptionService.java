@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.subscription;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.publication.model.Location;
@@ -59,6 +60,12 @@ import static org.silverpeas.kernel.util.Mutable.of;
  * @author silveryocha
  */
 public abstract class AbstractPublicationSubscriptionService extends AbstractResourceSubscriptionService {
+
+  @Inject
+  private OrganizationController controller;
+
+  @Inject
+  private PublicationService publicationService;
 
   @Override
   public void init() {
@@ -100,13 +107,13 @@ public abstract class AbstractPublicationSubscriptionService extends AbstractRes
           .map(LocationFilterDirective.class::cast)
           .map(LocationFilterDirective::getFilter)
           .collect(toList());
-      OrganizationController.get()
+      controller
           .getComponentInstance(componentInstanceId)
           .filter(SilverpeasComponentInstance::isTopicTracker)
-          .map(i -> PublicationService.get().getDetail(new PublicationPK(resourceId)))
+          .map(i -> publicationService.getDetail(new PublicationPK(resourceId)))
           .ifPresentOrElse(p ->
                   // In that case, subscribers of all publication locations MUST be verified.
-                  PublicationService.get()
+                  publicationService
                       .getAllLocations(p.getPK())
                       .stream()
                       .filter(locationFilters.stream().reduce(Predicate::and).orElse(x -> true))

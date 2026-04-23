@@ -31,11 +31,11 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 public class PdcSubscriptionDeletionUserNotification
     extends AbstractPdcSubscriptionUserNotification<PdcSubscription> {
 
-  private final static String MESSAGE_DELETE_TITLE = "notification.delete.title";
-  private final static String SOURCE_CLASSIFICATION = "pdcClassification";
+  private static final String MESSAGE_DELETE_TITLE = "notification.delete.title";
+  private static final String SOURCE_CLASSIFICATION = "pdcClassification";
 
-  boolean valueDeleted = false;
-  String axisName = null;
+  private final boolean valueDeleted;
+  private final String axisName;
 
   public PdcSubscriptionDeletionUserNotification(PdcSubscription pdcSubscription, String axisName,
       boolean valueDeleted) {
@@ -56,14 +56,13 @@ public class PdcSubscriptionDeletionUserNotification
 
   @Override
   protected String getComponentInstanceId() {
-    // This notification doesn't concerned a component.
+    // This notification doesn't concern a component.
     return null;
   }
 
   @Override
   protected String getSender() {
-    // Empty is here returned, because the notification is from the platform and not from an
-    // other user.
+    // Empty is here returned, because the notification is from the platform and not from another user.
     return "";
   }
 

@@ -29,6 +29,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.util.StringUtil;
@@ -47,8 +48,9 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * It is a singleton that represents the current look of the running Silverpeas. Its single object
- * provides an access to the different look of the widgets that compound Silverpeas.
+ * provides access to the different look of the widgets that compound Silverpeas.
  */
+@Bean
 @Singleton
 public class SilverpeasLook {
 

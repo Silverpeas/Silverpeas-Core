@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A REST Web resource representing a list of node. It is a web service that provides an access to a
+ * A REST Web resource representing a list of node. It is a web service that provides access to a
  * node referenced by its URL.
  */
 @WebService
@@ -96,7 +96,7 @@ public class ListNodeResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity[] updateListNode(final NodeEntity[] newListNode) {
-    // Verif that the current user has the Admin role to execute this REST service
+    // Verify that the current user has the Admin role to execute this REST service
     if (isUserAdmin()) {
       //Update list Node
       List<NodePK> nodePKs = new ArrayList<>();

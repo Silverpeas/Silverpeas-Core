@@ -34,18 +34,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.calendar.notification.AbstractNotifier;
 import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEvent;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEvent;
 import org.silverpeas.core.calendar.notification.CalendarEventOccurrenceLifeCycleEvent;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.LibCoreWarBuilder;
-import org.silverpeas.core.test.subscription.ResourceSubscriptionServiceInitListener;
 import org.silverpeas.core.test.stub.StubbedComponentInstanceRoutingMapProviderByInstance;
 import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.test.stub.UserImpl;
+import org.silverpeas.core.test.subscription.ResourceSubscriptionServiceInitListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -306,13 +306,16 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   }
 
   /**
-   * Listens for change in the attendance in an event (or in a given event's occurrence).
+   * Listens for change in the attendance in an event (or in a given event's occurrence). Because no
+   * database operation is performed by this listener, no need to be performed with its own
+   * transaction like with
+   * {@link
+   * org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener}.
    */
   @Bean
   @Singleton
   public static class AttendanceNotificationListener extends
-      AbstractNotifier<AttendeeLifeCycleEvent> {
-
+      CDIResourceEventListener<AttendeeLifeCycleEvent> {
 
     private final List<NotifAction> notifAction = new ArrayList<>(2);
 
@@ -347,15 +350,17 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   }
 
   /**
-   * In the case of an update, we first check the event's properties are modified to set accordingly
-   * the notification action. Then we check the attendees are modified. In this case, we send a
-   * notification about a change in the attendance in the event. This behavior is implemented by
-   * the attendee notification mechanism. We just simulate here this behavior.
+   * This listener is for checking the event notification is correctly sent when an event has been
+   * implied in a CRUD operation. In the case of an update, we first check the event's properties
+   * are modified to set accordingly the notification action. Because no database operation is
+   * performed by this listener, no need to be performed with its own transaction like with
+   * {@link
+   * org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener}.
    */
   @Bean
   @Singleton
   public static class CalendarEventNotificationListener extends
-      AbstractNotifier<CalendarEventLifeCycleEvent> {
+      CDIResourceEventListener<CalendarEventLifeCycleEvent> {
 
     private NotifAction notifAction = null;
 
@@ -395,15 +400,18 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   }
 
   /**
-   * In the case of an update, we first check the properties of the event's occurrence are modified
-   * to set accordingly the notification action. Then we check the attendees are modified. In
-   * this case, we send a notification about a change in the attendance in the event. This behavior
-   * is implemented by the attendee notification mechanism. We just simulate here this behavior.
+   * This listener is for checking the event notification is correctly sent when an event occurrence
+   * has been implied in a CRUD operation. In the case of an update, we first check the properties
+   * of the event's occurrence are modified to set accordingly the notification action. Because no
+   * database operation is performed by this listener, no need to be performed with its own
+   * transaction like with
+   * {@link
+   * org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener}.
    */
   @Bean
   @Singleton
   public static class CalendarEventOccurrenceNotificationListener
-      extends AbstractNotifier<CalendarEventOccurrenceLifeCycleEvent> {
+      extends CDIResourceEventListener<CalendarEventOccurrenceLifeCycleEvent> {
 
     private NotifAction notifAction = null;
 

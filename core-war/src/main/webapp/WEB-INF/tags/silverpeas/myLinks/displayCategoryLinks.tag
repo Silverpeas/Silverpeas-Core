@@ -25,8 +25,8 @@
 
 <%@ tag language="java" pageEncoding="UTF-8" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/myLinks" prefix="viewTags" %>
 
 <%-- Attributes --%>

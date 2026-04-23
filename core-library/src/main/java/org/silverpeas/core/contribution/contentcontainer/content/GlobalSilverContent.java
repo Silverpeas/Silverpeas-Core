@@ -25,10 +25,8 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18n;
-import org.silverpeas.core.util.DateUtil;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 
@@ -70,15 +68,10 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   }
 
   // constructor
-  public GlobalSilverContent(SilverContentInterface sci) {
-    Date date;
-    try {
-      date = sci.getDate() == null ? null : DateUtil.parseDate(sci.getDate());
-    } catch (ParseException e) {
-      date = null;
-    }
+  public GlobalSilverContent(ManagedContribution sci) {
+    Date date = sci.getLastUpdateDate() == null ? sci.getCreationDate() : sci.getLastUpdateDate();
     init(sci.getName(), sci.getDescription(), sci.getId(),
-        sci.getInstanceId(), sci.getCreatorId());
+        sci.getComponentInstanceId(), sci.getCreator().getId());
     this.updateDate = date;
     this.creationDate = sci.getCreationDate();
     this.type = sci.getContributionType();
@@ -86,7 +79,7 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     processLanguages(sci);
   }
 
-  private void processLanguages(SilverContentInterface sci) {
+  private void processLanguages(ManagedContribution sci) {
     Collection<String> languages = sci.getLanguages();
     languages.forEach(l -> {
       GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(l, sci.getName(l),

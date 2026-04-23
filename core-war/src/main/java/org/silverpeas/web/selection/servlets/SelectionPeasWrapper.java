@@ -73,7 +73,7 @@ public class SelectionPeasWrapper extends
       }
       return defaultStringIfNotDefined(destination, ERROR_PAGE_PATH);
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       return ERROR_PAGE_PATH;
     }
   }

@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-  ~ Copyright (C) 2000 - 2024 Silverpeas
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ As a special exception to the terms and conditions of version 3.0 of
-  ~ the GPL, you may redistribute this Program in connection with Free/Libre
-  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception.  You should have received a copy of the text describing
-  ~ the FLOSS exception, and it is also available here:
-  ~ "https://www.silverpeas.org/legal/floss_exception.html"
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
-<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+
+    Copyright (C) 2000 - 2026 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "https://www.silverpeas.org/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+-->
+<taglib xmlns="https://jakarta.ee/xml/ns/jakartaee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
-        version="2.0">
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-jsptaglibrary_3_1.xsd"
+        version="3.1">
   <description>Silverpeas Functions about workflow</description>
   <display-name>Silverpeas Workflow Functions</display-name>
-  <tlib-version>1.0</tlib-version>
+  <tlib-version>2.0</tlib-version>
   <short-name>workflowfn</short-name>
-  <uri>http://www.silverpeas.com/tld/workflowFunctions</uri>
+  <uri>silverpeas.tags.workflowFunctions</uri>
 
   <function>
     <description>Function that formats a value of a form field.</description>

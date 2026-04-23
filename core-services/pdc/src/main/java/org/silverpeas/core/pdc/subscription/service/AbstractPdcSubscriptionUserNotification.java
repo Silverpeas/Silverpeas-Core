@@ -37,9 +37,9 @@ public abstract class AbstractPdcSubscriptionUserNotification<T>
     extends AbstractResourceUserNotificationBuilder<T> {
 
   private final PdcSubscription pdcSubscription;
-  private final Map<Integer, String> userLanguages = new HashMap<Integer, String>();
+  private final Map<Integer, String> userLanguages = new HashMap<>();
 
-  public AbstractPdcSubscriptionUserNotification(PdcSubscription pdcSubscription, T resource) {
+  protected AbstractPdcSubscriptionUserNotification(PdcSubscription pdcSubscription, T resource) {
     super(resource);
     this.pdcSubscription = pdcSubscription;
   }
@@ -54,10 +54,6 @@ public abstract class AbstractPdcSubscriptionUserNotification<T>
     return Collections.singletonList(String.valueOf(pdcSubscription.getOwnerId()));
   }
 
-  /**
-   * @param userID
-   * @return user preferred language by userid provided
-   */
   protected String getUserLanguage(int userID) {
     String userLanguage = userLanguages.get(userID);
     if (StringUtil.isNotDefined(userLanguage)) {

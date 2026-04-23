@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.web.index;
 
+import jakarta.inject.Singleton;
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.kernel.cache.model.Cache;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.cache.model.Cache;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import jakarta.inject.Singleton;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -40,6 +41,7 @@ import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defau
  * Handles the execution of huge indexation process.
  * @author Yohann Chastagnier
  */
+@Bean
 @Singleton
 public class IndexationProcessExecutor {
   private static final String INDEXATION_PROCESS_EXECUTOR_KEY = "INDEXATION_PROCESS_EXECUTOR_KEY";
@@ -47,7 +49,7 @@ public class IndexationProcessExecutor {
   /**
    * Hidden constructor.
    */
-  private IndexationProcessExecutor() {
+  IndexationProcessExecutor() {
   }
 
   public static IndexationProcessExecutor get() {
@@ -87,7 +89,7 @@ public class IndexationProcessExecutor {
 
   /**
    * Executes an indexation process.<br>
-   * There is no error of an other one is already running.<br>
+   * There is no error of another one is already running.<br>
    * The monitoring of executions has to be performed by caller by using {@link
    * #isCurrentExecution()} and {@link #stopCurrentExecutionIfAny()} methods.
    * @param indexationProcess the indexation process to execute.

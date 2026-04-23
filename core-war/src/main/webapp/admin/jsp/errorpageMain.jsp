@@ -37,10 +37,10 @@ if (response.isCommitted() == false) {
 --%>
 
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ page import="org.silverpeas.core.exception.SilverpeasTrappedException"%>
 <%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
@@ -58,7 +58,7 @@ if (response.isCommitted() == false) {
 if (response.getStatus() < 400) {
   response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 };
-Throwable exception = (Throwable) request.getAttribute("javax.servlet.jsp.jspException");
+Throwable exception = (Throwable) request.getAttribute("jakarta.servlet.jsp.jspException");
 Throwable toDisplayException = HomePageUtil.getExceptionToDisplay(exception);
 String exStr = HomePageUtil.getMessageToDisplay(exception , language);
 String detailedString = HomePageUtil.getMessagesToDisplay(exception , language);

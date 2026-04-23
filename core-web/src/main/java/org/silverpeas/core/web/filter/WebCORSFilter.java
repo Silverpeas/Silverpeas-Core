@@ -52,11 +52,6 @@ public class WebCORSFilter implements Filter {
 
   private static final String ALL_DOMAINS_ALLOWED = "*";
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
-   * javax.servlet.FilterChain)
-   */
   @Override
   public void doFilter(final ServletRequest request, final ServletResponse response,
       final FilterChain chain) throws IOException, ServletException {
@@ -110,19 +105,11 @@ public class WebCORSFilter implements Filter {
     return allowedDomain;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-   */
   @Override
   public void init(final FilterConfig filterConfig) throws ServletException {
     // Nothing to do.
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.Filter#destroy()
-   */
   @Override
   public void destroy() {
     // Nothing to do.

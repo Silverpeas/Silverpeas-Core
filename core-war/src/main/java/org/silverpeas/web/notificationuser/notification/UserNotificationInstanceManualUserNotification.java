@@ -25,6 +25,7 @@
 package org.silverpeas.web.notificationuser.notification;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -42,6 +43,7 @@ import static org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 public class UserNotificationInstanceManualUserNotification extends
     AbstractComponentInstanceManualUserNotification {

@@ -27,38 +27,20 @@
  */
 package org.silverpeas.core.pdc.subscription.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class PdcSubscriptionRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = -4560552411663289681L;
 
-  public PdcSubscriptionRuntimeException(String callingClass, int level,
-      String message) {
-    super(callingClass, ERROR, message);
+  public PdcSubscriptionRuntimeException(String message) {
+    super(message);
   }
 
-  public PdcSubscriptionRuntimeException(String callingClass, int level,
-      String message, Object extraParams) {
-    super(callingClass, ERROR, message, makeString(extraParams));
+  public PdcSubscriptionRuntimeException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  public PdcSubscriptionRuntimeException(String callingClass, int level,
-      String message, Exception nested) {
-    super(callingClass, ERROR, message, nested);
-  }
-
-  public PdcSubscriptionRuntimeException(String callingClass, int level,
-      String message, Object extraParams, Exception nested) {
-    super(callingClass, ERROR, message, makeString(extraParams), nested);
-  }
-
-  @Override
-  public String getModule() {
-    return "pdc";
-  }
-
-  protected static String makeString(Object arg) {
-    return (arg != null) ? arg.toString() : "null";
+  public PdcSubscriptionRuntimeException(Throwable cause) {
+    super(cause);
   }
 }

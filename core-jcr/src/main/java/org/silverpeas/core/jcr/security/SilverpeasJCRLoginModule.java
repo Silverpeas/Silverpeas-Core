@@ -27,8 +27,8 @@ package org.silverpeas.core.jcr.security;
 
 import org.apache.jackrabbit.oak.spi.security.authentication.AbstractLoginModule;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.jcr.Credentials;
 import javax.jcr.SimpleCredentials;
 import javax.security.auth.Subject;
@@ -165,7 +165,7 @@ public abstract class SilverpeasJCRLoginModule extends AbstractLoginModule {
    * to define the current access context of the user.
    * @return the current access context of the user. By default, no peculiar context.
    */
-  @Nonnull
+  @NonNull
   protected AccessContext getAccessContext(final Credentials credentials) {
     return AccessContext.EMPTY;
   }

@@ -23,9 +23,13 @@
  */
 package org.silverpeas.core.webapi.comment;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.i18n.I18n;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
@@ -33,25 +37,22 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
 
 /**
- * A REST Web resource representing a given comment. It is a web service that provides access to
- * a comment referenced by its URL.
+ * A REST Web resource representing a given comment. It is a web service that provides access to a
+ * comment referenced by its URL.
  */
 @RequestScoped
 @Path(CommentResource.PATH + "/{componentId}/{contentType}/{contentId}")
@@ -84,6 +85,7 @@ public class CommentResource extends RESTWebService {
    * 404 HTTP code is returned. If the user isn't authenticated, a 401 HTTP code is returned. If the
    * user isn't authorized to access the comment, a 403 is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
+   *
    * @param onCommentId the unique identifier of the comment.
    * @return the response to the HTTP GET request with the JSON representation of the asked comment.
    */
@@ -110,12 +112,13 @@ public class CommentResource extends RESTWebService {
    * authenticated, a 401 HTTP code is returned. If the user isn't authorized to access the comment,
    * a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
+   *
    * @return the response to the HTTP GET request with the JSON representation of the comments on
    * the referred resource.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public CommentEntity[] getAllComments() {
+  public List<CommentEntity> getAllComments() {
     try {
       ResourceReference ref = new ResourceReference(onContentId(), inComponentId());
       List<Comment> theComments = commentService().getAllCommentsOnResource(onContentType(), ref);
@@ -135,6 +138,7 @@ public class CommentResource extends RESTWebService {
    * already exist, it is then cloned with a new identifier (thus with a new URI). If the user isn't
    * authenticated, a 401 HTTP code is returned. If the user isn't authorized to save the comment, a
    * 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
+   *
    * @param commentToSave the comment to save in Silverpeas.
    * @return the response to the HTTP POST request with the JSON representation of the saved
    * comment.
@@ -171,6 +175,7 @@ public class CommentResource extends RESTWebService {
    * doesn't exist, a 404 HTTP code is returned. If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to save the comment, a 403 is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
+   *
    * @param commentId the unique identifier of the comment to update.
    * @param commentToUpdate the comment to update in Silverpeas.
    * @return the response to the HTTP PUT request with the JSON representation of the updated
@@ -217,6 +222,7 @@ public class CommentResource extends RESTWebService {
    * isn't authenticated, a 401 HTTP code is returned. If the user isn't authorized to access the
    * comment, a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
+   *
    * @param onCommentId the unique identifier of the comment to delete.
    */
   @DELETE
@@ -242,6 +248,7 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Gets the identifier of the Silverpeas instance to which the commented content belongs.
+   *
    * @return the Silverpeas component instance identifier.
    */
   protected String inComponentId() {
@@ -250,6 +257,7 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Gets the type of the content that is commentable.
+   *
    * @return the type of the commentable content.
    */
   protected String onContentType() {
@@ -258,6 +266,7 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Gets the identifier of the content that is commentable.
+   *
    * @return the identifier of the commentable content.
    */
   protected String onContentId() {
@@ -266,6 +275,7 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Gets a business service on comments.
+   *
    * @return a comment service instance.
    */
   protected CommentService commentService() {
@@ -274,21 +284,22 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Converts the specified list of comments into their corresponding web entities.
+   *
    * @param comments the comments to convert.
-   * @return an array with the corresponding comment entities.
+   * @return a list with the corresponding comment entities.
    */
-  protected CommentEntity[] asWebEntities(List<Comment> comments) {
-    CommentEntity[] entities = new CommentEntity[comments.size()];
-    for (int i = 0; i < comments.size(); i++) {
-      Comment comment = comments.get(i);
-      URI commentURI = getUri().getRequestUriBuilder().path(comment.getId()).build();
-      entities[i] = asWebEntity(comment, identifiedBy(commentURI));
-    }
-    return entities;
+  protected List<CommentEntity> asWebEntities(List<Comment> comments) {
+    return comments.stream()
+        .map(c -> {
+          URI commentURI = getUri().getRequestUriBuilder().path(c.getId()).build();
+          return asWebEntity(c, identifiedBy(commentURI));
+        })
+        .collect(Collectors.toList());
   }
 
   /**
    * Converts the comment into its corresponding web entity.
+   *
    * @param comment the comment to convert.
    * @param commentURI the URI of the comment.
    * @return the corresponding comment entity.
@@ -319,16 +330,18 @@ public class CommentResource extends RESTWebService {
   /**
    * Check the specified comment is valid. A comment is valid if the following attributes are set:
    * componentId, resourceId, text and its author identifier.
+   *
    * @param theComment the comment to validate.
    */
   protected void checkIsValid(final CommentEntity theComment) {
     if (getUser().isAnonymous() || getUser().isAccessGuest()) {
-      throw new WebApplicationException("anonymous or guest user cannot manage comments", FORBIDDEN);
+      throw new WebApplicationException("anonymous or guest user cannot manage comments",
+          FORBIDDEN);
     }
     if (!theComment.getComponentId().equals(getComponentId()) ||
         !theComment.getResourceType().equals(
             getContentType()) || !theComment.getResourceId().equals(
-            getContentId())) {
+        getContentId())) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
   }
@@ -336,9 +349,10 @@ public class CommentResource extends RESTWebService {
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     if (PublicationDetail.TYPE.equals(getContentType())) {
-      PublicationDetail publi =
+      PublicationDetail publication =
           publicationService.getDetail(new PublicationPK(getContentId(), getComponentId()));
-      validation.validateUserAuthorizationOnPublication(getHttpServletRequest(), getUser(), publi);
+      validation.validateUserAuthorizationOnPublication(getHttpServletRequest(), getUser(),
+          publication);
     } else {
       super.validateUserAuthorization(validation);
     }

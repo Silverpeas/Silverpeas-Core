@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.user.builder.helper;
 
-import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -36,8 +35,7 @@ import org.silverpeas.core.util.ServiceProvider;
 @Service
 public class UserNotificationHelper {
 
-  @Inject
-  private UserNotificationManager userNotificationManager;
+  private final UserNotificationManager userNotificationManager = new UserNotificationManager();
 
   /**
    * Builds a notification data container from a given builder. After that, sends the built

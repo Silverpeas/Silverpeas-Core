@@ -54,9 +54,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -113,7 +111,7 @@ public class FileUploadResource extends RESTWebService {
    * HTTP code is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
    *
-   * @return the response in relation with jQuery plugins used on the client side: a html textarea
+   * @return the response in relation with jQuery plugins used on the client side: an HTML textarea
    * tag that contains a JSON array structure. Each line of this array contains information of an
    * uploaded file :
    * <ul>
@@ -161,7 +159,7 @@ public class FileUploadResource extends RESTWebService {
    * scanned before upload. If the user isn't authenticated, a 401 HTTP code is returned. If a
    * problem occurs when processing the request, a 503 HTTP code is returned.
    *
-   * @return the response in relation with jQuery plugins used on the client side: a html textarea
+   * @return the response in relation with jQuery plugins used on the client side: an HTML textarea
    * tag that contains a JSON array structure. Each line of this array contains information of an
    * uploaded file :
    * <ul>
@@ -297,7 +295,7 @@ public class FileUploadResource extends RESTWebService {
       try {
         uploadSessionFile.write(inputStream);
       } catch (IOException ioe) {
-        // The file is written currently by an other process
+        // The file is written currently by another process
         throw new WebApplicationException(ioe, Response.Status.CONFLICT);
       }
 

@@ -22,10 +22,10 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
   if (!response.isCommitted()) {
     response.resetBuffer();
@@ -51,7 +51,7 @@
 <%@ include file="import.jsp" %>
 
 <%
-  Throwable exception = (Throwable) request.getAttribute("javax.servlet.jsp.jspException");
+  Throwable exception = (Throwable) request.getAttribute("jakarta.servlet.jsp.jspException");
   Throwable toDisplayException = HomePageUtil.getExceptionToDisplay(exception);
   String exStr = HomePageUtil.getMessageToDisplay(exception, language);
   String detailedString = HomePageUtil.getMessagesToDisplay(exception, language);

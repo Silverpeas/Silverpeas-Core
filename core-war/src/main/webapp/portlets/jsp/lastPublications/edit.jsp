@@ -31,8 +31,8 @@
 <%@ page import="javax.portlet.RenderResponse" %>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt"%>
 
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>

@@ -23,22 +23,22 @@
  */
 package org.silverpeas.core.web.tools.agenda.model;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import jakarta.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Singleton
+@Repository
 public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao {
 
   /**
-   * Get synchronisation user settings
-   * @param userId Id of user whose settings belong to
+   * Get user settings for calendar synchronization.
+   * @param userId identifier of the user whose settings belong to
    * @return CalendarImportSettings object containing user settings, null if no settings found
    * @see org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings
    */
@@ -77,22 +77,16 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
   }
 
   /**
-   * Save synchronisation user settings
+   * Save user settings about calendar synchronization.
    * @param settings CalendarImportSettings object containing user settings
    * @see org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings
    */
   public void saveUserSettings(CalendarImportSettings settings)
       throws AgendaException {
-    Connection connection = null;
-    PreparedStatement st = null;
-    ResultSet rs = null;
-
     String insertStatement =
         "insert into sb_agenda_import_settings (userId, hostName, synchroType, synchroDelay, url, remoteLogin, remotePwd, charset) values (?, ?, ?, ?, ?, ?, ?, ?)";
-
-    try {
-      connection = getConnection();
-      st = connection.prepareStatement(insertStatement);
+    try (Connection connection = getConnection();
+    PreparedStatement st = connection.prepareStatement(insertStatement)) {
       st.setInt(1, settings.getUserId());
       st.setString(2, settings.getHostName());
       st.setInt(3, settings.getSynchroType());
@@ -104,29 +98,20 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
       st.executeUpdate();
     } catch (Exception e) {
       throw new AgendaException(e);
-    } finally {
-      DBUtil.close(rs, st);
-      close(connection);
     }
   }
 
   /**
-   * Update synchronisation user settings
+   * Update user settings about calendar synchronization.
    * @param settings CalendarImportSettings object containing user settings
    * @see org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings
    */
   public void updateUserSettings(CalendarImportSettings settings)
       throws AgendaException {
-    Connection connection = null;
-    PreparedStatement st = null;
-    ResultSet rs = null;
-
     String updateStatement =
         "update sb_agenda_import_settings set hostName = ?, synchroType = ?, synchroDelay = ?, url= ?, remoteLogin= ?, remotePwd= ?, charset= ? where userId = ?";
-
-    try {
-      connection = getConnection();
-      st = connection.prepareStatement(updateStatement);
+    try (Connection connection = getConnection();
+         PreparedStatement st = connection.prepareStatement(updateStatement)) {
       st.setString(1, settings.getHostName());
       st.setInt(2, settings.getSynchroType());
       st.setInt(3, settings.getSynchroDelay());
@@ -138,9 +123,6 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
       st.executeUpdate();
     } catch (Exception e) {
       throw new AgendaException(e);
-    } finally {
-      DBUtil.close(rs, st);
-      close(connection);
     }
   }
 

@@ -88,8 +88,12 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
    * @return optionally a PersonalComponent object related to the personal component instance.
    */
   public static Optional<PersonalComponent> getByInstanceId(String componentInstanceId) {
-    return getByName(
-        SilverpeasPersonalComponentInstance.getIdentity(componentInstanceId).getComponentName());
+    if (SilverpeasPersonalComponentInstance.Identity.isValid(componentInstanceId)) {
+      return getByName(
+          SilverpeasPersonalComponentInstance.getIdentity(componentInstanceId).getComponentName());
+    } else {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -98,6 +102,15 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
    */
   public static Collection<PersonalComponent> getAll() {
     return PersonalComponentRegistry.get().getAllPersonalComponents().values();
+  }
+
+  /**
+   * Is the specified identifier refers an instance of a user personal application.
+   * @param componentInstanceId the unique identifier of a user personal component.
+   * @return true if the identifier refers a personal component instance. False otherwise.
+   */
+  public static boolean isInstance(String componentInstanceId) {
+    return SilverpeasPersonalComponentInstance.Identity.isValid(componentInstanceId);
   }
 
   @Override

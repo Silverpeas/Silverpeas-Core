@@ -26,8 +26,8 @@
 package org.silverpeas.core.jcr.security;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.annotation.Nonnull;
 import java.security.Principal;
 import java.util.Objects;
 
@@ -43,13 +43,13 @@ public class SilverpeasUserPrincipal implements Principal {
   private final User user;
   private final AccessContext context;
 
-  public SilverpeasUserPrincipal(@Nonnull final User user) {
+  public SilverpeasUserPrincipal(@NonNull final User user) {
     Objects.requireNonNull(user);
     this.user = user;
     this.context = AccessContext.EMPTY;
   }
 
-  public SilverpeasUserPrincipal(@Nonnull final User user, final AccessContext context) {
+  public SilverpeasUserPrincipal(@NonNull final User user, final AccessContext context) {
     Objects.requireNonNull(user);
     this.user = user;
     this.context = context;

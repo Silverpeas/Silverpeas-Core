@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -44,6 +45,9 @@ import static org.silverpeas.core.silverstatistics.volume.model.SilverStatistics
       "jms/queue/statisticsQueue")}, description = "Message driven bean for statistics insertion")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SilverStatisticsMessageDriven implements MessageListener {
+
+  @Inject
+  private SilverStatistics statistics;
 
   /**
    * Insert statistics
@@ -71,6 +75,6 @@ public class SilverStatisticsMessageDriven implements MessageListener {
   }
 
   private SilverStatistics getSilverStatistics() {
-    return SilverStatisticsProvider.getSilverStatistics();
+    return statistics;
   }
 }

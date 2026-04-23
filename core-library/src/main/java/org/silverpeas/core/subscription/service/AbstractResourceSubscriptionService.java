@@ -23,22 +23,18 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.subscription.ResourceSubscriptionService;
-import org.silverpeas.core.subscription.SubscriberDirective;
-import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.*;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 
@@ -47,6 +43,12 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
  */
 public abstract class AbstractResourceSubscriptionService implements ResourceSubscriptionService,
     Initialization {
+
+  @Inject
+  private NodeService nodeService;
+
+  @Inject
+  private SubscriptionService subscriptionService;
 
   @Override
   public void init() {
@@ -90,7 +92,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
 
   private void addAllSubscribersAboutComponentInstance(final String componentInstanceId,
       final Collection<SubscriptionSubscriber> subscribers) {
-    subscribers.addAll(getSubscribeService()
+    subscribers.addAll(getSubscriptionService()
         .getSubscribers(ComponentSubscriptionResource.from(componentInstanceId)));
   }
 
@@ -98,13 +100,17 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
       final Collection<SubscriptionSubscriber> subscribers) {
     if (nodePath != null) {
       for (final NodeDetail node : nodePath) {
-        subscribers.addAll(getSubscribeService()
+        subscribers.addAll(getSubscriptionService()
             .getSubscribers(NodeSubscriptionResource.from(node.getNodePK())));
       }
     }
   }
 
   protected NodeService getNodeService() {
-    return NodeService.get();
+    return nodeService;
+  }
+
+  protected SubscriptionService getSubscriptionService() {
+    return subscriptionService;
   }
 }

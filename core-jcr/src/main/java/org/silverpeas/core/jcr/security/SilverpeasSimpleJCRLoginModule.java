@@ -31,8 +31,8 @@ import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
+import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.jcr.Credentials;
 import javax.jcr.SimpleCredentials;
 import javax.security.auth.login.LoginException;
@@ -56,7 +56,7 @@ public class SilverpeasSimpleJCRLoginModule extends SilverpeasJCRLoginModule {
 
   @SuppressWarnings("rawtypes")
   @Override
-  @Nonnull
+  @NonNull
   protected Set<Class> getSupportedCredentials() {
     return SUPPORTED_CREDENTIALS;
   }
@@ -92,7 +92,7 @@ public class SilverpeasSimpleJCRLoginModule extends SilverpeasJCRLoginModule {
         Arrays.equals(systemCredentials.getPassword(), credentials.getPassword());
   }
 
-  @Nonnull
+  @NonNull
   private AuthenticationCredential convert(final SimpleCredentials credentials)
       throws LoginException {
     AuthenticationCredential credential =

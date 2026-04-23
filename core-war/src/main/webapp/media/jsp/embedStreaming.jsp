@@ -24,10 +24,10 @@
 
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@ taglib prefix="viewTags" tagdir="/WEB-INF/tags/silverpeas/util" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
 <c:set var="entity" value="${requestScope.entity}"/>
 <c:set var="definition" value="${requestScope.definition}"/>

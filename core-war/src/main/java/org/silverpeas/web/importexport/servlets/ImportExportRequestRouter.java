@@ -183,7 +183,7 @@ public class ImportExportRequestRouter extends
         destination = "/importExportPeas/jsp/" + function;
       }
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
 

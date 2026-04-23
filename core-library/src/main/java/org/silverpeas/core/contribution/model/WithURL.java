@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,25 +19,17 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.silverstatistics.volume.service;
 
-import org.silverpeas.core.util.ServiceProvider;
+package org.silverpeas.core.contribution.model;
 
 /**
- * @author ehugonnet
+ *
+ * @author mmoquillon
  */
-public class SilverStatisticsProvider {
+public interface WithURL {
 
-  /**
-   * Gets a SilverStatistics implementation instance.
-   * @return a SilverStatistics implementation instance.
-   */
-  public static SilverStatistics getSilverStatistics() {
-    return ServiceProvider.getService(SilverStatistics.class);
-  }
-
-  private SilverStatisticsProvider() {
-  }
+  String getURL();
 }
+  

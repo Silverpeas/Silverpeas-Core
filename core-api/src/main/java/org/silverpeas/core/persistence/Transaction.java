@@ -39,8 +39,8 @@ import org.silverpeas.kernel.annotation.Technical;
  * @author mmoquillon
  */
 @Technical
-@Bean
 @Singleton
+@Bean
 public class Transaction {
 
   @Resource(mappedName = "java:/TransactionManager")

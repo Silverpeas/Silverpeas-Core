@@ -148,7 +148,8 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
         .orElseGet(() -> ComponentInstanceManualUserNotification
             .get(getComponentRootName())
             .orElseThrow(() -> new SilverpeasRuntimeException(
-              "default implementation of ComponentInstanceManualUserNotification is not available!!!")))
+              "No implementation of ComponentInstanceManualUserNotification is found for " +
+              "component " + getComponentRootName())))
         .initializesWith(context);
     return new UserNotificationWrapper(manualUserNotification, getLanguage());
   }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
 
-    Copyright (C) 2000 - 2024 Silverpeas
+    Copyright (C) 2000 - 2026 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,15 +24,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
-<taglib xmlns="http://java.sun.com/xml/ns/javaee"
+<taglib xmlns="https://jakarta.ee/xml/ns/jakartaee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
-        version="2.1">
-  <description>View Generator 1.1 core library</description>
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-jsptaglibrary_3_1.xsd"
+        version="3.1">
+  <description>View Generator 2.0 core library</description>
   <display-name>View Generator</display-name>
-  <tlib-version>1.0</tlib-version>
+  <tlib-version>2.0</tlib-version>
   <short-name>view</short-name>
-  <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
+  <uri>silverpeas.tags.viewGenerator</uri>
 
   <tag>
     <description>
@@ -1153,7 +1153,7 @@
       <description>Set comparator for lazy display. If specified, sortable attribute is ignored</description>
       <name>compareOn</name>
       <rtexprvalue>true</rtexprvalue>
-      <type>javax.el.LambdaExpression</type>
+      <type>jakarta.el.LambdaExpression</type>
     </attribute>
     <attribute>
       <description>If the column is sortable</description>
@@ -1238,7 +1238,7 @@
       <description>
         Name of the exported scoped variable for the
         status of the iteration. Object exported is of type
-        javax.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
+        jakarta.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
         visibility.
       </description>
       <name>varStatus</name>
@@ -1454,7 +1454,7 @@
       <description>
         Name of the exported scoped variable for the
         status of the iteration. Object exported is of type
-        javax.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
+        jakarta.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
         visibility.
       </description>
       <name>varStatus</name>
@@ -1583,7 +1583,7 @@
       <description>
         Name of the exported scoped variable for the
         status of the iteration. Object exported is of type
-        javax.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
+        jakarta.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
         visibility.
       </description>
       <name>varStatus</name>

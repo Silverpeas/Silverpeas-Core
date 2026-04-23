@@ -41,9 +41,9 @@ import org.apache.jackrabbit.oak.spi.security.principal.SystemUserPrincipal;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.jcr.security.AccessContext;
 import org.silverpeas.core.jcr.security.SilverpeasUserPrincipal;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.Set;
@@ -71,8 +71,8 @@ public class SilverpeasPermissionProvider implements PermissionProvider {
    * @param root the root node of the content tree.
    * @param principals the principals identifying the user in Silverpeas.
    */
-  SilverpeasPermissionProvider(@Nonnull Root root,
-      @Nonnull Set<Principal> principals, @Nonnull ProviderCtx providerCtx) {
+  SilverpeasPermissionProvider(@NonNull Root root,
+      @NonNull Set<Principal> principals, @NonNull ProviderCtx providerCtx) {
     SilverpeasUserPrincipal principal = principals.stream()
         .filter(Objects::nonNull)
         .filter(SilverpeasUserPrincipal.class::isInstance)
@@ -104,7 +104,7 @@ public class SilverpeasPermissionProvider implements PermissionProvider {
    * @return a set of privilege names.
    */
   @Override
-  public @Nonnull Set<String> getPrivileges(@Nullable final Tree tree) {
+  public @NonNull Set<String> getPrivileges(@Nullable final Tree tree) {
     if (tree == null || user == null) {
       return Set.of();
     }
@@ -115,7 +115,7 @@ public class SilverpeasPermissionProvider implements PermissionProvider {
   }
 
   @Override
-  public boolean hasPrivileges(@Nullable final Tree tree, final @Nonnull String... privilegeNames) {
+  public boolean hasPrivileges(@Nullable final Tree tree, final @NonNull String... privilegeNames) {
     if (isSystemOrAdminAccess()) {
       return true;
     }
@@ -126,19 +126,19 @@ public class SilverpeasPermissionProvider implements PermissionProvider {
   }
 
   @Override
-  public @Nonnull RepositoryPermission getRepositoryPermission() {
+  public @NonNull RepositoryPermission getRepositoryPermission() {
     return isSystemOrAdminAccess() ? RepositoryPermission.ALL : RepositoryPermission.EMPTY;
   }
 
   @Override
-  public @Nonnull TreePermission getTreePermission(@Nonnull final Tree tree,
-      @Nonnull final TreePermission parentPermission) {
+  public @NonNull TreePermission getTreePermission(@NonNull final Tree tree,
+      @NonNull final TreePermission parentPermission) {
     Tree readOnlyTree = PermissionUtil.getReadOnlyTree(tree, readOnlyRoot);
     return new SilverpeasTreePermission(readOnlyTree, user, accessContext);
   }
 
   @Override
-  public boolean isGranted(@Nonnull final Tree tree, @Nullable final PropertyState property,
+  public boolean isGranted(@NonNull final Tree tree, @Nullable final PropertyState property,
       final long permissions) {
     TreePermission treePermission = getTreePermission(tree, TreePermission.NO_RECOURSE);
     return property == null ?
@@ -147,7 +147,7 @@ public class SilverpeasPermissionProvider implements PermissionProvider {
   }
 
   @Override
-  public boolean isGranted(@Nonnull final String oakPath, @Nonnull final String jcrActions) {
+  public boolean isGranted(@NonNull final String oakPath, @NonNull final String jcrActions) {
     if (user.isSystem()) {
       return true;
     }
@@ -165,7 +165,7 @@ public class SilverpeasPermissionProvider implements PermissionProvider {
         principal instanceof AdminPrincipal;
   }
 
-  private boolean isGranted(@Nonnull TreeLocation location, long permissions) {
+  private boolean isGranted(@NonNull TreeLocation location, long permissions) {
     final boolean isGranted;
     PropertyState property = location.getProperty();
     Tree tree = (property == null) ? location.getTree() : location.getParent().getTree();

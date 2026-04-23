@@ -31,8 +31,8 @@ import org.apache.jackrabbit.oak.spi.security.authentication.LoginContext;
 import org.silverpeas.core.jcr.security.LoginModuleRegistry;
 import org.silverpeas.core.jcr.security.SilverpeasJCRLoginModule;
 import org.silverpeas.core.jcr.security.SilverpeasUserPrincipal;
+import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.jcr.Credentials;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginException;
@@ -128,7 +128,7 @@ public class SilverpeasLoginContext implements LoginContext {
    * @return the credentials of the user being authenticated.
    * @throws LoginException if no credentials were provided for the authentication.
    */
-  @Nonnull
+  @NonNull
   private Credentials getCredentials() throws LoginException {
     Credentials credentials = callbackHandler.getCredentials();
     if (credentials == null) {
@@ -137,7 +137,7 @@ public class SilverpeasLoginContext implements LoginContext {
     return credentials;
   }
 
-  @Nonnull
+  @NonNull
   private LoginModuleRegistry getLoginModuleRegistry() {
     return LoginModuleRegistry.getInstance();
   }
@@ -148,9 +148,9 @@ public class SilverpeasLoginContext implements LoginContext {
    * @return a set of login module able to process the specified credentials.
    * @throws LoginException if no login module are found to process the given type of credentials.
    */
-  @Nonnull
+  @NonNull
   private Set<SilverpeasJCRLoginModule> getLoginModules(
-      @Nonnull Class<? extends Credentials> credentialsType) throws LoginException {
+      @NonNull Class<? extends Credentials> credentialsType) throws LoginException {
     if (modules == null) {
       modules = getLoginModuleRegistry().getLoginModule(credentialsType);
       if (modules.isEmpty()) {

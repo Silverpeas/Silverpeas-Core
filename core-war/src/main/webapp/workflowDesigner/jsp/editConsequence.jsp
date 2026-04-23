@@ -53,7 +53,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>0
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>0
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
 
 <%

@@ -66,10 +66,10 @@ import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.USERS_B
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
- * way to access a representation of one or several user profile. This representation is vehiculed
+ * way to access a representation of one or several user profile. This representation is provided
  * as a Web entity in the HTTP requests and responses.
  * <p>
- * The users that are published depend on some parameters whose the domain isolation and the profile
+ * The users that are published depend on some parameters whose domain isolation and the profile
  * of the user behind the requesting. The domain isolation defines the visibility of a user or a
  * group of users in a given domain to the others domains in Silverpeas.
  * </p>
@@ -96,7 +96,7 @@ public class UserProfileResource extends RESTWebService {
   private RelationShipService relationShipService;
 
   /**
-   * Gets the profile of the user whose the API token is either passed in the {@code Authorization}
+   * Gets the profile of the user whose API token is either passed in the {@code Authorization}
    * HTTP header (Bearer authentication scheme, IETF RFC 6750) or with the query parameter
    * {@code access_token} (see IETF RFC 6750).
    * <p>
@@ -127,7 +127,7 @@ public class UserProfileResource extends RESTWebService {
    * </p>
    * <p>
    * In the response is indicated as an HTTP header (named X-Silverpeas-UserSize) the real size of
-   * the users that matches the query. This is usefull for clients that use the pagination to filter
+   * the users that matches the query. This is useful for clients that use the pagination to filter
    * the count of the answered users.
    * </p>
    *
@@ -245,7 +245,7 @@ public class UserProfileResource extends RESTWebService {
    * </p>
    * <p>
    * In the response is indicated as an HTTP header (named X-Silverpeas-UserSize) the real size of
-   * the users that matches the query. This is usefull for clients that use the pagination to filter
+   * the users that matches the query. This is useful for clients that use the pagination to filter
    * the count of the answered users.
    * </p>
    *
@@ -258,7 +258,7 @@ public class UserProfileResource extends RESTWebService {
    * @param matchingAllRoles boolean at true if the users must play all the roles, false otherwise.
    * @param resource the unique identifier of the resource in the component instance the users to
    * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
-   * one. If it is not set, by default the resource refered is the whole component instance. As for
+   * one. If it is not set, by default the resource referred is the whole component instance. As for
    * component instance identifier, a resource one is defined by its type followed by its
    * identifier.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
@@ -319,7 +319,7 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets the profile on the user that is identified by the unique identifier refered by the URI.
+   * Gets the profile on the user that is identified by the unique identifier referred by the URI.
    * The unique identifier in the URI accepts also the specific term <i>me</i> to refers the current
    * user of the session within which the request is received.
    *
@@ -332,7 +332,7 @@ public class UserProfileResource extends RESTWebService {
    * @param matchingAllRoles boolean at true if the users must play all the roles, false otherwise.
    * @param resource the unique identifier of the resource in the component instance the users to
    * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
-   * one. If it is not set, by default the resource refered is the whole component instance. As for
+   * one. If it is not set, by default the resource referred is the whole component instance. As for
    * component instance identifier, a resource one is defined by its type followed by its
    * identifier.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
@@ -407,7 +407,7 @@ public class UserProfileResource extends RESTWebService {
     return uri;
   }
 
-  private UserProfileEntity[] asWebEntity(final List<? extends UserDetail> allUsers,
+  private List<UserProfileEntity> asWebEntity(final List<? extends UserDetail> allUsers,
       final URI baseUri) {
     return UserProfileEntity.fromUsers(allUsers, baseUri);
   }

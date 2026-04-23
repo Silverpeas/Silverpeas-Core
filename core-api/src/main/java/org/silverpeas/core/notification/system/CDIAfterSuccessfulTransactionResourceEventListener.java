@@ -25,32 +25,35 @@
 package org.silverpeas.core.notification.system;
 
 import jakarta.enterprise.event.Observes;
-import org.silverpeas.core.persistence.Transaction;
+import jakarta.transaction.Transactional;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import static jakarta.enterprise.event.TransactionPhase.AFTER_SUCCESS;
 
 /**
- * A synchronous event listener using the notification bus of CDI. This bus is based on the
- * Observer pattern but by using the annotations in place of code lines to setup listeners and so
- * on.
+ * A synchronous event listener using the notification bus of CDI. This bus is based on the Observer
+ * pattern but by using the annotations in place of code lines to setup listeners and so on.
  * <p>
- * Synchronous events are carried within a specific CDI event and are collected by this
- * abstract class. All concrete listeners have just to extend this abstract class and to implement
- * some of the following methods to transparently receive the events on which they are interested:
+ * Synchronous events are carried within a specific CDI event and are collected by this abstract
+ * class. All concrete listeners have just to extend this abstract class and to implement some of
+ * the following methods to transparently receive the events on which they are interested:
  * </p>
  * <p>
- * If the observation is performed within a transaction, all the events are then just received
- * after a successful commit.
+ * If the observation is performed within a transaction, all the events are then just received after
+ * a successful commit.
  * </p>
  * <ul>
- *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onCreation(ResourceEvent} to
+ *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onCreation
+ *   (ResourceEvent} to
  *   receive events about the creation of a resource,</li>
- *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onUpdate(ResourceEvent} to
+ *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onUpdate
+ *   (ResourceEvent} to
  *   receive events about the update of a resource,</li>
- *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onRemoving(ResourceEvent} to
+ *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onRemoving
+ *   (ResourceEvent} to
  *   receive events about the removing of a resource,</li>
- *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onDeletion(ResourceEvent} to
+ *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onDeletion
+ *   (ResourceEvent} to
  *   receive events about the deletion of a resource,</li>
  * </ul>
  *
@@ -64,20 +67,19 @@ public abstract class CDIAfterSuccessfulTransactionResourceEventListener<T exten
   /**
    * Listens for events related to a resource managed in Silverpeas.
    * <p>
-   *   The event is decoded from the specified message and according to the type of the event,
-   *   the adequate method is then invoked.
+   * The event is decoded from the specified message and according to the type of the event, the
+   * adequate method is then invoked.
    * </p>
-   * @see ResourceEventListener#dispatchEvent(ResourceEvent)
+   *
    * @param event an event.
+   * @see ResourceEventListener#dispatchEvent(ResourceEvent)
    */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
   public void onEvent(@Observes(during = AFTER_SUCCESS) T event) {
-    Transaction.performInNew(() -> {
-      try {
-        dispatchEvent(event);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e);
-      }
-      return null;
-    });
+    try {
+      dispatchEvent(event);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 }

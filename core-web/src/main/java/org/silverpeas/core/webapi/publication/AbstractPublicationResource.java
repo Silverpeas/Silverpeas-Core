@@ -23,22 +23,20 @@
  */
 package org.silverpeas.core.webapi.publication;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
+import org.silverpeas.core.security.authorization.*;
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +47,19 @@ import java.util.stream.Collectors;
  * A REST Web resource providing access to publications.
  */
 public abstract class AbstractPublicationResource extends RESTWebService {
+
+  @Inject
+  private AttachmentService attachmentService;
+  @Inject
+  private NodeService nodeService;
+  @Inject
+  private PublicationService publicationService;
+  @Inject
+  private SimpleDocumentAccessControl simpleDocumentAccessControl;
+  @Inject
+  private NodeAccessControl nodeAccessController;
+  @Inject
+  private PublicationAccessControl publicationAccessController;
 
   /**
    * Gets all the publications in the specified topic (a folder or a category) with or not their
@@ -88,7 +99,6 @@ public abstract class AbstractPublicationResource extends RESTWebService {
       URI uri = getPublicationUri(publication);
       PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
       if (withAttachments) {
-        AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
         // expose regular files
         Collection<SimpleDocument> attachments =
             attachmentService.listDocumentsByForeignKey(publication.getPK().toResourceReference(),
@@ -119,26 +129,26 @@ public abstract class AbstractPublicationResource extends RESTWebService {
   }
 
   protected NodeService getNodeService() {
-    try {
-      return NodeService.get();
-    } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-    }
+    return nodeService;
   }
 
   protected PublicationService getPublicationService() {
-    try {
-      return PublicationService.get();
-    } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-    }
+    return publicationService;
+  }
+
+  protected NodeAccessControl getNodeAccessController() {
+    return nodeAccessController;
+  }
+
+  protected PublicationAccessControl getPublicationAccessController() {
+    return publicationAccessController;
   }
 
   private boolean isAttachmentAuthorized(final SimpleDocument attachment) {
     final boolean authorized;
     if (isUserDefined()) {
       final User user = getUser();
-      authorized = SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), attachment,
+      authorized = simpleDocumentAccessControl.isUserAuthorized(user.getId(), attachment,
           AccessControlContext.init().onOperationsOf(AccessControlOperation.DOWNLOAD));
     } else {
       authorized = attachment.isDownloadAllowedForReaders();

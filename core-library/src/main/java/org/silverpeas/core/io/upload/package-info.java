@@ -31,6 +31,6 @@
  * validate form unless all files are uploaded.
  * <br>
  * On server side, {@link org.silverpeas.core.io.upload.FileUploadManager} has to be used to
- * retrieve uploaded files from {@link javax.servlet.http.HttpServletRequest}.
+ * retrieve uploaded files from {@link jakarta.servlet.http.HttpServletRequest}.
  */
 package org.silverpeas.core.io.upload;

@@ -28,8 +28,10 @@ import org.silverpeas.core.node.model.NodeDetail;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serializable;
+
 @XmlRootElement
-public class NodeTranslationEntity {
+public class NodeTranslationEntity implements Serializable {
 
   @XmlElement(defaultValue = "")
   private String id;
@@ -40,6 +42,7 @@ public class NodeTranslationEntity {
   @XmlElement(defaultValue = "")
   private String language;
 
+  @SuppressWarnings("unused")
   public NodeTranslationEntity() {
   }
 

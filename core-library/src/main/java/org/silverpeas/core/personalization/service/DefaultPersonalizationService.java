@@ -43,7 +43,7 @@ import java.util.List;
  * Class declaration
  */
 @Service
-@Transactional
+@Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultPersonalizationService implements PersonalizationService {
 
   @Inject
@@ -69,6 +69,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
         .valueOf(settings.getString("DefaultMenuDisplay", DEFAULT_MENU_DISPLAY_MODE.name()));
   }
 
+  @Transactional
   @Override
   public void saveUserSettings(UserPreferences userPreferences) {
     final UserPreferences previous =
@@ -82,6 +83,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
     }
   }
 
+  @Transactional
   @Override
   public void resetDefaultSpace(String spaceId) {
     List<UserPreferences> prefs = personalizationRepository.findByDefaultSpace(spaceId);

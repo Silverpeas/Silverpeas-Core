@@ -295,7 +295,7 @@ public class PdcUtilizationRequestRouter extends
         destination = "/pdcPeas/jsp/" + function;
       }
     } catch (Exception exce_all) {
-      request.setAttribute("javax.servlet.jsp.jspException", exce_all);
+      request.setAttribute("jakarta.servlet.jsp.jspException", exce_all);
       return "/admin/jsp/errorpageMain.jsp";
     }
 
