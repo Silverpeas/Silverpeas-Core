@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import static org.silverpeas.core.calendar.subscription.CalendarSubscriptionConstants.CALENDAR;
-import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 
 /**
@@ -78,7 +77,7 @@ public abstract class AbstractCalendarSubscriptionService extends AbstractResour
       final Collection<SubscriptionSubscriber> subscribers) {
     final Calendar calendar = Calendar.getById(resourceId);
     if (calendar != null && calendar.getComponentInstanceId().equals(componentInstanceId)) {
-      subscribers.addAll(getSubscribeService().getSubscribers(CalendarSubscriptionResource.from(calendar)));
+      subscribers.addAll(getSubscriptionService().getSubscribers(CalendarSubscriptionResource.from(calendar)));
     }
   }
 }

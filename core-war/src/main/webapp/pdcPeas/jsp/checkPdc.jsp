@@ -31,7 +31,6 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Axis"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.AxisHeader"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.ClassifyPosition"%>
@@ -64,8 +63,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="javax.servlet.http.HttpSession"%>
-<%@ page import="javax.servlet.jsp.JspWriter"%>
+<%@ page import="jakarta.servlet.http.HttpSession"%>
+<%@ page import="jakarta.servlet.jsp.JspWriter"%>
 
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.util.ArrayList"%>

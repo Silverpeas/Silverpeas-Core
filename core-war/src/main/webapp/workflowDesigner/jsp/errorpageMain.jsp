@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%
     if (!response.isCommitted())
         response.resetBuffer();
@@ -45,7 +45,7 @@
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String language = m_MainSessionCtrl.getFavoriteLanguage();
     LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(language);
-	Exception exception = (Exception) request.getAttribute("javax.servlet.jsp.jspException");
+	Exception exception = (Exception) request.getAttribute("jakarta.servlet.jsp.jspException");
 	Throwable toDisplayException = HomePageUtil.getExceptionToDisplay(exception);
 	String exStr = HomePageUtil.getMessageToDisplay(exception , language);
 	String detailedString = null;

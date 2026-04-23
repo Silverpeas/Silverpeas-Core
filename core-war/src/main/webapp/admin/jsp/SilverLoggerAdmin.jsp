@@ -28,11 +28,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.kernel.logging.SilverLoggerProvider" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
 <c:set var="currentUser" value="${silfn:currentUser()}"/>
 <c:if test="${currentUser == null or not currentUser.accessAdmin}">

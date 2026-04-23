@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.*;
@@ -64,6 +65,13 @@ public class SilverStatisticsManager implements Initialization {
   private List<String> directoryToScan = null;
   private StatisticsConfig statsConfig = null;
 
+  @Inject
+  private SilverStatistics statistics;
+  @Inject
+  private Scheduler scheduler;
+  @Inject
+  private SilverStatisticsSender statisticsSender;
+
   /**
    * Init attributes.
    * This method is invoked by the IoC container. Don't invoke it!
@@ -96,7 +104,6 @@ public class SilverStatisticsManager implements Initialization {
 
   @Override
   public void release() throws SchedulerException {
-    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     scheduler.unscheduleJob(STAT_SIZE_JOB_NAME);
     scheduler.unscheduleJob(STAT_VOLUME_JOB_NAME);
     scheduler.unscheduleJob(STAT_CUMULI_JOB_NAME);
@@ -122,9 +129,7 @@ public class SilverStatisticsManager implements Initialization {
   private void initSchedulerStatistics(String aCronString, String jobName,
       Consumer<Date> jobOperation) throws SilverpeasException {
     try {
-      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(jobName);
-
       JobTrigger trigger = JobTrigger.triggerAt(aCronString);
       Job job = createJobWith(jobName, jobOperation);
       scheduler.scheduleJob(job, trigger);
@@ -228,9 +233,8 @@ public class SilverStatisticsManager implements Initialization {
 
   private void sendStatistic(StatType type, CharSequence stat) {
     if (isAsynchronStats(type)) {
-      SilverStatisticsSender mySilverStatisticsSender = SilverStatisticsSender.get();
       try {
-        mySilverStatisticsSender.send(type, stat.toString());
+        statisticsSender.send(type, stat.toString());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
@@ -298,7 +302,7 @@ public class SilverStatisticsManager implements Initialization {
   }
 
   private SilverStatistics getSilverStatistics() {
-    return SilverStatisticsProvider.getSilverStatistics();
+    return statistics;
   }
 
   /**

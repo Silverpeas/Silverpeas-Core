@@ -23,9 +23,14 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.kernel.annotation.Technical;
+
 /**
  * Custom encryption algorithm of the user credentials before storing them in cookies.
  */
+@Technical
+@Service
 public class CookieCredentialEncryption implements CredentialEncryption {
 
   /**
@@ -81,16 +86,15 @@ public class CookieCredentialEncryption implements CredentialEncryption {
     String prand = asciiCharString.toString();
 
     int sPos = (int) Math.floor(prand.length() / 5.0d);
-    StringBuilder stringMult = new StringBuilder();
-    stringMult.append(prand.charAt(sPos)).append(prand.charAt(sPos * 2))
-        .append(prand.charAt(sPos * 3)).append(prand.charAt(sPos * 4)).append(
-        prand.charAt(sPos * 5));
+    String stringMult = String.valueOf(prand.charAt(sPos)) + prand.charAt(sPos * 2) +
+                        prand.charAt(sPos * 3) + prand.charAt(sPos * 4) +
+                        prand.charAt(sPos * 5);
 
-    int mult = Integer.parseInt(stringMult.toString());
+    int mult = Integer.parseInt(stringMult);
 
     int incr = Math.round(key.length() / 2.0f);
     double modu = Math.pow(2, 127) - 1;
-    int salt = Integer.parseInt(str.substring(str.length() - 8, str.length()),
+    int salt = Integer.parseInt(str.substring(str.length() - 8),
         16);
 
     str = str.substring(0, str.length() - 8);

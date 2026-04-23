@@ -35,7 +35,7 @@
 <%@ page import="org.silverpeas.kernel.bundle.SettingBundle"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="javax.servlet.http.HttpServletResponse"%>
+<%@ page import="jakarta.servlet.http.HttpServletResponse"%>
 <%@ page import="java.util.List"%>
 
 <%

@@ -36,7 +36,7 @@ import jakarta.servlet.ServletRequest;
  */
 public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorUtil {
 
-  private static final String SERVLET_JSP_EXCEPTION_ATTRIBUTE = "javax.servlet.jsp.jspException";
+  private static final String SERVLET_JSP_EXCEPTION_ATTRIBUTE = "jakarta.servlet.jsp.jspException";
 
   /**
    * Checks if a DataStorageQuotaException is registered in the servlet request

@@ -62,10 +62,13 @@ public interface SilverpeasComponent {
     if (!StringUtil.isDefined(componentInstanceId)) {
       return Optional.empty();
     }
-    Optional<? extends SilverpeasComponent> component =
-        WAComponent.getByInstanceId(componentInstanceId);
-    if (component.isEmpty()) {
+    Optional<? extends SilverpeasComponent> component;
+    if (WAComponent.isInstance(componentInstanceId)) {
+      component = WAComponent.getByInstanceId(componentInstanceId);
+    } else if (PersonalComponent.isInstance(componentInstanceId)) {
       component = PersonalComponent.getByInstanceId(componentInstanceId);
+    } else {
+      component = Optional.empty();
     }
     return Optional.ofNullable(component.orElse(null));
   }

@@ -22,7 +22,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
 <!DOCTYPE html>
 <html>

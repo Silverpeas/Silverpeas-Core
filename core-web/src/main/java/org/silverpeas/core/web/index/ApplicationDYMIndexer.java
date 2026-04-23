@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.index;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.DidYouMeanIndexer;
 import org.silverpeas.core.util.ServiceProvider;
@@ -36,6 +37,7 @@ import java.io.FilenameFilter;
 /**
  * Executes a partial or full reindexing of spelling indexes
  */
+@Bean
 public class ApplicationDYMIndexer extends AbstractIndexer {
 
   private static final String CONTENT = "content";

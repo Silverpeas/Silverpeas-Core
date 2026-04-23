@@ -134,31 +134,31 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public List<PdcSubscription> getUserPDCSubscription() {
-    return getPdcSubscriptionService().getPDCSubscriptionByUserId(Integer.parseInt(getUserId()));
+    return getPdcSubscriptionService().getPdcSubscriptionByUserId(Integer.parseInt(getUserId()));
   }
 
   public List<PdcSubscription> getUserPDCSubscription(int userId) {
-    return getPdcSubscriptionService().getPDCSubscriptionByUserId(userId);
+    return getPdcSubscriptionService().getPdcSubscriptionByUserId(userId);
   }
 
   public PdcSubscription getPDCSubsriptionById(int id) {
-    return getPdcSubscriptionService().getPDCSubsriptionById(id);
+    return getPdcSubscriptionService().getPdcSubscriptionById(id);
   }
 
   public void createPDCSubscription(PdcSubscription subscription) {
-    subscription.setId(getPdcSubscriptionService().createPDCSubscription(subscription));
+    subscription.setId(getPdcSubscriptionService().createPdcSubscription(subscription));
   }
 
   public void updatePDCSubscription(PdcSubscription subscription) {
-    getPdcSubscriptionService().updatePDCSubscription(subscription);
+    getPdcSubscriptionService().updatePdcSubscription(subscription);
   }
 
   public void removePDCSubscriptionById(int id) {
-    getPdcSubscriptionService().removePDCSubscriptionById(id);
+    getPdcSubscriptionService().removePdcSubscriptionById(id);
   }
 
   public void removeICByPK(int[] ids) {
-    getPdcSubscriptionService().removePDCSubscriptionById(ids);
+    getPdcSubscriptionService().removePdcSubscriptionById(ids);
   }
 
   public AxisHeader getAxisHeader(String axisId) throws PdcException {

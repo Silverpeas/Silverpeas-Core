@@ -48,12 +48,12 @@ public class PdcSubscriptionManager {
 
   }
 
-  public PdcSubscription getPDCSubsriptionById(int id) {
-    return pdcSubscriptionService.getPDCSubsriptionById(id);
+  public PdcSubscription getPdcSubscriptionById(int id) {
+    return pdcSubscriptionService.getPdcSubscriptionById(id);
   }
 
-  public void createPDCSubsription(PdcSubscription subscription) {
-    pdcSubscriptionService.createPDCSubscription(subscription);
+  public void createPdCSubscription(PdcSubscription subscription) {
+    pdcSubscriptionService.createPdcSubscription(subscription);
   }
 
   public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,

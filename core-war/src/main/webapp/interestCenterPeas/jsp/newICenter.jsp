@@ -26,7 +26,7 @@
 <%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ include file="checkICenter.jsp" %>
 <%
 String action	= (String) request.getAttribute("action");

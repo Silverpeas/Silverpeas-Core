@@ -134,7 +134,7 @@ public final class WebComponentRequestRouter<T extends WebComponentController<R>
       destination = response.produces()
           .orElseGet(() -> response.navigation().orElseThrow(() -> forbidden("")).getDestination());
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
     return destination;

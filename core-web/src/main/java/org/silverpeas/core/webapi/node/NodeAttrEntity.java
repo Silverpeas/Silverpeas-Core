@@ -23,22 +23,19 @@
  */
 package org.silverpeas.core.webapi.node;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.core.webapi.profile.UserProfileEntity;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.webapi.profile.UserProfileEntity;
 
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Date;
 
-import static org.silverpeas.kernel.logging.SilverLogger.getLogger;
-
 @XmlRootElement
-public class NodeAttrEntity {
+public class NodeAttrEntity implements Serializable {
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -66,21 +63,18 @@ public class NodeAttrEntity {
   @XmlElement
   private boolean specificRights;
 
+  @SuppressWarnings("unused")
   public NodeAttrEntity() {
   }
 
   /**
    * Creates a new node entity from the specified node.
    *
-   * @param node the node to entitify.
+   * @param node the node
    * @return the entity representing the specified node.
    */
   public static NodeAttrEntity fromNodeDetail(final NodeDetail node, URI uri, String lang) {
     return new NodeAttrEntity(node, uri, lang);
-  }
-
-  public static NodeAttrEntity fromNodeDetail(final NodeDetail node, String uri, String lang) {
-    return fromNodeDetail(node, toURI(uri), lang);
   }
 
   private NodeAttrEntity(final NodeDetail node, URI uri, String lang) {
@@ -102,15 +96,6 @@ public class NodeAttrEntity {
     if (!this.id.equalsIgnoreCase(NodeType.TO_VALIDATE.value()) &&
         !this.id.equalsIgnoreCase(NodeType.NOT_VISIBLE_CONTRIBUTIONS.value())) {
       this.specificRights = node.haveLocalRights();
-    }
-  }
-
-  private static URI toURI(String uri) {
-    try {
-      return new URI(uri);
-    } catch (URISyntaxException ex) {
-      getLogger(NodeAttrEntity.class).error(ex.getMessage(), ex);
-      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
   }
 
@@ -140,10 +125,6 @@ public class NodeAttrEntity {
 
   public void setChildrenURI(URI childrenURI) {
     this.childrenURI = childrenURI;
-  }
-
-  public URI getChildrenURI() {
-    return childrenURI;
   }
 
   public void setNbItems(String nbItems) {
@@ -214,7 +195,4 @@ public class NodeAttrEntity {
     return specificRights;
   }
 
-  public void setSpecificRights(final boolean specificRights) {
-    this.specificRights = specificRights;
-  }
 }

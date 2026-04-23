@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.webapi.profile;
 
+import jakarta.servlet.ServletContext;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.User;
@@ -33,21 +40,15 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import jakarta.servlet.ServletContext;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.uriOfUser;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * The profile of a user that is web entity in the WEB. It is a web entity representing the profile
@@ -126,16 +127,15 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
    *
    * @param users a list of details on some users.
    * @param usersUri the URI at which the specified users are defined.
-   * @return an array of web entities representing the profile of the specified users.
+   * @return a list of web entities representing the profile of the specified users.
    */
-  public static UserProfileEntity[] fromUsers(final List<? extends UserDetail> users, URI usersUri) {
-    UserProfileEntity[] selectableUsers = new UserProfileEntity[users.size()];
+  public static List<UserProfileEntity> fromUsers(final List<? extends UserDetail> users,
+      URI usersUri) {
     String fromUsersUri = usersUri.toString();
-    int i = 0;
-    for (UserDetail aUser : users) {
-      selectableUsers[i++] = fromUser(aUser).withAsUri(uriOfUser(aUser, fromUsersUri));
-    }
-    return selectableUsers;
+    return users.stream()
+        .map(u ->
+            fromUser(u).withAsUri(uriOfUser(u, fromUsersUri)))
+        .collect(Collectors.toList());
   }
 
   @Override

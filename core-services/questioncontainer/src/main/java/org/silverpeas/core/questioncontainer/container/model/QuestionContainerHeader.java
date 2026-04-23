@@ -26,8 +26,9 @@ package org.silverpeas.core.questioncontainer.container.model;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
+import org.silverpeas.core.contribution.model.WithURL;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.util.DateUtil;
@@ -41,7 +42,7 @@ import java.util.Date;
 import java.util.Optional;
 
 public class QuestionContainerHeader extends AbstractBean
-    implements Serializable, SilverContentInterface, WithPermanentLink {
+    implements Serializable, SilverpeasContent, WithURL, WithPermanentLink {
 
   private static final long serialVersionUID = 6871118433726400355L;
   private QuestionContainerPK pk = null;
@@ -59,8 +60,7 @@ public class QuestionContainerHeader extends AbstractBean
   private int nbMaxPoints = 0;
   private Collection<ScoreDetail> scores = null;
   private boolean anonymous;
-  private String iconUrl;
-  //1 : résultats immédiat | 2 : résultats différés après validation initiateur
+  //1 : résultats immédiats | 2 : résultats différés après validation initiatrice
   private int resultMode;
   public static final int IMMEDIATE_RESULTS = 1;
   public static final int DELAYED_RESULTS = 2;
@@ -151,7 +151,6 @@ public class QuestionContainerHeader extends AbstractBean
     return comment;
   }
 
-  @Override
   public String getCreatorId() {
     return creatorId;
   }
@@ -299,8 +298,6 @@ public class QuestionContainerHeader extends AbstractBean
     this.scores = scores;
   }
 
-  // methods to be implemented by SilverContentInterface
-
   @Override
   public String getURL() {
     return "searchResult?Type=QuestionContainer&Id=" + getId();
@@ -312,27 +309,12 @@ public class QuestionContainerHeader extends AbstractBean
   }
 
   @Override
+  public String getComponentInstanceId() {
+    return getInstanceId();
+  }
+
   public String getInstanceId() {
     return getPK().getComponentName();
-  }
-
-  @Override
-  public String getDate() {
-    return creationDate;
-  }
-
-  @Override
-  public String getSilverCreationDate() {
-    return getDate();
-  }
-
-  public void setIconUrl(String iconUrl) {
-    this.iconUrl = iconUrl;
-  }
-
-  @Override
-  public String getIconUrl() {
-    return this.iconUrl;
   }
 
   @Override

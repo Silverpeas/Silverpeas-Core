@@ -31,10 +31,10 @@
     response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle" />

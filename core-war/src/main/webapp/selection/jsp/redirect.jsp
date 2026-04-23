@@ -24,8 +24,8 @@
 
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <c:set var="url" value="${requestScope.RedirectionURL}"/>
 

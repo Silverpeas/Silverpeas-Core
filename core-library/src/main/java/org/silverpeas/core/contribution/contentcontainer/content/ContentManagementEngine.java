@@ -96,28 +96,6 @@ public class ContentManagementEngine implements Serializable {
   }
 
   /**
-   * return a list of identifiers of the resources matching the specified identifiers of {@link
-   * SilverContent} objects.
-   * @param contentIds a list of identifiers of
-   * {@link org.silverpeas.core.contribution.contentcontainer.content.SilverContent}
-   * objects.
-   * @return a list of resource identifiers.
-   */
-  public List<String> getResourcesMatchingContents(final List<Integer> contentIds) {
-    List<String> pks = new ArrayList<>();
-    // for each id of SilverContent, we get the identifier of the matching resource.
-    for (Integer contentId : contentIds) {
-      try {
-        String id = getInternalContentId(contentId);
-        pks.add(id);
-      } catch (ContentManagerException ignored) {
-        // ignore unknown item
-      }
-    }
-    return pks;
-  }
-
-  /**
    * When a generic component is instantiated, this function is called to register the association
    * between container and content
    * @param connection connection to the database

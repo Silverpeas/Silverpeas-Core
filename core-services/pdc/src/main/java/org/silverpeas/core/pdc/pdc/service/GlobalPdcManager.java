@@ -2227,7 +2227,7 @@ public class GlobalPdcManager implements PdcManager {
               final ContentPeas contentP =
                   contentMgtEngine.getContentPeasByComponentName(componentName);
               if (contentP != null) {
-                // we are going to search only SilverContent of this instanceId
+                // we are going to search only silverpeas content of this instanceId
                 final SilverpeasContentManager contentManager = contentP.getContentManager();
                 //noinspection
                 final var localSilverContents =

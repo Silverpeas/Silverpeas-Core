@@ -23,9 +23,12 @@
  */
 package org.silverpeas.core.webapi.publication;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
@@ -36,24 +39,10 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.NodeAccessController;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import jakarta.inject.Inject;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,12 +71,6 @@ public class PublicationResource extends AbstractPublicationResource {
     return componentId;
   }
 
-  @Inject
-  private NodeAccessController nodeAccessController;
-
-  @Inject
-  private PublicationAccessController publicationAccessController;
-
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<PublicationEntity> listPublications(@QueryParam("node") String nodeId,
@@ -111,8 +94,9 @@ public class PublicationResource extends AbstractPublicationResource {
     }
 
     //Checking publication is modified by user
-    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
-        .init().onOperationsOf(AccessControlOperation.MODIFICATION))) {
+    if (!getPublicationAccessController().isUserAuthorized(getUser().getId(), pk,
+        AccessControlContext.init()
+            .onOperationsOf(AccessControlOperation.MODIFICATION))) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
@@ -145,8 +129,8 @@ public class PublicationResource extends AbstractPublicationResource {
     List<SilverpeasComponentInstance> compos;
     List<Location> sortedLocations = new ArrayList<>();
     try {
-      SpaceWithSubSpacesAndComponents treeView = OrganizationController.get()
-          .getFullTreeview(getUser().getId());
+      SpaceWithSubSpacesAndComponents treeView =
+          getOrganisationController().getFullTreeview(getUser().getId());
       compos = treeView.componentInstanceSelector().fromAllSpaces().select();
       for (SilverpeasComponentInstance compo : compos) {
         sortedLocations.addAll(getComponentLocations(locations, compo.getId()));
@@ -157,7 +141,8 @@ public class PublicationResource extends AbstractPublicationResource {
     }
 
     for (Location location : sortedLocations) {
-      entities.add(LocationEntity.fromLocation(location, UriBuilder.fromUri(uri).build(), language));
+      entities.add(LocationEntity.fromLocation(location, UriBuilder.fromUri(uri).build(),
+          language));
     }
     return entities;
   }
@@ -181,8 +166,9 @@ public class PublicationResource extends AbstractPublicationResource {
     PublicationPK pk = new PublicationPK(pubId, componentId);
 
     //Checking publication is modified by user
-    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
-        .init().onOperationsOf(AccessControlOperation.MODIFICATION))) {
+    if (!getPublicationAccessController().isUserAuthorized(getUser().getId(), pk,
+        AccessControlContext.init()
+            .onOperationsOf(AccessControlOperation.MODIFICATION))) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
@@ -203,8 +189,9 @@ public class PublicationResource extends AbstractPublicationResource {
     PublicationPK pk = new PublicationPK(pubId, componentId);
 
     //Checking publication is modified by user
-    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
-        .init().onOperationsOf(AccessControlOperation.MODIFICATION))) {
+    if (!getPublicationAccessController().isUserAuthorized(getUser().getId(), pk,
+        AccessControlContext.init()
+            .onOperationsOf(AccessControlOperation.MODIFICATION))) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
@@ -233,7 +220,7 @@ public class PublicationResource extends AbstractPublicationResource {
 
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
-    return nodeAccessController.isUserAuthorized(super.getUser().getId(), nodePK);
+    return getNodeAccessController().isUserAuthorized(super.getUser().getId(), nodePK);
   }
 
   protected URI identifiedBy(URI uri) {

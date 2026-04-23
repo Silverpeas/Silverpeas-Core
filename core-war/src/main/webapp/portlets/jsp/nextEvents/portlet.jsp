@@ -30,9 +30,9 @@
 <%@ include file="../portletImport.jsp"%>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 <c:set var="componentInstance" value="<%=PersonalComponentInstance.from(User.getCurrentRequester(), PersonalComponent.getByName(UserCalendarSettings.COMPONENT_NAME).orElse(null))%>"/>

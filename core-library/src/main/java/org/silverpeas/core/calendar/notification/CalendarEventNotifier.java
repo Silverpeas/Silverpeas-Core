@@ -73,7 +73,7 @@ public class CalendarEventNotifier
     final CalendarEvent before = event.getTransition().getBefore();
     final CalendarEvent after = event.getTransition().getAfter();
     if (after.isModifiedSince(before)) {
-      // the update is about the event itself
+      // the update is about the eve nt itself
       final CalendarOperation operation = after.isRecurrent()
           ? CalendarOperation.SINCE_EVENT_UPDATE
           : CalendarOperation.EVENT_UPDATE;

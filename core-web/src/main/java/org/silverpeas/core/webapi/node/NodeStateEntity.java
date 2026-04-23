@@ -28,13 +28,15 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serializable;
+
 /**
  * The state of a tree node.
  * @author mmoquillon
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class NodeStateEntity {
+public class NodeStateEntity implements Serializable {
 
   @XmlElement
   private boolean opened = false;

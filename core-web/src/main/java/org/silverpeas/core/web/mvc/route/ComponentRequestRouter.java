@@ -386,7 +386,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       }
     } catch (Exception e) {
       try {
-        request.setAttribute("javax.servlet.jsp.jspException",
+        request.setAttribute("jakarta.servlet.jsp.jspException",
             new PeasCoreException("ComponentRequestRouter.redirectService",
                 "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination=" + destination, e));
         getServletConfig().getServletContext().getRequestDispatcher("/admin/jsp/errorpageMain.jsp")

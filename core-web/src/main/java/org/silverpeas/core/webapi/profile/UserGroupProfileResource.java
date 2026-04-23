@@ -119,7 +119,7 @@ public class UserGroupProfileResource extends RESTWebService {
 
     SilverpeasList<Group> allGroups =
         getOrganisationController().searchGroups(criteriaBuilder.build(), true);
-    UserGroupProfileEntity[] entities =
+    List<UserGroupProfileEntity> entities =
         asWebEntity(allGroups, locatedAt(getUri().getAbsolutePath()));
     return Response.ok(entities).
         header(RESPONSE_HEADER_GROUPSIZE, allGroups.originalListSize()).
@@ -302,7 +302,7 @@ public class UserGroupProfileResource extends RESTWebService {
     return uri;
   }
 
-  private UserGroupProfileEntity[] asWebEntity(List<? extends Group> allGroups, URI baseUri) {
+  private List<UserGroupProfileEntity> asWebEntity(List<? extends Group> allGroups, URI baseUri) {
     return UserGroupProfileEntity.fromGroups(allGroups, baseUri);
   }
 

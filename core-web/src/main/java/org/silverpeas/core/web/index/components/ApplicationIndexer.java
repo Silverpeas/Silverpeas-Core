@@ -25,6 +25,7 @@ package org.silverpeas.core.web.index.components;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.pdc.pdc.service.PdcIndexer;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -33,6 +34,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.index.AbstractIndexer;
 import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
 
+@Bean
 public class ApplicationIndexer extends AbstractIndexer {
 
   protected ApplicationIndexer() {

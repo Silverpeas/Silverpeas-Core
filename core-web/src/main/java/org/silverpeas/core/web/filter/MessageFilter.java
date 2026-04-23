@@ -53,11 +53,6 @@ public class MessageFilter implements Filter {
    */
   public static final String HTTP_MESSAGEKEY = "X-Silverpeas-MessageKey";
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
-   * javax.servlet.FilterChain)
-   */
   @Override
   public void doFilter(final ServletRequest request, final ServletResponse response,
       final FilterChain chain) throws IOException, ServletException {
@@ -88,19 +83,11 @@ public class MessageFilter implements Filter {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-   */
   @Override
   public void init(final FilterConfig filterConfig) throws ServletException {
     // Nothing to do.
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.Filter#destroy()
-   */
   @Override
   public void destroy() {
     // Nothing to do.

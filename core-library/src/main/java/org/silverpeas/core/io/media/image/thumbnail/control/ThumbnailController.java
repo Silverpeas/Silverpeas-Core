@@ -101,7 +101,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     String physicalName = null;
     FileItem uploadedFile = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
     if (uploadedFile != null) {
-      String logicalName = uploadedFile.getFieldName().replace('\\', '/');
+      String logicalName = uploadedFile.getFileName().replace('\\', '/');
       if (StringUtil.isDefined(logicalName)) {
         logicalName = FilenameUtils.getName(logicalName);
         mimeType = FileUtil.getMimeType(logicalName);
@@ -121,7 +121,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
     // If no image have been uploaded, check if one have been picked up from a gallery
     if (physicalName == null) {
-      // on a pas d'image, regarder s'il y a une provenant de la galerie
+      // on a pas d'image, regarder s'il y en a une provenant de la galerie
       String nameImageFromGallery = getParameter(parameters, "valueImageGallery");
       if (StringUtil.isDefined(nameImageFromGallery)) {
         physicalName = nameImageFromGallery;
@@ -174,7 +174,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
   }
 
   /**
-   * To update thumbnails files informations.
+   * To update thumbnails files information.
    *
    * @param toUpdate contains the data to update.
    * @author Sebastien ROCHET
@@ -437,8 +437,8 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     try {
       ThumbnailDetail thumbDetailComplete = getThumbnailService().getCompleteThumbnail(thumbnail);
       if (thumbDetailComplete.getCropFileName() != null) {
-        // on garde toujours le meme nom de fichier par contre on le supprime
-        // puis le recreer avec les nouvelles coordonnees
+        // on garde toujours le meme nom de fichier, par contre on, le supprime
+        // puis le recréer avec les nouvelles coordonnées
         deleteThumbnailFileOnServer(thumbnail.getInstanceId(), thumbDetailComplete
             .getCropFileName());
       } else {

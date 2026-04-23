@@ -102,7 +102,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     this.context = context;
     if (StringUtil.isDefined(context.getCurrentComponentName())) {
       setComponentRootName(context.getCurrentComponentName());
-    } else {
+    } else if (StringUtil.isDefined(context.getCurrentComponentId())) {
       setComponentRootName(SilverpeasComponentInstance
           .getIdentity(context.getCurrentComponentId()).getComponentName());
     }

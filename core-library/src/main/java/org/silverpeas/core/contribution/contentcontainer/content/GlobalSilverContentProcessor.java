@@ -43,9 +43,9 @@ public interface GlobalSilverContentProcessor {
   String relatedToComponent();
 
   /**
-   * Converts given {@link SilverContentInterface} instances into {@link GlobalSilverContent}.
-   * @param silverContents a {@link SilverContentInterface} instance list.
+   * Converts given {@link ManagedContribution} instances into {@link GlobalSilverContent}.
+   * @param silverContents a {@link ManagedContribution} instance list.
    * @return the converted instances.
    */
-  Stream<GlobalSilverContent> asGlobalSilverContent(List<SilverContentInterface> silverContents);
+  Stream<GlobalSilverContent> asGlobalSilverContent(List<ManagedContribution> silverContents);
 }

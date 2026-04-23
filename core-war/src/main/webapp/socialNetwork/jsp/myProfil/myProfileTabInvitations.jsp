@@ -33,7 +33,7 @@
 <%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@page import="java.util.List"%>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%
 	List invitations;

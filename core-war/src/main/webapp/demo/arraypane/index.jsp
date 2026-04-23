@@ -27,9 +27,9 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <%!
   private User createAccount(final String lastName, final String firstName, final UserAccessLevel userAccessLevel) {

@@ -25,23 +25,15 @@
 package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.contribution.model.*;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.model.LocalizedContribution;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.sql.Connection;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +47,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
   }
 
   @Override
-  public List<SilverContentInterface> getSilverContentByReference(
+  public List<ManagedContribution> getSilverContentByReference(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
     List<Contribution> contributions =
         getAccessibleContributions(resourceReferences, currentUserId);
@@ -92,7 +84,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    * </p>
    * <p>
    * The user rights are not verified here as this method must be used only for silverpeas content
-   * id management and not to provide the data to an other service.
+   * id management and not to provide the data to another service.
    * </p>
    * @param resourceId a resource identifier.
    * @param componentInstanceId a component instance identifier.
@@ -145,7 +137,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    * is given.
    * @throws ContentManagerException on technical error.
    */
-  public int createSilverContent(final Connection connection, final Contribution contribution,
+  public int createSilverContent(final Connection connection, @NonNull final Contribution contribution,
       final String userId) throws ContentManagerException {
     final ContributionIdentifier contributionId = contribution.getIdentifier();
     final SilverContentVisibility scv = computeSilverContentVisibility(contribution);
@@ -158,7 +150,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    * is given.
    * @throws ContentManagerException on technical error.
    */
-  public int createSilverContent(final Connection connection, final Contribution contribution,
+  public int createSilverContent(final Connection connection, @NonNull final Contribution contribution,
       final String userId, final boolean visible) throws ContentManagerException {
     final ContributionIdentifier contributionId = contribution.getIdentifier();
     final SilverContentVisibility scv = computeSilverContentVisibility(contribution);
@@ -168,25 +160,10 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
   }
 
   /**
-   * Same as {@link #createSilverContent(Contribution, String)}, but here the {@link Connection}
-   * is given and instead of {@link Contribution} resource identifier and component instance
-   * identifier are given.<br>
-   * Internal method {@link #computeSilverContentVisibility(Contribution)} will be called with a
-   * null parameter.
-   * @throws ContentManagerException on technical error.
-   */
-  public int createSilverContent(final Connection connection, final String resourceId,
-      final String componentInstanceId, final String userId) throws ContentManagerException {
-    final SilverContentVisibility scv = computeSilverContentVisibility(null);
-    return getContentManager()
-        .addSilverContent(connection, resourceId, componentInstanceId, userId, scv);
-  }
-
-  /**
    * Updates the visibility of the given contribution.
    * @param contribution the content.
    */
-  public <T extends Contribution> void updateSilverContentVisibility(T contribution)
+  public <T extends Contribution> void updateSilverContentVisibility(@NonNull T contribution)
       throws ContentManagerException {
     int silverContentId = getSilverContentId(contribution);
     if (silverContentId == -1) {
@@ -203,7 +180,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    * @param visibility forces the visibility so that it bypasses the one set by {@link
    * #computeSilverContentVisibility(Contribution)}. Only taken into account on a real update.
    */
-  public <T extends Contribution> void updateSilverContentVisibility(T contribution,
+  public <T extends Contribution> void updateSilverContentVisibility(@NonNull T contribution,
       boolean visibility) throws ContentManagerException {
     int silverContentId = getSilverContentId(contribution);
     if (silverContentId == -1) {
@@ -221,10 +198,8 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    * @return a {@link SilverContentVisibility} instance initialized with default data.
    */
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
-      final T contribution) {
-    if (contribution == null) {
-      throw new IllegalArgumentException("contribution parameter must not be null");
-    }
+      @NonNull final T contribution) {
+    Objects.requireNonNull(contribution);
     return new SilverContentVisibility();
   }
 
@@ -261,15 +236,15 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
 
   /**
    * <p>
-   * Converts the given {@link Contribution} into a {@link SilverContentInterface} one.
+   * Converts the given {@link Contribution} into a {@link SilverpeasContent} one.
    * </p>
    * @param <T> the type of the instance.
    * @param instance an instance, a {@link Contribution} for the best.
-   * @return a {@link SilverContentInterface} instance.
+   * @return a {@link SilverpeasContent} instance.
    */
-  private <T extends Contribution> SilverContentInterface convert(T instance) {
+  private <T extends Contribution> ManagedContribution convert(T instance) {
     final String componentInstanceId = instance.getIdentifier().getComponentInstanceId();
-    return new ContributionWrapper(instance, getContentIconFileName(componentInstanceId));
+    return new ManagedContribution(instance, getContentIconFileName(componentInstanceId));
   }
 
   /**
@@ -280,192 +255,4 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    */
   protected abstract String getContentIconFileName(String componentInstanceId);
 
-  /**
-   * Wrapper which permits to handle as a {@link SilverContentInterface} each implementation of a
-   * {@link Contribution}.
-   */
-  public static class ContributionWrapper implements SilverContentInterface {
-
-    private final Contribution wrappedInstance;
-    private final ContributionIdentifier contributionId;
-    private final String contentIconFileName;
-    private final SilverContentInterface silverContentInterface;
-    private LocalizedContribution contribution;
-
-    private ContributionWrapper(final Contribution contribution, final String contentIconFileName) {
-      this.contributionId = contribution.getIdentifier();
-      this.wrappedInstance = contribution;
-      this.contribution = LocalizedContribution.from(contribution);
-      this.contentIconFileName = contentIconFileName;
-      if (contribution instanceof SilverContentInterface) {
-        silverContentInterface = (SilverContentInterface) contribution;
-      } else {
-        silverContentInterface = null;
-      }
-    }
-
-    private void setRightLocalizedContribution(String language) {
-      if (!language.equals(contribution.getLanguage())) {
-        contribution = LocalizedContribution.from(contribution, language);
-      }
-    }
-
-    public Contribution getWrappedInstance() {
-      return wrappedInstance;
-    }
-
-    @Override
-    public String getId() {
-      return contributionId.getLocalId();
-    }
-
-    @Override
-    public String getName() {
-      return contribution.getTitle();
-    }
-
-    @Override
-    public String getName(final String language) {
-      if (silverContentInterface != null) {
-        return silverContentInterface.getName(language);
-      }
-      setRightLocalizedContribution(language);
-      return contribution.getTitle();
-    }
-
-    @Override
-    public String getDescription(final String language) {
-      if (silverContentInterface != null) {
-        return silverContentInterface.getDescription(language);
-      }
-      setRightLocalizedContribution(language);
-      return contribution.getDescription();
-    }
-
-    @Override
-    public String getURL() {
-      if (silverContentInterface != null) {
-        return silverContentInterface.getURL();
-      }
-      // Indeed, the URL into context of PDC result is not used for now...
-      return null;
-    }
-
-    @Override
-    public String getInstanceId() {
-      return contributionId.getComponentInstanceId();
-    }
-
-    @Override
-    public String getComponentInstanceId() {
-      return contributionId.getComponentInstanceId();
-    }
-
-    @Override
-    public String getDate() {
-      if (silverContentInterface != null) {
-        return silverContentInterface.getDate();
-      }
-      return DateUtil.date2SQLDate(contribution.getLastUpdateDate());
-    }
-
-    @Override
-    public String getSilverCreationDate() {
-      if (silverContentInterface != null) {
-        return silverContentInterface.getSilverCreationDate();
-      }
-      return DateUtil.date2SQLDate(contribution.getCreationDate());
-    }
-
-    @Override
-    public String getIconUrl() {
-      return contentIconFileName;
-    }
-
-    @Override
-    public String getCreatorId() {
-      if (silverContentInterface != null) {
-        return silverContentInterface.getCreatorId();
-      }
-      return contribution.getCreator().getId();
-    }
-
-    @Override
-    public User getCreator() {
-      return contribution.getCreator();
-    }
-
-    @Override
-    public User getLastUpdater() {
-      return contribution.getLastUpdater();
-    }
-
-    @Override
-    public Date getCreationDate() {
-      return contribution.getCreationDate();
-    }
-
-    @Override
-    public Date getLastUpdateDate() {
-      return contribution.getLastUpdateDate();
-    }
-
-    @Override
-    public String getSilverpeasContentId() {
-      if (contribution instanceof SilverpeasContent) {
-        return ((SilverpeasContent) contribution).getSilverpeasContentId();
-      }
-      return SilverContentInterface.super.getSilverpeasContentId();
-    }
-
-    @Override
-    public ContributionIdentifier getIdentifier() {
-      return contributionId;
-    }
-
-    @Override
-    public String getTitle() {
-      return contribution.getTitle();
-    }
-
-    @Override
-    public String getDescription() {
-      return contribution.getDescription();
-    }
-
-    @Override
-    public String getContributionType() {
-      return contributionId.getType();
-    }
-
-    @Override
-    public boolean isIndexable() {
-      return contribution.isIndexable();
-    }
-
-    @Override
-    public boolean canBeAccessedBy(final User user) {
-      return contribution.canBeAccessedBy(user);
-    }
-
-    @Override
-    public boolean canBeModifiedBy(final User user) {
-      return contribution.canBeModifiedBy(user);
-    }
-
-    @Override
-    public boolean canBeDeletedBy(final User user) {
-      return contribution.canBeDeletedBy(user);
-    }
-
-    @Override
-    public Collection<String> getLanguages() {
-      if (silverContentInterface != null) {
-        return silverContentInterface.getLanguages();
-      }
-      // for now, no simple implementation of Contribution handles multi-language content.
-      // only some kind of SilverContentInterface handle it.
-      return Collections.emptyList();
-    }
-  }
 }

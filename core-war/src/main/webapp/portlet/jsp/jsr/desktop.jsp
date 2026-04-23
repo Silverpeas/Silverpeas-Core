@@ -32,8 +32,8 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.admin.space.SpaceInst" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
 <c:set var="spaceId" value="${requestScope['SpaceId']}"/>
 

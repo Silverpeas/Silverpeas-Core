@@ -27,10 +27,10 @@ package org.silverpeas.core.jcr.impl;
 import jakarta.annotation.PreDestroy;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nullable;
 import java.io.Closeable;
 import java.util.ArrayDeque;
 import java.util.Deque;

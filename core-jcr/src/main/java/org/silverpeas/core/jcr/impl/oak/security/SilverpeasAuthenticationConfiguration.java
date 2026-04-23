@@ -28,8 +28,8 @@ import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.spi.security.SecurityConfiguration;
 import org.apache.jackrabbit.oak.spi.security.authentication.AuthenticationConfiguration;
 import org.apache.jackrabbit.oak.spi.security.authentication.LoginContextProvider;
+import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.security.auth.Subject;
 
 /**
@@ -43,9 +43,9 @@ public class SilverpeasAuthenticationConfiguration extends SecurityConfiguration
     implements AuthenticationConfiguration {
 
   @Override
-  @Nonnull
+  @NonNull
   public LoginContextProvider getLoginContextProvider(
-      @Nonnull final ContentRepository contentRepository) {
+      @NonNull final ContentRepository contentRepository) {
     return (credentials, workspaceName) -> {
       Subject subject = getSubject();
       return new SilverpeasLoginContext(subject, new SilverpeasCallbackHandler(credentials));
@@ -53,7 +53,7 @@ public class SilverpeasAuthenticationConfiguration extends SecurityConfiguration
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public String getName() {
     return NAME;
   }

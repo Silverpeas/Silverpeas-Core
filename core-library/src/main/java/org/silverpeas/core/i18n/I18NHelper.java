@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
  */
 public final class I18NHelper {
 
-  private static final String HTML_SELECT_OBJECT_NAME = "I18NLanguage";
-  private static final String HTML_HIDDEN_REMOVED_TRANSLATION_MODE = "TranslationRemoveIt";
+  public static final String HTML_SELECT_OBJECT_NAME = "I18NLanguage";
+  public static final String HTML_HIDDEN_REMOVED_TRANSLATION_MODE = "TranslationRemoveIt";
 
   private final I18n i18n = I18n.get();
 

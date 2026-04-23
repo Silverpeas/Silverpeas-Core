@@ -23,12 +23,12 @@
   --%>
 <%@page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/contextMenu" prefix="menu" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib uri="silverpeas.tags.contextMenu" prefix="menu" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="org.silverpeas.core.ResourceReference" %>

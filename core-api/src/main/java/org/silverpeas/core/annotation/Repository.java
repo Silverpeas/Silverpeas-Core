@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.annotation;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Stereotype;
+import jakarta.inject.Singleton;
 import org.silverpeas.kernel.annotation.Managed;
 
 import java.lang.annotation.*;
@@ -34,9 +34,12 @@ import java.lang.annotation.*;
  * object aimed to store and to retrieve objects in a given data source. It wraps the type of the
  * used data source and the mechanism to access them.
  * <p>
- * Beans annotated with this annotation are marked to be managed by the underlying IoC container and
- * their life will be scoped to the current user request processing (one instance per user request).
- * If the bean declare another life-cycle scope, then the new scope overrides the default one.
+ * Beans annotated with this annotation are marked to be managed by the underlying IoC container as
+ * a single instance for the whole runtime. Because they are singleton, they are eligible for
+ * caching by {@link org.silverpeas.kernel.ManagedBeanProvider} and, as such, the single instance
+ * can be got by any non-managed objects like the business entities without any serious performance
+ * penalty. If the bean declare another life-cycle scope, then the new scope overrides the default
+ * one.
  * </p>
  * <p>
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
@@ -49,7 +52,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Managed
-@ApplicationScoped
+@Singleton
 @Stereotype
 public @interface Repository {
 }

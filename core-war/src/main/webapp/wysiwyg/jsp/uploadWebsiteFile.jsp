@@ -25,7 +25,7 @@
 --%>
 <%@page import="org.silverpeas.core.util.URLUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1

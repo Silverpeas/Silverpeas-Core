@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
@@ -40,7 +45,6 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.model.*;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
@@ -67,11 +71,6 @@ import org.silverpeas.core.xml.DateAdapter;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -97,7 +96,7 @@ import static org.silverpeas.kernel.util.StringUtil.split;
  * local identifier whatever the component instance (the application) it belongs to; this is why the
  * local identifier of the publication is also its global identifier. This characteristic has to be
  * taken with caution when comparing references to contributions between them
- * ({@link ResourceReference} because this can cause unexpected behaviour, as by default two
+ * ({@link ResourceReference} because this can cause unexpected behavior, as by default two
  * references are equal if they refer the same contribution (id est contributions having both same
  * local identifier and same component instance identifier).
  * </p>
@@ -106,8 +105,8 @@ import static org.silverpeas.kernel.util.StringUtil.split;
 @XmlAccessorType(XmlAccessType.NONE)
 @ModificationTracked
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
-    implements I18nContribution, ContributionWithVisibility, SilverContentInterface, Rateable,
-    Serializable, WithAttachment, WithThumbnail, WithReminder, WithPermanentLink {
+    implements I18nContribution, ContributionWithVisibility, SilverpeasContent, Rateable,
+    Serializable, WithAttachment, WithThumbnail, WithReminder, WithPermanentLink, WithURL {
   private static final long serialVersionUID = 9199848912262605680L;
 
   private static final String EXCHANGE_NAMESPACE = "http://www.silverpeas.org/exchange";
@@ -151,7 +150,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private String cloneStatus;
   // added for the components - PDC integration
   private String silverObjectId;
-  private String iconUrl;
   private int explicitRank = -1;
   // added for the taglib
   private List<XMLField> xmlFields = null;
@@ -427,6 +425,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return updateDate;
   }
 
+  @Override
+  public User getCreator() {
+    return User.getById(creatorId);
+  }
+
   public String getUpdaterId() {
     return updaterId;
   }
@@ -539,35 +542,17 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   @Override
+  public String getComponentInstanceId() {
+    return getInstanceId();
+  }
+
   public String getInstanceId() {
     return getPK().getComponentName();
   }
 
   @Override
-  public String getDate() {
-    if (getLastUpdateDate() != null) {
-      return DateUtil.date2SQLDate(getLastUpdateDate());
-    }
-    return DateUtil.date2SQLDate(getCreationDate());
-  }
-
-  @Override
-  public String getSilverCreationDate() {
-    return DateUtil.date2SQLDate(getCreationDate());
-  }
-
-  @Override
   public String getTitle() {
     return getName();
-  }
-
-  public void setIconUrl(String iconUrl) {
-    this.iconUrl = iconUrl;
-  }
-
-  @Override
-  public String getIconUrl() {
-    return this.iconUrl;
   }
 
 
@@ -1015,7 +1000,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   /**
-   * Gets the rating informations linked with the current publication.
+   * Gets the rating information linked with the current publication.
    *
    * @return the rating of the publication.
    */
@@ -1031,7 +1016,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   /**
    * Sets an authorized location to the current instance.
    * <p>
-   * A publication is linked or not to a node, depending the application functional context. This
+   * A publication is linked or not to a node, depending on the application functional context. This
    * method should be used into the case of a publication linked to a node, located at a location in
    * other words. Sometimes, a publication can be located at several locations (so linked to several
    * nodes), in that case there is a main location and the others which are called "aliases". The

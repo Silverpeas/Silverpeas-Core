@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.core.admin.user.model.Group"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%
 ArrayList 		groups 			= (ArrayList) request.getAttribute("Groups");

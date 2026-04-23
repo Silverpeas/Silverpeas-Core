@@ -23,27 +23,27 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.GroupDetail;
-import org.silverpeas.core.web.rs.WebEntity;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.web.rs.WebEntity;
+
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.*;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * The profile of the user group web entity in the WEB. It is a web entity representing a group of
- * users that can be serialized into a given media type (JSON, XML). It is a
- * decorator that decorates a Group object with additional properties concerning its exposition in
- * the WEB.
+ * users that can be serialized into a given media type (JSON, XML). It is a decorator that
+ * decorates a Group object with additional properties concerning its exposition in the WEB.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -66,16 +66,14 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
    *
    * @param groups a list of user groups to decorate.
    * @param groupsURI the URI at which the specified groups are defined.
-   * @return an array of web entities representing the specified group profiles.
+   * @return a list of web entities representing the specified group profiles.
    */
-  public static UserGroupProfileEntity[] fromGroups(final List<? extends Group> groups, URI groupsURI) {
-    UserGroupProfileEntity[] selectableGroups = new UserGroupProfileEntity[groups.size()];
+  public static List<UserGroupProfileEntity> fromGroups(final List<? extends Group> groups,
+      URI groupsURI) {
     String fromGroupsUri = groupsURI.toString();
-    int i = 0;
-    for (Group aGroup : groups) {
-      selectableGroups[i++] = fromGroup(aGroup).withAsUri(uriOfGroup(aGroup, fromGroupsUri));
-    }
-    return selectableGroups;
+    return groups.stream()
+        .map(g -> fromGroup(g).withAsUri(uriOfGroup(g, fromGroupsUri)))
+        .collect(Collectors.toList());
   }
 
   @XmlElement
@@ -88,7 +86,9 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   private URI usersUri;
   @XmlElement
   private int userCount = -1;
-  @XmlElement @NotNull @Size(min=1)
+  @XmlElement
+  @NotNull
+  @Size(min = 1)
   private String domainName;
   @XmlElement
   private boolean isCommunity = false;
@@ -96,7 +96,8 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
 
   private UserGroupProfileEntity(Group group) {
     this.group = (GroupDetail) group;
-    this.domainName = GroupDetail.getOrganisationController().getDomain(group.getDomainId()).getName();
+    this.domainName =
+        GroupDetail.getOrganisationController().getDomain(group.getDomainId()).getName();
     this.userCount = group.getTotalUsersCount();
     this.isCommunity = group.isCommunityGroup();
   }

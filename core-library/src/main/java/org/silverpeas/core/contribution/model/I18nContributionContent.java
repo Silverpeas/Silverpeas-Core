@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.model;
 /**
  * An internationalized contribution's content. It supports different languages and regional
  * specificities (i18n). Any content supporting the translation of its data in different
- * language should implements this interface.
+ * language should implement this interface.
  * @author mmoquillon
  */
 public interface I18nContributionContent {

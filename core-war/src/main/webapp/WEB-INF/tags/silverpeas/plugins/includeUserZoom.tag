@@ -23,8 +23,8 @@
   --%>
 
 <%@ tag language="java" pageEncoding="UTF-8" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
 <c:if test="${empty __SILVERPEAS_USERZOOM_PLUGIN}">
   <%--This handles several calls from same request--%>

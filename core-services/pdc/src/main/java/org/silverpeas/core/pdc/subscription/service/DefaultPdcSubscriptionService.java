@@ -27,16 +27,12 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverpeasContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
+import org.silverpeas.core.contribution.contentcontainer.content.*;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.classification.Value;
@@ -46,10 +42,8 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,89 +51,78 @@ import java.util.List;
 @Transactional
 public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
 
+  @Inject
+  private OrganizationController organizationController;
+
   @Override
-  public List<PdcSubscription> getPDCSubscriptionByUserId(int userId) {
-    try(Connection conn = DBUtil.openConnection()) {
+  public List<PdcSubscription> getPdcSubscriptionByUserId(int userId) {
+    try (Connection conn = DBUtil.openConnection()) {
       return PdcSubscriptionDAO.getPDCSubscriptionByUserId(conn, userId);
     } catch (SQLException re) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.getPDCSubscriptionByUserId",
-          PdcSubscriptionRuntimeException.ERROR,
-          "PdcSubscription.CANNOT_FIND_SUBSCRIPTION_BYUSID", String.valueOf(userId), re);
+      throw new PdcSubscriptionRuntimeException(re);
     }
   }
 
   @Override
-  public PdcSubscription getPDCSubsriptionById(int id) {
-    PdcSubscription result = null;
-    try(Connection conn = DBUtil.openConnection()) {
-      result = PdcSubscriptionDAO.getPDCSubsriptionById(conn, id);
+  public PdcSubscription getPdcSubscriptionById(int id) {
+    PdcSubscription result;
+    try (Connection conn = DBUtil.openConnection()) {
+      result = PdcSubscriptionDAO.getPdcSubscriptionById(conn, id);
     } catch (SQLException re) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.getPDCSubsriptionById",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_FIND_SUBSCRIPTION_BYUSID",
-          String.valueOf(id), re);
+      throw new PdcSubscriptionRuntimeException(re);
     }
     if (result == null) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.getPDCSubsriptionById",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.NO_SUBSCRIPTION_WITH_ID", String.
-          valueOf(id));
+      throw new PdcSubscriptionRuntimeException("No such subscription with id " + id);
     }
     return result;
   }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public int createPDCSubscription(PdcSubscription subscription) {
-    try(Connection conn = DBUtil.openConnection()) {
+  public int createPdcSubscription(PdcSubscription subscription) {
+    try (Connection conn = DBUtil.openConnection()) {
       return PdcSubscriptionDAO.createPDCSubscription(conn, subscription);
-    } catch (Exception re) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.createPDCSubscription",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_CREATE_SUBSCRIPTION",
-          subscription, re);
+    } catch (SQLException re) {
+      throw new PdcSubscriptionRuntimeException(re);
     }
   }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public void updatePDCSubscription(PdcSubscription subscription) {
-    try(Connection conn = DBUtil.openConnection()) {
+  public void updatePdcSubscription(PdcSubscription subscription) {
+    try (Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.updatePDCSubscription(conn, subscription);
     } catch (SQLException re) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.updatePDCSubscription",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_UPDATE_SUBSCRIPTION",
-          subscription, re);
+      throw new PdcSubscriptionRuntimeException(re);
     }
   }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public void removePDCSubscriptionById(int id) {
-    try(Connection conn = DBUtil.openConnection()) {
+  public void removePdcSubscriptionById(int id) {
+    try (Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, id);
     } catch (SQLException re) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.removePDCSubscriptionById",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_DELETE_SUBSCRIPTION",
-          String.valueOf(id), re);
+      throw new PdcSubscriptionRuntimeException(re);
     }
   }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public void removePDCSubscriptionById(int[] ids) {
-    try(Connection conn = DBUtil.openConnection()) {
+  public void removePdcSubscriptionById(int[] ids) {
+    try (Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, ids);
     } catch (SQLException re) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.removePDCSubscriptionById",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_DELETE_SUBSCRIPTION",
-          Arrays.toString(ids), re);
+      throw new PdcSubscriptionRuntimeException(re);
     }
   }
 
   @Override
   public void checkAxisOnDelete(int axisId, String axisName) {
-    try(Connection conn = DBUtil.openConnection()) {
+    try (Connection conn = DBUtil.openConnection()) {
       // found all subscription uses axis provided
-      List<PdcSubscription> subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
-          axisId);
+      List<PdcSubscription> subscriptions =
+          PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn, axisId);
       if (subscriptions.isEmpty()) {
         return;
       }
@@ -153,15 +136,14 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
       // remove all found subscriptions
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, pdcIds);
     } catch (SQLException e) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkAxisOnDelete",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED", e);
+      throw new PdcSubscriptionRuntimeException(e);
     }
   }
 
   @Override
   public void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
       List<String> newPath, List<org.silverpeas.core.pdc.pdc.model.Value> pathInfo) {
-    try(Connection conn = DBUtil.openConnection()) {
+    try (Connection conn = DBUtil.openConnection()) {
       List<PdcSubscription> subscriptions =
           PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn, axisId);
       if (subscriptions.isEmpty()) {
@@ -184,56 +166,51 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
       System.arraycopy(removeIds, 0, ids, 0, removeLength);
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, ids);
     } catch (SQLException e) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkValueOnDelete",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED", e);
+      throw new PdcSubscriptionRuntimeException(e);
     }
   }
 
   @Override
   public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
       int silverObjectid) {
-    OrganizationController organizationController = OrganizationControllerProvider
-        .getOrganisationController();
-
-    try(Connection conn = DBUtil.openConnection()) {
-      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+    try (Connection conn = DBUtil.openConnection()) {
+      ContentManagementEngine contentMgtEngine =
+          ContentManagementEngineProvider.getContentManagementEngine();
       SilverContentVisibility scv = contentMgtEngine.getSilverContentVisibility(silverObjectid);
       boolean contentObjectIsVisible = (scv.isVisible() == 1);
 
-      if(contentObjectIsVisible) {
-        // load all PDCSubscritions into the memory to perform future check of them
-        List<PdcSubscription> subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
-        // loop through all subscription
-        for (PdcSubscription subscription : subscriptions) {
-          // check if current subscription corresponds a list of classify values
-          // provided into the method
-          if (isCorrespondingSubscription(subscription, classifyValues)) {
-            // The current subscription matches the new classification.
-            // Now, we have to test if subscription's owner is allowed to access
-            // the classified item.
-            String userId = String.valueOf(subscription.getOwnerId());
-            if (organizationController.isComponentAvailableToUser(componentId, userId)) {
-              // if user is able to see component which contains content
-              SilverContentInterface silverContent =
-                  getSilverContent(componentId, silverObjectid, userId);
-              if (silverContent != null) {
-                // if user is able to see this content, sends a notification to the
-                // user specified in the pdcSubscription
-                UserNotificationHelper.buildAndSend(
-                    new PdcResourceClassificationUserNotification(subscription,
-                        silverContent));
-              } else {
-                SilverLogger.getLogger(this).warn("User {0} now alloawed to see the content {1}",
-                    userId, silverObjectid);
-              }
+      if (!contentObjectIsVisible) {
+        return;
+      }
+      // load all PDCSubscritions into the memory to perform future check of them
+      List<PdcSubscription> subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
+      // loop through all subscription
+      for (PdcSubscription subscription : subscriptions) {
+        // check if current subscription corresponds a list of classify values
+        // provided into the method
+        if (isCorrespondingSubscription(subscription, classifyValues)) {
+          // The current subscription matches the new classification.
+          // Now, we have to test if subscription's owner is allowed to access
+          // the classified item.
+          String userId = String.valueOf(subscription.getOwnerId());
+          if (organizationController.isComponentAvailableToUser(componentId, userId)) {
+            // if user is able to see component which contains content
+            var silverContent = getSilverContent(componentId, silverObjectid, userId);
+            if (silverContent != null) {
+              // if user is able to see this content, sends a notification to the
+              // user specified in the pdcSubscription
+              UserNotificationHelper.buildAndSend(
+                  new PdcResourceClassificationUserNotification(subscription,
+                      silverContent));
+            } else {
+              SilverLogger.getLogger(this).warn("User {0} now alloawed to see the content {1}",
+                  userId, silverObjectid);
             }
           }
         }
       }
-    } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkSubscriptions",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_SUBSCR_FALIED",
-          classifyValues, e);
+    } catch (SQLException | ContentManagerException e) {
+      throw new PdcSubscriptionRuntimeException(e);
     }
   }
 
@@ -242,25 +219,26 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
    *
    * @param componentId - the component where is classified the silverContent
    * @param silverObjectId - the unique identifier of the silverContent
-   * @return SilverContentInterface the object which has been classified
+   * @return the {@link ManagedContribution that has been classified onto the PdC
    */
-  private SilverContentInterface getSilverContent(String componentId, int silverObjectId, String userId) {
+  private ManagedContribution getSilverContent(String componentId, int silverObjectId,
+      String userId) {
 
-    List<SilverContentInterface> silverContents;
+    List<ManagedContribution> silverContents;
     try {
-      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+      ContentManagementEngine contentMgtEngine =
+          ContentManagementEngineProvider.getContentManagementEngine();
       ContentPeas contentPeas = contentMgtEngine.getContentPeas(componentId);
       SilverpeasContentManager silverpeasContentManager = contentPeas.getContentManager();
 
       List<Integer> silverContentIds = Collections.singletonList(silverObjectId);
-      List<ResourceReference> resourceReferences = contentMgtEngine.getResourceReferencesByContentIds(silverContentIds);
+      List<ResourceReference> resourceReferences =
+          contentMgtEngine.getResourceReferencesByContentIds(silverContentIds);
 
-      silverContents = silverpeasContentManager.getSilverContentByReference(resourceReferences, userId);
+      silverContents = silverpeasContentManager.getSilverContentByReference(resourceReferences,
+          userId);
     } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionBmEJB.sendSubscriptionNotif",
-          PdcSubscriptionRuntimeException.ERROR,
-          "PdcSubscription.EX_CHECK_SUBSCR_FALIED", e);
+      throw new PdcSubscriptionRuntimeException(e);
     }
     if (CollectionUtil.isNotEmpty(silverContents)) {
       return silverContents.get(0);
@@ -280,12 +258,11 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
       int axisId, List<String> oldPath, List<String> newPath) {
     List<? extends Criteria> subscriptionCtx = subscription.getPdcContext();
     for (Criteria criteria : subscriptionCtx) {
-      if (criteria.getAxisId() == axisId) {
-        // check if criterias value has been removed from axis
-        if (checkValuesRemove(criteria.getValue(), oldPath, newPath)) {
-          return true;
-        }
+      if (criteria.getAxisId() == axisId
+          && checkValuesRemove(criteria.getValue(), oldPath, newPath)) {
+        return true;
       }
+
     }
     return false;
   }
@@ -305,10 +282,9 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
   }
 
   /**
-   * Checks if values provided presented in provided path. <br>
-   * Ex1: path /2/3/4/5/ value: /5/ result:true <br>
-   * Ex2: path /2/3/4/5/ value: /3/ result true <br>
-   * Ex2: path /2/3/4/5/ value: /8/ result false
+   * Checks if values provided presented in provided path. <br> Ex1: path /2/3/4/5/ value: /5/
+   * result:true <br> Ex2: path /2/3/4/5/ value: /3/ result true <br> Ex2: path /2/3/4/5/ value: /8/
+   * result false
    */
   protected boolean checkValueInPath(String value, List<String> pathList) {
     for (String path : pathList) {
@@ -358,6 +334,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
 
   protected boolean checkValues(Criteria criteria, Value searchValue) {
     return searchValue.getAxisId() == criteria.getAxisId() &&
-        searchValue.getValue().startsWith(criteria.getValue());
+           searchValue.getValue().startsWith(criteria.getValue());
   }
 }

@@ -22,9 +22,9 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
 <c:set var="componentId" value="${param.componentId}"/>
 <c:set var="resourceId"  value="${param.resourceId}"/>

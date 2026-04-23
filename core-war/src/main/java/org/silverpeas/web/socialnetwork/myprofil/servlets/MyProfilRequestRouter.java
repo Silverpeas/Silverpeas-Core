@@ -180,7 +180,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         }
       }
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 

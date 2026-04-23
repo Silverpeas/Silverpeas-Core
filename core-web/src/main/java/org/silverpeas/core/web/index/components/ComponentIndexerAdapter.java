@@ -26,12 +26,14 @@ package org.silverpeas.core.web.index.components;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 
 import jakarta.inject.Singleton;
+import org.silverpeas.core.annotation.Bean;
 
 import static org.silverpeas.kernel.logging.SilverLogger.getLogger;
 
 /**
  * @author ehugonnet
  */
+@Bean
 @Singleton
 public class ComponentIndexerAdapter implements ComponentIndexation {
 

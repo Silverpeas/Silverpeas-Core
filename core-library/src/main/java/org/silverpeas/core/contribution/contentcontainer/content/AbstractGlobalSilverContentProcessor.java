@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 public abstract class AbstractGlobalSilverContentProcessor implements GlobalSilverContentProcessor {
 
   @Override
-  public Stream<GlobalSilverContent> asGlobalSilverContent(List<SilverContentInterface> silverContents) {
+  public Stream<GlobalSilverContent> asGlobalSilverContent(List<ManagedContribution> silverContents) {
     return silverContents.stream().map(GlobalSilverContent::new);
   }
 }

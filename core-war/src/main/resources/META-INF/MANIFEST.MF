@@ -2,6 +2,6 @@ Manifest-Version: 1.0
 Created-By: Silverpeas
 Dependencies: org.jboss.as.naming,
   org.slf4j,
-  org.apache.xerces,
   org.apache.cxf.impl meta-inf,
-  org.apache.cxf services
+  org.apache.cxf services,
+  jdk.unsupported

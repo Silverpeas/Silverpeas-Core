@@ -36,8 +36,8 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.jcr.security.AccessContext;
 import org.silverpeas.core.jcr.security.JCRAccessController;
 import org.silverpeas.core.jcr.security.JCRNode;
+import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.annotation.Nonnull;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -58,9 +58,9 @@ class SilverpeasTreePermission extends JCRAccessController implements TreePermis
   }
 
   @Override
-  public @Nonnull TreePermission getChildPermission(
-      @Nonnull final String childName,
-      @Nonnull final NodeState childState) {
+  public @NonNull TreePermission getChildPermission(
+      @NonNull final String childName,
+      @NonNull final NodeState childState) {
     Tree child = tree.getChild(childName);
     return new SilverpeasTreePermission(child, getUser(), getAccessContext());
   }
@@ -71,7 +71,7 @@ class SilverpeasTreePermission extends JCRAccessController implements TreePermis
   }
 
   @Override
-  public boolean canRead(@Nonnull final PropertyState property) {
+  public boolean canRead(@NonNull final PropertyState property) {
     return isGranted(Permissions.READ, property);
   }
 
@@ -92,7 +92,7 @@ class SilverpeasTreePermission extends JCRAccessController implements TreePermis
 
   @Override
   public boolean isGranted(final long permissions,
-      @Nonnull final PropertyState property) {
+      @NonNull final PropertyState property) {
     // property access is granted only if its holder access is granted
     return isGranted(permissions);
   }

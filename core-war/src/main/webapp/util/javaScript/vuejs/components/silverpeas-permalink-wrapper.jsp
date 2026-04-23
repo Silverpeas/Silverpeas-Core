@@ -22,7 +22,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <c:set var="link" value="${param.link}"/>

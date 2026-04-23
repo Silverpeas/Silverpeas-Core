@@ -27,19 +27,19 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
-
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
-import jakarta.servlet.http.HttpServletRequest;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
@@ -48,6 +48,7 @@ import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 /**
  * @author ehugonnet
  */
+@Bean
 @Singleton
 public class SilverpeasWebUtil {
 

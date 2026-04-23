@@ -26,12 +26,14 @@ package org.silverpeas.core.chat.listeners;
 import jakarta.inject.Inject;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipEvent;
 import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.stream.Stream;
 
@@ -52,12 +54,14 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
     final RelationShip rs = event.getTransition().getAfter();
     final User uf1 = User.getById(String.valueOf(rs.getUser1Id()));
     final User uf2 = User.getById(String.valueOf(rs.getUser2Id()));
-    if (isRelationshipMappable(uf1, uf2)) {
-      server.createRelationShip(uf1, uf2);
-      logger.debug("Chat relationship between {0} and {1} has been created", uf1.getId(), uf2.getId());
-    } else {
-      logger.debug("No chat relationship can be created between user {0} and {1}", uf1.getId(), uf2.getId());
-    }
+    execute(() -> {
+      if (isRelationshipMappable(uf1, uf2)) {
+        server.createRelationShip(uf1, uf2);
+        logger.debug("Chat relationship between {0} and {1} has been created", uf1.getId(), uf2.getId());
+      } else {
+        logger.debug("No chat relationship can be created between user {0} and {1}", uf1.getId(), uf2.getId());
+      }
+    });
   }
 
   @Override
@@ -65,14 +69,16 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
     final RelationShip rs = event.getTransition().getBefore();
     final User uf1 = User.getById(String.valueOf(rs.getUser1Id()));
     final User uf2 = User.getById(String.valueOf(rs.getUser2Id()));
-    if (isRelationshipMappable(uf1, uf2)) {
-      server.deleteRelationShip(uf1, uf2);
-      logger.debug("Chat relationship between {0} and {1} has been deleted", uf1.getId(),
-          uf2.getId());
-    } else {
-      logger.debug("No chat relationship can be deleted between user {0} and {1}", uf1.getId(),
-          uf2.getId());
-    }
+    execute(() -> {
+      if (isRelationshipMappable(uf1, uf2)) {
+        server.deleteRelationShip(uf1, uf2);
+        logger.debug("Chat relationship between {0} and {1} has been deleted", uf1.getId(),
+            uf2.getId());
+      } else {
+        logger.debug("No chat relationship can be deleted between user {0} and {1}", uf1.getId(),
+            uf2.getId());
+      }
+    });
   }
 
   @Override
@@ -92,5 +98,13 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
           return domainMapped;
         })
         .count() == 2;
+  }
+
+  private void execute(Runnable task) {
+    try {
+      task.run();
+    } catch (ChatServerException e) {
+      SilverLogger.getLogger(this).error(e.getMessage());
+    }
   }
 }

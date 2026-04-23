@@ -27,9 +27,9 @@ package org.silverpeas.core.jcr.security;
 
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
 import javax.jcr.Credentials;
 import javax.security.auth.login.LoginException;
 import java.util.Set;
@@ -50,7 +50,7 @@ public class SilverpeasTokenJCRLoginModule extends SilverpeasJCRLoginModule {
 
   @SuppressWarnings("rawtypes")
   @Override
-  @Nonnull
+  @NonNull
   protected Set<Class> getSupportedCredentials() {
     return SUPPORTED_CREDENTIALS;
   }
@@ -67,7 +67,7 @@ public class SilverpeasTokenJCRLoginModule extends SilverpeasJCRLoginModule {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   protected AccessContext getAccessContext(final Credentials credentials) {
     final String grantedDocPath = ((TokenCredentials) credentials).getAttribute(
         WebDavAccessContext.AUTHORIZED_DOCUMENT_PATH_ATTRIBUTE);

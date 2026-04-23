@@ -25,10 +25,10 @@
 --%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <c:set var="component" value="${requestScope.WAComponent}"/>
@@ -240,10 +240,11 @@ out.println(window.printBefore());
 <fieldset class="skinFieldset">
 	<legend class="without-img"><img src="<%=m_ComponentIcon%>" class="componentIcon" alt=""/>&nbsp;<%=m_JobPeas%></legend>
 
-  <% if (I18NHelper.isI18nContentEnabled()) { %>
+  <% if (I18NHelper.isI18nContentActivated()) { %>
   <ul class="fields">
     <li class="field">
-      <label for="<%=I18NHelper.HTMLSelectObjectName%>" class="txtlibform"><%=resource.getString("GML.language")%></label>
+      <label for="<%=I18NHelper.HTML_SELECT_OBJECT_NAME%>"
+             class="txtlibform"><%=resource.getString("GML.language")%></label>
       <div class="champs">
         <%=I18NHelper.getHTMLSelectObject(resource.getLanguage(), null, null) %>
       </div>

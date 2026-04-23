@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18n;
@@ -32,15 +33,18 @@ import org.silverpeas.core.notification.user.client.model.SentNotificationInterf
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * Sender of a notification to both the users in Silverpeas and to external users. The notification
  * is defined by a {@link NotificationMetaData} instance. It uses the service of a
  * {@link NotificationManager} object for doing its job.
  */
-public class NotificationSender implements java.io.Serializable {
+public class NotificationSender implements Serializable {
 
   private static final long serialVersionUID = 4165938893905145809L;
 
@@ -48,19 +52,22 @@ public class NotificationSender implements java.io.Serializable {
   private final int instanceId;
 
   /**
-   * Constructor for a standard component
-   * @param instanceId the instance Id of the calling's component
+   * Constructor for a Silverpeas component instance. The instance can be of a user personal
+   * component or of a shared application.
+   *
+   * @param instanceId the instance identifier of the calling's component
    */
   public NotificationSender(final String instanceId) {
-    this.instanceId = instanceId == null ? -1 :
-        SilverpeasSharedComponentInstance.getIdentity(instanceId).getInstanceLocalId();
+    this.instanceId = isNotDefined(instanceId) ? -1 :
+        SilverpeasComponentInstance.getIdentity(instanceId).getInstanceLocalId();
     notificationManager = NotificationManager.get();
   }
 
   /**
    * Sends the notification as defined by the specified {@link NotificationMetaData} instance.
-   * @param metaData the meta data of the notification. It defines the content of the notification
-   * as well as the recipients.
+   *
+   * @param metaData the metadata of the notification. It defines the content of the notification as
+   * well as the recipients.
    * @throws NotificationException if an error occurs while sending the notification.
    *
    */
@@ -72,8 +79,9 @@ public class NotificationSender implements java.io.Serializable {
   /**
    * Sends at the specified address the notification whose definition is given by the specified
    * {@link NotificationMetaData} instance.
+   *
    * @param addressId the unique identifier of an address at which the notification has to be sent.
-   * @param metaData the meta data of the notification. It defines the content of the notification
+   * @param metaData the metadata of the notification. It defines the content of the notification
    * as well as the recipients.
    * @throws NotificationException if an error occurs while sending the notification.
    */
@@ -144,14 +152,16 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   /**
-   * Sends to the specified users the notification described by the {@link NotificationMetaData}
-   * by using the given media type and in the specified language.
+   * Sends to the specified users the notification described by the {@link NotificationMetaData} by
+   * using the given media type and in the specified language.
+   *
    * @param userIds a collection of user identifiers. If the collection is empty, then the
    * notification will be sent to the external recipients declared within the
    * {@link NotificationMetaData} object.
    * @param metaData a {@link NotificationMetaData} instance that describes the notification to
    * send.
-   * @param addressId the unique identifier of the address at which the notification has to be sent.
+   * @param addressId the unique identifier of the address at which the notification has to be
+   * sent.
    * @param language the language in which the notification content will be written.
    * @throws NotificationException if an error occurs while sending the notification.
    */
@@ -174,11 +184,11 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   /**
-   * Saves the notification into the history of the sent notifications.
-   * @param metaData the meta data that defines the notification that has been sent.
+   * Saves the notification into the history of the notifications that have been sent.
+   *
+   * @param metaData the metadata that defines the notification that has been sent.
    * @param usersSet the recipients that have received the notification.
-   * @throws NotificationException if an error occurs while saving the notification
-   * information.
+   * @throws NotificationException if an error occurs while saving the notification information.
    */
   private void saveNotification(NotificationMetaData metaData, Set<UserRecipient> usersSet)
       throws NotificationException {
@@ -210,7 +220,7 @@ public class NotificationSender implements java.io.Serializable {
     } else {
       var localId = StringUtil.isDefined(metaData.getComponentId()) ?
           SilverpeasSharedComponentInstance.getIdentity(metaData.getComponentId())
-              .getInstanceLocalId() : -1;
+          .getInstanceLocalId() : -1;
       params.setComponentInstance(localId);
     }
     String sender = metaData.getSender();

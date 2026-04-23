@@ -24,9 +24,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.viewer.model.ViewerSettings" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
 <c:set var="contentUrl" value="${requestScope.contentUrl}"/>
 <c:set var="downloadEnabled" value="${requestScope.downloadEnabled}"/>

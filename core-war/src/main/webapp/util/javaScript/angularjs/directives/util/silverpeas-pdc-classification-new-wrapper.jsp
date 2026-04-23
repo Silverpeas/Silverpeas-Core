@@ -22,8 +22,8 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
 <c:set var="instanceId" value="${param.instanceId}"/>
 

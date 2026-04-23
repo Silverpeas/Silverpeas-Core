@@ -97,6 +97,6 @@ OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
 <c:set var="isSCIMDomain" value="${d -> d != null and d.authenticationServer eq 'autDomainSCIM'}"/>
 <c:set var="isGoogleDomain" value="${d -> d != null and d.authenticationServer eq 'autDomainGoogle'}"/>

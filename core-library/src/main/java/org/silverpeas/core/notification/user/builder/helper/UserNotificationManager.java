@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.user.builder.helper;
 
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
@@ -31,12 +30,7 @@ import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress
 /**
  * @author Yohann Chastagnier
  */
-@Service
 public class UserNotificationManager {
-
-  protected UserNotificationManager() {
-    // hidden constructor.
-  }
 
   /**
    * Builds a notification data container from a given builder. After that, sends the builded

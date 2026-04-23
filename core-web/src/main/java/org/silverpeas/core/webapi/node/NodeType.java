@@ -31,7 +31,7 @@ import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
 /**
- * The type of a node.
+ * The type of node.
  * @author mmoquillon
  */
 @XmlType

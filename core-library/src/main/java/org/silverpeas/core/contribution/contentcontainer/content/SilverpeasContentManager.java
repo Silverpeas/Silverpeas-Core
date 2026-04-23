@@ -24,16 +24,16 @@
 package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * A manager of a given type of content in Silverpeas. Every containers of
+ * A manager of a given type of content in Silverpeas. Every container of
  * {@link org.silverpeas.core.contribution.model.SilverpeasContent} objects have to implement
  * this interface.
  */
@@ -58,7 +58,7 @@ public interface SilverpeasContentManager {
    * @param currentUserId the identifier of the user accessing the content.
    * @return the content as {@link SilverpeasComponentInstance}
    */
-  List<SilverContentInterface> getSilverContentByReference(
+  List<ManagedContribution> getSilverContentByReference(
       List<ResourceReference> resourceReferences, String currentUserId);
 
   /**
@@ -85,7 +85,7 @@ public interface SilverpeasContentManager {
    * </p>
    * <p>
    * In a first time, the {@link Contribution} from the given identifiers is retrieved.<br>
-   * An error is thrown if it does not exists.<br>
+   * An error is thrown if it does not exist.<br>
    * Then the getting or creating of the linked silverpeas content id is performed.<br>
    * For performances, and if it knows his context, the caller can performed {@link
    * ContentManagementEngine#getSilverContentId(String, String)} before calling this method.
@@ -105,7 +105,7 @@ public interface SilverpeasContentManager {
    * Creates a silverpeas content from a contribution identifier and the instance of the component
    * instance the resource belong to.
    * @param contribution a contribution.
-   * @param userId the identifier of the user responsible of the creation.
+   * @param userId the identifier of the user responsible for the creation.
    * @param <T> a contribution implementation.
    * @return the identifier of the silverpeas content of the contribution as integer.
    */

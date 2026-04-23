@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A REST Web resource providing access to a node.
@@ -65,18 +65,18 @@ public abstract class AbstractNodeResource extends RESTWebService {
   /**
    * Get all children of any node of the application.
    *
-   * @return an array of NodeEntity representing children
+   * @return a list of NodeEntity representing children
    */
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*/children}")
   @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity[] getChildren(@PathParam("path") String path) {
+  public List<NodeEntity> getChildren(@PathParam("path") String path) {
     return getChildrenOfNodeByPath(path);
   }
 
   /**
-   * Get the root of the application and its children. As this service works only in non
-   * authenticated mode for the moment, children do not contain special nodes.
+   * Get the root of the application and its children. As this service works only in
+   * non-authenticated mode for the moment, children do not contain special nodes.
    *
    * @return the application root and its children
    */
@@ -91,7 +91,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
     }
     NodeEntity entity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri);
     entity.getState().setOpened(true);
-    // in non authenticated mode, special nodes are unavailable
+    // in non-authenticated mode, special nodes are unavailable
     entity.setChildren(removeSpecialNodes(entity.getChildren()));
     return entity;
   }
@@ -118,9 +118,9 @@ public abstract class AbstractNodeResource extends RESTWebService {
   /**
    * Get all children of any node of the application.
    *
-   * @return an array of NodeEntity representing children
+   * @return a list of NodeEntity representing children
    */
-  protected NodeEntity[] getChildrenOfNodeByPath(String path) {
+  protected List<NodeEntity> getChildrenOfNodeByPath(String path) {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
     NodeDetail node = getNodeDetail(nodeId);
@@ -151,15 +151,11 @@ public abstract class AbstractNodeResource extends RESTWebService {
     return getNodeService().getDetail(getNodePK(id));
   }
 
-  private NodeEntity[] removeSpecialNodes(NodeEntity[] nodes) {
-    List<NodeEntity> result = new ArrayList<>();
-    for (NodeEntity node : nodes) {
-      if (!node.getAttr().getId().equals(NodePK.BIN_NODE_ID) && !node.getAttr().getId().equals(
-          NodePK.UNCLASSED_NODE_ID)) {
-        result.add(node);
-      }
-    }
-    return result.toArray(new NodeEntity[0]);
+  private List<NodeEntity> removeSpecialNodes(List<NodeEntity> nodes) {
+    return nodes.stream()
+        .filter(n -> !n.getAttr().getId().equals(NodePK.BIN_NODE_ID) &&
+                     !n.getAttr().getId().equals(NodePK.UNCLASSED_NODE_ID))
+        .collect(Collectors.toList());
   }
 
   private NodePK getNodePK(String id) {
