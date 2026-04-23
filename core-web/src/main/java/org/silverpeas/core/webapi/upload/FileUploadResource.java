@@ -173,8 +173,6 @@ public class FileUploadResource extends RESTWebService {
       inputStream.transferTo(buffer);
       byte[] fileBytes = buffer.toByteArray();
 
-      SettingBundle settings =
-              ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Antivirus");
       LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
               "org.silverpeas.util.attachment.multilang.attachment",
               getUserPreferences().getLanguage());
@@ -183,7 +181,7 @@ public class FileUploadResource extends RESTWebService {
 
       // Virus scan
       AntivirusResult scanResult = checkVirus(new ByteArrayInputStream(fileBytes));
-      handleScanResult(scanResult, fileUploadData, settings, bundle);
+      handleScanResult(scanResult, fileUploadData, bundle);
 
       // Proceed with upload
       String jsonFile = packJSonObjectWithHtmlContainer(
@@ -202,22 +200,21 @@ public class FileUploadResource extends RESTWebService {
   }
 
   /** Handles the result of the antivirus scan and throws appropriate HTTP exceptions. */
-  private void handleScanResult(AntivirusResult scanResult, FileUploadData fileData,
-                                SettingBundle settings, LocalizationBundle bundle) {
+  private void handleScanResult(AntivirusResult scanResult, FileUploadData fileData, LocalizationBundle bundle) {
     if (scanResult.isSafe()) return;
 
     String message;
     if (scanResult.isError()) {
-      if (!settings.getBoolean("antivirus.allow-unverified-files", true)) {
+      if (!scanResult.isAllowUnverifiedFiles()) {
         message = MessageFormat.format(bundle.getString("antivirus.scan.unavailable"), fileData.getName());
-        SilverLogger.getLogger(this).warn(message);
+        SilverLogger.getLogger(this).warn(scanResult.getErrorMessage());
         MessageNotifier.addError(message);
         throw new WebApplicationException(Response.Status.FORBIDDEN);
       }
     } else {
       message = MessageFormat.format(bundle.getString("antivirus.scan.infected"),
               fileData.getName(), scanResult.getVirusName());
-      SilverLogger.getLogger(this).error(message);
+      SilverLogger.getLogger(this).error(scanResult.getErrorMessage());
       MessageNotifier.addError(message);
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
     }

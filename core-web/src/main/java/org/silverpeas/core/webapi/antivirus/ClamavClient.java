@@ -56,6 +56,8 @@ public class ClamavClient implements AntivirusClient {
             settings = ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Antivirus");
         }
 
+        result.setAllowUnverifiedFiles(settings.getBoolean("antivirus.allow-unverified-files", true));
+
         xyz.capybara.clamav.ClamavClient client = new xyz.capybara.clamav.ClamavClient(
                 settings.getString("clamav.host", "localhost"),
                 settings.getInteger("clamav.port", 3310)

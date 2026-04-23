@@ -32,6 +32,8 @@ package org.silverpeas.core.webapi.antivirus;
 public class AntivirusResult {
     private boolean safe;
     private boolean error;
+
+    private boolean allowUnverifiedFiles;
     private String virusName;
     private String errorMessage;
 
@@ -45,6 +47,14 @@ public class AntivirusResult {
         safeResult.setError(false);
         safeResult.setSafe(true);
         return safeResult;
+    }
+
+    public boolean isAllowUnverifiedFiles() {
+        return allowUnverifiedFiles;
+    }
+
+    public void setAllowUnverifiedFiles(boolean allowUnverifiedFiles) {
+        this.allowUnverifiedFiles = allowUnverifiedFiles;
     }
 
     public boolean isSafe() {
