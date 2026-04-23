@@ -41,7 +41,6 @@ import org.silverpeas.core.webapi.antivirus.AntivirusClientProvider;
 import org.silverpeas.core.webapi.antivirus.AntivirusResult;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
