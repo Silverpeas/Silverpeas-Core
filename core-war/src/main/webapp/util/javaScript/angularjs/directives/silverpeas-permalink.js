@@ -46,8 +46,8 @@
         //function used on the ng-include to resolve the template
         this.getFullTemplateUrl = function() {
           var config = sp.ajaxConfig(webContext + '/util/javaScript/angularjs/directives/silverpeas-permalink-wrapper.jsp');
-          config.withParam('link', encodeURIComponent(this.getFormattedPermalinkForWrapper()));
-          config.withParam('label', this.label ? encodeURIComponent(this.label) : this.label);
+          config.withParam('link', this.getFormattedPermalinkForWrapper());
+          config.withParam('label', this.label);
           config.withParam('help', this.help ? encodeURIComponent(this.help) : this.help);
           config.withParam('iconUrl', this.iconUrl);
           return config.getUrl();
