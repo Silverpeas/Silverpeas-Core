@@ -78,6 +78,9 @@ public class TicketEntity implements WebEntity {
   @XmlElement
   protected int nbAccess;
 
+  @XmlElement
+  protected String securityCode;
+
   @XmlElement(defaultValue = "")
   protected String token;
   @XmlElement(defaultValue = "")
@@ -133,12 +136,12 @@ public class TicketEntity implements WebEntity {
 
       ticket =
           TicketFactory.aTicket(theSharedObjectId.intValue(), this.componentId, user.getId(),
-              new Date(), theEndDate, maxAccessNb, this.sharedObjectType);
+              new Date(), theEndDate, maxAccessNb, this.sharedObjectType, this.securityCode);
 
     } else {
       ticket =
           TicketFactory.continuousTicket(theSharedObjectId.intValue(), componentId, user.getId(),
-              new Date(), this.sharedObjectType);
+              new Date(), this.sharedObjectType, this.securityCode);
 
     }
     return ticket;

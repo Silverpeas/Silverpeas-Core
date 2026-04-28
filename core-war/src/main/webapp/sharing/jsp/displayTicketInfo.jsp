@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2024 Silverpeas
+    Copyright (C) 2000 - 2026 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -29,36 +29,66 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const link = document.getElementById("downloadLink");
+        const input = document.getElementById("securityCode");
+
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            const baseUrl = link.getAttribute("href");
+            const code = input.value;
+
+            const url = new URL(baseUrl, window.location.origin);
+            if (code) {
+                url.searchParams.set("securityCode", code);
+            }
+            window.open(url.toString(), "_blank");
+        });
+
+    });
+</script>
+
 <view:sp-page>
-  <fmt:setLocale value="${requestScope.userLanguage}"/>
-  <view:setBundle basename="org.silverpeas.sharing.multilang.fileSharingBundle"/>
-  <view:setBundle basename="org.silverpeas.sharing.settings.fileSharingIcons" var="icons"/>
-  <c:set var="key" value="${requestScope.Key}"/>
-  <c:set var="wallpaper" value="${requestScope.wallpaper}"/>
-  <c:set var="ticket" value="${requestScope.attTicket}"/>
-  <jsp:useBean id="ticket" type="org.silverpeas.core.sharing.model.Ticket"/>
-  <c:set var="endDate" value=""/>
-  <c:if test="${not ticket.unlimited}">
-    <c:set var="endDate"><fmt:message key="sharing.endDate"/>:
-      <view:formatDate value="${ticket.endDate}"/></c:set>
-  </c:if>
-  <view:sp-head-part noLookAndFeel="true">
-    <link href="<c:url value='/util/styleSheets/silverpeas-main.css'/>" type="text/css" rel="stylesheet"/>
-    <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet"/>
-  </view:sp-head-part>
-  <view:sp-body-part id="fileSharingTicket">
-    <div class="tableBoard">
-      <strong><view:username userId="${ticket.creatorId}" zoom="false"/></strong>
-      <fmt:message key="sharing.shareFile"/><br/><br/>
-      <img alt="image" src="<c:out value='${requestScope.fileIcon}'/>" id="img_44"/>
-      <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><strong><c:out value="${ticket.resource.name}"/> </strong></a><br/>
-      <fmt:message key="sharing.sizeFile"/> : <c:out value="${requestScope.fileSize}"/><br/>
-      <c:out value="${endDate}"/><br/>
-      <hr/>
-      <em><fmt:message key="sharing.downloadFileHelp"/></em>
-    </div>
-    <div class="sp_buttonPane">
-      <a class="sp_button" target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message key="sharing.downloadLink"/></a>
-    </div>
-  </view:sp-body-part>
+    <fmt:setLocale value="${requestScope.userLanguage}"/>
+    <view:setBundle basename="org.silverpeas.sharing.multilang.fileSharingBundle"/>
+    <view:setBundle basename="org.silverpeas.sharing.settings.fileSharingIcons" var="icons"/>
+    <c:set var="key" value="${requestScope.Key}"/>
+    <c:set var="wallpaper" value="${requestScope.wallpaper}"/>
+    <c:set var="ticket" value="${requestScope.attTicket}"/>
+    <jsp:useBean id="ticket" type="org.silverpeas.core.sharing.model.Ticket"/>
+    <c:set var="endDate" value=""/>
+    <c:if test="${not ticket.unlimited}">
+        <c:set var="endDate"><fmt:message key="sharing.endDate"/>:
+            <view:formatDate value="${ticket.endDate}"/></c:set>
+    </c:if>
+    <view:sp-head-part noLookAndFeel="true">
+        <link href="<c:url value='/util/styleSheets/silverpeas-main.css'/>" type="text/css" rel="stylesheet"/>
+        <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet"/>
+    </view:sp-head-part>
+    <view:sp-body-part id="fileSharingTicket">
+        <div class="tableBoard">
+            <strong><view:username userId="${ticket.creatorId}" zoom="false"/></strong>
+            <fmt:message key="sharing.shareFile"/><br/><br/>
+            <img alt="image" src="<c:out value='${requestScope.fileIcon}'/>" id="img_44"/>
+            <a target="_blank"
+               href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><strong><c:out
+                    value="${ticket.resource.name}"/> </strong></a><br/>
+            <fmt:message key="sharing.sizeFile"/> : <c:out value="${requestScope.fileSize}"/><br/>
+            <c:out value="${endDate}"/><br/>
+            <hr/>
+            <em><fmt:message key="sharing.downloadFileHelp"/></em>
+        </div>
+        <div class="sp_buttonPane">
+            <div id="securityCheck">
+                <span>Code secret</span>
+                <input type="text" id="securityCode" name="securityCode"/>
+            </div>
+            <a id="downloadLink" class="sp_button" target="_blank"
+               href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message
+                    key="sharing.downloadLink"/></a>
+        </div>
+    </view:sp-body-part>
 </view:sp-page>
