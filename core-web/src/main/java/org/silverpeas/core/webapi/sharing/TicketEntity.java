@@ -79,6 +79,9 @@ public class TicketEntity implements WebEntity {
   @XmlElement
   protected int nbAccess;
 
+  @XmlElement
+  protected String securityCode;
+
   @XmlElement(defaultValue = "")
   protected String token;
   @XmlElement(defaultValue = "")
@@ -131,16 +134,13 @@ public class TicketEntity implements WebEntity {
       Date theEndDate = DateUtil.getEndOfDay(
           DateUtil.stringToDate(this.endDateStr, user.getUserPreferences().getLanguage()));
       int maxAccessNb = this.nbAccessMax;
-
       ticket =
           TicketFactory.aTicket((int) theSharedObjectId, this.componentId, user.getId(),
-              new Date(), theEndDate, maxAccessNb, this.sharedObjectType);
-
+              new Date(), theEndDate, maxAccessNb, this.sharedObjectType, securityCode);
     } else {
       ticket =
           TicketFactory.continuousTicket((int) theSharedObjectId, componentId, user.getId(),
-              new Date(), this.sharedObjectType);
-
+              new Date(), this.sharedObjectType, securityCode);
     }
     return ticket;
   }
