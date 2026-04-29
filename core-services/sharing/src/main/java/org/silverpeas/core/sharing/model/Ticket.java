@@ -287,7 +287,8 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   public abstract <R> ShareableResource<R> getResource();
 
   public boolean checkSecurityCode(String securityCode) {
-    return this.securityCode.equals(securityCode);
+    if (this.securityCode != null) return this.securityCode.equals(securityCode);
+    return true;
   }
 
   public enum QUERY_ORDER_BY {

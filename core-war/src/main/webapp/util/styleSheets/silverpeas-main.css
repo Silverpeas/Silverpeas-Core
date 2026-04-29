@@ -3796,6 +3796,10 @@ table.pdcPositionsField {
   display:inline-block;
 }
 
+.simple-button.btn-ui-dialog {
+  margin-left: 30%;
+}
+
 /** Css pour presentation pdc dans formsOnline **/
 .pdc_position {
   display:block;
@@ -5678,6 +5682,17 @@ ul.tagit li.tagit-choice a.tagit-close {
 .ui-dialog .filedset-ui-dialog.validity legend {
   padding-left:30px;
   background: url("../icons/calendar_2.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
+}
+
+.ui-dialog .filedset-ui-dialog.security legend::before {
+  display: inline-block;
+  content:" ";
+  vertical-align: middle;
+  width: 30px;
+  height: 24px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 12h7c-.53 4.11-3.28 7.78-7 8.92zH5V6.3l7-3.11M12 1L3 5v6c0 5.55 3.84 10.73 9 12c5.16-1.27 9-6.45 9-12V5z'/%3E%3C/svg%3E");
 }
 
 .ui-dialog .filedset-ui-dialog{
