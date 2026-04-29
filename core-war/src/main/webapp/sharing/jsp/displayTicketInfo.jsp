@@ -29,27 +29,45 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
+<c:set var="ticket" value="${requestScope.attTicket}"/>
+<c:set var="noCode" value="${empty ticket.securityCode}"/>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-
         const link = document.getElementById("downloadLink");
-        const input = document.getElementById("securityCode");
 
         link.addEventListener("click", function (e) {
             e.preventDefault();
 
+            const noCode = ${noCode};
             const baseUrl = link.getAttribute("href");
-            const code = input.value;
-
             const url = new URL(baseUrl, window.location.origin);
-            if (code) {
-                url.searchParams.set("securityCode", code);
+            if (noCode) {
+                url.searchParams.set("securityCode", "");
+                window.open(url.toString(), "_blank");
+                return;
             }
-            window.open(url.toString(), "_blank");
+
+            jQuery('#securityDialog').popup('validation', {
+                title: "Code de sécurité",
+                callback: function() {
+                    const input = document.getElementById("securityCode");
+                    const code = input.value;
+                    url.searchParams.set("securityCode", code);
+                    window.open(url.toString(), "_blank");
+                }
+            });
         });
 
     });
 </script>
+
+<div id="securityDialog" style="display:none;">
+    <div id="securityCheck">
+        <span>Code de sécurité</span>
+        <input type="text" id="securityCode" name="securityCode"/>
+    </div>
+</div>
 
 <view:sp-page>
     <fmt:setLocale value="${requestScope.userLanguage}"/>
@@ -57,14 +75,14 @@
     <view:setBundle basename="org.silverpeas.sharing.settings.fileSharingIcons" var="icons"/>
     <c:set var="key" value="${requestScope.Key}"/>
     <c:set var="wallpaper" value="${requestScope.wallpaper}"/>
-    <c:set var="ticket" value="${requestScope.attTicket}"/>
+
     <jsp:useBean id="ticket" type="org.silverpeas.core.sharing.model.Ticket"/>
     <c:set var="endDate" value=""/>
     <c:if test="${not ticket.unlimited}">
         <c:set var="endDate"><fmt:message key="sharing.endDate"/>:
             <view:formatDate value="${ticket.endDate}"/></c:set>
     </c:if>
-    <view:sp-head-part noLookAndFeel="true">
+    <view:sp-head-part noLookAndFeel="false">
         <link href="<c:url value='/util/styleSheets/silverpeas-main.css'/>" type="text/css" rel="stylesheet"/>
         <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet"/>
     </view:sp-head-part>
@@ -82,10 +100,6 @@
             <em><fmt:message key="sharing.downloadFileHelp"/></em>
         </div>
         <div class="sp_buttonPane">
-            <div id="securityCheck">
-                <span>Code secret</span>
-                <input type="text" id="securityCode" name="securityCode"/>
-            </div>
             <a id="downloadLink" class="sp_button" target="_blank"
                href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message
                     key="sharing.downloadLink"/></a>

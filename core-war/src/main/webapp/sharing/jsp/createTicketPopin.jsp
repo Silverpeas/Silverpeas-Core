@@ -202,6 +202,7 @@
     $("#users_name").val("");
     $("#externalEmails").val("");
     $("#additionalMessage").val("");
+    $(#securityCode).val("");
   }
 
   function showInformation() {
@@ -211,6 +212,52 @@
         return true;
       }
     });
+  }
+
+  function generateSecureCode(length = 32) {
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const special = `!@#$%^&*()_+-=[]{}|;:'",.<>?/\\~\``;
+    const all = lower + upper + numbers + special;
+
+    let result = [
+      lower[Math.floor(Math.random() * lower.length)],
+      upper[Math.floor(Math.random() * upper.length)],
+      numbers[Math.floor(Math.random() * numbers.length)],
+      special[Math.floor(Math.random() * special.length)]
+    ];
+
+    const array = new Uint8Array(length - 4);
+    crypto.getRandomValues(array);
+
+    for (let i = 0; i < array.length; i++) {
+      result.push(all[array[i] % all.length]);
+    }
+
+    // shuffle (Fisher-Yates)
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+
+    return result.join("");
+  }
+
+  function generateSecurityCodeAndFill() {
+    const code = generateSecureCode(32);
+    document.getElementById("securityCode").value = code;
+  }
+
+  async function copySecurityCode() {
+    const input = document.getElementById("securityCode");
+    const value = input.value;
+
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch (err) {
+      console.error("Error :", err);
+    }
   }
 
 </script>
@@ -251,9 +298,15 @@
     </fieldset>
 
     <fieldset class="filedset-ui-dialog security">
-      <label class="label-ui-dialog" for="securityCode">Code sécurité</label>
-      <span class="champ-ui-dialog">
-        <input type="text" name="securityCode" id="securityCode" size="50" maxlength="" />
+        <legend>Sécurité</legend>
+        <label class="label-ui-dialog" for="securityCode"><fmt:message key="sharing.security.code" bundle="${fsBundle}" /></label>
+      <div class="champ-ui-dialog">
+        <input type="text" name="securityCode" id="securityCode" size="50" maxlength="50" placeholder="Si renseigné, il vous incombera de transmettre ce code" title=" Si renseigné, il vous incombera de transmettre ce code"/>
+        <a class="sp_button copy-to-clipboard" title='<fmt:message key="sharing.copy.code" bundle="${fsBundle}" />' href="javascript:void(0)" onclick="copySecurityCode()">
+          <span><fmt:message key="sharing.copy.code" bundle="${fsBundle}" /></span>
+        </a>
+      </div>
+        <button type="button" class="simple-button btn-ui-dialog" onclick="generateSecurityCodeAndFill()"><fmt:message key="sharing.generation.code" bundle="${fsBundle}" /></button>
     </fieldset>
 
     <fieldset class="filedset-ui-dialog notification">
