@@ -32,8 +32,6 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -423,9 +421,8 @@ public class NavBarManager {
    */
   private static class DisplaySortedCache {
 
-    private final SortedSet<DisplaySorted> sortedData = synchronizedSortedSet(new TreeSet<>());
-    private final Map<String, DisplaySorted> cache = synchronizedMap(new HashMap<>());
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private SortedSet<DisplaySorted> sortedData = synchronizedSortedSet(new TreeSet<>());
+    private Map<String, DisplaySorted> cache = synchronizedMap(new HashMap<>());
 
     DisplaySortedCache() {
       super();
@@ -460,13 +457,8 @@ public class NavBarManager {
      *
      * @return sorted instances.
      */
-    public SortedSet<DisplaySorted> getSorted() {
-      lock.readLock().lock();
-      try {
-        return new TreeSet<>(sortedData);
-      } finally {
-        lock.readLock().unlock();
-      }
+    public synchronized SortedSet<DisplaySorted> getSorted() {
+      return sortedData;
     }
 
     /**
@@ -483,8 +475,8 @@ public class NavBarManager {
      * Clears the cache.
      */
     public synchronized void clear() {
-      sortedData.clear();
-      cache.clear();
+      sortedData = synchronizedSortedSet(new TreeSet<>());
+      cache = synchronizedMap(new HashMap<>());
     }
 
     /**
@@ -493,13 +485,8 @@ public class NavBarManager {
      * @param data the data to set into cache.
      */
     public synchronized void set(final Stream<DisplaySorted> data) {
-      lock.writeLock().lock();
-      try {
-        sortedData.clear();
-        data.forEach(d -> put(d.getId(), d));
-      } finally {
-        lock.writeLock().unlock();
-      }
+      clear();
+      data.forEach(d -> put(d.getId(), d));
     }
   }
 }
