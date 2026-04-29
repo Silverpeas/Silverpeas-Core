@@ -163,6 +163,14 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     }
   }
 
+  public String getSecurityCode() {
+    return securityCode;
+  }
+
+  public void setSecurityCode(String securityCode) {
+    this.securityCode = securityCode;
+  }
+
   public int getNbAccessMax() {
     return nbAccessMax;
   }
