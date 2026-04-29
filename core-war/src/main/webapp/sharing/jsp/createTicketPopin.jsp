@@ -301,7 +301,7 @@
         <legend>Sécurité</legend>
         <label class="label-ui-dialog" for="securityCode"><fmt:message key="sharing.security.code" bundle="${fsBundle}" /></label>
       <div class="champ-ui-dialog">
-        <input type="text" name="securityCode" id="securityCode" size="50" maxlength="50" placeholder="Si renseigné, il vous incombera de transmettre ce code" title=" Si renseigné, il vous incombera de transmettre ce code"/>
+        <input type="text" name="securityCode" id="securityCode" size="50" maxlength="50" placeholder='<fmt:message key="sharing.generation.code.help" bundle="${fsBundle}" />' title='<fmt:message key="sharing.generation.code.help" bundle="${fsBundle}" />'/>
         <a class="sp_button copy-to-clipboard" title='<fmt:message key="sharing.copy.code" bundle="${fsBundle}" />' href="javascript:void(0)" onclick="copySecurityCode()">
           <span><fmt:message key="sharing.copy.code" bundle="${fsBundle}" /></span>
         </a>
