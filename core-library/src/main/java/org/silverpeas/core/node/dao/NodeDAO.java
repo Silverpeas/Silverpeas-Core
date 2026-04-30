@@ -47,6 +47,7 @@ import java.sql.Statement;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -736,7 +737,10 @@ public class NodeDAO extends AbstractDAO {
       fatherId = Integer.parseInt(nd.getFatherPK().getId());
       nbBrothers = getChildrenNumber(con, nd.getFatherPK());
     }
-    nd.setOrder(nbBrothers + 1);
+
+    if (nd.getOrder() == 0) {
+      nd.setOrder(nbBrothers + 1);
+      }
 
     newId = getNewId(nd);
     var query = JdbcSqlQuery.insertInto(nd.getNodePK().getTableName())
