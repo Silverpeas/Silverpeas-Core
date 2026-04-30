@@ -731,8 +731,7 @@ public class NodeDAO extends AbstractDAO {
       fatherId = Integer.parseInt(nd.getFatherPK().getId());
       nbBrothers = getChildrenNumber(con, nd.getFatherPK());
     }
-
-    nd.setOrder(nbBrothers + 1);
+    if (nd.getOrder() == 0) nd.setOrder(nbBrothers + 1);
 
     try {
       if (nd.isUseId()) {
