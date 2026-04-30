@@ -55,7 +55,7 @@ public class GetLinkFileServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
     RestRequest rest = new RestRequest(request, "myFile");
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
-    String securityCode = request.getParameter("securityCode");
+    String securityCode = request.getHeader("X-Verification-Code");
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(keyFile);
     if (ticket != null && ticket.isValid() && ticket.checkSecurityCode(securityCode)) {
       // recherche des infos sur le fichier...
