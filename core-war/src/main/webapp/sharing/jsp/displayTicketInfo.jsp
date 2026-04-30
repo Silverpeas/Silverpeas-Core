@@ -43,8 +43,18 @@
             const baseUrl = link.getAttribute("href");
             const url = new URL(baseUrl, window.location.origin);
             if (noCode) {
-                url.searchParams.set("securityCode", "");
-                window.open(url.toString(), "_blank");
+                const code = "";
+                fetch(url.toString(), {
+                    method: 'GET',
+                    headers: {
+                        'X-Verification-Code': code
+                    }
+                })
+                .then(res => res.blob())
+                .then(data => {
+                    const newUrl = URL.createObjectURL(data);
+                    window.open(newUrl, '_blank');
+                });
                 return;
             }
 
@@ -53,8 +63,18 @@
                 callback: function() {
                     const input = document.getElementById("securityCode");
                     const code = input.value;
-                    url.searchParams.set("securityCode", code);
-                    window.open(url.toString(), "_blank");
+
+                    fetch(url.toString(), {
+                        method: 'GET',
+                        headers: {
+                            'X-Verification-Code': code
+                        }
+                    })
+                    .then(res => res.blob())
+                    .then(data => {
+                        const newUrl = URL.createObjectURL(data);
+                        window.open(newUrl, '_blank');
+                    });
                 }
             });
         });
