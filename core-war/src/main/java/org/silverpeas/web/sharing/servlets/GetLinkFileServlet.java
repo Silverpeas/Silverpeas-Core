@@ -87,7 +87,11 @@ public class GetLinkFileServlet extends HttpServlet {
         sendBackInvalidTicket(request, response);
       }
     } else {
-      sendBackInvalidTicket(request, response);
+      if (ticket.checkSecurityCode(securityCode)) {
+        sendBackInvalidTicket(request, response);
+      } else {
+        sendBackInvalidSecurityCode(request, response);
+      }
     }
   }
 
@@ -95,5 +99,11 @@ public class GetLinkFileServlet extends HttpServlet {
       throws IOException, ServletException {
     getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp")
         .forward(req, resp);
+  }
+
+  private void sendBackInvalidSecurityCode(final HttpServletRequest req, final HttpServletResponse resp)
+          throws IOException, ServletException {
+    getServletContext().getRequestDispatcher("/sharing/jsp/invalidSecuriyCode.jsp")
+            .forward(req, resp);
   }
 }
