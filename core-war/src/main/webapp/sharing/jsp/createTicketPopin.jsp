@@ -202,7 +202,7 @@
     $("#users_name").val("");
     $("#externalEmails").val("");
     $("#additionalMessage").val("");
-    $(#securityCode).val("");
+    $("#securityCode").val("");
   }
 
   function showInformation() {
