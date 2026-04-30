@@ -28,11 +28,7 @@ import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.web.rs.RESTWebService;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -70,6 +66,15 @@ public class SharingResource extends RESTWebService {
         .path(String.valueOf(ticket.getSharedObjectId()))
         .build();
     return new SharingEntity(getUri().getRequestUri(), webApplicationRootUri, ticket);
+  }
+
+  @GET
+  @Path("/check")
+  @Produces(MediaType.APPLICATION_JSON)
+  public boolean checkSecurityCode() {
+    String securityCode = this.getHttpRequest().getHeader("X-Verification-Code");
+    Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
+    return ticket.checkSecurityCode(securityCode);
   }
 
 }
