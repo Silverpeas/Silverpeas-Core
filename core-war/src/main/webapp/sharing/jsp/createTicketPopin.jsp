@@ -255,6 +255,7 @@
 
     try {
       await navigator.clipboard.writeText(value);
+      notyInfo('<fmt:message key="sharing.confirmCopyInClipbloard" bundle="${fsBundle}"/>');
     } catch (err) {
       console.error("Error :", err);
     }
