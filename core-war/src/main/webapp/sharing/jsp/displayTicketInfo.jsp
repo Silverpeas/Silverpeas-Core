@@ -59,7 +59,7 @@
             }
 
             jQuery('#securityDialog').popup('validation', {
-                title: "Code de sécurité",
+                title: "",
                 callback: function() {
                     const input = document.getElementById("securityCode");
                     const code = input.value;
@@ -81,13 +81,6 @@
 
     });
 </script>
-
-<div id="securityDialog" style="display:none;">
-    <div id="securityCheck">
-        <span>Code de sécurité</span>
-        <input type="text" id="securityCode" name="securityCode"/>
-    </div>
-</div>
 
 <view:sp-page>
     <fmt:setLocale value="${requestScope.userLanguage}"/>
@@ -126,3 +119,10 @@
         </div>
     </view:sp-body-part>
 </view:sp-page>
+
+<div id="securityDialog" style="display:none;">
+    <div id="securityCheck">
+        <span><fmt:message key="sharing.security.code"/></span>
+        <input type="text" id="securityCode" name="securityCode"/>
+    </div>
+</div>

@@ -65,7 +65,7 @@
               "OK": function() {
                 const input = document.getElementById("securityCode");
                 const code = input.value;
-                uri = uri + "/check";
+                uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
                 fetch(uri, {
                   method: 'GET',
                   headers: {
@@ -75,14 +75,13 @@
                   .then(response => response.json())
                   .then(result => {
                   if (result) {
+                    $(this).dialog("close");
                     // get publication and display it
                     displayPublication();
                   } else {
-                    alert('Code invalide');
+                    input.value = "";
                   }
                 });
-
-                $(this).dialog("close");
               },
               "Annuler": function() {
                 $(this).dialog("close");
