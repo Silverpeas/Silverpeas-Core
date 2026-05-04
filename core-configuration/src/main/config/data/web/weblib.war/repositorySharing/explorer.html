@@ -63,11 +63,48 @@ $(function () {
 				d.setTime(sharing.expiration);
 				$("#breadcrumb .validityInfo .expiration").html(d.toLocaleString());
 			}
-			//$("#uri").val(sharing.webApplicationRootUri);
-			loadTreeview(sharing.webApplicationRootUri);
+			  if (sharing.securityCode) {
+				  $("#securityDialog").dialog({
+					  modal: true,        // bloque le reste de la page
+					  title: "Code de sécurité",
+					  width: 400,
+					  buttons: {
+						  "OK": function() {
+							  const input = document.getElementById("securityCode");
+							  const code = input.value;
+							  uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
+							  fetch(uri, {
+								  method: 'GET',
+								  headers: {
+									  'X-Verification-Code': code
+								  }
+							  })
+									  .then(response => response.json())
+									  .then(result => {
+										  if (result) {
+											  $(this).dialog("close");
+											  loadTreeview(sharing.webApplicationRootUri);
+										  } else {
+											  input.value = "";
+										  }
+									  });
+						  },
+						  "Annuler": function() {
+							  $(this).dialog("close");
+						  }
+					  }
+				  });
+			  } else {
+				  //$("#uri").val(sharing.webApplicationRootUri);
+				  loadTreeview(sharing.webApplicationRootUri);
+			  }
 		  }, 'json');
 
   function loadTreeview(rootUri) {
+	$("#breadcrumb").show();
+	$("#publications").show();
+	$("#explorer").show();
+
     $("#explorer").jstree({
       "core" : {
         force_text : false, "data" : {
@@ -298,17 +335,25 @@ function hideZipPanel() {
 </script>
 </head>
 <body>
-	<div id="header">
-		<h1>Gestion documentaire �lectronique partag�e</h1>
+
+	<div id="securityDialog" style="display:none;">
+		<div id="securityCheck">
+			<span>Code de sécurité</span>
+			<input type="text" id="securityCode" name="securityCode"/>
+		</div>
 	</div>
-	<div id="breadcrumb">
+
+	<div id="header">
+		<h1>Gestion documentaire électronique partagée</h1>
+	</div>
+	<div id="breadcrumb" style="display: none">
 		<span class="path"></span>
 		<span class="validityInfo"><span id="expirationLabel"></span> : <span class="expiration"></span></span>
-		<a class="silverpeasLink" href="http://www.silverpeas.com" title="D�couvrir Silverpeas"><img src="generic-elts/sharedWithSilverpeas.png"></a>
+		<a class="silverpeasLink" href="http://www.silverpeas.com" title="Découvrir Silverpeas"><img src="generic-elts/sharedWithSilverpeas.png"></a>
 	</div>
-	<div id="explorer" class="demo">
+	<div id="explorer" class="demo" style="display: none">
 	</div>
-	<div id="publications">
+	<div id="publications" style="display: none">
 		<div class="container">
 			<ul id="publicationsList">
 			</ul>
@@ -317,7 +362,7 @@ function hideZipPanel() {
 			</div>
 		</div>
 	</div>
-	<a title="T�l�charger les fichiers s�lectionn�s" id="download-link" href="#">T�l�charger</a>
+	<a title="Télécharger les fichiers sélectionnés" id="download-link" href="#">Télécharger</a>
 	<div id="downloadZip-dialog" title="T&eacute;l&eacute;charger vos fichiers" style="display:none">
 		<p>
 			<a href="" target="_blank">Cliquez sur le lien pour t&eacute;l&eacute;charger le ZIP</a> - <span id="zipSize"></span>
