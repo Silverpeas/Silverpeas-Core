@@ -47,9 +47,9 @@ jobs:
           blackducksca_reports_sarif_create: true  # Create SARIF report and upload it as artifact
           blackducksca_upload_sarif_report: true  # Upload SARIF report in GitHub Advanced Security tab
 
-
           ### SCAN CONFIGURATION: Uncomment below to enable
           # blackducksca_waitForScan: true # Wait for scan completion before proceeding
+          detect_args: --detect.blackduck.signature.scanner.snippet.matching=SNIPPET_MATCHING
 
           ### Mark build status if policy violating issues are found
           # mark_build_status: failure # Set to success, failure, or skip
