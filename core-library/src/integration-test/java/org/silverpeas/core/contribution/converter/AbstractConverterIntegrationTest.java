@@ -52,7 +52,8 @@ public abstract class AbstractConverterIntegrationTest {
         .addIndexingEngine()
         .addWebListener(OfficeServiceInitializationListener.class)
         .addMavenDependencies("org.apache.commons:commons-exec",
-            "org.jodconverter:jodconverter-local")
+            "org.jodconverter:jodconverter-local",
+            "org.jodconverter:jodconverter-remote")
         .addPackages(true, "org.silverpeas.core.contribution.converter")
         .addClasses(MetadataExtractor.class, MetaData.class)
         .addAsResource("org/silverpeas/converter")

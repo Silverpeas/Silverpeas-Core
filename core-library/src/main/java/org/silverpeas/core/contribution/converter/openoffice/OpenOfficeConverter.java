@@ -25,9 +25,11 @@ package org.silverpeas.core.contribution.converter.openoffice;
 
 import org.apache.commons.io.FilenameUtils;
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.local.LocalConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.remote.RemoteConverter;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConversion;
 import org.silverpeas.core.contribution.converter.DocumentFormatConversionException;
@@ -116,17 +118,22 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
   private DocumentConverter getDocumentConverter(final FilterOption<?>... options) {
     OfficeManager manager = service.getOfficeManager();
-    LocalConverter.Builder builder = LocalConverter.builder().officeManager(manager);
-    if (options.length > 0) {
-      final Map<String, Object> filterData = new HashMap<>();
-      final Map<String, Object> customProperties = new HashMap<>();
-      for (final FilterOption<?> option : options) {
-        filterData.put(option.getName(), option.getValue());
+    if (manager instanceof LocalOfficeManager) {
+      LocalConverter.Builder builder = LocalConverter.builder().officeManager(manager);
+      if (options.length > 0) {
+        final Map<String, Object> filterData = new HashMap<>();
+        final Map<String, Object> customProperties = new HashMap<>();
+        for (final FilterOption<?> option : options) {
+          filterData.put(option.getName(), option.getValue());
+        }
+        customProperties.put("FilterData", filterData);
+        builder.storeProperties(customProperties);
       }
-      customProperties.put("FilterData", filterData);
-      builder.storeProperties(customProperties);
+      return builder.build();
+    } else {
+      RemoteConverter.Builder builder = RemoteConverter.builder().officeManager(manager);
+      return builder.build();
     }
-    return builder.build();
   }
 
   private org.jodconverter.core.document.DocumentFormat documentFormat(final DocumentFormat format) {

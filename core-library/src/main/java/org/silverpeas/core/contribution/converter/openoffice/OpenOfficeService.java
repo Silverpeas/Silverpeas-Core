@@ -28,6 +28,8 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.remote.office.RemoteOfficeManager;
+import org.jodconverter.remote.ssl.SslConfig;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -51,6 +53,7 @@ public class OpenOfficeService implements Initialization {
       ".openoffice");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOME = "openoffice.home";
+  private static final String OPENOFFICE_HOST = "openoffice.host";
   private static final String OPENOFFICE_QUEUE_TIMEOUT = "openoffice.task.queueTimeout";
   private static final String OPENOFFICE_EXECUTION_TIMEOUT = "openoffice.task.executionTimeout";
 
@@ -60,6 +63,7 @@ public class OpenOfficeService implements Initialization {
   public void init() {
     String home = settings.getString(OPENOFFICE_HOME, null);
     String ports = settings.getString(OPENOFFICE_PORT, "8100");
+    String host = settings.getString(OPENOFFICE_HOST, "");
     long taskQueueTimeout = settings.getLong(OPENOFFICE_QUEUE_TIMEOUT, DEFAULT_TASK_QUEUE_TIMEOUT);
     long taskExecutionTimeout = settings.getLong(OPENOFFICE_EXECUTION_TIMEOUT,
         DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -67,27 +71,39 @@ public class OpenOfficeService implements Initialization {
         .map(String::trim)
         .mapToInt(Integer::parseInt)
         .toArray();
-    LocalOfficeManager.Builder config = LocalOfficeManager.builder()
-        .install()
-        .officeHome(home)
-        .portNumbers(portNumbers)
-        .taskExecutionTimeout(taskExecutionTimeout)
-        .taskQueueTimeout(taskQueueTimeout);
-    startOfficeManager(config);
-  }
-
-  private void startOfficeManager(LocalOfficeManager.Builder builder) {
-    officeManager = builder.build();
-    try {
-      officeManager.start();
-    } catch (OfficeException e) {
-      throw new SilverpeasRuntimeException(e.getMessage(), e);
+    if (host.startsWith("https://")) {
+      final SslConfig sslConfig = new SslConfig();
+      sslConfig.setEnabled(true);
+      officeManager =
+          RemoteOfficeManager.builder()
+              .urlConnection(host)
+              .sslConfig(sslConfig)
+              .taskExecutionTimeout(taskExecutionTimeout)
+              .taskQueueTimeout(taskQueueTimeout)
+              .build();
+    } else {
+      LocalOfficeManager.Builder localBuilder = LocalOfficeManager.builder()
+          .install()
+          .officeHome(home)
+          .portNumbers(portNumbers)
+          .taskExecutionTimeout(taskExecutionTimeout)
+          .taskQueueTimeout(taskQueueTimeout);
+      officeManager = localBuilder.build();
     }
+    startOfficeManager();
   }
 
   @Override
   public void release() {
     OfficeUtils.stopQuietly(officeManager);
+  }
+
+  private void startOfficeManager() {
+    try {
+      officeManager.start();
+    } catch (OfficeException e) {
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
+    }
   }
 
   /**
