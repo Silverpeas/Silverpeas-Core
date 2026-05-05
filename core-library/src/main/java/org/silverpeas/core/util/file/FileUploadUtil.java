@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload2.core.DiskFileItem;
 import org.apache.commons.fileupload2.core.DiskFileItemFactory;
 import org.apache.commons.fileupload2.core.FileUploadException;
+import org.apache.commons.fileupload2.core.FileUploadSizeException;
 import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -66,7 +67,9 @@ public class FileUploadUtil {
    *
    * @param request the HTTP servlet request.
    * @return a list of file items encoded into the multipart stream of the request.
-   * @throws SilverpeasRuntimeException if an error occurs while fetching the file items.
+   * @throws FileUploadSizeLimitException if either the size of uploaded files or the size in bytes of
+   * one of the uploaded file exceed the configured threshold.
+   * @throws SilverpeasRuntimeException if an error occurs while fetching the file items
    */
   public static List<FileItem> parseRequest(HttpServletRequest request) {
     try {
@@ -75,6 +78,8 @@ public class FileUploadUtil {
           .map(DefaultFileItem::new)
           .collect(Collectors.toList());
 
+    } catch (FileUploadSizeException e) {
+      throw new FileUploadSizeLimitException(e.getMessage(), e);
     } catch (FileUploadException e) {
       throw new SilverpeasRuntimeException("Error uploading files", e);
     }
@@ -96,7 +101,7 @@ public class FileUploadUtil {
     Charset charset = toCharset(encoding);
     for (var item : items) {
       if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-          return charset != null ? item.getContent(charset) : item.getContent();
+        return charset != null ? item.getContent(charset) : item.getContent();
       }
     }
     return defaultValue;
