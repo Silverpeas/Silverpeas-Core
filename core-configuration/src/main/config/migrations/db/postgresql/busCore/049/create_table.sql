@@ -71,10 +71,10 @@ CREATE TABLE ST_Space
     removedBy            int,
     lang                 char(2),
     isInheritanceBlocked int      DEFAULT (0) NOT NULL,
+    isCommunity          smallint DEFAULT (0) NOT NULL,
     look                 varchar(50),
     displaySpaceFirst    smallint,
-    isPersonal           smallint,
-    isCommunity          smallint DEFAULT (0) NOT NULL,
+    isPersonal           smallint
 );
 
 CREATE TABLE ST_SpaceI18N
