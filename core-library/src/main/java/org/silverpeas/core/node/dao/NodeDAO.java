@@ -673,7 +673,7 @@ public class NodeDAO extends AbstractDAO {
    * Get the children number of this node
    * @param con A connection to the database
    * @param nodePK the primary key of the node
-   * @return a int
+   * @return the number of node children.
    * @throws java.sql.SQLException if a SQL error occurs
    * @since 1.0
    */
@@ -729,7 +729,9 @@ public class NodeDAO extends AbstractDAO {
       fatherId = Integer.parseInt(nd.getFatherPK().getId());
       nbBrothers = getChildrenNumber(con, nd.getFatherPK());
     }
-    nd.setOrder(nbBrothers + 1);
+    if (nd.getOrder() == 0) {
+      nd.setOrder(nbBrothers + 1);
+    }
 
     newId = getNewId(nd);
     var query = JdbcSqlQuery.insertInto(nd.getNodePK().getTableName())
