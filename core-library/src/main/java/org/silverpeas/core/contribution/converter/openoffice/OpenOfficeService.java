@@ -63,7 +63,7 @@ public class OpenOfficeService implements Initialization {
   public void init() throws Exception {
     String home = settings.getString(OPENOFFICE_HOME, null);
     String ports = settings.getString(OPENOFFICE_PORT, "");
-    String host = settings.getString(OPENOFFICE_HOST);
+    String host = settings.getString(OPENOFFICE_HOST, "");
     long taskQueueTimeout = settings.getLong(OPENOFFICE_QUEUE_TIMEOUT, DEFAULT_TASK_QUEUE_TIMEOUT);
     long taskExecutionTimeout = settings.getLong(OPENOFFICE_EXECUTION_TIMEOUT,
         DEFAULT_TASK_EXECUTION_TIMEOUT);
