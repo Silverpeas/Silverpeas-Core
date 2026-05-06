@@ -359,7 +359,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addOfficeFeatures() {
     addWebListener(OfficeServiceInitializationListener.class);
-    addMavenDependencies("org.apache.commons:commons-exec", "org.jodconverter:jodconverter-local");
+    addMavenDependencies("org.apache.commons:commons-exec", "org.jodconverter:jodconverter-local","org.jodconverter:jodconverter-remote");
     addPackages(true, "org.silverpeas.core.contribution.converter");
     addAsResource("org/silverpeas/converter");
     return this;
