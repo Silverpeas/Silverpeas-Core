@@ -88,14 +88,10 @@
     <dependency>
       <groupId>org.jodconverter</groupId>
       <artifactId>jodconverter-local</artifactId>
-      <version>4.4.11</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.jodconverter</groupId>
       <artifactId>jodconverter-remote</artifactId>
-      <version>4.4.11</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
