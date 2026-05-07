@@ -71,26 +71,24 @@ public class OpenOfficeService implements Initialization {
         .map(String::trim)
         .mapToInt(Integer::parseInt)
         .toArray();
-    switch (host)
-    {
-      case "":
-        LocalOfficeManager.Builder localBuilder = LocalOfficeManager.builder()
-        .install()
-        .officeHome(home)
-        .portNumbers(portNumbers)
-        .taskExecutionTimeout(taskExecutionTimeout)
-        .taskQueueTimeout(taskQueueTimeout);
-        officeManager = localBuilder.build();
-        break;
-      default:
-        final SslConfig sslConfig = new SslConfig();
-        sslConfig.setEnabled(true);
-        officeManager =
-            RemoteOfficeManager.builder()
-                .urlConnection(host)
-                .sslConfig(sslConfig)
-                .build();
-        break;
+    if (host.startsWith("https://")) {
+      final SslConfig sslConfig = new SslConfig();
+      sslConfig.setEnabled(true);
+      officeManager =
+          RemoteOfficeManager.builder()
+              .urlConnection(host)
+              .sslConfig(sslConfig)
+              .taskExecutionTimeout(taskExecutionTimeout)
+              .taskQueueTimeout(taskQueueTimeout)
+              .build();
+    } else {
+      LocalOfficeManager.Builder localBuilder = LocalOfficeManager.builder()
+          .install()
+          .officeHome(home)
+          .portNumbers(portNumbers)
+          .taskExecutionTimeout(taskExecutionTimeout)
+          .taskQueueTimeout(taskQueueTimeout);
+      officeManager = localBuilder.build();
     }
     officeManager.start();
   }
