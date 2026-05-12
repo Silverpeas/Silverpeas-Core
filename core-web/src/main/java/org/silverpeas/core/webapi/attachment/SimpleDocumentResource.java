@@ -28,6 +28,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -50,6 +51,7 @@ import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
 import org.silverpeas.core.jcr.webdav.WebDavTokenGenerator;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -78,6 +80,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
   private static final String DOCUMENT_PATH_NODE = "document";
 
+  @Inject
+  private AttachmentService attachmentService;
+  
   @PathParam("id")
   private String simpleDocumentId;
 
@@ -102,7 +107,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   }
 
   /**
-   * Deletes the the specified document.
+   * Deletes the specified document.
    */
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
@@ -110,11 +115,11 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(null);
     document.setUpdatedBy(getUser().getId());
-    AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
+    attachmentService.deleteAttachment(document);
   }
 
   /**
-   * Deletes the the specified document.
+   * Deletes the specified content of the document, written in the specified language.
    *
    * @param lang the lang of the content to be deleted.
    */
@@ -124,7 +129,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   public void deleteContent(final @PathParam("lang") String lang) {
     ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(lang);
-    AttachmentServiceProvider.getAttachmentService().removeContent(document, lang, false);
+    attachmentService.removeContent(document, lang, false);
   }
 
   /**
@@ -235,7 +240,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     if (!isPublic) {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
-    AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
+    attachmentService.unlock(unlockContext);
     if (isWebdav) {
       WebDavTokenGenerator.getFor(getUser()).deleteToken(document.getId());
     }
@@ -245,15 +250,15 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       final boolean isWebdav) {
     if (document.isVersioned()) {
       File content = new File(document.getAttachmentPath());
-      AttachmentServiceProvider.getAttachmentService()
+      attachmentService
           .lock(document.getId(), getUser().getId(), document.getLanguage());
-      AttachmentServiceProvider.getAttachmentService()
+      attachmentService
           .updateAttachment(document, content, true, true);
     } else {
       if (isWebdav) {
         WebdavServiceProvider.getWebdavService().updateDocumentContent(document);
       }
-      AttachmentServiceProvider.getAttachmentService().updateAttachment(document, true, true);
+      attachmentService.updateAttachment(document, true, true);
     }
   }
 
@@ -273,7 +278,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       document.edit(getUser().getId());
     }
 
-    AttachmentServiceProvider.getAttachmentService().updateAttachment(document, content, true,
+    attachmentService.updateAttachment(document, content, true,
         true);
     content.close();
     FileUtils.deleteQuietly(tempFile);
@@ -348,26 +353,26 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Locks the specified document for exclusive edition.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise..
+   * otherwise.
    */
   @PUT
   @Path("lock/{lang}")
   @Produces(MediaType.APPLICATION_JSON)
   public String lock(@PathParam("lang") final String language) {
-    boolean result = AttachmentServiceProvider.getAttachmentService().lock(getSimpleDocumentId(),
+    boolean result = attachmentService.lock(getSimpleDocumentId(),
         getUser().getId(), language);
     return MessageFormat.format("'{'\"status\":{0}}", result);
   }
 
   private List<SimpleDocument> getListDocuments(SimpleDocument document) {
     return
-        AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
+        attachmentService.listDocumentsByForeignKeyAndType(
             new ResourceReference(document.getForeignId(), getComponentId()), document.getDocumentType(),
             DEFAULT_LANGUAGE);
   }
 
   private String reorderDocuments(List<SimpleDocument> docs) {
-    AttachmentServiceProvider.getAttachmentService().reorderDocuments(docs);
+    attachmentService.reorderDocuments(docs);
     return MessageFormat.format("'{'\"status\":{0}}", true);
   }
 
@@ -375,7 +380,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Moves the specified document up in the list.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise..
+   * otherwise.
    */
   @PUT
   @Path("moveUp")
@@ -388,7 +393,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Moves the specified document down in the list.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise..
+   * otherwise.
    */
   @PUT
   @Path("moveDown")
@@ -409,11 +414,11 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Unlocks the specified document for exclusive edition.
    *
    * @param force if the unlocking has to be forced.
-   * @param webdav if the unlock is performed while a WebDAV access.
+   * @param webdav if the unlocking is performed while a WebDAV access.
    * @param privateVersion if the document is a private version.
-   * @param comment a comment about the unlock.
+   * @param comment a comment about the document unlocking.
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise..
+   * otherwise.
    */
   @POST
   @Path("unlock")
@@ -434,7 +439,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     if (privateVersion) {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
-    boolean result = AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
+    boolean result = attachmentService.unlock(unlockContext);
     if (result) {
       WebDavTokenGenerator.getFor(getUser()).deleteToken(document.getId());
     }
@@ -448,7 +453,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @param comment comment about the version state switching.
    * @param version the new version state.
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise..
+   * otherwise.
    */
   @PUT
   @Path("switchState")
@@ -465,8 +470,8 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       }
       pk = lastPublicVersion.getPk();
     }
-    pk = AttachmentServiceProvider.getAttachmentService().changeVersionState(pk, comment);
-    document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk,
+    pk = attachmentService.changeVersionState(pk, comment);
+    document = attachmentService.searchDocumentById(pk,
         DEFAULT_LANGUAGE);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         true, document.getOldSilverpeasId(), document.getId());
@@ -483,7 +488,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
     // Performing the request
     SimpleDocument document = getSimpleDocument(null);
-    AttachmentServiceProvider.getAttachmentService()
+    attachmentService
         .switchAllowingDownloadForReaders(document.getPk(), allowed);
 
     // JSON Response.
@@ -503,7 +508,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
     // Performing the request
     SimpleDocument document = getSimpleDocument(null);
-    AttachmentServiceProvider.getAttachmentService()
+    attachmentService
         .switchEnableDisplayAsContent(document.getPk(), enabled);
 
     // JSON Response.
@@ -523,7 +528,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
     // Performing the request
     SimpleDocument document = getSimpleDocument(null);
-    AttachmentServiceProvider.getAttachmentService()
+    attachmentService
         .switchEnableEditSimultaneously(document.getPk(), enabled);
 
     // JSON Response.
@@ -540,7 +545,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    */
   private SimpleDocument getSimpleDocument(String lang) {
     String language = (lang == null ? DEFAULT_LANGUAGE : lang);
-    SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
+    SimpleDocument attachment = attachmentService.
         searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
     if (attachment == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
