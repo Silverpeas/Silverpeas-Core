@@ -31,7 +31,7 @@ jobs:
 
       - name: Black Duck Security Scan
         id: black-duck-security-scan
-        uses: blackduck-inc/black-duck-security-scan@v2
+        uses: blackduck-inc/black-duck-security-scan@v2.9.0
         with:
           ### SCANNING: Required fields
           blackducksca_url: ${{ vars.BLACKDUCKSCA_URL }}
