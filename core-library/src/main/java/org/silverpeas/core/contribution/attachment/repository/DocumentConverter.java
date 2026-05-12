@@ -87,10 +87,6 @@ class DocumentConverter extends AbstractJcrConverter {
 
     try {
       String path = rootVersionNode.getPath();
-
-      Version baseVersion = versionManager.getBaseVersion(path);
-      String baseVersionId = baseVersion == null ? "" : baseVersion.getIdentifier();
-
       VersionHistory history = versionManager.getVersionHistory(path);
       VersionIterator versionsIterator = history.getAllLinearVersions();
       // VersionIterator#getSize() support depends on the JCR implementation: if it isn't supported,
@@ -105,9 +101,6 @@ class DocumentConverter extends AbstractJcrConverter {
       }
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
-        if (!baseVersionId.isEmpty() && baseVersionId.equals(version.getIdentifier())) {
-          continue;
-        }
         SimpleDocumentVersion versionDocument =
             new SimpleDocumentVersion(fillDocument(version.getFrozenNode(), lang),
                 historisedDocument);
