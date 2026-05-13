@@ -111,7 +111,7 @@
       spProgressMessage.show();
       const value = sp.element.querySelector('#domainUserFilterRule').value;
       return sp.ajaxRequest('domainModifyUserFilter')
-          .withParam('domainUserFilterRule', encodeURIComponent(value))
+          .withParam('domainUserFilterRule', value.escapeHTML())
           .withParam('action', action)
           .withParam('X-ATKN', '${requestScope["X-ATKN"]}')
           .send()
