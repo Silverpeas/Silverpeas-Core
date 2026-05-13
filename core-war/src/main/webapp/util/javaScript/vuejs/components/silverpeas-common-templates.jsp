@@ -30,10 +30,13 @@
 <%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <c:set var="language" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
-<jsp:useBean id="language" type="java.lang.String"/>
+<c:if test="${silfn:isNotDefined(language)}">
+  <c:set var="language" value="<%=I18NHelper.getDefaultLanguage() %>"/>
+</c:if>
 <fmt:setLocale value="${language}"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
 
+<jsp:useBean id="language" type="java.lang.String"/>
 <c:set var="allUserLanguagesAsJsArray"><%=Optional
     .of(language)
     .map(l -> JSONCodec.encodeArray(a -> {
