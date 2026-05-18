@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.attachment.repository;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -36,11 +35,12 @@ import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.persistence.jcr.util.NodeIterable;
 import org.silverpeas.core.persistence.jcr.util.PropertyIterable;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.Pair;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.jcr.*;
 import javax.jcr.query.QueryManager;
@@ -69,6 +69,7 @@ import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
  * Repository of documents attached to some contributions in Silverpeas. This repository abstracts
  * and wraps the use of the JCR by providing an API to work with {@link SimpleDocument} objects. It
  * is a low-level technical class.
+ *
  * @author ehugonnet
  */
 @Repository
@@ -102,6 +103,7 @@ public class DocumentRepository {
   /**
    * Creates the specified document attached to a contribution in Silverpeas. The contribution has
    * to be referred by the {@link SimpleDocument#getForeignId()} identifier.
+   *
    * @param session a session in the JCR
    * @param document the document to create in the JCR
    * @return the unique identifier of the document
@@ -137,6 +139,7 @@ public class DocumentRepository {
 
   /**
    * Moves the document to another attached contribution.
+   *
    * @param session a session in the JCR
    * @param document an exising document in the JCR to move from its actual contribution to another
    * one.
@@ -187,6 +190,7 @@ public class DocumentRepository {
   /**
    * Copies the document to another contribution. The operation duplicates the document and attaches
    * it to the other contribution.
+   *
    * @param session the session in the JCR.
    * @param document the document to copy.
    * @param destination the reference to the other contribution. The contribution can be in another
@@ -225,6 +229,7 @@ public class DocumentRepository {
   /**
    * Copies the versioned document to another contribution in Silverpeas. The operation duplicates
    * the document and all of its versions, and attaches them to the other contribution.
+   *
    * @param session a session in the JCR
    * @param document the document with all of its versions to copy
    * @param destination the reference to the other contribution. It can be in another component
@@ -335,6 +340,7 @@ public class DocumentRepository {
    * Updates the documents in the JCR. The specified document contains the new data with which the
    * document in the JCR has to be updated. The document in the JCR is referred by the unique
    * identifier of the specified document.
+   *
    * @param session a session in the JCR
    * @param document the document to update
    * @param updateLastModifiedData a flag indicating if the modification date and the last modifier
@@ -357,6 +363,7 @@ public class DocumentRepository {
    * Saves the optional slv:forbiddenDownloadForRoles document property (a mixin). This saving works
    * with versionable documents without changing the major and minor version. This property is
    * transverse between all versions.
+   *
    * @param session a session in the JCR
    * @param document the document for which download has to be forbidden for some user roles.
    * @throws RepositoryException if an error occurs while saving the mixin.
@@ -371,6 +378,7 @@ public class DocumentRepository {
    * Saves the optional slv:displayableAsContent simple document property (a mixin). This saving
    * works with versionable documents without changing the major and minor version. This property is
    * transverse between all versions.
+   *
    * @param session a session in the JCR
    * @param document the document for which the content can be automatically displayed.
    * @throws RepositoryException if an error occurs while saving the mixin.
@@ -385,6 +393,7 @@ public class DocumentRepository {
    * Saves the optional slv:editableSimultaneously simple document property (a mixin). This saving
    * works with versionable documents without changing the major and minor version. This property is
    * transverse between all versions.
+   *
    * @param session a session in the JCR
    * @param document the document for which the simultaneous edition can be done.
    * @throws RepositoryException if an error occurs while saving the mixin.
@@ -399,6 +408,7 @@ public class DocumentRepository {
    * Adds the document's clone id to the document even if it is locked. This saving works with
    * versionable documents without changing the major and minor version. This property is transverse
    * between all versions.
+   *
    * @param session the JCR session.
    * @param original the original document to be cloned.
    * @param clone the cone of the original document.
@@ -424,6 +434,7 @@ public class DocumentRepository {
   /**
    * Centralization of a simple update. This saving works with versionable documents without
    * changing the major and minor version. This property is transverse between all versions.
+   *
    * @param session the current session.
    * @param document the aimed document which will be updated on master version.
    * @param consumer the consumer of a checked documentNode.
@@ -436,6 +447,7 @@ public class DocumentRepository {
 
   /**
    * Centralization of the mechanism to update a property
+   *
    * @param session the current session.
    * @param document the aimed document without taking care of the version.
    * @param consumer the consumer of a checked documentNode.
@@ -457,6 +469,7 @@ public class DocumentRepository {
 
   /**
    * Deletes the document in the JCR referred by the specified identifier.
+   *
    * @param session a session in the JCR.
    * @param documentPk the unique identifier of the document to delete.
    * @throws RepositoryException if the deletion of the document in the JCR fails.
@@ -478,6 +491,7 @@ public class DocumentRepository {
    * with version management, then the whole versions history is removed and the document becomes a
    * simple document with no more version history. If the document isn't versioned then a new public
    * version is created and the document becomes a document with a version history management.
+   *
    * @param session a session in the JCR
    * @param documentPk the id of the document.
    * @param comment the comment of the user about the first version in the case the versioning is
@@ -533,7 +547,7 @@ public class DocumentRepository {
           SilverLogger.getLogger(this)
               .warn(
                   "During version state removing, attempting to delete {0} which does not exist " +
-                      "whereas JCR is having a reference on it",
+                  "whereas JCR is having a reference on it",
                   currentDocumentDir.getParentFile().toString());
           return new File[0];
         });
@@ -585,6 +599,7 @@ public class DocumentRepository {
    * Finds the document referred by the specified identifier and written in the given language. The
    * document can be proposed in different languages, in this case the language parameter indicates
    * the version of the document to find.
+   *
    * @param session the session in the JCR.
    * @param documentPk the unique identifier of the document;
    * @param lang the language in which the document to find is written.
@@ -609,6 +624,7 @@ public class DocumentRepository {
    * they were uniquely identified by an identifier crafted by this database. After their transition
    * to the JCR, a new schema of unique identifier has been applied to them and a need to maintain a
    * map between old identifier and new one for older documents was required.
+   *
    * @param session the session in the JCR.
    * @param instanceId the unique instance of the component in which the document is managed.
    * @param oldSilverpeasId the old unique identifier of the document.
@@ -643,6 +659,7 @@ public class DocumentRepository {
 
   /**
    * The last document in an instance with the specified foreignId.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
@@ -667,6 +684,7 @@ public class DocumentRepository {
   /**
    * Get the minimum and maximum order indexes of attachments linked to a resource for a given
    * type.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
@@ -694,6 +712,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents of type attachment in an instance with the specified foreignId.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
@@ -710,6 +729,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents of any type in an instance with the specified foreignId.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
@@ -725,6 +745,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance with the specified foreignId.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
@@ -742,6 +763,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance with the specified type.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param type the type of required documents.
@@ -758,6 +780,7 @@ public class DocumentRepository {
   /**
    * Search all the documents related to the component instance identified by the specified
    * identifier.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param language the language in which the documents are required.
@@ -772,6 +795,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance with the specified owner.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param owner the id of the user owning the document.
@@ -793,6 +817,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents of the specified type in an instance with the specified foreignId.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
@@ -819,6 +844,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents of any type in an instance with the specified foreignId.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
@@ -838,6 +864,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents of the specified type in an instance with the specified foreignId.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param type the type of document.
@@ -862,6 +889,7 @@ public class DocumentRepository {
   /**
    * Search all the documents related to the component instance identified by the specified
    * identifier.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @return an ordered list of the documents.
@@ -884,6 +912,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance which are expiring at the specified date.
+   *
    * @param session the current JCR session.
    * @param expiryDate the date when the document reservation should expire.
    * @param language the language in which the documents are required.
@@ -898,6 +927,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance which are locked at the alert date.
+   *
    * @param session the current JCR session.
    * @param alertDate the date when the document reservation should send an alert.
    * @param language the language in which the documents are required.
@@ -912,6 +942,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance expiring at the specified date.
+   *
    * @param session the current JCR session.
    * @param expiryDate the date when the document reservation should expire.
    * @return an ordered list of the documents.
@@ -955,6 +986,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance requiring to be unlocked at the specified date.
+   *
    * @param session the current JCR session.
    * @param expiryDate the date when the document reservation should expire.
    * @param language the language in which the documents are required.
@@ -969,6 +1001,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance requiring to be unlocked at the specified date.
+   *
    * @param session the current JCR session.
    * @param expiryDate the date when the document reservation should expire.
    * @return an ordered list of the documents.
@@ -986,7 +1019,8 @@ public class DocumentRepository {
         session.getValueFactory().createValue(expiry));
     Ordering order = factory.ascending(
         factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, expiryDateComparison, new Ordering[]{order},
+    QueryObjectModel query = factory.createQuery(source, expiryDateComparison,
+        new Ordering[]{order},
         null);
     QueryResult result = query.execute();
     return result.getNodes();
@@ -994,6 +1028,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance in a warning state at the specified date.
+   *
    * @param session the current JCR session.
    * @param alertDate the date when a warning is required.
    * @return an ordered list of the documents.
@@ -1005,6 +1040,7 @@ public class DocumentRepository {
 
   /**
    * Search all the documents in an instance with the specified owner.
+   *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param owner the id of the user owning the documents.
@@ -1018,13 +1054,14 @@ public class DocumentRepository {
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS,
         session.getRootNode().getPath() + instanceId + '/' +
-            DocumentType.attachment.getFolderName());
+        DocumentType.attachment.getFolderName());
     return getNodeIteratorByProperty(factory, source, childNodeConstraint, SLV_PROPERTY_OWNER,
         session.getValueFactory().createValue(owner));
   }
 
   /**
    * Search all the documents with the specified owner.
+   *
    * @param session the current JCR session.
    * @param owner the id of the user owning the documents.
    * @return an ordered list of the documents.
@@ -1041,6 +1078,7 @@ public class DocumentRepository {
 
   /**
    * Add the content.
+   *
    * @param session the current JCR session.
    * @param documentPk the document which content is to be added.
    * @param attachment the attachment metadata.
@@ -1061,6 +1099,7 @@ public class DocumentRepository {
 
   /**
    * Get the content.
+   *
    * @param session the current JCR session.
    * @param pk the document which content is to be added.
    * @param lang the content language.
@@ -1083,6 +1122,7 @@ public class DocumentRepository {
   /**
    * Remove the content for the specified language. If no other content exists, then the document
    * node is deleted.
+   *
    * @param session the current JCR session.
    * @param documentPk the document which content is to be removed.
    * @param language the language of the content which is to be removed.
@@ -1105,15 +1145,16 @@ public class DocumentRepository {
   }
 
   /**
-   * Checkout the specified document if it is versioned to create a new work in progress version.
-   * In the JCR the versioned documents are protected for direct modifications. The checking out
-   * mechanism is a way to create a working copy of the document on which the modification will
-   * be done. Once the modifications done, don't forget to invoke one of the checkin methods to
-   * create a new version of the document from its modified working copy.
+   * Checkout the specified document if it is versioned to create a new work in progress version. In
+   * the JCR the versioned documents are protected for direct modifications. The checking out
+   * mechanism is a way to create a working copy of the document on which the modification will be
+   * done. Once the modifications done, don't forget to invoke one of the checkin methods to create
+   * a new version of the document from its modified working copy.
    * <p>
    * Any non-versioned documents are by default modifiable and hence doesn't required to be
    * explicitly checked out.
    * </p>
+   *
    * @param session the session in the JCR
    * @param document the document to lock.
    * @param owner the user asking to checkout the node.
@@ -1135,6 +1176,7 @@ public class DocumentRepository {
   /**
    * Checkin the specified document if it is versioned to create a new version or to restore a
    * previous one. By using this method, the metadata of the content are always updated.
+   *
    * @param session the current JCR open session to perform actions.
    * @param document the document data from which all needed identifiers are retrieved.
    * @param restore true to restore the previous version if any.
@@ -1150,6 +1192,7 @@ public class DocumentRepository {
    * Checkin a document if it is versioned from a context into which a language content has just
    * been deleted. This method does not update the metadata of the content in order to obtain an
    * efficient content deletion.
+   *
    * @param session the current JCR open session to perform actions.
    * @param document the document data from which all needed identifiers are retrieved.
    * @return the document updated.
@@ -1163,6 +1206,7 @@ public class DocumentRepository {
   /**
    * Checkin the specified document if it is versioned to create a new version or to restore a
    * previous one.
+   *
    * @param session the current JCR open session to perform actions.
    * @param document the document data from which all needed identifiers are retrieved.
    * @param restore true to restore the previous version if any.
@@ -1182,15 +1226,11 @@ public class DocumentRepository {
     }
     if (document.isVersioned() && documentNode.isCheckedOut()) {
       if (restore) {
-        VersionIterator iter = session.getWorkspace()
-            .getVersionManager()
-            .getVersionHistory(document.getFullJcrPath())
-            .getAllVersions();
-        Version lastVersion = null;
-        while (iter.hasNext()) {
-          lastVersion = iter.nextVersion();
-        }
-        if (null != lastVersion) {
+        // In our case, the version history is linear, and we have only one single JCR workspace,
+        // so the base version is the last version
+        Version lastVersion =
+            session.getWorkspace().getVersionManager().getBaseVersion(document.getFullJcrPath());
+        if (lastVersion != null) {
           session.getWorkspace().getVersionManager().restore(lastVersion, true);
           return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
         }
@@ -1209,6 +1249,7 @@ public class DocumentRepository {
 
   /**
    * Check out the document.
+   *
    * @param node the node to check out.
    * @param owner the user  behind the operation
    * @throws RepositoryException if an error occurs in the JCR
@@ -1220,6 +1261,7 @@ public class DocumentRepository {
 
   /**
    * Check in the document.
+   *
    * @param documentNode the node to check in.
    * @param isMajor true if the new version is a major one - false otherwise.
    * @return the document for this new version.
@@ -1491,6 +1533,7 @@ public class DocumentRepository {
 
     /**
      * Gets first version and computes it if it does not yet exist.
+     *
      * @param version a version to register if none yet registered.
      * @return the already registered version if any, the given version otherwise.
      */
@@ -1501,6 +1544,7 @@ public class DocumentRepository {
     /**
      * Registers the given version, even if another one is already registered.
      * <p>The previous one registered if any is lost.</p>
+     *
      * @param version a version to register.
      */
     public static void set(final DocumentVersion version) {

@@ -29,7 +29,6 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
