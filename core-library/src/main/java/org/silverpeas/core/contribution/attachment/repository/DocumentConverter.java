@@ -24,24 +24,14 @@
 package org.silverpeas.core.contribution.attachment.repository;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocumentVersion;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
+import javax.jcr.*;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
@@ -57,12 +47,13 @@ import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfEditableSimultaneously;
-import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * A converter of node representing documents to {@link SimpleDocument} or
  * {@link HistorisedDocument} objects in Silverpeas.
+ *
  * @author ehugonnet
  */
 class DocumentConverter extends AbstractJcrConverter {
@@ -72,6 +63,7 @@ class DocumentConverter extends AbstractJcrConverter {
   /**
    * Builds from the root version node and from a language the object representation of a versioned
    * document and its history.
+   *
    * @param rootVersionNode the root version node (master).
    * @param lang the aimed content language.
    * @return the instance of a versioned document.
@@ -85,6 +77,9 @@ class DocumentConverter extends AbstractJcrConverter {
 
     try {
       String path = rootVersionNode.getPath();
+      // the base version is the current up-to-date version of the document (in our case, the
+      // latest one).
+      Version baseVersion = versionManager.getBaseVersion(path);
       VersionHistory history = versionManager.getVersionHistory(path);
       VersionIterator versionsIterator = history.getAllLinearVersions();
       // VersionIterator#getSize() support depends on the JCR implementation: if it isn't supported,
@@ -94,11 +89,18 @@ class DocumentConverter extends AbstractJcrConverter {
       int versionIndex = 0;
       SimpleDocumentVersion previousVersion = null;
       if (versionsIterator.hasNext()) {
-        // we skip the root version which is the eldest one in the history
+        // The root version is a null version that stores no state and simply serves as the
+        // eventual predecessor of all subsequent versions. So we skip the root version (the
+        // eldest one in the linear history)
         versionsIterator.nextVersion();
       }
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
+        if (baseVersion != null && version.getIdentifier().equals(baseVersion.getIdentifier())) {
+          // current state of the document = the base version in its history. So we can skip it
+          // in the build of the history of previous versions
+          continue;
+        }
         SimpleDocumentVersion versionDocument =
             new SimpleDocumentVersion(fillDocument(version.getFrozenNode(), lang),
                 historisedDocument);
@@ -136,9 +138,10 @@ class DocumentConverter extends AbstractJcrConverter {
       SimpleDocumentVersion version = document.getVersionIdentifiedBy(node.getIdentifier());
       if (version != null) {
         return new HistorisedDocumentVersion(version);
+      } else {
+        // last version / base version
+        return document;
       }
-      throw new PathNotFoundException(
-          "Version identified by " + parentNode.getIdentifier() + " has not been found.");
     }
     return fillDocument(node, lang);
   }
@@ -150,6 +153,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Browses the nodes with the specified iterator and converts each of them into to a document.
+   *
    * @param iter th NodeIterator to convert.
    * @param language the language of the wanted document.
    * @return a collection of SimpleDocument.
@@ -268,6 +272,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:forbiddenDownloadForRoles] optional property.
+   *
    * @param document the document for which download has to be enabled or disabled
    * @param documentNode the node representation of the document in the JCR
    * @throws RepositoryException if an error occurs in the JCR
@@ -290,6 +295,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:displayableAsContent] optional property.
+   *
    * @param document the document for which the rendering of its content has to be enabled or
    * disabled.
    * @param documentNode the node representation of the document in the JCR
@@ -312,6 +318,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:editableSimultaneously] optional property.
+   *
    * @param document the document for which the simultaneous edition has to be enabled or disabled.
    * @param documentNode the node representation of the document in the JCR
    * @throws RepositoryException if an error occurs in the JCR
