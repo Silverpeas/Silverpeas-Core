@@ -52,7 +52,7 @@
 <%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
 <%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page import="org.silverpeas.kernel.bundle.SettingBundle" %>
-<%@ page import="javax.ws.rs.core.UriBuilder" %>
+<%@ page import="jakarta.ws.rs.core.UriBuilder" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%

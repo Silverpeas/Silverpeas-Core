@@ -34,13 +34,9 @@
 
 <%@ page isErrorPage="true" %>
 <%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle"%>
-<%@ page import="javax.ejb.CreateException"%>
-<%@ page import="javax.ejb.FinderException"%>
-<%@ page import="javax.ejb.RemoveException"%>
-<%@ page import="javax.naming.NamingException"%>
 <%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.rmi.RemoteException"%>
-<%@ page import="java.sql.SQLException"%>
+<%@ page import="javax.naming.NamingException" %>
+<%@ page import="java.sql.SQLException" %>
 
 
 <%@ include file="checkSilvermail.jsp" %>
@@ -63,15 +59,6 @@ private String displayNetworkError() {
 private String displayDatabaseError() {
   return message.getString("ProblemeBaseDonnees");
 }
-private String displayEJBCreationError() {
-  return message.getString("ProblemeCreationEJB");
-}
-private String displayEJBFinderError() {
-  return message.getString("ProblemeRechercheEJB");
-}
-private String displayEJBRemoveError() {
-  return message.getString("ProblemeDestructionEJB");
-}
 private String displayUnexpectedError() {
   return message.getString("ProblemeInattenduRencontre");
 }
@@ -93,18 +80,6 @@ private String displayUnexpectedError() {
 	}
         else if (exception instanceof SQLException) {
 	    out.println(displayDatabaseError());
-	}
-        else if (exception instanceof RemoteException) {
-	    out.println(displayNetworkError());
-	}
-        else if (exception instanceof CreateException) {
-	    out.println(displayEJBCreationError());
-	}
-        else if (exception instanceof FinderException) {
-	    out.println(displayEJBFinderError());
-	}
-        else if (exception instanceof RemoveException) {
-	    out.println(displayEJBRemoveError());
 	}
         else {
             out.println(displayUnexpectedError());

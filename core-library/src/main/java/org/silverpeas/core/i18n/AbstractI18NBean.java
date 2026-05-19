@@ -49,7 +49,6 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   @XmlElement(namespace = "http://www.silverpeas.org/exchange")
   private String description = "";
 
-  private transient I18n i18n;
   private String language;
   private String translationId = null;
   private transient Map<String, T> translations = new HashMap<>(3);
@@ -164,7 +163,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   }
 
   private T selectTranslation(String language) {
-    final String lang = getI18n().checkLanguage(language);
+    final String lang = I18NHelper.checkLanguage(language);
     T translation = getTranslations().get(lang);
     if (translation == null) {
       translation = getNextTranslation();
@@ -173,15 +172,15 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   }
 
   public String getLanguage() {
-    if (getI18n().isEnabled() && StringUtil.isNotDefined(language)) {
-      return getI18n().getDefaultLanguage();
+    if (StringUtil.isNotDefined(language)) {
+      language = I18NHelper.getDefaultLanguage();
     }
     return language;
   }
 
   @Override
   public void setLanguage(String language) {
-    this.language = StringUtil.isDefined(language) ? language : getI18n().getDefaultLanguage();
+    this.language = StringUtil.isDefined(language) ? language : I18NHelper.getDefaultLanguage();
   }
 
   public boolean isRemoveTranslation() {
@@ -250,7 +249,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   public void addTranslation(T translation) {
     String lang = translation.getLanguage();
     if (!StringUtil.isDefined(lang)) {
-      lang = getI18n().getDefaultLanguage();
+      lang = I18NHelper.getDefaultLanguage();
       translation.setLanguage(lang);
     }
     translations.put(lang, translation);
@@ -259,7 +258,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   @Override
   public T getNextTranslation() {
     Map<String, T> l10n = getTranslations();
-    return getI18n().getSupportedLanguageCodes()
+    return I18NHelper.getAllSupportedLanguages()
         .stream()
         .map(l10n::get)
         .filter(Objects::nonNull)
@@ -281,10 +280,4 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     return languageToDisplay;
   }
 
-  private I18n getI18n() {
-    if (i18n == null) {
-      i18n = I18n.get();
-    }
-    return i18n;
-  }
 }
