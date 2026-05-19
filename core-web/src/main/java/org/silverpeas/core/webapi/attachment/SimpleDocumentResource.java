@@ -292,7 +292,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @GET
   @Path("translations")
   @Produces(MediaType.APPLICATION_JSON)
-  public SimpleDocumentEntity[] getDocumentTranslations() {
+  public List<SimpleDocumentEntity> getDocumentTranslations() {
     var supportedLanguages = i18n.getSupportedLanguageCodes();
     List<SimpleDocumentEntity> result = new ArrayList<>(supportedLanguages.size());
     for (String lang : supportedLanguages) {
@@ -302,7 +302,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         result.add(SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri));
       }
     }
-    return result.toArray(new SimpleDocumentEntity[0]);
+    return result;
   }
 
   /**
