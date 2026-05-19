@@ -1119,12 +1119,12 @@ public class DocumentRepository {
    * be done. Once the modifications done, don't forget to invoke one of the checkin methods to
    * create a new version of the document from its modified working copy.
    * <p>
-   * Any non-versioned documents are by default modifiable and hence doesn't required to be
+   * Any non-versioned documents are by default modifiable and hence doesn't require to be
    * explicitly checked out.
    * </p>
    * @param session the session in the JCR
    * @param document the document to lock.
-   * @param owner the user asking to checkout the node.
+   * @param owner the user asking to check out the node.
    * @return true if node has be checked out, false otherwise.
    * @throws RepositoryException if an error occurs in the JCR
    */
@@ -1190,15 +1190,11 @@ public class DocumentRepository {
     }
     if (document.isVersioned() && documentNode.isCheckedOut()) {
       if (restore) {
-        VersionIterator iter = session.getWorkspace()
-            .getVersionManager()
-            .getVersionHistory(document.getFullJcrPath())
-            .getAllVersions();
-        Version lastVersion = null;
-        while (iter.hasNext()) {
-          lastVersion = iter.nextVersion();
-        }
-        if (null != lastVersion) {
+        // In our case, the version history is linear, and we have only one single JCR workspace,
+        // so the base version is the last version
+        Version lastVersion =
+            session.getWorkspace().getVersionManager().getBaseVersion(document.getFullJcrPath());
+        if (lastVersion != null) {
           session.getWorkspace().getVersionManager().restore(lastVersion, true);
           return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
         }
@@ -1469,6 +1465,7 @@ public class DocumentRepository {
    * <p>
    * BE CAREFUL: the repository of this manager is the thread memory, so it MUST be used into a try
    * finally statement:
+   * <code>
    * <pre>
    *   try {
    *     ...
@@ -1477,7 +1474,10 @@ public class DocumentRepository {
    *   } finally {
    *     FirstVersionManager.clear();
    *   }
-   * </pre> or
+   * </pre>
+   * </code>
+   * or
+   * <code>
    * <pre>
    *   try {
    *     ...
@@ -1487,6 +1487,7 @@ public class DocumentRepository {
    *     FirstVersionManager.clear();
    *   }
    * </pre>
+   * </code>
    * </p>
    */
   public static class FirstVersionManager {

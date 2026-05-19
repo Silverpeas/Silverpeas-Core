@@ -138,9 +138,10 @@ class DocumentConverter extends AbstractJcrConverter {
       SimpleDocumentVersion version = document.getVersionIdentifiedBy(node.getIdentifier());
       if (version != null) {
         return new HistorisedDocumentVersion(version);
+      } else {
+        // last version / base version
+        return document;
       }
-      throw new PathNotFoundException(
-          "Version identified by " + parentNode.getIdentifier() + " has not been found.");
     }
     return fillDocument(node, lang);
   }
