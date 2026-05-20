@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -23,19 +22,36 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<migration module="fileSharing" order="2"
-           xmlns="http://silverpeas.org/xml/ns/migration"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://silverpeas.org/xml/ns/migration https://www.silverpeas.org/xsd/migration.xsd">
+--%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 
-  <current version="005">
-    <script name="create_table.sql" type="sql"/>
-    <script name="create_constraint.sql" type="sql"/>
-  </current>
-
-  <upgrade fromVersion="004">
-    <script name="alter_table.sql" type="sql"/>
-  </upgrade>
-
-</migration>
+<%@ page isELIgnored="false" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
+<view:sp-page>
+  <fmt:setLocale value="${requestScope.userLanguage}"/>
+  <view:setBundle basename="org.silverpeas.sharing.multilang.fileSharingBundle"/>
+  <view:setBundle basename="org.silverpeas.sharing.settings.fileSharingIcons" var="icons"/>
+  <view:sp-head-part noLookAndFeel="true">
+    <style type="text/css">
+      td {
+        font-family: "Verdana", "Arial", sans-serif;
+        font-size: 10px
+      }
+      fieldset {
+        vertical-align: middle;
+        text-align: center;
+      }
+      legend {
+        display: none;
+      }
+    </style>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <fieldset>
+      <fmt:message key="sharing.invalideSecurityCode"/>
+      <legend></legend>
+    </fieldset>
+  </view:sp-body-part>
+</view:sp-page>
