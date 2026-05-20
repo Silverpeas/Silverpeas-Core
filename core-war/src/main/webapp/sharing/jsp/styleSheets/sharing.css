@@ -70,3 +70,7 @@ body{
   padding-right:5px;
   text-align:center;
 }
+
+#securityCheck {
+  margin:10px auto 10px;
+}
