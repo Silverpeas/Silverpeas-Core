@@ -49,14 +49,14 @@ public class SimpleFileTicket extends Ticket {
   }
 
   public SimpleFileTicket(int sharedObjectId, String componentId, UserDetail creator,
-      Date creationDate, Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
+                          Date creationDate, Date endDate, int nbAccessMax, String securityCode) {
+    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax, securityCode);
     this.sharedObjectType = FILE_TYPE;
   }
 
   public SimpleFileTicket(int sharedObjectId, String componentId, String creatorId,
-      Date creationDate, Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
+                          Date creationDate, Date endDate, int nbAccessMax, String securityCode) {
+    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax, securityCode);
     this.sharedObjectType = FILE_TYPE;
   }
 
@@ -67,8 +67,8 @@ public class SimpleFileTicket extends Ticket {
   }
 
   public SimpleFileTicket(String key, int sharedObjectId, String componentId, UserDetail creator,
-      Date creationDate, Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
+                          Date creationDate, Date endDate, int nbAccessMax, String securityCode) {
+    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax, securityCode);
     setId(key);
   }
 
