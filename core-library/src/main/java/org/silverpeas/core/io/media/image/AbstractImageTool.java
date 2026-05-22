@@ -109,11 +109,10 @@ public abstract class AbstractImageTool implements ImageTool {
         semaphore.acquire();
         convert(source, destination, toMap(options), toSet(directives));
       } catch (final Exception e) {
-        SilverLogger.getLogger(this).silent(e);
+        SilverLogger.getLogger(this).warn("Please verify a possible problem during an image conversion for {0}",e);
         if (e instanceof InterruptedException) {
           Thread.currentThread().interrupt();
         }
-        throw new ImageToolException(e);
       } finally {
         semaphore.release();
       }
