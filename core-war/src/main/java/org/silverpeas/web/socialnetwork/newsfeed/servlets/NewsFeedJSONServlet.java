@@ -120,9 +120,8 @@ public class NewsFeedJSONServlet extends HttpServlet {
         map.putAll(getInformation(view, userId, type, anotherUserId, period));
         nbTries++;
       }
-
     } catch (Exception ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+      SilverLogger.getLogger(this).warn(ex.getMessage(), ex);
     }
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json");

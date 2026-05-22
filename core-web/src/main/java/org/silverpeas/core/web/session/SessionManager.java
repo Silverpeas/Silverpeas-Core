@@ -249,7 +249,7 @@ public class SessionManager implements SessionManagement, Initialization {
       defaultServerEventNotifier.notify(UserSessionServerEvent.aClosingOneFor(si));
       userSessionNotifier.fire(new UserSessionEvent(si));
     } catch (Exception ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+      SilverLogger.getLogger(this).warn("Problem during removeUserSession",ex.getMessage(), ex);
     }
   }
 
