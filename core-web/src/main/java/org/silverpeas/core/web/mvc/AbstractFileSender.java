@@ -33,6 +33,7 @@ import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -56,6 +57,8 @@ public abstract class AbstractFileSender extends HttpServlet {
       } catch (IOException e) {
         SilverLogger.getLogger(this).error("file: " + file.getAbsolutePath(), e);
         displayWarningHtmlCode(response);
+      } catch (WebApplicationException wae) {
+        SilverLogger.getLogger(this).warn("Possible interruption upload by client {0}", wae);
       }
     } else {
       response.setHeader("Content-Length", "0");
