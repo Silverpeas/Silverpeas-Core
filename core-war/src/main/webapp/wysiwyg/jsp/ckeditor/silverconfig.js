@@ -15,6 +15,8 @@ CKEDITOR.editorConfig = function( config )
   config.allowedContent = true;
   config.toolbarCanCollapse = true;
   config.disableNativeSpellChecker = false;
+  config.templates = 'Gallery';
+  config.templates_files = ['/silverpeas/wysiwyg/jsp/gallery/templatesGallery.js'];
   //config.forcePasteAsPlainText = true;
 
   config.stylesSet = [
