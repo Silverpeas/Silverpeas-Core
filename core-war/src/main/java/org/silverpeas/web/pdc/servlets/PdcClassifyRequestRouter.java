@@ -311,7 +311,12 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
         pdcFPM.init(pdcFieldName, pdcFieldPositions, pdcAxis);
         destination = getDestination(action, pdcSC, request);
       } else {
-        destination = "/pdcPeas/jsp/" + function;
+        // Validate function parameter to prevent path traversal
+        if (function != null && function.matches("[a-zA-Z0-9_]+\\.jsp")) {
+          destination = "/pdcPeas/jsp/" + function;
+        } else {
+          throw new IllegalArgumentException("Invalid function parameter: " + function);
+        }
       }
     } catch (Exception exce_all) {
       request.setAttribute("jakarta.servlet.jsp.jspException", exce_all);

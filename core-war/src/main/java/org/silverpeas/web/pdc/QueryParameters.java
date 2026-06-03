@@ -38,10 +38,12 @@ import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class QueryParameters implements java.io.Serializable {
 
@@ -222,13 +224,18 @@ public class QueryParameters implements java.io.Serializable {
           String fieldQuery = fieldValue.trim();
           if (fieldValue.contains("##")) {
             String operator = FileUploadUtil.getParameter(items,fieldName+"Operator");
+            // Validate operator against whitelist to prevent query injection
+            if (operator == null ||
+                !Arrays.asList("AND", "OR", "NOT").contains(operator.toUpperCase())) {
+              operator = "AND"; // default safe value
+            }
             context.setSearchOperator(fieldName, operator);
             fieldQuery = fieldQuery.replace("##", " "+operator+" ");
           } else if (field instanceof PdcField) {
             // search on the PdC by a form: in this case the search will be performed against the
             // index and as such, we need to use a regexp to select all the resources having at least
             // the queried position(s) on the PdC
-            fieldQuery = "Regexp:([0-9,;]+\\.)*" + fieldQuery + "(\\.[0-9,;]+)*";
+            fieldQuery = "Regexp:([0-9,;]+\\.)*" + Pattern.quote(fieldQuery) + "(\\.[0-9,;]+)*";
           }
           addXmlSubQuery(templateName + "$$" + fieldName, fieldQuery);
         }
