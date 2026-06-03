@@ -370,7 +370,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         setDefaultDataToNavigation(false, request, pdcSC);
         destination = getDestinationForResults(pdcSC);
       } else {
-        destination = "/pdcPeas/jsp/" + function;
+        // Validate function parameter to prevent path traversal
+        if (function != null && function.matches("[a-zA-Z0-9_]+\\.jsp")) {
+          destination = "/pdcPeas/jsp/" + function;
+        } else {
+          throw new IllegalArgumentException("Invalid function parameter: " + function);
+        }
       }
       ThesaurusHelper.setJargonInfoInRequest(pdcSC, request, pdcSC.getActiveThesaurus());
     } catch (Exception e) {
@@ -700,7 +705,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
   private String getDestinationForResults(PdcSearchSessionController pdcSC) {
     if (StringUtil.isDefined(pdcSC.getResultPage())) {
-      return "/pdcPeas/jsp/" + pdcSC.getResultPage();
+      String resultPage = pdcSC.getResultPage();
+      // Validate result page to prevent path traversal
+      if (resultPage.matches("[a-zA-Z0-9_]+\\.jsp")) {
+        return "/pdcPeas/jsp/" + resultPage;
+      }
+      throw new IllegalArgumentException("Invalid result page parameter: " + resultPage);
     }
     return GLOBAL_RESULT_DEST;
   }
