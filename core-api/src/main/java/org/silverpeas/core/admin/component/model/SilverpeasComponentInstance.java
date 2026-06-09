@@ -60,6 +60,10 @@ public interface SilverpeasComponentInstance extends Identifiable, Nameable, Ser
    * Gets the identity of the component instance referred by the specified unique global identifier.
    * The identity of a component instance is serialized in its unique identifier. The identity can
    * be either the one of a shared component instance or the one of a personal component instance.
+   * If the specified identifier doesn't refer a valid component instance identifier, then an
+   * {@link IllegalArgumentException} is thrown; This is why it is recommended to check the
+   * serialized form of the identifier with the
+   * {@link SilverpeasComponentInstance#isIdentityValid(String)} method.
    *
    * @param componentInstanceId the unique global identifier of a component instance. It must be
    * non-null and well-formed.
@@ -71,6 +75,17 @@ public interface SilverpeasComponentInstance extends Identifiable, Nameable, Ser
   @NonNull
   static Identity getIdentity(@NonNull final String componentInstanceId) {
     return new ComponentInstanceIdentityFactory().create(componentInstanceId);
+  }
+
+  /**
+   * Is the specified component instance identity is valid?
+   * @param componentInstanceId the serialized form of a component instance identity.
+   * @return true if the specified identifier refers a valid identifier of a Silvepreas component
+   * instance.
+   */
+  static boolean isIdentityValid(@NonNull final String componentInstanceId) {
+    return StringUtil.isDefined(componentInstanceId) &&
+        new ComponentInstanceIdentityFactory().isValid(componentInstanceId);
   }
 
   /**

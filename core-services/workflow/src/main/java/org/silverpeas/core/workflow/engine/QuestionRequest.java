@@ -1,5 +1,7 @@
 package org.silverpeas.core.workflow.engine;
 
+import jakarta.inject.Inject;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
@@ -19,7 +21,11 @@ import org.silverpeas.core.workflow.api.task.Task;
  * A QuestionRequest indicates the workflow engine that a user ask a back to a precedent
  * actor/activity
  */
+@Bean
 class QuestionRequest extends AbstractRequest {
+
+  @Inject
+  private TaskManager taskManager;
 
   protected QuestionRequest() {
   }
@@ -74,9 +80,6 @@ class QuestionRequest extends AbstractRequest {
 
     // get the last participant for the discussed state
     Participant participant = instance.getParticipant(state.getName());
-
-    // Get the task manager
-    TaskManager taskManager = WorkflowHub.getTaskManager();
 
     // Assign task to this participant
     Task task = taskManager.createTask(participant, instance);

@@ -1,5 +1,6 @@
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -13,6 +14,7 @@ import org.silverpeas.core.workflow.engine.model.StateImpl;
 /**
  * A TaskDone indicates the workflow engine that a task has been done
  */
+@Bean
 class TaskDoneRequest extends AbstractRequest {
 
   protected TaskDoneRequest() {

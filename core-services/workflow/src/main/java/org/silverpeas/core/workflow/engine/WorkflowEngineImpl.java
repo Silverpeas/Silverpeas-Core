@@ -47,10 +47,22 @@ import java.util.Date;
 public class WorkflowEngineImpl implements WorkflowEngine {
 
   @Inject
+  private TaskManager taskManager;
+
+  @Inject
+  private UserManager userManager;
+
+  @Inject
+  private WorkflowTaskEngine engineTask;
+
+  @Inject
   private ProcessInstanceRepository repository;
 
   @Inject
   private HistoryStepRepository historyStepRepository;
+
+  @Inject
+  private UpdatableProcessInstanceManager instanceManager;
 
   /**
    * A task has been done and sent to the workflow Engine which has to process it.
@@ -73,8 +85,6 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     Action action = model.getAction(event.getActionName());
     if (action != null && "create".equals(action.getKind())) {
       if (!event.isResumingAction()) {
-        UpdatableProcessInstanceManager instanceManager =
-            (UpdatableProcessInstanceManager) WorkflowHub.getProcessInstanceManager();
         instance = instanceManager.createProcessInstance(model.getModelId());
         event.setProcessInstance(instance);
       }
@@ -86,7 +96,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     }
 
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
-    WorkflowEngineTask.addTaskDoneRequest(event);
+    engineTask.addTaskDoneRequest(event);
   }
 
   private void processControls(GenericEvent event, String id, boolean creation) {
@@ -128,8 +138,6 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     // Tests if action is creation
     Action action = model.getAction(event.getActionName());
     if (event.isFirstTimeSaved() && action != null && "create".equals(action.getKind())) {
-      UpdatableProcessInstanceManager instanceManager =
-          (UpdatableProcessInstanceManager) WorkflowHub.getProcessInstanceManager();
       instance = instanceManager.createProcessInstance(model.getModelId());
       event.setProcessInstance(instance);
       creationEvent = true;
@@ -138,7 +146,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     processControls(event, instance.getInstanceId(), creationEvent);
 
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
-    WorkflowEngineTask.addTaskSavedRequest(event);
+    engineTask.addTaskSavedRequest(event);
   }
 
   /**
@@ -151,7 +159,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     processControls(event, instance.getInstanceId(), false);
 
     // All is OK, send the QuestionEvent to the WorkflowEngineThread
-    WorkflowEngineTask.addQuestionRequest(event);
+    engineTask.addQuestionRequest(event);
   }
 
   /**
@@ -164,7 +172,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     processControls(event, instance.getInstanceId(), false);
 
     // All is OK, send the ResponseEvent to the WorkflowEngineThread
-    WorkflowEngineTask.addResponseRequest(event);
+    engineTask.addResponseRequest(event);
   }
 
   /**
@@ -174,7 +182,6 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   public void reAssignActors(UpdatableProcessInstance instance, Actor[] unAssignedActors,
       Actor[] assignedActors, User user) throws WorkflowException {
     // Get the process instance
-    ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
     String id = instance.getInstanceId();
     Mutable<UpdatableHistoryStep> step = Mutable.empty();
 
@@ -235,7 +242,6 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   private void assignTasksToWorkingUsers(final Actor[] assignedActors, final User user,
       final UpdatableProcessInstance processInstance) throws WorkflowException {
     // Assign tasks to these working users
-    TaskManager taskManager = WorkflowHub.getTaskManager();
     Task[] tasks = taskManager.createTasks(assignedActors, processInstance);
     for (final Task task : tasks) {
       taskManager.assignTask(task, user);
@@ -254,7 +260,6 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   private void unassignTasksToWorkingUsers(final Actor[] unAssignedActors,
       final UpdatableProcessInstance processInstance) throws WorkflowException {
     // Unassign tasks to these working users
-    TaskManager taskManager = WorkflowHub.getTaskManager();
     Task[] tasks = taskManager.createTasks(unAssignedActors, processInstance);
     for (final Task task : tasks) {
       taskManager.unAssignTask(task);
@@ -314,7 +319,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       throw new WorkflowException("WorkflowEngineImpl.process(TaskDoneEvent)",
           "EX_ERR_NO_LOCK_BEFORE_ACTION");
     }
-    User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
+    User user = userManager.getUser(lockingUser.getUserId());
     if (!user.equals(actor)) {
       throw new WorkflowException("WorkflowEngineImpl.process(TaskDoneEvent)",
           "EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_USER");

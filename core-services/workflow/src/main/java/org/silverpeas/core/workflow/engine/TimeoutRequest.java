@@ -1,5 +1,6 @@
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
@@ -15,6 +16,7 @@ import java.util.Date;
  * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a too
  * long period
  */
+@Bean
 class TimeoutRequest extends AbstractRequest {
 
   protected TimeoutRequest() {

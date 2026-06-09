@@ -23,34 +23,39 @@
  */
 package org.silverpeas.core.workflow.engine;
 
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.workflow.api.event.*;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.kernel.logging.SilverLogger;
-import org.silverpeas.core.workflow.api.event.QuestionEvent;
-import org.silverpeas.core.workflow.api.event.ResponseEvent;
-import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
-import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
-import org.silverpeas.core.workflow.api.event.TimeoutEvent;
 
 /**
  * @author ebonnet
  */
 @Technical
 @Bean
-public class WorkflowEngineTask extends AbstractRequestTask<AbstractRequestTask.ProcessContext> {
+public class WorkflowTaskEngine extends AbstractRequestTask<AbstractRequestTask.ProcessContext> {
 
-  protected WorkflowEngineTask() {
+  @Inject
+  private Instance<AbstractRequest> requests;
+
+  @Inject
+  private RequestTaskManager requestTaskManager;
+
+  protected WorkflowTaskEngine() {
     super();
   }
 
   /**
    * Add a request 'TaskDoneEvent'
    */
-  public static void addTaskDoneRequest(TaskDoneEvent event) {
-    TaskDoneRequest request = TaskDoneRequest.get(event);
-    SilverLogger.getLogger(WorkflowEngineTask.class)
+  public void addTaskDoneRequest(TaskDoneEvent event) {
+    requests.select(TaskDoneRequest.class).get();
+    TaskDoneRequest request = getRequest(TaskDoneRequest.class, event);
+    SilverLogger.getLogger(WorkflowTaskEngine.class)
         .info("Add task done request: {0}", request.toString());
     push(request);
   }
@@ -58,9 +63,9 @@ public class WorkflowEngineTask extends AbstractRequestTask<AbstractRequestTask.
   /**
    * Add a request 'TaskSavedEvent'
    */
-  public static void addTaskSavedRequest(TaskSavedEvent event) {
-    TaskSavedRequest request = TaskSavedRequest.get(event);
-    SilverLogger.getLogger(WorkflowEngineTask.class)
+  public void addTaskSavedRequest(TaskSavedEvent event) {
+    TaskSavedRequest request = getRequest(TaskSavedRequest.class, event);
+    SilverLogger.getLogger(WorkflowTaskEngine.class)
         .info("Add task saved request: {0}", request.toString());
     push(request);
   }
@@ -68,9 +73,9 @@ public class WorkflowEngineTask extends AbstractRequestTask<AbstractRequestTask.
   /**
    * Add a request 'QuestionEvent'
    */
-  public static void addQuestionRequest(QuestionEvent event) {
-    QuestionRequest request = QuestionRequest.get(event);
-    SilverLogger.getLogger(WorkflowEngineTask.class)
+  public void addQuestionRequest(QuestionEvent event) {
+    QuestionRequest request = getRequest(QuestionRequest.class, event);
+    SilverLogger.getLogger(WorkflowTaskEngine.class)
         .info("Add question request: {0}", request.toString());
     push(request);
   }
@@ -78,9 +83,9 @@ public class WorkflowEngineTask extends AbstractRequestTask<AbstractRequestTask.
   /**
    * Add a request 'ResponseEvent'
    */
-  public static void addResponseRequest(ResponseEvent event) {
-    ResponseRequest request = ResponseRequest.get(event);
-    SilverLogger.getLogger(WorkflowEngineTask.class)
+  public void addResponseRequest(ResponseEvent event) {
+    ResponseRequest request = getRequest(ResponseRequest.class, event);
+    SilverLogger.getLogger(WorkflowTaskEngine.class)
         .info("Add response request: {0}", request.toString());
     push(request);
   }
@@ -88,14 +93,21 @@ public class WorkflowEngineTask extends AbstractRequestTask<AbstractRequestTask.
   /**
    * Add a request 'TimeoutEvent'
    */
-  public static void addTimeoutRequest(TimeoutEvent event) {
-    TimeoutRequest request = TimeoutRequest.get(event);
-    SilverLogger.getLogger(WorkflowEngineTask.class)
+  public void addTimeoutRequest(TimeoutEvent event) {
+    TimeoutRequest request = getRequest(TimeoutRequest.class, event);
+    SilverLogger.getLogger(WorkflowTaskEngine.class)
         .info("Add timeout request: {0}", request.toString());
     push(request);
   }
 
-  private static void push(AbstractRequest request) {
-    RequestTaskManager.get().push(WorkflowEngineTask.class, request);
+  private void push(AbstractRequest request) {
+    requestTaskManager.push(WorkflowTaskEngine.class, request);
+  }
+
+  private <T extends AbstractRequest, E extends GenericEvent> T getRequest(Class<T> requestType,
+      E event) {
+    T request = requests.select(requestType).get();
+    request.setEvent(event);
+    return request;
   }
 }

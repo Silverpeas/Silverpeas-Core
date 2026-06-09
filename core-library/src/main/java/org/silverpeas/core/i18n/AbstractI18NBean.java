@@ -173,7 +173,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   }
 
   public String getLanguage() {
-    if (getI18n().isEnabled() && StringUtil.isNotDefined(language)) {
+    if (StringUtil.isNotDefined(language)) {
       return getI18n().getDefaultLanguage();
     }
     return language;

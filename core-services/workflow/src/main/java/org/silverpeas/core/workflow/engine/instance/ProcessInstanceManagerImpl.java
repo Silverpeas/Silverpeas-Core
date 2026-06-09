@@ -26,6 +26,7 @@ package org.silverpeas.core.workflow.engine.instance;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -35,6 +36,7 @@ import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil.RuptureContext;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.workflow.api.ErrorManager;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ActionStatus;
@@ -65,7 +67,13 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   private SilverpeasCalendar calendar;
 
   @Inject
+  private AttachmentService attachmentService;
+
+  @Inject
   private ProcessInstanceRepository repository;
+
+  @Inject
+  private ErrorManager errorManager;
 
   @Override
   public List<ProcessInstanceImpl> getProcessInstances(String peasId, User user, String role)
@@ -248,7 +256,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     // Delete forms data associated with this instance
     removeProcessInstanceData(instance);
 
-    WorkflowHub.getErrorManager().removeErrorsOfInstance(instanceId);
+    errorManager.removeErrorsOfInstance(instanceId);
 
     repository.delete(instance);
   }
@@ -258,7 +266,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     String componentId = instance.getModelId();
 
     // delete attachments
-    AttachmentServiceProvider.getAttachmentService().deleteAllAttachments(id, componentId);
+    attachmentService.deleteAllAttachments(id, componentId);
 
     // delete folder
     try {

@@ -1,5 +1,7 @@
 package org.silverpeas.core.workflow.engine;
 
+import jakarta.inject.Inject;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
@@ -18,7 +20,11 @@ import org.silverpeas.core.workflow.api.task.Task;
  * A ResponseRequest indicates the workflow engine that a user answer a question to an user who had
  * requested a back to a precedent actor/activity
  */
+@Bean
 class ResponseRequest extends AbstractRequest {
+
+  @Inject
+  private TaskManager taskManager;
 
   protected ResponseRequest() {
   }
@@ -70,9 +76,6 @@ class ResponseRequest extends AbstractRequest {
 
     // get the last participant for the discussed state
     Participant participant = instance.getParticipant(state.getName());
-
-    // Get the task manager
-    TaskManager taskManager = WorkflowHub.getTaskManager();
 
     // Unassign task to this participant
     Task task = taskManager.createTask(participant, instance);

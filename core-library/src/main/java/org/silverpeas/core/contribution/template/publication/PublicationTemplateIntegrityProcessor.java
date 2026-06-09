@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.contribution.template.publication;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
@@ -44,12 +45,21 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 @Service
 public class PublicationTemplateIntegrityProcessor implements Initialization {
 
+  @Inject
+  private PublicationTemplateManager manager;
+
   @Override
   public void init() {
-    BackgroundProcessTask.push(new DeprecatedTemplateCleaner());
+    BackgroundProcessTask.push(new DeprecatedTemplateCleaner(manager));
   }
 
   private static class DeprecatedTemplateCleaner extends AbstractBackgroundProcessRequest {
+
+    private final PublicationTemplateManager manager;
+
+    public DeprecatedTemplateCleaner(PublicationTemplateManager manager) {
+      this.manager = manager;
+    }
 
     @Override
     protected void process() {
@@ -58,11 +68,12 @@ public class PublicationTemplateIntegrityProcessor implements Initialization {
             GenericRecordSetManager.getInstance().getAllComponentIdsOfRecords();
         Transaction.performInOne(() -> {
           componentIds.stream()
+              .filter(SilverpeasComponentInstance::isIdentityValid)
               .filter(c ->
                   isDefined(SilverpeasComponentInstance.getIdentity(c).getComponentName()))
               .filter(c ->
                   SilverpeasComponentInstance.getById(c).isEmpty())
-              .forEach(c -> PublicationTemplateManager.getInstance().delete(c));
+              .forEach(manager::delete);
           return null;
         });
       } catch (FormException e) {
