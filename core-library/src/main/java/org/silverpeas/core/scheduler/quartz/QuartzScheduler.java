@@ -227,7 +227,10 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   public void unscheduleJob(String jobName) throws SchedulerException {
     checkJobName(jobName);
     try {
-      execute(() -> this.quartz.deleteJob(JobKey.jobKey(jobName)));
+      JobKey jobKey = JobKey.jobKey(jobName);
+      if (this.quartz.checkExists(jobKey)) {
+        execute(() -> this.quartz.deleteJob(jobKey));
+      }
     } catch (org.quartz.SchedulerException ex) {
       SilverLogger.getLogger(this).error("The unscheduling of the job ''{0}'' failed!",
           new String[]{jobName}, ex);
@@ -239,7 +242,11 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   public boolean isJobScheduled(String jobName) {
     checkJobName(jobName);
     try {
-      JobDetail jobDetail = this.quartz.getJobDetail(JobKey.jobKey(jobName));
+      JobKey jobKey = JobKey.jobKey(jobName);
+      if (!this.quartz.checkExists(jobKey)) {
+        return false;
+      }
+      JobDetail jobDetail = this.quartz.getJobDetail(jobKey);
       boolean isScheduled = false;
       if (jobDetail != null) {
         isScheduled = jobDetail.getJobDataMap().getBoolean(JOB_SCHEDULED);
@@ -312,7 +319,7 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   }
 
   /**
-   * Checks the specified job name is well defined.
+   * Checks the specified job name is well-defined.
    * @param jobName the job name should not be null and empty.
    */
   private static void checkJobName(final String jobName) {
@@ -320,7 +327,7 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   }
 
   /**
-   * Checks the specified job trigger is well defined.
+   * Checks the specified job trigger is well-defined.
    * @param trigger the trigger should not be null.
    */
   private static void checkJobTrigger(final JobTrigger trigger) {
