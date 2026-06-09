@@ -2,6 +2,7 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
+import org.silverpeas.core.workflow.api.ErrorManager;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -31,6 +32,12 @@ public abstract class AbstractRequest
   @Inject
   private HistoryStepRepository historyStepRepository;
 
+  @Inject
+  private ProcessInstanceManager instanceManager;
+
+  @Inject
+  private ErrorManager errorManager;
+
   private GenericEvent event;
 
   protected ProcessInstanceRepository getProcessInstanceRepository() {
@@ -42,7 +49,7 @@ public abstract class AbstractRequest
   }
 
   protected void saveError(UpdatableProcessInstance instance, GenericEvent event, Exception we) {
-    WorkflowHub.getErrorManager().saveError(instance, event, we);
+    errorManager.saveError(instance, event, we);
     setInstanceInError(instance.getInstanceId());
   }
 
@@ -56,7 +63,6 @@ public abstract class AbstractRequest
   }
 
   protected UpdatableHistoryStep createHistoryNewStep(final HistoryStepDescriptor descriptor) {
-    ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
     SilverLogger.getLogger(this)
         .info("createHistoryNewStep() - InstanceId = {0}",
             descriptor.getProcessInstance().getInstanceId());
@@ -103,7 +109,6 @@ public abstract class AbstractRequest
       final UpdatableHistoryStep step) {
     SilverLogger.getLogger(this).info("processProcessInstance() - instanceId = {0}",id);
     Transaction.performInOne(() -> {
-      ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
       ProcessInstanceImpl processInstance = getProcessInstanceRepository().getById(id);
 
       // Do workflow stuff

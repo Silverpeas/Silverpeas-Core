@@ -36,7 +36,7 @@ import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
-import org.silverpeas.core.workflow.engine.WorkflowEngineTask;
+import org.silverpeas.core.workflow.engine.WorkflowTaskEngine;
 import org.silverpeas.core.workflow.engine.event.TimeoutEventImpl;
 import org.silverpeas.core.workflow.engine.instance.ActionAndState;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -53,6 +53,9 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
 
   @Inject
   private ProcessInstanceManager manager;
+
+  @Inject
+  private WorkflowTaskEngine taskEngine;
 
   // Local constants
   private static final String TIMEOUT_MANAGER_JOB_NAME = "WorkflowTimeoutManager";
@@ -110,7 +113,7 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
       ActionAndState timeoutActionAndState = instance.getTimeOutAction(now);
       TimeoutEvent event = new TimeoutEventImpl(instance, timeoutActionAndState.getState(),
           timeoutActionAndState.getAction());
-      WorkflowEngineTask.addTimeoutRequest(event);
+      taskEngine.addTimeoutRequest(event);
     } catch (WorkflowException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

@@ -34,52 +34,73 @@ import org.silverpeas.core.workflow.api.WorkflowEngine;
 /**
  * The workflowHub manages all the workflow components implementations. This instance-orphan class
  * gives a single point of access to the implementation of the different service interfaces without
- * having any knowledge about them and about the life-cycle.
+ * having any knowledge about them and about their life-cycle.
  */
 public class WorkflowHub {
 
+  private final ProcessModelManager processModelManager;
+  private final ProcessInstanceManager processInstanceManager;
+  private static WorkflowHub instance;
+  private final UserManager userManager;
+  private final WorkflowEngine workflowEngine;
+  private final TaskManager taskManager;
+  private final ErrorManager errorManager;
+
   private WorkflowHub() {
+    processModelManager = ServiceProvider.getService(ProcessModelManager.class);
+    processInstanceManager = ServiceProvider.getService(ProcessInstanceManager.class);
+    userManager = ServiceProvider.getService(UserManager.class);
+    workflowEngine = ServiceProvider.getService(WorkflowEngine.class);
+    taskManager = ServiceProvider.getService(TaskManager.class);
+    errorManager = ServiceProvider.getService(ErrorManager.class);
   }
 
   /**
    * @return an instance of {@link ProcessModelManager}
    */
   public static ProcessModelManager getProcessModelManager() {
-    return ServiceProvider.getService(ProcessModelManager.class);
+    return getInstance().processModelManager;
   }
 
   /**
    * @return an instance of {@link ProcessInstanceManager}
    */
   public static ProcessInstanceManager getProcessInstanceManager() {
-    return ServiceProvider.getService(ProcessInstanceManager.class);
+    return getInstance().processInstanceManager;
   }
 
   /**
    * @return an instance of {@link UserManager}
    */
   public static UserManager getUserManager() {
-    return ServiceProvider.getService(UserManager.class);
+    return getInstance().userManager;
   }
 
   /**
    * @return an instance of {@link WorkflowEngine}
    */
   public static WorkflowEngine getWorkflowEngine() {
-    return ServiceProvider.getService(WorkflowEngine.class);
+    return getInstance().workflowEngine;
   }
 
   /**
    * @return an instance of {@link TaskManager}
    */
   public static TaskManager getTaskManager() {
-    return ServiceProvider.getService(TaskManager.class);
+    return getInstance().taskManager;
   }
 
   /**
    * @return an instance of {@link ErrorManager}
    */
   public static ErrorManager getErrorManager() {
-    return ServiceProvider.getService(ErrorManager.class);
+    return getInstance().errorManager;
+  }
+
+  private static synchronized WorkflowHub getInstance() {
+    if (instance == null) {
+      instance = new WorkflowHub();
+    }
+    return instance;
   }
 }

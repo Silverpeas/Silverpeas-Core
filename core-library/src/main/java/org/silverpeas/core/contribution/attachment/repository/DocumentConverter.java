@@ -87,6 +87,9 @@ class DocumentConverter extends AbstractJcrConverter {
 
     try {
       String path = rootVersionNode.getPath();
+      // the base version is the current up-to-date version of the document (in our case, the
+      // latest one).
+      Version baseVersion = versionManager.getBaseVersion(path);
       VersionHistory history = versionManager.getVersionHistory(path);
       VersionIterator versionsIterator = history.getAllLinearVersions();
       // VersionIterator#getSize() support depends on the JCR implementation: if it isn't supported,
@@ -96,11 +99,18 @@ class DocumentConverter extends AbstractJcrConverter {
       int versionIndex = 0;
       SimpleDocumentVersion previousVersion = null;
       if (versionsIterator.hasNext()) {
-        // we skip the root version which is the eldest one in the history
+        // The root version is a null version that stores no state and simply serves as the
+        // eventual predecessor of all subsequent versions. So we skip the root version (the
+        // eldest one in the linear history)
         versionsIterator.nextVersion();
       }
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
+        if (baseVersion != null && version.getIdentifier().equals(baseVersion.getIdentifier())) {
+          // current state of the document = the base version in its history. So we can skip it
+          // in the build of the history of previous versions
+          continue;
+        }
         SimpleDocumentVersion versionDocument =
             new SimpleDocumentVersion(fillDocument(version.getFrozenNode(), lang),
                 historisedDocument);

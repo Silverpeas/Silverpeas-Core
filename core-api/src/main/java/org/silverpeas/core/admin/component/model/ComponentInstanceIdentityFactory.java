@@ -39,10 +39,13 @@ class ComponentInstanceIdentityFactory {
   /**
    * Creates the Silverpeas component instance identity from the specified unique global instance
    * identifier. The identifier can refer either a shared component instance or a personal component
-   * instance.
+   * instance. If the identifier doesn't refer any valid component instance identity, then an
+   * {@link IllegalArgumentException} is thrown.
    *
    * @param instanceId the unique global instance identifier of a Silverpeas component instance.
    * @return the identity of a Silverpeas component instance.
+   * @throws IllegalArgumentException if the argument doesn't refer any valid component instance
+   * identifier.
    */
   @NonNull
   public SilverpeasComponentInstance.Identity create(@NonNull String instanceId) {
@@ -51,8 +54,8 @@ class ComponentInstanceIdentityFactory {
     } else if (SilverpeasPersonalComponentInstance.Identity.isValid(instanceId)) {
       return SilverpeasPersonalComponentInstance.getIdentity(instanceId);
     } else {
-      throw new IllegalArgumentException("The argument doesn't match the identifier of any " +
-          "Silverpeas component instance!");
+      throw new IllegalArgumentException(instanceId +
+          " doesn't match the identifier of any Silverpeas component instance!");
     }
   }
 
@@ -85,6 +88,17 @@ class ComponentInstanceIdentityFactory {
     Objects.requireNonNull(name);
     Objects.requireNonNull(localId);
     return new SilverpeasSharedComponentInstance.Identity(name, Integer.parseInt(localId));
+  }
+
+  /**
+   * Is the specified component instance identifier is valid and refers then a possible component
+   * instance.
+   * @param instanceId the serializing form of a unique identifier of a component instance.
+   * @return true if the specified instance identifier is valid, false otherwise.
+   */
+  public boolean isValid(String instanceId) {
+    return SilverpeasSharedComponentInstance.Identity.isValid(instanceId) ||
+        SilverpeasPersonalComponentInstance.Identity.isValid(instanceId);
   }
 }
   

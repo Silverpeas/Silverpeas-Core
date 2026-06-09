@@ -1,5 +1,6 @@
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -12,6 +13,7 @@ import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 /**
  * A TaskSaved indicates the workflow engine that a task has been saved
  */
+@Bean
 class TaskSavedRequest extends AbstractRequest {
 
   protected TaskSavedRequest() {
