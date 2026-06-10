@@ -24,18 +24,21 @@
 
 package org.silverpeas.core.workflow.api.user;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.core.workflow.api.*;
+import org.silverpeas.core.workflow.engine.WorkflowHub;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.core.workflow.api.UserManager;
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.engine.user.ReplacementImpl;
 import org.silverpeas.core.workflow.engine.user.UserImpl;
+import org.silverpeas.kernel.test.util.Reflections;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -54,12 +57,14 @@ import static org.mockito.Mockito.when;
  * @author silveryocha
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
+@TestManagedMocks({ProcessModelManager.class, ProcessInstanceManager.class, WorkflowEngine.class,
+    TaskManager.class, ErrorManager.class})
 class ReplacementListTest {
 
-  private final static String ROLE_A = "roleA";
-  private final static String ROLE_B = "roleB";
-  private final static String ROLE_C = "roleC";
-  private final static String ROLE_D = "roleD";
+  private static final String ROLE_A = "roleA";
+  private static final String ROLE_B = "roleB";
+  private static final String ROLE_C = "roleC";
+  private static final String ROLE_D = "roleD";
 
   @TestManagedMock
   private OrganizationController mockedOrganizationController;
@@ -99,10 +104,15 @@ class ReplacementListTest {
       return new String[0];
     });
     when(mockedUserManager.getUser(anyString())).then(i -> {
-      final UserDetail mock = mock(UserDetail.class);
-      when(mock.getId()).thenReturn(i.getArgument(0));
-      return new UserImpl(mock);
+      final UserDetail user = new UserDetail();
+      user.setId(i.getArgument(0));
+      return new UserImpl(user);
     });
+  }
+
+  @AfterEach
+  void clearWorkflowHub() {
+    Reflections.setStaticField(WorkflowHub.class, "instance", null);
   }
 
   @Test

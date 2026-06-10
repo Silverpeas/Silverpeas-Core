@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.workflow.engine.notification;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -32,6 +33,7 @@ import org.silverpeas.core.admin.component.service.SilverpeasComponentInstancePr
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.Period;
@@ -40,13 +42,16 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.core.workflow.api.UserManager;
-import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.*;
 import org.silverpeas.core.workflow.api.user.Replacement;
+import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.user.ReplacementConstructor;
+import org.silverpeas.core.workflow.engine.user.UserImpl;
 import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.util.Reflections;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -65,6 +70,8 @@ import static org.mockito.Mockito.when;
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans(ReplacementConstructor.class)
+@TestManagedMocks({ProcessModelManager.class, ProcessInstanceManager.class, WorkflowEngine.class,
+    TaskManager.class, ErrorManager.class})
 class ReplacementUserNotificationTest {
 
   private static final String INSTANCE_ID = "workflow26";
@@ -82,40 +89,46 @@ class ReplacementUserNotificationTest {
   private ComponentAccessControl componentAccessControl;
   @TestManagedMock
   private Administration administration;
+  @TestManagedMock
+  private UserManager userManager;
 
-  private final org.silverpeas.core.workflow.api.user.User userA = mock(
-      org.silverpeas.core.workflow.api.user.User.class);
-  private final org.silverpeas.core.workflow.api.user.User userB = mock(
-      org.silverpeas.core.workflow.api.user.User.class);
+  private org.silverpeas.core.workflow.api.user.User userA;
+  private org.silverpeas.core.workflow.api.user.User userB;
 
   @BeforeEach
-  public void setup(@TestManagedMock UserProvider userProvider,
-      @TestManagedMock UserManager userManager,
+  void setup(@TestManagedMock UserProvider userProvider,
       @TestManagedMock OrganizationController organizationController,
       @TestManagedMock SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider)
       throws WorkflowException {
     ComponentInst componentInstance = mock(ComponentInst.class);
-
-    when(silverpeasComponentInstanceProvider.getById(INSTANCE_ID))
-        .thenReturn(Optional.of(componentInstance));
-
-    when(userA.getUserId()).thenReturn("i");
-    when(userA.getFullName()).thenReturn("incumbent");
-    when(userB.getUserId()).thenReturn("s");
-    when(userB.getFullName()).thenReturn("substitute");
-
     when(componentInstance.getName("fr")).thenReturn(COMPONENT_NAME + "_fr");
     when(componentInstance.getName("de")).thenReturn(COMPONENT_NAME + "_de");
     when(componentInstance.getName("en")).thenReturn(COMPONENT_NAME + "_en");
     when(organizationController.getComponentInst(INSTANCE_ID)).thenReturn(componentInstance);
+    when(silverpeasComponentInstanceProvider.getById(INSTANCE_ID))
+        .thenReturn(Optional.of(componentInstance));
+
+    UserDetail user = new UserDetail();
+    user.setId("i");
+    user.setLastName("incumbent");
+    userA = new UserImpl(user);
+    when(userManager.getUser(userA.getUserId())).thenReturn(userA);
+
+    user = new UserDetail();
+    user.setId("s");
+    user.setLastName("substitute");
+    userB = new UserImpl(user);
+    when(userManager.getUser(userB.getUserId())).thenReturn(userB);
 
     when(userProvider.getCurrentRequester()).thenReturn(mock(User.class));
 
-    when(userManager.getUser(userA.getUserId())).thenReturn(userA);
-    when(userManager.getUser(userB.getUserId())).thenReturn(userB);
-
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     when(componentAccessControl.isGroupAuthorized(anyString(), anyString())).thenReturn(true);
+  }
+
+  @AfterEach
+  void clearWorkflowHub() {
+    Reflections.setStaticField(WorkflowHub.class, "instance", null);
   }
 
   @Test
@@ -143,9 +156,12 @@ class ReplacementUserNotificationTest {
     assertThat(titles.get(EN), is("New replacement on componentNameTest_en"));
     assertThat(titles.get(FR), is("Nouveau remplacement sur componentNameTest_fr"));
     final Map<String, String> contents = computeNotificationContents(notification);
-    assertThat(contents.get(DE), is("New substitute <b>substitute</b> from <b>24.06.2018</b> to <b>25.06.2018</b>."));
-    assertThat(contents.get(EN), is("New substitute <b>substitute</b> from <b>06/24/2018</b> to <b>06/25/2018</b>."));
-    assertThat(contents.get(FR), is("Nouveau remplaçant <b>substitute</b> du <b>24/06/2018</b> au <b>25/06/2018</b>."));
+    assertThat(contents.get(DE), is("New substitute <b>substitute</b> from <b>24.06.2018</b> to " +
+        "<b>25.06.2018</b>."));
+    assertThat(contents.get(EN), is("New substitute <b>substitute</b> from <b>06/24/2018</b> to " +
+        "<b>06/25/2018</b>."));
+    assertThat(contents.get(FR), is("Nouveau remplaçant <b>substitute</b> du <b>24/06/2018</b> au" +
+        " <b>25/06/2018</b>."));
   }
 
   @Test
@@ -158,9 +174,12 @@ class ReplacementUserNotificationTest {
     assertThat(titles.get(EN), is("Replacement modification on componentNameTest_en"));
     assertThat(titles.get(FR), is("Modification d'un remplacement sur componentNameTest_fr"));
     final Map<String, String> contents = computeNotificationContents(notification);
-    assertThat(contents.get(DE), is("Period modification of your replacement by <b>substitute</b>: on <b>24.06.2018</b>."));
-    assertThat(contents.get(EN), is("Period modification of your replacement by <b>substitute</b>: on <b>06/24/2018</b>."));
-    assertThat(contents.get(FR), is("Changement de période de votre remplacement par <b>substitute</b> : le <b>24/06/2018</b>."));
+    assertThat(contents.get(DE), is("Period modification of your replacement by " +
+        "<b>substitute</b>: on <b>24.06.2018</b>."));
+    assertThat(contents.get(EN), is("Period modification of your replacement by " +
+        "<b>substitute</b>: on <b>06/24/2018</b>."));
+    assertThat(contents.get(FR), is("Changement de période de votre remplacement par " +
+        "<b>substitute</b> : le <b>24/06/2018</b>."));
   }
 
   @Test
@@ -173,54 +192,69 @@ class ReplacementUserNotificationTest {
     assertThat(titles.get(EN), is("Replacement deletion on componentNameTest_en"));
     assertThat(titles.get(FR), is("Suppression d'un remplacement sur componentNameTest_fr"));
     final Map<String, String> contents = computeNotificationContents(notification);
-    assertThat(contents.get(DE), is("Deletion of your replacement by <b>substitute</b> on <b>24.06.2018</b>."));
-    assertThat(contents.get(EN), is("Deletion of your replacement by <b>substitute</b> on <b>06/24/2018</b>."));
-    assertThat(contents.get(FR), is("Suppression de votre remplacement par <b>substitute</b> le <b>24/06/2018</b>."));
+    assertThat(contents.get(DE), is("Deletion of your replacement by <b>substitute</b> on <b>24" +
+        ".06.2018</b>."));
+    assertThat(contents.get(EN), is("Deletion of your replacement by <b>substitute</b> on " +
+        "<b>06/24/2018</b>."));
+    assertThat(contents.get(FR), is("Suppression de votre remplacement par <b>substitute</b> le " +
+        "<b>24/06/2018</b>."));
   }
 
   @Test
   void createToSubstituteOnOneDay() {
     final Replacement<?> replacement = initOnDayReplacement();
-    final UserNotification notification = new ToSubstituteReplacementNotificationBuilder(replacement,
+    final UserNotification notification =
+        new ToSubstituteReplacementNotificationBuilder(replacement,
         NotifAction.CREATE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
     assertThat(titles.get(DE), is("New replacement on componentNameTest_de"));
     assertThat(titles.get(EN), is("New replacement on componentNameTest_en"));
     assertThat(titles.get(FR), is("Nouveau remplacement sur componentNameTest_fr"));
     final Map<String, String> contents = computeNotificationContents(notification);
-    assertThat(contents.get(DE), is("New replacement on <b>24.06.2018</b> as <b>incumbent</b>'s substitute."));
-    assertThat(contents.get(EN), is("New replacement on <b>06/24/2018</b> as <b>incumbent</b>'s substitute."));
-    assertThat(contents.get(FR), is("Nouveau remplacement le <b>24/06/2018</b> en tant que <b>incumbent</b>."));
+    assertThat(contents.get(DE), is("New replacement on <b>24.06.2018</b> as <b>incumbent</b>'s " +
+        "substitute."));
+    assertThat(contents.get(EN), is("New replacement on <b>06/24/2018</b> as <b>incumbent</b>'s " +
+        "substitute."));
+    assertThat(contents.get(FR), is("Nouveau remplacement le <b>24/06/2018</b> en tant que " +
+        "<b>incumbent</b>."));
   }
 
   @Test
   void updateToSubstituteOnOneDay() {
     final Replacement<?> replacement = initOnDayReplacement();
-    final UserNotification notification = new ToSubstituteReplacementNotificationBuilder(replacement,
+    final UserNotification notification =
+        new ToSubstituteReplacementNotificationBuilder(replacement,
         NotifAction.UPDATE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
     assertThat(titles.get(DE), is("Replacement modification on componentNameTest_de"));
     assertThat(titles.get(EN), is("Replacement modification on componentNameTest_en"));
     assertThat(titles.get(FR), is("Modification d'un remplacement sur componentNameTest_fr"));
     final Map<String, String> contents = computeNotificationContents(notification);
-    assertThat(contents.get(DE), is("Period modification of your replacement as <b>incumbent</b>'s substitute: on <b>24.06.2018</b>."));
-    assertThat(contents.get(EN), is("Period modification of your replacement as <b>incumbent</b>'s substitute: on <b>06/24/2018</b>."));
-    assertThat(contents.get(FR), is("Changement de période de votre remplacement en tant que <b>incumbent</b> : le <b>24/06/2018</b>."));
+    assertThat(contents.get(DE), is("Period modification of your replacement as " +
+        "<b>incumbent</b>'s substitute: on <b>24.06.2018</b>."));
+    assertThat(contents.get(EN), is("Period modification of your replacement as " +
+        "<b>incumbent</b>'s substitute: on <b>06/24/2018</b>."));
+    assertThat(contents.get(FR), is("Changement de période de votre remplacement en tant que " +
+        "<b>incumbent</b> : le <b>24/06/2018</b>."));
   }
 
   @Test
   void deleteToSubstituteOnOneDay() {
     final Replacement<?> replacement = initOnDayReplacement();
-    final UserNotification notification = new ToSubstituteReplacementNotificationBuilder(replacement,
+    final UserNotification notification =
+        new ToSubstituteReplacementNotificationBuilder(replacement,
         NotifAction.DELETE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
     assertThat(titles.get(DE), is("Replacement deletion on componentNameTest_de"));
     assertThat(titles.get(EN), is("Replacement deletion on componentNameTest_en"));
     assertThat(titles.get(FR), is("Suppression d'un remplacement sur componentNameTest_fr"));
     final Map<String, String> contents = computeNotificationContents(notification);
-    assertThat(contents.get(DE), is("Deletion of your replacement as <b>incumbent</b>'s substitute on <b>24.06.2018</b>."));
-    assertThat(contents.get(EN), is("Deletion of your replacement as <b>incumbent</b>'s substitute on <b>06/24/2018</b>."));
-    assertThat(contents.get(FR), is("Suppression de votre remplacement en tant que <b>incumbent</b> le <b>24/06/2018</b>."));
+    assertThat(contents.get(DE), is("Deletion of your replacement as <b>incumbent</b>'s " +
+        "substitute on <b>24.06.2018</b>."));
+    assertThat(contents.get(EN), is("Deletion of your replacement as <b>incumbent</b>'s " +
+        "substitute on <b>06/24/2018</b>."));
+    assertThat(contents.get(FR), is("Suppression de votre remplacement en tant que " +
+        "<b>incumbent</b> le <b>24/06/2018</b>."));
   }
 
   private Replacement<?> initOnDayReplacement() {
@@ -255,7 +289,7 @@ class ReplacementUserNotificationTest {
 
   private String getContent(final UserNotification userNotification, final String language) {
     return userNotification.getNotificationMetaData().getContent(language)
-        .replaceAll("<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->", "");
+        .replace("<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->", "");
   }
 
   private String getTitle(final UserNotification userNotification, final String language) {

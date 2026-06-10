@@ -38,9 +38,9 @@ import org.silverpeas.core.workflow.api.WorkflowEngine;
  */
 public class WorkflowHub {
 
+  private static WorkflowHub instance;
   private final ProcessModelManager processModelManager;
   private final ProcessInstanceManager processInstanceManager;
-  private static WorkflowHub instance;
   private final UserManager userManager;
   private final WorkflowEngine workflowEngine;
   private final TaskManager taskManager;

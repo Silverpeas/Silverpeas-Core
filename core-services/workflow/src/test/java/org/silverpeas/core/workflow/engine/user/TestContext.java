@@ -25,10 +25,9 @@
 package org.silverpeas.core.workflow.engine.user;
 
 import org.mockito.invocation.InvocationOnMock;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.unit.JpaMocker;
-import org.silverpeas.core.workflow.api.UserManager;
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.kernel.TestManagedBeanFeeder;
@@ -40,7 +39,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -65,7 +63,6 @@ public class TestContext {
 
   public void init() {
     try {
-      mockUserManager();
       mockReplacementPersistence();
     } catch (Exception e) {
       throw new IllegalStateException(e);
@@ -73,9 +70,9 @@ public class TestContext {
   }
 
   public static User aUser(final String userId) {
-    User user = mock(User.class);
-    when(user.getUserId()).thenReturn(userId);
-    return user;
+    UserDetail user = new UserDetail();
+    user.setId(userId);
+    return new UserImpl(user);
   }
 
   private void mockReplacementPersistence() {
@@ -91,24 +88,7 @@ public class TestContext {
         invocation -> computeReplacementsFor(invocation, aSubstitute));
     when(repository.findAllBySubstituteAndByWorkflow(any(User.class), anyString())).thenAnswer(
         invocation -> computeReplacementsFor(invocation, anIncumbent));
-    feeder.manageBean(repository, ReplacementRepository.class);
     feeder.manageBean(repository, Replacement.Repository.class);
-  }
-
-  private void mockUserManager() throws WorkflowException {
-    // Mocking the User providing mechanism
-    UserManager userManager = mock(UserManager.class);
-    when(userManager.getUser(anyString())).thenAnswer(invocation -> {
-      String id = invocation.getArgument(0);
-      if (aSubstitute.getUserId().equals(id)) {
-        return aSubstitute;
-      } else if (anIncumbent.getUserId().equals(id)) {
-        return anIncumbent;
-      } else {
-        return aUser(id);
-      }
-    });
-    feeder.manageBean(userManager, UserManager.class);
   }
 
   private Object computeReplacementsFor(final InvocationOnMock invocation,

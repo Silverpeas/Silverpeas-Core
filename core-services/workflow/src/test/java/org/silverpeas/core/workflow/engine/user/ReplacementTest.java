@@ -23,15 +23,20 @@
  */
 package org.silverpeas.core.workflow.engine.user;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.annotations.TestManagedMocks;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.core.workflow.api.*;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.core.workflow.engine.WorkflowHub;
+import org.silverpeas.kernel.test.annotations.TestManagedBeans;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.util.Reflections;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,28 +44,45 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 import static org.silverpeas.core.workflow.engine.user.TestContext.WORKFLOW_ID;
 import static org.silverpeas.core.workflow.engine.user.TestContext.aUser;
 
 /**
  * Unit tests on the replacement of users by another ones in a workflow instance.
+ *
  * @author mmoquillon
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedBeans(ReplacementConstructor.class)
+@TestManagedMocks({ProcessModelManager.class, ProcessInstanceManager.class, WorkflowEngine.class,
+    TaskManager.class, ErrorManager.class})
 class ReplacementTest {
+
+  @TestManagedMock
+  private UserManager userManager;
 
   private final User anIncumbent = aUser("3");
   private final User aSubstitute = aUser("5");
+  private final User anotherUser = aUser("32");
   private final Period aPeriod =
       Period.between(LocalDate.now().plusDays(1), LocalDate.now().plusDays(8));
 
   public TestContext ctx;
 
   @BeforeEach
-  public void init() {
+  void init() throws WorkflowException {
+    when(userManager.getUser(aSubstitute.getUserId())).thenReturn(aSubstitute);
+    when(userManager.getUser(anIncumbent.getUserId())).thenReturn(anIncumbent);
+    when(userManager.getUser(anotherUser.getUserId())).thenReturn(anotherUser);
+
     ctx = new TestContext(anIncumbent, aSubstitute);
     ctx.init();
+  }
+
+  @AfterEach
+  void clearWorkflowHub() {
+    Reflections.setStaticField(WorkflowHub.class, "instance", null);
   }
 
   @Test
@@ -86,23 +108,23 @@ class ReplacementTest {
   void createBadlyADelegationWithANullSubstitute() {
     assertThrows(NullPointerException.class, () ->
         Replacement.between(anIncumbent, null)
-          .inWorkflow(WORKFLOW_ID)
-          .during(aPeriod));
+            .inWorkflow(WORKFLOW_ID)
+            .during(aPeriod));
   }
 
   @Test
   void createBadlyAReplacementWithAnNullWorkflowId() {
     assertThrows(AssertionError.class, () ->
         Replacement.between(anIncumbent, aSubstitute)
-          .inWorkflow(null)
-          .during(aPeriod));
+            .inWorkflow(null)
+            .during(aPeriod));
   }
 
   @Test
   void createBadlyAReplacementByMissingAWorkflowId() {
     assertThrows(AssertionError.class, () ->
         Replacement.between(anIncumbent, aSubstitute)
-          .during(aPeriod));
+            .during(aPeriod));
   }
 
   @Test
@@ -123,7 +145,7 @@ class ReplacementTest {
 
   @Test
   void getAllEmptyReplacementsOfAUser() {
-    List<? extends Replacement<?>> replacements = Replacement.getAllOf(aUser("32"), WORKFLOW_ID);
+    List<? extends Replacement<?>> replacements = Replacement.getAllOf(anotherUser, WORKFLOW_ID);
     assertThat(replacements.isEmpty(), is(true));
   }
 
@@ -135,7 +157,7 @@ class ReplacementTest {
 
   @Test
   void getAllEmptyReplacementsByAUser() {
-    List<? extends Replacement<?>> replacements = Replacement.getAllBy(aUser("32"), WORKFLOW_ID);
+    List<? extends Replacement<?>> replacements = Replacement.getAllBy(anotherUser, WORKFLOW_ID);
     assertThat(replacements.isEmpty(), is(true));
   }
 

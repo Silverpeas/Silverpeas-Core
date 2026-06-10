@@ -105,7 +105,7 @@ public final class UserImpl implements User {
    */
   @Override
   public boolean equals(Object user) {
-    if (user == null || !(user instanceof UserImpl)) {
+    if (!(user instanceof UserImpl)) {
       return false;
     }
     return this.getUserId().equals(((UserImpl) user).getUserId());
