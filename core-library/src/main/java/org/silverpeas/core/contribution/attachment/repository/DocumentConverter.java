@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.jcr.*;
@@ -174,7 +176,22 @@ class DocumentConverter extends AbstractJcrConverter {
     SimpleDocumentList<SimpleDocument> result =
         new SimpleDocumentList<>((int) iter.getSize()).setQueryLanguage(language);
     while (iter.hasNext()) {
-      result.add(convertNode(iter.nextNode(), language));
+      var node = iter.nextNode();
+      var doc = convertNode(node, language);
+      if (doc != null) {
+        // should be non-null, but in case the platform has switched from multilanguage to single
+        // language content, some contents in a language other than the single language (hence
+        // the default one) aren't then retrieved.
+        result.add(doc);
+      } else {
+        // in case no document found for the configured supported content languages, we warn
+        // about that in log
+        String path = node.getPath();
+        String languages =
+            String.join(", ", i18n.getSupportedLanguageCodes().toArray(new String[0]));
+        SilverLogger.getLogger(this)
+            .warn("No document " + path + " found for language(s) " + languages);
+      }
     }
     return result;
   }
@@ -194,6 +211,13 @@ class DocumentConverter extends AbstractJcrConverter {
       while (iter.hasNext() && file == null) {
         file = getAttachment(node, iter.next());
       }
+    }
+
+    if (file == null) {
+      // in the case the document has no content in any configured supported language, we skip
+      // the construction of the SimpleDocument instance and we return null. This can occur in
+      // the case where some content languages have been removed from the supported ones.
+      return null;
     }
 
     String nodeName = node.getName();
