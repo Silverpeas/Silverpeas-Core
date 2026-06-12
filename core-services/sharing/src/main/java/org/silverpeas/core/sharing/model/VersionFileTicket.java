@@ -46,8 +46,8 @@ public class VersionFileTicket extends Ticket {
   private static final long serialVersionUID = 7046398587440076818L;
 
   public VersionFileTicket(int sharedObjectId, String componentId, String creatorId,
-      Date creationDate, Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
+      Date creationDate, Date endDate, int nbAccessMax, String securityCode) {
+    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax, securityCode);
     this.sharedObjectType = VERSION_TYPE;
   }
 

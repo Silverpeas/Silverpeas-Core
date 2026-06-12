@@ -80,17 +80,19 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   protected int nbAccessMax;
   @Column(name = "nbaccess")
   protected int nbAccess;
+  @Column(name = "securitycode")
+  protected String securityCode;
 
   protected Ticket() {
   }
 
   protected Ticket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    this(sharedObjectId, componentId, creator.getId(), creationDate, endDate, nbAccessMax);
+      Date endDate, int nbAccessMax, String securityCode) {
+    this(sharedObjectId, componentId, creator.getId(), creationDate, endDate, nbAccessMax, securityCode);
   }
 
   protected Ticket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-      Date endDate, int nbAccessMax) {
+      Date endDate, int nbAccessMax, String securityCode) {
     this.sharedObjectId = sharedObjectId;
     this.componentId = componentId;
     this.creatorId = creatorId;
@@ -99,6 +101,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
       this.endDate = endDate.getTime();
     }
     this.nbAccessMax = nbAccessMax;
+    this.securityCode = securityCode;
   }
 
   public long getSharedObjectId() {
@@ -158,6 +161,14 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     } else {
       this.endDate = null;
     }
+  }
+
+  public String getSecurityCode() {
+    return securityCode;
+  }
+
+  public void setSecurityCode(String securityCode) {
+    this.securityCode = securityCode;
   }
 
   public int getNbAccessMax() {
@@ -274,6 +285,11 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   public abstract ShareableAccessControl getAccessControl();
 
   public abstract <R> ShareableResource<R> getResource();
+
+  public boolean checkSecurityCode(String securityCode) {
+    if (this.securityCode != null) return this.securityCode.equals(securityCode);
+    return true;
+  }
 
   public enum QUERY_ORDER_BY {
 

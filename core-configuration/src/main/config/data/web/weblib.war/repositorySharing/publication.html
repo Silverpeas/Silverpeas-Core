@@ -56,13 +56,48 @@
           d.setTime(sharing.expiration);
           $("#breadcrumb .validityInfo .expiration").html(d.toLocaleString());
         }
-
-        // get publication and display it
-        displayPublication();
+        if (sharing.securityCode) {
+          $("#securityDialog").dialog({
+            modal: true,        // bloque le reste de la page
+            title: "Code de sécurité",
+            width: 400,
+            buttons: {
+              "OK": function() {
+                const input = document.getElementById("securityCode");
+                const code = input.value;
+                uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
+                fetch(uri, {
+                  method: 'GET',
+                  headers: {
+                    'X-Verification-Code': code
+                  }
+                })
+                  .then(response => response.json())
+                  .then(result => {
+                  if (result) {
+                    $(this).dialog("close");
+                    // get publication and display it
+                    displayPublication();
+                  } else {
+                    input.value = "";
+                  }
+                });
+              },
+              "Annuler": function() {
+                $(this).dialog("close");
+              }
+            }
+          });
+        } else {
+          // get publication and display it
+          displayPublication();
+        }
       }, 'json');
 
       function displayPublication() {
         var url = baseURL + "/silverpeas/services/sharing/publications/" + token;
+        $("#breadcrumb").show();
+        $("#publication").show();
         $.getJSON(url, function(publication) {
           try {
             $(".publiName").html(publication.name);
@@ -202,10 +237,18 @@
   </script>
 </head>
 <body>
+
+<div id="securityDialog" style="display:none;">
+  <div id="securityCheck">
+    <span>Code de sécurité</span>
+    <input type="text" id="securityCode" name="securityCode"/>
+  </div>
+</div>
+
 <div id="header">
   <h1>Gestion documentaire électronique partagée</h1>
 </div>
-<div id="breadcrumb">
+<div id="breadcrumb" style="display: none">
     <span class="sharingBy">
 	<span id="sharingDateLabel"></span>
         <span id="sharingDate"></span>
@@ -218,7 +261,7 @@
   <a title="" href="http://www.silverpeas.com" class="silverpeasLink"><img
       src="generic-elts/sharedWithSilverpeas.png" alt="silverpeas"/></a>
 </div>
-<div id="publication">
+<div id="publication" style="display: none">
   <div class="container">
     <div class="attachments bgDegradeGris">
       <div class="bgDegradeGris header"><h4 class="clean"></h4></div>

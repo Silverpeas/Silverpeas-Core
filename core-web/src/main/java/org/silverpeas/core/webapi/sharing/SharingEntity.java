@@ -41,6 +41,9 @@ public class SharingEntity implements WebEntity {
   private URI webApplicationRootUri;
   @XmlElement(defaultValue = "")
   private String expiration;
+
+  @XmlElement(defaultValue = "")
+  private boolean securityCode;
   @XmlElement(defaultValue = "")
   private String creationDate;
   @XmlElement(defaultValue = "")
@@ -59,6 +62,14 @@ public class SharingEntity implements WebEntity {
     }
     this.creationDate = Long.toString(ticket.getCreationDate().getTime());
     this.user = UserDetail.getById(ticket.getCreatorId()).getDisplayedName();
+    this.securityCode = asSecurityCode(ticket);
+  }
+
+  private boolean asSecurityCode(Ticket ticket) {
+    if (ticket.getSecurityCode() != null) {
+      return !ticket.getSecurityCode().isEmpty();
+    }
+    return false;
   }
 
 }
