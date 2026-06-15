@@ -41,7 +41,7 @@ public class UserInfoImpl extends BasicJpaEntity<UserInfoImpl, UniqueIntegerIden
 
   @Column
   private String name = null;
-  @Column
+  @Column(name = "val")
   private String value = null;
 
   @ManyToOne
