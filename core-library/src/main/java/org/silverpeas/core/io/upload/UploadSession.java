@@ -37,6 +37,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -233,11 +234,16 @@ public class UploadSession {
 
   private void initUploadSessionFolder() {
     try {
-      String tempDirectory = FileRepositoryManager.getTemporaryPath();
+      // to normalize the path according to the underlying filesystem, we build it through a Path
+      // so we can compare it with the path of the upload session folder
+      String tempDirectory = Path.of(FileRepositoryManager.getTemporaryPath()).toString();
       uploadSessionFolder = new File(tempDirectory, uploadSessionId);
       if (!uploadSessionFolder.getCanonicalPath().startsWith(tempDirectory)) {
-        throw new ForbiddenRuntimeException(
-            "Attempt to bypass the temporary directory while uploading a file!");
+        // we ensure the upload session id isn't forged by an attacker to bypass the session folder
+        String msg = "Attempt to bypass the temporary directory while uploading a file with as " +
+            "upload session id '" + uploadSessionId + "'";
+        SilverLogger.getLogger(this).error(msg);
+        throw new ForbiddenRuntimeException(msg);
       }
     } catch (IOException e) {
       throw new SilverpeasRuntimeException(e.getMessage());
