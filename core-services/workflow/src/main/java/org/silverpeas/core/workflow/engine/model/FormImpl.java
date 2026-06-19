@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.DataRecordUtil;
+import org.silverpeas.core.workflow.util.DataRecordUtil;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
@@ -203,7 +203,8 @@ public class FormImpl implements Form, Serializable {
         // Compute the default value
         value = input.getValue();
         if (data != null) {
-          value = DataRecordUtil.applySubstitution(value, data, lang);
+          Item[] items = item == null ? new Item[0] : new Item[] {item};
+          value = DataRecordUtil.applySubstitution(value, data, items, lang);
         }
 
         // Set the field value

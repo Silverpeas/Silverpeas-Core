@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,14 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.workflow.util.DataRecordUtil;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
@@ -762,7 +769,8 @@ public class ProcessInstanceImpl
 
       String[] fieldNames = form.toRecordTemplate(role, lang).getFieldNames();
       DataRecord data = form.getDefaultRecord(role, lang, getAllDataRecord(role, lang));
-      DataRecordUtil.updateFields(fieldNames, data, getFolder(), lang);
+      Item[] items = getProcessModel().getDataFolder().getItems();
+      DataRecordUtil.updateFields(fieldNames, data, getFolder(), items, lang);
 
       return data;
     } catch (FormException e) {
@@ -783,18 +791,21 @@ public class ProcessInstanceImpl
       DataRecord data =
           getProcessModel().getNewActionRecord(actionName, "", "", getAllDataRecord("", ""));
       Input[] inputs = form.getInputs();
+      List<Item> items = new ArrayList<>();
       List<String> fNames;
       if (inputs != null) {
         fNames = new ArrayList<>(inputs.length);
         for (final Input input : inputs) {
           if (input != null && input.getItem() != null) {
+            items.add(input.getItem());
             fNames.add(input.getItem().getName());
           }
         }
       } else {
         fNames = Collections.emptyList();
       }
-      DataRecordUtil.updateFields(fNames.toArray(new String[0]), data, getFolder(), language);
+      DataRecordUtil.updateFields(fNames.toArray(new String[0]), data, getFolder(),
+          items.toArray(new Item[0]), language);
       return data;
     } catch (FormException e) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FORM_CREATE_FAILED",
@@ -1751,7 +1762,8 @@ public class ProcessInstanceImpl
       try {
         LazyProcessInstanceDataRecord dataRecord =
             new LazyProcessInstanceDataRecord(this, role, lang);
-        title = DataRecordUtil.applySubstitution(title, dataRecord, lang);
+        Item[] items = getProcessModel().getDataFolder().getItems();
+        title = DataRecordUtil.applySubstitution(title, dataRecord, items, lang);
       } catch (WorkflowException e) {
         SilverLogger.getLogger(this).warn(e);
       }

@@ -21,12 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.content.form;
+package org.silverpeas.core.workflow.util;
 
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,14 +51,14 @@ public class DataRecordUtil {
    * Updates the specified fields.
    */
   public static void updateFields(String[] fieldNames, DataRecord updatedRecord,
-      DataRecord copiedRecord, String language) throws FormException {
+      DataRecord copiedRecord, Item[] items, String language) throws FormException {
     for (String fieldName : fieldNames) {
-      updateField(fieldName, updatedRecord, copiedRecord, language);
+      updateField(fieldName, updatedRecord, copiedRecord, items, language);
     }
   }
 
   private static void updateField(String fieldName,
-    DataRecord updatedRecord, DataRecord copiedRecord, String language) throws FormException {
+      DataRecord updatedRecord, DataRecord copiedRecord, Item[] items, String language) throws FormException {
     Field updatedField = updatedRecord.getField(fieldName);
     try {
       Field copiedField = copiedRecord.getField(fieldName);
@@ -61,7 +67,7 @@ public class DataRecordUtil {
           Object value = copiedField.getObjectValue();
           if (value instanceof String) {
             updatedField.setObjectValue(
-                applySubstitution((String) value, updatedRecord, language));
+                applySubstitution((String) value, updatedRecord, items, language));
           } else {
             updatedField.setObjectValue(copiedField.getObjectValue());
           }
@@ -69,24 +75,43 @@ public class DataRecordUtil {
           updatedField.setValue(copiedField.getValue());
         }
       }
-    } catch (FormException ignored) {
+    } catch (FormException e) {
       SilverLogger.getLogger(DataRecordUtil.class)
-          .warn("Field '" + fieldName + "' is unknown", ignored);
+          .warn("Field '" + fieldName + "' is unknown", e);
     }
   }
 
   /**
-   * Returns : "But who is xoxox ?" for : "But who is ${foo} ?" when xoxox is the value of the foo
-   * field, The resolvedVar is used to detect recursive call like : foo = "${foo}"
+   * Applies any variable substitution in the specified text by their values as set in the given
+   * data record. In case a variable is in fact a dictionary encoded in a text field, the value of
+   * the field referred by the variable is the key to the actual value in the dictionary. So, the
+   * workflow item defining the field is required to access to the underlying dictionary. Recursive
+   * call like <code>foo = "${foo}"</code> are detected.
+   * <p>
+   * If the text is <code>"But who is ${foo}?"</code>, with the field <code>foo</code> valued with
+   * <code>"xoxox"</code>, then the returned text will be <code>"But who is xoxox?"</code>. If the
+   * text is <code>"Request of type ${type}</code>, with a text field valued with
+   * <code>"0"</code> but mapped in fact to a dictionary <code>{0 → "Foo", 1 → "Boo", 2 → "Proo"
+   * }</code>, then the returned text will be <code>"Request of type Foo</code>.
+   * </p>
+   *
+   * @param text the text to which variables substitution have to be applied. The text can be a
+   * variable itself.
+   * @param data the data record with all the valued fields and with its template (template defining
+   * each fields).
+   * @param items all the implied  workflow items.
+   * @param lang the ISO 639-1 code of a user language.
+   * @return the expanded text.
    */
-  public static String applySubstitution(String text, DataRecord data, String lang) {
-    String appliedText = applySubstitution(text, data, lang, new ArrayList<>());
+  public static String applySubstitution(String text, DataRecord data, Item[] items,
+      String lang) {
+    String appliedText = applySubstitution(text, data, items, lang, new ArrayList<>());
     // applying twice to replace variables in substituted text
-    appliedText = applySubstitution(appliedText, data, lang, new ArrayList<>());
+    appliedText = applySubstitution(appliedText, data, items, lang, new ArrayList<>());
     return appliedText;
   }
 
-  private static String applySubstitution(String text, DataRecord data,
+  private static String applySubstitution(String text, DataRecord data, Item[] items,
       String lang, List<String> resolvedVars) {
     if (text == null) {
       return "";
@@ -111,23 +136,26 @@ public class DataRecordUtil {
       value = VARIABLE_PREFIX + var + VARIABLE_SUFFIX;
     } else {
       resolvedVars.add(var);
-      value = getFieldValue(var, data, lang);
+      value = getFieldValue(var, data, items, lang);
     }
 
     if (suffix != null) {
-      suffix = applySubstitution(suffix, data, lang, resolvedVars);
+      suffix = applySubstitution(suffix, data, items, lang, resolvedVars);
       return prefix + value + suffix;
     } else {
       return prefix + value;
     }
   }
 
-  private static String getFieldValue(String fieldName, DataRecord data, String lang) {
-    String value = "";
+  private static String getFieldValue(String fieldName, DataRecord data, Item[] items,
+      String lang) {
+    String value;
     try {
+      FieldTemplate template =
+          data.getTemplate() == null ? null : data.getTemplate().getFieldTemplate(fieldName);
       Field field = getField(fieldName, data);
       if (field != null) {
-        value = field.getValue(lang);
+        value = getFieldValue(field, template, items, lang);
         if (DateField.TYPE.equals(field.getTypeName())) {
           value = getOutputDate(field, lang);
         } else if (value != null && value.startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
@@ -137,26 +165,43 @@ public class DataRecordUtil {
           // replacing non HTML End-Of-Line
           value = value.replace("\r\n", "");
         }
-      }
-      if (value == null) {
-        value = "";
+      } else {
+        return "";
       }
     } catch (FormException e) {
       SilverLogger.getLogger(DataRecordUtil.class).warn("Field '" + fieldName +
           "' is unknown. Error: " + e.getMessage());
       value = VARIABLE_PREFIX + fieldName + VARIABLE_SUFFIX;
     }
+    return value == null ? "" : value;
+  }
+
+  private static String getFieldValue(Field field, FieldTemplate template, Item[] items,
+      String lang) throws FormException {
+    String value;
+    if (template != null) {
+      value = WorkflowUtil.formatFieldValueAsString(items, template, field, lang);
+      if (StringUtil.isNotDefined(value)) {
+        value = field.getValue(lang);
+      }
+    } else {
+      value = field.getValue(lang);
+    }
+    field.setValue(value, lang);
     return value;
   }
 
   private static Field getField(String fieldName, DataRecord data) throws FormException {
+    String simpleFieldName = fieldName.startsWith(FOLDER_PREFIX) ?
+        fieldName.substring(FOLDER_PREFIX.length()) : fieldName;
     Field field = data.getField(fieldName);
-    if (field != null) {
-      return field;
-    } else if (fieldName.startsWith(FOLDER_PREFIX)) {
-      return data.getField(fieldName.substring(FOLDER_PREFIX.length()));
+    if (field == null) {
+      field = data.getField(simpleFieldName);
     }
-    return null;
+    if (field != null) {
+      field.setName(simpleFieldName);
+    }
+    return field;
   }
 
   private static String getOutputDate(Field field, String lang) {
