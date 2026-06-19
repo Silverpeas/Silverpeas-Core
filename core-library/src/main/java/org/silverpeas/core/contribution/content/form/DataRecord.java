@@ -125,4 +125,10 @@ public interface DataRecord extends Serializable {
    */
   ResourceReference getResourceReference();
 
+  /**
+   * Gets the template providing definition of this data record.
+   * @return the {@link RecordTemplate} defining this data record.
+   */
+  RecordTemplate getTemplate();
+
 }
