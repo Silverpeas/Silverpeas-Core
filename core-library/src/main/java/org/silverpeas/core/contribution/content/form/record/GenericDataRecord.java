@@ -247,4 +247,9 @@ public class GenericDataRecord implements DataRecord, Serializable {
     }
     return new ResourceReference(externalId, componentId);
   }
+
+  @Override
+  public RecordTemplate getTemplate() {
+    return template;
+  }
 }

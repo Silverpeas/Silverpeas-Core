@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.content.form.dummy;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.core.util.ArrayUtil;
 
@@ -106,5 +107,10 @@ public class DummyDataRecord implements DataRecord {
   @Override
   public ResourceReference getResourceReference() {
     return null;
+  }
+
+  @Override
+  public RecordTemplate getTemplate() {
+    return new DummyRecordTemplate();
   }
 }

@@ -75,8 +75,8 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
   }
 
   @Override
-  protected ProcessInstanceTemplate getTemplate(final String role, final String lang) {
-    return null;
+  protected ProcessInstanceTemplate getTemplate(final String role, final String lang) throws WorkflowException {
+    return (ProcessInstanceTemplate) instance.getProcessModel().getAllDataTemplate(role, lang);
   }
 
   @Override

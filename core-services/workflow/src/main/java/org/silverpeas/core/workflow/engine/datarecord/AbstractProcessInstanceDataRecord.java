@@ -27,6 +27,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 
@@ -58,7 +59,7 @@ public abstract class AbstractProcessInstanceDataRecord implements DataRecord {
    * @param role the role played by a user in the process instance.
    * @param lang the language in which the textual data are set or get within the process instance.
    */
-  public AbstractProcessInstanceDataRecord(ProcessInstance instance, String role, String lang)
+  protected AbstractProcessInstanceDataRecord(ProcessInstance instance, String role, String lang)
       throws WorkflowException {
     this.instance = instance;
     this.template = getTemplate(role, lang);
@@ -71,6 +72,10 @@ public abstract class AbstractProcessInstanceDataRecord implements DataRecord {
 
   protected abstract ProcessInstanceTemplate getTemplate(final String role, final String lang)
       throws WorkflowException;
+
+  public RecordTemplate getTemplate() {
+    return template;
+  }
 
   @Override
   public String getId() {

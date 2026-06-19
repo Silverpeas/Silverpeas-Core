@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.model.Item;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -57,12 +58,12 @@ public class WorkflowUtil {
   }
 
   /**
-   * Gets the comparable of the field value from given context.
+   * Gets comparable of the field value from given context.
    * @param items the items of a form.
    * @param fieldTemplate the field templates of a form.
    * @param field the aimed field.
    * @param language the language the formatting rules must take in charge.
-   * @return the comparable of the field.
+   * @return comparable of the field.
    */
   public static Comparable getFieldComparable(Item[] items, FieldTemplate fieldTemplate,
       Field field, String language) {
@@ -90,11 +91,14 @@ public class WorkflowUtil {
       Field field, String language) {
     String fieldValueAsString = defaultStringIfNotDefined(field.getValue(language));
     if (fieldValueAsString.isEmpty() || !DateField.TYPE.equals(field.getTypeName())) {
-      final String fieldName = fieldTemplate.getFieldName();
-      final Item item = getItemByName(items, fieldName);
+      String fieldName = fieldTemplate.getFieldName();
+      Item item = getItemByName(items, fieldName);
+      if (item == null && StringUtil.isDefined(field.getName())) {
+        item = getItemByName(items, field.getName());
+      }
       if (item != null) {
         final Map<String, String> keyValuePairs = item.getKeyValuePairs();
-        if (keyValuePairs != null && keyValuePairs.size() > 0) {
+        if (keyValuePairs != null && !keyValuePairs.isEmpty()) {
           // Try to format a checkbox list
           fieldValueAsString = Arrays
               .stream(fieldValueAsString.split(SEVERAL_VALUE_DELIMITER))

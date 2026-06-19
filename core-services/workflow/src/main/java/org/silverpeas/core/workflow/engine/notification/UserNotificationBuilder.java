@@ -25,19 +25,20 @@
 package org.silverpeas.core.workflow.engine.notification;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.Link;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.core.workflow.util.DataRecordUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -90,7 +91,8 @@ public class UserNotificationBuilder extends AbstractTemplateUserNotificationBui
 
     try {
       DataRecord data = task.getProcessInstance().getAllDataRecord(task.getUserRoleName(), language);
-      String content = DataRecordUtil.applySubstitution(text, data, language);
+      Item[] items = task.getProcessInstance().getProcessModel().getDataFolder().getItems();
+      String content = DataRecordUtil.applySubstitution(text, data, items, language);
 
       template.setAttribute("content", content);
     } catch (WorkflowException e) {
