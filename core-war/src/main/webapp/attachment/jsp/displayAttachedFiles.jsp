@@ -888,7 +888,7 @@ const _afManager${domIdSuffix} = new function() {
       open:function() {
         const filename = $(this).data("filename").escapeHTML();
         const $dialog = _self_ui.get$deleteAttachment().parent();
-        $dialog.find(".attachment-delete-warning-message").html('${silfn:escapeJs(deleteConfirmMsg)}'.replace(/([ ?]+)$/, ' <b>' + filename + '</b>$1'));
+        $dialog.find(".attachment-delete-warning-message").html('${silfn:escapeJs(deleteConfirmMsg)}'.replace(/([ ?]+)$/, ' <b>' + filename.escapeHTML() + '</b>$1'));
         $dialog.find("#button-delete-all${domIdSuffix}").hide();
       <c:if test="${_isI18nHandled && not isVersionActive}">
         const translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';

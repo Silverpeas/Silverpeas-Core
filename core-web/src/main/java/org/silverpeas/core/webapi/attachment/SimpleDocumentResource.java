@@ -24,6 +24,7 @@
 package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
@@ -38,8 +39,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.util.Charsets;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.jcr.webdav.WebDavTokenGenerator;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.web.http.FileResponse;
@@ -48,7 +48,7 @@ import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.UserPrivilegeValidator;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
-import org.silverpeas.core.jcr.webdav.WebDavTokenGenerator;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -56,13 +56,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -148,7 +143,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
     try {
       // Update the attachment
-      String normalizedFileName = StringUtil.normalize(URLDecoder.decode(filename, Charsets.UTF_8));
+      String normalizedFileName = StringUtil.normalize(Encode.forHtml(filename));
       SimpleDocumentEntity entity = updateSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
