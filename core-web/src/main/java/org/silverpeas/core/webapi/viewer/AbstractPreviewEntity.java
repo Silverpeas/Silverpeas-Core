@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.web.rs.WebEntity;
 
@@ -57,7 +58,7 @@ public abstract class AbstractPreviewEntity<T extends AbstractPreviewEntity<T>> 
     documentId = preview.getDocumentId();
     documentType = preview.getDocumentType();
     language = preview.getLanguage();
-    originalFileName = preview.getOriginalFileName();
+    originalFileName = Encode.forHtml(preview.getOriginalFileName());
     width = preview.getWidth();
     height = preview.getHeight();
   }
