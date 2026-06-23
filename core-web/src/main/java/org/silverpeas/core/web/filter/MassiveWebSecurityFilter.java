@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -133,9 +133,9 @@ public class MassiveWebSecurityFilter implements Filter {
     XSS_PATTERNS = new ArrayList<>(2);
     XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*(script|iframe|svg|math|details)"));
     XSS_PATTERNS.add(Pattern.compile(
-        "on(keydown|keypress|keyup|click|dbclick|mousedown|mousemove|mouseout|mouseover|mouseup" +
-        "|mousewheel|wheel|abort|error|onchange|onblur|contextmenu|focus|input|invalid|reset" +
-        "|search|select|submit|load|message)\\s*="));
+        "\\s+on(keydown|keypress|keyup|click|dbclick|mousedown|mousemove|mouseout|mouseover" +
+            "|mouseup|mousewheel|wheel|abort|error|onchange|onblur|contextmenu|focus|input" +
+            "|invalid|reset|search|select|submit|load|message)\\s*="));
   }
 
   @Override
@@ -312,7 +312,7 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   /**
-   * Verifies deeply a matched SQL string. Indeed, throwing an exception of XSS attack only on SQL
+   * Verifies deeply a matched SQL string. Indeed, throwing an exception to XSS attack only on SQL
    * detection is not enough. This method tries to detect a known table name from the SQL string.
    *
    * @param matcherFound a pattern matcher
