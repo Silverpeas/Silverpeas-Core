@@ -25,6 +25,7 @@ package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
@@ -36,7 +37,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.web.http.RequestFile;
@@ -48,7 +48,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -84,12 +83,9 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public Response createDocument(final @PathParam("filename") String filename) throws IOException {
     SimpleDocumentUploadData uploadData = decode(getHttpRequest());
-
     try {
-
       // Create the attachment
-      final String normalizedFileName =
-          StringUtil.normalize(URLDecoder.decode(filename, Charsets.UTF_8));
+      final String normalizedFileName = StringUtil.normalize(Encode.forHtml(filename));
       final SimpleDocumentEntity entity = createSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
