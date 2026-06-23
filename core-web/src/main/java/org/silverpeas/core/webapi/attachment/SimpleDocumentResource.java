@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import org.apache.commons.io.FileUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
@@ -59,7 +60,6 @@ import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.*;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,7 +77,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
   @Inject
   private I18n i18n;
-  
+
   @Inject
   private AttachmentService attachmentService;
 
@@ -147,7 +147,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
     try {
       // Update the attachment
-      String normalizedFileName = StringUtil.normalize(URLDecoder.decode(filename, Charsets.UTF_8));
+      String normalizedFileName = StringUtil.normalize(Encode.forHtml(filename));
       SimpleDocumentEntity entity = updateSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
@@ -352,7 +352,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Locks the specified document for exclusive edition.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise
+   * otherwise.
    */
   @PUT
   @Path("lock/{lang}")
@@ -379,7 +379,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Moves the specified document up in the list.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise
+   * otherwise.
    */
   @PUT
   @Path("moveUp")
@@ -392,7 +392,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Moves the specified document down in the list.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise
+   * otherwise.
    */
   @PUT
   @Path("moveDown")
@@ -417,7 +417,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @param privateVersion if the document is a private version.
    * @param comment a comment about the unlocking.
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise
+   * otherwise.
    */
   @POST
   @Path("unlock")
@@ -452,7 +452,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @param comment comment about the version state switching.
    * @param version the new version state.
    * @return JSON status to true if the document was locked successfully - JSON status to false
-   * otherwise
+   * otherwise.
    */
   @PUT
   @Path("switchState")
