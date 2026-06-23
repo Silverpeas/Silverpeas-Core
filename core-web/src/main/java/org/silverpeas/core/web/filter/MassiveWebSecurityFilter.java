@@ -132,7 +132,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
     XSS_PATTERNS = new ArrayList<>(2);
     XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*(script|iframe|svg|math|details)"));
-    XSS_PATTERNS.add(Pattern.compile("on\\w+\\s*="));
+    XSS_PATTERNS.add(Pattern.compile("\\s+on\\w+\\s*="));
   }
 
   @Override
