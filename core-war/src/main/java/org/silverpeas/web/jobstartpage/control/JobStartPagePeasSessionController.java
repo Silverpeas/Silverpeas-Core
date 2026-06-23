@@ -144,7 +144,6 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     checkAccessGranted(spaceId, null, true);
     managedSpaceId = spaceId;
     this.isManagedSpaceRoot = isManagedSpaceRoot;
-
   }
 
   public String getManagedSpaceId() {

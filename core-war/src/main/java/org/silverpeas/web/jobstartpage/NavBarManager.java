@@ -32,6 +32,8 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -421,8 +423,9 @@ public class NavBarManager {
    */
   private static class DisplaySortedCache {
 
-    private SortedSet<DisplaySorted> sortedData = synchronizedSortedSet(new TreeSet<>());
-    private Map<String, DisplaySorted> cache = synchronizedMap(new HashMap<>());
+    private final SortedSet<DisplaySorted> sortedData = synchronizedSortedSet(new TreeSet<>());
+    private final Map<String, DisplaySorted> cache = synchronizedMap(new HashMap<>());
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     DisplaySortedCache() {
       super();
@@ -457,8 +460,13 @@ public class NavBarManager {
      *
      * @return sorted instances.
      */
-    public synchronized SortedSet<DisplaySorted> getSorted() {
-      return sortedData;
+    public SortedSet<DisplaySorted> getSorted() {
+      lock.readLock().lock();
+      try {
+        return new TreeSet<>(sortedData);
+      } finally {
+        lock.readLock().unlock();
+      }
     }
 
     /**
@@ -475,8 +483,8 @@ public class NavBarManager {
      * Clears the cache.
      */
     public synchronized void clear() {
-      sortedData = synchronizedSortedSet(new TreeSet<>());
-      cache = synchronizedMap(new HashMap<>());
+      sortedData.clear();
+      cache.clear();
     }
 
     /**
@@ -485,8 +493,13 @@ public class NavBarManager {
      * @param data the data to set into cache.
      */
     public synchronized void set(final Stream<DisplaySorted> data) {
-      clear();
-      data.forEach(d -> put(d.getId(), d));
+      lock.writeLock().lock();
+      try {
+        sortedData.clear();
+        data.forEach(d -> put(d.getId(), d));
+      } finally {
+        lock.writeLock().unlock();
+      }
     }
   }
 }
