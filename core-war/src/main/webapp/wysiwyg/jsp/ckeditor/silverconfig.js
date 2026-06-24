@@ -57,12 +57,12 @@ CKEDITOR.editorConfig = function( config )
   ];
 
   config.toolbar_calendar = config.toolbar_Default;
-  config.toolbar_forum = config.toolbar_Light;
+  config.toolbar_forum = config.toolbar_Default;
   config.toolbar_blog = config.toolbar_Default;
   config.toolbar_almanach = config.toolbar_Default;
   config.toolbar_quickInfo = config.toolbar_Default;
   config.toolbar_XMLForm = config.toolbar_Default;
-  config.toolbar_questionReply = config.toolbar_Light;
+  config.toolbar_questionReply = config.toolbar_Default;
   config.toolbar_suggestionBox = config.toolbar_Light;
   config.toolbar_userNotification = config.toolbar_Basic;
 
