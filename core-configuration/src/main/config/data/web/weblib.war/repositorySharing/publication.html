@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -56,13 +56,48 @@
           d.setTime(sharing.expiration);
           $("#breadcrumb .validityInfo .expiration").html(d.toLocaleString());
         }
-
-        // get publication and display it
-        displayPublication();
+        if (sharing.securityCode) {
+          $("#securityDialog").dialog({
+            modal: true,        // bloque le reste de la page
+            title: "Code de sécurité",
+            width: 400,
+            buttons: {
+              "OK": function() {
+                const input = document.getElementById("securityCode");
+                const code = input.value;
+                uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
+                fetch(uri, {
+                  method: 'GET',
+                  headers: {
+                    'X-Verification-Code': code
+                  }
+                })
+                        .then(response => response.json())
+                        .then(result => {
+                          if (result) {
+                            $(this).dialog("close");
+                            // get publication and display it
+                            displayPublication();
+                          } else {
+                            input.value = "";
+                          }
+                        });
+              },
+              "Annuler": function() {
+                $(this).dialog("close");
+              }
+            }
+          });
+        } else {
+          // get publication and display it
+          displayPublication();
+        }
       }, 'json');
 
       function displayPublication() {
         var url = baseURL + "/silverpeas/services/sharing/publications/" + token;
+        $("#breadcrumb").show();
+        $("#publication").show();
         $.getJSON(url, function(publication) {
           try {
             $(".publiName").html(publication.name);
@@ -109,7 +144,7 @@
             a.appendTo(li);
             if (attachment.description) {
               var p = $("<p>").addClass("description").html(
-                  attachment.description.replace("\n", "<br/>"));
+                      attachment.description.replace("\n", "<br/>"));
               p.appendTo(li);
             }
 
@@ -157,7 +192,7 @@
         // generate zip file
         var instanceId = $("#instanceId").val();
         var url = baseURL + "/silverpeas/services/sharing/attachments/" + instanceId + "/" + token +
-            "/" + ids + "/zip";
+                "/" + ids + "/zip";
         $.getJSON(url, function(zip) {
           // display modal dialog to download zip
           $("#downloadZip-dialog a").attr("href", zip.url);
@@ -202,10 +237,18 @@
   </script>
 </head>
 <body>
+
+<div id="securityDialog" style="display:none;">
+  <div id="securityCheck">
+    <span>Code de sécurité</span>
+    <input type="text" id="securityCode" name="securityCode"/>
+  </div>
+</div>
+
 <div id="header">
   <h1>Gestion documentaire électronique partagée</h1>
 </div>
-<div id="breadcrumb">
+<div id="breadcrumb" style="display: none">
     <span class="sharingBy">
 	<span id="sharingDateLabel"></span>
         <span id="sharingDate"></span>
@@ -216,9 +259,9 @@
 	<span id="expirationLabel"></span> : <span class="expiration"></span>
     </span>
   <a title="" href="http://www.silverpeas.com" class="silverpeasLink"><img
-      src="generic-elts/sharedWithSilverpeas.png" alt="silverpeas"/></a>
+          src="generic-elts/sharedWithSilverpeas.png" alt="silverpeas"/></a>
 </div>
-<div id="publication">
+<div id="publication" style="display: none">
   <div class="container">
     <div class="attachments bgDegradeGris">
       <div class="bgDegradeGris header"><h4 class="clean"></h4></div>
@@ -236,7 +279,7 @@
 <div id="downloadZip-dialog" title="T&eacute;l&eacute;charger vos fichiers" style="display:none">
   <p>
     <a href="" target="_blank">Cliquez sur le lien pour t&eacute;l&eacute;charger le ZIP</a> - <span
-      id="zipSize"></span>
+          id="zipSize"></span>
   </p>
 </div>
 <input type="hidden" id="uri"/>
