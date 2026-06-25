@@ -30,7 +30,11 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import static java.util.Optional.ofNullable;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This abstraction is dedicated to administration implementations of
@@ -44,6 +48,8 @@ import static java.util.Optional.ofNullable;
 public abstract class AdminComponentRequestRouter<T extends AbstractAdminComponentSessionController>
     extends ComponentRequestRouter<T> {
   private static final long serialVersionUID = -1845547120139170876L;
+
+  protected static final String ADMIN_TOKEN = "X-ATKN";
 
   /**
    * This method has to be implemented by the admin component request Router it has to compute a

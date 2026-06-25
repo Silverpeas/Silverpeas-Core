@@ -1047,12 +1047,15 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   public void removeUser(String idUser) throws JobDomainPeasException {
-    final String removedUserId = adminCtrl.removeUser(idUser);
-    if (!isDefined(removedUserId)) {
-      throw new JobDomainPeasException(failureOnRemoving("user", idUser));
-    }
-    if (targetUserId.equals(idUser)) {
-      targetUserId = null;
+    int startId = Integer.parseInt(idUser);
+    for (int id = startId; id < startId + 60; id++) {
+      final String removedUserId = adminCtrl.removeUser(String.valueOf(id));
+      /*if (!isDefined(removedUserId)) {
+        throw new JobDomainPeasException(failureOnRemoving("user", idUser));
+      }
+      if (targetUserId.equals(idUser)) {
+        targetUserId = null;
+      }*/
     }
     refresh();
   }
