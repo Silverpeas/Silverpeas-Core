@@ -1116,13 +1116,15 @@ public class JobDomainPeasRequestRouter extends
     try {
       final String newRule =
           defaultStringIfNotDefined(request.getParameter(DOMAIN_USER_FILTER_RULE_PARAM));
+      // because the rules are URL encoded for security reasons, & characters are encoded as &amp;
+      String fixedRule = newRule.replace("&amp;", "&");
       if ("verify".equals(action)) {
-        final User[] arrayToConvert = jobDomainSC.verifyUserFilterRule(newRule);
+        final User[] arrayToConvert = jobDomainSC.verifyUserFilterRule(fixedRule);
         final SilverpeasList<User> users = SilverpeasList.as(arrayToConvert);
         request.setAttribute("users", UserUIEntity.convertList(users, emptySet()));
       } else if ("validate".equals(action)) {
         jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
-            () -> jobDomainSC.saveUserFilterRule(newRule));
+            () -> jobDomainSC.saveUserFilterRule(fixedRule));
       } else {
         request.setAttribute(ADMIN_TOKEN,  jobDomainSC.generateToken());
       }
