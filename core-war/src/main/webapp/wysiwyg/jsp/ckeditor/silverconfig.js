@@ -6,6 +6,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 CKEDITOR.editorConfig = function( config )
 {
   //config.contentsCss = webContext + '/util/styleSheets/silverpeas-main.css';
+  config.entities = false;
+  config.entities_latin = false;
   config.baseHref = webContext + '/wysiwyg/jsp/';
   config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
