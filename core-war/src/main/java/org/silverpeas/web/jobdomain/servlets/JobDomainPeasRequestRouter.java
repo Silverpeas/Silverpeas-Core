@@ -77,7 +77,6 @@ public class JobDomainPeasRequestRouter extends
 
   private static final long serialVersionUID = 1L;
 
-  private static final String ADMIN_TOKEN = "X-ATKN";
   private static final String DOMAIN_CREATE_FCT = "domainCreate";
   private static final String DOMAIN_SCIM_CREATE_FCT = "domainSCIMCreate";
   private static final String DOMAIN_GOOGLE_CREATE_FCT = "domainGoogleCreate";
@@ -213,27 +212,34 @@ public class JobDomainPeasRequestRouter extends
         jobDomainSC.setTargetUser(user.getId());
         destination = USER_CONTENT_DEST;
       } else if ("restoreUsers".equals(function)) {
-        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+        String token = request.getParameter(ADMIN_TOKEN);
+        jobDomainSC.securelyApply(token, () -> {
           jobDomainSC.checkCurrentDomainAccessGranted(false);
           final List<String> userIds = new ArrayList<>();
           request.mergeSelectedItemsInto(userIds);
           for (final String u : userIds) {
             jobDomainSC.restoreUser(u);
           }
+          // in pagination, we keep the same token
+          request.setAttribute(ADMIN_TOKEN, token);
         });
         destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
       } else if ("deleteUsers".equals(function)) {
-        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+        String token = request.getParameter(ADMIN_TOKEN);
+        jobDomainSC.securelyApply(token, () -> {
           jobDomainSC.checkCurrentDomainAccessGranted(false);
           final List<String> userIds = new ArrayList<>();
           request.mergeSelectedItemsInto(userIds);
           for (final String u : userIds) {
             jobDomainSC.deleteUser(u);
           }
+          // in pagination, we keep the same token
+          request.setAttribute(ADMIN_TOKEN, token);
         });
         destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
       } else if ("restoreGroups".equals(function)) {
-        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+        String token = request.getParameter(ADMIN_TOKEN);
+        jobDomainSC.securelyApply(token, () -> {
           jobDomainSC.checkCurrentDomainAccessGranted(false);
           final List<String> groupIds = new ArrayList<>();
           request.mergeSelectedItemsInto(groupIds);
@@ -244,16 +250,21 @@ public class JobDomainPeasRequestRouter extends
           if (refreshDomainNav) {
             reloadDomainNavigation(request);
           }
+          // in pagination, we keep the same token
+          request.setAttribute(ADMIN_TOKEN, token);
         });
         destination = getDestination(DISPLAY_REMOVED_GROUPS_DEST, jobDomainSC, request);
       } else if ("deleteGroups".equals(function)) {
-        jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN), () -> {
+        String token = request.getParameter(ADMIN_TOKEN);
+        jobDomainSC.securelyApply(token, () -> {
           jobDomainSC.checkCurrentDomainAccessGranted(false);
           final List<String> groupIds = new ArrayList<>();
           request.mergeSelectedItemsInto(groupIds);
           for (final String group : groupIds) {
             jobDomainSC.deleteGroup(group);
           }
+          // in pagination, we keep the same token
+          request.setAttribute(ADMIN_TOKEN, token);
         });
         destination = getDestination(DISPLAY_REMOVED_GROUPS_DEST, jobDomainSC, request);
       } else if ("filterByUserState".equals(function)) {
@@ -892,14 +903,18 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith(DISPLAY_REMOVED_USERS_DEST)) {
           final SilverpeasList<UserDetail> removedUsers =
               SilverpeasList.wrap(jobDomainSC.getRemovedUsers());
-          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
+          if (isNotInPaginationPage(request)) {
+            request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
+          }
           request.setAttribute("removedUsers", convertRemovedUserList(removedUsers, emptySet()));
           request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
           request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
           destination = "removedUsers.jsp";
         } else if (function.startsWith("displayDeletedUsers")) {
           final List<UserDetail> deletedUsers = jobDomainSC.getDeletedUsers();
-          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
+          if (isNotInPaginationPage(request)) {
+            request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
+          }
           request.setAttribute("deletedUsers", deletedUsers);
           request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
           request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
@@ -913,7 +928,9 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith(DISPLAY_REMOVED_GROUPS_DEST)) {
           final List<GroupDetail> allRemovedGroups = jobDomainSC.getRemovedGroups();
           final SilverpeasList<GroupDetail> removedGroups = SilverpeasList.wrap(allRemovedGroups);
-          request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
+          if (isNotInPaginationPage(request)) {
+            request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
+          }
           request.setAttribute("removedGroups", convertRemovedGroupList(removedGroups, emptySet()));
           request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
           request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
@@ -1084,6 +1101,11 @@ public class JobDomainPeasRequestRouter extends
     } catch (JobDomainPeasException e) {
       request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserDetail());
     }
+  }
+
+  private boolean isNotInPaginationPage(HttpServletRequest request) {
+    return request.getAttribute(ADMIN_TOKEN) == null &&
+        StringUtil.isNotDefined(request.getParameter("ArrayPaneAction"));
   }
 
   private String handleUserFilterModification(final JobDomainPeasSessionController jobDomainSC,
