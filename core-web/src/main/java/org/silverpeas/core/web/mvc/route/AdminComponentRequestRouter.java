@@ -25,16 +25,12 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.kernel.util.Mutable;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import static java.util.Optional.ofNullable;
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This abstraction is dedicated to administration implementations of
@@ -56,7 +52,7 @@ public abstract class AdminComponentRequestRouter<T extends AbstractAdminCompone
    * destination page
    * @param function The entering request function (ex : "Main.jsp", when accessing
    * "/RjobManager/jsp/Main.jsp")
-   * @param componentSC The component Session Controller, build and initialised.
+   * @param componentSC The component Session Controller, build and initialized.
    * @param request The entering request. The request Router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/RjobManager/jsp/Main.jsp?flag=read")
