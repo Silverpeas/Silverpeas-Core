@@ -68,11 +68,11 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private static final String JSP_DOMAIN_MIXT = "JSP.domainMixt";
   private final AdminController myAdminController =
       ServiceProvider.getService(AdminController.class);
-  private final PublicationService publicationService = PublicationService.get();
-  private final NodeService nodeService = NodeService.get();
+  private final transient PublicationService publicationService = PublicationService.get();
+  private final transient NodeService nodeService = NodeService.get();
   private String searchField = null;
   private String category = null;
-  private List<SearchResult> listResult = null;
+  private transient List<SearchResult> listResult = null;
 
   /**
    *
@@ -342,8 +342,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       publication = null;
     }
 
-    if (null != publication &&
-        PublicationAccessControl.get().isUserAuthorized(getUserId(), publication)) {
+    if (null != publication && getUserDetail().isAccessAdmin()) {
       final String nom = publication.getName(getLanguage());
       final String desc = publication.getDescription(getLanguage());
       final Date dateCrea = publication.getCreationDate();
