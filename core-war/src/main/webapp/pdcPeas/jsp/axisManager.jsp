@@ -32,8 +32,8 @@
 <%@ include file="checkPdc.jsp"%>
 <%
 	String type = (String) request.getAttribute("ViewType");
-	List primaryAxis = (List) request.getAttribute("PrimaryAxis");
-	List secondaryAxis = (List) request.getAttribute("SecondaryAxis");
+	List<AxisHeader> primaryAxis = (List<AxisHeader>) request.getAttribute("PrimaryAxis");
+	List<AxisHeader> secondaryAxis = (List<AxisHeader>) request.getAttribute("SecondaryAxis");
 
 	AxisHeader axisHeader = (AxisHeader) request.getAttribute("AxisHeader");
 	String max = (String) request.getAttribute("MaxAxis");
@@ -43,7 +43,7 @@
 	String translation = (String) request.getAttribute("Translation");
 	if (translation == null || translation.equals("null"))
 	{
-		translation = I18NHelper.DEFAULT_LANGUAGE;
+		translation = I18NHelper.getDefaultLanguage();
 	}
 
 	String id = "";
@@ -54,7 +54,7 @@
 	String primaryChecked = "checked";
 	String secondaryChecked = "";
 	String errorMessage = "";
-	List selectedAxis = primaryAxis; // pour affichage des options du tag select
+	List<AxisHeader> selectedAxis = primaryAxis; // pour affichage des options du tag select
 	if (type.equals("S")) {
 		primaryChecked = "";
 		secondaryChecked = "checked";
@@ -74,7 +74,7 @@
 			}
 			name = axisHeader.getName(translation);
 			description = axisHeader.getDescription(translation);
-			order = new Integer(axisHeader.getAxisOrder()).toString();
+			order = Integer.toString(axisHeader.getAxisOrder());
 			if (alreadyExist != null && alreadyExist.equals("1")) {
 				errorMessage = "<font size=2 color=#FF6600><b>"+resource.getString("pdcPeas.axisAlreadyExist")+"</b></font>";
 			}
@@ -82,7 +82,7 @@
 	}
 
 	// pour affichage des options du tag select
-	Iterator it = null;
+	Iterator<AxisHeader> it = null;
 	int nbItemShowed = 1; // cas ou ce serait le 1er axe de cr�er
 	if (!selectedAxis.isEmpty()){
 		it = selectedAxis.iterator();
@@ -94,23 +94,23 @@
 			nbItemShowed = 5;
 		}
 	}
-	AxisHeader tempAxisHeader = null;
-	String axisName = "";
+	AxisHeader tempAxisHeader;
+	String axisName;
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= language %>">
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 
-<script language="Javascript">
+<script type="application/javascript">
 
 	function ifCorrectFormExecute(callback) {
-		var name = stripInitialWhitespace(document.axisForm.Name.value);
-		if (isWhitespace(name)) {
+    const name = stripInitialWhitespace(document.axisForm.Name.value);
+    if (isWhitespace(name)) {
       jQuery.popup.error("<%=resource.getString("pdcPeas.emptyName")%>");
 			document.axisForm.Name.focus();
 		} else {
@@ -140,24 +140,24 @@
 			int item; // place de l'item dans l'objet html SELECT
 		%>
 		// effacer toutes les options actuelles
-		var longueur_list = document.axisForm.Order.length;
-		for (i=0;i<longueur_list ;i++ ){
+    const longueur_list = document.axisForm.Order.length;
+    for (let i=0; i<longueur_list; i++ ){
 			document.axisForm.Order.options[0] = null;
 		}
 
-		if (axisType == 'P'){
-			// d�finition des noms d'axe et de leur ordre de l'axe primaire
+		if (axisType === 'P'){
+			// définition des noms d'axe et de leur ordre de l'axe primaire
 			<%
 			if (!primaryAxis.isEmpty()){
-				// la liste n'est pas vide, on construit les instructions javascript pour reconstuire dynamique la liste
-				Iterator IteratorP = primaryAxis.iterator();
+				// la liste n'est pas vide, on construit les instructions javascript pour reconstuire dynamiquement la liste
+				Iterator<AxisHeader> IteratorP = primaryAxis.iterator();
 				item = 0;
 				while (IteratorP.hasNext()){
-					h = (AxisHeader)IteratorP.next();
+					h = IteratorP.next();
 					nom = WebEncodeHelper.javaStringToHtmlString(h.getName());
 					desc = WebEncodeHelper.javaStringToHtmlString(h.getDescription());
 					o = h.getAxisOrder();
-					ordre = new Integer(o).toString();
+					ordre = Integer.toString(o);
 					if (!(h.getPK().getId()).equals(id)){
 						out.println("document.axisForm.Order.options["+item+"] = new Option(\""+nom+"\",\""+nom+sepOptionValueTag+ordre+"\");");
 						item++;
@@ -175,17 +175,17 @@
 			out.println("document.axisForm.Order.size = 5"); // d�finition en dur de la taille de la liste :-(
 			%>
 		} else {
-			// d�finition des noms d'axe et de leur ordre
+			// définition des noms d'axe et de leur ordre
 			<%
 			if (!secondaryAxis.isEmpty()){
-				Iterator IteratorS = secondaryAxis.iterator();
+				Iterator<AxisHeader> IteratorS = secondaryAxis.iterator();
 				item = 0;
 				while (IteratorS.hasNext()){
-					h = (AxisHeader)IteratorS.next();
+					h = IteratorS.next();
 					nom = WebEncodeHelper.javaStringToHtmlString(h.getName());
 					desc = WebEncodeHelper.javaStringToHtmlString(h.getDescription());
 					o = h.getAxisOrder();
-					ordre = new Integer(o).toString();
+					ordre = Integer.toString(o);
 					if (!(h.getPK().getId()).equals(id)){
 						out.println("document.axisForm.Order.options["+item+"] = new Option(\""+nom+"\",\""+nom+sepOptionValueTag+ordre+"\");");
 						item++;
@@ -193,14 +193,14 @@
 				}
 				o++;
 				// ajoute le dernier element
-				if (modification == null) // cr�ation
+				if (modification == null) // création
 					out.println("document.axisForm.Order.options["+item+"] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\""+o+"\",true,\"selected\");");
 				else
 					out.println("document.axisForm.Order.options["+item+"] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\""+o+"\");");
 			} else {
 				out.println("document.axisForm.Order.options[0] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\"0\",true,\"selected\");");
 			}
-			out.println("document.axisForm.Order.size = 5"); // d�finition en dur de la taille de la liste :-(
+			out.println("document.axisForm.Order.size = 5"); // définition en dur de la taille de la liste :-(
 			%>
 		}
 	}
@@ -210,12 +210,7 @@
 	<%
 	if (axisHeader != null)
 	{
-		String lang = "";
-		Iterator codes = axisHeader.getTranslations().keySet().iterator();
-
-		while (codes.hasNext())
-		{
-			lang = (String) codes.next();
+		for(String lang: axisHeader.getTranslations().keySet()){
 			out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(axisHeader.getName(lang))+"\";\n");
 			out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(axisHeader.getDescription(lang))+"\";\n");
 		}
@@ -234,7 +229,7 @@
 	}
 </script>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" onload="storeItems(document.axisForm.Order);document.axisForm.Name.focus()">
+<BODY onload="storeItems(document.axisForm.Order);document.axisForm.Name.focus()">
 <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));
     browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
@@ -257,50 +252,59 @@
     out.println(frame.printBefore());
     out.println(board.printBefore());
 %>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4">
-    <form action="<%=formAction%>" name="axisForm" method="post">
-
+  <form action="<%=formAction%>" name="axisForm" method="post">
+  <table>
+    <th></th>
 	<%=I18NHelper.getFormLine(resource, axisHeader, translation)%>
 
 		<input type="hidden" name="Id" value="<%=id%>">
-	  <% if (errorMessage != null && errorMessage.length() > 0) { %>
+	  <% if (errorMessage != null && !errorMessage.isEmpty()) { %>
 		<tr>
-			<td colspan=2 nowrap align=center><%=errorMessage%></td>
+			<td style="text-align: center"><%=errorMessage%></td>
 		</tr>
 	  <% } %>
       <tr>
-        <td width="30%" class="txtlibform" nowrap><%=resource.getString("GML.nom")%>&nbsp;:</td>
-        <td nowrap><input type="text" style="text-align:left;" name="Name" id="AxisName" maxlength="25" size="30" value="<%=WebEncodeHelper.javaStringToHtmlString(name)%>" onKeyUP="javascript:highlightItem(document.axisForm.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width="5" align="absmiddle"></td>
+        <td style="width: 30%" class="txtlibform">
+          <label for="AxisName"><%=resource.getString("GML.nom")%> :</label></td>
+        <td>
+          <input type="text" style="text-align:left;" name="Name" id="AxisName" maxlength="25" size="30" value="<%=WebEncodeHelper.javaStringToHtmlString(name)%>" onKeyUP="javascript:highlightItem(document.axisForm.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width="5" align="absmiddle"></td>
       </tr>
       <tr>
-	  <td width="30%" class="txtlibform" valign="top" nowrap><%=resource.getString("pdcPeas.definition")%>&nbsp;:</td>
+	  <td style="width: 30%" class="txtlibform">
+      <label for="AxisDescription"><%=resource.getString("pdcPeas.definition")%>&nbsp;:</label></td>
         <td><TEXTAREA style="width:100%" name="Description" id="AxisDescription" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(description)%></TEXTAREA></td>
      </tr>
       <tr>
-        <td class="txtlibform" nowrap><%=resource.getString("GML.type")%>&nbsp;:</td>
-        <td nowrap>
-          <input type="radio" name="Type" value="P" <%=primaryChecked%> onClick="javascript:changeList('P')"><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.primary")%></span><br>
-          <input type="radio" name="Type" value="S" <%=secondaryChecked%> onClick="javascript:changeList('S')"><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.secondary")%></span></td>
+        <td class="txtlibform">
+          <label for="Type"><%=resource.getString("GML.type")%>&nbsp;:</label></td>
+        <td>
+          <input id="Type" type="radio" name="Type" value="P" <%=primaryChecked%>
+                 onClick="changeList('P')" onkeypress="changeList('P')">
+          <span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.primary")%></span><br>
+          <input type="radio" name="Type" value="S" <%=secondaryChecked%>
+                 onClick="changeList('S')" onkeypress="changeList('S')">
+          <span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.secondary")%></span>
+        </td>
       </tr>
       <tr>
-        <td class="txtlibform" valign="top"><%=resource.getString("pdcPeas.position")%>&nbsp;:</td>
+        <td class="txtlibform"><%=resource.getString("pdcPeas.position")%>&nbsp;:</td>
         <td class="textePetitBold"><%=resource.getString("pdcPeas.brothersAxis")%>&nbsp;:<br>
 			<%
-				out.println("<select name=\"Order\" size=\""+new Integer(nbItemShowed).toString()+"\">");
-				// test s'il ne s'agit pas du premier axe que l'on cr�ait.
+				out.println("<select name=\"Order\" size=\""+ Integer.toString(nbItemShowed) +"\">");
+				// test s'il ne s'agit pas du premier axe que l'on créait.
 				if (!selectedAxis.isEmpty()){
-					// affiche les axes fr�res
-					while (it.hasNext()){
-						tempAxisHeader = (AxisHeader)it.next();
+					// affiche les axes frères
+					while (it != null && it.hasNext()){
+						tempAxisHeader = it.next();
 						axisName = WebEncodeHelper.javaStringToHtmlString(tempAxisHeader.getName());
-						order = (new Integer( tempAxisHeader.getAxisOrder() )).toString();
+						order = Integer.toString(tempAxisHeader.getAxisOrder());
 						if (!(tempAxisHeader.getPK().getId()).equals(id)) {
 							out.println("<option value=\""+axisName+sepOptionValueTag+order+"\">"+axisName+"</option>");
 						}
 					}
 					// calcul le dernier ordre
-					int newOrder_tmp = (new Integer(order)).intValue() + 1;
-					String newOrder = (new Integer(newOrder_tmp)).toString();
+					int newOrder_tmp = Integer.parseInt(order) + 1;
+					String newOrder = Integer.toString(newOrder_tmp);
 					if (modification == null) // cr�ation
 						out.println("<option value=\""+newOrder+"\" selected>&lt;"+resource.getString("pdcPeas.EndTag")+"&gt;</option>");
 					else
@@ -313,11 +317,12 @@
 		</td>
       </tr>
       <tr>
-        <td nowrap>( <img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width="5" align="absmiddle">&nbsp;: <%=resource.getString("GML.requiredField")%> )</td>
-        <td nowrap>&nbsp;</td>
+        <td>(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("pdcPeas.mandatoryField")%>">&nbsp;:
+          <%=resource.getString("GML.requiredField")%>)</td>
+        <td>&nbsp;</td>
       </tr>
-	</form>
   </table>
+  </form>
   <%
 	out.println(board.printAfter());
 

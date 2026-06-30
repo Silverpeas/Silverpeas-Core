@@ -30,15 +30,16 @@
 <%
 // recuperation des parametres
 Value	value			= (Value) request.getAttribute("Value");			// l'objet Value pour afficher ses informations
-List	sisters			= (List) request.getAttribute("Sisters");			// les valeurs soeurs
-List	list			= (List) request.getAttribute("Path");				// le chemin complet ou l'on peut retrouver la valeur selectionnee
+List<Value>	sisters			= (List<Value>) request.getAttribute("Sisters");			// les valeurs soeurs
+List<Value>	list			= (List<Value>) request.getAttribute("Path");
+// le chemin complet ou l'on peut retrouver la valeur selectionnee
 String	alreadyExist	= (String) request.getAttribute("AlreadyExist");	// La valeur existe deja.
 boolean	isAdmin			= ((Boolean) request.getAttribute("IsAdmin")).booleanValue();
 
 String translation = (String) request.getAttribute("Translation");
 if (translation == null || translation.equals("null"))
 {
-	translation = I18NHelper.DEFAULT_LANGUAGE;
+	translation = I18NHelper.getDefaultLanguage();
 }
 
 // initialisation des diff�rentes variables pour l'affichage
@@ -51,32 +52,32 @@ String errorMessage = null;
 
 Value		tempValue		= null; // pour affichage des options du tag select
 String		sisterValueName = null; // pour affichage des options du tag select
-Iterator	itSisters		= sisters.iterator(); // pour affichage des options du tag select
+Iterator<Value>	itSisters		= sisters.iterator(); // pour affichage des options du tag select
 String		order			= ""; // pour affichage des options du tag select
 
 // Pour l'affichage du chemin complet
 String completPath = buildCompletPath(list, false, 1, translation);
 
 if ( (alreadyExist != null) && (alreadyExist.equals("1")) ){
-	// Le nom de la valeur entr�e par l'utilisateur existe deja
+	// Le nom de la valeur entrée par l'utilisateur existe deja
 	errorMessage = "<font size=2 color=#FF6600><b>"+resource.getString("pdcPeas.valueAlreadyExist")+"</b></font>";
 }
 
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= language %>">
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 
-<script language="Javascript">
+<script type="application/javascript">
 function ifCorrectFormExecute(callback) {
-  var errorMsg = "";
-  var errorNb = 0;
-  var name = stripInitialWhitespace(document.editValue.Name.value);
+  let errorMsg = "";
+  let errorNb = 0;
+  const name = stripInitialWhitespace(document.editValue.Name.value);
   if (isWhitespace(name)) {
     errorMsg+=" - <%=resource.getString("pdcPeas.TheField")%> '<%=resource.getString("pdcPeas.value")%>' <%=resource.getString("pdcPeas.MustContainsText")%>\n";
     errorNb++;
@@ -111,14 +112,11 @@ function sendData() {
 //gestion des traductions
 
 <%
-if (value != null)
-{
+if (value != null) {
 	String lang = "";
-	Iterator codes = value.getTranslations().keySet().iterator();
 
-	while (codes.hasNext())
-	{
-		lang = (String) codes.next();
+	for(String string: value.getTranslations().keySet()){
+		lang = string;
 		out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(value.getName(lang))+"\";\n");
 		out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(value.getDescription(lang))+"\";\n");
 	}
@@ -142,17 +140,18 @@ function removeTranslation()
 <FORM name="editValue" action="UpdateValue" method="post">
 <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));
-    browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
+  browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
 	browseBar.setPath(resource.getString("pdcPeas.updateValue"));
 
     out.println(window.printBefore());
     out.println(frame.printBefore());
     out.println(board.printBefore());
 %>
-    <table width="100%" border="0" cellspacing="0" cellpadding="4">
+    <table>
+      <th></th>
 	  <% if (errorMessage != null && errorMessage.length() > 0) { %>
 		<tr>
-			<td colspan="2" nowrap align="center"><%=errorMessage%></td>
+			<td style="text-align: center"><%=errorMessage%></td>
 		</tr>
 	  <% } %>
       <tr>
@@ -161,35 +160,39 @@ function removeTranslation()
       </tr>
       <%=I18NHelper.getFormLine(resource, value, translation)%>
       <tr>
-        <td width="30%" class="txtlibform"><%=resource.getString("pdcPeas.value")%>&nbsp;:&nbsp;</td>
-        <td><input type="text" style="text-align:left;" name="Name" id="ValueName" maxlength="75" size="75" value="<%=WebEncodeHelper.javaStringToHtmlString(valueName)%>" onKeyUP="javascript:highlightItem(document.editValue.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle"/></td>
+        <td style="width: 30%" class="txtlibform">
+          <label for="ValueName"><%=resource.getString("pdcPeas.value")%>&nbsp;:</label></td>
+        <td><input type="text" style="text-align:left;" name="Name" id="ValueName"
+                   maxlength="75" size="75" value="<%=WebEncodeHelper.javaStringToHtmlString(valueName)%>" onKeyUP="javascript:highlightItem(document.editValue.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle"/></td>
       </tr>
 	  <tr>
-		<td valign=top width="30%" class="txtlibform"><%=resource.getString("pdcPeas.definition")%>&nbsp;:&nbsp;</td>
+		<td style="width: 30%" class="txtlibform">
+      <label for="ValueDescription"><%=resource.getString("pdcPeas.definition")%>&nbsp;:</label></td>
 		<td><TEXTAREA name="Description" id="ValueDescription" rows="4" cols="75"><%=WebEncodeHelper.javaStringToHtmlString(valueDescription)%></TEXTAREA></td>
 	  </tr>
 	  <tr>
-	<td width="30%" class="txtlibform"><%=resource.getString("pdcPeas.docsNumber")%>&nbsp;:&nbsp;</td>
+	<td style="width: 30%" class="txtlibform"><%=resource.getString("pdcPeas.docsNumber")%>&nbsp;:&nbsp;</td>
 	<td><%=valueNbDoc%></td>
      </tr>
 	<% if (isAdmin) { %>
 	 <tr>
-	 <td width="30%" valign="top" class="txtlibform"><%=resource.getString("pdcPeas.sistersValue")%>&nbsp;:&nbsp;</td>
+	 <td style="width: 30%" class="txtlibform">
+     <label for="Order"><%=resource.getString("pdcPeas.sistersValue")%></label></td>
 		<td>
-			<select name="Order" size="5">
+			<select id="Order" name="Order" size="5">
 			<%
 
 				if (!sisters.isEmpty()){
-					// affiche les soeurs de la valeur courante
+					// affiche les sœurs de la valeur courante
 					while (itSisters.hasNext()){
-						tempValue = (Value)itSisters.next();
+						tempValue = itSisters.next();
 						sisterValueName = WebEncodeHelper.javaStringToHtmlString(tempValue.getName(translation));
-						order = (new Integer( tempValue.getOrderNumber() )).toString();
+						order = Integer.toString(tempValue.getOrderNumber());
 						out.println("<option value=\""+sisterValueName+sepOptionValueTag+order+"\">"+sisterValueName+"</option>");
 					}
 					// calcul le dernier ordre
-					int newOrder_tmp = (new Integer(order)).intValue() + 1;
-					String newOrder = (new Integer(newOrder_tmp)).toString();
+					int newOrder_tmp = Integer.parseInt(order) + 1;
+					String newOrder = Integer.toString(newOrder_tmp);
 					out.println("<option value=\""+sepOptionValueTag+newOrder+"\" selected>&lt;"+resource.getString("pdcPeas.EndTag")+"&gt;</option>");
 				} else {
 					out.println("<option value=\"0\" selected>&lt;"+resource.getString("pdcPeas.EndTag")+"&gt;</option>");
@@ -206,9 +209,9 @@ function removeTranslation()
 		<input type="hidden" name="Id" value="<%=valueId%>"/>
     </table>
     <%
-    out.println(board.printAfter());
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript: sendData()", false));
+  out.println(board.printAfter());
+  ButtonPane buttonPane = gef.getButtonPane();
+  buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript: sendData()", false));
 	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:history.go(-1)", false));
 	out.println("<br/><center>"+buttonPane.print()+"</center>");
 

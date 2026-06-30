@@ -31,17 +31,18 @@
 // recuperation des parametres
 Value	valueToMove		= (Value) request.getAttribute("Value");			// l'objet Value pour afficher ses informations
 Axis	axis 			= (Axis) request.getAttribute("Axis");			// l'arbre
-List	list			= (List) request.getAttribute("Path");				// le chemin complet ou l'on peut retrouver la valeur selectionnee
+List<Value>	list			= (List<Value>) request.getAttribute("Path");
+// le chemin complet ou l'on peut retrouver la valeur selectionnee
 String	alreadyExist	= (String) request.getAttribute("AlreadyExist");	// La valeur existe deja.
 String 	translation		= (String) request.getAttribute("Translation");
-ArrayList userRights 	= (ArrayList) request.getAttribute("UserRights");
-boolean kmAdmin 		= ((Boolean)request.getAttribute("KMAdmin")).booleanValue() ;
-List	sisters			= (List) request.getAttribute("Sisters");
+List<String> userRights 	= (List<String>) request.getAttribute("UserRights");
+boolean kmAdmin 		= (Boolean) request.getAttribute("KMAdmin");
+List<Value>	sisters			= (List<Value>) request.getAttribute("Sisters");
 String	newMotherId		= (String) request.getAttribute("newFatherId");
 
 if (translation == null || translation.equals("null"))
 {
-	translation = I18NHelper.DEFAULT_LANGUAGE;
+	translation = I18NHelper.getDefaultLanguage();
 }
 // initialisation des diff�rentes variables pour l'affichage
 String valueName		= valueToMove.getName(translation);
@@ -53,22 +54,22 @@ String errorMessage = null;
 String completPath = buildCompletPath(list, false, 1, translation);
 
 if ( (alreadyExist != null) && (alreadyExist.equals("1")) ){
-	// Le nom de la valeur entr�e par l'utilisateur existe deja
+	// Le nom de la valeur entrée par l'utilisateur existe deja
 	errorMessage = "<font size=2 color=#FF6600><b>"+resource.getString("pdcPeas.valueAlreadyExist")+"</b></font>";
 }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= language %>">
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 
-<script language="Javascript">
+<script type="application/javascript">
 function sendData(action) {
 	document.moveValue.action = action;
-	if (action == 'MoveValue') {
+	if (action === 'MoveValue') {
     jQuery.popup.confirm("<%=resource.getString("pdcPeas.confirmMoveValue")%>", function() {
 			$.progressMessage();
 			document.moveValue.submit();
@@ -83,19 +84,20 @@ function sendData(action) {
 
 <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));
-    browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
+  browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
 	browseBar.setPath(resource.getString("pdcPeas.moveValue"));
 
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
+  out.println(window.printBefore());
+  out.println(frame.printBefore());
+  out.println(board.printBefore());
 %>
 <FORM name="moveValue" id="moveValue" action="ToMoveValueGetSisters" method="post">
 	  <input type="hidden" name="Id" value="<%=valueId%>"/>
-    <table width="100%" border="0" cellspacing="0" cellpadding="4">
-	  <% if (errorMessage != null && errorMessage.length() > 0) { %>
+    <table>
+      <th></th>
+	  <% if (errorMessage != null && !errorMessage.isEmpty()) { %>
 		<tr>
-			<td colspan="2" nowrap="nowrap" align="center"><%=errorMessage%></td>
+			<td style="text-align: center"><%=errorMessage%></td>
 		</tr>
 	  <% } %>
       <tr>
@@ -103,81 +105,79 @@ function sendData(action) {
         <td><%=completPath%></td>
       </tr>
       <tr>
-        <td class="txtlibform" width="30%"><%=resource.getString("pdcPeas.value")%> :</td>
+        <td class="txtlibform" style="width: 30%"><%=resource.getString("pdcPeas.value")%> :</td>
         <td><%=WebEncodeHelper.javaStringToHtmlString(valueName)%></td>
       </tr>
 	  <tr>
-	<td class="txtlibform" width="30%"><%=resource.getString("pdcPeas.docsNumber")%> :</td>
+	<td class="txtlibform" style="width: 30%"><%=resource.getString("pdcPeas.docsNumber")%> :</td>
 	<td><%=valueNbDoc%></td>
      </tr>
 	 <tr>
-	 <td class="txtlibform" width="30%" valign="top"><%=resource.getString("pdcPeas.motherValue")%> :</td>
+	 <td class="txtlibform" style="width: 30%">
+     <label for="newFatherId"><%=resource.getString("pdcPeas.motherValue")%> :</label></td>
 		<td>
-			<select name="newFatherId" onChange="javaScript:sendData('ToMoveValueGetSisters')">
+			<select id="newFatherId" name="newFatherId" onChange="sendData('ToMoveValueGetSisters')">
 			<%
 			// affiche l'arbre courant moins le subtree � d�placer et moins les valeurs pour lesquelles le user n'a pas de droit
-			ArrayList axisValues = (ArrayList) axis.getValues();
-			int valueLevel = -1;
-			String increment = "";
-			Value value = null;
+			List<Value> axisValues = axis.getValues();
+			int valueLevel;
+			StringBuilder increment;
+			Value value;
 			int levelRights = 1000;
-			String newMother = "";
+			String newMother;
 
-			for (int i = 0; i<axisValues.size(); i++)
-			  {
-				value = (Value) axisValues.get(i);
+        for (Value axisValue : axisValues) {
+          value = axisValue;
 
-				newMother = "";
-				if (value.getPK().getId().equals(newMotherId))
-					newMother = "selected";
+          newMother = "";
+          if (value.getPK().getId().equals(newMotherId))
+            newMother = "selected";
 
-				// si la valeur = celle que l'on veut d�placer, on ne l'affiche pas
-				// c'est � dire si le chemin commence par celui de la valeur � d�placer + son id
-				if ( (!value.getPath().startsWith(valueToMove.getPath()+ valueToMove.getPK().getId() +"/")) && !(value.getPK().getId().equals(valueToMove.getPK().getId()) ) )
-				{
-						valueName = value.getName(translation);
-						valueId = value.getPK().getId();
-						valueLevel = value.getLevelNumber();
-						increment = "";
+          // si la valeur = celle que l'on veut déplacer, on ne l'affiche pas,
+          // c'est-à-dire si le chemin commence par celui de la valeur à déplacer + son id
+          if ((!value.getPath().startsWith(valueToMove.getPath() + valueToMove.getPK().getId() + "/")) && !(value.getPK().getId().equals(valueToMove.getPK().getId()))) {
+            valueName = value.getName(translation);
+            valueId = value.getPK().getId();
+            valueLevel = value.getLevelNumber();
+            increment = new StringBuilder();
 
-						if ( valueLevel <= levelRights ) 		levelRights = 1000 ;
-						if ( userRights != null && userRights.contains(valueId) && valueLevel < levelRights )		levelRights = valueLevel ;
-						if ( ( levelRights < 1000 ) || ( kmAdmin ) )
-						{
-							for (int j = 0; j < valueLevel; j++)
-							{
-								increment += "&nbsp;&nbsp;&nbsp;";
-							}
-							out.println("<option value=\""+valueId+"\" "+newMother+">"+ increment + valueName +"</option>");
-						}
-				  }
-			  }
+            if (valueLevel <= levelRights) levelRights = 1000;
+            if (userRights != null && userRights.contains(valueId) && valueLevel < levelRights)
+              levelRights = valueLevel;
+            if ((levelRights < 1000) || (kmAdmin)) {
+              increment.append("&nbsp;&nbsp;&nbsp;".repeat(Math.max(0, valueLevel)));
+              out.println("<option value=\"" + valueId + "\" " + newMother + ">" + increment + valueName + "</option>");
+            }
+          }
+        }
 			%>
 			</select>
 		</td>
       </tr>
 	  <% if (sisters != null) { %>
 	  <tr>
-		<td class="txtlibform" width="30%" valign="top"><%=resource.getString("pdcPeas.sistersValue")%> :</span></td>
+		<td class="txtlibform" style="width: 30%">
+      <label for="order"><%=resource.getString("pdcPeas.sistersValue")%> :</label></td>
 		<td>
-			<select name="Order" size="5">
+			<select id="order" name="Order" size="5">
 			<%
-				Value		tempValue		= null; // pour affichage des options du tag select
-				String		sisterValueName = null; // pour affichage des options du tag select
-				Iterator	itSisters		= sisters.iterator(); // pour affichage des options du tag select
+				Value		tempValue; // pour affichage des options du tag select
+				String		sisterValueName; // pour affichage des options du tag select
+				Iterator<Value>	itSisters		= sisters.iterator();
+        // pour affichage des options du tag select
 				String		order			= ""; // pour affichage des options du tag select
 
 				if (!sisters.isEmpty()){
 					// affiche les soeurs de la valeur courante
 					while (itSisters.hasNext()){
-						tempValue = (Value)itSisters.next();
+						tempValue = itSisters.next();
 						sisterValueName = WebEncodeHelper.javaStringToHtmlString(tempValue.getName(translation));
-						order = (new Integer( tempValue.getOrderNumber() )).toString();
+						order = Integer.toString(tempValue.getOrderNumber());
 						out.println("<option value=\""+sisterValueName+sepOptionValueTag+order+"\">"+sisterValueName+"</option>");
 					}
 					// calcul le dernier ordre
-					int newOrder_tmp = (new Integer(order)).intValue() + 1;
-					String newOrder = (new Integer(newOrder_tmp)).toString();
+					int newOrder_tmp = Integer.parseInt(order) + 1;
+					String newOrder = Integer.toString(newOrder_tmp);
 					out.println("<option value=\""+sepOptionValueTag+newOrder+"\" selected>&lt;"+resource.getString("pdcPeas.EndTag")+"&gt;</option>");
 				} else {
 					out.println("<option value=\"0\" selected>&lt;"+resource.getString("pdcPeas.EndTag")+"&gt;</option>");
