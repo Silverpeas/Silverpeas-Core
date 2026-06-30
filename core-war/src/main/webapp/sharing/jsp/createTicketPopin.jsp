@@ -31,9 +31,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache");        //HTTP 1.0
-response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
+  response.setHeader("Cache-Control","no-store"); //HTTP 1.1
+  response.setHeader("Pragma","no-cache");        //HTTP 1.0
+  response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -49,168 +49,217 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <view:script src="/util/javaScript/checkForm.js"/>
 
 <script type="text/javascript">
-function createSharingTicketPopup(sharingParam) {
-  cleanForm();
-  $("#hiddenType").val(sharingParam.type);
-  $("#hiddenComponentId").val(sharingParam.componentId);
-  $("#displayNameId").text(sharingParam.name);
-  $("#hiddenObjectId").val(sharingParam.id);
+  function createSharingTicketPopup(sharingParam) {
+    cleanForm();
+    $("#hiddenType").val(sharingParam.type);
+    $("#hiddenComponentId").val(sharingParam.componentId);
+    $("#displayNameId").text(sharingParam.name);
+    $("#hiddenObjectId").val(sharingParam.id);
 
-  toggleContinuous();
+    toggleContinuous();
 
-  if (sharingParam.type === 'Node') {
-    $("#objectName").text("<fmt:message key="GML.theme" />")
-  } else if (sharingParam.type === 'Publication') {
-    $("#objectName").text("<fmt:message key="GML.publication" />")
-  } else {
-    //Attachment
-    $("#objectName").text("<fmt:message key="GML.file" />")
-  }
+    if (sharingParam.type === 'Node') {
+      $("#objectName").text("<fmt:message key="GML.theme" />")
+    } else if (sharingParam.type === 'Publication') {
+      $("#objectName").text("<fmt:message key="GML.publication" />")
+    } else {
+      //Attachment
+      $("#objectName").text("<fmt:message key="GML.file" />")
+    }
 
-  $('#sharingticket-popup-content').popup('validation', {
+    $('#sharingticket-popup-content').popup('validation', {
       title : "<fmt:message key="sharing.createTicket" bundle="${fsBundle}" />",
       width : "700px",
-    callback : function() {
-      return ifCorrectFormExecute(function() {
-        createTicket();
-      });
-    }
-  });
-}
-
-function toggleContinuous(effect) {
-  const continuousTicket = $("#validity").val() === "0";
-  const nbAccessShown = $("#hiddenType").val() === 'Attachment';
-  if (continuousTicket) {
-    $('.threshold').hide(effect);
-  } else {
-    $('.threshold').show(effect);
-    if (nbAccessShown) {
-      $("#nbAccessMaxArea").show();
-    } else {
-      $("#nbAccessMaxArea").hide();
-    }
+      callback : function() {
+        return ifCorrectFormExecute(function() {
+          createTicket();
+        });
+      }
+    });
   }
-}
 
-
-function ifCorrectFormExecute(callback) {
-  var errorMsg = "";
-  var errorNb = 0;
-  var nb  = $("#nbAccessMax").val();
-  var nbMin = 0;
-  var endDate = $("#endDate").val();
-  var nbAccessShown = $("#hiddenType").val() === 'Attachment';
-
-  if($("#validity").val() === "1")
-  {
-    if (nbAccessShown && isWhitespace(nb)) {
-      errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-      errorNb++;
-    }
-    if (nbAccessShown && !isInteger(nb)) {
-      errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustContainsNumber'/>\n";
-      errorNb++;
-    }
-    if (nb > 10000 || nb < 0) {
-      errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='sharing.maxValue'/> " +
-        nbMin + " <fmt:message key='GML.and'/> 10000\n";
-      errorNb++;
-    }
-    if (isWhitespace(endDate)) {
-      errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate' bundle='${fsBundle}'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-      errorNb++;
+  function toggleContinuous(effect) {
+    const continuousTicket = $("#validity").val() === "0";
+    const nbAccessShown = $("#hiddenType").val() === 'Attachment';
+    if (continuousTicket) {
+      $('.threshold').hide(effect);
     } else {
-      if (!isDateOK(endDate, '<c:out value="${language}"/>')) {
-        errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate' bundle='${fsBundle}'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-        errorNb++;
+      $('.threshold').show(effect);
+      if (nbAccessShown) {
+        $("#nbAccessMaxArea").show();
+      } else {
+        $("#nbAccessMaxArea").hide();
       }
     }
   }
-  switch(errorNb) {
-    case 0 :
-      callback.call(this);
-      return true;
-    case 1 :
-      errorMsg = "<fmt:message key='GML.ThisFormContains'/> 1 <fmt:message key='GML.error'/> : \n" + errorMsg;
-      jQuery.popup.error(errorMsg);
-      return false;
-    default :
-      errorMsg = "<fmt:message key='GML.ThisFormContains'/> " + errorNb + " <fmt:message key='GML.errors'/> :\n" + errorMsg;
-      jQuery.popup.error(errorMsg);
-      return false;
+
+
+  function ifCorrectFormExecute(callback) {
+    var errorMsg = "";
+    var errorNb = 0;
+    var nb  = $("#nbAccessMax").val();
+    var nbMin = 0;
+    var endDate = $("#endDate").val();
+    var nbAccessShown = $("#hiddenType").val() === 'Attachment';
+
+    if($("#validity").val() === "1")
+    {
+      if (nbAccessShown && isWhitespace(nb)) {
+        errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustBeFilled'/>\n";
+        errorNb++;
+      }
+      if (nbAccessShown && !isInteger(nb)) {
+        errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustContainsNumber'/>\n";
+        errorNb++;
+      }
+      if (nb > 10000 || nb < 0) {
+        errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='sharing.maxValue'/> " +
+                nbMin + " <fmt:message key='GML.and'/> 10000\n";
+        errorNb++;
+      }
+      if (isWhitespace(endDate)) {
+        errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate' bundle='${fsBundle}'/>' <fmt:message key='GML.MustBeFilled'/>\n";
+        errorNb++;
+      } else {
+        if (!isDateOK(endDate, '<c:out value="${language}"/>')) {
+          errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate' bundle='${fsBundle}'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
+          errorNb++;
+        }
+      }
+    }
+    switch(errorNb) {
+      case 0 :
+        callback.call(this);
+        return true;
+      case 1 :
+        errorMsg = "<fmt:message key='GML.ThisFormContains'/> 1 <fmt:message key='GML.error'/> : \n" + errorMsg;
+        jQuery.popup.error(errorMsg);
+        return false;
+      default :
+        errorMsg = "<fmt:message key='GML.ThisFormContains'/> " + errorNb + " <fmt:message key='GML.errors'/> :\n" + errorMsg;
+        jQuery.popup.error(errorMsg);
+        return false;
+    }
   }
-}
 
 
-function createTicket() {
-  const ajaxUrl = webContext + '/services/mytickets/' + $("#hiddenComponentId").val();
+  function createTicket() {
+    const ajaxUrl = webContext + '/services/mytickets/' + $("#hiddenComponentId").val();
 
-  const newTicket = {
-    "sharedObjectId": $("#hiddenObjectId").val(),
-    "sharedObjectType": $("#hiddenType").val(),
-    "componentId": $("#hiddenComponentId").val(),
-    "validity": $("#validity").val(),
-    "uri": '',
-    "endDateStr": $("#endDate").val(),
-    "endDateFormat": $("#endDateFormat").val(),
-    "nbAccessMax": $("#nbAccessMax").val(),
-    "users": $("#users").val(),
-    "externalEmails": $("#externalEmails").val(),
-    "additionalMessage": $("#additionalMessage").val()
-  };
+    const newTicket = {
+      "sharedObjectId": $("#hiddenObjectId").val(),
+      "sharedObjectType": $("#hiddenType").val(),
+      "componentId": $("#hiddenComponentId").val(),
+      "validity": $("#validity").val(),
+      "uri": '',
+      "endDateStr": $("#endDate").val(),
+      "endDateFormat": $("#endDateFormat").val(),
+      "nbAccessMax": $("#nbAccessMax").val(),
+      "users": $("#users").val(),
+      "externalEmails": $("#externalEmails").val(),
+      "additionalMessage": $("#additionalMessage").val(),
+      "securityCode": $("#securityCode").val()
+    };
 
-  jQuery.ajax({
-    url: ajaxUrl,
-    type: 'POST',
-    data: $.toJSON(newTicket),
-    contentType: "application/json",
-    cache: false,
-    dataType: "json",
-    async: true,
-    success: function(result) {
-      $("#message-content-url").html($('<a>',
-      { text: result.url,
-        href: result.url,
-        target: '_blank'
-      }));
-      showInformation();
-      cleanForm();
-    },
-    error: function (xhr, ajaxOptions, thrownError) {
-      var data = /<body.*?>([\s\S]*)<\/body>/.exec(xhr.responseText)[1];
-      $("#sharingticket-error-content").html(data);
-      $('#sharingticket-error-content').popup('basic', {
-        title : "Error"
-      });
-      cleanForm();
+    jQuery.ajax({
+      url: ajaxUrl,
+      type: 'POST',
+      data: $.toJSON(newTicket),
+      contentType: "application/json",
+      cache: false,
+      dataType: "json",
+      async: true,
+      success: function(result) {
+        $("#message-content-url").html($('<a>',
+                { text: result.url,
+                  href: result.url,
+                  target: '_blank'
+                }));
+        showInformation();
+        cleanForm();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        var data = /<body.*?>([\s\S]*)<\/body>/.exec(xhr.responseText)[1];
+        $("#sharingticket-error-content").html(data);
+        $('#sharingticket-error-content').popup('basic', {
+          title : "Error"
+        });
+        cleanForm();
+      }
+    });
+  }
+
+
+  function cleanForm() {
+    $("#hiddenObjectId").val("");
+    $("#hiddenType").val("");
+    $("#hiddenComponentId").val("");
+    $("#validity").val("0");
+    $("#endDate").val("");
+    $("#endDateFormat").val("");
+    $("#nbAccessMax").val("");
+    $("#users").val("");
+    $("#users_name").val("");
+    $("#externalEmails").val("");
+    $("#additionalMessage").val("");
+    $("#securityCode").val("");
+  }
+
+  function showInformation() {
+    $('#sharingticket-message-content').popup('information', {
+      title : "<fmt:message key="sharing.tickets" bundle="${fsBundle}"/> > <fmt:message key="sharing.confirmTicket" bundle="${fsBundle}"/>",
+      callback : function() {
+        return true;
+      }
+    });
+  }
+
+  function generateSecureCode(length = 32) {
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const special = `!@#$%^&*()_+-=[]{}|;:'",.<>?/\\~\``;
+    const all = lower + upper + numbers + special;
+
+    let result = [
+      lower[Math.floor(Math.random() * lower.length)],
+      upper[Math.floor(Math.random() * upper.length)],
+      numbers[Math.floor(Math.random() * numbers.length)],
+      special[Math.floor(Math.random() * special.length)]
+    ];
+
+    const array = new Uint8Array(length - 4);
+    crypto.getRandomValues(array);
+
+    for (let i = 0; i < array.length; i++) {
+      result.push(all[array[i] % all.length]);
     }
-  });
-}
 
-
-function cleanForm() {
-  $("#hiddenObjectId").val("");
-  $("#hiddenType").val("");
-  $("#hiddenComponentId").val("");
-  $("#validity").val("0");
-  $("#endDate").val("");
-  $("#endDateFormat").val("");
-  $("#nbAccessMax").val("");
-  $("#users").val("");
-  $("#users_name").val("");
-  $("#externalEmails").val("");
-  $("#additionalMessage").val("");
-}
-
-function showInformation() {
-  $('#sharingticket-message-content').popup('information', {
-    title : "<fmt:message key="sharing.tickets" bundle="${fsBundle}"/> > <fmt:message key="sharing.confirmTicket" bundle="${fsBundle}"/>",
-    callback : function() {
-      return true;
+    // shuffle (Fisher-Yates)
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
     }
-  });
-}
+
+    return result.join("");
+  }
+
+  function generateSecurityCodeAndFill() {
+    const code = generateSecureCode(32);
+    document.getElementById("securityCode").value = code;
+  }
+
+  async function copySecurityCode() {
+    const input = document.getElementById("securityCode");
+    const value = input.value;
+
+    try {
+      await navigator.clipboard.writeText(value);
+      notyInfo('<fmt:message key="sharing.confirmCopyInClipbloard" bundle="${fsBundle}"/>');
+    } catch (err) {
+      console.error("Error :", err);
+    }
+  }
 
 </script>
 
@@ -247,6 +296,18 @@ function showInformation() {
           <input id="nbAccessMax" type="text" value="" maxlength="5" size="5" name="nbAccessMax" class="int-5"/> <fmt:message key="sharing.nbAccessMax.info" bundle="${fsBundle}" /> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
         </span>
       </div>
+    </fieldset>
+
+    <fieldset class="filedset-ui-dialog security">
+        <legend>Sécurité</legend>
+        <label class="label-ui-dialog" for="securityCode"><fmt:message key="sharing.security.code" bundle="${fsBundle}" /></label>
+      <div class="champ-ui-dialog">
+        <input type="text" name="securityCode" id="securityCode" size="50" maxlength="50" placeholder='<fmt:message key="sharing.generation.code.help" bundle="${fsBundle}" />' title='<fmt:message key="sharing.generation.code.help" bundle="${fsBundle}" />'/>
+        <a class="sp_button copy-to-clipboard" title='<fmt:message key="sharing.copy.code" bundle="${fsBundle}" />' href="javascript:void(0)" onclick="copySecurityCode()">
+          <span><fmt:message key="sharing.copy.code" bundle="${fsBundle}" /></span>
+        </a>
+      </div>
+        <button type="button" class="simple-button btn-ui-dialog" onclick="generateSecurityCodeAndFill()"><fmt:message key="sharing.generation.code" bundle="${fsBundle}" /></button>
     </fieldset>
 
     <fieldset class="filedset-ui-dialog notification">

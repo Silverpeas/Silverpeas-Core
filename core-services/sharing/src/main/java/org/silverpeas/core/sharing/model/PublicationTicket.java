@@ -46,8 +46,8 @@ public class PublicationTicket extends Ticket {
   private static final long serialVersionUID = 6661700474412230957L;
 
   public PublicationTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
+      Date endDate, int nbAccessMax, String securityCode) {
+    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax, securityCode);
     this.sharedObjectType = PUBLICATION_TYPE;
   }
 
