@@ -24,21 +24,17 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import org.apache.directory.scim.protocol.BulkResource;
-import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.web.rs.annotation.Authorized;
-
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Priority;
-import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Context;
+import org.apache.directory.scim.protocol.BulkResource;
+import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE_URI;
 
 /**
@@ -53,8 +49,6 @@ import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE
 @WebService
 @Path(SCIM_2_BASE_URI + "/Bulk")
 @Authorized
-@Alternative
-@Priority(APPLICATION + 10)
 public class ScimV2BulkResource implements BulkResource, ScimProtectedWebResource {
 
   @PathParam("domainId")

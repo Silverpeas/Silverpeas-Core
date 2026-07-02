@@ -24,21 +24,18 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import org.apache.directory.scim.server.rest.ResourceTypesResourceImpl;
-import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.web.rs.annotation.Authorized;
-
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Priority;
-import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Specializes;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Context;
+import org.apache.directory.scim.server.rest.ResourceTypesResourceImpl;
+import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE_URI;
 
 /**
@@ -53,8 +50,7 @@ import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE
 @WebService
 @Path(SCIM_2_BASE_URI + "/ServiceProviderConfig")
 @Authorized
-@Alternative
-@Priority(APPLICATION + 10)
+@Specializes
 public class ScimV2ResourceTypeResource extends ResourceTypesResourceImpl
     implements ScimProtectedWebResource {
 

@@ -24,12 +24,19 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
 import org.apache.directory.scim.protocol.Constants;
+import org.apache.directory.scim.protocol.GroupResource;
 import org.apache.directory.scim.protocol.adapter.FilterWrapper;
 import org.apache.directory.scim.protocol.data.PatchRequest;
 import org.apache.directory.scim.protocol.data.SearchRequest;
 import org.apache.directory.scim.protocol.exception.ScimException;
-import org.apache.directory.scim.server.rest.GroupResourceImpl;
 import org.apache.directory.scim.spec.exception.ResourceException;
 import org.apache.directory.scim.spec.filter.SortOrder;
 import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
@@ -38,18 +45,6 @@ import org.apache.directory.scim.spec.resources.ScimGroup;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Priority;
-import jakarta.enterprise.inject.Alternative;
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
-
-import jakarta.ws.rs.core.Response;
-
-import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE_URI;
 
 /**
@@ -65,15 +60,16 @@ import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE
 @WebService
 @Path(SCIM_2_BASE_URI + "/Groups")
 @Authorized
-@Alternative
-@Priority(APPLICATION + 10)
-public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtectedWebResource {
+public class ScimV2GroupResource implements ScimProtectedWebResource {
 
   @PathParam("domainId")
   private String domainId;
 
   @Inject
   private ScimRequestContext scimRequestContext;
+
+  @Inject
+  private GroupResource delegate;
 
   @Context
   private HttpServletRequest httpRequest;
@@ -93,12 +89,11 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @GET
   @Path("{id}")
   @Produces(Constants.SCIM_CONTENT_TYPE)
-  @Override
   public Response getById(@PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
       @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
       throws ScimException, ResourceException {
-    return super.getById(id, attributes, excludedAttributes);
+    return delegate.getById(id, attributes, excludedAttributes);
   }
 
   /**
@@ -107,7 +102,6 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
    */
   @GET
   @Produces(Constants.SCIM_CONTENT_TYPE)
-  @Override
   public Response query(@QueryParam("attributes") final AttributeReferenceListWrapper attributes,
       @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes,
       @QueryParam("filter") final FilterWrapper filter,
@@ -115,7 +109,7 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
       @QueryParam("sortOrder") final SortOrder sortOrder,
       @QueryParam("startIndex") final Integer startIndex,
       @QueryParam("count") final Integer count) throws ScimException, ResourceException {
-    return super
+    return delegate
         .query(attributes, excludedAttributes, filter, sortBy, sortOrder, startIndex, count);
   }
 
@@ -126,12 +120,11 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @POST
   @Consumes(Constants.SCIM_CONTENT_TYPE)
   @Produces(Constants.SCIM_CONTENT_TYPE)
-  @Override
   public Response create(final ScimGroup resource,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
       @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
       throws ScimException, ResourceException {
-    return super.create(resource, attributes, excludedAttributes);
+    return delegate.create(resource, attributes, excludedAttributes);
   }
 
   /**
@@ -141,9 +134,8 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @POST
   @Path("/.search")
   @Produces(Constants.SCIM_CONTENT_TYPE)
-  @Override
   public Response find(final SearchRequest request) throws ScimException, ResourceException {
-    return super.find(request);
+    return delegate.find(request);
   }
 
   /**
@@ -154,31 +146,28 @@ public class ScimV2GroupResource extends GroupResourceImpl implements ScimProtec
   @Path("{id}")
   @Consumes(Constants.SCIM_CONTENT_TYPE)
   @Produces(Constants.SCIM_CONTENT_TYPE)
-  @Override
   public Response update(final ScimGroup resource, @PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
       @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
       throws ScimException, ResourceException {
-    return super.update(resource, id, attributes, excludedAttributes);
+    return delegate.update(resource, id, attributes, excludedAttributes);
   }
 
   @PATCH
   @Path("{id}")
   @Consumes(Constants.SCIM_CONTENT_TYPE)
   @Produces(Constants.SCIM_CONTENT_TYPE)
-  @Override
   public Response patch(final PatchRequest patchRequest, @PathParam("id") final String id,
       @QueryParam("attributes") final AttributeReferenceListWrapper attributes,
       @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
       throws ScimException, ResourceException {
-    return super.patch(patchRequest, id, attributes, excludedAttributes);
+    return delegate.patch(patchRequest, id, attributes, excludedAttributes);
   }
 
   @DELETE
   @Path("{id}")
-  @Override
   public Response delete(@PathParam("id") final String id) throws ScimException, ResourceException {
-    return super.delete(id);
+    return delegate.delete(id);
   }
 
   @Override

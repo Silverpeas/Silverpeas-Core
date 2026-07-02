@@ -89,6 +89,9 @@ abstract class AbstractScimAdminService {
         } else if ("externalId".equals(attributeBase)) {
           searchCriteria.onUserSpecificIds((String) ace.getCompareValue());
           return searchCriteria;
+        } else if ("userName".equals(attributeBase)) {
+          searchCriteria.onName((String) ace.getCompareValue());
+          return searchCriteria;
         }
       }
       throw new UnableToRetrieveResourceException(Response.Status.BAD_REQUEST, MessageFormat
