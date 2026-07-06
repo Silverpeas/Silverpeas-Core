@@ -2,13 +2,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // Récupérer toutes les images de la galerie
-  var imagesSpGallery = [];
-  var currentIndex = 0;
+  const imagesSpGallery = [];
+  let currentIndex = 0;
 
   $('.sp-gallery-interaction img').each(function() {
     $(this).attr('title', 'Ouvrir en diaporama / Open slideshow');
-    var src = $(this).attr('src');
-    var alt = $(this).attr('alt') || 'Sans description';
+    const src = $(this).attr('src');
+    const alt = $(this).attr('alt') || 'Sans description';
     imagesSpGallery.push({
       src: src,
       alt: alt
@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Créer le HTML du carrousel
   function createSpCarGal() {
-    var img = imagesSpGallery[currentIndex];
-    var SpCarGalHTML =
+    const img = imagesSpGallery[currentIndex];
+    const SpCarGalHTML =
       '<div class="SpCarGal-overlay">' +
         '<div class="SpCarGal-container">' +
           '<button class="SpCarGal-close">&times;</button>' +
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Ajouter le CSS du carrousel
-  var SpCarGalCSS =
+  const SpCarGalCSS =
     '<style>' +
       '.SpCarGal-overlay {' +
         'position: fixed;' +
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Fonction pour afficher le carrousel
   function showSpCarGal(index) {
     currentIndex = index;
-    var $overlay = $('.SpCarGal-overlay');
+    const $overlay = $('.SpCarGal-overlay');
 
     $overlay.html(createSpCarGal());
     updateSpCarGalButtons();
@@ -175,9 +175,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Fonction pour mettre à jour les boutons
   function updateSpCarGalButtons() {
-    var $overlay = $('.SpCarGal-overlay');
-    var $prevBtn = $overlay.find('.SpCarGal-prev');
-    var $nextBtn = $overlay.find('.SpCarGal-next');
+    const $overlay = $('.SpCarGal-overlay');
+    const $prevBtn = $overlay.find('.SpCarGal-prev');
+    const $nextBtn = $overlay.find('.SpCarGal-next');
 
     // Désactiver/activer les boutons selon la position
     $prevBtn.prop('disabled', currentIndex === 0);
@@ -226,8 +226,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Lancement du carousel au clic
   $('.sp-gallery-interaction img').on('click', function() {
-    var clickedSrc = $(this).attr('src');
-    var index = -1;
+    const clickedSrc = $(this).attr('src');
+    let index = -1;
     for (var i = 0; i < imagesSpGallery.length; i++) {
       if (imagesSpGallery[i].src === clickedSrc) {
         index = i;
