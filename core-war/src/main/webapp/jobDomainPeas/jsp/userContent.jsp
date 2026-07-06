@@ -522,7 +522,7 @@ out.println(window.printBefore());
   <c:if test="${not empty userGroups}">
     <fieldset class="skinFieldset qTipCompliant" id="profil-groups-belong">
       <legend><fmt:message key="GML.groupes"/></legend>
-      <view:arrayPane var="profile-groups" routingAddress="#" numberLinesPerPage="-1">
+      <view:arrayPane var="profile-groups" routingAddress="#" numberLinesPerPage="-1" export="true">
         <view:arrayColumn title="${labelGroupName}" sortable="false"/>
         <view:arrayColumn title="${labelNBUsers}" sortable="false"/>
         <view:arrayColumn title="${labelGroupDesc}" sortable="false"/>
@@ -542,7 +542,7 @@ out.println(window.printBefore());
   <c:if test="${not empty userManageableGroups}">
     <fieldset class="skinFieldset qTipCompliant" id="user-manageable-groups">
       <legend><fmt:message key="JDP.user.groups.manageable"/></legend>
-      <view:arrayPane var="profile-manageable-groups" routingAddress="#" numberLinesPerPage="-1">
+      <view:arrayPane var="profile-manageable-groups" routingAddress="#" numberLinesPerPage="-1" export="true">
         <view:arrayColumn title="${labelGroupName}" sortable="false"/>
         <view:arrayColumn title="${labelNBUsers}" sortable="false"/>
         <view:arrayColumn title="${labelGroupDesc}" sortable="false"/>
@@ -562,7 +562,7 @@ out.println(window.printBefore());
   <c:if test="${not empty userManageableSpaces}">
     <fieldset class="skinFieldset qTipCompliant" id="manageable-spaces">
       <legend><fmt:message key="JDP.user.spaces.manageable"/></legend>
-      <view:arrayPane var="profile-spaces" routingAddress="#" numberLinesPerPage="-1">
+      <view:arrayPane var="profile-spaces" routingAddress="#" numberLinesPerPage="-1" export="true">
         <fmt:message key="GML.name" var="labelSpaceName"/>
         <fmt:message key="GML.description" var="labelSpaceDesc"/>
         <view:arrayColumn title="${labelSpaceName}" sortable="false"/>
@@ -582,7 +582,7 @@ out.println(window.printBefore());
   <c:if test="${not empty userProfiles}">
     <fieldset class="skinFieldset qTipCompliant" id="user-profiles">
       <legend><fmt:message key="JDP.user.rights.title"/></legend>
-      <view:arrayPane var="profile-rights" routingAddress="#" numberLinesPerPage="-1">
+      <view:arrayPane var="profile-rights" routingAddress="#" numberLinesPerPage="-1" export="true">
         <fmt:message key="GML.space" var="labelSpace"/>
         <fmt:message key="GML.component" var="labelComponent"/>
         <fmt:message key="GML.type" var="labelType"/>
