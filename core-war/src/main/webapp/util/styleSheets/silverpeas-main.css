@@ -690,6 +690,16 @@ Style Utilise par le ViewGenerator
   background-color:#fff
 }
 
+.footerNav:has(.exportlinks) td{
+  height: 3em;
+  border-top:1px dashed #CCC;
+  border-radius: 0;
+}
+
+.footerNav:has(.exportlinks) td .pageNav{
+  border:0;
+}
+
 .arrayPane {
   margin-left: auto;
   margin-right: auto;
@@ -1454,10 +1464,9 @@ Style Utilise par le ViewGenerator
 
 .footerNav .exportlinks {
   position:absolute;
-  right:1em;
-  top:0;
+  right:0.5em;
+  top:calc( 1.5em - 5px );
   width:inherit;
-  padding:1.5em 0 ;
 }
 
 /*- [Specific export BEGIN ] ---------------- */
@@ -1475,12 +1484,15 @@ Style Utilise par le ViewGenerator
 .exportlinks a:hover {
   color:#5E9F09;
 }
+.exportlinks a {
+  display: inline-block;
+}
 span.export {
-  padding: 0 4px 1px 20px;
-  display: inline;
+  min-height: 16px;
+  padding: 0 4px 0 20px;
   display: inline-block;
   cursor: pointer;
-  margin:0 10px;
+  margin:0;
   font-weight:normal;
 }
 span.csv {
@@ -7757,4 +7769,3 @@ input.dateToPick,
 #identity-extra label .sensitive_no_active {
   margin: -1em 0 0 -0.25em;
 }
-
