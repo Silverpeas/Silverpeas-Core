@@ -29,6 +29,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -108,7 +109,7 @@ public class PdfUtil {
     } else if (!FileUtil.isPdf(pdfSource.getPath())) {
       throw new SilverpeasRuntimeException(NOT_PDF_FILE_ERROR_MSG);
     }
-    try (final PDDocument document = PDDocument.load(pdfSource)) {
+    try (final PDDocument document = Loader.loadPDF(pdfSource)) {
       final PDFRenderer pdfRenderer = new PDFRenderer(document);
       final BufferedImage image = pdfRenderer.renderImage(0);
       ImageIO.write(image, "jpg", imageDestination);

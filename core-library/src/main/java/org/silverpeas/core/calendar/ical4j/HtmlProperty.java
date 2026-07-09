@@ -42,14 +42,14 @@ public class HtmlProperty extends Property implements Encodable {
    * Default constructor.
    */
   public HtmlProperty() {
-    super(PROPERTY_NAME, FACTORY);
+    super(PROPERTY_NAME);
   }
 
   /**
    * @param aValue a value string for this component
    */
   public HtmlProperty(final String aValue) {
-    super(PROPERTY_NAME, FACTORY);
+    super(PROPERTY_NAME);
     setValue(aValue);
   }
 
@@ -58,7 +58,7 @@ public class HtmlProperty extends Property implements Encodable {
    * @param aValue a value string for this component
    */
   public HtmlProperty(final ParameterList aList, final String aValue) {
-    super(PROPERTY_NAME, aList, FACTORY);
+    super(PROPERTY_NAME, aList);
     setValue(aValue);
   }
 
@@ -85,6 +85,11 @@ public class HtmlProperty extends Property implements Encodable {
   @Override
   public final void setValue(final String aValue) {
     this.value = aValue;
+  }
+
+  @Override
+  protected PropertyFactory<?> newFactory() {
+    return FACTORY;
   }
 
   public static class HtmlPropertyFactory implements PropertyFactory<Property> {

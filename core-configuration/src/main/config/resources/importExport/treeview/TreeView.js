@@ -172,7 +172,7 @@ TreeView.prototype.nodes_valide = function ( )  {
 **************************************************************/
 
 
-/*---------------Display control - Affichage du contrôle------------------------*/
+/*---------------Display control - Affichage du contrÃ´le------------------------*/
 
 TreeView.prototype.display = function ( )  {
 	the_root = this.root ( );
@@ -189,13 +189,13 @@ TreeView.prototype.display2 = function ( )  {
 
 
 
-/*---------------Design control - Construction du contrôle----------------------*/
+/*---------------Design control - Construction du contrÃ´le----------------------*/
 
 TreeView.prototype.built_control = function ( node ) {
 	try {
 	var node_is_root = ( 0 == node.E_Num ) ;
 
-	// CREATION DE LA BASE DU CONTRÔLE ET DE LA RACINE
+	// CREATION DE LA BASE DU CONTRÃ”LE ET DE LA RACINE
 	if ( node_is_root ) {
 
 		document.write ( "<div id='TreeView_" + this.id + "'></div>" )
@@ -274,7 +274,7 @@ TreeView.prototype.built_control = function ( node ) {
 		// PRELOADER
 		if ( this.preloader_position == "bottom" ) this.built_preloader ( )
 
-		// CREATION DE LA BASE D'UN ITEM DU CONTRÔLE
+		// CREATION DE LA BASE D'UN ITEM DU CONTRÃ”LE
 		} else {
 			var childrens_node = document.createElement ( "ul" )
 			childrens_node.id = this.id + "_childrens_Folder_" + node.E_Num
@@ -320,7 +320,7 @@ TreeView.prototype.built_childrens = function ( parentNode , node ) {
 					break		// Fils = dossier avec fils
 				case 6:	this.built_last_node_file ( parentNode , node )
 					break		// Fils = fichier
-				default : alert(" Cas indéfini : " + cas )
+				default : alert(" Cas indÃ©fini : " + cas )
 				}
 
 			// PRECHARGEMENT
@@ -679,7 +679,7 @@ TreeView.prototype.built_preloader = function ( ) {
 	}
 
 
-// Features Add - Ajout de fonctionnalités
+// Features Add - Ajout de fonctionnalitÃ©s
 TreeView.prototype.add_feature = function ( TreeViewID , node, children_label ) {
 	try {
 	var E_Num = node.E_Num
@@ -816,7 +816,7 @@ TreeView.prototype.objet = function ( id ) { try {	return document.getElementByI
 TreeView.prototype.all_exist = function ( )  { return !( navigator.appName.indexOf ( "Microsoft" , 0) == -1 ) ; }
 
 
-/*----------------------- Alternate Reduce all folder & Collapse all folder  - Réduit tous les dossier ------------------------------*/
+/*----------------------- Alternate Reduce all folder & Collapse all folder  - RÃ©duit tous les dossier ------------------------------*/
 
 TreeView.prototype.switch_all_display = function ( )  {
 	try {
@@ -842,7 +842,7 @@ TreeView.prototype.switch_all_display = function ( )  {
 
 
 
-/*----------------------- Reduce all folder - Réduit tous les dossier ------------------------------*/
+/*----------------------- Reduce all folder - RÃ©duit tous les dossier ------------------------------*/
 
 TreeView.prototype.reduce_all = function ( )  {
 	try {
@@ -1000,7 +1000,7 @@ display_folder = function ( TreeViewID , folderID ) {
 
 
 
-/*----------------------Ouvre le lien d'un élément du contrôle-------------------*/
+/*----------------------Ouvre le lien d'un Ã©lÃ©ment du contrÃ´le-------------------*/
 
 goto_link = function ( TreeViewID , E_Num , link_target , lien ) {
 	try {

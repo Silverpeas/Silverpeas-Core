@@ -117,10 +117,10 @@ TreeViewElements.prototype.trier = function ( tableau ) {
 TreeViewElements.prototype.validate = function ( ) {
 	if (this.elements.length>0) {
 		if (!this.type_OK()) alert("TreeViewElements : element.Type incorrecte !");
-		if (!this.a_une_racine()) alert("TreeViewElements : pas de racine dÈfinie !");
-		if (!this.unicite_racine()) alert("TreeViewElements : plusieurs racines dÈfinie !");
-		if (!this.elements_ont_pere()) alert("TreeViewElements : Des ÈlÈments n'ont pas de pËre !");
-		} else alert("TreeViewElements : Aucun ÈlÈment dÈfini !");
+		if (!this.a_une_racine()) alert("TreeViewElements : pas de racine d√©finie !");
+		if (!this.unicite_racine()) alert("TreeViewElements : plusieurs racines d√©finie !");
+		if (!this.elements_ont_pere()) alert("TreeViewElements : Des √©l√©ments n'ont pas de p√®re !");
+		} else alert("TreeViewElements : Aucun √©l√©ment d√©fini !");
 	}
 
 
@@ -128,7 +128,7 @@ TreeViewElements.prototype.type_OK = function ( ) {
 	for ( m=0 ; m<this.elements.length ; m++ ) {
 		l_element = this.elements[m];
 		if (!( l_element.Type == "dossier" || l_element.Type == "fichier" )) {
-			alert("TreeViewElements : Type ÈlÈment '"+l_element.Type+"' incorrecte !");
+			alert("TreeViewElements : Type √©l√©ment '"+l_element.Type+"' incorrecte !");
 			return false;
 			}
 		}
@@ -154,9 +154,9 @@ TreeViewElements.prototype.unicite_racine = function ( ) {
 		if ( l_element.E_Num == l_element.E_E_Num ) nb_E_Num_egal_a_E_E_Num++;
 		if ( l_element.E_Num==0 ) nb_E_Num_egal_a_0++;
 		}
-	if ( nb_E_Num_egal_a_E_E_Num==0 ) alert("TreeViewElements.validate\nPas de racine dÈfinie. \n Une racine ‡ pour attribut identifiant Id=0 et pour pËre Id_Pere=0.");
-	if ( nb_E_Num_egal_a_E_E_Num>1 ) alert("TreeViewElements.validate\nPlusieurs ÈlÈments ont pour pËre soit-mÍme.");
-	if ( nb_E_Num_egal_a_0>1 ) alert("TreeViewElements.validate\nPlusieurs ÈlÈment ont pour attribut Id=0.");
+	if ( nb_E_Num_egal_a_E_E_Num==0 ) alert("TreeViewElements.validate\nPas de racine d√©finie. \n Une racine √† pour attribut identifiant Id=0 et pour p√®re Id_Pere=0.");
+	if ( nb_E_Num_egal_a_E_E_Num>1 ) alert("TreeViewElements.validate\nPlusieurs √©l√©ments ont pour p√®re soit-m√™me.");
+	if ( nb_E_Num_egal_a_0>1 ) alert("TreeViewElements.validate\nPlusieurs √©l√©ment ont pour attribut Id=0.");
 	return true;
 	}
 
@@ -170,7 +170,7 @@ TreeViewElements.prototype.elements_ont_pere = function ( ) {
 			un_element = this.elements[j];
 			if (l_element.E_E_Num==un_element.E_Num) trouve = true;
 			}
-		if (!trouve) alert("TreeViewElements.validate\nPas de pËre trouvÈ pour l'ÈlÈment E_Num="+l_element.E_Num);
+		if (!trouve) alert("TreeViewElements.validate\nPas de p√®re trouv√© pour l'√©l√©ment E_Num="+l_element.E_Num);
 		}
 	return true;
 	}

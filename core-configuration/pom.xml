@@ -51,13 +51,11 @@
         <executions>
           <execution>
             <goals>
-              <goal>jslint</goal>
               <goal>compress</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <jswarn>false</jswarn>
           <excludes>
             <exclude>**/*.min.*</exclude>
             <exclude>**/*-min.*</exclude>

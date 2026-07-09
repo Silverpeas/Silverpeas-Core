@@ -289,7 +289,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skipTests>false</skipTests>
-          <argLine>-XX:MaxPermSize=512m</argLine>
+          <argLine>-Xmx512m</argLine>
           <systemProperties>
             <property>
               <name>java.awt.headless</name>

@@ -22,12 +22,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 .Treeview {
-	/*position: absolute; left:40px; top:40px;*/
 	border: 1px solid #bbb;
 	margin: 0px;	padding: 0px;
 	background-color : #ffffff;
 	overflow:hidden;
-	/*visibility:visible;*/
 	}
 
 #root {
@@ -66,7 +64,6 @@
 	border-top: 2px solid #fff;  /* Gecko HACKS.... */
 	/*line-height:17px;*/
 	font : bold  11px Verdana, Arial, Helvetica, sans-serif ;
-	text-decoration : ;
 	letter-spacing : -1px ; word-spacing: 1px;
 	vertical-align: top;
 	white-space: nowrap;

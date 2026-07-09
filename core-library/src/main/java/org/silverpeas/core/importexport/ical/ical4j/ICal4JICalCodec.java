@@ -30,6 +30,8 @@ import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
+import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -45,6 +47,7 @@ import org.silverpeas.kernel.util.StringUtil;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -75,24 +78,24 @@ public class ICal4JICalCodec implements ICalCodec {
     }
 
     Calendar calendarIcs = new Calendar();
-    calendarIcs.getProperties().add(new ProdId("-//Silverpeas//iCal4j 1.1//FR"));
-    calendarIcs.getProperties().add(Version.VERSION_2_0);
-    calendarIcs.getProperties().add(CalScale.GREGORIAN);
+    calendarIcs.add(new ProdId("-//Silverpeas//iCal4j 1.1//FR"));
+    calendarIcs.add(ImmutableVersion.VERSION_2_0);
+    calendarIcs.add(ImmutableCalScale.GREGORIAN);
 
     // adding VTimeZone component (mandatory with Outlook)
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
     VTimeZone tz = registry.getTimeZone("Europe/Paris").getVTimeZone();
-    calendarIcs.getComponents().add(tz);
+    calendarIcs.add(tz);
 
     List<VEvent> iCalEvents = new ArrayList<>();
     ByteArrayOutputStream output = new ByteArrayOutputStream(10240);
     for (CalendarEvent event : events) {
-      Date startDate = iCal4JDateCodec.encode(event.getStartDate());
-      Date endDate = iCal4JDateCodec.encode(event.getEndDate());
+      Temporal startDate = iCal4JDateCodec.encode(event.getStartDate());
+      Temporal endDate = iCal4JDateCodec.encode(event.getEndDate());
       VEvent iCalEvent = getICalEvent(event, startDate, endDate);
       iCalEvents.add(iCalEvent);
     }
-    calendarIcs.getComponents().addAll(iCalEvents);
+    iCalEvents.forEach(calendarIcs::add);
     CalendarOutputter outputter = new CalendarOutputter();
     try {
       outputter.output(calendarIcs, output);
@@ -106,7 +109,8 @@ public class ICal4JICalCodec implements ICalCodec {
   }
 
   @Nonnull
-  private VEvent getICalEvent(final CalendarEvent event, final Date startDate, final Date endDate) {
+  private VEvent getICalEvent(final CalendarEvent event, final Temporal startDate,
+      final Temporal endDate) {
     VEvent iCalEvent;
     if (event.isOnAllDay() && startDate.equals(endDate)) {
       iCalEvent = new VEvent(startDate, event.getTitle());
@@ -114,14 +118,13 @@ public class ICal4JICalCodec implements ICalCodec {
       iCalEvent = new VEvent(startDate, endDate, event.getTitle());
     }
     // Generate UID
-    iCalEvent.getProperties().add(generateUid(event));
+    iCalEvent.add(generateUid(event));
 
     // Add recurring data if any
     if (event.isRecurrent()) {
-      Recur recur = iCal4JRecurrenceCodec.encode(event);
-      iCalEvent.getProperties().add(new RRule(recur));
-      iCalEvent.getProperties()
-          .add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
+      Recur<Temporal> recur = iCal4JRecurrenceCodec.encode(event);
+      iCalEvent.add(new RRule<>(recur));
+      iCalEvent.add(iCal4JRecurrenceCodec.exceptionDates(event));
     }
 
     // Add Description if any
@@ -133,42 +136,36 @@ public class ICal4JICalCodec implements ICalCodec {
       } catch (Exception e) {
         // do nothing
       }
-      iCalEvent.getProperties().add(new Description(plainText));
-      iCalEvent.getProperties().add(new HtmlProperty(event.getDescription()));
+      iCalEvent.add(new Description(plainText));
+      iCalEvent.add(new HtmlProperty(event.getDescription()));
     }
 
     // Add Visibility
-    iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
+    iCalEvent.add(new Clazz(event.getVisibilityLevel().name()));
     // Add Priority
-    iCalEvent.getProperties().add(new Priority(event.getPriority().getICalLevel()));
+    iCalEvent.add(new Priority(event.getPriority().getICalLevel()));
 
     // Add location if any
     Optional<String> location = Optional.ofNullable(event.getLocation());
-    location.ifPresent(s -> iCalEvent.getProperties().add(new Location(s)));
+    location.ifPresent(s -> iCalEvent.add(new Location(s)));
 
     // Add event URL if any
     Optional<String> url = event.getAttributes().get("url");
     if (url.isPresent()) {
       try {
-        iCalEvent.getProperties().add(new Url(new URI(url.get())));
+        iCalEvent.add(new Url(new URI(url.get())));
       } catch (URISyntaxException ex) {
         throw new EncodingException(ex.getMessage(), ex);
       }
     }
 
     // Add Categories
-    TextList categoryList = new TextList(event.getCategories().asArray());
-    if (!categoryList.isEmpty()) {
-      iCalEvent.getProperties().add(new Categories(categoryList));
+    TextList categoryList = new TextList(java.util.List.of(event.getCategories().asArray()));
+    if (!categoryList.getTexts().isEmpty()) {
+      iCalEvent.add(new Categories(categoryList));
     }
     // Add attendees
-    event.getAttendees().forEach(a -> {
-      try {
-        iCalEvent.getProperties().add(new Attendee(a.getId()));
-      } catch (URISyntaxException ex) {
-        throw new EncodingException("Malformed attendee URI: " + a, ex);
-      }
-    });
+    event.getAttendees().forEach(a -> iCalEvent.add(new Attendee(a.getId())));
 
     return iCalEvent;
   }

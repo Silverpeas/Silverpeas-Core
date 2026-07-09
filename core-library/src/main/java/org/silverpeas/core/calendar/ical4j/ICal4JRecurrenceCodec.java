@@ -32,14 +32,15 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
+import net.fortuna.ical4j.transform.recurrence.Frequency;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
+import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
-import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
 import jakarta.inject.Inject;
@@ -47,7 +48,7 @@ import jakarta.inject.Singleton;
 import java.time.DayOfWeek;
 import java.time.temporal.Temporal;
 import java.util.Comparator;
-import java.util.Optional;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
@@ -76,28 +77,34 @@ public class ICal4JRecurrenceCodec {
    * @param event a recurrent calendar event.
    * @return the converted exception dates.
    */
-  public DateList convertExceptionDates(final CalendarEvent event) {
+  public DateList<Temporal> convertExceptionDates(final CalendarEvent event) {
     Recurrence recurrence = event.getRecurrence();
     if (recurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("The event isn't recurrent!");
     }
-    return recurrence.getExceptionDates()
+    final CalendarComponent component = event.asCalendarComponent();
+    final List<Temporal> dates = recurrence.getExceptionDates()
         .stream()
-        .map(date -> TemporalConverter.applyByType(date, iCal4JDateCodec.localDateConversion(),
-            iCal4JDateCodec.offsetDateTimeConversion()))
-        .sorted()
-        .collect(Collectors.toCollection(() -> {
-          Value type = event.isOnAllDay() ? Value.DATE : Value.DATE_TIME;
-          final DateList list = new DateList(type);
-          if (iCal4JDateCodec.isEventDateToBeEncodedIntoUtc(event.isRecurrent(),
-              event.asCalendarComponent())) {
-            list.setUtc(true);
-          } else {
-            list.setUtc(false);
-            list.setTimeZone(iCal4JDateCodec.getTimeZone(event.getCalendar().getZoneId()));
-          }
-          return list;
-        }));
+        .map(date -> iCal4JDateCodec.encode(event.isRecurrent(), component, date))
+        .sorted(ICal4JDateCodec.temporalComparator())
+        .collect(Collectors.toList());
+    return new DateList<>(dates);
+  }
+
+  /**
+   * Builds the iCal4J exception dates property (EXDATE) of the specified recurrent calendar event.
+   * <p>
+   * For an event on all the day(s), the {@code VALUE=DATE} parameter is set on the property so that
+   * the exception dates are serialized as dates (and not as datetimes).
+   * @param event a recurrent calendar event.
+   * @return the EXDATE property with the encoded exception dates.
+   */
+  public ExDate<Temporal> exceptionDates(final CalendarEvent event) {
+    final ExDate<Temporal> exDate = new ExDate<>(convertExceptionDates(event));
+    if (event.isOnAllDay()) {
+      exDate.add(Value.DATE);
+    }
+    return exDate;
   }
 
   /**
@@ -108,23 +115,23 @@ public class ICal4JRecurrenceCodec {
    * @return the encoded iCal4J recurrence.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Recur encode(final CalendarEvent event) {
+  public Recur<Temporal> encode(final CalendarEvent event) {
     Recurrence eventRecurrence = event.getRecurrence();
     if (eventRecurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("Event recurrence missing!");
     }
-    Recur.Builder recurBuilder =
-        new Recur.Builder().frequency(asICal4JFrequency(eventRecurrence.getFrequency()));
+    Recur.Builder<Temporal> recurBuilder =
+        new Recur.Builder<Temporal>().frequency(asICal4JFrequency(eventRecurrence.getFrequency()));
     if (eventRecurrence.getFrequency().getInterval() > 1) {
       recurBuilder.interval(eventRecurrence.getFrequency().getInterval());
     }
 
-    final Optional<Temporal> recurrenceEndDate = eventRecurrence.getRecurrenceEndDate();
     if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
       recurBuilder.count(eventRecurrence.getRecurrenceCount());
-    } else recurrenceEndDate.ifPresent(endDate -> TemporalConverter.consumeByType(endDate,
-        date -> recurBuilder.until(iCal4JDateCodec.encode(date)),
-        dateTime -> recurBuilder.until(iCal4JDateCodec.encode(dateTime))));
+    } else {
+      eventRecurrence.getRecurrenceEndDate()
+          .ifPresent(endDate -> recurBuilder.until(iCal4JDateCodec.encode(endDate)));
+    }
     WeekDayList daysOfWeek = eventRecurrence.getDaysOfWeek()
         .stream()
         .sorted(Comparator.comparing(DayOfWeekOccurrence::dayOfWeek))
@@ -170,10 +177,9 @@ public class ICal4JRecurrenceCodec {
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
   public Recurrence decode(final VEvent vEvent) {
-    Recur recur = ((RRule) vEvent.getProperty(Property.RRULE)).getRecur();
-    if (recur == null) {
-      throw new IllegalArgumentException("VEVENT recurrence missing!");
-    }
+    Recur<Temporal> recur = vEvent.<RRule<Temporal>>getProperty(Property.RRULE)
+        .map(RRule::getRecur)
+        .orElseThrow(() -> new IllegalArgumentException("VEVENT recurrence missing!"));
     RecurrencePeriod recurrencePeriod = decodeRecurrencePeriod(recur);
     Recurrence recurrence = Recurrence.from(recurrencePeriod);
     if (recur.getCount() > 0) {
@@ -190,35 +196,36 @@ public class ICal4JRecurrenceCodec {
   }
 
   private void processExclusionDates(final VEvent vEvent, final Recurrence recurrence) {
-    vEvent.getProperties(Property.EXDATE).forEach(e -> ((ExDate) e).getDates().forEach(exDate -> {
-      final Temporal dateToExclude = iCal4JDateCodec.decode(exDate);
-      recurrence.excludeEventOccurrencesStartingAt(dateToExclude);
-    }));
+    vEvent.<ExDate<Temporal>>getProperties(Property.EXDATE)
+        .forEach(e -> e.getDates().forEach(exDate -> {
+          final Temporal dateToExclude = iCal4JDateCodec.decode(exDate);
+          recurrence.excludeEventOccurrencesStartingAt(dateToExclude);
+        }));
   }
 
-  private Recur.Frequency asICal4JFrequency(final RecurrencePeriod period) {
-    Recur.Frequency freq;
+  private Frequency asICal4JFrequency(final RecurrencePeriod period) {
+    Frequency freq;
     switch (period.getUnit()) {
       case SECOND:
-        freq = Recur.Frequency.SECONDLY;
+        freq = Frequency.SECONDLY;
         break;
       case MINUTE:
-        freq = Recur.Frequency.MINUTELY;
+        freq = Frequency.MINUTELY;
         break;
       case HOUR:
-        freq = Recur.Frequency.HOURLY;
+        freq = Frequency.HOURLY;
         break;
       case DAY:
-        freq = Recur.Frequency.DAILY;
+        freq = Frequency.DAILY;
         break;
       case WEEK:
-        freq = Recur.Frequency.WEEKLY;
+        freq = Frequency.WEEKLY;
         break;
       case MONTH:
-        freq = Recur.Frequency.MONTHLY;
+        freq = Frequency.MONTHLY;
         break;
       case YEAR:
-        freq = Recur.Frequency.YEARLY;
+        freq = Frequency.YEARLY;
         break;
       default:
         throw new SilverpeasRuntimeException(
@@ -235,7 +242,7 @@ public class ICal4JRecurrenceCodec {
     return weekday;
   }
 
-  private RecurrencePeriod decodeRecurrencePeriod(final Recur recur) {
+  private RecurrencePeriod decodeRecurrencePeriod(final Recur<Temporal> recur) {
     final RecurrencePeriod recurrencePeriod;
     int interval = recur.getInterval() == -1 ? 1 : recur.getInterval();
     switch (recur.getFrequency()) {
