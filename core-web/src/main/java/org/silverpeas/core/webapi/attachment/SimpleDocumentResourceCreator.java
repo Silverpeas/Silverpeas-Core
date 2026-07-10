@@ -23,9 +23,11 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
@@ -37,24 +39,23 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.web.http.RequestFile;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.io.*;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static java.util.Optional.ofNullable;
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static jakarta.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.web.attachment.SimpleDocumentUploadData.decode;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
@@ -74,6 +75,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
    * parameters passed within the request.
    * <p>
    * A {@link SimpleDocumentUploadData} is extracted from request parameters.
+   *
    * @return an HTTP response embodied an entity in a format expected by the client (that is
    * identified by the <code>xRequestedWith</code> parameter).
    * @throws IOException if an error occurs while updating the document.
@@ -85,7 +87,8 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
     SimpleDocumentUploadData uploadData = decode(getHttpRequest());
     try {
       // Create the attachment
-      final String normalizedFileName = StringUtil.normalize(Encode.forHtml(filename));
+      final String normalizedFileName = StringUtil.normalize(
+          URLDecoder.decode(filename, Charsets.UTF_8));
       final SimpleDocumentEntity entity = createSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
@@ -117,7 +120,8 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
       String filename) throws IOException {
     final Context context = initializeContext(uploadData, filename);
     if (!context.contentDataAvailable()) {
-      throw new WebApplicationException("Missing content data (file content or physical filename)", BAD_REQUEST);
+      throw new WebApplicationException("Missing content data (file content or physical filename)"
+          , BAD_REQUEST);
     }
     try {
       ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
@@ -194,14 +198,16 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
   }
 
   private SimpleDocument saveContent(final Context context,
-      final SimpleDocument document,final boolean needCreation,
+      final SimpleDocument document, final boolean needCreation,
       final boolean publicDocument, final String lang)
       throws IOException {
     final String userId = getUser().getId();
     final SimpleDocument result;
-    try (final InputStream content = new BufferedInputStream(new FileInputStream(context.getContentFile()))) {
+    try (final InputStream content =
+             new BufferedInputStream(new FileInputStream(context.getContentFile()))) {
       if (needCreation) {
-        result = getAttachmentService().createAttachment(document, content, context.mustIndex(), publicDocument);
+        result = getAttachmentService().createAttachment(document, content, context.mustIndex(),
+            publicDocument);
       } else {
         document.edit(userId);
         getAttachmentService().lock(document.getId(), userId, lang);
@@ -218,7 +224,8 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
     return result;
   }
 
-  private Context initializeContext(final SimpleDocumentUploadData uploadData, final String filename) {
+  private Context initializeContext(final SimpleDocumentUploadData uploadData,
+      final String filename) {
     final Context context;
     try {
       context = new Context(this, uploadData, filename);

@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.web.filter;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
@@ -39,16 +44,12 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.InternalServerErrorException;
-import jakarta.ws.rs.core.UriBuilder;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -124,7 +125,8 @@ public class MassiveWebSecurityFilter implements Filter {
     SQL_PATTERNS.add(
         Pattern.compile("(?i)revoke(([\\s/*]+.*\\s*)(references|alter|index|all))+" +
             "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)from"));
-    SQL_PATTERNS.add(Pattern.compile("(?i)(create|drop|alter)([\\s/*]+.*\\s*)(table|database|schema)"));
+    SQL_PATTERNS.add(Pattern.compile("(?i)(create|drop|alter)([\\s/*]+.*\\s*)" +
+        "(table|database|schema)"));
     SQL_PATTERNS.add(SQL_SELECT_FROM_PATTERN);
     SQL_PATTERNS.add(SQL_INSERT_VALUES_PATTERN);
     SQL_PATTERNS.add(SQL_UPDATE_PATTERN);
@@ -220,6 +222,7 @@ public class MassiveWebSecurityFilter implements Filter {
         httpResponse.setHeader("X-XSS-Protection", "1");
       }
       checkRequestEntityForInjection(httpRequest);
+      checkRequestHeadersForInjection(httpRequest);
       checkRequestParametersForInjection(httpRequest, isWebSqlInjectionSecurityEnabled,
           isWebXssInjectionSecurityEnabled);
     }
@@ -249,6 +252,29 @@ public class MassiveWebSecurityFilter implements Filter {
           DurationFormatUtils.formatDurationHMS(end - start));
     }
   }
+
+  private void checkRequestHeadersForInjection(final HttpRequest httpRequest)
+      throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
+    long start = System.currentTimeMillis();
+    try {
+      // Browsing all headers
+      Enumeration<String> headerNames = httpRequest.getHeaderNames();
+      while (headerNames.hasMoreElements()) {
+        String headerName = headerNames.nextElement();
+        // we check only our own custom headers used to transfer information and with which we
+        // can perform some possible sensible treatments
+        if (headerName.toLowerCase().startsWith("x-")) {
+          String headerValue = httpRequest.getHeader(headerName);
+          checkValueForInjection(headerValue, true, true);
+        }
+      }
+    } finally {
+      long end = System.currentTimeMillis();
+      logger.debug("Massive Web Security Verify on request parameters: " +
+          DurationFormatUtils.formatDurationHMS(end - start));
+    }
+  }
+
 
   private void checkRequestParametersForInjection(final HttpRequest httpRequest,
       final boolean isWebSqlInjectionSecurityEnabled,
@@ -508,6 +534,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
     /**
      * Decorates the specified {@link ServletRequest}.
+     *
      * @param request the incoming request to decorate.
      * @return an {@link HttpRequest} instance decorating the given incoming request by adding a
      * buffer capability to the input stream on its body content.
@@ -533,6 +560,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
     /**
      * Copy constructor from another {@link HttpRequest}.
+     *
      * @param request the {@link HttpRequest} to copy into this new instance.
      */
     private BufferedHttpRequest(HttpRequest request) {
