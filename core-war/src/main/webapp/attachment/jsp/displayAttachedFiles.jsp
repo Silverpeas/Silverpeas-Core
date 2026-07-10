@@ -734,7 +734,7 @@ const _afManager${domIdSuffix} = new function() {
         }, __vuejsCtx), function(formPaneData) {
           return new Promise(function(resolve) {
             let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
-            submitUrl = submitUrl + '/' + encodeURIComponent(formPaneData.fileName.unescapeHTML());
+            submitUrl = submitUrl + '/' + encodeURIComponent(formPaneData.fileName.escapeHTML());
             _performActionWithContributionModificationManagement(function() {
               spProgressMessage.show();
               const formData = new FormData();

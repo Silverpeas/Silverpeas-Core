@@ -756,7 +756,7 @@
         xhr.setRequestHeader('X-COMPONENT-INSTANCE-ID', uploadContext.options.componentInstanceId);
       }
       xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-      xhr.setRequestHeader('X-FULL-PATH', encodeURIComponent(file.name));
+      xhr.setRequestHeader('X-FULL-PATH', file.name.escapeHTML());
       xhr.send(file);
     };
 
