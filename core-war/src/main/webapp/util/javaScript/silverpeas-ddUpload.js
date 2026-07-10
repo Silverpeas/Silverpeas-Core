@@ -581,7 +581,7 @@ const dragAndDropUploadEnabled = window.File;
 
       let headers = {
         "Content-Type" : 'application/octet-stream',
-        "X-FULL-PATH" : encodeURIComponent(file.fullPath)
+        "X-FULL-PATH" : file.fullPath.escapeHTML()
       };
 
       if (this.uploadSessionId) {

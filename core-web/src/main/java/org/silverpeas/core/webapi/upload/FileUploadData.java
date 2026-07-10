@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.webapi.upload;
 
-import org.owasp.encoder.Encode;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -89,8 +88,7 @@ public class FileUploadData {
     if (StringUtil.isNotDefined(brutFullPath)) {
       brutFullPath = "";
     }
-    String fullPath = Encode.forHtml(brutFullPath);
-    fullPath = StringUtil.normalize(fullPath);
+    String fullPath = StringUtil.normalize(brutFullPath);
     return new FileUploadData(request.getHeader(X_UPLOAD_SESSION), fullPath,
         request.getHeader(X_COMPONENT_INSTANCE_ID));
   }
