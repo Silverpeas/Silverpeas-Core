@@ -225,6 +225,14 @@
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers-standard-package</artifactId>
     </dependency>
+    <!-- Apache POI 5.x logs through the Log4j API. It is excluded from POI by the dependencies
+         BOM as it is provided by the application server at runtime, so it has to be added back for
+         the unit tests exercising the POI-based extractors (e.g. MSGExtractor). -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.drewnoakes</groupId>
       <artifactId>metadata-extractor</artifactId>

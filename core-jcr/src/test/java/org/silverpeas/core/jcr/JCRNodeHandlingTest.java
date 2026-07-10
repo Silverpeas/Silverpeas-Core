@@ -25,7 +25,7 @@
 
 package org.silverpeas.core.jcr;
 
-import org.apache.jackrabbit.core.fs.local.FileUtil;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,7 +102,7 @@ class JCRNodeHandlingTest extends SecurityTest {
   static void purgeFileStorage() throws IOException {
     Path jcrHome = Path.of(JCR_HOME);
     if (Files.exists(jcrHome)) {
-      FileUtil.delete(jcrHome.toFile());
+      FileUtils.deleteDirectory(jcrHome.toFile());
     }
   }
 

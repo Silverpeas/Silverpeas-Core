@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.io.media;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -37,6 +39,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -61,6 +64,22 @@ class MetadataExtractorTest {
   FieldMocker mocker = new FieldMocker();
 
   private MetadataExtractor instance;
+
+  private static TimeZone defaultTimeZone;
+
+  @BeforeAll
+  static void forceDefaultTimeZone() {
+    // some media (e.g. the TIFF image) carry dates without any timezone (EXIF DateTime); Tika then
+    // interprets them in the JVM default timezone. It is forced here to Europe/Paris so that the
+    // dates asserted below are deterministic whatever the timezone of the host running the tests.
+    defaultTimeZone = TimeZone.getDefault();
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
+  }
+
+  @AfterAll
+  static void restoreDefaultTimeZone() {
+    TimeZone.setDefault(defaultTimeZone);
+  }
 
   @BeforeEach
   public void setup() {
@@ -150,7 +169,8 @@ class MetadataExtractorTest {
     assertThat(result.getKeywords(), emptyArray());
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
-    assertThat(result.getCreationDate().getTime(), greaterThanOrEqualTo(1340963223000L));
+    // EXIF DateTime 2012:06:29 11:47:03 read as Europe/Paris (11:47:03+02:00) = 09:47:03 UTC
+    assertThat(result.getCreationDate().getTime(), greaterThanOrEqualTo(1340956023000L));
     assertThat(result.getLastSaveDateTime(), is(nullValue()));
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.of(1942, 1309)));

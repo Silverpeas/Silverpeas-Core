@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2000 - 2026 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/licensing"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!--
+  Silverpeas relies on the metadata properties normalized by the Tika built-in parsers (tiff:*,
+  xmpDM:*, dcterms:*, ...). The external parsers, delegating to command line tools such as ffmpeg or
+  exiftool when they are available on the host, emit their own non-normalized properties and thus
+  make the metadata extraction both non-deterministic (depending on the tools installed on the host)
+  and unusable by Silverpeas. They are therefore excluded so that only the built-in parsers are used.
+  -->
+<properties>
+  <parsers>
+    <parser class="org.apache.tika.parser.DefaultParser">
+      <parser-exclude class="org.apache.tika.parser.external.CompositeExternalParser"/>
+      <parser-exclude class="org.apache.tika.parser.external.ExternalParser"/>
+    </parser>
+  </parsers>
+</properties>

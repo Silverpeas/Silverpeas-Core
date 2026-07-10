@@ -24,12 +24,11 @@
 
 package org.silverpeas.core.util;
 
-import com.pholser.junit.quickcheck.Property;
-import com.pholser.junit.quickcheck.When;
-import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.silverpeas.core.test.quickcheck.generators.SimpleStringGenerator.SpSimpleString;
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
+import net.jqwik.api.constraints.CharRange;
+import net.jqwik.api.constraints.StringLength;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -37,7 +36,6 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author silveryocha
  */
-@RunWith(JUnitQuickcheck.class)
 public class WebEncodeHelperTest {
 
   @Test
@@ -59,9 +57,9 @@ public class WebEncodeHelperTest {
         is("{\\\"toto\\\":\\\"t\\'ti - \\\\n le fou dingue ?!\\\",\\\"href\\\":\\\"https:\\/\\/www.silverpeas.org\\\"}"));
   }
 
-  @Property(trials = 1000)
+  @Property(tries = 1000, seed = "0")
   public void javaStringToJsStringQuickCheck(
-      @When(seed = 0) @SpSimpleString(includes = "5..2000") String string) {
+      @ForAll @CharRange(from = 5, to = 2000) @StringLength(min = 5, max = 2000) String string) {
     final String actual = WebEncodeHelper.javaStringToJsString(string);
     assertThat(actual.length(), greaterThanOrEqualTo(string.length()));
   }
@@ -79,9 +77,9 @@ public class WebEncodeHelperTest {
         is("&lt;div&gt;&lt;a href=&quot;https://www.silverpeas.org&quot;&gt;&lt;span&gt;Visit our community&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;"));
   }
 
-  @Property(trials = 1000)
+  @Property(tries = 1000, seed = "0")
   public void javaStringToHtmlStringQuickCheck(
-      @When(seed = 0) @SpSimpleString(includes = "5..2000") String string) {
+      @ForAll @CharRange(from = 5, to = 2000) @StringLength(min = 5, max = 2000) String string) {
     final String actual = WebEncodeHelper.javaStringToHtmlString(string);
     assertThat(actual.length(), greaterThanOrEqualTo(string.length()));
   }
@@ -99,9 +97,9 @@ public class WebEncodeHelperTest {
         is("&lt;div&gt;&lt;a href=&quot;https://www.silverpeas.org&quot;&gt;&lt;span&gt;Visit our community&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;"));
   }
 
-  @Property(trials = 1000)
+  @Property(tries = 1000, seed = "0")
   public void escapeXmlQuickCheck(
-      @When(seed = 0) @SpSimpleString(includes = "5..2000") String string) {
+      @ForAll @CharRange(from = 5, to = 2000) @StringLength(min = 5, max = 2000) String string) {
     final String actual = WebEncodeHelper.escapeXml(string);
     assertThat(actual.length(), greaterThanOrEqualTo(string.length()));
   }
@@ -123,9 +121,9 @@ public class WebEncodeHelperTest {
     assertThat(WebEncodeHelper.convertBlanksForHtml("a"), is("a"));
   }
 
-  @Property(trials = 1000)
+  @Property(tries = 1000, seed = "0")
   public void convertBlanksForHtmlQuickCheck(
-      @When(seed = 0) @SpSimpleString(includes = "5..2000") String string) {
+      @ForAll @CharRange(from = 5, to = 2000) @StringLength(min = 5, max = 2000) String string) {
     final String actual = WebEncodeHelper.convertBlanksForHtml(string);
     final int rCount = (int) string.chars().filter(c -> c == '\r').count();
     final int nCount = (int) string.chars().filter(c -> c == '\n').count();
@@ -147,9 +145,9 @@ public class WebEncodeHelperTest {
         is("&lt;div&gt;&lt;a href=&quot;https://www.silverpeas.org&quot;&gt;&lt;span&gt;Visit our community&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;"));
   }
 
-  @Property(trials = 1000)
+  @Property(tries = 1000, seed = "0")
   public void javaStringToHtmlParagrapheQuickCheck(
-      @When(seed = 0) @SpSimpleString(includes = "5..2000") String string) {
+      @ForAll @CharRange(from = 5, to = 2000) @StringLength(min = 5, max = 2000) String string) {
     final String actual = WebEncodeHelper.javaStringToHtmlParagraphe(string);
     final int rCount = (int) string.chars().filter(c -> c == '\r').count();
     final int nCount = (int) string.chars().filter(c -> c == '\n').count();
@@ -174,9 +172,9 @@ public class WebEncodeHelperTest {
         is("<div><a href=\"https://www.silverpeas.org\"><span>Visit our community</span></a></div>"));
   }
 
-  @Property(trials = 1000)
+  @Property(tries = 1000, seed = "0")
   public void htmlStringToJavaStringQuickCheck(
-      @When(seed = 0) @SpSimpleString(includes = "5..2000") String string) {
+      @ForAll @CharRange(from = 5, to = 2000) @StringLength(min = 5, max = 2000) String string) {
     final String actual = WebEncodeHelper.htmlStringToJavaString(string);
     assertThat(actual.length(), lessThanOrEqualTo(string.length()));
   }
