@@ -36,6 +36,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
+import org.silverpeas.core.test.integration.TestDateTimes;
 import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.time.*;
@@ -296,7 +297,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
   @Test
   public void planANewEventAtAGivenDateTime() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    OffsetDateTime now = OffsetDateTime.now();
+    OffsetDateTime now = TestDateTimes.now();
     OffsetDateTime inThreeHours = now.plusHours(3);
     CalendarEvent expectedEvent = CalendarEvent.on(Period.between(now, inThreeHours))
         .createdBy(USER_ID)

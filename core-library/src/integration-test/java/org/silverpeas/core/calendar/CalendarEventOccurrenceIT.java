@@ -34,11 +34,11 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.LibCoreWarBuilder;
+import org.silverpeas.core.test.integration.TestDateTimes;
 import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
@@ -314,7 +314,7 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(occurrences.size(), is(1));
 
     final String newTitle = "15mn Meeting";
-    Period newPeriod = Period.between(OffsetDateTime.now(), OffsetDateTime.now().plusMinutes(15));
+    Period newPeriod = Period.between(TestDateTimes.now(), TestDateTimes.now().plusMinutes(15));
     occurrences.get(0).setTitle(newTitle);
     occurrences.get(0).setPeriod(newPeriod);
 
@@ -433,7 +433,7 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     recurrentEvent = occurrences.get(0).getCalendarEvent();
 
     final String newTitle = "15mn Meeting";
-    Period newPeriod = Period.between(OffsetDateTime.now(), OffsetDateTime.now().plusMinutes(15));
+    Period newPeriod = Period.between(TestDateTimes.now(), TestDateTimes.now().plusMinutes(15));
     occurrences.get(0).setTitle(newTitle);
     occurrences.get(0).setPeriod(newPeriod);
 

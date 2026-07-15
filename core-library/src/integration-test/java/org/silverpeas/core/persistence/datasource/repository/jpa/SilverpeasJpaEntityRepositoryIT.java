@@ -46,6 +46,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOIT;
 import org.silverpeas.core.test.LibCoreWarBuilder;
+import org.silverpeas.core.test.integration.TestDateTimes;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.stub.StubbedUserProvider;
 import org.silverpeas.core.util.ServiceProvider;
@@ -62,12 +63,12 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThrows;
 
 /**
- * This class of tests are verified :
+ * This class of tests verifies:
  * - Entity
  * - EntityRepository
  * - Service and transactions
  * <p>
- * Entities :
+ * Entities:
  * - Person (Uuid identifier, has a bag of animal without cascade behavior)
  * - Animal (Unique identifier, attached to a person and has a bag of equipment with {@link
  * jakarta.persistence.CascadeType#ALL} behaviour)
@@ -346,9 +347,9 @@ public class SilverpeasJpaEntityRepositoryIT {
   @Test
   public void saveEquipmentRentedAGivenPeriod() {
     OffsetDateTime yesterday =
-        OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).minusDays(1);
+        TestDateTimes.now().withOffsetSameInstant(ZoneOffset.UTC).minusDays(1);
     OffsetDateTime tomorrow =
-        OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).plusDays(1);
+        TestDateTimes.now().withOffsetSameInstant(ZoneOffset.UTC).plusDays(1);
     OperationContext.fromUser("0");
     Animal updatedDog = Transaction.performInOne(() -> {
       Animal dog = jpaEntityServiceTest.getAnimalById("2");
