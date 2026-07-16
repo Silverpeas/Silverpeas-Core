@@ -128,7 +128,7 @@ public class WysiwygManager implements WysiwygContentRepository {
    *
    * @param id the id of the object to which this wysiwyg is attached.
    * @param componentId the id of component.
-   * @return List<SimpleDocument>
+   * @return a {@code List<SimpleDocument>}
    */
   public List<SimpleDocument> getImages(String id, String componentId) {
     List<SimpleDocument> attachments =

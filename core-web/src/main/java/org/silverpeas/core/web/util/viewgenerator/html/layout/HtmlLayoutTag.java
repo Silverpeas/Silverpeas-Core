@@ -32,8 +32,8 @@ import jakarta.servlet.jsp.JspException;
 
 /**
  * This tag MUST be the first called from a JSP page providing HTML code.
- * <ul>
  * It MUST includes directly the following ordered children:
+ * <ul>
  * <li>{@link HeadLayoutPartTag}</li>
  * <li>{@link BodyPartLayoutTag}</li>
  * </ul>

@@ -1465,7 +1465,7 @@ public class DocumentRepository {
    * <p>
    * BE CAREFUL: the repository of this manager is the thread memory, so it MUST be used into a try
    * finally statement:
-   * <code>
+   * </p>
    * <pre>
    *   try {
    *     ...
@@ -1475,9 +1475,7 @@ public class DocumentRepository {
    *     FirstVersionManager.clear();
    *   }
    * </pre>
-   * </code>
    * or
-   * <code>
    * <pre>
    *   try {
    *     ...
@@ -1487,8 +1485,6 @@ public class DocumentRepository {
    *     FirstVersionManager.clear();
    *   }
    * </pre>
-   * </code>
-   * </p>
    */
   public static class FirstVersionManager {
 

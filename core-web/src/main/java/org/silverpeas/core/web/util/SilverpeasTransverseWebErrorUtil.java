@@ -42,7 +42,8 @@ public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorU
    * Checks if a DataStorageQuotaException is registered in the servlet request
    * @param request the http servlet request
    * @param language the language of current user
-   * @throws DataStorageQuotaException, ComponentFileFilterException
+   * @throws DataStorageQuotaException
+   * @throws ComponentFileFilterException
    */
   public static void verifyErrorFromRequest(final ServletRequest request, final String language)
       throws DataStorageQuotaException, ComponentFileFilterException {

@@ -33,7 +33,7 @@ import java.util.Optional;
  * It is a process implied within the manufacturing of a new component instance in Silverpeas.
  * Usually such process is about allocating some specific resources for the component instance
  * being created.
- * </p>
+ * <p>
  * When an application component is instantiated, it is first created and then registered into
  * Silverpeas. In some circumstances, according to the application, some actions have to be
  * performed in the behalf of the new application instance. The application instantiation is
@@ -42,7 +42,7 @@ import java.util.Optional;
  * interface qualified by a name that satisfies the following convention
  * <code>[COMPONENT NAME]InstancePostConstruction</code> is looked for by the instantiation process
  * and then invoked if it is has been found.
- * </p>
+ * <p>
  * Any application that requires specific actions when a new application component is instantiated
  * has to implement this interface and the implementation has to be qualified with the @Named
  * annotation by a name satisfying the following convention

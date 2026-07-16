@@ -40,7 +40,6 @@ public class Tree implements java.io.Serializable {
   /**
    * Constructor declaration
    * @param treeNodes
-   * @see
    */
   public Tree(List<TreeNode> treeNodes) {
     tree = treeNodes;
@@ -49,7 +48,6 @@ public class Tree implements java.io.Serializable {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public List<TreeNode> getTree() {
     return tree;
@@ -58,7 +56,6 @@ public class Tree implements java.io.Serializable {
   /**
    * Method declaration
    * @param treeNodes
-   * @see
    */
   public void setTree(List<TreeNode> treeNodes) {
     this.tree = treeNodes;
@@ -67,7 +64,6 @@ public class Tree implements java.io.Serializable {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public int getDepth() {
     if (getTree() != null && getTree().size() > 0) {
@@ -95,7 +91,6 @@ public class Tree implements java.io.Serializable {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public TreeNode getRoot() {
     if (getTree() != null && getTree().size() > 0) {
@@ -107,7 +102,6 @@ public class Tree implements java.io.Serializable {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String toString() {
     return "(tree = " + getTree() + ")";

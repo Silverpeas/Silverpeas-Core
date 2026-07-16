@@ -106,7 +106,7 @@ public class ImportExportSessionController extends AbstractAdminComponentSession
   /**
    * Export PDF attachements of selected publications to a unique PDF. Useful for a single print or
    * download.
-   * @param itemsToExport : List<WAAttributeValuePair> contains ids of elements to export (objectId
+   * @param itemsToExport : {@code List<WAAttributeValuePair>} contains ids of elements to export (objectId
    * and instanceId)
    * @return the report about the PDF export.
    * @throws ImportExportException if the export fails.

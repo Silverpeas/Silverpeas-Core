@@ -38,7 +38,6 @@ import java.time.Instant;
  *     <li>{@link #isNewContribution(Contribution)}</li>
  *     <li>{@link #isNewContribution(ContributionIdentifier, Instant)}</li>
  *   </ul>
- * </p>
  * @author silveryocha
  */
 public interface NewContributionIndicator {

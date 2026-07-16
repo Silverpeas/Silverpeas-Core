@@ -26,7 +26,7 @@
  * Uploaded files are retrieved from indicators contained in an HttpServletRequest.
  * <br>
  * On user interface side, silverpeas-fileUpload.js has to be used via
- * <view:fileUpload [options] /> tag. When this Silverpeas jQuery plugin is used,
+ * {@code <view:fileUpload [options] />} tag. When this Silverpeas jQuery plugin is used,
  * each files selected or dragged and dropped are uploaded by AJAX http request. User can't
  * validate form unless all files are uploaded.
  * <br>

@@ -35,7 +35,7 @@ import org.silverpeas.core.util.SilverpeasList;
 import java.util.List;
 
 /**
- * @author: ebonnet
+ * @author ebonnet
  */
 @Repository
 public class TicketJpaRepository extends BasicJpaEntityRepository<Ticket>

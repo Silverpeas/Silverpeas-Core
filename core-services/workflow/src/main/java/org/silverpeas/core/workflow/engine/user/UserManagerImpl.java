@@ -64,7 +64,7 @@ public class UserManagerImpl implements UserManager {
    * @param userIds
    * @return
    * @throws WorkflowException
-   * @throw WorkflowException if a userId is unknown.
+   * @throws WorkflowException if a userId is unknown.
    */
   @Override
   public User[] getUsers(String[] userIds) throws WorkflowException {

@@ -66,7 +66,7 @@ public interface WADataPaginator {
   /**
    * this method returns the last page of data, or null is there is no such page. T
    * @see #getNextPage
-   * @see #getpreviousPage
+   * @see #getPreviousPage
    */
   public WADataPage getLastPage();
 

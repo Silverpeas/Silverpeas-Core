@@ -39,35 +39,30 @@ public interface Window extends SimpleGraphicElement {
   /**
    * Method declaration
    * @param gef
-   * @see
    */
   public void init(GraphicElementFactory gef);
 
   /**
    * Method declaration
    * @param body
-   * @see
    */
   public void addBody(String body);
 
   /**
    * Method declaration
    * @return
-   * @see
    */
   public BrowseBar getBrowseBar();
 
   /**
    * Method declaration
    * @return
-   * @see
    */
   public OperationPane getOperationPane();
 
   /**
    * Method declaration
    * @param width
-   * @see
    */
   public void setWidth(String width);
 

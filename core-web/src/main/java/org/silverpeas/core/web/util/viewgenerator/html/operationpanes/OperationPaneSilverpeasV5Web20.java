@@ -36,7 +36,6 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   /**
    * Constructor declaration
-   * @see
    */
   public OperationPaneSilverpeasV5Web20() {
     super();
@@ -80,7 +79,6 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
   /**
    * Method declaration
    * @return
-   * @see
    */
   @Override
   public String print() {

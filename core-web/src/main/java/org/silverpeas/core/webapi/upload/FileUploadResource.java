@@ -68,7 +68,7 @@ import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
  * plugins:
  * <ul>
  * <li>silverpeas-filUpload.js: useful to handle file upload on resource creation</li>
- * <li>silverpeas-ddUpload.js: useful to handle drag & drop file upload on existing resources</li>
+ * <li>silverpeas-ddUpload.js: useful to handle drag &amp; drop file upload on existing resources</li>
  * </ul>
  *
  * @author Yohann Chastagnier

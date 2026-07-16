@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPerma
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 /**
- * @author: ebonnet
+ * @author ebonnet
  */
 @Repository
 public class VersionPermalinkJpaRepository extends BasicJpaEntityRepository<VersionPermalink>

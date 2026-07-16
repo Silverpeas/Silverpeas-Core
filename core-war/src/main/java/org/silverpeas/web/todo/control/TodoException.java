@@ -55,7 +55,6 @@ public class TodoException extends SilverpeasException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
    */
   public TodoException(String callingClass, int errorLevel, String message,
       String extraParams) {
@@ -68,7 +67,6 @@ public class TodoException extends SilverpeasException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
    */
   public TodoException(String callingClass, int errorLevel, String message,
       Exception nested) {
@@ -82,7 +80,6 @@ public class TodoException extends SilverpeasException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
    */
   public TodoException(String callingClass, int errorLevel, String message,
       String extraParams, Exception nested) {

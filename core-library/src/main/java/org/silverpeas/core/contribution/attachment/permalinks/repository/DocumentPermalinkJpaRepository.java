@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.attachment.permalinks.model.DocumentPerm
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 /**
- * @author: ebonnet
+ * @author ebonnet
  */
 @Repository
 public class DocumentPermalinkJpaRepository extends BasicJpaEntityRepository<DocumentPermalink>

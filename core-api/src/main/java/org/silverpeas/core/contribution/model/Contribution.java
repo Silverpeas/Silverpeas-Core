@@ -139,7 +139,7 @@ public interface Contribution extends SilverpeasResource, Serializable, Securabl
   }
 
   /**
-   * Gets the {@link ResourcePath <T>} of the contribution represented by the given identifier.
+   * Gets the {@link ResourcePath} {@code <T>} of the contribution represented by the given identifier.
    * <p>
    * Returns empty by default if not implemented.
    * </p>

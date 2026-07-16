@@ -44,7 +44,7 @@ import java.util.Properties;
  *   <li>MemoryDocumentStore: keeps documents in memory. This implementation should only be used
  *   for testing purposes and it isn't addressed here.</li>
  * </ul>
- * <h3>The MongoDocumentStore</h1>
+ * <b>The MongoDocumentStore</b>
  * <p>
  *  The MongoDocumentStore use MongoDB to persist nodes as documents. For production deployments
  *  use a replica-set with at least three mongod instances and a majority write concern. Fewer
@@ -60,7 +60,7 @@ import java.util.Properties;
  * Large blobs can lead to a significantly reduced op-log window and cause delay in replicating
  * other changes between the replica-set members. See available blob stores alternatives for
  * production use.
- * <h3>The RDBDocumentStore</h3>
+ * <b>The RDBDocumentStore</b>
  * <p>
  * The RDBDocumentStore uses relational databases to persist nodes as documents, mainly emulating
  * the native capabilities of MongoDocumentStore. H2DB, PostgreSQL, Microsoft SQL Server, and

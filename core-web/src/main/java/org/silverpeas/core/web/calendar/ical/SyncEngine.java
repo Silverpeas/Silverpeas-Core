@@ -54,7 +54,6 @@ public final class SyncEngine {
    * this value is optional in feed converter mode
    * @param password Gmail password (in unencrypted, plain text format), this value is optional in
    * feed converter mode
-   * @throws Exception any exception (eg. i/o, invalid param, invalid calendar syntax, etc)
    */
   public final String synchronize(File localCalendar, URL remoteCalendar, String username,
       String password) throws SilverpeasException {

@@ -40,11 +40,10 @@ import java.util.Optional;
  *   <li>{@link BuiltInNotifAddress#DEFAULT} is an alias to the first address set as default by
  *   the user,</li>
  *   <li>{@link BuiltInNotifAddress#COMPONENT_DEFINED} is an alias to the address that is defined
- *   by the user for all notifications sent through a given component instance</li>.
+ *   by the user for all notifications sent through a given component instance.</li>
  * </ul>
  * The two above aliases can designate not only a builtin address but also a custom address created
  * by the user himself.
- * </p>
  * @author Yohann Chastagnier
  */
 public enum BuiltInNotifAddress {

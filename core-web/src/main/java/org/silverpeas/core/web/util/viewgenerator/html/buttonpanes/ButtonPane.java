@@ -43,26 +43,22 @@ public interface ButtonPane extends SimpleGraphicElement {
   /**
    * Method declaration
    * @param button
-   * @see
    */
   void addButton(Button button);
 
   /**
    * Method declaration
-   * @see
    */
   void setVerticalPosition();
 
   /**
    * Method declaration
    * @param width
-   * @see
    */
   void setVerticalWidth(String width);
 
   /**
    * Method declaration
-   * @see
    */
   void setHorizontalPosition();
 

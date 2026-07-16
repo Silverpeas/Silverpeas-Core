@@ -37,7 +37,7 @@ public class SpaceEvent extends AbstractResourceEvent<SpaceInst> {
   }
 
   /**
-   * @see AbstractResourceEvent#AbstractResourceEvent(ResourceEvent.Type, Object[])
+   * @see AbstractResourceEvent
    */
   public SpaceEvent(final Type type, final SpaceInst... resource) {
     super(type, resource);

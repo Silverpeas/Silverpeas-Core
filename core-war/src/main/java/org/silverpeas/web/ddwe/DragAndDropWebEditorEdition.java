@@ -29,7 +29,7 @@ import org.silverpeas.core.wbe.WbeFile;
 import org.silverpeas.core.wbe.WbeUser;
 
 /**
- * Represents the preparation of a Drag & Drop Web Edition.
+ * Represents the preparation of a Drag &amp; Drop Web Edition.
  * @author silveryocha
  */
 public class DragAndDropWebEditorEdition extends WbeEdition {

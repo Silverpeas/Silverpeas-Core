@@ -51,7 +51,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *     component instance involved by the processing. If the object is not a
  *     {@link SimpleDocument} one, then the method {@link Object#toString()} of the annotated
  *     object instance MUST return a component instance identifier to be functional</li> </ul>
- * </p>
  * @author silveryocha
  */
 @Inherited

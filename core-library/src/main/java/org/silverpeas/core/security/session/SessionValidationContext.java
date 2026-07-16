@@ -25,7 +25,7 @@ package org.silverpeas.core.security.session;
 
 /**
  * This class handles context data to perform a session validation.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class SessionValidationContext {
   private final String sessionKey;

@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 
 /**
  * A registry of tools available in Silverpeas.
- * </p>
+ * <p>
  * The {@code Tool} available in Silverpeas are defined by a simple property file.
  * @author silveryocha
  */

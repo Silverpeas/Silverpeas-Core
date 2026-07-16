@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Defines the different possible status in which a contribution must be.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public enum ContributionStatus {
   UNKNOWN,

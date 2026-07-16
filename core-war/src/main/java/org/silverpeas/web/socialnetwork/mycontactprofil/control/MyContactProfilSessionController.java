@@ -70,7 +70,7 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
   /**
    * get all RelationShips ids for this user
    * @param userId : int myId
-   * @return : List<String> of contact identifiers
+   * @return : {@code List<String>} of contact identifiers
    */
   public List<String> getContactsIdsForUser(String userId) {
     return getRelationShipService().getMyContactsIds(Integer.parseInt(userId));
@@ -78,7 +78,7 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
 
   /**
    * get all RelationShips ids for this user
-   * @return :List<String>
+   * @return :{@code List<String>}
    * @param userId : int myId
    */
   public List<String> getCommonContactsIdsForUser(String userId) {

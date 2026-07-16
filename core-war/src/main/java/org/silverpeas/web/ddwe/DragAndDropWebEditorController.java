@@ -81,7 +81,7 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 import static org.silverpeas.kernel.util.StringUtil.normalize;
 
 /**
- * Handles the Drag&Drop Web Editor.
+ * Handles the Drag&amp;Drop Web Editor.
  *
  * @author silveryocha
  */

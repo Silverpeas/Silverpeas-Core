@@ -88,8 +88,8 @@ public class PortletWindowInvoker extends WindowInvoker {
 
   /**
    * Implementation of the abstract method defined in the base class. EntityID is represented as
-   * <web application name>/<portlet name>/<portletWindow name> <web application name>/<portlet
-   * name> is stored in the display profile during deployment time.
+   * &lt;web application name&gt;/&lt;portlet name&gt;/&lt;portletWindow name&gt; &lt;web application name&gt;/&lt;portlet
+   * name&gt; is stored in the display profile during deployment time.
    */
   @Override
   public EntityID getEntityID(HttpServletRequest request) throws InvokerException {

@@ -172,7 +172,6 @@ public abstract class RESTWebServiceTest {
    * </p>
    * <p>
    * For example: <pre>getTokenKeyOf(get().createUser());</pre>
-   * </p>
    * @param theUser the user to authenticate.
    * @return the key of the opened session.
    */

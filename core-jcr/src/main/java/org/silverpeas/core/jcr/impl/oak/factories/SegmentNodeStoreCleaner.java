@@ -73,7 +73,6 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  *     <li>compaction</li>
  *     <li>cleanup</li>
  *   </ul>
- * </p>
  * <p>
  *   In a second time, all the backup files created in a read only context are deleted (*.bak).
  * </p>

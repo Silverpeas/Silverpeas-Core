@@ -68,7 +68,6 @@ import static org.silverpeas.kernel.util.StringUtil.*;
  *     into different user languages. The base name part of file is the identifier (an UUID) and
  *     the extension is '.json'</li>
  *   </ul>
- * </p>
  * @author silveryocha
  */
 @Repository

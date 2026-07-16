@@ -539,7 +539,6 @@ public class CalendarEventOccurrence
    * <p>
    * This is equivalent to
    * <pre>{@code EventOperationResult result = event.updateSince(this)}</pre>
-   * </p>
    * @see CalendarEvent#updateSince(CalendarEventOccurrence)
    * @return the result of the update.
    */
@@ -587,7 +586,6 @@ public class CalendarEventOccurrence
    * <p>
    *  This is equivalent to
    * <pre>{@code EventOperationResult result = event.deleteSince(this)}</pre>
-   * </p>
    * @see CalendarEvent#deleteSince(CalendarEventOccurrence)
    * @return the result of the deletion.
    */
@@ -606,7 +604,6 @@ public class CalendarEventOccurrence
    * <p>
    * This is equivalent to
    * <pre>{@code EventOperationResult result = event.deleteOnly(this)}</pre>
-   * </p>
    * @see CalendarEvent#deleteOnly(CalendarEventOccurrence)
    * @return the result of the deletion.
    */

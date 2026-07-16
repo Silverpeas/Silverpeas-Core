@@ -423,7 +423,6 @@ public abstract class AbstractFileHandler {
 
   /**
    * Delete session path
-   * @return
    */
   protected void deleteSessionWorkingPath() {
     FileUtils.deleteQuietly(FileUtils.getFile(sessionRootPath, getSession().getId()));
@@ -432,7 +431,6 @@ public abstract class AbstractFileHandler {
 
   /**
    * Checkin session path
-   * @return
    */
   protected void checkinSessionWorkingPath() throws Exception {
 

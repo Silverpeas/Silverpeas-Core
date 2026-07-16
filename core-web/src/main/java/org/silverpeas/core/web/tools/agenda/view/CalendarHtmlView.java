@@ -66,7 +66,6 @@ public class CalendarHtmlView {
   /**
    * Method declaration
    * @param scheduleCount
-   * @see
    */
   public void add(SchedulableCount scheduleCount) {
     scheduleCounts.add(scheduleCount);
@@ -76,7 +75,6 @@ public class CalendarHtmlView {
    * Method declaration
    * @param day
    * @return
-   * @see
    */
   public SchedulableCount getSchedulableCount(int day) {
     String d = String.valueOf(day);
@@ -98,7 +96,6 @@ public class CalendarHtmlView {
   /**
    * Method declaration
    * @param value
-   * @see
    */
   public void setWeekDayStyle(String value) {
     weekDayStyle = value;
@@ -107,7 +104,6 @@ public class CalendarHtmlView {
   /**
    * Method declaration
    * @param value
-   * @see
    */
   public void setMonthDayStyle(String value) {
     monthDayStyle = value;
@@ -116,7 +112,6 @@ public class CalendarHtmlView {
   /**
    * Method declaration
    * @param value
-   * @see
    */
   public void setMonthSelectedDayStyle(String value) {
     // monthSelectedDayStyle = value;
@@ -125,7 +120,6 @@ public class CalendarHtmlView {
   /**
    * Method declaration
    * @param value
-   * @see
    */
   public void setMonthVisible(boolean value) {
     monthVisible = value;
@@ -134,7 +128,6 @@ public class CalendarHtmlView {
   /**
    * Method declaration
    * @param value
-   * @see
    */
   public void setNavigationBar(boolean value) {
     navigationBar = value;
@@ -143,7 +136,6 @@ public class CalendarHtmlView {
   /**
    * Method declaration
    * @param value
-   * @see
    */
   public void setShortName(boolean value) {
     shortName = value;
@@ -154,7 +146,6 @@ public class CalendarHtmlView {
    * @param date
    * @param agendaSessionController
    * @return
-   * @see
    */
 
   public String getHtmlView(Date date,
@@ -167,7 +158,6 @@ public class CalendarHtmlView {
    * @param date
    * @param agendaSessionController
    * @return
-   * @see
    */
   public String getPDAView(Date date,
       AgendaSessionController agendaSessionController) {
@@ -181,7 +171,6 @@ public class CalendarHtmlView {
    * @param agendaSessionController
    * @param forPda
    * @return
-   * @see
    */
   public String getHtmlView(Date date,
       AgendaSessionController agendaSessionController, boolean forPda) {

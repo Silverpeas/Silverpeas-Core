@@ -484,7 +484,7 @@ public interface OrganizationController {
 
   /**
    * Is the specified tool is available in Silverpeas?
-   * </p>
+   * <p>
    * A tool in Silverpeas is a singleton component that is dedicated to a given user. Each tool is
    * identified by a unique identifier, and it is unique to each user.
    * @param toolId the unique identifier of a tool.
@@ -494,7 +494,7 @@ public interface OrganizationController {
 
   /**
    * Gets the component instance identifiers available for the specified user?
-   * </p>
+   * <p>
    * A component is an application in Silverpeas to perform some tasks and to manage some resources.
    * Each component in Silverpeas can be instantiated several times, each of them corresponding then
    * to a running application in Silverpeas, and it is uniquely identified from others instances by
@@ -507,7 +507,7 @@ public interface OrganizationController {
   /**
    * Is the specified component instance available among the components instances accessible by the
    * specified user?
-   * </p>
+   * <p>
    * A component is an application in Silverpeas to perform some tasks and to manage some resources.
    * Each component in Silverpeas can be instantiated several times, each of them corresponding then
    * to a running application in Silverpeas, and it is uniquely identified from others instances by
@@ -521,7 +521,7 @@ public interface OrganizationController {
   /**
    * Is the specified component instance available among the components instances accessible by the
    * specified group of users?
-   * </p>
+   * <p>
    * A component is an application in Silverpeas to perform some tasks and to manage some resources.
    * Each component in Silverpeas can be instantiated several times, each of them corresponding then
    * to a running application in Silverpeas, and it is uniquely identified from others instances by
@@ -719,7 +719,7 @@ public interface OrganizationController {
 
   /**
    * Is the specified tool belongs to the administration component?
-   * </p>
+   * <p>
    * The administration component (or administrative console) forms a particular component made up
    * of several tools, each of them providing an administrative feature. Each tool in the
    * administration component have the same identifier that refers in fact the administration

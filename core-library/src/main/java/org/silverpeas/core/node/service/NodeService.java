@@ -181,7 +181,6 @@ public interface NodeService {
    *     <li>rightsDependsOn</li>
    *   </ul>
    *   This method is designed for process performance needs.
-   * </p>
    * @param instanceIds the instance ids aimed.
    * @return a list of {@link NodeDetail} instances.
    */

@@ -34,7 +34,7 @@ import java.io.Serializable;
  * Because an identifiable entity is a business object, it is strongly recommended to expose the
  * business operations related to the entity itself directly within its interface. In the
  * same way, we recommend to perform repository related operations through the entity itself.
- * @author: ebonnet
+ * @author ebonnet
  */
 public interface IdentifiableEntity extends Serializable {
   /**

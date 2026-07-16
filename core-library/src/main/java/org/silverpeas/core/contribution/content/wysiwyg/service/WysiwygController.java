@@ -77,7 +77,7 @@ public class WysiwygController {
    * Turn over all the images attached according to the parameters id, componentId.
    * @param id the id of the object to which this wysiwyg is attached.
    * @param componentId the id of component.
-   * @return List<SimpleDocument>
+   * @return a {@code List<SimpleDocument>}
    */
   public static List<SimpleDocument> getImages(String id, String componentId) {
     return getManager().getImages(id, componentId);
@@ -319,7 +319,7 @@ public class WysiwygController {
   /**
    * updateWebsite : creation or update of a file of a website Param = cheminFichier =
    * c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
-   * contenuFichier = code du fichier : "<HTML><TITLE>...."
+   * contenuFichier = code du fichier : {@code "<HTML><TITLE>...."}
    * @param cheminFichier
    * @param contenuFichier
    * @param nomFichier

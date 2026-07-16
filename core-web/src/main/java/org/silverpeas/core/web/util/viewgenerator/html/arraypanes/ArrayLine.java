@@ -278,7 +278,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable<ArrayLine> {
 
   /**
    * Compares this array line with the specified one by the cell in the same sortable column.
-   * </p>
+   * <p>
    * This comparing function is not about array line equality meaning the following
    * property <code>(x.compareTo(y)==0) == (x.equals(y))</code> is broken.
    */

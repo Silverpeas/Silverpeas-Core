@@ -32,7 +32,7 @@ import org.silverpeas.core.wbe.WbeUser;
 import java.util.StringJoiner;
 
 /**
- * Handles the edition context of a file handled by Drag & Drop Web Editor.
+ * Handles the edition context of a file handled by Drag &amp; Drop Web Editor.
  * @author silveryocha
  */
 public class DragAndDropWebEditorFileEditionContext {

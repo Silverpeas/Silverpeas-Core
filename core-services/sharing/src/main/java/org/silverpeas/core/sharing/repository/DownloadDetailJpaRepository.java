@@ -33,7 +33,7 @@ import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.util.SilverpeasList;
 
 /**
- * @author: ebonnet
+ * @author ebonnet
  */
 @Repository
 public class DownloadDetailJpaRepository extends BasicJpaEntityRepository<DownloadDetail>

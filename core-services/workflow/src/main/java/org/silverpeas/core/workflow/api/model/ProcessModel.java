@@ -259,7 +259,6 @@ public interface ProcessModel {
    * Set the data folder for this process model
    *
    * @param dataFolder folder for this process model. it contains all the items declarations
-   * @return
    */
   void setDataFolder(DataFolder dataFolder);
 

@@ -98,7 +98,6 @@ public abstract class WbeFile implements Securable {
    * <li>In the case of shared files, the ID for a given file must be the same for every user that
    * accesses the file.</li>
    * </ul>
-   * </p>
    * @return a unique identifier as string.
    */
   public String id() {

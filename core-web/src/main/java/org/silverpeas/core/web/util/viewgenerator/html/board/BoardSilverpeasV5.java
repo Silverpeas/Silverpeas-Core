@@ -35,7 +35,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.board;
 import org.silverpeas.kernel.util.StringUtil;
 
 /**
- * @author mraverdy&lloiseau
+ * @author mraverdy&amp;lloiseau
  * @version 1.0
  */
 public class BoardSilverpeasV5 extends AbstractBoard {

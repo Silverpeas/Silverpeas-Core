@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.frame;
 
 /**
- * @author mraverdy&lloiseau
+ * @author mraverdy&amp;lloiseau
  * @version 1.0
  */
 public class FrameSilverpeasV5 extends AbstractFrame {

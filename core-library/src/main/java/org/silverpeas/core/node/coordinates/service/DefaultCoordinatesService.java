@@ -115,7 +115,6 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
    *
    * @param pk
    * @param coordinatePoints
-   * @
    *
    */
   @Override

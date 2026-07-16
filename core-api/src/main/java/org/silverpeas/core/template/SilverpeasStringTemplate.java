@@ -55,7 +55,6 @@ import static org.apache.commons.io.FileUtils.copyDirectory;
  * $endif}
  * </pre>
  * will generate a line-feed after the <code>if</code> and the <code>toto</code> statements.
- * </p>
  * <p>
  * Nevertheless, template descriptors are also supported for a better indented templating code or a
  * better control over the template use. A template descriptor is a file containing the
@@ -65,7 +64,6 @@ import static org.apache.commons.io.FileUtils.copyDirectory;
  * with <<template header> = <template name>'('<comma-separated list of attributes>')', and
  * '<%','%>' is to ignore indentation and newlines in multi-lines template body}
  * </pre>
- * </p>
  */
 public class SilverpeasStringTemplate implements SilverpeasTemplate {
 

@@ -854,7 +854,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    *     <li>the last update date</li>
    *     <li>the last updater</li>
    *   </ul>
-   * </p>
    *
    * @return true if update data MUST be set, false otherwise.
    */

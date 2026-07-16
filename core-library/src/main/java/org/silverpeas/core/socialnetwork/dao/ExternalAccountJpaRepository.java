@@ -30,7 +30,7 @@ import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import java.util.List;
 
 /**
- * @author: ebonnet
+ * @author ebonnet
  */
 @Repository
 public class ExternalAccountJpaRepository extends BasicJpaEntityRepository<ExternalAccount>

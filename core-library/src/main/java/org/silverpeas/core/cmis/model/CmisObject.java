@@ -150,7 +150,7 @@ public abstract class CmisObject extends ObjectDataImpl {
 
   /**
    * Gets the identifier of the base type from which the type of the CMIS object is derived.
-   * @returna a {@link BaseTypeId} enumeration value.
+   * @return a {@link BaseTypeId} enumeration value.
    */
   @Override
   public abstract BaseTypeId getBaseTypeId();

@@ -52,14 +52,12 @@ public interface Board extends SimpleGraphicElement {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String printBefore();
 
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String printAfter();
 }

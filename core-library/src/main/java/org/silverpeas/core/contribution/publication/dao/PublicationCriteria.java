@@ -134,7 +134,7 @@ public class PublicationCriteria {
 
   /**
    * Additionally filter on the trash node.
-   * @see #onComponentInstanceIds(String...).
+   * @see #onComponentInstanceIds(String...)
    */
   public static PublicationCriteria excludingTrashNodeOnComponentInstanceIds(
       final String... componentInstanceIds) {
@@ -143,7 +143,7 @@ public class PublicationCriteria {
 
   /**
    * Additionally filter on the trash node.
-   * @see #onComponentInstanceIds(Collection).
+   * @see #onComponentInstanceIds(Collection)
    */
   public static PublicationCriteria excludingTrashNodeOnComponentInstanceIds(
       final Collection<String> componentInstanceIds) {
@@ -248,7 +248,7 @@ public class PublicationCriteria {
 
   /**
    * Limit to a given number of result.
-   * @param limit a number of result (<= 0 means no limit).
+   * @param limit a number of result (&lt;= 0 means no limit).
    * @return itself.
    */
   public PublicationCriteria limitTo(int limit) {

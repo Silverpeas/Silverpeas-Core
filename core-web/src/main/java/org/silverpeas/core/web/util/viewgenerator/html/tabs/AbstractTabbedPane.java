@@ -45,7 +45,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
 
   /**
    * Constructor declaration
-   * @see
    */
   public AbstractTabbedPane() {
   }
@@ -56,7 +55,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @param label
    * @param action
    * @param disabled
-   * @see
    */
   public Tab addTab(String label, String action, boolean disabled) {
     Tab tab = new Tab(label, action, disabled);
@@ -70,7 +68,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @param action
    * @param disabled
    * @param enabled
-   * @see
    */
   public Tab addTab(String label, String action, boolean disabled, boolean enabled) {
     Tab tab = new Tab(label, action, disabled, enabled);
@@ -81,7 +78,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public List<Tab> getTabs() {
     return tabs;
@@ -90,7 +86,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public abstract String print();
 

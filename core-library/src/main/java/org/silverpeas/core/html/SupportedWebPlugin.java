@@ -137,10 +137,10 @@ public interface SupportedWebPlugin {
      */
     public static final SupportedWebPlugin POPUP = () -> "POPUP";
     /**
-     * JQuery plugin that implements an `<iframe>` transport so that `$.ajax()` calls support the
-     * uploading of files using standard HTML file input fields. {
+     * JQuery plugin that implements an {@code <iframe>} transport so that {@code $.ajax()} calls
+     * support the uploading of files using standard HTML file input fields.
      *
-     * @see http://api.jquery.com/extending-ajax/#Transports}
+     * @see <a href="http://api.jquery.com/extending-ajax/#Transports">jQuery Ajax Transports</a>
      */
     public static final SupportedWebPlugin IFRAMEAJAXTRANSPORT = () -> "IFRAMEAJAXTRANSPORT";
     /**

@@ -41,7 +41,6 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
  *     <li>for minor/major modifications</li>
  *     <li>for user notification sending</li>
  *   </ul>
- * </p>
  */
 public class ContributionManagementContextTag extends AbstractContributionManagementContextTag {
   private static final long serialVersionUID = 7960431491482255658L;

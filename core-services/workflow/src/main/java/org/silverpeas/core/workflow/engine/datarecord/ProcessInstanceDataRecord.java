@@ -34,11 +34,12 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
 /**
  * A ProcessInstanceDataRecord groups in a single DataRecord all the data items of a
- * ProcessInstance. The instance : instance instance.title instance.<columnName> The model : model
- * model.label model.peas-label The folder : <folderItem> The forms : form.<formName>
- * form.<formName>.title form.<formName>.<fieldItem> The actions : action.<actionName>
- * action.<actionName>.label action.<actionName>.date action.<actionName>.actor The users :
- * participant.<participantName>
+ * ProcessInstance. The instance : instance instance.title instance.{@code <columnName>} The model :
+ * model model.label model.peas-label The folder : {@code <folderItem>} The forms :
+ * form.{@code <formName>} form.{@code <formName>}.title
+ * form.{@code <formName>}.{@code <fieldItem>} The actions : action.{@code <actionName>}
+ * action.{@code <actionName>}.label action.{@code <actionName>}.date
+ * action.{@code <actionName>}.actor The users : participant.{@code <participantName>}
  */
 public class ProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord {
 
@@ -69,7 +70,7 @@ public class ProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord
 
   /**
    * Returns the named field.
-   * @throw FormException when the fieldName is unknown.
+   * @throws FormException when the fieldName is unknown.
    */
   @Override
   public Field getField(String fieldName) throws FormException {

@@ -51,7 +51,7 @@ import java.util.stream.Stream;
 
 /**
  * A registry of Web Application Personal Components available in Silverpeas.
- * </p>
+ * <p>
  * The {@code PersonalComponent} available in Silverpeas are defined by an XML descriptor located in
  * the
  * <code>SILVERPEAS_HOME/xmlcomponents</code> directory. The descriptors that must satisfy the XSD

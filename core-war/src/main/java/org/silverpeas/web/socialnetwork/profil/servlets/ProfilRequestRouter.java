@@ -78,7 +78,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
 
   /**
    * return true if this userId is in my Contacts
-   * @param: int userId
+   * @param userId
    * @return boolean
    */
 

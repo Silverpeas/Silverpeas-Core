@@ -43,7 +43,6 @@ public abstract class AbstractBoard implements Board {
 
   /**
    * Constructor declaration
-   * @see
    */
   public AbstractBoard() {
   }
@@ -51,7 +50,6 @@ public abstract class AbstractBoard implements Board {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getIconsPath() {
     return GraphicElementFactory.getIconsPath();
@@ -67,7 +65,6 @@ public abstract class AbstractBoard implements Board {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getBody() {
     return this.body;

@@ -85,7 +85,7 @@ public class CipherKeyResource extends RESTWebService {
 
   /**
    * Sets the specified cipher key to encrypt and decrypt the content in Silverpeas.
-   * </p>
+   * <p>
    * If a cipher key was already defined, then this new one will replace it and in a such case, any
    * content that was encrypted with the previous key will be encrypted again but with the new key.
    *

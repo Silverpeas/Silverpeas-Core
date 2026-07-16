@@ -67,7 +67,7 @@ public class AttachmentSettings {
   }
 
   /**
-   * Indicates if metadata of a file, if any, can be used to fill data (title & description) of an
+   * Indicates if metadata of a file, if any, can be used to fill data (title &amp; description) of an
    * attachment. (defined in properties by attachment.data.fromMetadata)
    * @return true if they must be used, false otherwise.
    */

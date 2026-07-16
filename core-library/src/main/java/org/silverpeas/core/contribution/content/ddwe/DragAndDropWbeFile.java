@@ -45,7 +45,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
- * This class represents a file content dedicated to the registering of Drag&Drop web editor
+ * This class represents a file content dedicated to the registering of Drag&amp;Drop web editor
  * contents.
  * <p>
  * This file representation permits to such content to be taken in charge by WBE services

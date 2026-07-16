@@ -44,13 +44,13 @@ public interface Consequence extends Serializable {
 
   /**
    * Get the operator used to compare item and value
-   * @return an operator (ie : =, >, >=, <, <=, !=)
+   * @return an operator (ie : =, &gt;, &gt;=, &lt;, &lt;=, !=)
    */
   String getOperator();
 
   /**
    * Set the operator used to compare item and value
-   * @param strOperator the operator (ie : =, >, >=, <, <=, !=)
+   * @param strOperator the operator (ie : =, &gt;, &gt;=, &lt;, &lt;=, !=)
    */
   void setOperator(String strOperator);
 

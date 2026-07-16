@@ -103,7 +103,7 @@ public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord 
 
   /**
    * Returns the named field.
-   * @throw FormException when the fieldName is unknown.
+   * @throws FormException when the fieldName is unknown.
    */
   @Override
   public Field getField(String fieldName) throws FormException {

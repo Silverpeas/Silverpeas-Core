@@ -50,8 +50,6 @@ public interface DownloadDetailRepository extends EntityRepository<DownloadDetai
 
   /**
    * Gets paginated ticket downloads.
-   * @param paginationCriterion a pagination.
-   * @param orderBy an optional order by.
    * @param ticket a ticket.
    * @return a paginated list of downloads.
    */

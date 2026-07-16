@@ -39,7 +39,6 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable {
   /**
    * Constructor declaration
    * @param id
-   * @see
    */
   public DocumentVersionPK(int id) {
     super(String.valueOf(id));
@@ -50,7 +49,6 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable {
    * @param id
    * @param spaceId
    * @param componentId
-   * @see
    */
   public DocumentVersionPK(int id, String spaceId, String componentId) {
     super(String.valueOf(id), spaceId, componentId);
@@ -60,7 +58,6 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable {
    * Constructor declaration
    * @param id
    * @param pk
-   * @see
    */
   public DocumentVersionPK(int id, WAPrimaryKey pk) {
     super(String.valueOf(id), pk);
@@ -77,7 +74,6 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
    */
   @Override
   public String getTableName() {
@@ -88,7 +84,6 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable {
    * Method declaration
    * @param other
    * @return
-   * @see
    */
   @Override
   public boolean equals(Object other) {
@@ -110,7 +105,6 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
    */
   @Override
   public String toString() {

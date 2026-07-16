@@ -405,7 +405,6 @@ public abstract class RESTWebService implements ProtectedWebResource {
    *   <li>Left value represents the page number. First page is '1'.</li>
    *   <li>Right value represents the number of data per page.</li>
    * </ul>
-   * </p>
    *
    * @param page the page information.
    * @return the initialized {@link PaginationPage}.

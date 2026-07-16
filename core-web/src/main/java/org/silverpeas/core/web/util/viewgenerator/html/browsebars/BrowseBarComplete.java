@@ -56,8 +56,6 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
   /**
    * Constructor declaration
-   *
-   * @see
    */
   public BrowseBarComplete() {
     super();
@@ -67,7 +65,6 @@ public class BrowseBarComplete extends AbstractBrowseBar {
    * Method declaration
    *
    * @return
-   * @see
    */
   @Override
   public String print() {

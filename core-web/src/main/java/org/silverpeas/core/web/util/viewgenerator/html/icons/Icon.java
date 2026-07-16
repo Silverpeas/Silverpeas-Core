@@ -57,7 +57,6 @@ public interface Icon extends SimpleGraphicElement {
 *
 * @param iconName
 * @param altText
-* @see
 */
   public void setProperties(String iconName, String altText);
 
@@ -67,7 +66,6 @@ public interface Icon extends SimpleGraphicElement {
 * @param iconName
 * @param altText
 * @param action
-* @see
 */
   public void setProperties(String iconName, String altText, String action);
 
@@ -78,7 +76,6 @@ public interface Icon extends SimpleGraphicElement {
 * @param altText
 * @param action
 * @param imagePath
-* @see
 */
   public void setProperties(String iconName, String altText, String action,
     String imagePath);
@@ -87,7 +84,6 @@ public interface Icon extends SimpleGraphicElement {
 * Method declaration
 *
 * @param s
-* @see
 */
   public void setRootImagePath(String s);
 
@@ -95,7 +91,6 @@ public interface Icon extends SimpleGraphicElement {
 * Method declaration
 *
 * @return
-* @see
 */
   public String print();
 }

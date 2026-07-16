@@ -38,7 +38,7 @@ import static org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWeb
 
 /**
  * Implementation of a client able to take in charge the edition into the Web Browser of HTML
- * content by Drag & Drop.
+ * content by Drag &amp; Drop.
  * @author silveryocha
  */
 @Service

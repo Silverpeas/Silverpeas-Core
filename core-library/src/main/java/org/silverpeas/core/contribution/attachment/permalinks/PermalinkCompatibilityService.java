@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.attachment.permalinks;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
- * @author: ebonnet
+ * @author ebonnet
  */
 public interface PermalinkCompatibilityService {
   SimpleDocument findDocumentVersionByOldId(int oldId);

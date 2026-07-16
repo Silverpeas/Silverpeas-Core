@@ -28,7 +28,7 @@ import org.silverpeas.core.wbe.WbeFile;
 import org.silverpeas.core.webapi.wbe.WbeFileWrapper;
 
 /**
- * This WRAPPER is used by Drag & Drop Web Editor  host and gives the possibility to add
+ * This WRAPPER is used by Drag &amp; Drop Web Editor  host and gives the possibility to add
  * functionality contextualized to a
  * {@link org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile}.
  * @author silveryocha

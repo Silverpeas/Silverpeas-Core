@@ -61,15 +61,15 @@ public class EmailAddress {
 
   /**
    * Validate the form of an email address.
-   * <p> Returns <tt>true</tt> only if
+   * <p> Returns <code>true</code> only if
    * <ul>
-   * <li><tt>aEmailAddress</tt> can successfully construct an
+   * <li><code>aEmailAddress</code> can successfully construct an
    * {@link jakarta.mail.internet.InternetAddress}</li>
-   * <li>when parsed with "@" as delimiter, <tt>aEmailAddress</tt> contains two tokens which
+   * <li>when parsed with "@" as delimiter, <code>aEmailAddress</code> contains two tokens which
    * satisfy</li>
    * </ul>
    * <p>
-   * The second condition arises since local email addresses, simply of the form "<tt>albert</tt>",
+   * The second condition arises since local email addresses, simply of the form "<code>albert</code>",
    * for example, are valid for {@link jakarta.mail.internet.InternetAddress}, but almost always
    * undesired.
    *

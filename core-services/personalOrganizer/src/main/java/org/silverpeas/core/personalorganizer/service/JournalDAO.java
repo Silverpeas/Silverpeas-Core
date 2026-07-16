@@ -589,7 +589,7 @@ public class JournalDAO {
    * @param myContactsIds
    * @param begin
    * @param end
-   * @return List<SocialInformationEvent>
+   * @return a {@code List<SocialInformationEvent>}
    * @throws SQLException
    * @throws ParseException
    */
@@ -646,7 +646,7 @@ public class JournalDAO {
    * @param myContactsIds
    * @param begin
    * @param end
-   * @return List<SocialInformationEvent>
+   * @return a {@code List<SocialInformationEvent>}
    * @throws SQLException
    * @throws ParseException
    */
@@ -686,9 +686,7 @@ public class JournalDAO {
    * @param con
    * @param day
    * @param myId
-   * @param numberOfElement
-   * @param firstIndex
-   * @return List<SocialInformationEvent>
+   * @return a {@code List<SocialInformationEvent>}
    * @throws SQLException
    * @throws ParseException
    */

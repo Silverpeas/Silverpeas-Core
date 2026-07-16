@@ -37,7 +37,6 @@ import java.util.Optional;
  *     <li>a {@link WbeFile}, the aimed file by the edition</li>
  *     <li>a {@link WbeUser}, the editor</li>
  *   </ul>
- * </p>
  * @author silveryocha
  */
 public abstract class WbeEdition {

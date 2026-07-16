@@ -134,7 +134,6 @@ public class MimeTypes {
    *   <li>If the supplier provides a list with the prefix {@code (+)}, then the registry is
    *   loaded with them and also with the given default mime types.</li>
    * </ul>
-   * </p>
    */
   public static class MimeTypeRegistry {
     static final String ADDITIONAL_PREFIX_CLAUSE = "(+)";

@@ -60,7 +60,7 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
- * Represents the store that register all data manipulated by a Drag & Drop Web Editor.
+ * Represents the store that register all data manipulated by a Drag &amp; Drop Web Editor.
  * <p>
  *   The content is registered in Silverpeas's home data as structured XML file.
  *   The save MUST be explicitly performed by calling {@link #save()} method.
@@ -72,7 +72,6 @@ import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
  *     the context</li>
  *     <li>a final part that represents the content to provide when data are validated</li>
  *   </ul>
- * </p>
  * @author silveryocha
  */
 public class DragAndDropWebEditorStore implements SilverpeasResource, Serializable, Securable {
@@ -93,7 +92,7 @@ public class DragAndDropWebEditorStore implements SilverpeasResource, Serializab
 
   /**
    * Gets the Silverpeas's file containing the structured content from which Web Editor can
-   * perform Drag & Drop edition.
+   * perform Drag&amp;Drop edition.
    * @return a {@link File} instance.
    */
   public File getFile() {
@@ -360,7 +359,7 @@ public class DragAndDropWebEditorStore implements SilverpeasResource, Serializab
   }
 
   /**
-   * Content of Drag&Drop web editor
+   * Content of Drag&amp;Drop web editor
    * @author silveryocha
    */
   @XmlRootElement

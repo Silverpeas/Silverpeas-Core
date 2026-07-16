@@ -37,7 +37,6 @@ import java.io.IOException;
  *     <li>WebSocket, which is using the websocket one. Technically, on client side, a WebSocket
  *     MUST be created to mimic an EventSource behavior.</li>
  *   </ul>
- * </p>
  * <p>
  *   This interface allows to handle these contexts by Silverpeas's Server Event API, regardless
  *   the WEB context.

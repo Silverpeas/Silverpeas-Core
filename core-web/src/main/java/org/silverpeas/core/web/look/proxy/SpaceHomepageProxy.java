@@ -38,7 +38,6 @@ import static java.util.Optional.ofNullable;
  *     <li>{@link SpaceInst#getFirstPageType()}</li>
  *     <li>{@link SpaceInst#getFirstPageExtraParam()} ()}</li>
  *   </ul>
- * </p>
  * @author silveryocha
  */
 public class SpaceHomepageProxy {

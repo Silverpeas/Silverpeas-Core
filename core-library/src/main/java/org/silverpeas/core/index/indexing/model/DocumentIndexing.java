@@ -27,7 +27,7 @@ package org.silverpeas.core.index.indexing.model;
  * This interface is for services wanting the documents referred by an index entry to be also
  * indexed. Any implementation of this interface has to enrich the index entry with the documents
  * to index. These documents will be then parsed by the indexing engine.
- * </p>
+ * <p>
  * Some times, some documents are attached to a contribution to index and it can be then useful to
  * index also the documents themselves. As the indexing engine doesn't know how to get such
  * documents, it delegates this task to the services with this knowledge. For doing, such services

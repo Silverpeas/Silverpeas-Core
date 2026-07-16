@@ -25,7 +25,7 @@
 /**
  * Provides an old way to manage the contributions (as containers of content) and their contents
  * (prior to version 6).
- * </p>
+ * <p>
  * This way is yet used for contributions classified on the PdC (Plan de Classement in French
  * meaning Plan of Classification). This package is deprecated and will be removed once
  * all the code depending on this old API will be rewritten to use the new API.

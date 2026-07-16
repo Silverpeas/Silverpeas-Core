@@ -59,7 +59,6 @@ public class LocalizedParameter extends ComponentLocalization {
 
   /**
    * This static method is useful into JSTL context.
-   * @see silverFunction.tld
    */
   public static LocalizedParameter toLocalizedParameter(SilverpeasComponent component,
       Parameter parameter, String lang) {

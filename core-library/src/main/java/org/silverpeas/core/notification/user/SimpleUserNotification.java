@@ -142,7 +142,7 @@ public class SimpleUserNotification implements UserNotification {
 
   /**
    * Sets the {@link BiConsumer} which is filling the {@link SilverpeasTemplate} data according
-   * to given language.</br>
+   * to given language.<br>
    * {@link SilverpeasTemplate} is initialized from given template path represented by a
    * {@link Pair}.
    * <p>
