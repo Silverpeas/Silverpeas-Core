@@ -66,7 +66,6 @@ import java.io.Serializable;
 
 /**
  * Class declaration
- * @author
  */
 public class AttachmentPK extends WAPrimaryKey implements Serializable {
   /**

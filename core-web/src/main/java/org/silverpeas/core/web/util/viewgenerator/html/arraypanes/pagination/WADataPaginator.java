@@ -33,7 +33,6 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination;
  * This interface is used when pagination of large result sets is needed, mostly as part of the
  * rendering process.
  * @author jpouyadou
- * @version
  */
 public interface WADataPaginator {
   /**

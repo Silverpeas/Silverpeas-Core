@@ -28,7 +28,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
 
 /**
  * @author squere
- * @version
  */
 public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
 

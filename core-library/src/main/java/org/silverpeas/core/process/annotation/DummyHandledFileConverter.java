@@ -32,7 +32,6 @@ import java.util.List;
 
 /**
  * This interface provides services to convert an element from any type to a dummy handled file.
- * <p>
  * @author Yohann Chastagnier
  */
 public interface DummyHandledFileConverter<S extends SimulationElement<?>> extends Initialization {

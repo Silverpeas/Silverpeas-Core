@@ -37,7 +37,6 @@ import java.util.List;
 
 /**
  * @author squere
- * @version
  */
 public abstract class AbstractTabbedPane implements TabbedPane {
 

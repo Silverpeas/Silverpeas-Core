@@ -138,7 +138,6 @@ public class UnixSHA512Encryption implements PasswordEncryption {
 
   /**
    * Checks the specified password matches the specified digest.
-   * <p>
    * @param password an unencrypted password.
    * @param digest a digest of a password with which the specified password has to be matched.
    * @throws AssertionError if the digest wasn't computed from the specified password.

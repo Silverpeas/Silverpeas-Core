@@ -31,7 +31,6 @@ package org.silverpeas.core.util;
 
 /**
  * @author jpouyadou
- * @version
  */
 public class WAAttributeValuePair {
   public static final int SEARCH_MODE_PARTIAL = 0x0001;

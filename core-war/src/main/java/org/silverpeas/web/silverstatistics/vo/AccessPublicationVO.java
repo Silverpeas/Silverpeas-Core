@@ -32,7 +32,6 @@ import org.silverpeas.core.ResourceReference;
 
 /**
  * Class declaration
- * @author
  */
 public class AccessPublicationVO implements Serializable {
 

@@ -32,7 +32,6 @@ import java.util.Date;
 import org.silverpeas.core.ResourceReference;
 
 /**
- * @author
  */
 public class HistoryObjectDetail implements Serializable {
 

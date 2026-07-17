@@ -33,7 +33,6 @@ import java.util.Collection;
 
 /**
  * Interface declaration
- * @author
  */
 public interface SubscriptionService extends Serializable {
 

@@ -30,7 +30,6 @@ import java.util.List;
 
 /**
  * Class declaration
- * @author
  */
 public class Tree implements java.io.Serializable {
 

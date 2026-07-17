@@ -31,7 +31,6 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination;
 
 /**
  * @author jpouyadou
- * @version
  */
 public interface WAItem {
   public int getFieldCount();

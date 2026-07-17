@@ -25,7 +25,6 @@ package org.silverpeas.core.questioncontainer.score.model;
 
 /**
  * Class declaration
- * @author
  */
 public class ScoreDetail implements java.io.Serializable {
   private static final long serialVersionUID = 2322117586354034602L;

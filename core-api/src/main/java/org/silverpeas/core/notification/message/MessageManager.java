@@ -58,7 +58,6 @@ import org.silverpeas.kernel.logging.SilverLogger;
  * MessageMessager.addError(bundle.getMessage("err.label", params));
  * }
  * </code>
- * <p>
  * @author Yohann Chastagnier
  */
 public class MessageManager {

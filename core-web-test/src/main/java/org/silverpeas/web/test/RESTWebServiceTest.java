@@ -225,7 +225,6 @@ public abstract class RESTWebServiceTest {
    * during a test. Once the session opened for the given user, the session cache service is then
    * set to the local thread of the current running test so that any data in the session cache
    * will be accessible to the tests.
-   * <p></p>
    * <p>
    * Warning: the authentication is performed by the corresponding REST-based web service and as
    * such this one is required to be included in the deployment archive as well as all of its

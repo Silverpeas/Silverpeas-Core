@@ -35,7 +35,6 @@ import java.util.Collection;
 
 /**
  * Class declaration
- * @author
  * @version %I%, %G%
  */
 public class HomePageUtil {

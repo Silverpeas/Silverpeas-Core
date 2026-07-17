@@ -25,7 +25,6 @@ package org.silverpeas.core.security.authentication.exception;
 
 /**
  * @author tleroi
- * @version
  */
 public class AuthenticationHostException extends AuthenticationException {
 

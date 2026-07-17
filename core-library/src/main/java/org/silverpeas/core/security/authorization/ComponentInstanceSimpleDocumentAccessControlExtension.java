@@ -51,7 +51,6 @@ import jakarta.enterprise.util.AnnotationLiteral;
  * application Kmelia, the implementation must be qualified with <code>@Named
  * ("kmeliaInstanceSimpleDocumentAccessControlExtension")
  * </code>
- * <p>
  * @author silveryocha
  */
 public interface ComponentInstanceSimpleDocumentAccessControlExtension {

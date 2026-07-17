@@ -47,7 +47,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
 
 /**
  * Class declaration
- * @author
  */
 public abstract class AbstractCalendar implements Calendar {
   protected boolean navigationBar = true;

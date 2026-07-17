@@ -41,7 +41,6 @@ import java.util.List;
 
 /**
  * @author neysseri
- * @version
  */
 public abstract class AbstractProgressMessage implements ProgressMessage {
 

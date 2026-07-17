@@ -42,7 +42,6 @@ import java.util.Map;
  * <p>
  * Use {@link #applyTo} to apply the named parameter to the query. This method returns the query
  * passed, so that query methods can be called directly in one line of code.
- * <p>
  * @author Yohann Chastagnier
  */
 public class NamedParameters implements Parameters {

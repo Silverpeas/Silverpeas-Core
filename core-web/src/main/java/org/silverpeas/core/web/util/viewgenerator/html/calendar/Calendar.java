@@ -37,7 +37,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
 
 /**
  * @author groccia
- * @version
  */
 public interface Calendar extends SimpleGraphicElement {
   public void setEvents(List<Event> events);

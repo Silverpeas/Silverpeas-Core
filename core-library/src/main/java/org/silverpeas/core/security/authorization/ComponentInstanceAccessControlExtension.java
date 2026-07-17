@@ -53,7 +53,6 @@ import java.util.Set;
  * application Kmelia, the implementation must be qualified with <code>@Named
  * ("kmeliaInstanceAccessControlExtension")
  * </code>
- * <p>
  * @author silveryocha
  */
 public interface ComponentInstanceAccessControlExtension {

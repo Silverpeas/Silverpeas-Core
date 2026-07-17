@@ -50,7 +50,6 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 /**
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can
  * retrieve via HTTP any updated value.
- * <p>
  * @see Field
  * @see FieldTemplate
  * @see Form

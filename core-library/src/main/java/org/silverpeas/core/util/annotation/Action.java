@@ -36,7 +36,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation to specify an action.
  * It can specify also a list of source PK.
- * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

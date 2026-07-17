@@ -33,7 +33,6 @@ import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Interface declaration
- * @author
  */
 public interface QuestionService {
 

@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * Class declaration
- * @author
  */
 public class SentNotificationDetail implements Serializable {
 

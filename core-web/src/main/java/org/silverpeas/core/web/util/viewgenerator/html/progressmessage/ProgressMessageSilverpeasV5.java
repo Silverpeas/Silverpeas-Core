@@ -32,7 +32,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer
 
 /**
  * @author neysseri
- * @version
  */
 public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
 

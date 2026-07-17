@@ -28,7 +28,6 @@ import org.silverpeas.kernel.util.StringUtil;
 /**
  * Class declaration
  *
- * @author
  */
 public class IconWA extends AbstractIcon {
 

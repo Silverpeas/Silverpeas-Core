@@ -36,7 +36,6 @@ import java.util.List;
 
 /**
  * Class declaration
- * @author
  */
 @Repository
 public class TreeI18NDAO {

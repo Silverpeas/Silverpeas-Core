@@ -592,7 +592,6 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
 
   /**
    * Is the specified user can access this node?
-   * <p>
    * @param user a user in Silverpeas.
    * @return true if the user can access this node, false otherwise.
    */

@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * @author
  */
 @Repository
 public class PdcUtilizationDAO {

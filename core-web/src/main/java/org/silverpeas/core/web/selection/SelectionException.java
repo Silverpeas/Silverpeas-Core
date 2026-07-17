@@ -30,7 +30,6 @@ import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Class declaration
- * @author
  */
 public class SelectionException extends SilverpeasException {
 

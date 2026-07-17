@@ -39,7 +39,6 @@ import java.util.Vector;
 
 /**
  * Class declaration
- * @author
  */
 @Deprecated(forRemoval = true)
 public class CalendarHtmlView {

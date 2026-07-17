@@ -74,7 +74,6 @@ public interface PasswordEncryption {
 
   /**
    * Checks the specified password matches the specified digest.
-   * <p>
    *
    * @param password an unencrypted password.
    * @param digest a digest of a password with which the specified password has to be matched.

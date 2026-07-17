@@ -197,7 +197,6 @@ public class Parameter {
    * <pre>
    * getOptions().add(newItem);
    * </pre>
-   * <p>
    */
   public List<Option> getOptions() {
     if (isXmlTemplate() && CollectionUtil.isEmpty(options)) {

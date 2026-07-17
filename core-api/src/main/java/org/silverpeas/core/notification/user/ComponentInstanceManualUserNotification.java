@@ -22,7 +22,6 @@ import static org.silverpeas.core.util.ServiceProvider.getService;
  * NAME]InstanceManualUserNotification</code>. For example, for an application Kmelia, the
  * implementation must be qualified with <code>@Named("kmeliaInstanceManualUserNotification")
  * </code>
- * <p>
  * @author silveryocha
  */
 public interface ComponentInstanceManualUserNotification {

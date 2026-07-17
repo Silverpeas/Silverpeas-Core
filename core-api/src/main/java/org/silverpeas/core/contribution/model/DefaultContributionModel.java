@@ -28,6 +28,7 @@ import org.silverpeas.core.util.filter.FilterByType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -117,6 +118,18 @@ public class DefaultContributionModel<C extends Contribution> implements Contrib
    */
   protected C getContribution() {
     return contribution;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof DefaultContributionModel<?> that)) return false;
+    return Objects.equals(contribution.getIdentifier().asString(),
+        that.contribution.getIdentifier().asString());
+  }
+
+  @Override
+  public int hashCode() {
+    return contribution.getIdentifier().asString().hashCode();
   }
 }
   

@@ -951,7 +951,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       document.setOrder(resultHistory.getOrder());
       assertSimpleDocumentsAreEquals(resultHistory, document, ArrayUtils
           .addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
-              "webdavJcrPath", "onlineURL"));
+              "webdavJcrPath", "onlineURL", "contributionType"));
     }
   }
 
@@ -1154,7 +1154,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       String[] ignoredBeanPropertiesInComparison =
           new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
               "publicVersions", "lastPublicVersion", "versionMaster", "realVersionPk",
-              "realVersionForeignId", "previousVersion"};
+              "realVersionForeignId", "previousVersion", "contributionType"};
       document.getPk().setComponentName(targetInstanceId);
       document.setForeignId(targetForeignId);
       document.setVersionIndex(2);
@@ -1309,7 +1309,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       String[] ignoredBeanPropertiesInComparison =
           new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
               "publicVersions", "lastPublicVersion", "versionMaster", "realVersionPk",
-              "realVersionForeignId", "previousVersion"};
+              "realVersionForeignId", "previousVersion", "contributionType"};
       document.getPk().setComponentName(targetInstanceId);
       document.setForeignId(targetForeignId);
       document.setVersionIndex(2);
@@ -1604,7 +1604,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       String[] ignoredBeanPropertiesInComparison =
           new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
               "publicVersions", "versionMaster", "realVersionPk", "realVersionForeignId",
-              "previousVersion"};
+              "previousVersion", "contributionType"};
       document.getPk().setComponentName(targetInstanceId);
       document.setForeignId(targetForeignId);
       document.setVersionIndex(8);
@@ -1951,7 +1951,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
         String[] ignoredBeanPropertiesInComparison =
             new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
                 "publicVersions", "versionMaster", "realVersionPk", "realVersionForeignId",
-                "previousVersion"};
+                "previousVersion", "contributionType"};
         document.getPk().setComponentName(targetInstanceId);
         document.setForeignId(targetForeignId);
         document.setVersionIndex(8);

@@ -27,7 +27,6 @@ import java.io.Serializable;
 
 /**
  * Class declaration
- * @author
  * @version %I%, %G%
  */
 public class CoordinatePoint implements Serializable {

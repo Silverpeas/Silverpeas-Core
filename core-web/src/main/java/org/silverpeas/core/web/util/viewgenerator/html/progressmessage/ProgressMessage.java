@@ -39,7 +39,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * @author neysseri
- * @version
  */
 public interface ProgressMessage extends SimpleGraphicElement {
 

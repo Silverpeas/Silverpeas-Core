@@ -35,7 +35,6 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- * @author
  */
 public class CommentRuntimeException extends SilverpeasRuntimeException {
 

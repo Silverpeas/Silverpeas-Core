@@ -44,7 +44,6 @@ import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author neysseri
- * @version
  */
 public abstract class AbstractButton implements Button {
 

@@ -39,7 +39,6 @@ import java.util.*;
 /**
  * A CheckBoxDisplayer is an object which can display a checkbox in HTML the content of a checkbox
  * to a end user and can retrieve via HTTP any updated value.
- * <p>
  *
  * @see Field
  * @see FieldTemplate
