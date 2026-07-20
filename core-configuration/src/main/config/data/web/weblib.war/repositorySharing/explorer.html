@@ -66,10 +66,10 @@ $(function () {
 			  if (sharing.securityCode) {
 				  $("#securityDialog").dialog({
 					  modal: true,        // bloque le reste de la page
-					  title: "Code de sécurité",
+					  title: window.i18n.prop("security.code.title"),
 					  width: 400,
 					  buttons: {
-						  "OK": function() {
+						  [window.i18n.prop("button.ok")]: function() {
 							  const input = document.getElementById("securityCode");
 							  const code = input.value;
 							  uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
@@ -89,7 +89,7 @@ $(function () {
 										  }
 									  });
 						  },
-						  "Annuler": function() {
+						  [window.i18n.prop("button.cancel")]: function() {
 							  $(this).dialog("close");
 						  }
 					  }
@@ -266,6 +266,10 @@ $(function () {
 		$("#downloadZip-dialog a").html(window.i18n.prop("download.dialog.content"));
 		$(".silverpeasLink").attr("title", window.i18n.prop("silverpeas.link"));
 		$("#empty-folder").html(window.i18n.prop("folder.empty"));
+
+		$("#securityCheck > span").html(window.i18n.prop("security.code.title"));
+
+
 	}
 
 	$('#download-link').click(function processZip() {
