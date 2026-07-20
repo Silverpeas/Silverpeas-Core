@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -246,5 +246,10 @@ public class GenericDataRecord implements DataRecord, Serializable {
       componentId = ((IdentifiedRecordTemplate) template).getInstanceId();
     }
     return new ResourceReference(externalId, componentId);
+  }
+
+  @Override
+  public RecordTemplate getTemplate() {
+    return template;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.frame;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 /**
- * @author mraverdy&lloiseau
+ * @author mraverdy&amp;lloiseau
  * @version 1.0
  */
 public abstract class AbstractFrame implements Frame {
@@ -38,7 +38,6 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Constructor declaration
-   * @see
    */
   public AbstractFrame() {
   }
@@ -46,7 +45,6 @@ public abstract class AbstractFrame implements Frame {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getIconsPath() {
     return GraphicElementFactory.getIconsPath();
@@ -63,7 +61,6 @@ public abstract class AbstractFrame implements Frame {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getTop() {
     return this.top;
@@ -80,7 +77,6 @@ public abstract class AbstractFrame implements Frame {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getBottom() {
     return this.bottom;
@@ -89,7 +85,6 @@ public abstract class AbstractFrame implements Frame {
   /**
    * Method declaration
    * @param title
-   * @see
    */
   @Override
   public void addTitle(String title) {
@@ -99,7 +94,6 @@ public abstract class AbstractFrame implements Frame {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getTitle() {
     return this.titleFrame;
@@ -108,7 +102,6 @@ public abstract class AbstractFrame implements Frame {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public boolean hasMiddle() {
     return this.hasMiddle;
@@ -116,7 +109,6 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Method declaration
-   * @see
    */
   public void setMiddle() {
     this.hasMiddle = true;

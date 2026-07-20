@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -142,7 +142,7 @@ public class SimpleUserNotification implements UserNotification {
 
   /**
    * Sets the {@link BiConsumer} which is filling the {@link SilverpeasTemplate} data according
-   * to given language.</br>
+   * to given language.<br>
    * {@link SilverpeasTemplate} is initialized from given template path represented by a
    * {@link Pair}.
    * <p>

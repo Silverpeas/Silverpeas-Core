@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,8 +24,6 @@
 package org.silverpeas.core.calendar.ical4j;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
-import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TextList;
 import net.fortuna.ical4j.model.TimeZone;
@@ -36,6 +34,10 @@ import net.fortuna.ical4j.model.parameter.PartStat;
 import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.parameter.Rsvp;
 import net.fortuna.ical4j.model.property.*;
+import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
+import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
+import net.fortuna.ical4j.model.property.immutable.ImmutableStatus;
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 import net.fortuna.ical4j.util.CompatibilityHints;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
@@ -58,7 +60,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.ZoneOffset;
+import java.time.Instant;
+import java.time.temporal.Temporal;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -97,19 +100,19 @@ public class ICal4JExporter implements ICalendarExporter {
       Calendar calendar = descriptor.getParameter(CALENDAR);
 
       net.fortuna.ical4j.model.Calendar iCalCalendar = new net.fortuna.ical4j.model.Calendar();
-      iCalCalendar.getProperties().add(new ProdId("-//Silverpeas//iCal4j 2.0//FR"));
-      iCalCalendar.getProperties().add(Version.VERSION_2_0);
-      iCalCalendar.getProperties().add(CalScale.GREGORIAN);
-      iCalCalendar.getProperties().add(Method.PUBLISH);
-      iCalCalendar.getProperties().add(new Name(calendar.getTitle()));
+      iCalCalendar.add(new ProdId("-//Silverpeas//iCal4j 2.0//FR"));
+      iCalCalendar.add(ImmutableVersion.VERSION_2_0);
+      iCalCalendar.add(ImmutableCalScale.GREGORIAN);
+      iCalCalendar.add(ImmutableMethod.PUBLISH);
+      iCalCalendar.add(new Name(calendar.getTitle()));
 
       // Adding VTimeZone component (mandatory with Outlook)
       TimeZone tz = iCal4JDateCodec.getTimeZone(calendar.getZoneId());
-      iCalCalendar.getComponents().add(tz.getVTimeZone());
+      iCalCalendar.add(tz.getVTimeZone());
 
       // X Properties
-      iCalCalendar.getProperties().add(new XProperty("X-WR-CALNAME", calendar.getTitle()));
-      iCalCalendar.getProperties().add(new XProperty("X-WR-TIMEZONE", tz.getID()));
+      iCalCalendar.add(new XProperty("X-WR-CALNAME", calendar.getTitle()));
+      iCalCalendar.add(new XProperty("X-WR-TIMEZONE", tz.getID()));
 
       try (Stream<CalendarEvent> events = supplier.get()) {
         events.forEach(event -> {
@@ -121,10 +124,10 @@ public class ICal4JExporter implements ICalendarExporter {
                 .sorted(CalendarEventOccurrence.COMPARATOR_BY_DATE_DESC)
                 .forEach(occurrence -> {
                   VEvent occICalEvent = convertToICalEvent(descriptor, calendar, occurrence);
-                  iCalCalendar.getComponents().add(occICalEvent);
+                  iCalCalendar.add(occICalEvent);
                 });
           }
-          iCalCalendar.getComponents().add(iCalEvent);
+          iCalCalendar.add(iCalEvent);
         });
       }
 
@@ -142,9 +145,9 @@ public class ICal4JExporter implements ICalendarExporter {
     final CalendarComponent evtComponent = occurrence.getCalendarEvent().asCalendarComponent();
     VEvent occICalEvent =
         convertToICalEvent(descriptor, calendar, occurrence.getCalendarEvent(), occComponent);
-    final Date occOrigStartDate =
+    final Temporal occOrigStartDate =
         iCal4JDateCodec.encode(true, evtComponent, occurrence.getOriginalStartDate());
-    occICalEvent.getProperties().add(new RecurrenceId(occOrigStartDate));
+    occICalEvent.add(new RecurrenceId<>(occOrigStartDate));
     return occICalEvent;
   }
 
@@ -164,54 +167,53 @@ public class ICal4JExporter implements ICalendarExporter {
   }
 
   private void setICalRecurrence(final CalendarEvent event, final VEvent iCalEvent) {
-    Recur recur = iCal4JRecurrenceCodec.encode(event);
-    iCalEvent.getProperties().add(new RRule(recur));
+    Recur<Temporal> recur = iCal4JRecurrenceCodec.encode(event);
+    iCalEvent.add(new RRule<>(recur));
     if (!event.getRecurrence().getExceptionDates().isEmpty()) {
-      iCalEvent.getProperties()
-          .add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
+      iCalEvent.add(iCal4JRecurrenceCodec.exceptionDates(event));
     }
   }
 
   private void setICalPriority(final CalendarComponent component, final VEvent iCalEvent) {
-    iCalEvent.getProperties().add(new Priority(component.getPriority().getICalLevel()));
+    iCalEvent.add(new Priority(component.getPriority().getICalLevel()));
   }
 
   private void setICalVisibility(final CalendarEvent event, final VEvent iCalEvent) {
-    iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
+    iCalEvent.add(new Clazz(event.getVisibilityLevel().name()));
   }
 
   private void setICalLocation(final CalendarComponent component, final VEvent iCalEvent,
       final boolean hideData) {
     if (!hideData && isDefined(component.getLocation())) {
-      iCalEvent.getProperties().add(new Location(component.getLocation()));
+      iCalEvent.add(new Location(component.getLocation()));
     }
   }
 
   private void setICalAttendees(final CalendarComponent component, final VEvent iCalEvent,
       final boolean hideData) {
     if (!hideData && component.getAttendees().isEmpty()) {
-      iCalEvent.getProperties().add(Status.VEVENT_CONFIRMED);
+      iCalEvent.add(ImmutableStatus.VEVENT_CONFIRMED);
     } else if (!hideData) {
-      iCalEvent.getProperties().add(convertOrganizer(component.getCreator()));
-      final Mutable<Status> mutableStatus = Mutable.of(Status.VEVENT_CONFIRMED);
+      iCalEvent.add(convertOrganizer(component.getCreator()));
+      final Mutable<Status> mutableStatus = Mutable.of(ImmutableStatus.VEVENT_CONFIRMED);
       component.getAttendees().stream()
           .sorted(Comparator.comparing(org.silverpeas.core.calendar.Attendee::getId))
           .forEach(attendee -> {
-            iCalEvent.getProperties().add(convertAttendee(attendee));
+            iCalEvent.add(convertAttendee(attendee));
             if (ACCEPTED != attendee.getParticipationStatus()) {
-              mutableStatus.set(Status.VEVENT_TENTATIVE);
+              mutableStatus.set(ImmutableStatus.VEVENT_TENTATIVE);
             }
           });
-      iCalEvent.getProperties().add(mutableStatus.get());
+      iCalEvent.add(mutableStatus.get());
     }
   }
 
   private void setICalCategories(final CalendarEvent event, final VEvent iCalEvent,
       final boolean hideData) {
     if (!hideData) {
-      TextList categoryList = new TextList(event.getCategories().asArray());
-      if (!categoryList.isEmpty()) {
-        iCalEvent.getProperties().add(new Categories(categoryList));
+      TextList categoryList = new TextList(java.util.List.of(event.getCategories().asArray()));
+      if (!categoryList.getTexts().isEmpty()) {
+        iCalEvent.add(new Categories(categoryList));
       }
     }
   }
@@ -221,7 +223,7 @@ public class ICal4JExporter implements ICalendarExporter {
     Optional<String> url = hideData ? Optional.empty() : component.getAttributes().get("url");
     if (url.isPresent()) {
       try {
-        iCalEvent.getProperties().add(new Url(new URI(url.get())));
+        iCalEvent.add(new Url(new URI(url.get())));
       } catch (URISyntaxException ex) {
         throw new SilverpeasRuntimeException(ex.getMessage(), ex);
       }
@@ -231,24 +233,22 @@ public class ICal4JExporter implements ICalendarExporter {
   private VEvent initICalEvent(final Calendar calendar, final CalendarEvent event,
       final CalendarComponent component, final boolean hideData) {
     // ICal4J period
-    final Date startDate = iCal4JDateCodec
+    final Temporal startDate = iCal4JDateCodec
         .encode(event.isRecurrent(), component, component.getPeriod().getStartDate());
-    final Date endDate =
+    final Temporal endDate =
         iCal4JDateCodec.encode(event.isRecurrent(), component, component.getPeriod().getEndDate());
 
-    DateTime createdDate =
-        iCal4JDateCodec.encode(component.getCreationDate().toInstant().atOffset(ZoneOffset.UTC));
-    DateTime lastUpdateDate =
-        iCal4JDateCodec.encode(component.getLastUpdateDate().toInstant().atOffset(ZoneOffset.UTC));
+    Instant createdDate = component.getCreationDate().toInstant();
+    Instant lastUpdateDate = component.getLastUpdateDate().toInstant();
 
     // ICal4J event
     final String title = hideData ? HIDDEN_DATA :
         formatTitle(component, calendar.getComponentInstanceId(), true);
     VEvent iCalEvent = component.getPeriod().isInDays() && startDate.equals(endDate) ?
         new VEvent(startDate, title) : new VEvent(startDate, endDate, title);
-    iCalEvent.getProperties().add(new Created(createdDate));
-    iCalEvent.getProperties().add(new LastModified(lastUpdateDate));
-    iCalEvent.getProperties().add(new Sequence((int) component.getSequence()));
+    iCalEvent.add(new Created(createdDate));
+    iCalEvent.add(new LastModified(lastUpdateDate));
+    iCalEvent.add(new Sequence((int) component.getSequence()));
     return iCalEvent;
   }
 
@@ -263,14 +263,14 @@ public class ICal4JExporter implements ICalendarExporter {
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);
       }
-      iCalEvent.getProperties().add(new Description(plainText));
-      iCalEvent.getProperties().add(new HtmlProperty(description));
+      iCalEvent.add(new Description(plainText));
+      iCalEvent.add(new HtmlProperty(description));
     }
   }
 
   private void setICalUuid(final CalendarEvent event, final VEvent iCalEvent) {
     final String eventId = event.getExternalId() != null ? event.getExternalId() : event.getId();
-    iCalEvent.getProperties().add(new Uid(eventId));
+    iCalEvent.add(new Uid(eventId));
   }
 
   /**
@@ -279,14 +279,11 @@ public class ICal4JExporter implements ICalendarExporter {
    * @return the corresponding ICal4J organizer.
    */
   private Organizer convertOrganizer(final User user) {
-    try {
-      final Organizer iCalEventOrganizer =
-          isDefined(user.getEmailAddress()) ? new Organizer(MAIL_TO + user.getEmailAddress()) : new Organizer();
-      iCalEventOrganizer.getParameters().add(new Cn(user.getDisplayedName()));
-      return iCalEventOrganizer;
-    } catch (URISyntaxException ex) {
-      throw new SilverpeasRuntimeException("Malformed organizer URI: " + user, ex);
-    }
+    final Organizer iCalEventOrganizer =
+        isDefined(user.getEmailAddress()) ? new Organizer(MAIL_TO + user.getEmailAddress()) :
+            new Organizer();
+    iCalEventOrganizer.add(new Cn(user.getDisplayedName()));
+    return iCalEventOrganizer;
   }
 
   /**
@@ -307,28 +304,23 @@ public class ICal4JExporter implements ICalendarExporter {
   private Attendee convertAttendee(final org.silverpeas.core.calendar.Attendee attendee,
       final org.silverpeas.core.calendar.Attendee.ParticipationStatus participationStatus) {
     final Attendee iCalEventAttendee;
-    try {
-      if (attendee instanceof InternalAttendee) {
-        InternalAttendee internalAttendee = (InternalAttendee) attendee;
-        final String displayedName = internalAttendee.getUser().getDisplayedName();
-        iCalEventAttendee = isDefined(internalAttendee.getUser().getEmailAddress()) ?
-            new Attendee(MAIL_TO + internalAttendee.getUser().getEmailAddress()) :
-            new Attendee(MAIL_TO + displayedName);
-        iCalEventAttendee.getParameters().add(new Cn(displayedName));
-      } else {
-        iCalEventAttendee = new Attendee(MAIL_TO + attendee.getId());
-        iCalEventAttendee.getParameters().add(new Cn(attendee.getId()));
-      }
-      iCalEventAttendee.getParameters().add(CuType.INDIVIDUAL);
-      iCalEventAttendee.getParameters().add(Rsvp.TRUE);
-      convertPresenceStatus(attendee.getPresenceStatus())
-          .ifPresent(role -> iCalEventAttendee.getParameters().add(role));
-      convertParticipationStatus(participationStatus)
-          .ifPresent(partStat -> iCalEventAttendee.getParameters().add(partStat));
-      return iCalEventAttendee;
-    } catch (URISyntaxException ex) {
-      throw new SilverpeasRuntimeException("Malformed attendee URI: " + attendee, ex);
+    if (attendee instanceof InternalAttendee internalAttendee) {
+      final String displayedName = internalAttendee.getUser().getDisplayedName();
+      iCalEventAttendee = isDefined(internalAttendee.getUser().getEmailAddress()) ?
+          new Attendee(MAIL_TO + internalAttendee.getUser().getEmailAddress()) :
+          new Attendee(MAIL_TO + displayedName);
+      iCalEventAttendee.add(new Cn(displayedName));
+    } else {
+      iCalEventAttendee = new Attendee(MAIL_TO + attendee.getId());
+      iCalEventAttendee.add(new Cn(attendee.getId()));
     }
+    iCalEventAttendee.add(CuType.INDIVIDUAL);
+    iCalEventAttendee.add(Rsvp.TRUE);
+    convertPresenceStatus(attendee.getPresenceStatus())
+        .ifPresent(role -> iCalEventAttendee.add(role));
+    convertParticipationStatus(participationStatus)
+        .ifPresent(partStat -> iCalEventAttendee.add(partStat));
+    return iCalEventAttendee;
   }
 
   /**

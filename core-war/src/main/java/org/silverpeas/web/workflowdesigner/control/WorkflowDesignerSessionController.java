@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -1489,7 +1489,7 @@ public class WorkflowDesignerSessionController extends AbstractAdminComponentSes
    * @param strContext the context of the designation
    * @param strLanguage the language
    * @param strRole the role name
-   * @return contextual designation of the given role & name or <code>null</code>
+   * @return contextual designation of the given role &amp; name or <code>null</code>
    * @throws WorkflowDesignerException if something goes wrong
    */
   public ContextualDesignation findContextualDesignation(String strContext,

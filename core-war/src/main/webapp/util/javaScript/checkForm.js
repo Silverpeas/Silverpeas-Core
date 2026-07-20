@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,10 @@
  */
 // whitespace characters
 window.whitespace = " \t\n\r";
+
+const textAreaLength = 2000;
+const textFieldLength = 1000;
+const textMaxiLength = 4000;
 
 /**
  * Check whether string s is empty.
@@ -74,8 +78,6 @@ function stripCharsInBag (s, bag) {
     return returnString;
 }
 
-
-
 /**
  * Removes all characters which do NOT appear in string bag from string s
  * @param {string} s
@@ -111,11 +113,6 @@ function stripCharsNotInBag (s, bag) {
 function stripWhitespace (s) {
 	return stripCharsInBag (s, whitespace);
 }
-
-
-
-
-
 
 /**
  * Removes initial (leading) whitespace characters from s.
@@ -153,7 +150,6 @@ function isValidText(input, textFieldLength) {
  * @returns {boolean}
  */
 function isValidTextField(input) {
-    const textFieldLength = 1000;
     return isValidText(input, textFieldLength);
 }
 
@@ -163,7 +159,6 @@ function isValidTextField(input) {
  * @returns {boolean}
  */
 function isValidTextArea(input) {
-    const textAreaLength = 2000;
     let s = input.value;
     if (s === null || s === undefined) {
       s = input;
@@ -177,7 +172,7 @@ function isValidTextArea(input) {
  * @returns {boolean}
  */
 function isValidTextMaxi(input) {
-    const textMaxiLength = 4000;
+
     const s = typeof input === 'string' ? input : input.value;
     if (typeof s !== 'undefined') {
 		return (s.length <= textMaxiLength);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -78,7 +78,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
 
   /**
    * return true if this userId is in my Contacts
-   * @param: int userId
+   * @param userId
    * @return boolean
    */
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -1438,7 +1438,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
    *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
-   * @
    */
   @Override
   public void addLinks(PublicationPK pubPK, List<ResourceReference> links) {
@@ -1462,13 +1461,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   /**
-   * get my list of SocialInformationPublication according to options and number of Item and the
-   * first Index
+   * Gets all the social information about publications between the specified start and end date
+   * and for the given user.
    *
    * @param userId a user identifier
-   * @param begin date
-   * @param end date
-   * @return List <SocialInformation>
+   * @param begin start date since the social information has been published
+   * @param end end date until which the social information has been published
+   * @return a list of social information about publications.
    */
   @Override
   public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,

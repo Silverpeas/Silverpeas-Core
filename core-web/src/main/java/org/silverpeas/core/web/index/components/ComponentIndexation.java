@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,7 @@ import static org.silverpeas.core.index.indexing.model.IndexEngineProxy.removeSc
  * Indexation of the data managed by a given component instance. Each Application in Silverpeas
  * should provide an implementation of this interface as it knows how to index it own data. This
  * implementation must be qualified by a unique name starting by the application name and ending by
- * the <code>QUALIFIER_SUFFIX</code> constant value (aka annotated by {@link javax.inject.Named}).
+ * the <code>QUALIFIER_SUFFIX</code> constant value (aka annotated by {@link jakarta.inject.Named}).
  * The implementation will be then lookable by the index engine by their qualification name.
  */
 public interface ComponentIndexation {

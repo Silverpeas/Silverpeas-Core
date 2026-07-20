@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,9 +25,11 @@ package org.silverpeas.core.io.media;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.tika.Tika;
+import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.UnitUtil;
@@ -61,7 +63,11 @@ public class MetadataExtractor {
 
   @PostConstruct
   protected void initialize() {
-    tika = new Tika();
+    try (InputStream config = getClass().getResourceAsStream("tika-config.xml")) {
+      tika = new Tika(new TikaConfig(config));
+    } catch (Exception e) {
+      throw new SilverpeasRuntimeException("Cannot initialize the Tika metadata extractor", e);
+    }
   }
 
   /**
@@ -95,11 +101,22 @@ public class MetadataExtractor {
 
   private MetaData apply(MetadataFetcher fetcher) {
     Metadata metadata = new Metadata();
-    try (@SuppressWarnings("unused") Reader reader = fetcher.fetch(metadata)) {
+    try (Reader reader = fetcher.fetch(metadata)) {
+      // the content has to be fully consumed so that Tika completes the parsing (some parsers,
+      // like the external ones delegating to ffmpeg or exiftool for audio/video files, populate
+      // the metadata only as their output stream is read) before the metadata is exploited.
+      drain(reader);
       return adjust(metadata);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).warn(ex);
       return new MetaData(new Metadata());
+    }
+  }
+
+  private void drain(Reader reader) throws IOException {
+    final char[] buffer = new char[8192];
+    while (reader.read(buffer) != -1) {
+      // the content itself isn't of interest here, only the metadata extracted from it is.
     }
   }
 

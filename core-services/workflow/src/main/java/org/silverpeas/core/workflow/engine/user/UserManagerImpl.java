@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -64,7 +64,7 @@ public class UserManagerImpl implements UserManager {
    * @param userIds
    * @return
    * @throws WorkflowException
-   * @throw WorkflowException if a userId is unknown.
+   * @throws WorkflowException if a userId is unknown.
    */
   @Override
   public User[] getUsers(String[] userIds) throws WorkflowException {

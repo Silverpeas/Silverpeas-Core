@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -68,7 +68,7 @@ import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
  * plugins:
  * <ul>
  * <li>silverpeas-filUpload.js: useful to handle file upload on resource creation</li>
- * <li>silverpeas-ddUpload.js: useful to handle drag & drop file upload on existing resources</li>
+ * <li>silverpeas-ddUpload.js: useful to handle drag &amp; drop file upload on existing resources</li>
  * </ul>
  *
  * @author Yohann Chastagnier

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -35,14 +35,16 @@ import java.util.Vector;
  * The WADataPaginatorHeader is used by presentation components such as the ViewGenerator to help
  * them manage their user interface. The hold all information that are needed by the rendering
  * object to present table headers, namely: <br>
- * <li>Flags to help sorting data <li>Default sork jey <li>Routing address, that is, script code to
- * which the column headers of data displayed are bound to
+ * <ul>
+ * <li>Flags to help sorting data</li><li>Default sork jey</li><li>Routing address, that is, script
+ * code to which the column headers of data displayed are bound to</li>
+ * </ul>
  * <p>
  * This object is actually a collection of {@link FieldDescriptor} objects. One thus first creates
  * an empty WADataPaginatorHeader, and then call the {@link #addField} method as many times as there
  * are columns to display. <br>
  * The rendering process, on the other hand, will get this list of fields back, and will, depending
- * on the flags returned by the {@link #getFlags()} routine, output the header information of each
+ * on the flags returned by the {@link FieldDescriptor#getFlags()} routine, output the header information of each
  * field.
  * @author jpouyadou
  * @version 1.0
@@ -72,7 +74,7 @@ public class WADataPaginatorHeader {
   /**
    * This method retuns the count of fields in this header. It should match the number of times the
    * {@link #addField} succeeded
-   * @see #addField()
+   * @see #addField
    */
   public int getFieldCount() {
     return (m_Fields.size());

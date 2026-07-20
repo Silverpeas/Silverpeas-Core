@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,37 +34,37 @@ import java.text.ParseException;
  * The format of the expected cron expression is as following:
  * <code>MINUTES HOURS DAY_OF_MONTH MONTH DAY_OF_WEEK</code> with
  * </p>
- * <table cellspacing="8">
+ * <table>
  * <caption>Field definition</caption>
  * <tr>
- * <th align="left">Field Name</th>
- * <th align="left">Allowed Values</th>
- * <th align="left">Allowed Special Characters</th>
+ * <th>Field Name</th>
+ * <th>Allowed Values</th>
+ * <th>Allowed Special Characters</th>
  * </tr>
  * <tr>
- * <td align="left"><code>MINUTES</code></td>
- * <td align="left"><code>0-59</code></td>
- * <td align="left"><code>, - * /</code></td>
+ * <td><code>MINUTES</code></td>
+ * <td><code>0-59</code></td>
+ * <td><code>, - * /</code></td>
  * </tr>
  * <tr>
- * <td align="left"><code>HOURS</code></td>
- * <td align="left"><code>0-23</code></td>
- * <td align="left"><code>, - * /</code></td>
+ * <td><code>HOURS</code></td>
+ * <td><code>0-23</code></td>
+ * <td><code>, - * /</code></td>
  * </tr>
  * <tr>
- * <td align="left"><code>DAY_OF_MONTH</code></td>
- * <td align="left"><code>1-31</code></td>
- * <td align="left"><code>, - * ? /</code></td>
+ * <td><code>DAY_OF_MONTH</code></td>
+ * <td><code>1-31</code></td>
+ * <td><code>, - * ? /</code></td>
  * </tr>
  * <tr>
- * <td align="left"><code>MONTH</code></td>
- * <td align="left"><code>1-12 or JAN-DEC</code></td>
- * <td align="left"><code>, - * /</code></td>
+ * <td><code>MONTH</code></td>
+ * <td><code>1-12 or JAN-DEC</code></td>
+ * <td><code>, - * /</code></td>
  * </tr>
  * <tr>
- * <td align="left"><code>DAY_OF_WEEK</code></td>
- * <td align="left"><code>1-7 or SUN-SAT</code></td>
- * <td align="left"><code>, - * ? /</code></td>
+ * <td><code>DAY_OF_WEEK</code></td>
+ * <td><code>1-7 or SUN-SAT</code></td>
+ * <td><code>, - * ? /</code></td>
  * </tr>
  * </table>
  * <p>

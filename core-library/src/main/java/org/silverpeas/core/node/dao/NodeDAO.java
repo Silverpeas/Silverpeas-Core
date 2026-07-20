@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -50,6 +50,7 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHM
 
 /**
  * This is the Node Data Access Object.
+ *
  * @author Nicolas Eysseric
  */
 @Repository
@@ -94,6 +95,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Deletes all nodes linked to the component instance represented by the given identifier.
+   *
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
    * @throws SQLException if a SQL error occurs
@@ -119,6 +121,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * On node creation, check if another node have got the same name with same father
+   *
    * @param con A connection to the database
    * @param nd A NodeDetail contains new node data to compare
    * @return true if there is already a node with same name with same father false else
@@ -151,6 +154,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * On node update, check if another node have got the same name with same father
+   *
    * @param con A connection to the database
    * @param nd A NodeDetail contains new node data to compare
    * @return true if there is already a node with same name with same father false else
@@ -186,6 +190,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get children node PKs of a node
+   *
    * @param con A connection to the database
    * @param nodePK A NodePK
    * @return A collection of NodePK
@@ -222,6 +227,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get descendant node PKs of a node
+   *
    * @param con A connection to the database
    * @param nodePK A NodePK
    * @return A collection of NodePK
@@ -272,6 +278,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get descendant nodeDetails of a node
+   *
    * @param con A connection to the database
    * @param nodePK A NodePK
    * @return A List of NodeDetail
@@ -300,7 +307,7 @@ public class NodeDAO extends AbstractDAO {
         }
       } catch (SQLException e) {
         SilverLogger.getLogger(this).error(SELECT_QUERY + selectNodes + COMPO_NAME +
-                nodePK.getComponentName(), e);
+            nodePK.getComponentName(), e);
         throw e;
       }
     }
@@ -309,6 +316,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get descendant nodeDetails of a node
+   *
    * @param con A connection to the database
    * @param node A NodeDetail
    * @return A List of NodeDetail
@@ -332,7 +340,7 @@ public class NodeDAO extends AbstractDAO {
       }
     } catch (SQLException e) {
       SilverLogger.getLogger(this).error(SELECT_QUERY + selectQuery + COMPO_NAME +
-              node.getNodePK().getComponentName(), e);
+          node.getNodePK().getComponentName(), e);
       throw e;
     }
     return nodeDetails;
@@ -340,6 +348,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get nodeDetails by level.
+   *
    * @param con A connection to the database
    * @param nodePK the primary key of the node to get
    * @param level the level of the node to get
@@ -383,7 +392,7 @@ public class NodeDAO extends AbstractDAO {
     // Add default translation
     final NodeI18NDetail nodeI18NDetail =
         new NodeI18NDetail(node.getLanguage(), node.getName(), node.
-        getDescription());
+            getDescription());
     node.addTranslation(nodeI18NDetail);
     if (i18n.isEnabled()) {
       List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, node.getId());
@@ -424,13 +433,16 @@ public class NodeDAO extends AbstractDAO {
    * Selects massively simple data about nodes.
    * <p>
    * For now, only the following data are retrieved:
+   * </p>
    *   <ul>
    *     <li>nodeId</li>
    *     <li>instanceId</li>
    *     <li>rightsDependsOn</li>
    *   </ul>
+   *  <p>
    *   This method is designed for process performance needs.
    * </p>
+   *
    * @param con the database connection.
    * @param instanceIds the instance ids aimed.
    * @return a list of {@link NodeDetail} instances.
@@ -444,23 +456,25 @@ public class NodeDAO extends AbstractDAO {
         .map(SilverpeasSharedComponentInstance.Identity::getInstanceLocalId)
         .collect(Collectors.toList());
     JdbcSqlQuery.executeBySplittingOn(instanceIdsAsInt, (idBatch, ignore) ->
-      JdbcSqlQuery.select("nodeid, instanceid, rightsdependson")
-          .from(NODE_TABLE + " N")
-          .join("ST_ComponentInstance I").on("N.instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))")
-          .where("I.id").in(idBatch)
-          .executeWith(con, r -> {
-        final NodePK nodePK = new NodePK(Integer.toString(r.getInt(1)), r.getString(2));
-        final NodeDetail nodeDetail = new NodeDetail();
-        nodeDetail.setNodePK(nodePK);
-        nodeDetail.setRightsDependsOn(String.valueOf(r.getInt(3)));
-        entities.add(nodeDetail);
-        return null;
-      }));
+        JdbcSqlQuery.select("nodeid, instanceid, rightsdependson")
+            .from(NODE_TABLE + " N")
+            .join("ST_ComponentInstance I").on("N.instanceid = CONCAT(I.componentname , CAST(I.id" +
+                " AS VARCHAR(20)))")
+            .where("I.id").in(idBatch)
+            .executeWith(con, r -> {
+              final NodePK nodePK = new NodePK(Integer.toString(r.getInt(1)), r.getString(2));
+              final NodeDetail nodeDetail = new NodeDetail();
+              nodeDetail.setNodePK(nodePK);
+              nodeDetail.setRightsDependsOn(String.valueOf(r.getInt(3)));
+              entities.add(nodeDetail);
+              return null;
+            }));
     return entities;
   }
 
   /**
    * Get all nodeDetails
+   *
    * @param con A connection to the database
    * @param nodePK the node primary key in which is defined the component instance identifier
    * @return A collection of NodeDetail
@@ -473,6 +487,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get all nodeDetails
+   *
    * @param con A connection to the database
    * @param nodePK the node primary key in which is defined the component instance identifier
    * @param sorting the sorting to apply
@@ -535,6 +550,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get the path from root to a node
+   *
    * @param con A connection to the database
    * @param nodePK A NodePK
    * @return A {@link NodePath} instance.
@@ -559,6 +575,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Create a NodeDetail from a ResultSet
+   *
    * @param rs the ResultSet which contains data
    * @param nodePK build the node from the specified result set
    * @return the NodeDetail
@@ -603,13 +620,14 @@ public class NodeDAO extends AbstractDAO {
       nd.setRemovalStatus(DateUtil.parseDate(removalDate), removerId);
       return (nd);
     } catch (ParseException e) {
-      SilverLogger.getLogger(this).error("Error in resultSet2NodeDetail: NodePK={0}",pk,e);
+      SilverLogger.getLogger(this).error("Error in resultSet2NodeDetail: NodePK={0}", pk, e);
       throw new NodeRuntimeException("The creation date of the node isn't correctly formatted!");
     }
   }
 
   /**
    * Get the detail of another Node
+   *
    * @param con A connection to the database
    * @param nodePK the PK of the Node
    * @return a NodeDetail
@@ -638,6 +656,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get the header of each child of the node
+   *
    * @param con A connection to the database
    * @param nodePK the primary key of the node
    * @return a NodeDetail collection
@@ -671,6 +690,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Get the children number of this node
+   *
    * @param con A connection to the database
    * @param nodePK the primary key of the node
    * @return the number of node children.
@@ -695,13 +715,14 @@ public class NodeDAO extends AbstractDAO {
     } catch (SQLException e) {
       SilverLogger.getLogger(this)
           .error(SELECT_QUERY + selectQuery + " nodeId = " + nodePK.getId() + COMPO_NAME +
-                  nodePK.getComponentName(), e);
+              nodePK.getComponentName(), e);
       throw e;
     }
   }
 
   /**
    * Insert into the database the data of a node
+   *
    * @param con A connection to the database
    * @param nd the NodeDetail which contains data
    * @return a NodePK which contains the new row id
@@ -751,8 +772,8 @@ public class NodeDAO extends AbstractDAO {
         .withInsertParam("lang", language)
         .withInsertParam("rightsDependsOn", Integer.parseInt(nd.getRightsDependsOn()));
     if (nd.isRemoved()) {
-        query.withInsertParam(NODE_REMOVAL_DATE, DateUtil.formatDate(nd.getRemovalDate()));
-        query.withInsertParam(NODE_REMOVER_ID, nd.getRemoverId());
+      query.withInsertParam(NODE_REMOVAL_DATE, DateUtil.formatDate(nd.getRemovalDate()));
+      query.withInsertParam(NODE_REMOVER_ID, nd.getRemoverId());
     }
     query.executeWith(con);
 
@@ -778,6 +799,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Delete into the database a node but not it's descendants.
+   *
    * @param con a connection to the database
    * @param nodePK the node PK to delete.
    * @throws java.sql.SQLException if a SQL error occurs
@@ -796,6 +818,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Check if a Node exists in database.
+   *
    * @param con the current connection to the database.
    * @param pk the node PK to find
    * @return the fat pk (pk + detail)
@@ -833,6 +856,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Load node attributes from database
+   *
    * @param con a connection to the database
    * @param nodePK the primary key of the node to load
    * @param getTranslations a flag indicating if the translations has to be loaded
@@ -907,6 +931,7 @@ public class NodeDAO extends AbstractDAO {
 
   /**
    * Store node attributes into database
+   *
    * @param con a connection to the database
    * @param nodeDetail the node to store
    * @throws java.sql.SQLException if a SQL error occurs

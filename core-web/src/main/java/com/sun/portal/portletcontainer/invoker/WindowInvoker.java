@@ -112,7 +112,6 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   // ******************************************************************
   /**
    * Initializes the WindowInvoker.
-   * <p>
    * @param servletContext The ServletContext object.
    * @param request The HTTP request object.
    * @param response The HTTP response object.

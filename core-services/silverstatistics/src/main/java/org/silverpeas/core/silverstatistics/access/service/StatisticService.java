@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -114,7 +114,6 @@ public interface StatisticService {
    * @param startDate the start date
    * @param endDate the end date
    * @return the number of access over a list of publications between startDate and endDate
-   * @
    */
   int getDistinctCountByPeriod(List<ResourceReference> refs, int action,
       String objectType, Date startDate, Date endDate);
@@ -142,7 +141,7 @@ public interface StatisticService {
    * @param contributions the contributions to filter.
    * @param userId the identifier of the user to verify.
    * @param <T> the type of contribution.
-   * @return a stream of read <T>
+   * @return a stream of read {@code <T>}
    */
   <T extends Contribution> Stream<T> filterRead(Collection<T> contributions, String userId);
 }

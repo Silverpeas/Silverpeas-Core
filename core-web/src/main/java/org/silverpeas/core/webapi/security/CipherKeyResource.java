@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -85,7 +85,7 @@ public class CipherKeyResource extends RESTWebService {
 
   /**
    * Sets the specified cipher key to encrypt and decrypt the content in Silverpeas.
-   * </p>
+   * <p>
    * If a cipher key was already defined, then this new one will replace it and in a such case, any
    * content that was encrypted with the previous key will be encrypted again but with the new key.
    *

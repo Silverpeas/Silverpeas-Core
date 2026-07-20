@@ -58,7 +58,7 @@ public class InvokerUtil {
 
   /**
    * Sets the response properties like cookies and headers in the HttpServletResponse and sets the
-   * markup header in Session so that it will be set in the <head> tag in header.jsp
+   * markup header in Session so that it will be set in the {@code <head>} tag in header.jsp
    * @param request the HttpServletRequest object
    * @param response the HttpServletResponse object
    * @param responseProperties the ResponseProperties responseProperties object

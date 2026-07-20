@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,6 @@ import java.util.List;
 
 /**
  * @author squere
- * @version
  */
 public abstract class AbstractTabbedPane implements TabbedPane {
 
@@ -45,7 +44,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
 
   /**
    * Constructor declaration
-   * @see
    */
   public AbstractTabbedPane() {
   }
@@ -56,7 +54,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @param label
    * @param action
    * @param disabled
-   * @see
    */
   public Tab addTab(String label, String action, boolean disabled) {
     Tab tab = new Tab(label, action, disabled);
@@ -70,7 +67,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @param action
    * @param disabled
    * @param enabled
-   * @see
    */
   public Tab addTab(String label, String action, boolean disabled, boolean enabled) {
     Tab tab = new Tab(label, action, disabled, enabled);
@@ -81,7 +77,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public List<Tab> getTabs() {
     return tabs;
@@ -90,7 +85,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public abstract String print();
 

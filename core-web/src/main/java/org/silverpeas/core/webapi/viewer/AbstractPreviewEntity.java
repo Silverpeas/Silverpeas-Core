@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.web.rs.WebEntity;
 
@@ -57,7 +58,7 @@ public abstract class AbstractPreviewEntity<T extends AbstractPreviewEntity<T>> 
     documentId = preview.getDocumentId();
     documentType = preview.getDocumentType();
     language = preview.getLanguage();
-    originalFileName = preview.getOriginalFileName();
+    originalFileName = Encode.forHtml(preview.getOriginalFileName());
     width = preview.getWidth();
     height = preview.getHeight();
   }

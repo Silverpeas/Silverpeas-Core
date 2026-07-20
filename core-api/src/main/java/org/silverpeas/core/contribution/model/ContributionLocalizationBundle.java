@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,7 +40,7 @@ import static org.apache.commons.lang3.ArrayUtils.toArray;
  * <p>
  * Useful to gets localized labels, for example, according to the type of a contribution and also
  * according to the component which is handling the contribution.
- * </p
+ * </p>
  * <p>It exists two possible bundle repositories:</p>
  * <ul>
  * <li>a main one: <code>org.silverpeas.contribution.multilang.contribution.properties</code></li>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,8 @@ public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorU
    * Checks if a DataStorageQuotaException is registered in the servlet request
    * @param request the http servlet request
    * @param language the language of current user
-   * @throws DataStorageQuotaException, ComponentFileFilterException
+   * @throws DataStorageQuotaException
+   * @throws ComponentFileFilterException
    */
   public static void verifyErrorFromRequest(final ServletRequest request, final String language)
       throws DataStorageQuotaException, ComponentFileFilterException {

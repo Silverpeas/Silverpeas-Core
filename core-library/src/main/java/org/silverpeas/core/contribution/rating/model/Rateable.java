@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,7 @@ package org.silverpeas.core.contribution.rating.model;
  * A rateable is an object that represents a contribution which can be rated.
  * This interface defines all methods that must be implemented in order to obtain differents
  * contribution types that can be handled by a same rating mechanism.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public interface Rateable {
 

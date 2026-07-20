@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,7 +30,6 @@ import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Class declaration
- * @author
  */
 public class SelectionException extends SilverpeasException {
 
@@ -41,7 +40,6 @@ public class SelectionException extends SilverpeasException {
    * @param callingClass
    * @param errorLevel
    * @param message
-   * @see
    */
   public SelectionException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
@@ -53,7 +51,6 @@ public class SelectionException extends SilverpeasException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
    */
   public SelectionException(String callingClass, int errorLevel,
       String message, String extraParams) {
@@ -66,7 +63,6 @@ public class SelectionException extends SilverpeasException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
    */
   public SelectionException(String callingClass, int errorLevel,
       String message, Exception nested) {
@@ -80,7 +76,6 @@ public class SelectionException extends SilverpeasException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
    */
   public SelectionException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {
@@ -90,7 +85,6 @@ public class SelectionException extends SilverpeasException {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getModule() {
     return "selection";

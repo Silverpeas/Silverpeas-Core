@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2024 Silverpeas
+  ~ Copyright (C) 2000 - 2026 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -734,7 +734,7 @@ const _afManager${domIdSuffix} = new function() {
         }, __vuejsCtx), function(formPaneData) {
           return new Promise(function(resolve) {
             let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
-            submitUrl = submitUrl + '/' + encodeURIComponent(formPaneData.fileName.unescapeHTML());
+            submitUrl = submitUrl + '/' + encodeURIComponent(formPaneData.fileName.escapeHTML());
             _performActionWithContributionModificationManagement(function() {
               spProgressMessage.show();
               const formData = new FormData();
@@ -888,7 +888,7 @@ const _afManager${domIdSuffix} = new function() {
       open:function() {
         const filename = $(this).data("filename").escapeHTML();
         const $dialog = _self_ui.get$deleteAttachment().parent();
-        $dialog.find(".attachment-delete-warning-message").html('${silfn:escapeJs(deleteConfirmMsg)}'.replace(/([ ?]+)$/, ' <b>' + filename + '</b>$1'));
+        $dialog.find(".attachment-delete-warning-message").html('${silfn:escapeJs(deleteConfirmMsg)}'.replace(/([ ?]+)$/, ' <b>' + filename.escapeHTML() + '</b>$1'));
         $dialog.find("#button-delete-all${domIdSuffix}").hide();
       <c:if test="${_isI18nHandled && not isVersionActive}">
         const translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -36,7 +36,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore} and {@link
  * org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeAfter} method annotations.
  * For now, an invokable method can not be a HTTP Method.
- * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

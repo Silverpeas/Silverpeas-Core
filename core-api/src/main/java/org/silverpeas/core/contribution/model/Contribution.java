@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -139,7 +139,7 @@ public interface Contribution extends SilverpeasResource, Serializable, Securabl
   }
 
   /**
-   * Gets the {@link ResourcePath <T>} of the contribution represented by the given identifier.
+   * Gets the {@link ResourcePath} {@code <T>} of the contribution represented by the given identifier.
    * <p>
    * Returns empty by default if not implemented.
    * </p>

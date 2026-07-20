@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -55,6 +55,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -176,7 +177,13 @@ public class ICalendarEventSynchronization implements Initialization {
 
   private ICalendarImportResult synchronizeCalendarFrom(Calendar calendar, InputStream source) {
     return Transaction.performInOne(() -> {
-      final Instant synchronizationDateTime = Instant.now();
+      // the synchronization datetime is truncated to the microsecond because the datastore (a
+      // TIMESTAMP column) doesn't support a finer resolution. Otherwise the sub-microsecond part
+      // carried by Instant.now() since Java 9 wouldn't survive the persistence of the events'
+      // synchronization date, and the just-imported events (persisted at microsecond precision)
+      // would be wrongly detected as stale (their synchronization date being then lower than this
+      // in-memory limit) and deleted by removeDeletedEvents.
+      final Instant synchronizationDateTime = Instant.now().truncatedTo(ChronoUnit.MICROS);
       calendar.setLastSynchronizationDate(synchronizationDateTime);
       Calendar syncCalendar = Calendar.getById(calendar.getId());
       syncCalendar.setLastSynchronizationDate(synchronizationDateTime);

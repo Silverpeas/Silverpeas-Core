@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -124,5 +124,11 @@ public interface DataRecord extends Serializable {
    * @return a reference to a resource in Silverpeas.
    */
   ResourceReference getResourceReference();
+
+  /**
+   * Gets the template providing definition of this data record.
+   * @return the {@link RecordTemplate} defining this data record.
+   */
+  RecordTemplate getTemplate();
 
 }

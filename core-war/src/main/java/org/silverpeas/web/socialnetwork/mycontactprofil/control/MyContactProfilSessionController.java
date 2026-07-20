@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -70,7 +70,7 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
   /**
    * get all RelationShips ids for this user
    * @param userId : int myId
-   * @return : List<String> of contact identifiers
+   * @return : {@code List<String>} of contact identifiers
    */
   public List<String> getContactsIdsForUser(String userId) {
     return getRelationShipService().getMyContactsIds(Integer.parseInt(userId));
@@ -78,7 +78,7 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
 
   /**
    * get all RelationShips ids for this user
-   * @return :List<String>
+   * @return :{@code List<String>}
    * @param userId : int myId
    */
   public List<String> getCommonContactsIdsForUser(String userId) {

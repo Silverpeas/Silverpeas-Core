@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -38,7 +38,7 @@ import static org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWeb
 
 /**
  * Implementation of a client able to take in charge the edition into the Web Browser of HTML
- * content by Drag & Drop.
+ * content by Drag &amp; Drop.
  * @author silveryocha
  */
 @Service

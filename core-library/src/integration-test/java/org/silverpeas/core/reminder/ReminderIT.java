@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -45,6 +45,7 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.DefaultPersonalizationService;
 import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.LibCoreWarBuilder;
+import org.silverpeas.core.test.integration.TestDateTimes;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.stub.StubbedUserProvider;
@@ -134,7 +135,7 @@ public class ReminderIT {
     manager.clearAll();
     manager.addContribution(new EventContrib(CONTRIBUTION_FOR_NOW).authoredBy(aUser));
     manager.addContribution(new EventContrib(CONTRIBUTION_FOR_LATER).authoredBy(aUser)
-        .publishAt(OffsetDateTime.now().plusSeconds(45)));
+        .publishAt(TestDateTimes.now().plusSeconds(45)));
     BackgroundProcessLogger.get().setLevel(Level.DEBUG);
   }
 
@@ -223,7 +224,7 @@ public class ReminderIT {
   @Test
   public void scheduleAReminderInDateTimeWillPersistIt() {
     final String reminderText = "Remind me!";
-    final OffsetDateTime triggerDate = OffsetDateTime.now().plusDays(1);
+    final OffsetDateTime triggerDate = TestDateTimes.now().plusDays(1);
     Reminder expectedReminder =
         new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER2_ID), PROCESS_NAME).withText(reminderText)
             .triggerAt(triggerDate)
@@ -247,7 +248,7 @@ public class ReminderIT {
   @Test
   public void scheduleASystemReminderInDateTimeWillPersistIt() {
     final String reminderText = "Remind me!";
-    final OffsetDateTime triggerDate = OffsetDateTime.now().plusDays(1);
+    final OffsetDateTime triggerDate = TestDateTimes.now().plusDays(1);
     Reminder expectedReminder =
         new DateTimeReminder(CONTRIBUTION_FOR_NOW, PROCESS_NAME).withText(reminderText)
             .triggerAt(triggerDate)
@@ -346,7 +347,7 @@ public class ReminderIT {
   @Test
   public void rescheduleAScheduledReminderShouldApplyTheChange() {
     final String reminderText = "Remind me!";
-    final OffsetDateTime triggerDate = OffsetDateTime.now().plusSeconds(5);
+    final OffsetDateTime triggerDate = TestDateTimes.now().plusSeconds(5);
     DateTimeReminder reminder = getAReminderScheduledInOneDay();
     assertThat(reminder.isScheduled(), is(true));
     reminder.withText(reminderText).triggerAt(triggerDate).schedule();
@@ -375,7 +376,7 @@ public class ReminderIT {
   @Test
   public void rescheduleAScheduledSystemReminderShouldRemoveItAfterTriggered() {
     final String reminderText = "Remind me!";
-    final OffsetDateTime triggerDate = OffsetDateTime.now().plusSeconds(15);
+    final OffsetDateTime triggerDate = TestDateTimes.now().plusSeconds(15);
     DateTimeReminder reminder = getASystemReminderScheduledInOneDay();
     assertThat(reminder.isScheduled(), is(true));
     reminder.withText(reminderText).triggerAt(triggerDate).schedule();

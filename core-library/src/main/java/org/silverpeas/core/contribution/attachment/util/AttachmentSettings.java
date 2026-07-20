@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -67,7 +67,7 @@ public class AttachmentSettings {
   }
 
   /**
-   * Indicates if metadata of a file, if any, can be used to fill data (title & description) of an
+   * Indicates if metadata of a file, if any, can be used to fill data (title &amp; description) of an
    * attachment. (defined in properties by attachment.data.fromMetadata)
    * @return true if they must be used, false otherwise.
    */

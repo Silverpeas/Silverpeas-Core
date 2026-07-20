@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,15 +27,13 @@ import com.rometools.rome.io.XmlReader;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.parameter.Value;
-import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.RRule;
+import net.fortuna.ical4j.model.property.immutable.ImmutablePriority;
+import net.fortuna.ical4j.transform.recurrence.Frequency;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
@@ -51,17 +49,34 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class ImportIcalManager {
 
-  private static final long YEAR = 1000L * 60 * 60 * 24 * 365;
+  private static final DateTimeFormatter ICAL_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
+  private static final DateTimeFormatter ICAL_DATETIME =
+      DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
   private static String charset = null;
   private final AgendaSessionController agendaSessionController;
   private SilverpeasCalendar calendarService;
@@ -113,7 +128,7 @@ public class ImportIcalManager {
   }
 
   private void importAllEvents(final Calendar calendar) throws ParseException, AgendaException {
-    for (CalendarComponent o : calendar.getComponents(Component.VEVENT)) {
+    for (CalendarComponent o : calendar.<CalendarComponent>getComponents(Component.VEVENT)) {
       VEvent eventIcal = (VEvent) o;
       String startDate = getFieldEvent(eventIcal.getProperty(Property.DTSTART));
       String endDate = getFieldEvent(eventIcal.getProperty(Property.DTEND));
@@ -177,13 +192,13 @@ public class ImportIcalManager {
       startDay = recurrenceDate;
       // Reccurent event endDate
       long newEndDay = startDay.getTime() + duration;
-      endDay = new DateTime(newEndDay);
+      endDay = new Date(newEndDay);
       if (allDay) {
         // So we have to convert this date to agenda format date
         GregorianCalendar gregCalendar = new GregorianCalendar();
         gregCalendar.setTime(endDay);
         gregCalendar.add(java.util.Calendar.DATE, -1);
-        endDay = new Date(gregCalendar.getTime());
+        endDay = gregCalendar.getTime();
       }
       String idEvent = isExist(eventIcal, startDay, endDay, startHour);
       // update if event already exists, create if does not exist
@@ -202,7 +217,7 @@ public class ImportIcalManager {
   private String getPriority(final VEvent eventIcal) {
     String priority = getFieldEvent(eventIcal.getProperty(Property.PRIORITY));
     if (!isDefined(priority)) {
-      priority = Priority.UNDEFINED.getValue();
+      priority = ImmutablePriority.UNDEFINED.getValue();
     }
     return priority;
   }
@@ -275,8 +290,9 @@ public class ImportIcalManager {
   }
 
   private void processCategories(Component eventIcal, String idEvent) throws AgendaException {
-    if (eventIcal.getProperty(Property.CATEGORIES) != null) {
-      String categories = eventIcal.getProperty(Property.CATEGORIES).getValue();
+    final Optional<Property> categoriesProperty = eventIcal.getProperty(Property.CATEGORIES);
+    if (categoriesProperty.isPresent()) {
+      String categories = categoriesProperty.get().getValue();
       StringTokenizer st = new StringTokenizer(categories, ",");
       String[] categoryIds = new String[st.countTokens()];
       int j = 0;
@@ -308,46 +324,86 @@ public class ImportIcalManager {
 
   private Date getDay(String dateTime) throws ParseException {
     Objects.requireNonNull(dateTime);
-    final Date day;
-    if (dateTime.length() > 8) {
-      day = new DateTime(dateTime);
-    } else {
-      day = new Date(dateTime);
-    }
-    return day;
+    return parseICalDate(dateTime);
   }
 
   private String getHour(String dateTime) throws ParseException {
     Objects.requireNonNull(dateTime);
     String hour = null;
     if (dateTime.length() > 8) {
-      hour = DateUtil.getFormattedTime(new DateTime(dateTime));
+      hour = DateUtil.getFormattedTime(parseICalDate(dateTime));
     }
     return hour;
   }
 
-  private String getFieldEvent(Property property) {
-    String fieldValue = null;
-    if (property != null) {
-      fieldValue = transformStringForBD(property.getValue());
+  /**
+   * Parses an iCalendar date ({@code yyyyMMdd}) or datetime ({@code yyyyMMdd'T'HHmmss} optionally
+   * suffixed with {@code Z} for UTC) into a {@link Date}. A datetime without the {@code Z} suffix
+   * (floating) is interpreted, as iCal4J does, in the default time zone of the system.
+   * @param value an iCalendar date or datetime.
+   * @return the corresponding {@link Date}.
+   * @throws ParseException if the value cannot be parsed.
+   */
+  private static Date parseICalDate(String value) throws ParseException {
+    try {
+      final Instant instant;
+      if (value.length() > 8) {
+        final boolean utc = value.endsWith("Z");
+        final String dateTime = utc ? value.substring(0, value.length() - 1) : value;
+        final LocalDateTime ldt = LocalDateTime.parse(dateTime, ICAL_DATETIME);
+        instant = ldt.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault()).toInstant();
+      } else {
+        instant = LocalDate.parse(value, ICAL_DATE).atStartOfDay(ZoneId.systemDefault()).toInstant();
+      }
+      return Date.from(instant);
+    } catch (DateTimeParseException e) {
+      throw new ParseException(e.getMessage(), e.getErrorIndex());
     }
+  }
 
-    return fieldValue;
+  private String getFieldEvent(Optional<? extends Property> property) {
+    return property.map(p -> transformStringForBD(p.getValue())).orElse(null);
   }
 
   private static Collection<Date> getRecurrenceDates(VEvent event) {
-    RRule rule = event.getProperty(Property.RRULE);
-    if (rule != null) {
-      Recur recur = rule.getRecur();
-      DateTime startDate = new DateTime(event.getStartDate().getDate());
-      long interval = YEAR * 2;
-      if (Recur.Frequency.YEARLY.equals(recur.getFrequency())) {
-        interval *= 5;
-      }
-      DateTime endDate = new DateTime(startDate.getTime() + (interval));
-      return recur.getDates(startDate, endDate, Value.DATE_TIME);
+    return event.<RRule<Temporal>>getProperty(Property.RRULE).map(rule -> {
+      Recur<Temporal> recur = rule.getRecur();
+      Temporal startDate =
+          asRecurrenceTemporal(event.<Temporal>getStartDate().orElseThrow().getDate());
+      long years = Frequency.YEARLY.equals(recur.getFrequency()) ? 10 : 2;
+      Temporal endDate = startDate.plus(years, ChronoUnit.YEARS);
+      return recur.getDates(startDate, startDate, endDate).stream()
+          .map(ImportIcalManager::asDate)
+          .collect(Collectors.<Date>toList());
+    }).orElse(Collections.emptyList());
+  }
+
+  /**
+   * An {@link Instant} doesn't support the temporal arithmetic (weeks, months, years) required by
+   * the recurrence computation; such a UTC datetime is hence converted to an {@link OffsetDateTime}.
+   */
+  private static Temporal asRecurrenceTemporal(final Temporal temporal) {
+    return temporal instanceof Instant ?
+        OffsetDateTime.ofInstant((Instant) temporal, ZoneOffset.UTC) :
+        temporal;
+  }
+
+  private static Date asDate(final Temporal temporal) {
+    final Instant instant;
+    if (temporal instanceof LocalDate) {
+      instant = ((LocalDate) temporal).atStartOfDay(ZoneId.systemDefault()).toInstant();
+    } else if (temporal instanceof LocalDateTime) {
+      instant = ((LocalDateTime) temporal).atZone(ZoneId.systemDefault()).toInstant();
+    } else if (temporal instanceof OffsetDateTime) {
+      instant = ((OffsetDateTime) temporal).toInstant();
+    } else if (temporal instanceof ZonedDateTime) {
+      instant = ((ZonedDateTime) temporal).toInstant();
+    } else if (temporal instanceof Instant) {
+      instant = (Instant) temporal;
+    } else {
+      instant = Instant.from(temporal);
     }
-    return Collections.emptyList();
+    return Date.from(instant);
   }
 
   /**

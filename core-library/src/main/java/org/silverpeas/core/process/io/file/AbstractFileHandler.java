@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -423,7 +423,6 @@ public abstract class AbstractFileHandler {
 
   /**
    * Delete session path
-   * @return
    */
   protected void deleteSessionWorkingPath() {
     FileUtils.deleteQuietly(FileUtils.getFile(sessionRootPath, getSession().getId()));
@@ -432,7 +431,6 @@ public abstract class AbstractFileHandler {
 
   /**
    * Checkin session path
-   * @return
    */
   protected void checkinSessionWorkingPath() throws Exception {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,7 @@ public class Encode {
   }
 
   /**
-   * Convert a java string to a html string for textArea Replace ", <, >, & and \n
+   * Convert a java string to a html string for textArea Replace ", &lt;, &gt;, &amp; and \n
    * @param javastring Java string to encode
    * @return html string encoded
    */
@@ -55,7 +55,7 @@ public class Encode {
   }
 
   /**
-   * Convert a java string to a html string for textfield... Replace ", <, >, & and \n
+   * Convert a java string to a html string for textfield... Replace ", &lt;, &gt;, &amp; and \n
    * @param javastring Java string to encode
    * @return html string encoded
    */

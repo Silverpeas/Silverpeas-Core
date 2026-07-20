@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -449,7 +449,6 @@ public interface PublicationService {
    *
    * @param criteria criteria for delimiting the scope of the request.
    * @return the tree of nodes with the number of publication per node
-   * @
    */
   Map<String, Integer> getDistributionTree(DistributionTreeCriteria criteria);
 
@@ -510,7 +509,6 @@ public interface PublicationService {
    *   </ul>
    *   This method is designed for process performance needs.<br/>
    *   The result is not necessarily into same ordering as the one of given parameter.
-   * </p>
    *
    * @param ids the instance ids aimed.
    * @return a list of {@link PublicationDetail} instances.
@@ -527,7 +525,6 @@ public interface PublicationService {
    * @param pubPK the identifier of the instance
    * @param pubName the publication's name we are looking for
    * @return the pubId if a publication already exists in this component's instance. null otherwise.
-   * @
    */
   PublicationDetail getDetailByName(PublicationPK pubPK, String pubName);
 
@@ -556,7 +553,6 @@ public interface PublicationService {
    *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
-   * @
    */
   void addLinks(PublicationPK pubPK, List<ResourceReference> links);
 

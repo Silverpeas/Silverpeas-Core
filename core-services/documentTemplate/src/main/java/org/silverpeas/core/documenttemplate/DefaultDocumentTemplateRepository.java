@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -68,7 +68,6 @@ import static org.silverpeas.kernel.util.StringUtil.*;
  *     into different user languages. The base name part of file is the identifier (an UUID) and
  *     the extension is '.json'</li>
  *   </ul>
- * </p>
  * @author silveryocha
  */
 @Repository

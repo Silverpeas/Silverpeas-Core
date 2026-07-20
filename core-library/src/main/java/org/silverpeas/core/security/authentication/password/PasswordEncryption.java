@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -74,7 +74,6 @@ public interface PasswordEncryption {
 
   /**
    * Checks the specified password matches the specified digest.
-   * <p>
    *
    * @param password an unencrypted password.
    * @param digest a digest of a password with which the specified password has to be matched.

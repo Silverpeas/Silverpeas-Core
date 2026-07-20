@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -739,7 +739,7 @@ public class DefaultOrganizationController implements OrganizationController {
 
   /**
    * Is the specified tool belongs to the administration component?
-   * </p>
+   * <p>
    * The administration component (or administrative console) forms a particular component made up
    * of several tools, each of them providing an administrative feature. Each tool in the
    * administration component have the same identifier that refers in fact the administration

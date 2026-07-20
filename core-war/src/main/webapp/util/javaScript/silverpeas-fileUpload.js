@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -756,7 +756,7 @@
         xhr.setRequestHeader('X-COMPONENT-INSTANCE-ID', uploadContext.options.componentInstanceId);
       }
       xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-      xhr.setRequestHeader('X-FULL-PATH', encodeURIComponent(file.name));
+      xhr.setRequestHeader('X-FULL-PATH', file.name.escapeHTML());
       xhr.send(file);
     };
 

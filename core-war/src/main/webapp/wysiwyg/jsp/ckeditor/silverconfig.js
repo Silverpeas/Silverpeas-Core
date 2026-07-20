@@ -6,6 +6,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 CKEDITOR.editorConfig = function( config )
 {
   //config.contentsCss = webContext + '/util/styleSheets/silverpeas-main.css';
+  config.entities = false;
+  config.entities_latin = false;
   config.baseHref = webContext + '/wysiwyg/jsp/';
   config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
@@ -15,6 +17,8 @@ CKEDITOR.editorConfig = function( config )
   config.allowedContent = true;
   config.toolbarCanCollapse = true;
   config.disableNativeSpellChecker = false;
+  config.templates = 'Gallery';
+  config.templates_files = ['/silverpeas/wysiwyg/jsp/gallery/templatesGallery.js'];
   //config.forcePasteAsPlainText = true;
 
   config.stylesSet = [
@@ -57,12 +61,12 @@ CKEDITOR.editorConfig = function( config )
   ];
 
   config.toolbar_calendar = config.toolbar_Default;
-  config.toolbar_forum = config.toolbar_Light;
+  config.toolbar_forum = config.toolbar_Default;
   config.toolbar_blog = config.toolbar_Default;
   config.toolbar_almanach = config.toolbar_Default;
   config.toolbar_quickInfo = config.toolbar_Default;
   config.toolbar_XMLForm = config.toolbar_Default;
-  config.toolbar_questionReply = config.toolbar_Light;
+  config.toolbar_questionReply = config.toolbar_Default;
   config.toolbar_suggestionBox = config.toolbar_Light;
   config.toolbar_userNotification = config.toolbar_Basic;
 

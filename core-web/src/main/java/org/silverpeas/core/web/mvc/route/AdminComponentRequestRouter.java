@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,10 +25,10 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.kernel.util.Mutable;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 
 import static java.util.Optional.ofNullable;
 
@@ -45,12 +45,14 @@ public abstract class AdminComponentRequestRouter<T extends AbstractAdminCompone
     extends ComponentRequestRouter<T> {
   private static final long serialVersionUID = -1845547120139170876L;
 
+  protected static final String ADMIN_TOKEN = "X-ATKN";
+
   /**
    * This method has to be implemented by the admin component request Router it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp", when accessing
    * "/RjobManager/jsp/Main.jsp")
-   * @param componentSC The component Session Controller, build and initialised.
+   * @param componentSC The component Session Controller, build and initialized.
    * @param request The entering request. The request Router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/RjobManager/jsp/Main.jsp?flag=read")

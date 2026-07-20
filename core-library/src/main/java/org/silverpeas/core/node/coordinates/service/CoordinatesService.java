@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,7 +39,6 @@ public interface CoordinatesService {
    * @param fatherIds
    * @param pk
    * @return
-   * @
    *
    */
   public Collection<String> getCoordinatesByFatherIds(List<Integer> fatherIds, CoordinatePK pk);
@@ -57,7 +56,6 @@ public interface CoordinatesService {
    * @param pk
    * @param coordinatePoints
    * @return
-   * @
    *
    */
   public int addCoordinate(CoordinatePK pk, List<CoordinatePoint> coordinatePoints);
@@ -67,7 +65,6 @@ public interface CoordinatesService {
    *
    * @param pk
    * @param coordinates
-   * @
    *
    */
   public void deleteCoordinates(CoordinatePK pk, List<String> coordinates);
@@ -77,7 +74,6 @@ public interface CoordinatesService {
    *
    * @param pk
    * @param coordinatePoints
-   * @
    *
    */
   public void deleteCoordinatesByPoints(CoordinatePK pk, List<String> coordinatePoints);
@@ -88,7 +84,6 @@ public interface CoordinatesService {
    * @param coordinateIds
    * @param pk
    * @return
-   * @
    *
    */
   public List<Coordinate> getCoordinatesByCoordinateIds(List<String> coordinateIds, CoordinatePK pk);
@@ -98,7 +93,6 @@ public interface CoordinatesService {
    *
    * @param pk
    * @param point
-   * @
    *
    */
   public void addPointToAllCoordinates(CoordinatePK pk, CoordinatePoint point);
@@ -109,7 +103,6 @@ public interface CoordinatesService {
    * @param pk
    * @param nodeId
    * @return
-   * @
    *
    */
   public Collection<String> getCoordinateIdsByNodeId(CoordinatePK pk, String nodeId);

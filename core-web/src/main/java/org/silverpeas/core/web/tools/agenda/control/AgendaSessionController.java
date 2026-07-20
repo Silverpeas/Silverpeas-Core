@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -166,7 +166,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @param endDay
    * @param endHour
    * @return
-   * @throws RemoteException
    */
   public String addJournal(String name, String description, String priority, String classification,
       Date startDay, String startHour, Date endDay, String endHour) {
@@ -233,8 +232,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @param startHour
    * @param endDay
    * @param endHour
-   * @throws CalendarException
-   * @throws RemoteException
    *
    */
   public void updateJournal(String id, String name, String description, String priority,
@@ -277,8 +274,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   /**
    * Method declaration
    * @param id
-   * @throws CalendarException
-   * @throws RemoteException
    */
   public void removeJournal(String id) {
     notifyAttendees(id, NotifAction.DELETE);
@@ -289,7 +284,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * Method declaration
    * @param journalId
    * @return
-   * @throws RemoteException
    *
    */
   public JournalHeader getJournalHeader(String journalId) {
@@ -632,7 +626,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   /**
    * Method declaration
    * @return
-   * @throws RemoteException
    *
    */
   public Collection<JournalHeader> getDaySchedulables() {
@@ -649,7 +642,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   /**
    * Method declaration
    * @return
-   * @throws RemoteException
    *
    */
   public Collection<JournalHeader> getMonthSchedulables(Date date) {
@@ -668,7 +660,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   /**
    * Method declaration
    * @return
-   * @throws RemoteException
    *
    */
   public Collection<JournalHeader> getWeekSchedulables() {
@@ -687,7 +678,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   /**
    * Method declaration
    * @return
-   * @throws RemoteException
    *
    */
   public Collection<SchedulableCount> countMonthSchedulables() {
@@ -748,7 +738,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @param userId
    * @param day
    * @return isDayHasEvents
-   * @throws RemoteException
    */
   public boolean isDayHasEvents(String userId, Date day) {
     Collection<JournalHeader> result =
@@ -1198,10 +1187,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Retourne une Collection de UserDetail des utilisateurs selectionnés via le userPanel
-   * @param
    * @return
-   * @throws
-   *
    */
   public Collection<Attendee> getUserSelected() throws AgendaException {
     Selection sel = getSelection();
@@ -1278,8 +1264,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   /**
    * Get user by the userPanel (for viewing another agenda)
    * @return
-   * @throws
-   *
    */
   public String initUserPanelOtherAgenda() {
     String ctx = URLUtil.getApplicationURL();
@@ -1309,7 +1293,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get a UserDetail of selected user in UserPanel
-   * @param
    * @return UserDetail
    */
   public UserDetail getSelectedUser() {
@@ -1388,7 +1371,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @param startDate
    * @param endDate
    * @return ReturnCode (0=ok, 1=Empty)
-   * @throws Exception
    */
   public String exportIcalAgenda(String startDate, String endDate) throws AgendaException {
     return new ExportIcalManager(this).exportIcalAgenda(startDate, endDate);
@@ -1408,7 +1390,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @param loginIcalendar
    * @param pwdIcalendar
    * @return ReturnCode
-   * @throws Exception
    */
   public String synchroIcalAgenda(String urlICalendar, String loginIcalendar, String pwdIcalendar)
       throws MalformedURLException {
@@ -1421,7 +1402,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * Synchronize localResourceLocator agenda with URLIcalendar
    * @param urlICalendar
    * @return ReturnCode
-   * @throws Exception
    */
   public String synchroIcalAgenda(String urlICalendar) throws MalformedURLException {
     return synchroIcalAgenda(urlICalendar, null, null);
@@ -1436,7 +1416,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   /**
    * Get days off defined for this agenda user
    * @return List of HolidayDetail (yyyy/mm/dd, userId)
-   * @throws RemoteException
    */
   public List<String> getHolidaysDatesInDb() {
     return calendarBm.getHolidayDates(getAgendaUserId());
@@ -1462,7 +1441,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @param month
    * @param day
    * @throws RemoteException
-   * @throws ParseException
    */
   public void changeDayOfWeekStatus(String year, String month, String day) throws RemoteException {
 

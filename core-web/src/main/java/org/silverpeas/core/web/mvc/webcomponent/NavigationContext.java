@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -58,7 +58,7 @@ import java.util.List;
  *   navigation step from the navigation stack that is identifier by {@code
  *   RedirectToNavigationStep#value()}</li>
  * </ul>
- * The navigation context can be specified to the path attribute of TAG <view:browseBar .../>.
+ * The navigation context can be specified to the path attribute of TAG {@code <view:browseBar .../>}.
  * In that case, the complete stack of navigation steps is browsed to generate browse bar element
  * parts. {@link NavigationContext.NavigationStep} element with no label defined is ignored in
  * this generation treatment.

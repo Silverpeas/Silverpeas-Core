@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -86,7 +86,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * get all RelationShips ids for current user.
-   * @return :List<String>
+   * @return :{@code List<String>}
    */
   public List<String> getContactsIdsForUser() {
     return relationShipService.getMyContactsIds(Integer.parseInt(getUserId()));
@@ -194,7 +194,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * return my invitation list sent
-   * @return List<InvitationUser>
+   * @return {@code List<InvitationUser>}
    */
   public List<InvitationUser> getAllMyInvitationsSent() {
     List<InvitationUser> invitationUsers = new ArrayList<>();
@@ -209,7 +209,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * return my invitation list Received
-   * @return List<InvitationUser>
+   * @return {@code List<InvitationUser>}
    */
   public List<InvitationUser> getAllMyInvitationsReceived() {
     List<InvitationUser> invitationUsers = new ArrayList<>();

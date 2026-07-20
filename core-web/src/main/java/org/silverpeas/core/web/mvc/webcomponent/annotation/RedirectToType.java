@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,9 +24,9 @@
 package org.silverpeas.core.web.mvc.webcomponent.annotation;
 
 /**
- * Enumeration to define different types of redirection that can be set to {@link com.stratelia
- * .silverpeas.peasCore.servlets.annotation.RedirectTo} annotation.
- * @author: Yohann Chastagnier
+ * Enumeration to define different types of redirection that can be set to
+ * {@link org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo} annotation.
+ * @author Yohann Chastagnier
  */
 public enum RedirectToType {
 

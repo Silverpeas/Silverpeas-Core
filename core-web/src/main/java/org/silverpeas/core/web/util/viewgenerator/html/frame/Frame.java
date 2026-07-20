@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * Frame is an interface to be implemented by a graphic element to print a frame in an html format.
- * @author mraverdy&lloiseau
+ * @author mraverdy&amp;lloiseau
  * @version 1.0
  */
 public interface Frame extends SimpleGraphicElement {
@@ -50,21 +50,18 @@ public interface Frame extends SimpleGraphicElement {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String printBefore();
 
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String printMiddle();
 
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String printAfter();
 }

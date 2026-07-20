@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -134,7 +134,7 @@ public class PublicationCriteria {
 
   /**
    * Additionally filter on the trash node.
-   * @see #onComponentInstanceIds(String...).
+   * @see #onComponentInstanceIds(String...)
    */
   public static PublicationCriteria excludingTrashNodeOnComponentInstanceIds(
       final String... componentInstanceIds) {
@@ -143,7 +143,7 @@ public class PublicationCriteria {
 
   /**
    * Additionally filter on the trash node.
-   * @see #onComponentInstanceIds(Collection).
+   * @see #onComponentInstanceIds(Collection)
    */
   public static PublicationCriteria excludingTrashNodeOnComponentInstanceIds(
       final Collection<String> componentInstanceIds) {
@@ -248,7 +248,7 @@ public class PublicationCriteria {
 
   /**
    * Limit to a given number of result.
-   * @param limit a number of result (<= 0 means no limit).
+   * @param limit a number of result (&lt;= 0 means no limit).
    * @return itself.
    */
   public PublicationCriteria limitTo(int limit) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,7 @@ import org.silverpeas.core.wbe.WbeUser;
 import java.util.StringJoiner;
 
 /**
- * Handles the edition context of a file handled by Drag & Drop Web Editor.
+ * Handles the edition context of a file handled by Drag &amp; Drop Web Editor.
  * @author silveryocha
  */
 public class DragAndDropWebEditorFileEditionContext {

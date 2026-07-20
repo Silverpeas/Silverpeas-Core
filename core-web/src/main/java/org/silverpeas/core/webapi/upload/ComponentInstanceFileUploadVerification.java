@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,7 @@ import java.util.Optional;
 
 /**
  * It is a process implied within the manufacturing of a new file upload.
- * </p>
+ * <p>
  * When a file upload is performed, it is first verified according to its name (the file is not
  * yet on the server), then it is verified a second time after than the upload is completed
  * successfully. In some circumstances, according to the application, some verifications have to be
@@ -42,7 +42,7 @@ import java.util.Optional;
  * qualified by a name that satisfies the following convention <code>[COMPONENT
  * NAME]InstanceFileUploadVerification</code> is looked for by the file upload process and then
  * invoked if it is has been found.
- * </p>
+ * <p>
  * Any application that requires specific actions when a file upload is performed has to implement
  * this interface and the implementation has to be qualified with the @Named annotation by a name
  * satisfying the following convention <code>[COMPONENT NAME]FileUploadVerification</code>. For

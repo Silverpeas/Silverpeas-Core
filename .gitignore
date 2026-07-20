@@ -4,6 +4,7 @@
 *.ipr
 *.iml
 *.merge*
+**/.jqwik-database
 catalog.xml
 target
 core-war/overlays

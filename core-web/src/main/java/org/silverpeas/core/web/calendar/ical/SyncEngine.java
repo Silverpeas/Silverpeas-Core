@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -54,7 +54,6 @@ public final class SyncEngine {
    * this value is optional in feed converter mode
    * @param password Gmail password (in unencrypted, plain text format), this value is optional in
    * feed converter mode
-   * @throws Exception any exception (eg. i/o, invalid param, invalid calendar syntax, etc)
    */
   public final String synchronize(File localCalendar, URL remoteCalendar, String username,
       String password) throws SilverpeasException {

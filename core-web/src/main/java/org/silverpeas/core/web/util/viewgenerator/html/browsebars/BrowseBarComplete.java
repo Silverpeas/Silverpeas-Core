@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -56,8 +56,6 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
   /**
    * Constructor declaration
-   *
-   * @see
    */
   public BrowseBarComplete() {
     super();
@@ -67,7 +65,6 @@ public class BrowseBarComplete extends AbstractBrowseBar {
    * Method declaration
    *
    * @return
-   * @see
    */
   @Override
   public String print() {

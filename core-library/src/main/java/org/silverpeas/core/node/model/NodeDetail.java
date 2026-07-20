@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -592,7 +592,6 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
 
   /**
    * Is the specified user can access this node?
-   * <p>
    * @param user a user in Silverpeas.
    * @return true if the user can access this node, false otherwise.
    */

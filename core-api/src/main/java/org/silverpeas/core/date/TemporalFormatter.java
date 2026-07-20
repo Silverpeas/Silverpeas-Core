@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -74,7 +74,6 @@ public class TemporalFormatter {
    * formatted. Otherwise null is simply returned.
    * @return the {@link java.time.temporal.Temporal} instance decoded from the specified string.
    * According to the date/datetime representation, the following temporal is returned:
-   * </p>
    * <ul>
    * <li>a datetime with an offset indication: returns a {@link OffsetDateTime} instance</li>
    * <li>a datetime with a Zone id indication: returns a {@link ZonedDateTime} instance</li>
@@ -130,7 +129,6 @@ public class TemporalFormatter {
    *   {@code TemporalConverter.toIso8601(LocalDate, true)}
    *   {@code Result: 2018-03-13}
    * </pre>
-   * </p>
    * @param temporal a {@link Temporal} object to convert.
    * @param withSeconds if in the ISO-8601 string the seconds have to be represented (seconds
    * following by nanoseconds can be optional a part according to the ISO 8601 specification).
@@ -173,7 +171,6 @@ public class TemporalFormatter {
    *   {@code TemporalConverter.toIso8601(LocalDate, true)}
    *   {@code Result: 2018-03-13}
    * </pre>
-   * </p>
    * @param withSeconds if in the ISO-8601 string the seconds have to be represented (seconds
    * following by nanoseconds can be optional a part according to the ISO 8601 specification).
    * For displaying, usually the seconds aren't meaningful whereas for the datetime
@@ -207,7 +204,6 @@ public class TemporalFormatter {
    *   {@code TemporalConverter.toLocalized(LocalDate.now(), "fr")}
    *   {@code Result: 13/03/2018}
    * </pre>
-   * </p>
    * @param temporal a {@link Temporal} object to convert.
    * @param language an ISO 632-1 language code.
    * @return a localized string representation of the temporal. The localized representation is
@@ -277,7 +273,6 @@ public class TemporalFormatter {
    *   ZoneId.of("America/Cancun"), "fr")}
    *   {@code Result: 13/03/2018 09:11}
    * </pre>
-   * </p>
    * @param temporal a {@link Temporal} object to convert.
    * @param zoneId the zone id of the renderer or any objects that will handle the localized
    * representation of the temporal.
@@ -336,7 +331,6 @@ public class TemporalFormatter {
    *   ZoneId.of("America/Cancun"), "fr")}
    *   {@code Result: 13/03/2018 09:11}
    * </pre>
-   * </p>
    * @param temporal a {@link Temporal} object to convert.
    * @param zoneId the zone id of the renderer or any objects that will handle the localized
    * representation of the temporal.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,7 @@ package org.silverpeas.core.security.session;
 
 /**
  * This class handles context data to perform a session validation.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class SessionValidationContext {
   private final String sessionKey;

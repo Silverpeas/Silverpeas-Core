@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -54,7 +54,7 @@ public class Item {
    * @param label
    * @param URL
    * @param nbelem
-   * @param info
+   * @param links
    */
   public Item(String label, String URL, int nbelem, Collection<Link> links) {
     this.URL = URL;
@@ -102,7 +102,6 @@ public class Item {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getLabel() {
     return label;
@@ -113,7 +112,6 @@ public class Item {
   /**
    * Method declaration
    * @param label
-   * @see
    */
   public void setLabel(String label) {
     this.label = label;
@@ -124,7 +122,6 @@ public class Item {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getURL() {
     return URL;
@@ -135,7 +132,6 @@ public class Item {
   /**
    * Method declaration
    * @param URL
-   * @see
    */
   public void setURL(String URL) {
     this.URL = URL;
@@ -146,7 +142,6 @@ public class Item {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public int getNbelem() {
     return nbelem;
@@ -157,7 +152,6 @@ public class Item {
   /**
    * Method declaration
    * @param nbelem
-   * @see
    */
   public void setNbelem(int nbelem) {
     this.nbelem = nbelem;
@@ -168,7 +162,6 @@ public class Item {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getInfo() {
     return info;
@@ -179,7 +172,6 @@ public class Item {
   /**
    * Method declaration
    * @param info
-   * @see
    */
   public void setInfo(String info) {
     this.info = info;
@@ -190,7 +182,6 @@ public class Item {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public Collection<Link> getLinks() {
     return links;
@@ -201,7 +192,6 @@ public class Item {
   /**
    * Method declaration
    * @param links
-   * @see
    */
   public void setLinks(Collection<Link> links) {
     this.links = links;

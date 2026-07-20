@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,7 +33,6 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination;
  * This interface is used when pagination of large result sets is needed, mostly as part of the
  * rendering process.
  * @author jpouyadou
- * @version
  */
 public interface WADataPaginator {
   /**
@@ -66,7 +65,7 @@ public interface WADataPaginator {
   /**
    * this method returns the last page of data, or null is there is no such page. T
    * @see #getNextPage
-   * @see #getpreviousPage
+   * @see #getPreviousPage
    */
   public WADataPage getLastPage();
 

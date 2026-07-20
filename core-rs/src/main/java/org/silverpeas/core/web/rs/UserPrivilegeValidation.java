@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -131,7 +131,7 @@ public interface UserPrivilegeValidation {
    *
    * @param request the HTTP request from which the authentication of the caller can be done.
    * @param user the user for whom the authorization has to be validated.
-   * @param publi the publication accessed.
+   * @param publication the publication accessed.
    * @throws WebApplicationException exception if the validation failed.
    */
   void validateUserAuthorizationOnPublication(final HttpServletRequest request, final User user,

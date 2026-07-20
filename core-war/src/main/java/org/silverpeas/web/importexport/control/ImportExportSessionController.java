@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -106,7 +106,7 @@ public class ImportExportSessionController extends AbstractAdminComponentSession
   /**
    * Export PDF attachements of selected publications to a unique PDF. Useful for a single print or
    * download.
-   * @param itemsToExport : List<WAAttributeValuePair> contains ids of elements to export (objectId
+   * @param itemsToExport : {@code List<WAAttributeValuePair>} contains ids of elements to export (objectId
    * and instanceId)
    * @return the report about the PDF export.
    * @throws ImportExportException if the export fails.

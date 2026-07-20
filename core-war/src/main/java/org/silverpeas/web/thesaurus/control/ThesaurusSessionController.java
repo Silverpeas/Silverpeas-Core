@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -143,7 +143,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   // *** Gestion des axes et termes *** /
   /**
    * Retourne la liste des axes (Collection Axis)
-   * @param
    * @return Collection
    * @throws ThesaurusException
    *
@@ -179,9 +178,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   /**
    * Retourne la liste des termes de l'axe courant (getCurrentAxis().getValues())
-   * @param
    * @return Collection
-   * @throws ThesaurusException
    *
    */
   public Collection<Value> getAxisTerms() {
@@ -221,7 +218,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   // *** Gestion des vocabulaires *** //
   /**
    * Retourne la liste des vocabulaires
-   * @param
    * @return Collection
    * @throws ThesaurusException
    *
@@ -311,7 +307,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   /**
    * Supprime un vocabulaire à partir de son id
    * @param idVoca
-   * @return
    * @throws ThesaurusException
    *
    */
@@ -321,8 +316,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   /**
    * Supprime le vocabulaire courant
-   * @param
-   * @return
    * @throws ThesaurusException
    *
    */
@@ -336,7 +329,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   // *** Gestion des synonymes *** //
   /**
    * Retourne la liste des synonymes du vocabulaire et du terme courant
-   * @param
    * @return Collection
    * @throws ThesaurusException
    *
@@ -351,7 +343,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   // *** Gestion des users et groupes affectés aux vocabulaire *** //
   /**
    * Retourne la liste des users ou groupes utilisant le vocabulaire courant (Collection Jargon)
-   * @param
    * @return Collection
    * @throws ThesaurusException
    *
@@ -365,7 +356,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   /**
    * Paramètre le userPannel => tous les users et groupes, users et groupes affectés au voca courant
    * sont sélectionnés
-   * @param
    * @return
    * @throws ThesaurusException
    */
@@ -405,9 +395,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   /**
    * Paramètre le userPannel => tous les users et groupes, aucun sélectionné
-   * @param
    * @return
-   * @throws ThesaurusException
    *
    */
   public String initUserPanel() {
@@ -445,8 +433,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   /**
    * met en session les jargons des users et groupes sélectionnés au travers du userPanel met en
    * session la liste des users et la liste des groupes sélectionnés au travers du userPanel
-   * @param
-   * @return
    * @throws ThesaurusException
    *
    */
@@ -464,8 +450,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   /**
    * met en session les jargons des users et groupes sélectionnés au travers du userPanel
-   * @param
-   * @return
    * @throws ThesaurusException
    *
    */
@@ -541,7 +525,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   /**
    * Enregistre l'affectation au vocabulaire courant de tous les users et groupes sélectionnés au
    * travers du userPanel s'il n'existe pas de conflits Retourne le nombre de conflits
-   * @param
    * @return int
    * @throws ThesaurusException
    */
@@ -596,8 +579,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   /**
    * Enregistre en base les affectations au vocabulaire courant de tous les users et groupes
    * sélectionnés au travers du userPanel
-   * @param
-   * @return
    * @throws ThesaurusException
    *
    */
@@ -610,8 +591,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * Enregistre en base les affectations au vocabulaire courant de tous les users et groupes
    * sélectionnés au travers du userPanel et ... ... n'ayant pas déjà une affectation autre que
    * celle au vocabulaire courant
-   * @param
-   * @return
    * @throws ThesaurusException
    */
   public void createNewJargons() throws ThesaurusException {
@@ -626,7 +605,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * Enregistre en base les affectations au vocabulaire passé en paramètre de tous les users et
    * groupes sélectionnés au travers du userPanel
    * @param idVoca
-   * @return
    * @throws ThesaurusException
    *
    */
@@ -639,7 +617,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * groupes sélectionnés au travers du userPanel et ... ... n'ayant pas déjà une affectation autre
    * que celle au vocabulaire
    * @param idVoca
-   * @return
    * @throws ThesaurusException
    */
   public void createNewJargons(long idVoca) throws ThesaurusException {
@@ -707,8 +684,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   /**
    * Supprime l'affectation de vocabulaire actuel de la liste des users et groupes sélectionnés au
    * travers du userPanel
-   * @param
-   * @return
    *
    */
   public void deleteJargons() throws ThesaurusException {

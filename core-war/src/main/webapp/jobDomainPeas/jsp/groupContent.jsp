@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2024 Silverpeas
+    Copyright (C) 2000 - 2026 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -441,7 +441,7 @@ if (showTabs) {
     <br/><br/>
     <fieldset class="skinFieldset qTipCompliant" id="manageable-spaces">
       <legend><fmt:message key="JDP.user.spaces.manageable"/></legend>
-      <view:arrayPane var="profile-spaces" routingAddress="#" numberLinesPerPage="-1">
+      <view:arrayPane var="profile-spaces" routingAddress="#" numberLinesPerPage="-1" export="true">
         <fmt:message key="GML.name" var="labelSpaceName"/>
         <fmt:message key="GML.description" var="labelSpaceDesc"/>
         <view:arrayColumn title="${labelSpaceName}" sortable="false"/>
@@ -462,7 +462,7 @@ if (showTabs) {
     <br/>
     <fieldset class="skinFieldset qTipCompliant" id="group-profiles">
       <legend><fmt:message key="JDP.user.rights.title"/></legend>
-      <view:arrayPane var="profile-rights" routingAddress="#" numberLinesPerPage="-1">
+      <view:arrayPane var="profile-rights" routingAddress="#" numberLinesPerPage="-1" export="true">
         <fmt:message key="GML.space" var="labelSpace"/>
         <fmt:message key="GML.component" var="labelComponent"/>
         <fmt:message key="GML.type" var="labelType"/>

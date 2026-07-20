@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2024 Silverpeas
+    Copyright (C) 2000 - 2026 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -174,7 +174,9 @@
     $("#dialog-attachment-add").dialog("open");
   }
   function deleteAttachment(id, filename) {
-    $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?' );
+    $("#attachment-delete-warning-message").html('<fmt:message
+    key="attachment.suppressionConfirmation" />'.replace(/([ ?]+)$/, ' <b>' +
+        filename.escapeHTML() + '</b>$1'));
     $("#dialog-attachment-delete").data("id", id).dialog("open");
   }
 

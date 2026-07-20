@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -50,8 +50,7 @@ public abstract class AbstractIcon implements Icon {
   /**
    * Constructor declaration
    * @param iconName
-   * @param altTex
-   * @see
+   * @param altText
    */
   public AbstractIcon(String iconName, String altText) {
     this.iconName = iconName;
@@ -63,7 +62,6 @@ public abstract class AbstractIcon implements Icon {
    * @param iconName
    * @param altText
    * @param action
-   * @see
    */
   public AbstractIcon(String iconName, String altText, String action) {
     this.iconName = iconName;
@@ -77,7 +75,6 @@ public abstract class AbstractIcon implements Icon {
    * @param altText
    * @param action
    * @param imagePath
-   * @see
    */
   public AbstractIcon(String iconName, String altText, String action,
       String imagePath) {
@@ -91,7 +88,6 @@ public abstract class AbstractIcon implements Icon {
    * Method declaration
    * @param iconName
    * @param altText
-   * @see
    */
   @Override
   public void setProperties(String iconName, String altText) {
@@ -104,7 +100,6 @@ public abstract class AbstractIcon implements Icon {
    * @param iconName
    * @param altText
    * @param action
-   * @see
    */
   @Override
   public void setProperties(String iconName, String altText, String action) {
@@ -119,7 +114,6 @@ public abstract class AbstractIcon implements Icon {
    * @param altText
    * @param action
    * @param imagePath
-   * @see
    */
   @Override
   public void setProperties(String iconName, String altText, String action,
@@ -133,7 +127,6 @@ public abstract class AbstractIcon implements Icon {
   /**
    * Method declaration
    * @param s
-   * @see
    */
   @Override
   public void setRootImagePath(String s) {
@@ -147,7 +140,6 @@ public abstract class AbstractIcon implements Icon {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getAction() {
     return this.action;
@@ -156,7 +148,6 @@ public abstract class AbstractIcon implements Icon {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getIconName() {
     return this.iconName;
@@ -165,7 +156,6 @@ public abstract class AbstractIcon implements Icon {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getAltText() {
     return this.altText;
@@ -174,7 +164,6 @@ public abstract class AbstractIcon implements Icon {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getImagePath() {
     return this.imagePath;
@@ -183,7 +172,6 @@ public abstract class AbstractIcon implements Icon {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getRootImagePath() {
     return this.m_RootImagePath;

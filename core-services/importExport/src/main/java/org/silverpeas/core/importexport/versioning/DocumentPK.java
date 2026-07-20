@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,7 +39,6 @@ public class DocumentPK extends WAPrimaryKey implements Serializable {
   /**
    * Constructor declaration
    * @param id
-   * @see
    */
   public DocumentPK(int id) {
     super(String.valueOf(id));
@@ -50,7 +49,6 @@ public class DocumentPK extends WAPrimaryKey implements Serializable {
    * @param id
    * @param spaceId
    * @param componentId
-   * @see
    */
   public DocumentPK(int id, String spaceId, String componentId) {
     super(String.valueOf(id), spaceId, componentId);
@@ -60,7 +58,6 @@ public class DocumentPK extends WAPrimaryKey implements Serializable {
    * Constructor declaration
    * @param id
    * @param componentId
-   * @see
    */
   public DocumentPK(int id, String componentId) {
     super(String.valueOf(id), componentId);
@@ -70,7 +67,6 @@ public class DocumentPK extends WAPrimaryKey implements Serializable {
    * Constructor declaration
    * @param id
    * @param pk
-   * @see
    */
   public DocumentPK(int id, WAPrimaryKey pk) {
     super(String.valueOf(id), pk);

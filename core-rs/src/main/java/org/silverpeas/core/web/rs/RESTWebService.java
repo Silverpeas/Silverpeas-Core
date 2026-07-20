@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -405,7 +405,6 @@ public abstract class RESTWebService implements ProtectedWebResource {
    *   <li>Left value represents the page number. First page is '1'.</li>
    *   <li>Right value represents the number of data per page.</li>
    * </ul>
-   * </p>
    *
    * @param page the page information.
    * @return the initialized {@link PaginationPage}.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -35,6 +35,7 @@ import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.SQLRequester;
+import org.silverpeas.core.test.integration.TestDateTimes;
 import org.silverpeas.core.test.stub.StubbedUserProvider;
 
 import java.time.LocalDate;
@@ -70,7 +71,7 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
   private static final String USER_ID = "1";
 
   private final LocalDate today = LocalDate.now();
-  private final OffsetDateTime now = OffsetDateTime.now();
+  private final OffsetDateTime now = TestDateTimes.now();
 
   @Deployment
   public static Archive<?> createTestArchive() {

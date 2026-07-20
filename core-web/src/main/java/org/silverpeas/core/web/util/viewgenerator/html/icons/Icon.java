@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 /**
-* Copyright (C) 2000 - 2024 Silverpeas
+* Copyright (C) 2000 - 2026 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
 * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -48,7 +48,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
 * @author neysseri
-* @version
 */
 public interface Icon extends SimpleGraphicElement {
 
@@ -57,7 +56,6 @@ public interface Icon extends SimpleGraphicElement {
 *
 * @param iconName
 * @param altText
-* @see
 */
   public void setProperties(String iconName, String altText);
 
@@ -67,7 +65,6 @@ public interface Icon extends SimpleGraphicElement {
 * @param iconName
 * @param altText
 * @param action
-* @see
 */
   public void setProperties(String iconName, String altText, String action);
 
@@ -78,7 +75,6 @@ public interface Icon extends SimpleGraphicElement {
 * @param altText
 * @param action
 * @param imagePath
-* @see
 */
   public void setProperties(String iconName, String altText, String action,
     String imagePath);
@@ -87,7 +83,6 @@ public interface Icon extends SimpleGraphicElement {
 * Method declaration
 *
 * @param s
-* @see
 */
   public void setRootImagePath(String s);
 
@@ -95,7 +90,6 @@ public interface Icon extends SimpleGraphicElement {
 * Method declaration
 *
 * @return
-* @see
 */
   public String print();
 }

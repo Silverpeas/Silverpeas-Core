@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
  *     <li>for minor/major modifications</li>
  *     <li>for user notification sending</li>
  *   </ul>
- * </p>
  */
 public class ContributionBatchManagementContextTag extends AbstractContributionManagementContextTag {
   private static final long serialVersionUID = -3652425520811693463L;

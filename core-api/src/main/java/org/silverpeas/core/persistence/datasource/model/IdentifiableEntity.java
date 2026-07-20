@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,7 @@ import java.io.Serializable;
  * Because an identifiable entity is a business object, it is strongly recommended to expose the
  * business operations related to the entity itself directly within its interface. In the
  * same way, we recommend to perform repository related operations through the entity itself.
- * @author: ebonnet
+ * @author ebonnet
  */
 public interface IdentifiableEntity extends Serializable {
   /**

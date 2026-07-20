@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -57,7 +57,7 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
 
 /**
  * A registry of Web Application Components available in Silverpeas.
- * </p>
+ * <p>
  * The {@code WAComponent} available in Silverpeas are defined by an XML descriptor located in the
  * <code>SILVERPEAS_HOME/xmlcomponents</code> directory. The descriptors that must satisfy the XSD
  * <a href="http://www.silverpeas.org/xsd/component.xsd">component.xsd</a>. The WAComponent
@@ -153,7 +153,7 @@ public class WAComponentRegistry implements Initialization {
   /**
    * Removes from the registry the specified workflow application. Once removed, it will be no
    * longer available among the instantiable applications in Silverpeas.
-   * </p>
+   * <p>
    * If a such workflow application doesn't exist, nothing is done.
    * @param waComponent the WAComponent instance representing a workflow application.
    * @throws SilverpeasRuntimeException if the remove failed.

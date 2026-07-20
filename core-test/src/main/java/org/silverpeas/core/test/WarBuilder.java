@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -396,7 +396,12 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     return f -> !f.getName().startsWith("resteasy")
         && !f.getName().startsWith("jakarta")
         && !f.getName().startsWith("javax")
-        && !f.getName().contains("hibernate");
+        && !f.getName().contains("hibernate")
+        // ical4j is provided by the org.mnode.ical4j WildFly module (declared in the
+        // Dependencies of each module's META-INF/test-MANIFEST.MF) so that its JVM-global
+        // ZoneRulesProvider is registered only once, whatever the number of ICS-parsing ITs
+        // (re)deployed into the same running WildFly.
+        && !f.getName().startsWith("ical4j");
   }
 
   private void logInfo(String info) {

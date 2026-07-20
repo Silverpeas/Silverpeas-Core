@@ -208,7 +208,8 @@ public class LibCoreWarBuilder extends WarBuilder<LibCoreWarBuilder> {
         .addMavenDependencies("org.apache.tika:tika-core")
         .addMavenDependencies("org.apache.tika:tika-parsers-standard-package")
         .addMavenDependencies("com.drewnoakes:metadata-extractor")
-        .addAsResource("org/silverpeas/index/indexing");
+        .addAsResource("org/silverpeas/index/indexing")
+        .addAsResource("org/silverpeas/core/io/media/tika-config.xml");
     return this;
   }
 

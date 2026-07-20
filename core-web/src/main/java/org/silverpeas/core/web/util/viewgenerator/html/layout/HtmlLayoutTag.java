@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,8 +32,8 @@ import jakarta.servlet.jsp.JspException;
 
 /**
  * This tag MUST be the first called from a JSP page providing HTML code.
- * <ul>
  * It MUST includes directly the following ordered children:
+ * <ul>
  * <li>{@link HeadLayoutPartTag}</li>
  * <li>{@link BodyPartLayoutTag}</li>
  * </ul>

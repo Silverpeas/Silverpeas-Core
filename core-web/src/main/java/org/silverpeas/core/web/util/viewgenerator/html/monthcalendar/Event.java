@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -121,7 +121,6 @@ public class Event {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getName() {
     return name;
@@ -130,7 +129,6 @@ public class Event {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public Date getStartDate() {
     return new Date(startDate.getTime());
@@ -139,7 +137,6 @@ public class Event {
   /**
    * Method declaration
    * @param date
-   * @see
    */
   public void setStartDate(Date date) {
     startDate = new Date(date.getTime());
@@ -148,7 +145,6 @@ public class Event {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public Date getEndDate() {
     return new Date(endDate.getTime());
@@ -157,7 +153,6 @@ public class Event {
   /**
    * Method declaration
    * @param date
-   * @see
    */
   public void setEndDate(Date date) {
     endDate = new Date(date.getTime());
@@ -166,7 +161,6 @@ public class Event {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getUrl() {
     return url;
@@ -175,7 +169,6 @@ public class Event {
   /**
    * Method declaration
    * @param p
-   * @see
    */
   public void setPriority(int p) {
     priority = p;
@@ -184,7 +177,6 @@ public class Event {
   /**
    * Method declaration
    * @return
-   * @see
    */
   public int getPriority() {
     return priority;
@@ -274,7 +266,6 @@ public class Event {
 
   /**
    * @author dlesimple
-   * @return
    */
   public void setColor(String color) {
     this.color = color;

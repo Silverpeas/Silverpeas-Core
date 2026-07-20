@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -38,10 +38,10 @@ body {
 
   --color-flashy-principale:#7eb73b;
   --color-text-sur-flashy-principale:#FFF;
-  
+
   --color-flashy-hover:#252525;
   --color-text-sur-flashy-hover:#FFF;
-  
+
   --color-text:#212121;
   --color-text-second-niveau:#626262;
   --color-lien-action:#3975b5;
@@ -56,10 +56,10 @@ body {
   --border-color-bloc-fond-clair: #D6D6D6;
   --border-color-bloc-fond-clair-hover: #9e9e9e;
   --radius-bloc:8px;
-  
+
   --bg-bloc-degrade:linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   --border-bloc-degrade:1px solid #cdcdcd;
-  
+
   --bgColor-dossier:#EAEAEAEA;
   --bgColor-dossier-hover:#ffffdc;
   --radius-dossier:10px;
@@ -74,12 +74,12 @@ body {
   --color-titre:#333;
   --font-size-titre:1.3em;
   --font-weight-titre:700;
-  
+
   --border-color-even:#d4d4d4;
   --border-color-odd:#d4d4d4;
   --bgColor-even:#f9f9f9;
   --bgColor-odd:#eeeeee;
-  
+
   --color-trait-separateur: #DDD;
 
   --color-draft:#FF6F6F;
@@ -88,7 +88,7 @@ body {
 
 
   --width-photo-profil:30px;
-  
+
 
   --bgColor-card:#FFF;
   --border-color-card:#CCC;
@@ -101,7 +101,7 @@ body {
   --border-color-avatar-card:#CECECE;
   --bg-color-avatar-card:#FFF;
 
-  
+
 	--width-avatar-comment:50px;
 	--height-avatar-comment:auto;
 	--shadow-avatar-comment:0px 1px 3px 0px rgba(0, 0, 0, 0.75);
@@ -114,7 +114,7 @@ body {
   --decoration-link-richContent:underline;
   /* LES TAILLES ET PROPORTIONS */
   --right-side-width:33%;
-  
+
   /* Comportement roll hover d'un lien / un titre */
   --roll-hover-background:#FAFAFA; /*fafafa dans blog*/
   --roll-hover-color:#000;
@@ -128,7 +128,7 @@ body {
   --bgColor-hover-etiquette:#5c5c5c;
   --color-text-hover-etiquette:#FFFFFF;
 
-  
+
   /* FILTRE etiquette */
   --radius-filtre:4px;
   /* vérifier lisibilité*/
@@ -139,7 +139,7 @@ body {
   --bgColor-filtre-hover:#adadad;
   --color-text-filtre-hover:#252525;
   --border-color-filtre-hover:#ACACAC;
-  
+
   --bgColor-filtre-select:#5c5c5c;
   --color-text-filtre-select:#FFF;
   --border-color-filtre-select:#5c5c5c;
@@ -168,14 +168,14 @@ body {
   --bgColor-btn-secondaire-hover:linear-gradient(180deg,  rgba(228,228,228,1) 0%, rgba(243,243,243,1) 33%,rgba(250,250,250,1) 100%);
   --border-color-btn-secondaire:#cccccc;
   --color-text-btn-secondaire:#4c4c4c;
-  
+
   --bgColor-action-hover: #EAEAEA;
 
   /* COULEURS DES MESSAGES INFORMATION */
 
   --border-color-im-ok:#9BD94A;
   --bgColor-color-im-ok:#D5FAC5;
-  
+
   --border-color-im-nok:#CE6F6F;
   --bgColor-color-im-nok:#FECBCB;
 
@@ -189,7 +189,7 @@ body {
   /* FORMULAIRE & CO */
   --height-input:22px;
 
-  
+
   font-family: "Verdana", "Arial", sans-serif;
   font-size: var(--font-size);
   margin: 0px;
@@ -831,6 +831,16 @@ Style Utilise par le ViewGenerator
 
 .tableArrayPane > tbody > tr:nth-child(2n+1) > td{
   background-color:#fff
+}
+
+.footerNav:has(.exportlinks) td{
+  height: 3em;
+  border-top:1px dashed #CCC;
+  border-radius: 0;
+}
+
+.footerNav:has(.exportlinks) td .pageNav{
+  border:0;
 }
 
 .arrayPane {
@@ -1588,10 +1598,9 @@ Style Utilise par le ViewGenerator
 
 .footerNav .exportlinks {
   position:absolute;
-  right:1em;
-  top:0;
+  right:0.5em;
+  top:calc( 1.5em - 5px );
   width:inherit;
-  padding:1.5em 0 ;
 }
 
 /*- [Specific export BEGIN ] ---------------- */
@@ -1609,12 +1618,15 @@ Style Utilise par le ViewGenerator
 .exportlinks a:hover {
   color:#5E9F09;
 }
+.exportlinks a {
+  display: inline-block;
+}
 span.export {
-  padding: 0 4px 1px 20px;
-  display: inline;
+  min-height: 16px;
+  padding: 0 4px 0 20px;
   display: inline-block;
   cursor: pointer;
-  margin:0 10px;
+  margin:0;
   font-weight:normal;
 }
 span.csv {
@@ -2193,7 +2205,7 @@ span.csv {
   font-weight: bold;
 }
 
-#browseBar #i18n {  
+#browseBar #i18n {
   position: absolute;
   right: 0;
   top: calc( 50% - 0.5em );
@@ -2380,12 +2392,12 @@ ul#globalResultListDetails {
 .searchGroupTitle {
   background-color: var(--color-flashy-principale);
   line-height: 2em;
-  height: 2em; 
+  height: 2em;
   text-align: center;
 }
 
 #searchGroupTitle span.author:before,
-#searchGroupTitle span.file:before, 
+#searchGroupTitle span.file:before,
 #searchGroupTitle span.component:before{
   display: inline-block;
   content:'';
@@ -2873,7 +2885,7 @@ button.link {
 
 #myProfile #indexAndSearch #index a,
 #publicProfile #indexAndSearch #index a ,
-.sousNavBulle a:not(.sp_button){  
+.sousNavBulle a:not(.sp_button){
   border:1px solid var(--border-color-filtre);
   padding:0.25em 0.5em;
   margin:0 0.5em 0.5em 0;
@@ -3733,7 +3745,7 @@ select.mandatoryField option.emphasis {
 
 .componentInstanceIntro {
   border-left: var(--border-left-size-description) solid var(--border-left-color-description);
-  color:var(--color-text-description); 
+  color:var(--color-text-description);
   padding:0.5em 0.5em 0.5em var(--padding-left-description);
   max-height: 90px;
   overflow: hidden;
@@ -3785,7 +3797,7 @@ table.pdcPositionsField {
   padding: 0;
   width: 100%;
 }
-  
+
 .simple-button {
   border-radius:var(--radius-btn-secondaire);
   border: 1px solid var(--border-color-btn-secondaire);
@@ -5659,8 +5671,11 @@ ul.tagit li.tagit-choice a.tagit-close {
 .ui-dialog .champ-ui-dialog .document-template-input,
 .ui-dialog .champ-ui-dialog input[type=text],
 .ui-dialog .champ-ui-dialog input[type=file],
+.ui-dialog input[type="text"] ,
+.ui-dialog input[type="file"] ,
+.ui-dialog  textarea,
 .ui-dialog .champ-ui-dialog textarea {
-  width: 90%;
+  width: calc(100% - 2em) !important;
 }
 
 .ui-dialog .filedset-ui-dialog legend {

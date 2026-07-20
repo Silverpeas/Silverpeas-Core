@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,7 @@
 
 package org.silverpeas.core.jcr.impl.oak;
 
-import org.apache.jackrabbit.core.fs.local.FileUtil;
+import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.value.BinaryImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -84,7 +84,7 @@ public class SegmentStoreTest extends SecurityTest {
   public static void prepareFileStorage() throws IOException {
     Path jcrHome = Path.of(JCR_HOME);
     if (Files.exists(jcrHome)) {
-      FileUtil.delete(jcrHome.toFile());
+      FileUtils.deleteDirectory(jcrHome.toFile());
     }
     Files.createDirectories(jcrHome);
   }
@@ -93,7 +93,7 @@ public class SegmentStoreTest extends SecurityTest {
   public static void purgeFileStorage() throws IOException {
     Path jcrHome = Path.of(JCR_HOME);
     if (Files.exists(jcrHome)) {
-      FileUtil.delete(jcrHome.toFile());
+      FileUtils.deleteDirectory(jcrHome.toFile());
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,19 +29,14 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.ComponentList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.PropertyList;
-import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Url;
-import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -54,6 +49,9 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -142,14 +140,12 @@ public final class FeedUtilities {
 
     // Create new calendar
     Calendar calendar = new Calendar();
-    PropertyList<Property> props = calendar.getProperties();
-    props.add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
-    props.add(Version.VERSION_2_0);
-    props.add(CalScale.GREGORIAN);
+    calendar.add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
+    calendar.add(ImmutableVersion.VERSION_2_0);
+    calendar.add(ImmutableCalScale.GREGORIAN);
 
     // Convert events
     SyndEntry[] entries = getFeedEntries(feed);
-    ComponentList<CalendarComponent> events = calendar.getComponents();
     java.util.Date now = new java.util.Date();
     SyndEntry entry;
     for (SyndEntry entry1 : entries) {
@@ -166,10 +162,11 @@ public final class FeedUtilities {
       if (date == null) {
         date = now;
       }
-      DateTime startDate = new DateTime(date);
+      OffsetDateTime startDate = date.toInstant().atOffset(ZoneOffset.UTC);
 
       // Calculate iCal end date
-      DateTime endDate = new DateTime(date.getTime() + eventLength);
+      OffsetDateTime endDate =
+          Instant.ofEpochMilli(date.getTime() + eventLength).atOffset(ZoneOffset.UTC);
 
       // Convert feed title to iCal summary
       String title = entry.getTitle();
@@ -181,17 +178,14 @@ public final class FeedUtilities {
       VEvent event = new VEvent(startDate, endDate, title);
 
       // Set event URL
-      PropertyList<Property> args = event.getProperties();
       URI uri = URI.create(url);
-      args.add(new Url(uri));
+      event.add(new Url(uri));
 
       // Generate location by URL
-      Location location = new Location(uri.getHost());
-      args.add(location);
+      event.add(new Location(uri.getHost()));
 
       // Generate UID by URL
-      Uid uid = new Uid(url);
-      args.add(uid);
+      event.add(new Uid(url));
 
       // Convert feed description to iCal description
       SyndContent syndContent = entry.getDescription();
@@ -202,11 +196,10 @@ public final class FeedUtilities {
       if (content == null) {
         content = url;
       }
-      Description desc = new Description(content);
-      args.add(desc);
+      event.add(new Description(content));
 
       // Add converted event
-      events.add(event);
+      calendar.add(event);
     }
 
     return calendar;
