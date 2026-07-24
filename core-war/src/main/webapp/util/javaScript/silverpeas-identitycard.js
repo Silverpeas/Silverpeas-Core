@@ -35,7 +35,7 @@
               promises.push(User.getExtended($userCard.getAttribute('rel')).then(function(user) {
                 const nodeToUpdate = [{
                   element : sp.element.querySelector('.userToZoom', $userCard),
-                  textValue : user.firstName + ' ' + user.lastName
+                  textValue : decodeHtml(user.firstName) + ' ' + decodeHtml(user.lastName)
                 }];
                 for (let key in user) {
                   if (user.hasOwnProperty(key)) {
@@ -50,14 +50,14 @@
                         if (val.hasOwnProperty(keyMore)) {
                           nodeToUpdate.push({
                             element : sp.element.querySelector('.' + keyMore, $userCard),
-                            textValue : val[keyMore]
+                            textValue : decodeHtml(val[keyMore])
                           });
                         }
                       }
                     } else {
                       nodeToUpdate.push({
                         element : sp.element.querySelector('.' + key, $userCard),
-                        textValue : user[key]
+                        textValue : decodeHtml(user[key])
                       });
                     }
                   }
@@ -72,9 +72,9 @@
                       });
                     }
                   } else if (data.element.childNodes.length) {
-                    data.element.childNodes[0].textContent = data.textValue;
+                    data.element.childNodes[0].textContent = decodeHtml(data.textValue);
                   } else {
-                    data.element.innerText = data.textValue;
+                    data.element.innerText = decodeHtml(data.textValue);
                   }
                 });
               }));
@@ -91,3 +91,12 @@
   const __timer = setTimeout(activateIDCards, 1000);
   setTimeout(activateIDCards, 100);
 })();
+function decodeHtml(value) {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = value;
+  return textarea.value;
+}
