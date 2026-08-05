@@ -1,13 +1,13 @@
 {
   "name": "Silverpeas-Core",
-  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
-  "containerEnv": {
-    // Indicates the UID of the user to create by the environment variable USER_UID
-    "USER_UID": "${localEnv:USER_UID}",
-    // Indicates the GID of the user to create by the environment variable USER_GID
-    "USER_GID": "${localEnv:USER_GID}"
+  "build": {
+    "dockerfile": "./Dockerfile"
   },
+  "containerUser": "silveruser",
   "remoteUser": "silveruser",
+  "updateRemoteUserUID": true,
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/silveruser/${localWorkspaceFolderBasename},type=bind",
+  "workspaceFolder": "/home/silveruser/${localWorkspaceFolderBasename}",
   "mounts": [
     {
       "source": "${localEnv:HOME}/.m2",
@@ -18,34 +18,20 @@
       "source": "${localEnv:HOME}/.ssh",
       "target": "/home/silveruser/.ssh",
       "type": "bind"
+    },
+    {
+      "source": "${localEnv:HOME}/.gitconfig",
+      "target": "/home/silveruser/.gitconfig",
+      "type": "bind"
     }
   ],
-  "privileged": true,
-  "features": {
-    // install Java
-    "ghcr.io/devcontainers/features/java:1": {
-      "version": "11",
-      "jdkDistro": "ms",
-      "installMaven": "true",
-      "mavenVersion": "3.9.6"
-    },
-    // install Git
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    // add a user specific for dev
-    "./additional-user": {
-      "username": "silveruser"
-    },
-    // install tools required to run the integration tests
-    "./integration-tests": {
-      "user": "silveruser",
-      "wildfly": "26.1.3",
-      "installsAfter": [
-        "./additional-user"
-      ]
-    }
-  },
   "customizations": {
     "jetbrains": {
+      "settings": {
+        "com.intellij:app:BaseRefactoringSettings.rename_search_in_comments_for_file": false,
+        "com.intellij:app:BaseRefactoringSettings.rename_search_for_text_for_file": false,
+        "com.intellij:app:HttpConfigurable.use_proxy_pac": true
+      },
       "backend": "IntelliJ"
     }
   }
