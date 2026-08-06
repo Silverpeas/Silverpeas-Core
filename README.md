@@ -369,6 +369,8 @@ request, and:
 
 Bugs and improvement requests are tracked in the
 [Silverpeas tracker](https://tracker.silverpeas.org/projects/silverpeas).
+Pull requests are welcome; their title has to start with `Bug #<n>`, `Feature #<n>` or `Support 
+#<n>`, referring to the tracked issue, as the continuous integration relies on it.
 
 ## License
 
