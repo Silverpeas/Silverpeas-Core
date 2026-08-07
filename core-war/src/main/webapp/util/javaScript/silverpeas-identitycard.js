@@ -35,7 +35,7 @@
               promises.push(User.getExtended($userCard.getAttribute('rel')).then(function(user) {
                 const nodeToUpdate = [{
                   element : sp.element.querySelector('.userToZoom', $userCard),
-                  textValue : decodeHtml(user.firstName) + ' ' + decodeHtml(user.lastName)
+                  textValue : user.firstName.unescapeHTML() + ' ' + user.lastName.unescapeHTML()
                 }];
                 for (let key in user) {
                   if (user.hasOwnProperty(key)) {
@@ -50,14 +50,14 @@
                         if (val.hasOwnProperty(keyMore)) {
                           nodeToUpdate.push({
                             element : sp.element.querySelector('.' + keyMore, $userCard),
-                            textValue : decodeHtml(val[keyMore])
+                            textValue : val[keyMore].unescapeHTML()
                           });
                         }
                       }
                     } else {
                       nodeToUpdate.push({
                         element : sp.element.querySelector('.' + key, $userCard),
-                        textValue : decodeHtml(user[key])
+                        textValue : user[key].unescapeHTML()
                       });
                     }
                   }
@@ -72,9 +72,9 @@
                       });
                     }
                   } else if (data.element.childNodes.length) {
-                    data.element.childNodes[0].textContent = decodeHtml(data.textValue);
+                    data.element.childNodes[0].textContent = data.textValue.unescapeHTML();
                   } else {
-                    data.element.innerText = decodeHtml(data.textValue);
+                    data.element.innerText = data.textValue.unescapeHTML();
                   }
                 });
               }));
@@ -91,12 +91,3 @@
   const __timer = setTimeout(activateIDCards, 1000);
   setTimeout(activateIDCards, 100);
 })();
-function decodeHtml(value) {
-  if (typeof value !== 'string') {
-    return value;
-  }
-
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = value;
-  return textarea.value;
-}
