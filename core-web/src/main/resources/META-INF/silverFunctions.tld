@@ -155,6 +155,14 @@
     </function-signature>
   </function>
   <function>
+    <description>Function that display the icon related to the filetype</description>
+    <name>fileIcon</name>
+    <function-class>org.silverpeas.core.util.file.FileRepositoryManager</function-class>
+    <function-signature>
+      java.lang.String getFileIcon(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <description>Function that display the file size in a human readable format.</description>
     <name>humanReadableSize</name>
     <function-class>org.silverpeas.core.util.UnitUtil</function-class>
