@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2026 Silverpeas
+  ~ Copyright (C) 2000 - 2024 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -21,13 +21,12 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
-<%@page import="org.silverpeas.core.util.file.FileUtil" %>
 <%@page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page isELIgnored="false" %>
 
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn"  %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
@@ -37,7 +36,6 @@
                  org.silverpeas.core.util.URLUtil,
                  org.silverpeas.core.util.MultiSilverpeasBundle,
                  org.silverpeas.core.util.file.FileRepositoryManager,
-                 org.silverpeas.core.util.file.FileServerUtils,
                  org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory,
                  org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText,
                  org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
@@ -45,242 +43,221 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="org.apache.commons.lang3.CharEncoding" %>
 <%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument" %>
-<%@page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@page import="java.net.URLEncoder" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
 <%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
-<%@ page import="org.silverpeas.kernel.bundle.SettingBundle" %>
-<%@ page import="jakarta.ws.rs.core.UriBuilder" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="jakarta.ws.rs.core.UriBuilder" %>
+<%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
 <%
   GraphicElementFactory gef =
       (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
   MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
-  SettingBundle attachmentSettings =
-      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  VersioningSessionController versioningSC =
-      (VersioningSessionController) request.getAttribute(URLUtil.CMP_VERSIONINGPEAS);%>
-
-<%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
-
-<view:setBundle basename="org.silverpeas.versioningPeas.multilang.versioning"/>
-<view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" var="attachmentBundle" />
-<fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
-<%
   LocalizationBundle messages =
       ResourceLocator.getLocalizationBundle("org.silverpeas.versioningPeas.multilang.versioning",
           mainSessionCtrl.getFavoriteLanguage());
 
-  SimpleDocument document = (SimpleDocument) request.getAttribute("Document");
+  SimpleDocument theDocument = (SimpleDocument) request.getAttribute("Document");
   List<SimpleDocument> vVersions = (List<SimpleDocument>) request.getAttribute("Versions");
 
-  String componentId = document.getPk().getInstanceId();
-  String id = document.getPk().getId();
-  boolean spinfireViewerEnable = attachmentSettings.getBoolean("SpinfireViewerEnable", false);
+  String componentId = theDocument.getPk().getInstanceId();
+  String id = theDocument.getPk().getId();
   String contentLanguage = (String) request.getAttribute("ContentLanguage");
   boolean fromAlias = (boolean) request.getAttribute("fromAlias");
+
+  UriBuilder uriBuilder = UriBuilder.fromPath("ViewAllVersions")
+      .queryParam("DocId", id)
+      .queryParam("ComponentId", componentId)
+      .queryParam("fromAlias", fromAlias);
+  if (StringUtil.isDefined(contentLanguage)) {
+    uriBuilder = uriBuilder.queryParam("Language", contentLanguage);
+  }
+  String routingAdress = uriBuilder.build().toString();
+
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><fmt:message key="popupTitle"/></title>
-  <view:looknfeel/>
-  <view:includePlugin name="qtip"/>
-</head>
-<body>
-<view:window popup="true">
-  <view:browseBar extraInformations="${requestScope.Document.title}" clickable="false"/>
+<c:set var="routingAdress" value="<%=routingAdress%>"/>
+<c:set var="context" value="${pageContext.request.contextPath}"/>
+<c:set var="document" value="${pageContext.request.getAttribute('Document')}"/>
+<c:set var="versions" value="${pageContext.request.getAttribute('Versions')}"/>
+<jsp:useBean id="versions" type="java.util.List<org.silverpeas.core.contribution.attachment.model.HistorisedDocument>"/>
+<c:set var="language" value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
+<c:set var="mainSessionController" value="<%=mainSessionCtrl%>" />
 
-  <%
-    UriBuilder uriBuilder = UriBuilder.fromPath("ViewAllVersions")
-        .queryParam("DocId", id)
-        .queryParam("ComponentId", componentId)
-        .queryParam("fromAlias", fromAlias);
-    if (StringUtil.isDefined(contentLanguage)) {
-      uriBuilder = uriBuilder.queryParam("Language", contentLanguage);
-    }
-    ArrayPane arrayPane = gef.getArrayPane("List", uriBuilder.build().toString(), request, session);
+<fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
+<view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" var="attachmentBundle" />
+<view:setBundle basename="org.silverpeas.versioningPeas.multilang.versioning" var="versioningBundle"/>
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="GMLBundle" />
 
-// header of the array
-    ArrayColumn arrayColumn_version = arrayPane.addArrayColumn(messages.getString("version"));
-    arrayColumn_version.setSortable(true);
-    ArrayColumn arrayColumn_mimeType =
-        arrayPane.addArrayColumn(messages.getString("GML.attachments"));
-    arrayColumn_mimeType.setSortable(false);
-    ArrayColumn arrayColumn_titre = arrayPane.addArrayColumn(messages.getString("GML.title"));
-    arrayColumn_mimeType.setSortable(false);
-    ArrayColumn arrayColumn_infos = arrayPane.addArrayColumn(messages.getString("description"));
-    arrayColumn_mimeType.setSortable(false);
-    ArrayColumn arrayColumn_creatorLabel = arrayPane.addArrayColumn(messages.getString("creator"));
-    arrayColumn_creatorLabel.setSortable(false);
-    ArrayColumn arrayColumn_date = arrayPane.addArrayColumn(messages.getString("date"));
-    arrayColumn_date.setSortable(false);
-    ArrayColumn arrayColumn_status = arrayPane.addArrayColumn(messages.getString("comments"));
-    arrayColumn_status.setSortable(false);
+<view:sp-page>
+  <view:sp-head-part>
+    <view:includePlugin name="qtip"/>
+    <view:includePlugin name="iframeajaxtransport"/>
+    <view:includePlugin name="attachment"/>
 
-    ArrayLine arrayLine = null; // declare line object of the array
-
-    for (SimpleDocument publicVersion : vVersions) {
-      boolean canUserDownloadFile =
-          publicVersion.isDownloadAllowedForRolesFrom(mainSessionCtrl.getCurrentUserDetail());
-
-      arrayLine = arrayPane.addArrayLine(); // set a new line
-      String url = URLUtil.getApplicationURL() + publicVersion.getAttachmentURL();
-
-      String spinFire = "";
-      if (publicVersion.isContentSpinfire() && spinfireViewerEnable &&
-          canUserDownloadFile) {
-        spinFire = "<br><div id=\"switchView\" name=\"switchView\" style=\"display: none\">";
-        spinFire += "<a title=\"Viewer SpinFire 3D\"href=\"#\" onClick=\"changeView3d(" +
-            publicVersion.getPk().getId() +
-            ")\"><img name= \"iconeView\" border=0 src=\"/util/icons/masque.gif\"></a>";
-        spinFire += "</div>";
-        spinFire += "<div id=\"" + publicVersion.getPk().getId() + "\" style=\"display: none\">";
-        spinFire += "<OBJECT classid=\"CLSID:A31CCCB0-46A8-11D3-A726-005004B35102\"";
-        spinFire += "width=\"300\" height=\"200\" id=\"XV\">";
-        spinFire += "<PARAM NAME=\"ModelName\" VALUE=\"" + url + "\">";
-        spinFire += "</OBJECT>";
-        spinFire += "</div>";
-      }
-      String permalink = "";
-      if (canUserDownloadFile) {
-        permalink =
-            " <a href=\"" + publicVersion.getUniversalURL() + "\">" +
-                "<img src=\"" + URLUtil.getApplicationURL() + "/util/icons/link.gif\"" +
-                "border=\"0\" valign=\"absmiddle\" alt=\"" +
-                messages.getString("versioning.CopyLink") + "\" title=\"" +
-                messages.getString("versioning.CopyLink") + "\" target=\"_blank\"></a> ";
-      }
-      StringBuilder sb = new StringBuilder();
-      sb.append(publicVersion.getVersion());
-      if (canUserDownloadFile) {
-        sb.insert(0, "<a href=\"" + url + "\" target=\"_blank\">");
-        sb.append("</a>");
-      }
-      sb.append(permalink).append(spinFire);
-      final String sortMajorPart = StringUtil.leftPad(String.valueOf(publicVersion.getMajorVersion()), 5, "0");
-      final String sortMinorPart = StringUtil.leftPad(String.valueOf(publicVersion.getMinorVersion()), 5, "0");
-      sb.insert(0, "<!--" + sortMajorPart + "." + sortMinorPart + "-->");
-      arrayLine.addArrayCellText(sb.toString());
-      sb.setLength(0);
-      sb.append("<img src=\"")
-          .append(FileRepositoryManager.getFileIcon(publicVersion.getFilename()))
-          .append("\" border=\"0\" title=\"").append(WebEncodeHelper.javaStringToHtmlString(publicVersion.getFilename())).append("\"/> ")
-          .append(publicVersion.getFilename());
-      if (canUserDownloadFile) {
-        sb.insert(0, "<a href=\"" + url + "\" target=\"_blank\">");
-        sb.append("</a>");
-      }
-      arrayLine.addArrayCellText(sb.toString());
-
-      if (StringUtil.isDefined(publicVersion.getTitle())) {
-        arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(publicVersion.getTitle()));
-      } else {
-        arrayLine.addArrayCellText("");
-      }
-      if (StringUtil.isDefined(publicVersion.getDescription())) {
-        arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(publicVersion.getDescription()));
-      } else {
-        arrayLine.addArrayCellText("");
-      }
-      UserDetail lastModifier = null;
-      if (StringUtil.isDefined(publicVersion.getUpdatedBy())) {
-        lastModifier = UserDetail.getById(publicVersion.getUpdatedBy());
-      } else if (StringUtil.isDefined(publicVersion.getCreatedBy())) {
-        lastModifier = UserDetail.getById(publicVersion.getCreatedBy());
-      }
-      if (lastModifier != null) {
-        arrayLine.addArrayCellText(lastModifier.getDisplayedName());
-      } else {
-        arrayLine.addArrayCellText("????");
-      }
-      ArrayCellText cell =
-          arrayLine.addArrayCellText(resources.getOutputDateAndHour(publicVersion.getLastUpdateDate()));
-
-      String xtraData = "";
-      if (StringUtil.isDefined(publicVersion.getXmlFormId())) {
-        String xmlURL = URLUtil.getApplicationURL() + "/RformTemplate/jsp/View?ObjectId=" +
-            publicVersion.getId() + "&ComponentId=" + componentId +
-            "&ObjectType=Attachment&XMLFormName=" +
-            URLEncoder.encode(publicVersion.getXmlFormId(), CharEncoding.UTF_8) +
-            "&ObjectLanguage=" + contentLanguage;
-        xtraData = "<a rel=\"" + xmlURL + "\" href=\"#\" title=\"" + document.getFilename() + " " +
-            publicVersion.getMajorVersion() + "." + publicVersion.getMinorVersion() +
-            "\"><img src=\"" + URLUtil.getApplicationURL() +
-            "/util/icons/info.gif\" border=\"0\"></a> ";
-      }
-      if (StringUtil.isDefined(publicVersion.getComment())) {
-        arrayLine.addArrayCellText(xtraData + WebEncodeHelper.javaStringToHtmlString(publicVersion.getComment()));
-      } else {
-        arrayLine.addArrayCellText("");
-      }
-    }
-
-    out.println(arrayPane.print());%>
-</view:window>
-</body>
-</html>
-<% if (spinfireViewerEnable) { %>
-<script type="text/javascript">
-  if (navigator.appName == 'Microsoft Internet Explorer') {
-    for (i = 0; document.getElementsByName("switchView")[i].style.display == 'none'; i++)
-      document.getElementsByName("switchView")[i].style.display = '';
-  }
-  function changeView3d(objectId) {
-    if (document.getElementById(objectId).style.display == 'none') {
-      document.getElementById(objectId).style.display = '';
-      iconeView.src = '/util/icons/visible.gif';
-    } else {
-      document.getElementById(objectId).style.display = 'none';
-      iconeView.src = '/util/icons/masque.gif';
-    }
-  }
-</script>
-<% } %>
-<script type="text/javascript">
-  // Create the tooltips only on document load
-  $(document).ready(function() {
-    // Use the each() method to gain access to each elements attributes
-    $('a[rel]').each(function() {
-      $(this).qtip({
-        content : {
-          // Set the text to an image HTML string with the correct src URL to the loading image you want to use
-          text : '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
-          ajax: {
-            url : $(this).attr('rel') // Use the rel attribute of each element for the url to load
-          },
-          title : {
-            text : '<fmt:message key="attachment.xmlForm.ToolTip" bundle="${attachmentBundle}"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
-            button : '<fmt:message key="GML.close" />' // Show a close link in the title
-          }
-        },
-        position : {
-          adjust : {
-            method : "flip flip"
-          },
-          at : "left center",
-          my : "right center",
-          viewport : $(window) // Keep the tooltip on-screen at all times
-        },
-        show : {
-          solo : true,
-          event : "click"
-        },
-        hide : {
-          event : "unfocus"
-        },
-        style : {
-          tip : true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
-          width : 570,
-          classes : "qtip-shadow qtip-light"
-        }
+    <script type="text/javascript">
+      // Create the tooltips only on document load
+      $(document).ready(function() {
+        // Use the each() method to gain access to each elements attributes
+        $('a[rel]').each(function() {
+          $(this).qtip({
+            content : {
+              // Set the text to an image HTML string with the correct src URL to the loading image you want to use
+              text : '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
+              ajax: {
+                url : $(this).attr('rel') // Use the rel attribute of each element for the url to load
+              },
+              title : {
+                text : '<fmt:message key="attachment.xmlForm.ToolTip" bundle="${attachmentBundle}"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+                button : '<fmt:message key="GML.close" />' // Show a close link in the title
+              }
+            },
+            position : {
+              adjust : {
+                method : "flip flip"
+              },
+              at : "left center",
+              my : "right center",
+              viewport : $(window) // Keep the tooltip on-screen at all times
+            },
+            show : {
+              solo : true,
+              event : "click"
+            },
+            hide : {
+              event : "unfocus"
+            },
+            style : {
+              tip : true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
+              width : 570,
+              classes : "qtip-shadow qtip-light"
+            }
+          });
+        });
       });
-    });
-  });
-</script>
+
+      function preview(target, attachmentId) {
+        $(target).preview("document", {
+          documentId: attachmentId,
+          documentType: 'attachment',
+          lang: '${language}',
+          versioned: true
+        });
+        return false;
+      }
+
+      function view(target, attachmentId) {
+        $(target).view("document", {
+          documentId: attachmentId,
+          documentType: 'attachment',
+          lang: '${language}'
+        });
+        return false;
+      }
+
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <view:window popup="true">
+      <view:browseBar extraInformations="${requestScope.Document.title}" clickable="false"/>
+
+      <fmt:message bundle="${GMLBundle}" key="GML.attachments" var="gmlAttachments"/>
+      <fmt:message bundle="${GMLBundle}" key="GML.title" var="gmlTitle"/>
+      <fmt:message bundle="${attachmentBundle}" key="CopyLink" var="copyLinkLabel"/>
+      <fmt:message bundle="${versioningBundle}" key="version" var="versionLabel"/>
+      <fmt:message bundle="${versioningBundle}" key="description" var="descriptionLabel"/>
+      <fmt:message bundle="${versioningBundle}" key="creator" var="creatorLabel"/>
+      <fmt:message bundle="${versioningBundle}" key="date" var="dateLabel"/>
+      <fmt:message bundle="${versioningBundle}" key="comments" var="commentsLabel"/>
+
+      <view:arrayPane var="List" routingAddress="${routingAdress}" export="true">
+        <view:arrayColumn width="90" title="${versionLabel}" compareOn="${publicVersion -> publicVersion.majorVersion}"/>
+        <view:arrayColumn title="${gmlAttachments}" sortable="false"/>
+        <view:arrayColumn title="${gmlTitle}" sortable="false"/>
+        <view:arrayColumn title="${descriptionLabel}" sortable="false"/>
+        <view:arrayColumn title="${creatorLabel}" sortable="true"/>
+        <view:arrayColumn title="${dateLabel}" sortable="false"/>
+        <view:arrayColumn title="${commentsLabel}" sortable="false"/>
+
+        <view:arrayLines var="publicVersion" items="${versions}">
+          <view:arrayLine id="line">
+            <c:set var="canUserDownloadFile" value="${publicVersion.isDownloadAllowedForRolesFrom(mainSessionController.currentUserDetail)}"/>
+            <c:set var="url" value="${context}${publicVersion.attachmentURL}"/>
+            <c:if test="${canUserDownloadFile}">
+              <c:set var="imgLink" value='<img src="${context}/util/icons/link.gif" alt="${copyLinkLabel}" title="${copyLinkLabel}"'/>
+              <c:set var="permalink" value='<a href="${publicVersion.universalURL}" target="_blank">${imgLink}"></a>'/>
+            </c:if>
+            <view:arrayCellText>
+              ${publicVersion.version}
+              <c:if test="${canUserDownloadFile}">
+                ${permalink}
+              </c:if>
+              <c:set var="versionId" value="${publicVersion.id}"/>
+              <c:if test="${silfn:isPreviewable(publicVersion.attachmentPath)}">
+                -${versionId}-
+                <img onclick="preview(this,'${versionId}')" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message bundle="${GMLBundle}" key="GML.preview.file"/>" title="<fmt:message bundle="${GMLBundle}" key="GML.preview.file" />"/>
+              </c:if>
+              <c:if test="${silfn:isViewable(publicVersion.attachmentPath)}">
+                <img onclick="view(this, '${versionId}');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message bundle="${GMLBundle}" key="GML.view.file"/>" title="<fmt:message bundle="${GMLBundle}" key="GML.view.file" />"/>
+              </c:if>
+            </view:arrayCellText>
+
+            <view:arrayCellText>
+              <c:choose>
+                <c:when test="${canUserDownloadFile}">
+                  <img src="${silfn:fileIcon(publicVersion.filename)}">
+                  <a href='<c:out value="${publicVersion.universalURL}" />' target="_blank"><c:out value="${publicVersion.filename}" /></a>
+                </c:when>
+                <c:otherwise>
+                  <c:set var="forbiddenDownloadClass" value="forbidden-download"/>
+                  <fmt:message key="GML.download.forbidden" var="forbiddenDownloadHelp"/>
+                  <c:out value="${publicVersion.filename}" />
+                </c:otherwise>
+              </c:choose>
+            </view:arrayCellText>
+
+            <view:arrayCellText>
+              ${publicVersion.title}
+            </view:arrayCellText>
+
+            <view:arrayCellText>
+              <view:encodeHtmlParagraph string="${publicVersion.description}" />
+            </view:arrayCellText>
+
+            <view:arrayCellText>
+              <c:choose>
+                <c:when test="${silfn:isDefined(publicVersion.updatedBy)}">
+                  <c:set var="lastUpdater" value="${UserDetail.getById(publicVersion.updatedBy).displayedName}"/>
+                </c:when>
+                <c:otherwise>
+                  <c:set var="lastUpdater" value=""/>
+                </c:otherwise>
+              </c:choose>
+              <c:choose>
+                <c:when test="${silfn:isDefined(lastUpdater)}">
+                  ${lastUpdater}
+                </c:when>
+                <c:otherwise>
+                  <c:out value="????"/>
+                </c:otherwise>
+              </c:choose>
+            </view:arrayCellText>
+
+            <view:arrayCellText>
+              ${silfn:formatDateAndHour(publicVersion.lastUpdateDate,language)}
+            </view:arrayCellText>
+
+            <view:arrayCellText>
+              <view:encodeHtmlParagraph string="${publicVersion.comment}" />
+            </view:arrayCellText>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+    </view:window>
+  </view:sp-body-part>
+</view:sp-page>
