@@ -187,7 +187,7 @@
             <view:arrayCellText>
               <c:choose>
                 <c:when test="${canUserDownloadFile}">
-                  <img src="${silfn:fileIcon(publicVersion.filename)}">
+                  <img src="${silfn:fileIcon(publicVersion.filename)}" alt="">
                   <a href='<c:out value="${publicVersion.universalURL}" />' target="_blank"><c:out value="${publicVersion.filename}" /></a>
                 </c:when>
                 <c:otherwise>
