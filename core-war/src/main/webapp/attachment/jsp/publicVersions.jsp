@@ -62,6 +62,7 @@
       ResourceLocator.getLocalizationBundle("org.silverpeas.versioningPeas.multilang.versioning",
           mainSessionCtrl.getFavoriteLanguage());
 
+
   SimpleDocument theDocument = (SimpleDocument) request.getAttribute("Document");
   List<SimpleDocument> vVersions = (List<SimpleDocument>) request.getAttribute("Versions");
 
@@ -92,6 +93,7 @@
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" var="attachmentBundle" />
 <view:setBundle basename="org.silverpeas.versioningPeas.multilang.versioning" var="versioningBundle"/>
+<view:settings settings="org.silverpeas.versioningPeas.settings.versioningSettings" key="Pagination.NbItemPerPage" var="nbItemPerPage"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="GMLBundle" />
 
 <view:sp-page>
@@ -143,7 +145,7 @@
 
       function preview(target, attachmentId) {
         $(target).preview("document", {
-          documentId: attachmentId,
+          documentId: encodeURIComponent(attachmentId),
           documentType: 'attachment',
           lang: '${language}',
           versioned: true
@@ -153,7 +155,7 @@
 
       function view(target, attachmentId) {
         $(target).view("document", {
-          documentId: attachmentId,
+          documentId: encodeURIComponent(attachmentId),
           documentType: 'attachment',
           lang: '${language}'
         });
@@ -175,8 +177,8 @@
       <fmt:message bundle="${versioningBundle}" key="date" var="dateLabel"/>
       <fmt:message bundle="${versioningBundle}" key="comments" var="commentsLabel"/>
 
-      <view:arrayPane var="List" routingAddress="${routingAdress}" export="true">
-        <view:arrayColumn width="90" title="${versionLabel}" compareOn="${publicVersion -> publicVersion.majorVersion}"/>
+      <view:arrayPane var="List" routingAddress="${routingAdress}" export="true" numberLinesPerPage="${nbItemPerPage}">
+        <view:arrayColumn title="${versionLabel}" compareOn="${publicVersion -> publicVersion.majorVersion}"/>
         <view:arrayColumn title="${gmlAttachments}" sortable="false"/>
         <view:arrayColumn title="${gmlTitle}" sortable="false"/>
         <view:arrayColumn title="${descriptionLabel}" sortable="false"/>
@@ -199,7 +201,6 @@
               </c:if>
               <c:set var="versionId" value="${publicVersion.id}"/>
               <c:if test="${silfn:isPreviewable(publicVersion.attachmentPath)}">
-                -${versionId}-
                 <img onclick="preview(this,'${versionId}')" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message bundle="${GMLBundle}" key="GML.preview.file"/>" title="<fmt:message bundle="${GMLBundle}" key="GML.preview.file" />"/>
               </c:if>
               <c:if test="${silfn:isViewable(publicVersion.attachmentPath)}">
