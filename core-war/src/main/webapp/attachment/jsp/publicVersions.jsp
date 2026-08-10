@@ -31,40 +31,16 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
-<%@ page import="
-				 org.silverpeas.core.web.mvc.controller.MainSessionController,
-                 org.silverpeas.core.util.URLUtil,
-                 org.silverpeas.core.util.MultiSilverpeasBundle,
-                 org.silverpeas.core.util.file.FileRepositoryManager,
-                 org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory,
-                 org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText,
-                 org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
-<%@ page import="org.apache.commons.lang3.CharEncoding" %>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument" %>
-<%@page import="java.net.URLEncoder" %>
-<%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
-<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator" %>
-<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="jakarta.ws.rs.core.UriBuilder" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
 <%
-  GraphicElementFactory gef =
-      (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-  MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  LocalizationBundle messages =
-      ResourceLocator.getLocalizationBundle("org.silverpeas.versioningPeas.multilang.versioning",
-          mainSessionCtrl.getFavoriteLanguage());
-
-
   SimpleDocument theDocument = (SimpleDocument) request.getAttribute("Document");
-  List<SimpleDocument> vVersions = (List<SimpleDocument>) request.getAttribute("Versions");
 
   String componentId = theDocument.getPk().getInstanceId();
   String id = theDocument.getPk().getId();
