@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2024 Silverpeas
+  ~ Copyright (C) 2000 - 2026 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -177,10 +177,10 @@
               </c:if>
               <c:set var="versionId" value="${publicVersion.id}"/>
               <c:if test="${silfn:isPreviewable(publicVersion.attachmentPath)}">
-                <img onclick="preview(this,'${versionId}')" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message bundle="${GMLBundle}" key="GML.preview.file"/>" title="<fmt:message bundle="${GMLBundle}" key="GML.preview.file" />"/>
+                <a href="javascript:preview(this,'${versionId}')"><img class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message bundle="${GMLBundle}" key="GML.preview.file"/>" title="<fmt:message bundle="${GMLBundle}" key="GML.preview.file" />"/></a>
               </c:if>
               <c:if test="${silfn:isViewable(publicVersion.attachmentPath)}">
-                <img onclick="view(this, '${versionId}');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message bundle="${GMLBundle}" key="GML.view.file"/>" title="<fmt:message bundle="${GMLBundle}" key="GML.view.file" />"/>
+                <a href="javascript:view(this, '${versionId}')"><img class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message bundle="${GMLBundle}" key="GML.view.file"/>" title="<fmt:message bundle="${GMLBundle}" key="GML.view.file" />"/></a>
               </c:if>
             </view:arrayCellText>
 
