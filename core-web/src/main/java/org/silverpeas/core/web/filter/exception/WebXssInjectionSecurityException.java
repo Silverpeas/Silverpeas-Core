@@ -23,14 +23,21 @@
  */
 package org.silverpeas.core.web.filter.exception;
 
+import java.io.Serial;
+
 /**
  * User: Yohann Chastagnier
  * Date: 05/03/14
  */
 public class WebXssInjectionSecurityException extends WebSecurityException {
+  @Serial
   private static final long serialVersionUID = 1565523880339634671L;
 
   public WebXssInjectionSecurityException() {
     super("Attempt of a XSS injection detected at ");
+  }
+
+  public WebXssInjectionSecurityException(String vulnValue) {
+    super("Attempt of a XSS injection detected with '" + vulnValue + "' at ");
   }
 }
