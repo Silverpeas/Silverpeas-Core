@@ -326,14 +326,14 @@ public class MassiveWebSecurityFilter implements Filter {
       }
 
       if (patternMatcherFound != null) {
-        throw new WebSqlInjectionSecurityException();
+        throw new WebSqlInjectionSecurityException(patternMatcherFound.group(0));
       }
     }
 
     // XSS injections?
-    if (xssInjectionToVerify &&
-        findPatternMatcherFromString(XSS_PATTERNS, value, false) != null) {
-      throw new WebXssInjectionSecurityException();
+    if (xssInjectionToVerify && (patternMatcherFound =
+        findPatternMatcherFromString(XSS_PATTERNS, value, false)) != null) {
+      throw new WebXssInjectionSecurityException(patternMatcherFound.group(0));
     }
   }
 
