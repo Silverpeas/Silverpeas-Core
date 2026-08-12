@@ -74,7 +74,8 @@
   }
 </script>
 <div id="dynamic-container">
-  <view:arrayPane var="readingControl" routingAddress="ReadingControl?fromArrayPane=true" numberLinesPerPage="25">
+  <view:arrayPane var="readingControl" routingAddress="ReadingControl?fromArrayPane=true"
+                  export="true" numberLinesPerPage="25">
     <view:arrayColumn title="${userLabel}" compareOn="${h -> h.user}"/>
     <view:arrayColumn title="${lastAccessLabel}" compareOn="${h ->h.lastAccess}"/>
     <view:arrayColumn title="${nbAccessLabel}" compareOn="${h ->h.nbAccess}"/>
