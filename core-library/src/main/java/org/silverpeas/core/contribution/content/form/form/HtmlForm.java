@@ -182,6 +182,7 @@ public class HtmlForm extends AbstractForm {
     // Search for end tag
     int endPos = currentLine.indexOf(TAG_END);
     StringBuilder tagContent = new StringBuilder();
+    tagContent.append(currentLine);
     while (endPos == -1) {
       String newLine = m_HtmlFile.readLine();
       if (newLine == null) {
