@@ -40,6 +40,7 @@ public class SyntheseResource {
   private String location;
   private String url;
   private String linkLabel;
+  private String thumbnail;
   private List<AttachmentLink> attachmentLinks = null;
   private final List<SyntheseResourceNotification> notifications = new ArrayList<>();
 
@@ -57,6 +58,14 @@ public class SyntheseResource {
 
   public void setDescription(final String description) {
     this.description = description == null ? null : Encode.forHtml(description);
+  }
+
+  public String getThumbnail() {
+    return thumbnail;
+  }
+
+  public void setThumbnail(String thumbnail) {
+    this.thumbnail = thumbnail;
   }
 
   public String getLocation() {

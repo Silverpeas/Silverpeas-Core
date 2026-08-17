@@ -415,6 +415,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
       syntheseResource.setUrl(computeURL(synthesis.getUserId(), syntheseResource.getUrl()));
     }
     syntheseResource.setLinkLabel(getResourceLinkLabel(resource));
+    syntheseResource.setThumbnail(resource.getResourceThumbnail());
 
     if (isDefined(resource.getAttachmentTargetId()) &&
         isDefined(resource.getComponentInstanceId())) {

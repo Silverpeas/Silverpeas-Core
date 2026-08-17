@@ -23,11 +23,18 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.directive;
 
+import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
 import org.silverpeas.kernel.util.StringUtil;
 
-import static org.owasp.html.Sanitizers.*;
+import java.util.regex.Pattern;
+
+import static org.owasp.html.Sanitizers.BLOCKS;
+import static org.owasp.html.Sanitizers.FORMATTING;
+import static org.owasp.html.Sanitizers.LINKS;
+import static org.owasp.html.Sanitizers.STYLES;
+import static org.owasp.html.Sanitizers.TABLES;
 
 /**
  * Sanitize the WYSIWYG content in order to keep only:
@@ -42,6 +49,37 @@ import static org.owasp.html.Sanitizers.*;
  * @author silveryocha
  */
 public class SanitizeDirective implements WysiwygContentTransformerDirective {
+
+  /**
+   * The raster image types accepted as an inlined image. SVG is deliberately excluded as such a
+   * document can carry scripts.
+   */
+  private static final Pattern INLINED_IMAGE = Pattern.compile(
+      "(?i)^data:image/(?:png|jpeg|gif|webp);base64,[a-z0-9+/]+={0,2}$");
+
+  /**
+   * The source of an image is either a regular HTTP(S) URL or an image directly inlined as a
+   * base64 encoded data URI. The latter is used by the user notifications to carry the thumbnail
+   * of a contribution, as the notification content is built once, whatever the channel by which
+   * it will be then distributed.
+   * <p>
+   * This is a replacement of {@link org.owasp.html.Sanitizers#IMAGES} which allows only the HTTP
+   * and HTTPS protocols. The protocol guard and the pattern below are combined by the policy
+   * builder as a conjunction: a source has to satisfy both of them.
+   * </p>
+   */
+  private static final PolicyFactory IMAGES = new HtmlPolicyBuilder()
+      .allowUrlProtocols("http", "https", "data")
+      .allowElements("img")
+      .allowAttributes("alt").onElements("img")
+      .allowAttributes("src")
+          .matching((elementName, attributeName, value) ->
+              value.startsWith("data:") && !INLINED_IMAGE.matcher(value).matches() ? null : value)
+          .onElements("img")
+      .allowAttributes("border", "height", "width")
+          .matching(Pattern.compile("^\\d+$"))
+          .onElements("img")
+      .toFactory();
 
   private static final PolicyFactory POLICY_FACTORY =
       FORMATTING.and(BLOCKS).and(LINKS).and(STYLES).and(TABLES).and(IMAGES);

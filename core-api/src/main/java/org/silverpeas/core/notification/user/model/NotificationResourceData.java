@@ -29,6 +29,8 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.silverpeas.core.util.JSONCodec.decode;
@@ -49,6 +51,7 @@ import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 public class NotificationResourceData
     extends BasicJpaEntity<NotificationResourceData, UniqueLongIdentifier> {
   public static final String LOCATION_SEPARATOR = "@#@#@";
+  @Serial
   private static final long serialVersionUID = -6720839869471833683L;
   private static final String EMPTY_JSON_DETAILS = "{}";
   private static final String TITLE_KEY = "title";
@@ -72,6 +75,9 @@ public class NotificationResourceData
 
   @Column(name = "resourceUrl")
   private String resourceUrl;
+
+  @Column
+  private String resourceThumbnail;
 
   @Column(name = "componentInstanceId", nullable = false)
   private String componentInstanceId;
@@ -119,6 +125,7 @@ public class NotificationResourceData
     getDetails().merge(notificationResourceData.transientDetails);
     this.componentInstanceId = notificationResourceData.componentInstanceId;
     this.attachmentTargetId = notificationResourceData.attachmentTargetId;
+    this.resourceThumbnail = notificationResourceData.resourceThumbnail;
   }
 
   @Override
@@ -138,6 +145,9 @@ public class NotificationResourceData
     }
     if (isBlank(resourceUrl)) {
       resourceUrl = null;
+    }
+    if (isBlank(resourceThumbnail)) {
+      resourceThumbnail = null;
     }
     final String labels = transientDetails != null ? encode(transientDetails) : null;
     details = defaultStringIfNotDefined(labels, null);
@@ -212,6 +222,14 @@ public class NotificationResourceData
 
   public void setResourceUrl(final String resourceUrl) {
     this.resourceUrl = resourceUrl;
+  }
+
+  public String getResourceThumbnail() {
+    return resourceThumbnail;
+  }
+
+  public void setResourceThumbnail(String resourceThumbnail) {
+    this.resourceThumbnail = resourceThumbnail;
   }
 
   public String getComponentInstanceId() {

@@ -31,7 +31,6 @@ import org.silverpeas.core.persistence.datasource.repository.SimpleQueryCriteria
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A dynamic builder of a JPQL query.
@@ -55,7 +54,7 @@ public class JPQLQueryBuilder implements SilvermailCriteriaProcessor {
 
   @Override
   public void endProcessing() {
-    if (orderBy != null && orderBy.length() > 0) {
+    if (orderBy != null && !orderBy.isEmpty()) {
       jpqlCriteria.clause().add(orderBy.toString());
     }
     done = true;
@@ -79,9 +78,11 @@ public class JPQLQueryBuilder implements SilvermailCriteriaProcessor {
   public SilvermailCriteriaProcessor processByIds(final List<Long> ids) {
     if (!done) {
       List<UniqueLongIdentifier> convertedIds =
-          ids.stream().map(i -> new UniqueLongIdentifier().setFromString(String.valueOf(i)))
-              .collect(Collectors.toList());
-      jpqlCriteria.clause().add(conjonction).add("id = :ids").parameters().add("ids", convertedIds);
+          ids.stream()
+              .map(i -> new UniqueLongIdentifier().setFromString(String.valueOf(i)))
+              .toList();
+      jpqlCriteria.clause().add(conjonction).add("id in (:ids)").parameters().add("ids",
+          convertedIds);
       conjonction = null;
     }
     return this;

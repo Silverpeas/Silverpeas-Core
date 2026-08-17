@@ -30,10 +30,17 @@ import org.silverpeas.kernel.test.UnitTest;
 import org.silverpeas.core.util.Charsets;
 
 import jakarta.activation.DataHandler;
+import jakarta.mail.BodyPart;
 import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,6 +60,10 @@ public class MailContentTest {
           "maximum-scale=1\">" +
           "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">" +
           "</head><body>%s</body></html>";
+  /** A 1x1 pixel PNG image. */
+  private static final String PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAA" +
+      "DUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+  private static final String PNG_DATA_URI = "data:image/png;base64," + PNG_BASE64;
 
   @Test
   public void emptyContent() throws Exception {
@@ -106,6 +117,60 @@ public class MailContentTest {
   }
 
   @Test
+  public void stringContentWithAnImageInlinedAsADataUri() throws Exception {
+    MailContent mailContent = MailContent.of(
+        "before<img src=\"" + PNG_DATA_URI + "\" alt=\"a thumbnail\"/>after");
+
+    final Multipart related = applyAndCaptureContentOf(mailContent);
+
+    // the images are referenced by the HTML content, hence a multipart/related content
+    assertThat(related.getContentType(), containsString("multipart/related"));
+    assertThat(related.getCount(), is(2));
+
+    // the root part is the very same alternative than the one built without any inlined image
+    final Multipart alternative = (Multipart) related.getBodyPart(0).getContent();
+    assertThat(alternative.getContentType(), containsString("multipart/alternative"));
+    assertThat(alternative.getCount(), is(2));
+    final String html = alternative.getBodyPart(1).getDataHandler().getContent().toString();
+    assertThat(html, containsString("src=\"cid:inlined-image-0\""));
+    assertThat(html, not(containsString("base64")));
+
+    // the image itself is carried by its own part, referred to by its content identifier
+    final BodyPart image = related.getBodyPart(1);
+    assertThat(image.getHeader("Content-ID"), is(arrayContaining("<inlined-image-0>")));
+    assertThat(image.getDisposition(), is(MimeBodyPart.INLINE));
+    assertThat(image.getDataHandler().getContentType(), is("image/png"));
+    assertThat(toBytes(image), is(Base64.getDecoder().decode(PNG_BASE64)));
+  }
+
+  @Test
+  public void stringContentWithTheSameImageInlinedSeveralTimes() throws Exception {
+    MailContent mailContent = MailContent.of("<img src=\"" + PNG_DATA_URI + "\" alt=\"one\"/>" +
+        "<img src=\"" + PNG_DATA_URI + "\" alt=\"two\"/>");
+
+    final Multipart related = applyAndCaptureContentOf(mailContent);
+
+    // the image is carried only once, both occurrences referring the same part
+    assertThat(related.getCount(), is(2));
+    final Multipart alternative = (Multipart) related.getBodyPart(0).getContent();
+    final String html = alternative.getBodyPart(1).getDataHandler().getContent().toString();
+    assertThat(StringUtils.countMatches(html, "src=\"cid:inlined-image-0\""), is(2));
+  }
+
+  @Test
+  public void stringContentWithADataUriThatIsNotAnImage() throws Exception {
+    final String dataUri = "data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==";
+    MailContent mailContent = MailContent.of("<img src=\"" + dataUri + "\" alt=\"nope\"/>");
+
+    final Multipart multipart = applyAndCaptureContentOf(mailContent);
+
+    // nothing has been extracted, the content stays a plain alternative one
+    assertThat(multipart.getContentType(), containsString("multipart/alternative"));
+    final String html = multipart.getBodyPart(1).getDataHandler().getContent().toString();
+    assertThat(html, containsString(dataUri));
+  }
+
+  @Test
   public void multipartContentHtmlIndicated() throws Exception {
     Multipart multipart = new MimeMultipart();
     MailContent mailContent = MailContent.of(multipart);
@@ -124,6 +189,22 @@ public class MailContentTest {
   /*
   ASSERTION METHODS
    */
+
+  private Multipart applyAndCaptureContentOf(final MailContent mailContent) throws Exception {
+    MimeMessage mimeMessageMock = mock(MimeMessage.class);
+    mailContent.applyOn(mimeMessageMock);
+    ArgumentCaptor<Multipart> multipart = ArgumentCaptor.forClass(Multipart.class);
+    verify(mimeMessageMock).setContent(multipart.capture());
+    return multipart.getValue();
+  }
+
+  private byte[] toBytes(final BodyPart bodyPart) throws Exception {
+    final ByteArrayOutputStream output = new ByteArrayOutputStream();
+    try (final InputStream input = bodyPart.getDataHandler().getInputStream()) {
+      input.transferTo(output);
+    }
+    return output.toByteArray();
+  }
 
   private void assertContentAsOtherType(final MailContent mailContent)
       throws Exception {

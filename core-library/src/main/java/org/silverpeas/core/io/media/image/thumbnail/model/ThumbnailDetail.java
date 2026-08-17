@@ -30,6 +30,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 
+import java.io.Serial;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -42,6 +43,7 @@ public class ThumbnailDetail implements Thumbnail {
       "org.silverpeas.publication.publicationSettings");
   public static final int THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE = 1;
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private final ThumbnailReference reference;
@@ -79,8 +81,9 @@ public class ThumbnailDetail implements Thumbnail {
   }
 
   /**
-   * Returns the image file name of thumbnail by priority.
-   * If the crop file name exists it is returned, otherwise the original file name is returned.
+   * Returns the image file name of thumbnail by priority. If the crop file name exists it is
+   * returned, otherwise the original file name is returned.
+   *
    * @return a file name as string.
    */
   @Override
