@@ -24,8 +24,11 @@
 package org.silverpeas.core.notification.user.builder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.model.Thumbnail;
+import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
@@ -36,12 +39,16 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.Pair;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -95,10 +102,10 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
 
   /**
    * The title is by default defined by the property <code>GML.st.notification.subject</code> in the
-   * Silverpeas's general localization bundle. The property is valued by a StringTemplate pattern,
-   * so that information about the resource concerned by the notification can be passed.
+   * Silverpeas general localization bundle. The property is valued by a StringTemplate pattern, so
+   * that information about the resource concerned by the notification can be passed.
    * <p>
-   * It can be overridden by specifying a another property in the bundle returned by
+   * It can be overridden by specifying another property in the bundle returned by
    * {@link #getBundle()} and under the name given by {@link #getBundleSubjectKey()}. By this way,
    * each component in Silverpeas has a way to customize the title of the notifications for the
    * resources handled by itself.
@@ -109,7 +116,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * method, please override instead the {@link #getTitle(String)} method.
    * </p>
    *
-   * @return the title of the notification. By default, the title is specify globally for all
+   * @return the title of the notification. By default, the title is specified globally for all
    * notifications by the <code>GML.st.notification.subject</code> property.
    */
   @Override
@@ -123,7 +130,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * another implementation.
    *
    * @param language the ISO-631 code of a language.
-   * @return the title of the notification. By default, the title is specify globally for all
+   * @return the title of the notification. By default, the title is specified globally for all
    * notifications by the <code>GML.st.notification.subject</code> property.
    * @see #getTitle()
    */
@@ -154,9 +161,8 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   protected final void performBuild(final T resource) {
     templates.clear();
     perform(resource);
-    SilverpeasTemplate template;
+    String thumbnail = computeInlineThumbnail(resource);
     final NotificationResourceData nRDBase = initializeNotificationResourceData();
-    NotificationResourceData resourceData;
     for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
       //set link url and link label
       final String linkUrl;
@@ -173,18 +179,46 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
         getNotificationMetaData().setLink(link, curLanguage);
       }
 
-      template = createTemplate();
+      NotificationResourceData resourceData = new NotificationResourceData(nRDBase);
+      SilverpeasTemplate template = createTemplate();
       template.setAttribute("silverpeasURL", linkUrl);
       template.setAttribute("resource", resource);
+      resourceData.setCurrentLanguage(curLanguage);
+      resourceData.setLinkLabel(linkLabel);
+      if (thumbnail != null) {
+        template.setAttribute("thumbnail", thumbnail);
+        resourceData.setResourceThumbnail(thumbnail);
+      }
+
       templates.put(curLanguage, template);
 
       performTemplateData(curLanguage, resource, template);
-      resourceData = new NotificationResourceData(nRDBase);
-      resourceData.setCurrentLanguage(curLanguage);
-      resourceData.setLinkLabel(linkLabel);
       performNotificationResource(curLanguage, resource, resourceData);
       getNotificationMetaData().setNotificationResourceData(curLanguage, resourceData);
     }
+  }
+
+  private String computeInlineThumbnail(T resource) {
+    if (resource instanceof WithThumbnail resWithThumbnail) {
+      Thumbnail thumbnail = resWithThumbnail.getThumbnail();
+      if (thumbnail != null) {
+        var path = thumbnail.getPath();
+        if (path.isPresent()) {
+          var sourceType = "data:" + thumbnail.getMimeType() + ";base64,";
+          try {
+            var image = Files.readAllBytes(path.get());
+            return sourceType + Base64.getEncoder().encodeToString(image);
+          } catch (IOException e) {
+            var identifiableRes = (SilverpeasResource) resource;
+            SilverLogger.getLogger(this).warn("The thumbnail of {0} cannot be loaded for " +
+                    " user notification: {1}", identifiableRes.getIdentifier().asString() ,
+                e.getMessage());
+            return null;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   @Override

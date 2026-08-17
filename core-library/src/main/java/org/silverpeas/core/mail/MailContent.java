@@ -23,25 +23,30 @@
  */
 package org.silverpeas.core.mail;
 
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.Part;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 import net.htmlparser.jericho.Renderer;
 import net.htmlparser.jericho.Source;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.body;
 import org.apache.ecs.xhtml.head;
 import org.apache.ecs.xhtml.html;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.activation.DataHandler;
-import jakarta.activation.FileDataSource;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Multipart;
-import jakarta.mail.internet.MimeBodyPart;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
-import jakarta.mail.util.ByteArrayDataSource;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Yohann Chastagnier
@@ -52,6 +57,14 @@ public class MailContent {
   private static final String DEFAULT_CONTENT_TYPE = "text/html; charset=\"UTF-8\"";
   private static final String TEXT_CONTENT_TYPE = "text/plain; charset=\"UTF-8\"";
   private static final String ALTERNATIVE_SUBTYPE = "alternative";
+  private static final String RELATED_SUBTYPE = "related";
+  /**
+   * An image directly inlined into the HTML content as a base64 encoded data URI. The user
+   * notifications use such URIs to carry the thumbnail of a contribution, as their content is
+   * built once, whatever the channel by which they will be then distributed.
+   */
+  private static final Pattern INLINED_IMAGE =
+      Pattern.compile("(?i)src=([\"'])(data:(image/[a-z0-9.+-]+);base64,([a-z0-9+/=\\s]+))\\1");
   private static final String META_CHARSET = "<meta charset=\"utf-8\">";
   private static final String META_VIEWPORT = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">";
   private static final String META_HTTP_EQUIV = "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">";
@@ -109,7 +122,7 @@ public class MailContent {
   /**
    * Normalizes the given HTML content in order to be sent safely by mail infrastructure.
    * <p>
-   *   If HTML TAG container does not exists, then the normalization is performed.
+   *   If HTML TAG container does not exist, then the normalization is performed.
    *   HTML, HEAD and BODY are created and all declared styles in BODY are moved to HEAD part in
    *   order to get as most as possible compatibility email reader.
    * </p>
@@ -184,7 +197,7 @@ public class MailContent {
   }
 
   /**
-   * Indicates if the content is an html one.
+   * Indicates if the content is a html one.
    * @return true if content is an HTML one, false otherwise.
    */
   boolean isHtml() {
@@ -225,19 +238,23 @@ public class MailContent {
    * @throws MessagingException if an error occurs with the message
    */
   public void applyOn(MimeMessage message) throws MessagingException {
-    if (getValue() instanceof String) {
-      final String contentAsString = (String) getValue();
+    if (getValue() instanceof String contentAsString) {
       if (!isHtml() && !contentAsString.toLowerCase().contains("<html>")) {
         // Content as simple text if no <html> TAG is detected.
         message.setText(contentAsString, Charsets.UTF_8.name());
       } else if (getContentType().toLowerCase().contains("html")) {
-        final String htmlContent = normalizeHtmlContent(contentAsString);
-        final Multipart multipart = new MimeMultipart(ALTERNATIVE_SUBTYPE);
-        content = multipart;
-        multipart.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
+        // the images inlined as data URIs are turned into referenced body parts as most of the
+        // mail readers refuse to render a data URI
+        final InlinedImages images =
+            InlinedImages.extractFrom(normalizeHtmlContent(contentAsString));
+        final String htmlContent = images.getHtmlContent();
+        final Multipart alternative = new MimeMultipart(ALTERNATIVE_SUBTYPE);
+        alternative.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
         final MimeBodyPart htmlPart = initMimeBodyPartFromContent(htmlContent, getContentType());
-        multipart.addBodyPart(htmlPart);
         // last body part is the preferred alternative
+        alternative.addBodyPart(htmlPart);
+        final Multipart multipart = images.isEmpty() ? alternative : images.relate(alternative);
+        content = multipart;
         message.setContent(multipart);
       } else {
         message.setContent(contentAsString, getContentType());
@@ -250,6 +267,106 @@ public class MailContent {
   @Override
   public String toString() {
     return getValue().toString();
+  }
+
+  /**
+   * The images that were inlined into an HTML content as base64 encoded data URIs and that have
+   * been extracted to be carried by their own body part, each of them being then referred by the
+   * HTML content through a {@code cid:} URI.
+   * <p>
+   * Data URIs are rejected by most of the mail readers (Gmail and Outlook among others), whereas
+   * the referenced body parts of a {@code multipart/related} content are the standard and widely
+   * supported way to inline an image into a mail.
+   * </p>
+   */
+  private static class InlinedImages {
+
+    private final String htmlContent;
+    private final List<MimeBodyPart> bodyParts;
+
+    private InlinedImages(final String htmlContent, final List<MimeBodyPart> bodyParts) {
+      this.htmlContent = htmlContent;
+      this.bodyParts = bodyParts;
+    }
+
+    /**
+     * Extracts from the given HTML content all the images inlined as base64 encoded data URIs.
+     * An image whose content can not be decoded is left as such into the HTML content.
+     * @param htmlContent an HTML content.
+     * @return the images that have been extracted, with the HTML content in which each of them
+     * is now referred by a {@code cid:} URI.
+     */
+    static InlinedImages extractFrom(final String htmlContent) {
+      final List<MimeBodyPart> parts = new ArrayList<>();
+      final Map<String, String> cids = new HashMap<>();
+      final Matcher matcher = INLINED_IMAGE.matcher(htmlContent);
+      final StringBuilder transformed = new StringBuilder();
+      while (matcher.find()) {
+        final String dataUri = matcher.group(2);
+        final String cid =
+            cids.computeIfAbsent(dataUri, u -> newBodyPart(matcher.group(3), matcher.group(4),
+                parts));
+        final String quote = matcher.group(1);
+        final String replacement =
+            cid == null ? matcher.group() : "src=" + quote + "cid:" + cid + quote;
+        matcher.appendReplacement(transformed, Matcher.quoteReplacement(replacement));
+      }
+      matcher.appendTail(transformed);
+      return new InlinedImages(transformed.toString(), parts);
+    }
+
+    /**
+     * Creates the body part carrying the given base64 encoded image and appends it to the given
+     * parts.
+     * @param mimeType the MIME type of the image.
+     * @param base64Content the content of the image, base64 encoded.
+     * @param parts the body parts to complete.
+     * @return the identifier by which the created body part has to be referred, or null if the
+     * image can not be decoded.
+     */
+    private static String newBodyPart(final String mimeType, final String base64Content,
+        final List<MimeBodyPart> parts) {
+      try {
+        final byte[] image = Base64.getMimeDecoder().decode(base64Content);
+        final String cid = "inlined-image-" + parts.size();
+        final MimeBodyPart bodyPart = new MimeBodyPart();
+        bodyPart.setDataHandler(new DataHandler(new ByteArrayDataSource(image, mimeType)));
+        bodyPart.setHeader("Content-ID", "<" + cid + ">");
+        bodyPart.setDisposition(Part.INLINE);
+        parts.add(bodyPart);
+        return cid;
+      } catch (IllegalArgumentException | MessagingException e) {
+        SilverLogger.getLogger(MailContent.class)
+            .warn("Cannot inline an image of type {0} into a mail: {1}", mimeType, e.getMessage());
+        return null;
+      }
+    }
+
+    boolean isEmpty() {
+      return bodyParts.isEmpty();
+    }
+
+    String getHtmlContent() {
+      return htmlContent;
+    }
+
+    /**
+     * Relates the images to the given content by wrapping both of them into a
+     * {@code multipart/related} content, the given content coming first as being the root one.
+     * @param mainContent the content referring the images.
+     * @return a {@code multipart/related} content.
+     * @throws MessagingException if the content can not be built.
+     */
+    Multipart relate(final Multipart mainContent) throws MessagingException {
+      final Multipart related = new MimeMultipart(RELATED_SUBTYPE);
+      final MimeBodyPart mainPart = new MimeBodyPart();
+      mainPart.setContent(mainContent);
+      related.addBodyPart(mainPart);
+      for (final MimeBodyPart bodyPart : bodyParts) {
+        related.addBodyPart(bodyPart);
+      }
+      return related;
+    }
   }
 
   /**

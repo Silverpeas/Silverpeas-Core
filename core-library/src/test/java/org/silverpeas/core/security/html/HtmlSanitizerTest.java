@@ -96,4 +96,44 @@ class HtmlSanitizerTest {
         is("test<a href=\"http://server/users/1\" rel=\"noopener noreferrer nofollow\" " +
             "target=\"_blank\"></a>"));
   }
+
+  /**
+   * The user notifications carry the thumbnail of a contribution as an image directly inlined
+   * into their content, and this whatever the channel by which they are then distributed.
+   */
+  @Test
+  void sanitizeInlinedImage() {
+    String img = "<img src=\"data:image/png;base64,iVBORw0KGgo=\" alt=\"a thumbnail\" " +
+        "height=\"60\"/>AFTER";
+    assertThat(service.sanitize(img),
+        is("<img src=\"data:image/png;base64,iVBORw0KGgo&#61;\" alt=\"a thumbnail\" " +
+            "height=\"60\" />AFTER"));
+    img = "<img src=\"data:image/jpeg;base64,/9j+AA==\" alt=\"a thumbnail\"/>AFTER";
+    assertThat(service.sanitize(img),
+        is("<img src=\"data:image/jpeg;base64,/9j&#43;AA&#61;&#61;\" alt=\"a thumbnail\" />AFTER"));
+  }
+
+  /**
+   * Only raster images can be inlined. An SVG document can carry scripts, and a data URI must not
+   * be a way to smuggle any other type of content.
+   */
+  @Test
+  void sanitizeInlinedContentThatIsNotARasterImage() {
+    String img = "<img src=\"data:image/svg+xml;base64,PHN2Zz4=\" alt=\"exploit\"/>AFTER";
+    assertThat(service.sanitize(img), is("<img alt=\"exploit\" />AFTER"));
+    img = "<img src=\"data:text/html;base64,PHNjcmlwdD4=\" alt=\"exploit\"/>AFTER";
+    assertThat(service.sanitize(img), is("<img alt=\"exploit\" />AFTER"));
+    // with no attribute left to keep, the element itself is dropped
+    img = "<img src=\"data:image/png;base64,AAA<script>window.alert(1)</script>\"/>AFTER";
+    assertThat(service.sanitize(img), is("AFTER"));
+  }
+
+  /**
+   * Inlining is allowed for the images only: a link must not be able to carry its own content.
+   */
+  @Test
+  void sanitizeInlinedContentOfALink() {
+    final String link = "<a href=\"data:text/html;base64,PHNjcmlwdD4=\">exploit</a>";
+    assertThat(service.sanitize(link), is("exploit"));
+  }
 }
