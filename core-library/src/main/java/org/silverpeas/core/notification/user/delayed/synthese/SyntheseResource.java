@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.user.delayed.synthese;
 
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.notification.user.AttachmentLink;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,6 +67,15 @@ public class SyntheseResource {
 
   public void setThumbnail(String thumbnail) {
     this.thumbnail = thumbnail;
+  }
+
+  /**
+   * Gets the height, in pixels, at which the thumbnail has to be rendered. It is the very height
+   * at which the image has been resized when the notification was built.
+   * @return a height in pixels.
+   */
+  public int getThumbnailHeight() {
+    return NotificationManagerSettings.getNotificationThumbnailHeight();
   }
 
   public String getLocation() {

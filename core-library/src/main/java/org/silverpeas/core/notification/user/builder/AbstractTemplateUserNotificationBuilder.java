@@ -30,9 +30,12 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -45,6 +48,7 @@ import org.silverpeas.kernel.util.Pair;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
@@ -187,6 +191,8 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       resourceData.setLinkLabel(linkLabel);
       if (thumbnail != null) {
         template.setAttribute("thumbnail", thumbnail);
+        template.setAttribute("thumbnailHeight",
+            NotificationManagerSettings.getNotificationThumbnailHeight());
         resourceData.setResourceThumbnail(thumbnail);
       }
 
@@ -206,19 +212,52 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
         if (path.isPresent()) {
           var sourceType = "data:" + thumbnail.getMimeType() + ";base64,";
           try {
-            var image = Files.readAllBytes(path.get());
+            var resized = resize(path.get());
+            var weight = Files.size(resized);
+            var maxWeight = NotificationManagerSettings.getNotificationThumbnailMaxWeight();
+            if (weight > maxWeight) {
+              SilverLogger.getLogger(this).warn("The thumbnail of {0} is too heavy to be carried " +
+                      "by a user notification: {1} bytes for a maximum of {2}",
+                  identifierOf(resource), weight, maxWeight);
+              return null;
+            }
+            var image = Files.readAllBytes(resized);
             return sourceType + Base64.getEncoder().encodeToString(image);
           } catch (IOException e) {
-            var identifiableRes = (SilverpeasResource) resource;
             SilverLogger.getLogger(this).warn("The thumbnail of {0} cannot be loaded for " +
-                    " user notification: {1}", identifiableRes.getIdentifier().asString() ,
-                e.getMessage());
+                    " user notification: {1}", identifierOf(resource), e.getMessage());
             return null;
           }
         }
       }
     }
     return null;
+  }
+
+  /**
+   * Resizes the image at the given path at the height expected by the templates of the
+   * notifications. The resizing is delegated to the
+   * {@link org.silverpeas.core.io.file.ImageResizingProcessor} whose the convention is to encode
+   * the expected dimension as the name of the directory containing the image; the processor caches
+   * its result so that an image is actually resized only once, and again only if it is modified
+   * later.
+   * @param thumbnail the path of the image of a thumbnail.
+   * @return the path of the resized image, or the path of the given image itself if no resizing
+   * occurred. The latter happens when the image tools aren't available on the platform; the weight
+   * of the image is then the only guard against carrying a full sized image.
+   */
+  private static Path resize(final Path thumbnail) {
+    final Path expected = thumbnail.getParent()
+        .resolve("x" + NotificationManagerSettings.getNotificationThumbnailHeight())
+        .resolve(thumbnail.getFileName());
+    final SilverpeasFile resized = SilverpeasFileProvider.getFile(expected.toString());
+    return resized.exists() ? resized.toPath() : thumbnail;
+  }
+
+  private static String identifierOf(final Object resource) {
+    return resource instanceof SilverpeasResource silverpeasResource
+        ? silverpeasResource.getIdentifier().asString()
+        : resource.getClass().getSimpleName();
   }
 
   @Override
