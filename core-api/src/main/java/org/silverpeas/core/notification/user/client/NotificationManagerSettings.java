@@ -51,6 +51,8 @@ public class NotificationManagerSettings {
   private static final int DEFAULT_SSE_JOB_TRIGGER = 45;
   private static final int DEFAULT_SSE_ASYNC_TIMEOUT = 180;
   private static final int DEFAULT_SSE_STORE_EVENT_LIFETIME = 40;
+  private static final int DEFAULT_THUMBNAIL_HEIGHT = 30;
+  private static final int DEFAULT_THUMBNAIL_MAX_WEIGHT = 100 * 1024;
   private static final int MS = 1000;
   static final SettingBundle DEFAULT_SETTINGS = ResourceLocator.getSettingBundle(
       "org.silverpeas.notificationManager.settings.notificationManagerSettings");
@@ -338,6 +340,31 @@ public class NotificationManagerSettings {
    */
   public static boolean isComponentInstanceLabelInNotificationSource() {
     return getSettings().getBoolean("notification.source.componentLabel");
+  }
+
+  /**
+   * Gets the height, in pixels, at which the thumbnail of a contribution has to be resized before
+   * being inlined into the content of a notification. The width is computed so that the ratio of
+   * the image is kept.
+   * <p>
+   * This height is also passed to the StringTemplates of the notifications, as the
+   * {@code thumbnailHeight} variable, so that the image is rendered at the very height at which it
+   * has been resized.
+   * </p>
+   * @return a height in pixels.
+   */
+  public static int getNotificationThumbnailHeight() {
+    return getSettings().getInteger("notification.thumbnail.height", DEFAULT_THUMBNAIL_HEIGHT);
+  }
+
+  /**
+   * Gets the maximum weight, in bytes, of a thumbnail to be inlined into the content of a
+   * notification. Any thumbnail heavier than this limit is simply not carried by the notification.
+   * @return a weight in bytes.
+   */
+  public static int getNotificationThumbnailMaxWeight() {
+    return getSettings().getInteger("notification.thumbnail.maxWeight",
+        DEFAULT_THUMBNAIL_MAX_WEIGHT);
   }
 
   /**
