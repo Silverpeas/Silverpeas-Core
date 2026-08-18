@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar.ical4j;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.data.FoldingWriter;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TextList;
 import net.fortuna.ical4j.model.TimeZone;
@@ -81,6 +82,12 @@ public class ICal4JExporter implements ICalendarExporter {
 
   private static final String MAIL_TO = "mailto:";
   private static final String HIDDEN_DATA = "";
+  /**
+   * The length at which the lines of the produced iCalendar text are folded. It is set explicitly
+   * because, otherwise, iCal4J deduces it from the Outlook compatibility hint, and this hint is a
+   * process wide setting that is enabled by {@link ICal4JImporter} for its own parsing needs.
+   */
+  private static final int FOLD_LENGTH = FoldingWriter.REDUCED_FOLD_LENGTH;
 
   @Inject
   private ICal4JDateCodec iCal4JDateCodec;
@@ -131,7 +138,7 @@ public class ICal4JExporter implements ICalendarExporter {
         });
       }
 
-      CalendarOutputter writer = new CalendarOutputter();
+      CalendarOutputter writer = new CalendarOutputter(true, FOLD_LENGTH);
       writer.output(iCalCalendar, descriptor.getOutputStream());
     } catch (Exception e) {
       throw new ExportException("The export of the events in iCal formatted text has failed!",
