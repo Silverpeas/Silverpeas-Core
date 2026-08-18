@@ -43,39 +43,38 @@ public final class I18NHelper {
   public static final String HTML_SELECT_OBJECT_NAME = "I18NLanguage";
   public static final String HTML_HIDDEN_REMOVED_TRANSLATION_MODE = "TranslationRemoveIt";
 
-  private final I18n i18n = I18n.get();
-
-  private static I18NHelper instance;
-
-  private static I18NHelper getInstance() {
-    if (instance == null) {
-      instance = new I18NHelper();
-    }
-    return instance;
+  /**
+   * Gets the l10n settings of the platform. The bean is deliberately not memoized here: doing so
+   * would pin, for the whole lifetime of the JVM, the very first instance that was registered into
+   * the bean container.
+   * @return the {@link I18n} managed bean.
+   */
+  private static I18n i18n() {
+    return I18n.get();
   }
 
   public static int getNumberOfLanguages() {
-    return getInstance().i18n.getSupportedLanguageCodes().size();
+    return i18n().getSupportedLanguageCodes().size();
   }
 
   public static String checkLanguage(String language) {
-    return getInstance().i18n.checkLanguage(language);
+    return i18n().checkLanguage(language);
   }
 
   public static boolean isDefaultLanguage(String language) {
-    return getInstance().i18n.isDefaultLanguage(language);
+    return i18n().isDefaultLanguage(language);
   }
 
   public static boolean isI18nContentActivated() {
-    return getInstance().i18n.isEnabled();
+    return i18n().isEnabled();
   }
 
-  private List<String> getSupportedLanguageCodes() {
-    return i18n.getSupportedLanguageCodes();
+  private static List<String> getSupportedLanguageCodes() {
+    return i18n().getSupportedLanguageCodes();
   }
 
-  private boolean isNotEnabled() {
-    return !i18n.isEnabled();
+  private static boolean isNotEnabled() {
+    return !i18n().isEnabled();
   }
 
   public static String getLanguageLabel(String code, String userLanguage) {
@@ -93,16 +92,15 @@ public final class I18NHelper {
   }
 
   public static String getDefaultLanguage() {
-    return getInstance().i18n.getDefaultLanguage();
+    return i18n().getDefaultLanguage();
   }
 
   public static List<String> getAllSupportedLanguages() {
-    return getInstance().getSupportedLanguageCodes();
+    return getSupportedLanguageCodes();
   }
 
   public static String getHTMLLinks(String url, String currentLanguage) {
-    I18NHelper helper = getInstance();
-    if (helper.isNotEnabled()) {
+    if (isNotEnabled()) {
       return "";
     }
     String baseUrl = url;
@@ -115,7 +113,7 @@ public final class I18NHelper {
 
     StringBuilder links = new StringBuilder(512);
     boolean first = true;
-    for (String code : helper.getSupportedLanguageCodes()) {
+    for (String code : getSupportedLanguageCodes()) {
       String className = "";
       String link = baseUrl + code;
       if (!first) {
@@ -134,15 +132,14 @@ public final class I18NHelper {
   }
 
   public static String getHTMLLinks(List<String> languages, String currentLanguage) {
-    I18NHelper helper = getInstance();
-    if (helper.isNotEnabled() || languages == null) {
+    if (isNotEnabled() || languages == null) {
       return "";
     }
 
     StringBuilder links = new StringBuilder(512);
     String link;
     boolean first = true;
-    for (String code : helper.getSupportedLanguageCodes()) {
+    for (String code : getSupportedLanguageCodes()) {
       String className = "";
 
       if (languages.contains(code)) {
@@ -166,8 +163,7 @@ public final class I18NHelper {
 
   public static String getHTMLLinks(I18NBean<?> bean, String currentLanguage) {
     String lang = currentLanguage;
-    I18NHelper helper = getInstance();
-    if (helper.isNotEnabled() || bean == null) {
+    if (isNotEnabled() || bean == null) {
       return "";
     }
 
@@ -187,8 +183,7 @@ public final class I18NHelper {
 
   public static String getFormLine(MultiSilverpeasBundle resources, I18NBean<?> bean,
       String translation) {
-    I18NHelper helper = getInstance();
-    if (helper.getSupportedLanguageCodes().size() == 1) {
+    if (getSupportedLanguageCodes().size() == 1) {
       return "";
     }
     return "<tr>\n" +
@@ -219,7 +214,7 @@ public final class I18NHelper {
   }
 
   public static List<I18NLanguage> getAllUserTranslationsOfContentLanguages(String userLanguage) {
-    return getInstance().i18n.getSupportedLanguages(userLanguage).stream()
+    return i18n().getSupportedLanguages(userLanguage).stream()
         .map(l -> new I18NLanguage(l.getCode(), l.getName()))
         .collect(Collectors.toList());
   }

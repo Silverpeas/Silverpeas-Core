@@ -6,6 +6,7 @@ import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.i18n.I18nSettings;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.TestManagedBeanFeeder;
@@ -109,6 +110,10 @@ public class JEETestContext extends SilverTestEnvContext {
     when(i18n.isDefaultLanguage(anyString())).thenAnswer(i -> {
       String language = i.getArgument(0);
       return language.equals("fr");
+    });
+    when(i18n.getSupportedLanguages(anyString())).thenAnswer(i -> {
+      String userLanguage = i.getArgument(0);
+      return new I18nSettings().getTranslatedLanguages(userLanguage, languages);
     });
   }
 
