@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.ResourceReference;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Optional;
