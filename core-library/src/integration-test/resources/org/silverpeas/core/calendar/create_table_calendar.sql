@@ -156,12 +156,15 @@ CREATE TABLE st_delayednotifusersetting (
 CREATE TABLE st_notificationresource (
   id 					int8 NOT NULL ,
   componentInstanceId	varchar(50) NOT NULL ,
-  resourceId			varchar(50) NOT NULL ,
+  resourceId			varchar(500) NOT NULL ,
   resourceType			varchar(50) NOT NULL ,
   resourceName			varchar(500) NOT NULL ,
   resourceDescription	varchar(2000) NULL ,
   resourceLocation		varchar(500) NOT NULL ,
   resourceUrl			varchar(1000) NULL,
+  resourceThumbnail		text NULL,
+  attachmentTargetId	varchar(500) NULL,
+  resourceDetails		varchar(8000) NULL,
   CONSTRAINT const_st_nr_pk PRIMARY KEY (id)
 );
 
