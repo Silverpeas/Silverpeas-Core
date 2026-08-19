@@ -1,0 +1,10 @@
+{
+  "serverUrl": "https://www.silverpeas.org/silverpeas",
+  "outPath": "target/site/restapi/core",
+  "projectName": "Silverpeas Core REST API",
+  "framework": "JAX-RS",
+  "packageFilters": "org.silverpeas.web.*",
+  "recursionLimit": 3,
+  "allInOne": false,
+  "createDebugPage": false
+}

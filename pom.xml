@@ -277,17 +277,8 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>com.qmino</groupId>
-            <artifactId>miredot-plugin</artifactId>
-            <configuration>
-              <output>
-                <title>Silverpeas Core REST API</title>
-                <location>restapi/core</location>
-                <html>
-                  <baseUrl>https://www.silverpeas.org/silverpeas</baseUrl>
-                </html>
-              </output>
-            </configuration>
+            <groupId>com.ly.smart-doc</groupId>
+            <artifactId>smart-doc-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>
