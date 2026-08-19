@@ -277,7 +277,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>com.ly.smart-doc</groupId>
+            <groupId>com.github.shalousun</groupId>
             <artifactId>smart-doc-maven-plugin</artifactId>
           </plugin>
         </plugins>
