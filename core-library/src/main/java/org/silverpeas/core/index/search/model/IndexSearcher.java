@@ -29,6 +29,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.QueryParserBase;
@@ -144,7 +145,7 @@ public class IndexSearcher {
         TermQuery query = new TermQuery(term);
         TopDocs topDocs = searcher.search(query, maxNumberResult);
         ScoreDoc scoreDoc = topDocs.scoreDocs[0];
-        matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
+        matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher.storedFields());
       } catch (IOException ioe) {
         SilverLogger.getLogger(this).error("Index file corrupted", ioe);
       }
@@ -364,13 +365,14 @@ public class IndexSearcher {
   /**
    * @param scoreDoc occurrence of Lucene search result
    * @param requestedLanguage a language as short string
-   * @param searcher the index search result instance
+   * @param storedFields the stored fields of the index in which the search was performed. It has
+   * to be used by a single thread only.
    * @return MatchingIndexEntry wraps the Lucene search result
    * @throws IOException if there is a problem when searching Lucene index
    */
   private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
-      org.apache.lucene.search.IndexSearcher searcher) throws IOException {
-    final Document doc = searcher.doc(scoreDoc.doc);
+      StoredFields storedFields) throws IOException {
+    final Document doc = storedFields.document(scoreDoc.doc);
     final MatchingIndexEntry indexEntry = new MatchingIndexEntry(
         IndexEntryKey.create(doc.get(IndexManager.KEY)));
 
@@ -461,9 +463,10 @@ public class IndexSearcher {
       org.apache.lucene.search.IndexSearcher searcher) throws IOException {
     final List<MatchingIndexEntry> results = new ArrayList<>();
     if (topDocs != null) {
+      final StoredFields storedFields = searcher.storedFields();
       for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
         final String requestedLanguage = query.getRequestedLanguage().orElse("*");
-        results.add(createMatchingIndexEntry(scoreDoc, requestedLanguage, searcher));
+        results.add(createMatchingIndexEntry(scoreDoc, requestedLanguage, storedFields));
       }
     }
     return results;
