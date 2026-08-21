@@ -84,6 +84,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @PathParam("id")
   private String simpleDocumentId;
 
+  /**
+   * @ignore
+   */
   public String getSimpleDocumentId() {
     return simpleDocumentId;
   }
@@ -176,6 +179,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     }
   }
 
+  /**
+   * @ignore
+   */
   protected SimpleDocumentEntity updateSimpleDocument(SimpleDocumentUploadData uploadData,
       String filename) throws IOException {
     try {
@@ -318,6 +324,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @param validation the validation instance to use.
    * @throws WebApplicationException if the rights of the user are not enough to access this web
    * resource.
+   * @ignore
    */
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {

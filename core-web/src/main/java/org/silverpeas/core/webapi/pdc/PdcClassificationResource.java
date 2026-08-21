@@ -84,16 +84,25 @@ public class PdcClassificationResource extends RESTWebService {
   @PathParam("contentId")
   private String contentId;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return this.componentId;
   }
 
+  /**
+   * @ignore
+   */
   protected String getContentId() {
     return this.contentId;
   }

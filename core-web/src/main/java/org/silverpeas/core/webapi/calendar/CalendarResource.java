@@ -634,6 +634,7 @@ public class CalendarResource extends AbstractCalendarResource {
    * Converts the list of calendar into list of calendar web entities.
    * @param calendars the calendars to convert.
    * @return the calendar web entities.
+   * @ignore
    */
   public List<CalendarEntity> asWebEntities(Collection<Calendar> calendars) {
     return calendars.stream().map(this::asWebEntity).collect(Collectors.toList());
@@ -645,6 +646,7 @@ public class CalendarResource extends AbstractCalendarResource {
    * calendar.
    * @param calendar the calendar to convert.
    * @return the corresponding calendar entity.
+   * @ignore
    */
   public CalendarEntity asWebEntity(Calendar calendar) {
     assertEntityIsDefined(calendar);
@@ -671,6 +673,7 @@ public class CalendarResource extends AbstractCalendarResource {
    * Converts the list of calendar event into list of calendar event web entities.
    * @param events the calendar events to convert.
    * @return the calendar event web entities.
+   * @ignore
    */
   public List<CalendarEventEntity> asEventWebEntities(
       Collection<CalendarEvent> events) {
@@ -683,6 +686,7 @@ public class CalendarResource extends AbstractCalendarResource {
    * entity representation of the calendar event.
    * @param event the calendar event  to convert.
    * @return the corresponding calendar event  entity.
+   * @ignore
    */
   public CalendarEventEntity asEventWebEntity(CalendarEvent event) {
     assertEntityIsDefined(event.asCalendarComponent());
@@ -703,6 +707,7 @@ public class CalendarResource extends AbstractCalendarResource {
    * entities.
    * @param occurrences the calendar event occurrences to convert.
    * @return the calendar event occurrence web entities.
+   * @ignore
    */
   public List<CalendarEventOccurrenceEntity> asOccurrenceWebEntities(
       Collection<CalendarEventOccurrence> occurrences) {
@@ -715,6 +720,7 @@ public class CalendarResource extends AbstractCalendarResource {
    * entity representation of the calendar event occurrence.
    * @param occurrence the calendar event occurrence to convert.
    * @return the corresponding calendar event occurrence entity.
+   * @ignore
    */
   public CalendarEventOccurrenceEntity asOccurrenceWebEntity(
       CalendarEventOccurrence occurrence) {
@@ -762,6 +768,7 @@ public class CalendarResource extends AbstractCalendarResource {
    * @param occurrence the occurrence the attendees belongs to.
    * @param attendee the calendar event attendee to convert.
    * @return the corresponding calendar event attendee entity.
+   * @ignore
    */
   public CalendarEventAttendeeEntity asAttendeeWebEntity(
       final CalendarEventOccurrence occurrence, Attendee attendee) {
@@ -774,11 +781,15 @@ public class CalendarResource extends AbstractCalendarResource {
    * Converts the calendar event attribute into its corresponding web entity.
    * @param nameAndValue the data which represents an attribute.
    * @return the corresponding calendar event attribute entity.
+   * @ignore
    */
   public CalendarEventAttributeEntity asAttributeWebEntity(Map.Entry<String, String> nameAndValue) {
     return CalendarEventAttributeEntity.from(nameAndValue);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getBundleLocation() {
     return "org.silverpeas.calendar.multilang.calendarBundle";

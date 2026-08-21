@@ -38,6 +38,9 @@ public abstract class AbstractLookResource extends RESTWebService {
 
   private LookWebDelegate lookDelegate;
 
+  /**
+   * @ignore
+   */
   protected AbstractLookEntity<?> asWebEntity(final Object object) {
     throw new WebApplicationException(Status.NOT_FOUND);
   }
@@ -45,6 +48,7 @@ public abstract class AbstractLookResource extends RESTWebService {
   /**
    * Gets the common look services for Web Services
    * @return a delegate to the look
+   * @ignore
    */
   protected LookWebDelegate getLookDelegate() {
     verifyUserAuthorizedToAccessLookContext();
@@ -53,6 +57,7 @@ public abstract class AbstractLookResource extends RESTWebService {
 
   /**
    * Verifies the requester user is authorized to access the look context
+   * @ignore
    */
   protected void verifyUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized
@@ -63,6 +68,7 @@ public abstract class AbstractLookResource extends RESTWebService {
 
   /**
    * Indicates if the requester user is authorized to access the look context
+   * @ignore
    */
   protected boolean isUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized

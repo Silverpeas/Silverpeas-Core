@@ -61,11 +61,17 @@ public class TicketResource extends RESTWebService {
 
   private String componentId = null;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;

@@ -39,6 +39,7 @@ public abstract class AbstractPasswordResource extends RESTWebService {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.web.RESTWebService#getComponentId()
+   * @ignore
    */
   @Override
   public String getComponentId() {
@@ -49,6 +50,7 @@ public abstract class AbstractPasswordResource extends RESTWebService {
    * Converts the password rule into its corresponding web entity.
    * @param rule the password rule.
    * @return the corresponding password rule entity.
+   * @ignore
    */
   protected PasswordRuleEntity asWebEntity(PasswordRule rule) {
     checkNotFoundStatus(rule);
@@ -59,6 +61,7 @@ public abstract class AbstractPasswordResource extends RESTWebService {
    * Converts the password check into its corresponding web entity.
    * @param check the password check.
    * @return the corresponding password check entity.
+   * @ignore
    */
   protected PasswordCheckEntity asWebEntity(PasswordCheck check) {
     checkNotFoundStatus(check);
@@ -79,6 +82,7 @@ public abstract class AbstractPasswordResource extends RESTWebService {
    * Due to the particularity of this WEB Service according to authentication, the language is
    * handled at this level.
    * @return the language code
+   * @ignore
    */
   @Override
   protected String getLanguage() {

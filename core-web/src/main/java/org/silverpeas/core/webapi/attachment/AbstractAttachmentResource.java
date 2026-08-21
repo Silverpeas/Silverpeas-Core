@@ -46,11 +46,17 @@ public abstract class AbstractAttachmentResource extends RESTWebService {
   @PathParam("componentId")
   protected String componentId;
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;
   }
 
+  /**
+   * @ignore
+   */
   protected Response getAttachmentContent(String attachmentId) {
     final SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(new SimpleDocumentPK(attachmentId), null);
@@ -76,6 +82,9 @@ public abstract class AbstractAttachmentResource extends RESTWebService {
     return Response.ok().entity(data).type(lastPublicVersion.getContentType()).build();
   }
 
+  /**
+   * @ignore
+   */
   protected abstract boolean isFileReadable(SimpleDocument attachment);
 
 }

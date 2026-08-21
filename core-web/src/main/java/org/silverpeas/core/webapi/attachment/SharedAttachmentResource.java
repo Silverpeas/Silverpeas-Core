@@ -60,6 +60,9 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   @PathParam("token")
   private String token;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -132,6 +135,9 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   }
 
 
+  /**
+   * @ignore
+   */
   @Override
   protected boolean isFileReadable(SimpleDocument attachment) {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(getToken());
@@ -139,6 +145,9 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     return ticket != null && ticket.getAccessControl().isReadable(ctx);
   }
 
+  /**
+   * @ignore
+   */
   protected String getToken() {
     return token;
   }

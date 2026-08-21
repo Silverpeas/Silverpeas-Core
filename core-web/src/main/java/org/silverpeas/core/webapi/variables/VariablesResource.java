@@ -124,11 +124,17 @@ public class VariablesResource extends RESTWebService {
     return VariableEntity.fromVariable(value);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

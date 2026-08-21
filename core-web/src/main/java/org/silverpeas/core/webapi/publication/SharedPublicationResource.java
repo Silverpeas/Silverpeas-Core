@@ -58,11 +58,17 @@ public class SharedPublicationResource extends AbstractPublicationResource {
 
   private Ticket ticket;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return this.ticket.getComponentId();
@@ -117,6 +123,9 @@ public class SharedPublicationResource extends AbstractPublicationResource {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
     nodePK.setComponentName(getComponentId());

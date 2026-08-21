@@ -67,11 +67,17 @@ public class CipherKeyResource extends RESTWebService {
   @Inject
   private DefaultContentEncryptionService contentEncryptionService;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return WEB_PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return Administration.Constants.ADMIN_COMPONENT_ID;
@@ -123,6 +129,9 @@ public class CipherKeyResource extends RESTWebService {
     return contentEncryptionService;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     if (!getUser().isAccessAdmin()) {

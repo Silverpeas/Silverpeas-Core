@@ -129,11 +129,17 @@ public class WysiwygEditorConfigResource extends RESTWebService {
             Response.Status.NOT_FOUND)).getName();
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentInstanceId;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return WYSIWYG_CONFIG_BASE_URI;

@@ -57,11 +57,17 @@ public class ListNodeResource extends RESTWebService {
   @PathParam("instanceId")
   private String instanceId;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return instanceId;

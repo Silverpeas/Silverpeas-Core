@@ -39,6 +39,7 @@ public abstract class AbstractViewResource extends RESTWebService {
 
   /**
    * @see ResourceViewProvider#getAuthorizedResourceView(String, String, String)
+   * @ignore
    */
   protected ResourceView getAuthorizedResourceView(final String id, final String type, final String language) {
     // Content Language
@@ -47,6 +48,9 @@ public abstract class AbstractViewResource extends RESTWebService {
     return ResourceViewProvider.getAuthorizedResourceView(id, type, contentLanguage);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

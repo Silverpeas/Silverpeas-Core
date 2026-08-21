@@ -60,6 +60,9 @@ import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
 @Authenticated
 public class SpaceResource extends AbstractAdminResource {
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return SPACES_BASE_URI;
@@ -451,6 +454,7 @@ public class SpaceResource extends AbstractAdminResource {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.web.RESTWebService#getComponentId()
+   * @ignore
    */
   @Override
   public String getComponentId() {

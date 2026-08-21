@@ -56,6 +56,9 @@ public class StreamingPlayerResource extends RESTWebService {
 
   static final String PATH = "media/streaming";
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -117,6 +120,9 @@ public class StreamingPlayerResource extends RESTWebService {
     return streamingEntity;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

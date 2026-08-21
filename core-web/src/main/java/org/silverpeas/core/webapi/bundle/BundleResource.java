@@ -74,11 +74,17 @@ public class BundleResource extends RESTWebService {
   private static final String PROPERTIES_FILE_EXT = ".properties";
   private static final String LANG_SEPARATOR = "_";
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     throw new UnsupportedOperationException("Not supported yet.");
@@ -89,6 +95,7 @@ public class BundleResource extends RESTWebService {
    * used here to identify the user behind the call if possible.
    *
    * @param validation the validation instance to use.
+   * @ignore
    */
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation) {

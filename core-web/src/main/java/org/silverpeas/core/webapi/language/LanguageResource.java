@@ -46,11 +46,17 @@ public class LanguageResource extends RESTWebService {
 
   static final String PATH = "languages";
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

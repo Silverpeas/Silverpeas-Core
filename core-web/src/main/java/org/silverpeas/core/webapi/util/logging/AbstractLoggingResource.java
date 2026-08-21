@@ -60,6 +60,9 @@ import jakarta.ws.rs.core.Response;
  */
 public abstract class AbstractLoggingResource extends RESTWebService {
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     if (!getUser().isAccessAdmin()) {
@@ -71,6 +74,7 @@ public abstract class AbstractLoggingResource extends RESTWebService {
   /**
    * Gets the identifier of the component instance to which the requested resource belongs to.
    * @return the identifier of the Silverpeas component instance.
+   * @ignore
    */
   @Override
   public String getComponentId() {

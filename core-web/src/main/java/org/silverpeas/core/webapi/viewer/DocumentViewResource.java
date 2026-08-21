@@ -80,11 +80,15 @@ public class DocumentViewResource extends AbstractViewResource {
    * Converts the document view into its corresponding web entity.
    * @param documentView the view to convert.
    * @return the corresponding view entity.
+   * @ignore
    */
   protected DocumentViewEntity asWebEntity(final DocumentView documentView) {
     return DocumentViewEntity.createFrom(documentView).withURI(getUri().getRequestUri());
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;

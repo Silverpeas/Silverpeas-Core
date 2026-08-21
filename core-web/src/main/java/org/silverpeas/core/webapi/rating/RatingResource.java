@@ -63,16 +63,25 @@ public class RatingResource extends RESTWebService {
   @PathParam("contributionId")
   private String contributionId;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getBundleLocation() {
     return "org.silverpeas.notation.multilang.notation";
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;
@@ -121,6 +130,7 @@ public class RatingResource extends RESTWebService {
    * Converts the rating into its corresponding web entity.
    * @param raterRating the rater rating to convert.
    * @return the corresponding rating entity.
+   * @ignore
    */
   protected RaterRatingEntity asWebEntity(final RaterRating raterRating) {
     return RaterRatingEntity.fromRaterRating(raterRating);

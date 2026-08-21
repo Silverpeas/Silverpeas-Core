@@ -74,11 +74,17 @@ public class ComponentResource extends AbstractAdminResource {
   @Context
   private UriInfo uriInfo;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return COMPONENTS_BASE_URI;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected WebResourceUri initWebResourceUri() {
     return new WebResourceUri(getResourceBasePath(), getHttpServletRequest(), uriInfo);
@@ -186,6 +192,7 @@ public class ComponentResource extends AbstractAdminResource {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.web.RESTWebService#getComponentId()
+   * @ignore
    */
   @Override
   public String getComponentId() {

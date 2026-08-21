@@ -35,6 +35,7 @@ public abstract class AbstractMessageResource extends RESTWebService {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.web.RESTWebService#getComponentId()
+   * @ignore
    */
   @Override
   public String getComponentId() {
@@ -45,6 +46,7 @@ public abstract class AbstractMessageResource extends RESTWebService {
    * Converts the message container into its corresponding web entity.
    * @param messageContainer the message container.
    * @return the corresponding message container entity.
+   * @ignore
    */
   protected MessageContainerEntity asWebEntity(MessageContainer messageContainer) {
     return MessageContainerEntity.createFrom(messageContainer);
@@ -54,6 +56,7 @@ public abstract class AbstractMessageResource extends RESTWebService {
    * Due to the particularity of this WEB Service according to authentication, the language is
    * handled at this level.
    * @return the language code
+   * @ignore
    */
   @Override
   protected String getLanguage() {

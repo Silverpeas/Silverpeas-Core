@@ -86,6 +86,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * </p>
    * @param spaceId the space identifier.
    * @return the space instance light representation.
+   * @ignore
    */
   protected SpaceInstLight loadSpace(final String spaceId) {
     return loadSpaces(false, spaceId).findFirst().orElse(null);
@@ -99,6 +100,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * </p>
    * @param spaceIds the space identifiers.
    * @return stream of {@link SpaceInstLight} instance.
+   * @ignore
    */
   protected Stream<SpaceInstLight> loadSpaces(final String... spaceIds) {
     return loadSpaces(true, spaceIds);
@@ -123,6 +125,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * </p>
    * @param componentId the component instance identifier
    * @return an instance of {@link ComponentInstLight} if any, null otherwise.
+   * @ignore
    */
   protected ComponentInstLight loadComponent(final String componentId) {
     return loadComponents(false, componentId).findFirst().orElse(null);
@@ -136,6 +139,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * </p>
    * @param componentIds the component instance identifiers.
    * @return stream of {@link ComponentInstLight} instance.
+   * @ignore
    */
   protected Stream<ComponentInstLight> loadComponents(final String... componentIds) {
     return loadComponents(true, componentIds);
@@ -154,6 +158,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * Filters the given collection of {@link ComponentInstLight} instance according to user rights.
    * @param componentInstances component instances to filter.
    * @return a filtered stream of {@link ComponentInstLight} instance.
+   * @ignore
    */
   protected Stream<ComponentInstLight> filterAuthorizedComponents(
       final Collection<ComponentInstLight> componentInstances) {
@@ -177,6 +182,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * Converts the given list of data into their corresponding web entities.
    * @param data data to convert.
    * @return an array with the corresponding web entities.
+   * @ignore
    */
   protected <T, E extends AbstractTypeEntity> Collection<E> asWebEntities(final Stream<T> data) {
     return asWebEntities(data, false);
@@ -188,6 +194,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
    * feature is disabled
    * @return an array with the corresponding web entities.
+   * @ignore
    */
   @SuppressWarnings("unchecked")
   protected <T, E extends AbstractTypeEntity> Collection<E> asWebEntities(
@@ -207,6 +214,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * Converts the given list of data into their corresponding web entities.
    * @param data data to convert.
    * @return an array with the corresponding web entities.
+   * @ignore
    */
   @SuppressWarnings("unchecked")
   protected <T, E extends AbstractTypeEntity> Collection<E> asWebPersonalEntities(
@@ -231,6 +239,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @param space the space to convert.
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
    * @return the corresponding space entity.
+   * @ignore
    */
   protected SpaceEntity asWebEntity(final SpaceInstLight space, final boolean forceGettingFavorite) {
     checkNotFoundStatus(space);
@@ -251,6 +260,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @param look the look associated to the given space.
    * @param wallpaper the wallpaper associated to the given space.
    * @return the corresponding space appearance entity.
+   * @ignore
    */
   protected SpaceAppearanceEntity asWebEntity(final SpaceInstLight space, final String look,
       final String wallpaper, final String css) {
@@ -264,6 +274,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * Converts the component into its corresponding web entity.
    * @param component the component to convert.
    * @return the corresponding component entity.
+   * @ignore
    */
   protected ComponentEntity asWebEntity(final ComponentInstLight component) {
     checkNotFoundStatus(component);
@@ -275,6 +286,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * Converts the personal component into its corresponding web entity.
    * @param component the personal component to convert.
    * @return the corresponding personal component entity.
+   * @ignore
    */
   protected PersonalComponentEntity asWebPersonalEntity(final SilverpeasComponent component) {
     checkNotFoundStatus(component);
@@ -287,6 +299,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * Converts the personal component into its corresponding web entity.
    * @param component the personal component to convert.
    * @return the corresponding personal component entity.
+   * @ignore
    */
   protected PersonalComponentEntity asWebPersonalEntity(final SilverpeasComponentInstance component) {
     checkNotFoundStatus(component);
@@ -297,6 +310,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * Converts the tool into its corresponding web entity.
    * @param tool the tool to convert.
    * @return the corresponding tool entity.
+   * @ignore
    */
   protected PersonalToolEntity asWebPersonalEntity(final AbstractTool tool) {
     checkNotFoundStatus(tool);
@@ -307,6 +321,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * Converts the component into its corresponding web entity.
    * @param object any object instance.
    * @return the corresponding component entity.
+   * @ignore
    */
   protected AbstractTypeEntity asWebEntity(final Object object) {
     throw new WebApplicationException(Status.NOT_FOUND);
@@ -320,6 +335,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * @return the commin admin personal services
+   * @ignore
    */
   protected AdminPersonalWebDelegate getAdminPersonalDelegate() {
     if (adminPersonalDelegate == null) {
@@ -332,6 +348,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
   /**
    * Verifies the requester user is authorized to access the given space.
    * @param spaceId the space identifier
+   * @ignore
    */
   protected void verifyUserAuthorizedToAccessSpace(final String spaceId) {
     if (!isValidAdminAccess() &&
@@ -340,6 +357,9 @@ public abstract class AbstractAdminResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     if (!isValidAdminAccess()) {
@@ -349,6 +369,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Verifies the requester user is authorized to access the given space
+   * @ignore
    */
   protected void verifyUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized
@@ -359,6 +380,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Indicates if the requester user is authorized to access the given space
+   * @ignore
    */
   protected boolean isUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized
@@ -371,6 +393,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * @return the common look services for Web Services
+   * @ignore
    */
   protected LookWebDelegate getLookDelegate() {
     verifyUserAuthorizedToAccessLookContext();

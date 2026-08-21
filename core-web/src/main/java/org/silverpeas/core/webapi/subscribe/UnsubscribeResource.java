@@ -125,6 +125,9 @@ public class UnsubscribeResource extends AbstractSubscriptionResource {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;

@@ -80,11 +80,15 @@ public class PreviewResource extends AbstractViewResource {
    * Converts the preview into its corresponding web entity.
    * @param preview the view to convert.
    * @return the corresponding view entity.
+   * @ignore
    */
   protected PreviewEntity asWebEntity(final Preview preview) {
     return PreviewEntity.createFrom(preview).withURI(getUri().getRequestUri());
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;

@@ -64,6 +64,9 @@ public class DocumentTemplateResource extends RESTWebService {
   @QueryParam("instanceIdFilter")
   private String instanceIdFilter;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return DOC_TEMPLATE_BASE_URI;
@@ -113,6 +116,9 @@ public class DocumentTemplateResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

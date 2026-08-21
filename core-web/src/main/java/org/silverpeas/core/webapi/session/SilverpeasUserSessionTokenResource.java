@@ -55,6 +55,9 @@ public class SilverpeasUserSessionTokenResource extends RESTWebService {
 
   protected static final String PATH = "session/token";
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation) {
     super.validateUserAuthentication(
@@ -77,11 +80,17 @@ public class SilverpeasUserSessionTokenResource extends RESTWebService {
     return Response.ok(JSONCodec.encodeObject(o -> o.put("token", token.getValue()))).build();
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;

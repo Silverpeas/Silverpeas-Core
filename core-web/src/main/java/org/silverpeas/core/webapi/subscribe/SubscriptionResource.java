@@ -247,6 +247,7 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * Gets WEB entity collection representing the given subscription collection.
    * @param subscriptions a collection of subscriptions
    * @return a collection of subscription entities
+   * @ignore
    */
   protected Collection<SubscriptionEntity> asWebEntities(Collection<Subscription> subscriptions) {
     final Collection<SubscriptionEntity> entities = new ArrayList<>(subscriptions.size());
@@ -260,6 +261,7 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * Gets the WEB entity representing the given subscription.
    * @param subscription a subscription
    * @return a subscription entity
+   * @ignore
    */
   protected SubscriptionEntity asWebEntity(final Subscription subscription) {
     return SubscriptionEntity.from(subscription);
@@ -269,6 +271,7 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * Gets WEB entity collection representing the given subscriber collection.
    * @param subscribers a collection of subscribers in subscriptions
    * @return a collection of subscriber entities.
+   * @ignore
    */
   protected Collection<SubscriberEntity> asSubscriberWebEntities(
       Collection<SubscriptionSubscriber> subscribers) {
@@ -283,11 +286,15 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * Gets the WEB entity representing the given subscriber.
    * @param subscriber a subscriber in a subscription
    * @return a subscriber entity
+   * @ignore
    */
   protected SubscriberEntity asSubscriberWebEntity(final SubscriptionSubscriber subscriber) {
     return SubscriberEntity.from(subscriber);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return SubscriptionResourceURIs.SUBSCRIPTION_BASE_URI;

@@ -88,16 +88,25 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
   private WebResourceUri webResourceUri;
 
+  /**
+   * @ignore
+   */
   @PostConstruct
   protected void initContext() {
     restRequestContext.init(httpServletRequest, httpResponse);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public RESTRequestContext getSilverpeasContext() {
     return restRequestContext;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public WebResourceUri getUri() {
     if (webResourceUri == null) {
@@ -119,6 +128,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * </p>
    *
    * @return a {@link WebResourceUri} instance.
+   * @ignore
    */
   protected WebResourceUri initWebResourceUri() {
     String path = getResourceBasePath();
@@ -139,6 +149,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    *
    * @param webResourcePath the relative base path of a web resource.
    * @return a {@link WebResourceUri} instance.
+   * @ignore
    */
   protected WebResourceUri createWebResourceUri(final String webResourcePath) {
     return new WebResourceUri(webResourcePath, getHttpServletRequest(), uriInfo);
@@ -150,6 +161,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    *
    * @return the relative path that identifies this REST web service among all other REST web
    * services.
+   * @ignore
    */
   protected abstract String getResourceBasePath();
 
@@ -157,6 +169,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * Gets the HTTP servlet request mapped with the execution context of this web service.
    *
    * @return the HTTP servlet request.
+   * @ignore
    */
   public HttpServletRequest getHttpServletRequest() {
     return httpServletRequest;
@@ -166,6 +179,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * Gets the HTTP request mapped with the execution context of this web service.
    *
    * @return the HTTP request.
+   * @ignore
    */
   @Override
   public HttpRequest getHttpRequest() {
@@ -182,6 +196,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * Gets the HTTP servlet response mapped with the execution context of this web service.
    *
    * @return the HTTP servlet response.
+   * @ignore
    */
   public HttpServletResponse getHttpServletResponse() {
     return httpResponse;
@@ -193,6 +208,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * false.
    *
    * @return true if the user behind the request is well identified, false otherwise.
+   * @ignore
    */
   protected boolean isUserDefined() {
     return getSilverpeasContext().getUser() != null;
@@ -203,6 +219,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * identified by this web service, then null is returned.
    *
    * @return the detail about the user.
+   * @ignore
    */
   protected User getUser() {
     return getSilverpeasContext().getUser();
@@ -217,6 +234,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * be retrieved, then null is returned.
    *
    * @return the user preference or null if its preferences can be retrieved.
+   * @ignore
    */
   protected UserPreferences getUserPreferences() {
     return getUser().getUserPreferences();
@@ -226,6 +244,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * Gets roles of the authenticated user.
    *
    * @return a collection of roles played by the current authenticated and then identified user.
+   * @ignore
    */
   protected Collection<SilverpeasRole> getUserRoles() {
     if (userRoles == null) {
@@ -239,6 +258,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * Gets the organization controller.
    *
    * @return an OrganizationController instance.
+   * @ignore
    */
   protected OrganizationController getOrganisationController() {
     return organizationController;
@@ -248,6 +268,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * Gets the location of the bundle to use.
    *
    * @return the classpath location of the localization bundle used by this Web service.
+   * @ignore
    */
   protected String getBundleLocation() {
     return null;
@@ -257,6 +278,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * Gets the bundle to use.
    *
    * @return the localization bundle to translate texts for the user.
+   * @ignore
    */
   protected LocalizationBundle getBundle() {
     if (bundle == null) {
@@ -275,6 +297,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    *
    * @return the highest role the current authenticated and then identified user can play for this
    * Web service.
+   * @ignore
    */
   public SilverpeasRole getHighestUserRole() {
     if (highestUserRole == null) {
@@ -289,6 +312,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * @param webTreatment a treatment to process in the behalf of a Web service.
    * @param <R> the concrete type of the type the treatment will return.
    * @return a process wrapping the treatment it will take in charge.
+   * @ignore
    */
   protected <R> WebProcess<R> process(
       WebTreatment<R> webTreatment) {
@@ -377,6 +401,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    *
    * @param id one or more identifiers identifying uniquely the current requested web resource.
    * @return a URI identifying uniquely in the Web the current requested resource.
+   * @ignore
    */
   protected URI identifiedBy(final String... id) {
     return identifiedBy(getUri().getAbsolutePathBuilder(), id);
@@ -391,6 +416,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * will be computed.
    * @param id one or more identifiers identifying uniquely the current requested web resource.
    * @return a URI identifying uniquely in the Web the current requested resource.
+   * @ignore
    */
   protected URI identifiedBy(final UriBuilder base, final String... id) {
     Stream.of(id).forEach(base::path);
@@ -408,6 +434,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    *
    * @param page the page information.
    * @return the initialized {@link PaginationPage}.
+   * @ignore
    */
   protected PaginationPage fromPage(String page) {
     PaginationPage paginationPage = null;
@@ -432,6 +459,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * either the language set in the request or the default language in Silverpeas.
    *
    * @return the language code
+   * @ignore
    */
   protected String getLanguage() {
     String language;

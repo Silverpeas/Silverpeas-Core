@@ -389,20 +389,32 @@ public class UserProfileResource extends RESTWebService {
         header(RESPONSE_HEADER_ARRAYSIZE, contacts.originalListSize()).build();
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return USERS_BASE_URI;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;
   }
 
+  /**
+   * @ignore
+   */
   protected static URI locatedAt(final URI uri) {
     return uri;
   }
 
+  /**
+   * @ignore
+   */
   protected static URI identifiedBy(final URI uri) {
     return uri;
   }
@@ -496,6 +508,9 @@ public class UserProfileResource extends RESTWebService {
     return "me".equals(identifier) || getUser().getId().equals(identifier);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthorization(UserPrivilegeValidation validation) {
     User currentUser = getUser();

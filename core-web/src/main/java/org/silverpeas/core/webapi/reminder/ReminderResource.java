@@ -252,11 +252,17 @@ public class ReminderResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return REMINDER_BASE_URI;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentInstanceId;

@@ -88,6 +88,9 @@ public class LogResource extends AbstractLoggingResource {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return LOGS_PATH;

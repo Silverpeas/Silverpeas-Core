@@ -46,11 +46,17 @@ public class SharingResource extends RESTWebService {
   @PathParam("token")
   private String token;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

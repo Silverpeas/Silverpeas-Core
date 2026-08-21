@@ -44,21 +44,33 @@ public abstract class AbstractSimpleDocumentResource extends RESTWebService {
   @PathParam("componentId")
   private String componentId;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getBundleLocation() {
     return "org.silverpeas.util.attachment.multilang.attachment";
   }
 
+  /**
+   * @ignore
+   */
   protected void checkUploadedFile(File fileToCheck) {
     try {
 
@@ -81,6 +93,9 @@ public abstract class AbstractSimpleDocumentResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   protected void performRuntimeException(RuntimeException re) {
     String transverseExceptionMessage = SilverpeasTransverseErrorUtil
         .performExceptionMessage(re, getUserPreferences().getLanguage());

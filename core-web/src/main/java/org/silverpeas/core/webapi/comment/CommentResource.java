@@ -75,6 +75,9 @@ public class CommentResource extends RESTWebService {
   @Inject
   private I18n i18n;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -250,6 +253,7 @@ public class CommentResource extends RESTWebService {
    * Gets the identifier of the Silverpeas instance to which the commented content belongs.
    *
    * @return the Silverpeas component instance identifier.
+   * @ignore
    */
   protected String inComponentId() {
     return getComponentId();
@@ -259,6 +263,7 @@ public class CommentResource extends RESTWebService {
    * Gets the type of the content that is commentable.
    *
    * @return the type of the commentable content.
+   * @ignore
    */
   protected String onContentType() {
     return contentType;
@@ -268,6 +273,7 @@ public class CommentResource extends RESTWebService {
    * Gets the identifier of the content that is commentable.
    *
    * @return the identifier of the commentable content.
+   * @ignore
    */
   protected String onContentId() {
     return contentId;
@@ -277,6 +283,7 @@ public class CommentResource extends RESTWebService {
    * Gets a business service on comments.
    *
    * @return a comment service instance.
+   * @ignore
    */
   protected CommentService commentService() {
     return commentService;
@@ -287,6 +294,7 @@ public class CommentResource extends RESTWebService {
    *
    * @param comments the comments to convert.
    * @return a list with the corresponding comment entities.
+   * @ignore
    */
   protected List<CommentEntity> asWebEntities(List<Comment> comments) {
     return comments.stream()
@@ -303,6 +311,7 @@ public class CommentResource extends RESTWebService {
    * @param comment the comment to convert.
    * @param commentURI the URI of the comment.
    * @return the corresponding comment entity.
+   * @ignore
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
     return CommentEntity.fromComment(comment, i18n.getDefaultLanguage())
@@ -310,19 +319,31 @@ public class CommentResource extends RESTWebService {
         .withCurrentUserLanguage(getUserPreferences().getLanguage());
   }
 
+  /**
+   * @ignore
+   */
   protected URI identifiedBy(URI uri) {
     return uri;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return this.componentId;
   }
 
+  /**
+   * @ignore
+   */
   protected String getContentType() {
     return this.contentType;
   }
 
+  /**
+   * @ignore
+   */
   protected String getContentId() {
     return this.contentId;
   }
@@ -332,6 +353,7 @@ public class CommentResource extends RESTWebService {
    * componentId, resourceId, text and its author identifier.
    *
    * @param theComment the comment to validate.
+   * @ignore
    */
   protected void checkIsValid(final CommentEntity theComment) {
     if (getUser().isAnonymous() || getUser().isAccessGuest()) {
@@ -346,6 +368,9 @@ public class CommentResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     if (PublicationDetail.TYPE.equals(getContentType())) {

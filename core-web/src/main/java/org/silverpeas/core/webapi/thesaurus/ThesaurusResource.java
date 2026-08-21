@@ -55,6 +55,9 @@ public class ThesaurusResource extends RESTWebService {
 
   static final String PATH = "thesaurus";
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     if (!getUser().isAccessAdmin() && !getUser().isAccessPdcManager()) {
@@ -105,11 +108,17 @@ public class ThesaurusResource extends RESTWebService {
     return ThesaurusService.getInstance();
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return "";

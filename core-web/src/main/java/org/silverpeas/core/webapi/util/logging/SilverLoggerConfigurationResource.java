@@ -76,6 +76,9 @@ public class SilverLoggerConfigurationResource extends AbstractLoggingResource {
         .withAsURi(getUri().getRequestUri());
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return LOGGING_PATH;

@@ -40,11 +40,17 @@ public class NodeResource extends AbstractNodeResource {
 
   static final String PATH = "private/nodes";
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected boolean isNodeReadable(NodeDetail node) {
     return node.canBeAccessedBy(UserDetail.from(getUser()));

@@ -57,16 +57,25 @@ public class ContributionContentResource extends AbstractContributionResource {
   @PathParam("contributionId")
   private String contributionId;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return CONTRIBUTION_BASE_URI;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentInstanceId;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getContributionId() {
     return contributionId;

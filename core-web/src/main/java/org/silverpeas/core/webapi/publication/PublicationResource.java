@@ -61,11 +61,17 @@ public class PublicationResource extends AbstractPublicationResource {
   @PathParam("componentId")
   protected String componentId;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;
@@ -218,11 +224,17 @@ public class PublicationResource extends AbstractPublicationResource {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
     return getNodeAccessController().isUserAuthorized(super.getUser().getId(), nodePK);
   }
 
+  /**
+   * @ignore
+   */
   protected URI identifiedBy(URI uri) {
     return uri;
   }

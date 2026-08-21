@@ -43,6 +43,9 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 @Authenticated
 public class DisplayResource extends AbstractLookResource {
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return LookResourceURIs.DISPLAY_BASE_URI;
@@ -73,6 +76,7 @@ public class DisplayResource extends AbstractLookResource {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.web.RESTWebService#getComponentId()
+   * @ignore
    */
   @Override
   public String getComponentId() {

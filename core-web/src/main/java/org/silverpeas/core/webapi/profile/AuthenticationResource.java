@@ -81,11 +81,17 @@ public class AuthenticationResource extends RESTWebService {
   }
 
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

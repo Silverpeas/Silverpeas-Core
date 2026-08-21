@@ -49,6 +49,9 @@ public class PasswordResource extends AbstractPasswordResource {
   @Inject
   private PasswordRulesService service;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PasswordResourceURIs.PASSWORD_BASE_URI;

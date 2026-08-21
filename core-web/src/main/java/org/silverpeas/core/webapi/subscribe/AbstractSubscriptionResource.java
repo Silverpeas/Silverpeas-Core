@@ -46,6 +46,9 @@ public abstract class AbstractSubscriptionResource extends RESTWebService {
   @PathParam("componentId")
   private String componentId;
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;
@@ -55,6 +58,7 @@ public abstract class AbstractSubscriptionResource extends RESTWebService {
    * Decodes from the given type as string the right {@link SubscriptionResourceType} instance.
    * @param type type as string.
    * @return the corresponding {@link SubscriptionResourceType} instance.
+   * @ignore
    */
   protected SubscriptionResourceType decodeSubscriptionResourceType(final String type) {
     return SubscriptionResourceType.from(type.toUpperCase());
@@ -66,6 +70,7 @@ public abstract class AbstractSubscriptionResource extends RESTWebService {
    * @param type the subscription resource type.
    * @param resourceId the identifier of a resource.
    * @return the right {@link SubscriptionResource} instance.
+   * @ignore
    */
   protected SubscriptionResource getSubscriptionResource(
       final SubscriptionResourceType type, final String resourceId) {
@@ -85,6 +90,7 @@ public abstract class AbstractSubscriptionResource extends RESTWebService {
    * @param type the subscription resource type.
    * @param resourceId the identifier of a resource.
    * @return the right {@link SubscriptionResource} instance.
+   * @ignore
    */
   protected Subscription getSubscription(final SubscriptionSubscriber subscriber,
       final SubscriptionResourceType type, final String resourceId) {

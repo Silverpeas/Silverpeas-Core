@@ -44,11 +44,17 @@ public class SharedNodeResource extends AbstractNodeResource {
   @PathParam("token")
   private String token;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected boolean isNodeReadable(NodeDetail node) {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);

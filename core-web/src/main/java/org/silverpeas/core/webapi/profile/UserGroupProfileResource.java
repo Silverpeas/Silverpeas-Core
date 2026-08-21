@@ -284,20 +284,32 @@ public class UserGroupProfileResource extends RESTWebService {
     criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return GROUPS_BASE_URI;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;
   }
 
+  /**
+   * @ignore
+   */
   protected static URI locatedAt(final URI uri) {
     return uri;
   }
 
+  /**
+   * @ignore
+   */
   protected static URI identifiedBy(final URI uri) {
     return uri;
   }
@@ -310,6 +322,9 @@ public class UserGroupProfileResource extends RESTWebService {
     return UserGroupProfileEntity.fromGroup(group).withAsUri(groupUri);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthorization(UserPrivilegeValidation validation) {
     User currentUser = getUser();

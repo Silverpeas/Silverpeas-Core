@@ -116,6 +116,9 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
     }
   }
 
+  /**
+   * @ignore
+   */
   protected SimpleDocumentEntity createSimpleDocument(SimpleDocumentUploadData uploadData,
       String filename) throws IOException {
     final Context context = initializeContext(uploadData, filename);

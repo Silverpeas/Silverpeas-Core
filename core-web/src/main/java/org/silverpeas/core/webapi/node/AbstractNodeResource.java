@@ -44,6 +44,9 @@ public abstract class AbstractNodeResource extends RESTWebService {
   @PathParam("componentId")
   protected String componentId;
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;
@@ -79,6 +82,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
    * non-authenticated mode for the moment, children do not contain special nodes.
    *
    * @return the application root and its children
+   * @ignore
    */
   protected NodeEntity getRootNode() {
     NodeDetail node = getNodeDetail(NodePK.ROOT_NODE_ID);
@@ -100,6 +104,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
    * Get any node of the application and its children.
    *
    * @return NodeEntity representing asking node
+   * @ignore
    */
   protected NodeEntity getNodeByPath(String path) {
     String nodeId = getNodeIdFromURI(path);
@@ -119,6 +124,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
    * Get all children of any node of the application.
    *
    * @return a list of NodeEntity representing children
+   * @ignore
    */
   protected List<NodeEntity> getChildrenOfNodeByPath(String path) {
     String[] nodeIds = path.split("/");
@@ -136,6 +142,9 @@ public abstract class AbstractNodeResource extends RESTWebService {
     return entity.getChildren();
   }
 
+  /**
+   * @ignore
+   */
   protected abstract boolean isNodeReadable(NodeDetail node);
 
   private boolean isNodeNotReadable(NodeDetail node) {

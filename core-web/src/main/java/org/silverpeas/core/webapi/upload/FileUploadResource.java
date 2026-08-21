@@ -241,6 +241,7 @@ public class FileUploadResource extends RESTWebService {
    *
    * @param file the InputStream of the file to scan
    * @return an AntivirusResult containing the scan outcome
+   * @ignore
    */
   public AntivirusResult checkVirus(InputStream file) {
     Optional<AntivirusClient> antivirus = antivirusProvider.getAntivirusClient();
@@ -432,11 +433,17 @@ public class FileUploadResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
   
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return getHttpRequest().getHeader(FileUploadData.X_COMPONENT_INSTANCE_ID);

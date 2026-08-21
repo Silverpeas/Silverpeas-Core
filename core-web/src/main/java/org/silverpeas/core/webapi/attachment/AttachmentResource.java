@@ -45,6 +45,9 @@ public class AttachmentResource extends AbstractAttachmentResource {
 
   static final String PATH = "private/attachments";
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -57,6 +60,9 @@ public class AttachmentResource extends AbstractAttachmentResource {
     return getAttachmentContent(attachmentId);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected boolean isFileReadable(SimpleDocument attachment) {
     return attachment.canBeAccessedBy(UserDetail.from(getUser()));

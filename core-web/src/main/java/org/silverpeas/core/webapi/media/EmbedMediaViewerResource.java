@@ -64,6 +64,9 @@ public class EmbedMediaViewerResource extends RESTWebService {
   @Inject
   private ViewService viewService;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -193,6 +196,9 @@ public class EmbedMediaViewerResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

@@ -72,6 +72,9 @@ public class MyLinksResource extends RESTWebService {
   @Inject
   private MyLinksWebManager manager;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -268,6 +271,9 @@ public class MyLinksResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     // no need to return a component identifier

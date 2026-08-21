@@ -45,6 +45,9 @@ import jakarta.ws.rs.core.Response.Status;
 @Authenticated
 public class MessageResource extends AbstractMessageResource {
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return MessageResourceURIs.MESSAGE_BASE_URI;
@@ -55,6 +58,7 @@ public class MessageResource extends AbstractMessageResource {
    * used here to identify the user behind the call if possible.
    * @param validation the validation instance to use.
    * @throws jakarta.ws.rs.WebApplicationException
+   * @ignore
    */
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation)

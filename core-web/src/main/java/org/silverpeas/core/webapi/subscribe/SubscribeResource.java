@@ -82,10 +82,16 @@ public class SubscribeResource extends AbstractSubscriptionResource {
     }
   }
 
+  /**
+   * @ignore
+   */
   protected URI identifiedBy(URI uri) {
     return uri;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;

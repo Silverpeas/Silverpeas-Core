@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
+ * A REST Web resource to search for contributions in Silverpeas.
  * @author Nicolas Eysseric
  */
 @WebService
@@ -60,6 +61,19 @@ public class SearchResource extends RESTWebService {
 
   static final String PATH = "search";
 
+  /**
+   * Searches the contributions matching the specified criteria and accessible to the requester.
+   * @param query the terms to search for.
+   * @param position the position in the classification plan (PdC) onto which the search has to be
+   * restricted.
+   * @param spaceId the unique identifier of the space within which the search has to be performed.
+   * @param appIds the unique identifiers of the applications within which the search has to be
+   * performed.
+   * @param startDate the date since which the contributions have been created.
+   * @param endDate the date until which the contributions have been created.
+   * @param form the criteria on the fields of a form, as a JSON representation.
+   * @return the JSON representation of the contributions matching the search criteria.
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<ResultEntity> search(@QueryParam("query") String query,
@@ -168,11 +182,17 @@ public class SearchResource extends RESTWebService {
     queryDescription.setFieldQueries(formQuery);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return "";

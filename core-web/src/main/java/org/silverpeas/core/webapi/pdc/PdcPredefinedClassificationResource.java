@@ -100,11 +100,17 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   @PathParam("componentId")
   private String componentId;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PdcClassificationResource.PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;

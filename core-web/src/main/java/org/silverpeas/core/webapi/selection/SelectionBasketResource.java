@@ -152,11 +152,17 @@ public class SelectionBasketResource extends RESTWebService {
     return listBasketEntries(basket);
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return BASE_URI_PATH;

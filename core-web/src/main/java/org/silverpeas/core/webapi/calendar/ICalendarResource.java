@@ -64,6 +64,9 @@ public class ICalendarResource extends RESTWebService {
 
   static final String PATH = CALENDAR_BASE_URI + "/ical";
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -201,6 +204,9 @@ public class ICalendarResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

@@ -228,11 +228,17 @@ public class ReplacementResource extends RESTWebService {
     replacement.delete();
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return REPLACEMENT_BASE_URI.format(new Object[]{this.workflowId});
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return workflowId;

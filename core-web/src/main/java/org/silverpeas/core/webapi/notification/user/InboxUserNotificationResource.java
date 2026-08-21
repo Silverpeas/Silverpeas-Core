@@ -63,12 +63,16 @@ public class InboxUserNotificationResource extends RESTWebService {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.web.RESTWebService#getComponentId()
+   * @ignore
    */
   @Override
   public String getComponentId() {
     return "";
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return InboxUserNotificationResourceURIs.BASE_URI;
@@ -181,6 +185,7 @@ public class InboxUserNotificationResource extends RESTWebService {
    * Converts the list of notification into list of notification web entities.
    * @param notifications the notifications to convert.
    * @return the notification web entities.
+   * @ignore
    */
   public List<InboxUserNotificationEntity> asWebEntities(
       final Collection<SILVERMAILMessage> notifications) {
@@ -195,6 +200,7 @@ public class InboxUserNotificationResource extends RESTWebService {
    * sent back.
    * @param notification the notification to convert.
    * @return the corresponding notification entity.
+   * @ignore
    */
   public InboxUserNotificationEntity asWebEntity(final SILVERMAILMessage notification) {
     if (notification == null) {

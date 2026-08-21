@@ -51,6 +51,9 @@ public class EmbedMediaPlayerResource extends RESTWebService {
 
   static final String PATH = "media/player/embed";
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -88,6 +91,9 @@ public class EmbedMediaPlayerResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

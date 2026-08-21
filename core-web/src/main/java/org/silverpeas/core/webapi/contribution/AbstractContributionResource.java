@@ -52,10 +52,14 @@ import java.util.List;
  */
 public abstract class AbstractContributionResource extends RESTWebService {
 
+  /**
+   * @ignore
+   */
   public abstract String getContributionId();
 
   /**
    * @return the default form id
+   * @ignore
    */
   protected String getDefaultFormId() {
     final String xmlFormName =
@@ -68,6 +72,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
 
   /**
    * @return the default publication template language
+   * @ignore
    */
   protected String getDefaultPublicationTemplateLanguage() {
     return getUserPreferences().getLanguage();
@@ -82,6 +87,9 @@ public abstract class AbstractContributionResource extends RESTWebService {
     return getComponentId() + ":" + FilenameUtils.getBaseName(formId);
   }
 
+  /**
+   * @ignore
+   */
   protected List<FormFieldValueEntity> getFormFieldValues(FieldTemplate fieldTemplate,
       DataRecord data, String lang) throws FormException {
     final int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
@@ -120,6 +128,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
    * @param lang the content language of data.
    * @return a {@link FormFieldValueEntity} instance initialized with given form data.
    * @throws FormException which could be thrown by form services.
+   * @ignore
    */
   protected FormFieldValueEntity getFormFieldValue(FieldTemplate fieldTemplate, DataRecord data,
       String lang) throws FormException {
@@ -207,6 +216,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
    * Gets the publication template of the specified form id
    * @param formId an identifier of a form.
    * @return the corresponding {@link PublicationTemplate} instance if any, null otherwise.
+   * @ignore
    */
   protected PublicationTemplate getPublicationTemplate(String formId) {
     try {

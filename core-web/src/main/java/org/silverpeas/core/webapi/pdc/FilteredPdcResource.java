@@ -58,6 +58,9 @@ public class FilteredPdcResource extends RESTWebService {
   @Inject
   private PdcServiceProvider pdcServiceProvider;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -118,6 +121,9 @@ public class FilteredPdcResource extends RESTWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

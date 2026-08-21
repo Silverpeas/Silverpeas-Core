@@ -47,6 +47,9 @@ public class MyPreferencesResource extends RESTWebService {
 
   static final String PATH = "mypreferences";
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;
@@ -68,6 +71,9 @@ public class MyPreferencesResource extends RESTWebService {
     return preferences;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;

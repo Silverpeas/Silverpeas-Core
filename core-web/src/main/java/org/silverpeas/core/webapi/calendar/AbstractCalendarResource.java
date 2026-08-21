@@ -52,25 +52,38 @@ public abstract class AbstractCalendarResource extends RESTWebService {
   /**
    * Gets the zoneId into which dates must be set.
    * @return a {@link ZoneId} instance if zoneid parameter has been set, null otherwise.
+   * @ignore
    */
   public ZoneId getZoneId() {
     return StringUtil.isDefined(zoneId) ? ZoneId.of(zoneId) : null;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return CalendarResourceURIs.CALENDAR_BASE_URI;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentInstanceId;
   }
 
+  /**
+   * @ignore
+   */
   public CalendarResourceURIs uri() {
     return uri;
   }
 
+  /**
+   * @ignore
+   */
   boolean isEditionMode() {
     return editionMode != null ? editionMode : false;
   }

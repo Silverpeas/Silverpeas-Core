@@ -71,6 +71,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
    * @param withAttachments are the attachments of the publications have to be also got with them.
    * @return a list of the publications in the given topic. If no publications are located in the
    * specified topic, then an empty list is returned.
+   * @ignore
    */
   protected List<PublicationEntity> getPublications(String nodeId,
       boolean includingAliases, boolean withAttachments) {
@@ -93,6 +94,9 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     return entities;
   }
 
+  /**
+   * @ignore
+   */
   protected PublicationEntity getPublicationEntity(PublicationDetail publication,
       boolean withAttachments) {
     if (publication.isValid()) {
@@ -119,6 +123,9 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     return null;
   }
 
+  /**
+   * @ignore
+   */
   protected abstract boolean isNodeReadable(NodePK nodePK);
 
   private URI getPublicationUri(PublicationDetail publication) {
@@ -128,18 +135,30 @@ public abstract class AbstractPublicationResource extends RESTWebService {
         .build();
   }
 
+  /**
+   * @ignore
+   */
   protected NodeService getNodeService() {
     return nodeService;
   }
 
+  /**
+   * @ignore
+   */
   protected PublicationService getPublicationService() {
     return publicationService;
   }
 
+  /**
+   * @ignore
+   */
   protected NodeAccessControl getNodeAccessController() {
     return nodeAccessController;
   }
 
+  /**
+   * @ignore
+   */
   protected PublicationAccessControl getPublicationAccessController() {
     return publicationAccessController;
   }

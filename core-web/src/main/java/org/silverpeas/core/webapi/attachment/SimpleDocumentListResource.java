@@ -75,6 +75,9 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
   @QueryParam("highestUserRole")
   private SilverpeasRole highestUserRole = null;
 
+  /**
+   * @ignore
+   */
   public String getResourceId() {
     return resourceId;
   }
@@ -174,6 +177,9 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
     }
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     // authorization verifications MUST be done directly into each signatures

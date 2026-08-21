@@ -123,11 +123,17 @@ public class InvitationResource extends RESTWebService {
     return Response.ok(invitationEntity).build();
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;

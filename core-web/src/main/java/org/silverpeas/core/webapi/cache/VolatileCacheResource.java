@@ -68,11 +68,17 @@ public class VolatileCacheResource extends RESTWebService {
         .lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentInstanceId;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return VOLATILE_BASE_URI;
