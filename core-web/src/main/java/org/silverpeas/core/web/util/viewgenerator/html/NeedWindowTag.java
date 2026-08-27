@@ -28,8 +28,11 @@ import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 import jakarta.servlet.jsp.PageContext;
 import jakarta.servlet.jsp.tagext.TagSupport;
 
+import java.io.Serial;
+
 public class NeedWindowTag extends TagSupport {
 
+  @Serial
   private static final long serialVersionUID = 1610658738987330527L;
   public static final String WINDOW_PAGE_ATT = "pageContextWindow";
 

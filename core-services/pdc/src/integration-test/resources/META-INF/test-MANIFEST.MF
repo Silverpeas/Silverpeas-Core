@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Created-By: Silverpeas
+Dependencies: org.jboss.as.naming,
+  org.slf4j,
+  org.mnode.ical4j services,
+  jdk.unsupported

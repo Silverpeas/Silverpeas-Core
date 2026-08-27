@@ -21,60 +21,94 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/*
- * Aliaksei_Budnikau
- * Date: Oct 24, 2002
- */
 package org.silverpeas.core.pdc.subscription.service;
 
-import java.util.List;
-
-import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
-
 import org.silverpeas.core.pdc.classification.Value;
+import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
+import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionPositionCriteria;
 
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * The service dedicated to the position criteria on the PdC that can be aimed by a subscription.
+ * <p>
+ * The subscriptions themselves are taken in charge by the subscription API of Silverpeas: use
+ * {@link org.silverpeas.core.subscription.SubscriptionService} to subscribe a user or a group of
+ * users to position criteria, to unsubscribe them, or to know who is subscribed to a given set.
+ * This service is only about the lifecycle of the position criteria and about the business rules
+ * that are specific to the PdC.
+ * </p>
+ */
 public interface PdcSubscriptionService {
 
-  List<PdcSubscription> getPdcSubscriptionByUserId(int userId);
-
-  PdcSubscription getPdcSubscriptionById(int id);
-
-  int createPdcSubscription(PdcSubscription subscription);
-
-  void updatePdcSubscription(PdcSubscription subscription);
-
-  void removePdcSubscriptionById(int id);
-
-  void removePdcSubscriptionById(int[] ids);
+  /**
+   * Gets the position criteria on the PdC with the specified identifier. The returned resource is
+   * fully valued: both its name and its positions are loaded from the data source.
+   * @param id the unique identifier of position criteria on the PdC.
+   * @return the position criteria on the PdC or nothing if there is no such a set in the data
+   * source.
+   */
+  Optional<PdcSubscriptionPositionCriteria> getPositionCriteria(String id);
 
   /**
-   * This method check is any subscription that match criteria provided and sends notification if
-   * succeed
-   *
-   * @param classifyValues List of ClassifyValues to be checked
-   * @param componentId component where classify event occurs
-   * @param silverObjectid object that was classified
+   * Gets all the position criteria on the PdC that have been defined in Silverpeas, whatever the
+   * users or the groups of users that are subscribed to them.
+   * @return a list of position criteria on the PdC.
+   */
+  List<PdcSubscriptionPositionCriteria> getAllPositionCriteria();
+
+  /**
+   * Creates a new position criteria on the PdC. Once created, users or groups of users can
+   * subscribe to it with the subscription API of Silverpeas.
+   * @param name the name of the position criteria.
+   * @param positions the positions on the axis of the PdC.
+   * @return the newly created position criteria, with its unique identifier valued.
+   */
+  PdcSubscriptionPositionCriteria createPositionCriteria(String name, List<AxisValueCriterion> positions);
+
+  /**
+   * Updates both the name and the positions of the specified position criteria on the PdC. The
+   * subscriptions on that set are left untouched.
+   * @param resource the position criteria to update.
+   */
+  void updatePositionCriteria(PdcSubscriptionPositionCriteria resource);
+
+  /**
+   * Deletes the position criteria on the PdC with the specified identifier as well as all the
+   * subscriptions on it.
+   * @param id the unique identifier of position criteria on the PdC.
+   */
+  void deletePositionCriteria(String id);
+
+  /**
+   * Checks if any position criteria on the PdC matches the classification provided and, if so,
+   * notifies all the users that are subscribed to that set and that are allowed to access the
+   * classified contribution. The users subscribed through a group of users is taken into account.
+   * @param classifyValues the positions on which the contribution has been classified.
+   * @param componentId the component instance into which the classification event occurred.
+   * @param silverObjectid the contribution that has been classified.
    */
   void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
       int silverObjectid);
 
   /**
-   * Implements PdcSubscription check for value deletion. It deletes all references to the path
-   * containing this value from PdcSubscription module DB
-   *
+   * Checks the deletion of a value of an axis of the PdC. All the position criteria referring the
+   * deleted value are deleted, as well as the subscriptions on them, and all their subscribers are
+   * notified.
    * @param axisId the axis to be checked
    * @param axisName the name of the axis
    * @param oldPath old path that would be removed soon
    * @param newPath new path. That will be places instead of old for this axis
-   * @param pathInfo should contains PdcBm.getFullPath data structure
+   * @param pathInfo should contain PdcBm.getFullPath data structure
    */
   void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
       List<String> newPath, List<org.silverpeas.core.pdc.pdc.model.Value> pathInfo);
 
   /**
-   * Implements PdcSubscription check for axis deletion. It deletes all references to this axis from
-   * PdcSubscription module DB
-   *
+   * Checks the deletion of an axis of the PdC. All the position criteria referring the deleted
+   * axis are deleted, as well as the subscriptions on them, and all their subscribers are
+   * notified.
    * @param axisId the axis to be checked
    * @param axisName the name of the axis
    */

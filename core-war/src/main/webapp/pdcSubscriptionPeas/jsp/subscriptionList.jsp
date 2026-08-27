@@ -23,231 +23,150 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.Tab" %>
-<%@ page import="org.owasp.encoder.Encode" %>
-
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="slfn" uri="silverpeas.tags.silverFunctions" %>
 <%@ include file="check.jsp" %>
 
-<%!
-    public final static String separatorPath = ">";
-    public final static int maxEltAuthorized = 5;
-    public final static String troncateSeparator = "...";
-    public final static int nbShowedEltAuthorized = 2;
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-    void troncatePath(StringBuilder completPath, List<Value> list, boolean isLinked, int
-            withLastValue,
-            String language) {
-        Value value;
-        // prend les nbShowedEltAuthorized 1er elements
-        for (int nb = 0; nb < nbShowedEltAuthorized; nb++) {
-            value = list.get(nb);
-            completPath.append(linkedNode(value, isLinked, language))
-                    .append(separatorPath);
-        }
+<fmt:message var="deletionConfirm" key="confirmDeleteSubscription"/>
 
-        // colle ici les points de suspension
-        completPath.append(troncateSeparator).append(separatorPath);
+<c:set var="webCtxt"><%= m_context%></c:set>
+<c:set var="context" value="${requestScope.context}"/>
+<c:set var="path" value="${requestScope.path}"/>
+<c:set var="ctrl" value="${requestScope.pdcSubscriptionPeas}"/>
+<jsp:useBean id="ctrl" type="org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController"/>
+<c:set var="action" value="${requestScope.action}"/>
+<c:set var="readOnly" value="${action != null and action == 'showUserSubscriptions'}"/>
+<c:set var="subscriptions" value="${requestScope.subscriptionList}"/>
+<%-- In the window of the PdC, only the forced subscriptions are listed and they are managed by
+     the managers of the PdC. In the window of the personal subscriptions, a forced subscription
+     can neither be updated nor deleted by the subscriber himself. --%>
+<c:set var="forcedContext" value="${context == 'pdc'}"/>
+<c:set var="canManageForced" value="${forcedContext and ctrl.pdcManager}"/>
 
-        // prend les nbShowedEltAuthorized derniers elements
-        for (int nb = nbShowedEltAuthorized + withLastValue; nb > withLastValue; nb--) {
-            value = list.get(list.size() - nb);
-            completPath.append(linkedNode(value, isLinked, language))
-                    .append(separatorPath);
-        }
-    }
-
-    String linkedNode(Value unit, boolean isLinked, String language) {
-        String node;
-
-        // Attention la partie hyperlink est a faire !!!!
-        if (isLinked) {
-            node = "<a href=" + unit.getPath() + ">" + Encode.forHtml(unit.getName(language)) +
-                    "</a>";
-        } else {
-            node = Encode.forHtml(unit.getName(language));
-        }
-
-        return node;
-    }
-
-    String buildCompletPath(List<Value> list, String language) {
-        boolean isLinked = false;
-        int withLastValue = 0;
-        StringBuilder completPath = new StringBuilder();
-
-        // on regarde d'en un 1er temps le nombre d'element de la liste que l'on recoit.
-        // si ce nombre est strictement superieur a maxEltAuthorized alors on doit tronquer le chemin complet
-        // et l'afficher comme suit : noeud1 / noeud2 / ... / noeudn-1 / noeudn
-        if (list.size() > maxEltAuthorized) {
-            troncatePath(completPath, list, isLinked, withLastValue, language);
-        } else {
-            for (int nb = 0; nb < list.size() - withLastValue; nb++) {
-                Value value = list.get(nb);
-                completPath.append(linkedNode(value, isLinked, language))
-                        .append(separatorPath);
-            }
-        }
-
-        String path = completPath.toString().trim();
-        if (path.isEmpty() || path.equals(">")) {
-            path = null;
-        } else {
-            path = path.substring(0, completPath.length() - separatorPath.length());
-            // retire le dernier separateur
-        }
-
-        return path;
-    }
-
-
-    public String formatPDCContext(List<List<Value>> pathCriteria, String language) {
-        if (pathCriteria == null) {
-            return "";
-        }
-        StringBuilder result = new StringBuilder();
-        int size = pathCriteria.size();
-        for (int k = 0; k < size; k++) {
-            List<Value> list = pathCriteria.get(k);
-            String fullPath = buildCompletPath(list, language);
-            result.append(fullPath);
-            if (k < size - 1) {
-                result.append(" X ");
-            }
-        }
-
-        return result.toString();
-    }
-
-    %>
-
-<%
-    //noinspection unchecked
-    List<List<List<Value>>>	pathContext	= (List<List<List<Value>>>) request.getAttribute("PathContext");
-    //noinspection unchecked
-    List<PdcSubscription>	subscriptionList = (List<PdcSubscription>) request.getAttribute("subscriptionList");
-	String action = (String) request.getAttribute("action");
-	String userId = (String) request.getAttribute("userId");
-
-    boolean isReadOnly = action != null && action.equals("showUserSubscriptions");
-
-    final String iconEdit		= m_context+"/util/icons/update.gif";
-    final String iconAdd		= resource.getIcon("icoAddNew");
-    final String iconDelete		= resource.getIcon("icoDelete");
-    final String path			= resource.getString("Path");
-
-    if ( subscriptionList == null ){
-       subscriptionList = new ArrayList<>();
-    }
-
-%>
 <view:sp-page>
-<view:sp-head-part withCheckFormScript="true">
-<script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
-<script type="text/javascript">
-function newSubscription() {
-        chemin = '<%=m_context%>/RpdcSubscriptionPeas/jsp/PdcSubscription';
-                largeur = "600";
-                hauteur = "440";
-                SP_openWindow(chemin,"",largeur,hauteur,"resizable=yes,scrollbars=yes");
-}
-
-function editSubscription(scid) {
-		chemin = '<%=m_context%>/RpdcSubscriptionPeas/jsp/PdcSubscription?pdcSId=' + scid ;
-                largeur = "600";
-                hauteur = "440";
-                SP_openWindow(chemin,"",largeur,hauteur,"resizable=yes,scrollbars=yes");
-}
-
-function deleteSubscription() {
-  const boxItems = document.subscriptionList.pdcCheck;
-  let selectItems = "";
-  if (boxItems != null) {
-    // au moins une checkbox exist
-    const nbBox = boxItems.length;
-    if ((nbBox == null) && (boxItems.checked === true)) {
-      selectItems += boxItems.value;
-    } else {
-      for (i = 0; i < boxItems.length; i++) {
-        if (boxItems[i].checked === true) {
-          selectItems += boxItems[i].value + ",";
+  <view:sp-head-part withCheckFormScript="true">
+    <script type="text/javascript" src="${webCtxt}/pdcPeas/jsp/javascript/formUtil.js"></script>
+    <script type="text/javascript">
+      function deleteSubscription() {
+        const form = document.subscriptionList;
+        const checked = $('input[name="pdcCheck"]:checked', form).length > 0;
+        if (checked) {
+          jQuery.popup.confirm('<view:encodeJs string="${deletionConfirm}"/>', function() {
+            form.mode.value = 'delete';
+            form.submit();
+          });
         }
       }
-      selectItems = selectItems.substring(0, selectItems.length - 1);
-    }
-  }
-  if (selectItems.length > 0) {
-    jQuery.popup.confirm("<%=resource.getString("confirmDeleteSubscription")%>", function() {
-      document.subscriptionList.mode.value = 'delete';
-      document.subscriptionList.submit();
-    });
-  }
-}
-</script>
-</view:sp-head-part>
-<view:sp-body-part cssClass="txtlist">
-<form name="subscriptionList" action="<%=action%>" method="post">
-<input type="hidden" name="mode"/>
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part cssClass="txtlist">
+    <form name="subscriptionList" action="${action}" method="post">
+      <input type="hidden" name="mode"/>
+      <input type="hidden" name="context" value="${context}"/>
+      <input type="hidden" name="scope" value="${requestScope.scope}"/>
 
- <%
-     browseBar.setComponentName(path);
+      <view:browseBar componentId="${path}"/>
 
-     TabbedPane tabbedPane = gef.getTabbedPane();
-     sessionController.getSubscriptionCategories().forEach(c -> {
-         final String subscriptionResourceCategoryUrl = "ViewSubscriptionOfCategory?userId=" + userId + "&action=" + action + "&subResCategory=" + c.getId();
-         Tab tab = tabbedPane.addTab(Encode.forHtml(c.getLabel()),
-                 subscriptionResourceCategoryUrl, false);
-         tab.setName(c.getId());
-     });
-     Tab tabPDC = tabbedPane.addTab(resource.getString("pdc"), "#", true);
-     tabPDC.setName("PDC");
+      <c:if test="${not readOnly}">
+        <fmt:message var="subscrAdding" key="AddSC"/>
+        <fmt:message var="subscrAddingIcon" key="icoAddNew" bundle="${icons}"/>
+        <c:url var="addingIconURL" value="${subscrAddingIcon}"/>
+        <c:url var="subscrAddingUrl"
+               value="/RpdcSubscriptionPeas/jsp/PdcSubscription?path=${path}&context=${context}&scope=${requestScope.scope}"/>
+        <view:operationPane>
+          <view:operationOfCreation action="${subscrAddingUrl}"
+                                    icon="${addingIconURL}"
+                                    altText="${subscrAdding}"/>
+          <c:if test="${not subscriptions.isEmpty()}">
+            <fmt:message var="subscrDeletion" key="DeleteSC"/>
+            <fmt:message var="subscrDeletionIcon" key="icoDelete" bundle="${icons}"/>
+            <c:url var="deletionIconURL" value="${subscrDeletionIcon}"/>
+            <view:operation action="javascript:deleteSubscription()"
+                            altText="${subscrDeletion}"
+                            icon="${deletionIconURL}"/>
+          </c:if>
+        </view:operationPane>
+      </c:if>
 
-     if (!isReadOnly) {
-         operationPane.addOperationOfCreation(iconAdd, resource.getString("AddSC"), m_context + "/RpdcSubscriptionPeas/jsp/PdcSubscription");
-         if (!subscriptionList.isEmpty()) {
-             operationPane.addOperation(iconDelete, resource.getString("DeleteSC"), "javascript:deleteSubscription()");
-         }
-     }
+      <view:window>
+        <c:if test="${context == 'userSubscriptions'}">
+          <fmt:message var="pdcTitle" key="pdc"/>
+          <c:set var="userId" value="${requestScope.userId}"/>
+          <c:set var="actionUrl"
+                 value="ViewSubscriptionOfCategory?userId=${userId}&action=${action}&subResCategory="/>
+          <view:tabs>
+            <c:forEach var="category" items="${ctrl.subscriptionCategories}">
+              <jsp:useBean id="category"
+                           type="org.silverpeas.web.pdcsubscription.control.SubscriptionCategory"/>
+              <view:tab label="${slfn:escapeHtml(category.label)}"
+                        action="${actionUrl}${category.id}"
+                        selected="false"
+                        name="${category.id}"/>
+            </c:forEach>
+            <view:tab label="${pdcTitle}" action="#" selected="true" name="PDC"/>
+          </view:tabs>
+        </c:if>
 
-     out.println(window.printBefore());
-     out.println(tabbedPane.print());
-%>
-<view:frame>
-<view:areaOfOperationOfCreation/>
-<%
-      ArrayPane arrayPane = gef.getArrayPane("tableau1", action + "?userId=" + userId, request, session);
+        <view:frame>
+          <view:areaOfOperationOfCreation/>
+          <view:arrayPane var="tableau1" routingAddress="${action}?userId=${userId}">
+            <fmt:message var="title" key="name"/>
+            <fmt:message var="value" key="value"/>
+            <c:if test="${not forcedContext}">
+              <fmt:message var="subscriptionType" key="SubscriptionType"/>
+              <view:arrayColumn title="${subscriptionType}" sortable="true"/>
+            </c:if>
+            <view:arrayColumn title="${title}"/>
+            <view:arrayColumn title="${value}" sortable="false"/>
+            <c:if test="${not readOnly}">
+              <fmt:message var="operations" key="Operations"/>
+              <view:arrayColumn title="${operations}" sortable="false"/>
+            </c:if>
+            <view:arrayLines var="subscr" items="${subscriptions}">
+              <jsp:useBean id="subscr"
+                           type="org.silverpeas.web.pdcsubscription.control.PdcSubscriptionData"/>
+              <c:set var="manageable" value="${canManageForced or not subscr.forced}"/>
+              <view:arrayLine>
+                <c:if test="${not forcedContext}">
+                  <view:arrayCellText text="${subscr.nature}"/>
+                </c:if>
+                <view:arrayCellText text="${silfn:escapeHtml(subscr.name)}"/>
+                <view:arrayCellText text="${subscr.pdCPositions}"/>
+                <c:if test="${not readOnly}">
+                  <view:arrayCellText>
+                    <c:if test="${manageable}">
+                      <fmt:message var="edit" key="EditSC"/>
+                      <c:url var="editIcon" value="/util/icons/update.gif"/>
+                      <c:url var="editUrl"
+                             value="/RpdcSubscriptionPeas/jsp/PdcSubscription?pdcSId=${subscr.id}&path=${path}&context=${context}&scope=${requestScope.scope}"/>
+                      <view:icon iconName="${editIcon}" altText="${edit}" action="${editUrl}"/>
+                      <span style="padding-left: 1em;"></span>
+                      <input id="${subscr.id}" type="checkbox" name="pdcCheck" value="${subscr.id}"/>
+                    </c:if>
+                  </view:arrayCellText>
+                </c:if>
+              </view:arrayLine>
+            </view:arrayLines>
+          </view:arrayPane>
 
-      arrayPane.addArrayColumn(resource.getString("name"));
-      ArrayColumn column = arrayPane.addArrayColumn(resource.getString("value"));
-      column.setSortable(false);
-      if (!isReadOnly) {
-          ArrayColumn column0 = arrayPane.addArrayColumn(resource.getString("Operations"));
-		  column0.setSortable(false);
-      }
-
-	  for (int i =0 ; i < subscriptionList.size(); i++ ) {
-          PdcSubscription ps = subscriptionList.get(i);
-          ArrayLine line = arrayPane.addArrayLine();
-		  line.addArrayCellText(Encode.forHtml(ps.getName()));
-		  line.addArrayCellText(formatPDCContext(pathContext.get(i), resource.getLanguage()));
-
-          IconPane iconPane	= gef.getIconPane();
-          Icon updateIcon = iconPane.addIcon();
-          updateIcon.setProperties(iconEdit, resource.getString("EditSC"), m_context + "/RpdcSubscriptionPeas/jsp/PdcSubscription?pdcSId="+ps.getId());
-
-		  if (!isReadOnly) {
-			  line.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"pdcCheck\" value=\""+ps.getId()+"\"/>");
-		  }
-	  }
-
-  out.println(arrayPane.print());
-%>
-</view:frame>
-<%
-  out.println(window.printAfter());
- %>
-</form>
-</view:sp-body-part>
+          <c:if test="${context == 'pdc'}">
+            <br/>
+            <view:buttonPane cssClass="center">
+              <fmt:message var="goBack" key="GML.back"/>
+              <view:button label="${goBack}" action="javascript:spAdminWindow.loadOperation(21)"/>
+            </view:buttonPane>
+          </c:if>
+        </view:frame>
+      </view:window>
+    </form>
+  </view:sp-body-part>
 </view:sp-page>

@@ -21,85 +21,66 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/*
- * Aliaksei_Budnikau
- * Date: Oct 24, 2002
- */
 package org.silverpeas.core.pdc.subscription.model;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.core.pdc.classification.Criteria;
-import java.util.List;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.service.AbstractSubscription;
+import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 
-public class PdcSubscription implements java.io.Serializable, Cloneable {
+/**
+ * A subscription of a user or of a group of users to position criteria on the axis of the PdC.
+ * <p>
+ * As any subscription in Silverpeas, it can be either created by the subscriber himself or forced
+ * by a manager of the PdC for one or more users or groups of users.
+ * </p>
+ * @author mmoquillon
+ */
+public class PdcSubscription extends AbstractSubscription<PdcSubscriptionPositionCriteria> {
 
-  private static final long serialVersionUID = 7886692014029046614L;
-  public static final int NULL_ID = -1;
-  private int id = NULL_ID;
-  private String name;
-  private List<? extends Criteria> pdcContext;
-  private int ownerId = NULL_ID;
-
-  protected PdcSubscription() {
-  }
-
-  public PdcSubscription(int id, String name, List<? extends Criteria> pdcContext, int ownerId) {
-    this.id = id;
-    this.name = name;
-    this.pdcContext = pdcContext;
-    this.ownerId = ownerId;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public List<? extends Criteria> getPdcContext() {
-    return pdcContext;
-  }
-
-  public void setPdcContext(List<? extends Criteria> pdcContext) {
-    this.pdcContext = pdcContext;
-  }
-
-  public int getOwnerId() {
-    return ownerId;
-  }
-
-  public void setOwnerId(int ownerId) {
-    this.ownerId = ownerId;
+  /**
+   * Constructs a subscription of the specified user to the given position criteria on the PdC. The
+   * user is both the subscriber and the creator of the subscription, and hence the subscription is
+   * a {@link org.silverpeas.core.subscription.constant.SubscriptionMethod#SELF_CREATION} one.
+   * @param subscriberId the unique identifier of the user that subscribes.
+   * @param resource the position criteria on the PdC aimed by the subscription.
+   */
+  public PdcSubscription(final String subscriberId, final PdcSubscriptionPositionCriteria resource) {
+    super(UserSubscriptionSubscriber.from(subscriberId), resource, subscriberId);
   }
 
   /**
-   * Overriden toString method for debug/trace purposes
+   * Constructs a subscription of the specified subscriber to the given position criteria on the
+   * PdC. The subscription method is deduced from both the type of the subscriber and the user
+   * that has handled the subscription.
+   * @param subscriber the user or the group of users that is subscribed.
+   * @param resource the position criteria on the PdC aimed by the subscription.
+   * @param creatorId the unique identifier of the user that has handled the subscription.
    */
-  @Override
-  public String toString() {
-    return "PdcSubscription object : [ id = " + id + ", name = " + name
-        + ", ownerId = " + ownerId + ", pdcContext = " + pdcContext + " ];";
+  public PdcSubscription(final SubscriptionSubscriber subscriber,
+      final PdcSubscriptionPositionCriteria resource, final String creatorId) {
+    super(subscriber, resource, creatorId);
   }
 
   /**
-   * Support Cloneable Interface
+   * Constructs a subscription of the specified subscriber to the given position criteria on the PdC
+   * with an explicit subscription method.
+   * <p>
+   * Unlike {@link #PdcSubscription(SubscriptionSubscriber, PdcSubscriptionPositionCriteria, String)}, the
+   * method isn't deduced from the subscriber and the creator. It is required by the management of
+   * the forced subscriptions on the PdC: a manager of the PdC that subscribes himself among the
+   * other subscribers has to be subscribed by a
+   * {@link SubscriptionMethod#FORCED} subscription and not by a self created one, otherwise the
+   * position criteria he manages wouldn't be anymore listed as a forced subscription.
+   * </p>
+   * @param subscriber the user or the group of users that is subscribed.
+   * @param resource the position criteria on the PdC aimed by the subscription.
+   * @param method the method by which the subscription has been done.
+   * @param creatorId the unique identifier of the user that has handled the subscription.
    */
-  @Override
-  public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new SilverpeasRuntimeException(e); // this should never happened
-    }
+  public PdcSubscription(final SubscriptionSubscriber subscriber,
+      final PdcSubscriptionPositionCriteria resource, final SubscriptionMethod method,
+      final String creatorId) {
+    super(subscriber, resource, method, creatorId, null);
   }
 }
