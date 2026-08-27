@@ -27,8 +27,11 @@ import org.silverpeas.core.contribution.contentcontainer.content.ManagedContribu
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
+import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionPositionCriteria;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
+
+import java.util.Collection;
 
 import static org.silverpeas.core.util.URLUtil.getSearchResultURL;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
@@ -37,9 +40,9 @@ public class PdcResourceClassificationUserNotification
     extends AbstractPdcSubscriptionUserNotification<ManagedContribution>
     implements UserSubscriptionNotificationBehavior {
 
-  public PdcResourceClassificationUserNotification(PdcSubscription pdcSubscription,
-      ManagedContribution silverContent) {
-    super(pdcSubscription, silverContent);
+  public PdcResourceClassificationUserNotification(PdcSubscriptionPositionCriteria pdcResource,
+      Collection<String> recipientIds, ManagedContribution silverContent) {
+    super(pdcResource, recipientIds, silverContent);
   }
 
   @Override
@@ -68,19 +71,39 @@ public class PdcResourceClassificationUserNotification
 
   @Override
   protected void performBuild(final ManagedContribution silverContent) {
-    String lang = getUserLanguage(getPdcSubscription().getOwnerId());
-    LocalizationBundle resources = getBundle(lang);
+    DisplayI18NHelper.getLanguages().forEach(lang -> {
+      final LocalizationBundle resources = getBundle(lang);
+      final String message = resources.getString("Subscription") +
+          getPdcSubscriptionPositionCriteria().getName() + "\n" + resources.getString("DocumentName") +
+          silverContent.getName(lang) + "\n";
+      getNotificationMetaData()
+          .addLanguage(lang, resources.getString("standartMessage"), message);
+    });
+  }
 
-    String message = resources.getString("Subscription") + getPdcSubscription().getName() +
-      "\n" + resources.getString("DocumentName") + silverContent.getName(lang) + "\n";
-
-    getNotificationMetaData().setTitle(resources.getString("standartMessage"));
-    getNotificationMetaData().setContent(message);
+  /**
+   * As the notification is sent at once to several subscribers that don't necessarily share the
+   * same language, a {@link NotificationResourceData} is computed for each of the languages
+   * supported by the platform instead of for the single default one.
+   */
+  @Override
+  protected void performNotificationResource(final ManagedContribution silverContent) {
+    DisplayI18NHelper.getLanguages().forEach(lang -> {
+      final NotificationResourceData data = initializeNotificationResourceData();
+      performNotificationResource(silverContent, data, lang);
+      getNotificationMetaData().setNotificationResourceData(lang, data);
+    });
   }
 
   @Override
   protected void performNotificationResource(final ManagedContribution silverContent,
       final NotificationResourceData notificationResourceData) {
+    performNotificationResource(silverContent, notificationResourceData,
+        DisplayI18NHelper.getDefaultLanguage());
+  }
+
+  private void performNotificationResource(final ManagedContribution silverContent,
+      final NotificationResourceData notificationResourceData, final String language) {
 
     // If the resource is not a SilvepeasContent implementation, id and type are filled here.
     if (notificationResourceData.getResourceId() == null) {
@@ -88,10 +111,9 @@ public class PdcResourceClassificationUserNotification
       notificationResourceData.setResourceType("PDCSubscriptionUnknownResourceType");
     }
 
-    // Resource name and description are filled in relation with the user language.
-    String lang = getUserLanguage(getPdcSubscription().getOwnerId());
-    notificationResourceData.setResourceName(silverContent.getName(lang));
-    notificationResourceData.setResourceDescription(silverContent.getDescription(lang));
+    // Resource name and description are filled in relation with the language of the recipients.
+    notificationResourceData.setResourceName(silverContent.getName(language));
+    notificationResourceData.setResourceDescription(silverContent.getDescription(language));
   }
 
   @Override

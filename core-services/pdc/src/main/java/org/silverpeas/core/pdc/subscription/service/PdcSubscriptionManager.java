@@ -25,7 +25,6 @@ package org.silverpeas.core.pdc.subscription.service;
 
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.pdc.classification.Value;
-import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.util.ServiceProvider;
 
 import jakarta.inject.Inject;
@@ -46,14 +45,6 @@ public class PdcSubscriptionManager {
 
   protected PdcSubscriptionManager() {
 
-  }
-
-  public PdcSubscription getPdcSubscriptionById(int id) {
-    return pdcSubscriptionService.getPdcSubscriptionById(id);
-  }
-
-  public void createPdCSubscription(PdcSubscription subscription) {
-    pdcSubscriptionService.createPdcSubscription(subscription);
   }
 
   public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,

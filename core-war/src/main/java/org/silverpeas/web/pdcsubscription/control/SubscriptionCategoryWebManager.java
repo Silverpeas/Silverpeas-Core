@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingInt;
+import static org.silverpeas.core.pdc.subscription.model.PdcSubscriptionConstants.PDC;
 
 /**
  * The manager of Subscription Categories.
@@ -72,6 +73,9 @@ public class SubscriptionCategoryWebManager {
         .streamAll()
         .filter(SubscriptionResourceType::isValid)
         .filter(Predicate.not(SubscriptionContributionType.class::isInstance))
+        // the subscriptions on the PdC have their own dedicated tab as the positions on the axis
+        // of the PdC require a specific rendering
+        .filter(Predicate.not(PDC::equals))
         .map(t -> new DefaultSubscriptionCategory(ctrl, t));
     categories = Stream.concat(categories, Stream.of(new ContributionSubscriptionCategory(ctrl)));
     return categories.sorted(

@@ -26,14 +26,15 @@ package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 import jakarta.servlet.jsp.JspException;
 import jakarta.servlet.jsp.tagext.TagSupport;
 
+import java.io.Serial;
+
 public class BrowseBarElementTag extends TagSupport {
 
   private String label;
   private String link;
   private String eltId;
-  /**
-   *
-   */
+
+  @Serial
   private static final long serialVersionUID = -8148199393832209872L;
 
   public void setLabel(String label) {

@@ -900,6 +900,15 @@
       </deferred-value>
     </attribute>
     <attribute>
+      <description>Forces the name of the domain to which the browse bar belongs. The
+        domain is the upper father of a resource. For example, the name of an
+        administrative tool in the backoffice or the name of a user domain.</description>
+      <name>domainName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
       <description>Forces spaceId (useful in portlets page and space homepage)</description>
       <name>spaceId</name>
       <required>false</required>
@@ -915,7 +924,7 @@
     </attribute>
     <attribute>
       <description>
-        Defines a Javascript callback on component id element instead of having a
+        Defines a JavaScript callback on component id element instead of having a
         computed URL when clicking on component name part.
         The component id is given as first and only one parameter.
       </description>
@@ -932,7 +941,7 @@
       <type>boolean</type>
     </attribute>
     <attribute>
-      <description>Allows to display a non clickable breadcrumb</description>
+      <description>Allows to display a non-clickable breadcrumb</description>
       <name>clickable</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -940,12 +949,32 @@
     </attribute>
     <attribute>
       <description>
-        Defines a Javascript callback on space id element instead of having a
+        Defines a JavaScript callback on space id element instead of having a
         computed URL when clicking on space name part.
         The space id is given as first and only one parameter.
       </description>
       <name>spaceJsCallback</name>
       <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>A display language selector within a browse bar</description>
+    <name>browseBarLangSelector</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarLanguageSelectorTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The actual display language (the ISO 639-1 code of a language)</description>
+      <name>lang</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The link to the selector function (can be an URL)</description>
+      <name>link</name>
+      <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>

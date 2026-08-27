@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.comment.service;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -168,7 +169,7 @@ public class CommentUserNotification
   }
 
   @Override
-  protected String getLocalizationBundlePath() {
+  protected @NonNull String getLocalizationBundlePath() {
     return "org.silverpeas.util.comment.multilang.comment";
   }
 

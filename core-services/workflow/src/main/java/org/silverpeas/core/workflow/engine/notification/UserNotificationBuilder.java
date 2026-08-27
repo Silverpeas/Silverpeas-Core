@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.workflow.engine.notification;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
@@ -139,7 +140,7 @@ public class UserNotificationBuilder extends AbstractTemplateUserNotificationBui
   }
 
   @Override
-  protected String getLocalizationBundlePath() {
+  protected @NonNull String getLocalizationBundlePath() {
     return MULTILANG_BUNDLE;
   }
 

@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.calendar.notification.user;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.PlannedOnCalendar;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
@@ -65,7 +66,7 @@ public abstract class AbstractCalendarUserNotificationBuilder<P extends PlannedO
   }
 
   @Override
-  protected String getLocalizationBundlePath() {
+  protected @NonNull String getLocalizationBundlePath() {
     return "org.silverpeas.calendar.multilang.usernotification";
   }
 

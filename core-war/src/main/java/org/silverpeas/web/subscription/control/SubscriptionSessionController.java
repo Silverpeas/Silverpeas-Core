@@ -48,6 +48,7 @@ import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,28 +56,21 @@ import java.util.stream.Stream;
 import static org.silverpeas.core.subscription.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 04/03/13
  */
 public class SubscriptionSessionController extends AbstractComponentSessionController {
+  @Serial
   private static final long serialVersionUID = -5612529905360855746L;
 
   private transient SubscriptionService subscriptionService;
 
-  /**
-   * Default constructor.
-   * @param controller
-   * @param context
-   */
   public SubscriptionSessionController(final MainSessionController controller,
       final ComponentContext context) {
     super(controller, context, "org.silverpeas.subscription.multilang.subscriptionBundle");
   }
 
-  /**
-   * Gets the context.
-   * @return
-   */
+
   public SubscriptionContext getContext() {
     return getSubscriptionContext();
   }
@@ -129,10 +123,10 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
   }
 
   /*
-   * Retour du UserPanel
+   * Back from UserPanel
    */
   public void fromUserPanel() {
-    // Getting selection informations
+    // Getting selection information
     Selection sel = getSelection();
     UserDetail[] users = SelectionUsersGroups.getUserDetails(sel.getSelectedElements());
     Group[] groups = SelectionUsersGroups.getGroups(sel.getSelectedSets());
