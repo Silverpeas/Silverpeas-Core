@@ -158,7 +158,7 @@
    * @param withLastValue on garde ou non la valeur sélectionnée
    * @return completPath le chemin fabrique
    */
-  String troncatePath(String completPath, List<Value> list, boolean isLinked, int withLastValue,
+  String truncatePath(String completPath, List<Value> list, boolean isLinked, int withLastValue,
       String language) {
     // prend les nbShowedEltAuthorized 1er elements
     StringBuilder completPathBuilder = new StringBuilder(completPath);
@@ -197,7 +197,7 @@
     // et l'afficher comme suit : node1 / node2 / ... / node<n>-1 / node<n>
     Value value;
     if (list.size() > maxEltAuthorized) {
-      completPath.append(troncatePath(completPath.toString(), list, isLinked, withLastValue,
+      completPath.append(truncatePath(completPath.toString(), list, isLinked, withLastValue,
           language));
     } else {
       for (int nb = 0; nb < list.size() - withLastValue; nb++) {

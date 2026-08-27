@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.workflow.engine.notification;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
@@ -133,7 +134,7 @@ public abstract class AbstractReplacementNotificationBuilder
   }
 
   @Override
-  protected String getLocalizationBundlePath() {
+  protected @NonNull String getLocalizationBundlePath() {
     return MULTILANG_BUNDLE;
   }
 }
