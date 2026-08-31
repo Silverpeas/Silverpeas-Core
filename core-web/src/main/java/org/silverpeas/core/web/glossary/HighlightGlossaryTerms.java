@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.glossary;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -42,6 +43,7 @@ import static java.text.MessageFormat.format;
 /**
  * @author David Derigent
  */
+@Bean
 public class HighlightGlossaryTerms {
 
   @Inject
@@ -58,10 +60,10 @@ public class HighlightGlossaryTerms {
    * occurrences found in the given text. The regular expression used to retrieve the occurrence
    * works only in HTML code, not in plain text. This code is designed to parse HTML code.
    * @param publicationContent the publication text used to perform the highlight operation
-   * @param className the css class name used to "mark" the highlighted term and format his
+   * @param className the CSS class name used to "mark" the highlighted term and format his
    * displaying
    * @param axisId The pdc axis identifier used to load the glossary
-   * @param onlyFirst indicates if all the occurrence of a term must be highlight or only the first
+   * @param onlyFirst indicates if all the occurrence of a term must be highlighted or only the first
    * @param language indicates the language use to load information from glossary
    * @return a String which contain given publication with highlight term.
    */

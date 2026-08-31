@@ -31,12 +31,6 @@ import java.util.Comparator;
  */
 public class TermComparator implements Comparator<TreeNode> {
 
-  /**
-   *
-   */
-  public TermComparator() {
-  }
-
   @Override
   public int compare(TreeNode firstTreeNode, TreeNode secondTreeNode) {
     String t1 = firstTreeNode.getName();
