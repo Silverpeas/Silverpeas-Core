@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.publication.model;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,19 +38,20 @@ import java.util.List;
  */
 public class CompletePublication implements Serializable {
 
-  private static final long serialVersionUID = 7644813195325660580L;
+  @Serial
+  private static final long serialVersionUID = 7644813195325660581L;
 
-  private PublicationDetail pubDetail;
+  private final PublicationDetail pubDetail;
 
   /**
    * The publications linked to the current publication
    */
-  private List<PublicationLink> linkList;
+  private final List<PublicationLink> linkList;
 
   /**
    * The publications which are a reference to the current publication
    */
-  private List<PublicationLink> reverseLinkList;
+  private final List<PublicationLink> reverseLinkList;
 
   private List<ValidationStep> validationSteps = null;
 

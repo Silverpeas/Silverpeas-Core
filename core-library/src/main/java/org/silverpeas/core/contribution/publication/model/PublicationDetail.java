@@ -72,6 +72,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.PrintWriter;
+import java.io.Serial;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.MessageFormat;
@@ -107,7 +108,8 @@ import static org.silverpeas.kernel.util.StringUtil.split;
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     implements I18nContribution, ContributionWithVisibility, SilverpeasContent, Rateable,
     Serializable, WithAttachment, WithThumbnail, WithReminder, WithPermanentLink, WithURL {
-  private static final long serialVersionUID = 9199848912262605680L;
+  @Serial
+  private static final long serialVersionUID = 9199848912262605681L;
 
   private static final String EXCHANGE_NAMESPACE = "http://www.silverpeas.org/exchange";
   public static final String DELAYED_VISIBILITY_AT_MODEL_PROPERTY = "DELAYED_VISIBILITY_AT";
