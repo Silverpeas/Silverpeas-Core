@@ -31,23 +31,36 @@ import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
 import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 
 import jakarta.servlet.jsp.JspException;
+import org.silverpeas.kernel.util.StringUtil;
+
+import java.io.Serial;
 import java.util.Optional;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class BrowseBarTag extends NeedWindowTag {
 
+  @Serial
   private static final long serialVersionUID = 2496136938371562945L;
-  private BrowseBar browseBar;
+  private transient BrowseBar browseBar;
   private String extraInformations;
-  private Object path;
+  private transient Object path;
   private String spaceId;
   private String componentId;
   private String componentJsCallback;
   private String spaceJsCallback;
+  private String domainName;
 
   private boolean ignoreComponentLink = true;
   private boolean clickable = true;
+
+  public String getDomainName() {
+    return domainName;
+  }
+
+  public void setDomainName(String domainName) {
+    this.domainName = domainName;
+  }
 
   public void setExtraInformations(String extraInformations) {
     this.extraInformations = extraInformations;
@@ -81,13 +94,12 @@ public class BrowseBarTag extends NeedWindowTag {
     this.spaceJsCallback = spaceJsCallback;
   }
 
-  @Override
-  public int doEndTag() throws JspException {
-    return EVAL_PAGE;
-  }
-
   public void addElement(BrowseBarElement element) {
     browseBar.addElement(element);
+  }
+
+  public void setI18N(String url, String language) {
+    browseBar.setI18N(url, language);
   }
 
   @Override
@@ -98,6 +110,7 @@ public class BrowseBarTag extends NeedWindowTag {
 
     applyExtraInformations();
     applyPath();
+    applyDomainData();
     applyComponentData();
     applySpaceData();
 
@@ -109,16 +122,21 @@ public class BrowseBarTag extends NeedWindowTag {
     return EVAL_BODY_INCLUDE;
   }
 
+  private void applyDomainData() {
+    if (StringUtil.isDefined(domainName)) {
+      browseBar.setDomainName(domainName);
+    }
+  }
+
   private void applyNavigationContextData() {
-    if (path instanceof NavigationContext) {
-      NavigationContext.NavigationStep currentNavigationStep = ((NavigationContext) path)
-          .getBaseNavigationStep();
+    if (path instanceof NavigationContext<?> navCtx) {
+      NavigationContext<?>.NavigationStep currentNavigationStep = navCtx.getBaseNavigationStep();
       while (currentNavigationStep != null) {
         if (isDefined(currentNavigationStep.getLabel())) {
           String link = "#";
           if (currentNavigationStep.isUriMustBeUsedByBrowseBar()) {
             link = URLUtil.getApplicationURL() +
-                currentNavigationStep.getUri().toString().replaceAll("[&]ArrayPaneAction.*", "");
+                currentNavigationStep.getUri().toString().replaceAll("&ArrayPaneAction.*", "");
           }
           BrowseBarElement element = new BrowseBarElement(currentNavigationStep.getLabel(), link,
               null);

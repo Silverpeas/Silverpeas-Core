@@ -31,7 +31,7 @@ import org.silverpeas.web.subscription.constant.SubscriptionFunction;
 import org.silverpeas.web.subscription.control.SubscriptionSessionController;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 04/03/13
  */
 public class SubscriptionRequestRouter
@@ -52,27 +52,17 @@ public class SubscriptionRequestRouter
   public String getDestination(final String function,
       final SubscriptionSessionController subscriptionSC, final HttpRequest request) {
 
-    // Initializing destination
-    String destination = "";
-
     // Setting the context
     request.setAttribute("context", subscriptionSC.getContext());
 
-    switch (SubscriptionFunction.from(function)) {
-      case ToUserPanel:
-        destination = subscriptionSC.toUserPanel();
-        break;
-      case FromUserPanel:
-        subscriptionSC.fromUserPanel();
-        destination = getDestination(SubscriptionFunction.Main.name(), subscriptionSC, request);
-        break;
-      case Main:
-      default:
-        destination = "/subscription/jsp/subscriptionpanel.jsp";
-        break;
-    }
-
     // Returning the destination
-    return destination;
+    return switch (SubscriptionFunction.from(function)) {
+      case ToUserPanel -> subscriptionSC.toUserPanel();
+      case FromUserPanel -> {
+        subscriptionSC.fromUserPanel();
+        yield getDestination(SubscriptionFunction.Main.name(), subscriptionSC, request);
+      }
+      default -> "/subscription/jsp/subscriptionpanel.jsp";
+    };
   }
 }

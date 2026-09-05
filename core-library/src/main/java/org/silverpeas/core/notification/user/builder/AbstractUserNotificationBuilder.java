@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.user.builder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.user.*;
 import org.silverpeas.core.notification.user.client.*;
@@ -31,6 +30,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -297,7 +297,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   }
 
   /**
-   * Should the notification treatment be stopped if there is no user to notify? By default true.
+   * Should the notification treatment be stopped if there is no user to notify? By default, true.
    * This method can be overridden to specify a different or a contextualized answer. In that case,
    * the recipients setting should be then performed out of the builder.
    * @return true if no notification has to be done when no recipient is defined.
@@ -316,14 +316,15 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * For more specific localized text to use in the notification, override this method.
    * @return the path of the localization bundle.
    */
+  @NonNull
   protected String getLocalizationBundlePath() {
     return LocalizationBundle.GENERAL_BUNDLE_NAME;
   }
 
   /**
    * Gets the localization bundle from which the localized text to use in the notification can
-   * be get.
-   * @return the localization bundle whose the path is provided by the
+   * be got.
+   * @return the localization bundle whose path is provided by the
    * {@link #getLocalizationBundlePath()} method.
    */
   protected final LocalizationBundle getBundle() {
@@ -337,11 +338,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * {@link #getLocalizationBundlePath()} method.
    */
   protected final LocalizationBundle getBundle(final String language) {
-    LocalizationBundle bundle = null;
-    if (StringUtils.isNotBlank(getLocalizationBundlePath())) {
-      bundle = ResourceLocator.getLocalizationBundle(getLocalizationBundlePath(), language);
-    }
-    return bundle;
+    return ResourceLocator.getLocalizationBundle(getLocalizationBundlePath(), language);
   }
 
   /**
@@ -374,8 +371,6 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * @author Yohann Chastagnier
    */
   private static class Stop extends RuntimeException {
-    private static final long serialVersionUID = 1L;
-    // Nothing to do
   }
 
   private boolean isUserSubscriptionNotification() {

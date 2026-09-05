@@ -39,26 +39,36 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle" />
 <c:set var="isNewSubscription" value="${requestScope.IsNewPDCSubscription}"/>
-<c:set var="subscription" value="${requestScope.PdcSubscription}"/>
+<c:set var="positions" value="${requestScope.PdcSubscriptionPositions}"/>
 <c:set var="subscriptionName" value="${silfn:escapeHtml(requestScope.PDCSubscriptionName)}"/>
+<c:set var="path" value="${requestScope.path}"/>
+<c:set var="context" value="${requestScope.context}"/>
+<c:set var="isForced" value="${context eq 'pdc'}"/>
+<c:set var="subscribedUsers" value="${requestScope.SubscribedUsers}"/>
+<c:set var="subscribedGroups" value="${requestScope.SubscribedGroups}"/>
 
-<fmt:message key="Path" var="path"/>
 <fmt:message key="GML.ok" var="okLabel"/>
 <fmt:message key="GML.cancel" var="cancelLabel"/>
 <fmt:message key="pdcSubscription.Name.NotEmpty" var="invalidName"/>
 <fmt:message key="pdcSubscription.Values.NotEmpty" var="invalidValues"/>
-<fmt:message key="pdcSubscription.Update" var="updateSubscription"/>
-<fmt:message key="pdcSubscription.New" var="newSubscription"/>
+<fmt:message key="${isForced ? 'pdcSubscription.UpdateForced' : 'pdcSubscription.Update'}"
+             var="updateSubscription"/>
+<fmt:message key="${isForced ? 'pdcSubscription.NewForced' : 'pdcSubscription.New'}"
+             var="newSubscription"/>
 
+<c:url var="subscriptionListUrl" value="ViewSubscriptionTaxonomy">
+  <c:param name="context" value="${context}"/>
+  <c:param name="scope" value="${requestScope.scope}"/>
+</c:url>
 <c:choose>
 <c:when test="${!isNewSubscription}">
 	<view:browseBar extraInformations="${updateSubscription}">
-	    <view:browseBarElt label="${path}" link="ViewSubscriptionTaxonomy"/>
+	    <view:browseBarElt label="${path}" link="${subscriptionListUrl}"/>
 	</view:browseBar>
 </c:when>
 <c:otherwise>
 	<view:browseBar extraInformations="${newSubscription}">
-		<view:browseBarElt label="${path}" link="ViewSubscriptionTaxonomy"/>
+		<view:browseBarElt label="${path}" link="${subscriptionListUrl}"/>
 	</view:browseBar>
 </c:otherwise>
 </c:choose>
@@ -72,6 +82,8 @@
     <view:frame>
         <form id="PdcSubscription" name="PdcSubscription" action="addSubscription" method="POST">
           <input type="hidden" name="AxisValueCouples"/>
+          <input type="hidden" name="context" value="${context}"/>
+          <input type="hidden" name="scope" value="${requestScope.scope}"/>
             <view:board>
               <span class="txtlibform"><fmt:message key="pdcSubscription.Name"/>&nbsp;:</span>
               <input type="text" name="SubscriptionName" size="50" maxlength="100" value="${subscriptionName}"/>
@@ -79,6 +91,28 @@
             <view:board>
                 <fieldset id="used_pdc" class="skinFieldset"></fieldset>
             </view:board>
+            <c:if test="${isForced}">
+              <view:board>
+                <span class="txtlibform"><fmt:message key="pdcSubscription.Subscribers"/>&nbsp;:</span>
+                <c:choose>
+                  <c:when test="${empty subscribedUsers and empty subscribedGroups}">
+                    <span class="txtnote"><fmt:message key="pdcSubscription.NoSubscriber"/></span>
+                  </c:when>
+                  <c:otherwise>
+                    <ul class="subscribers">
+                      <c:forEach var="group" items="${subscribedGroups}">
+                        <li class="group">${silfn:escapeHtml(group.name)}</li>
+                      </c:forEach>
+                      <c:forEach var="user" items="${subscribedUsers}">
+                        <li class="user">${silfn:escapeHtml(user.displayedName)}</li>
+                      </c:forEach>
+                    </ul>
+                  </c:otherwise>
+                </c:choose>
+                <fmt:message key="pdcSubscription.UpdateSubscribers" var="updateSubscribers"/>
+                <view:button label="${updateSubscribers}" action="javascript:selectSubscribers()"/>
+              </view:board>
+            </c:if>
             <view:buttonPane>
               <view:button label="${okLabel}" action="javascript:sendSubscription()"/>
               <view:button label="${cancelLabel}" action="javascript:goBack()"/>
@@ -88,14 +122,17 @@
     </view:window>
     <script type="text/javascript">
       const values = [];
-      <c:if test="${subscription != null}">
-        <c:forEach var="criterion" items="${subscription.pdcContext}">
-          values.push({ axisId: ${criterion.axisId}, id: "${criterion.value}" });
-        </c:forEach>
-      </c:if>
+      <c:forEach var="criterion" items="${positions}">
+        values.push({ axisId: ${criterion.axisId}, id: "${criterion.value}" });
+      </c:forEach>
       $('#used_pdc').pdc('all', {
         values: values
       });
+
+      function collectPositions() {
+        $('input[name="AxisValueCouples"]').val(
+            $('#used_pdc').pdc('selectedValues').flatten());
+      }
 
       function sendSubscription() {
         const name = $('input[name="SubscriptionName"]').val();
@@ -108,12 +145,23 @@
           jQuery.popup.error('<view:encodeJs string="${invalidValues}"/>');
           return;
         }
-        $('input[name="AxisValueCouples"]').val(values.flatten());
+        collectPositions();
       <c:if test="${!isNewSubscription}">
         $('#PdcSubscription').attr('action', 'updateSubscription');
       </c:if>
         $('#PdcSubscription').submit();
       }
+
+      <c:if test="${isForced}">
+      function selectSubscribers() {
+        // the edition in progress is kept in the session before leaving this screen for the user
+        // panel from which the subscribers are designated. It isn't validated here so that the
+        // subscribers can be designated at any moment of the edition.
+        collectPositions();
+        $('#PdcSubscription').attr('action', 'ToUserPanel');
+        $('#PdcSubscription').submit();
+      }
+      </c:if>
 
       function goBack() {
         $('#PdcSubscription').attr('action', 'ViewSubscriptionTaxonomy');

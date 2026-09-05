@@ -75,17 +75,15 @@
 <fmt:message var="unsubscribeErrorMessage" key="subscription.panel.unsubscribe.message.error">
   <fmt:param value="@name@"/>
 </fmt:message>
+<fmt:message var="pageTitle" key="subscription.panel.title"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="${requestScope.resources.language}">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part title="${pageTitle}">
   <view:includePlugin name="pagination"/>
   <view:includePlugin name="datepicker"/>
   <view:includePlugin name="popup"/>
-  <title><fmt:message key="subscription.panel.title"/></title>
-  <style type="text/css">
+
+  <style>
     html, body {
       height: 100%;
       overflow: hidden;
@@ -97,8 +95,9 @@
       display: none
     }
   </style>
-  <script type="text/javascript" src="<c:url value='/util/javaScript/angularjs/services/silverpeas-profile.js'/>"></script>
-  <script type="text/javascript">
+  <script type="application/javascript" src="<c:url
+  value='/util/javaScript/angularjs/services/silverpeas-profile.js'/>"></script>
+  <script type="application/javascript">
 
     /**
      * Go to screen that proposing to select groups and users : User Panel.
@@ -112,18 +111,18 @@
      */
     (function($) {
 
-      var context = {
-        cache : [],
-        SUB_TYPE : {
-          FORCED_GROUP : 'forced_group_subscription',
-          FORCED_USER : 'forced_user_subscription',
-          SELF_CREATION_USER : 'selfCreation_user_subscription'
+      const context = {
+        cache: [],
+        SUB_TYPE: {
+          FORCED_GROUP: 'forced_group_subscription',
+          FORCED_USER: 'forced_user_subscription',
+          SELF_CREATION_USER: 'selfCreation_user_subscription'
         },
-        subscriptions : [],
-        users : [],
-        groups : [],
-        dateFormat : '',
-        unsubscribeStartUrl : ''
+        subscriptions: [],
+        users: [],
+        groups: [],
+        dateFormat: '',
+        unsubscribeStartUrl: ''
       };
       context.subscriptions[context.SUB_TYPE.FORCED_GROUP] = [];
       context.subscriptions[context.SUB_TYPE.FORCED_USER] = [];
@@ -144,7 +143,7 @@
       function __loadSubscriptions() {
 
         // Date format
-        var dateFormat = $.datepicker.regional['${requestScope.resources.language}'];
+        const dateFormat = $.datepicker.regional['${requestScope.resources.language}'];
         if (dateFormat) {
           context.dateFormat = dateFormat.dateFormat;
         } else {
@@ -152,7 +151,7 @@
         }
 
         // Subscriptions
-        var url = '<c:url value="/services/subscriptions/${instanceId}"/>';
+        let url = '<c:url value="/services/subscriptions/${instanceId}"/>';
         <c:if test="${isOnResource}">
         url += '/${subscriptionResourceType}/${resourceId}';
         </c:if>
@@ -183,14 +182,14 @@
        */
       function __renderSubscriptions(subscriptions) {
         __classifySubscriptions(subscriptions).then(function() {
-          var $forcedGroups = __renderSubscriptionBloc({
-            subType : context.SUB_TYPE.FORCED_GROUP
+          const $forcedGroups = __renderSubscriptionBloc({
+            subType: context.SUB_TYPE.FORCED_GROUP
           });
-          var $forcedUsers = __renderSubscriptionBloc({
-            subType : context.SUB_TYPE.FORCED_USER
+          const $forcedUsers = __renderSubscriptionBloc({
+            subType: context.SUB_TYPE.FORCED_USER
           });
-          var $manualUsers = __renderSubscriptionBloc({
-            subType : context.SUB_TYPE.SELF_CREATION_USER
+          const $manualUsers = __renderSubscriptionBloc({
+            subType: context.SUB_TYPE.SELF_CREATION_USER
           });
 
           __paginate($('div.compulsory-subscription-management'), [$forcedGroups, $forcedUsers]);
@@ -205,8 +204,8 @@
        * @private
        */
       function __classifySubscriptions(subscriptions) {
-        var userIds = [];
-        var groupIds = [];
+        const userIds = [];
+        const groupIds = [];
         $(subscriptions).each(function(index, subscription) {
           if (subscription.subscriber.group) {
             context.subscriptions[context.SUB_TYPE.FORCED_GROUP].push(subscription);
@@ -224,8 +223,8 @@
         });
 
         // the promise of the processing termination to chain the asynchronous computations together;
-        // it is immediatly resolved as the computation of this method is synchrone.
-        var termination =  AngularPromise.defer();
+        // it is immediately resolved as the computation of this method is synchrone.
+        let termination = AngularPromise.defer();
         termination.resolve(0);
         termination = termination.promise;
 
@@ -272,7 +271,7 @@
        */
       function __agregatesData(subscriptions, profiles) {
         $(subscriptions).each(function(index, subscription) {
-          var subscriber = profiles[subscription.subscriber.id];
+          const subscriber = profiles[subscription.subscriber.id];
           if (subscription.subscriber.group) {
             subscription.ui = {
               classSuffix : 'group',
@@ -306,8 +305,8 @@
        * @private
        */
       function __sortByName(a, b) {
-        var aName = a.ui.name.toLowerCase();
-        var bName = b.ui.name.toLowerCase();
+        const aName = a.ui.name.toLowerCase();
+        const bName = b.ui.name.toLowerCase();
         return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
       }
 
@@ -318,12 +317,12 @@
        * @private
        */
       function __renderSubscriptionBloc(params) {
-        var $bloc = $('#' + params.subType);
-        var subscriptions = context.subscriptions[params.subType];
+        const $bloc = $('#' + params.subType);
+        const subscriptions = context.subscriptions[params.subType];
         if (subscriptions.length > 0) {
 
           // List
-          var $list = __renderSubscriptionBlocList(params, $bloc, subscriptions);
+          const $list = __renderSubscriptionBlocList(params, $bloc, subscriptions);
 
           // Bloc title
           __renderSubscriptionBlocTitle(params);
@@ -341,9 +340,9 @@
        * @private
        */
       function __renderSubscriptionBlocTitle(params) {
-        var $bloc = $('#' + params.subType);
-        var nbSubscriptions = $bloc.find('li[id^="' + params.subType + '"]').length;
-        var blocTitle = (nbSubscriptions <= 1) ? '${listOfOneUser}' : '${listOfSeveralUsers}';
+        const $bloc = $('#' + params.subType);
+        const nbSubscriptions = $bloc.find('li[id^="' + params.subType + '"]').length;
+        let blocTitle = (nbSubscriptions <= 1) ? '${listOfOneUser}' : '${listOfSeveralUsers}';
         if (params.subType == context.SUB_TYPE.FORCED_GROUP) {
           blocTitle = (nbSubscriptions <= 1) ? '${listOfOneGroup}' : '${listOfSeveralGroups}';
         }
@@ -360,7 +359,7 @@
        * @private
        */
       function __renderSubscriptionBlocList(params, $bloc, subscriptions) {
-        var $list = $bloc.find('#' + params.subType + '_list');
+        const $list = $bloc.find('#' + params.subType + '_list');
         $(subscriptions).each(function(index, subscription) {
           $list.append(__renderSubscription(params, index, subscription));
         });
@@ -378,7 +377,7 @@
       function __renderSubscription(params, index, subscription) {
 
         // Subscriber
-        var subscriber;
+        let subscriber;
         if (params.subType == context.SUB_TYPE.FORCED_GROUP) {
           subscriber = context.groups[subscription.subscriber.id];
         } else {
@@ -391,17 +390,17 @@
         }
 
         // Initializing the subscription
-        var $subscription = $('<li>').attr('id',
-                params.subType + '_' + subscription.subscriber.id).addClass('line').addClass(
-                ((index % 2) == 0) ? 'odd' : 'even');
+        const $subscription = $('<li>').attr('id',
+            params.subType + '_' + subscription.subscriber.id).addClass('line').addClass(
+            ((index % 2) == 0) ? 'odd' : 'even');
 
         // Avatar
-        var $avatar = $('<div>').addClass('avatar').append($('<img>').attr('src',
+        const $avatar = $('<div>').addClass('avatar').append($('<img>').attr('src',
             subscription.ui.avatarUrl));
         $subscription.append($avatar);
 
         // Name
-        var $name =  $('<span>').addClass('name_' + subscription.ui.classSuffix).text(subscription.ui.name);
+        const $name = $('<span>').addClass('name_' + subscription.ui.classSuffix).text(subscription.ui.name);
         if (!subscription.enabled) {
            $name.addClass('removed');
         }
@@ -418,7 +417,7 @@
             params.subType == context.SUB_TYPE.FORCED_USER ||
             (params.subType == context.SUB_TYPE.SELF_CREATION_USER &&
                 subscription.subscriber.id == '${currentUserId}')) {
-          var unsuncribeAction = $('<a>');
+          const unsuncribeAction = $('<a>');
           $subscription.append(unsuncribeAction.attr('title',
                   '${unsubscribeLabel}').addClass('action unsubscribe').text('${unsubscribeLabel}').click(function() {
                 __confirmSubscriptionDeletion(subscription, function() {
@@ -471,12 +470,12 @@
        */
       function __paginate($mainContainer, blocs) {
 
-        var notEmptyBlocs = [];
+        let notEmptyBlocs = [];
 
         // Compute the size of blocs
-        var sizeOfBlocs = 0;
+        let sizeOfBlocs = 0;
         $(blocs).each(function(index, $bloc) {
-          var currentHeight = $bloc.height();
+          const currentHeight = $bloc.height();
           if (currentHeight > 20) {
             notEmptyBlocs.push($bloc);
           }
@@ -485,25 +484,25 @@
 
         // Sorting blocs by their height
         notEmptyBlocs.sort(function($blocA, $blocB) {
-          var aHeight = $blocA.height();
-          var bHeight = $blocB.height();
+          const aHeight = $blocA.height();
+          const bHeight = $blocB.height();
           return ((aHeight < bHeight) ? -1 : ((aHeight > bHeight) ? 1 : 0));
         });
 
         // Compute the available heigth for one bloc
-        var availableBlocHeight = parseInt(($(window).height() -
+        let availableBlocHeight = parseInt(($(window).height() -
             ($mainContainer.height() - sizeOfBlocs) - 75) / notEmptyBlocs.length);
 
         // Paginate each bloc
         $(notEmptyBlocs).each(function(index, $bloc) {
-          var blocHeight = $bloc.height();
-          var remainingBlocHeight = availableBlocHeight - blocHeight;
+          const blocHeight = $bloc.height();
+          const remainingBlocHeight = availableBlocHeight - blocHeight;
           if (remainingBlocHeight <= 0) {
-            var blocTitleHeight = $('[id$="_result_count"]', $bloc).height();
-            var $pagination = $('[id$="_list_pagination"]', $bloc).show();
-            var paginationHeight = $('[id$="_list_pagination"]', $bloc).height();
-            var $rows = $('li', $bloc);
-            var rowHeight = $rows.outerHeight(true);
+            const blocTitleHeight = $('[id$="_result_count"]', $bloc).height();
+            const $pagination = $('[id$="_list_pagination"]', $bloc).show();
+            const paginationHeight = $('[id$="_list_pagination"]', $bloc).height();
+            const $rows = $('li', $bloc);
+            const rowHeight = $rows.outerHeight(true);
             $pagination.smartpaginator({
               totalrecords : $rows.length,
               recordsperpage : parseInt((availableBlocHeight - blocTitleHeight - paginationHeight) /
@@ -535,7 +534,7 @@
        * @private
        */
       function __confirmSubscriptionDeletion(subscription, callback) {
-        var $confirm = $('<div>').html("${unsubscribeConfirmMessage}".replace('@name@',
+        const $confirm = $('<div>').html("${unsubscribeConfirmMessage}".replace('@name@',
             subscription.ui.name)).hide().appendTo(document.body);
         $confirm.popup('confirmation', {
           callback : callback,
@@ -553,8 +552,8 @@
       jQuery.subscription();
     });
   </script>
-</head>
-<body class="subscription-management userPanel">
+</view:sp-head-part>
+<view:sp-body-part cssClass="subscription-management userPanel">
 <!-- Breadcrumb -->
 <view:browseBar componentId="${instanceId}">
   <c:forEach items="${context.path}" var="path">
@@ -599,5 +598,5 @@
     </div>
   </div>
 </view:window>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

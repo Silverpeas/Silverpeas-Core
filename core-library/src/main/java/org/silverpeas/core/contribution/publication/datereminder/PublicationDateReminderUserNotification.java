@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.datereminder;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -128,7 +129,7 @@ public class PublicationDateReminderUserNotification
   }
 
   @Override
-  protected String getLocalizationBundlePath() {
+  protected @NonNull String getLocalizationBundlePath() {
     return "org.silverpeas.dateReminder.multilang.dateReminder";
   }
 

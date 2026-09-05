@@ -23,13 +23,16 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
-import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionPositionCriteria;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 
+import java.util.Collection;
+
 public class PdcSubscriptionDeletionUserNotification
-    extends AbstractPdcSubscriptionUserNotification<PdcSubscription> {
+    extends AbstractPdcSubscriptionUserNotification<PdcSubscriptionPositionCriteria> {
 
   private static final String MESSAGE_DELETE_TITLE = "notification.delete.title";
   private static final String SOURCE_CLASSIFICATION = "pdcClassification";
@@ -37,9 +40,9 @@ public class PdcSubscriptionDeletionUserNotification
   private final boolean valueDeleted;
   private final String axisName;
 
-  public PdcSubscriptionDeletionUserNotification(PdcSubscription pdcSubscription, String axisName,
-      boolean valueDeleted) {
-    super(pdcSubscription, pdcSubscription);
+  public PdcSubscriptionDeletionUserNotification(PdcSubscriptionPositionCriteria pdcResource,
+      Collection<String> recipientIds, String axisName, boolean valueDeleted) {
+    super(pdcResource, recipientIds, pdcResource);
     this.valueDeleted = valueDeleted;
     this.axisName = axisName;
   }
@@ -67,34 +70,35 @@ public class PdcSubscriptionDeletionUserNotification
   }
 
   @Override
-  protected void performBuild(final PdcSubscription subscription) {
-    String lang = getUserLanguage(subscription.getOwnerId());
-    LocalizationBundle resources = getBundle(lang);
+  protected void performBuild(final PdcSubscriptionPositionCriteria resource) {
+    DisplayI18NHelper.getLanguages().forEach(lang -> {
+      final LocalizationBundle resources = getBundle(lang);
+      final StringBuilder message = new StringBuilder(150);
 
-    final StringBuilder message = new StringBuilder(150);
+      if (valueDeleted) {
+        message.append(resources.getString("deleteOnValueMessage"));
+      } else {
+        message.append(resources.getString("deleteOnAxisMessage"));
+      }
+      message.append("\n");
 
-    if (valueDeleted) {
-      message.append(resources.getString("deleteOnValueMessage"));
-    } else {
-      message.append(resources.getString("deleteOnAxisMessage"));
-    }
-    message.append("\n");
+      message.append(resources.getString("Subscription"));
+      message.append(resource.getName());
+      message.append("\n");
 
-    message.append(resources.getString("Subscription"));
-    message.append(subscription.getName());
-    message.append("\n");
+      message.append(resources.getString("Axis"));
+      message.append(axisName);
+      message.append("\n");
 
-    message.append(resources.getString("Axis"));
-    message.append(axisName);
-    message.append("\n");
-
-    getNotificationMetaData().setTitle(resources.getString(MESSAGE_DELETE_TITLE));
-    getNotificationMetaData().setContent(message.toString());
-    getNotificationMetaData().setSource(resources.getString(SOURCE_CLASSIFICATION));
+      getNotificationMetaData()
+          .addLanguage(lang, resources.getString(MESSAGE_DELETE_TITLE), message.toString());
+    });
+    getNotificationMetaData().setSource(
+        getBundle(DisplayI18NHelper.getDefaultLanguage()).getString(SOURCE_CLASSIFICATION));
   }
 
   @Override
-  protected void performNotificationResource(final PdcSubscription resource,
+  protected void performNotificationResource(final PdcSubscriptionPositionCriteria resource,
       final NotificationResourceData notificationResourceData) {
     // Nothing is done here because of delayed notification that is not handled for this kind of
     // PDC user notification.

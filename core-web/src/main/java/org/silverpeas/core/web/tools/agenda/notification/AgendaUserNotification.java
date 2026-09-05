@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.tools.agenda.notification;
 
+import org.jetbrains.annotations.NotNull;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
@@ -255,6 +256,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
    * @see
    * com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getLocalizationBundlePath()
    */
+  @NotNull
   @Override
   protected String getLocalizationBundlePath() {
     return "org.silverpeas.agenda.multilang.agenda";
