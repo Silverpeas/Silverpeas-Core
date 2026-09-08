@@ -23,11 +23,17 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.viewer.service.ViewerException;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -63,6 +69,10 @@ public class DocumentViewResource extends AbstractViewResource {
    * @return the response to the HTTP GET request with the JSON representation of document view
    * information.
    */
+  @Operation(summary = "Gets document view information.")
+  @ApiResponse(responseCode = "200", description = "Document view information.",
+      content = @Content(schema = @Schema(implementation = DocumentViewEntity.class)))
+  @NotFound
   @GET
   @Path("{type}/{id}")
   @Produces(APPLICATION_JSON)

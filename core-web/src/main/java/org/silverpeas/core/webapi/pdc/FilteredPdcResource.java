@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
@@ -91,6 +96,21 @@ public class FilteredPdcResource extends RESTWebService {
    * @return a web entity representing the PdC filtered by the contents that are classified on it.
    * The entity is serialized in JSON.
    */
+  @Operation(summary = "Gets a PdC containing only the axis and the axis's value that were used " +
+      "in the classification of the contents in Silverpeas.",
+      description = "The Pdc can be restricted by the workspace and by the application to which " +
+      "the classified contents belong. As the filtered PdC is for a search, only the " +
+      "applications configured as searchable are taken into account. The PdC that is sent back " +
+      "contains only the axis and, with each of them, the values to which the contents in " +
+      "Silverpeas are classified. The classified contents to take into account can be restricted " +
+      "by the workspace or by the application to which they belong, and by a set of axis' values " +
+      "with which they have to be classified. The version of the returned PdC indicates, for " +
+      "each axis's value, the count of contents that are classified with this value. According " +
+      "to the query parameters, it can contain also the secondary axis of the PdC. The PdC is " +
+      "sent back in JSON.")
+  @ApiResponse(responseCode = "200",
+      description = "A web entity representing the PdC filtered by the contents that are " +
+      "classified on it.", content = @Content(schema = @Schema(implementation = PdcEntity.class)))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("used")

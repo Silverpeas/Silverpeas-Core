@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.profile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.Group;
@@ -86,6 +91,8 @@ public class UserGroupProfileResource extends RESTWebService {
    * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the JSON representation of the array of the groups matching the pattern.
    */
+  @Operation(summary = "Gets all the root user groups in Silverpeas.")
+  @ApiResponse(responseCode = "200", description = "The array of the groups matching the pattern.")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAllRootGroups(@QueryParam("ids") Set<String> groupIds,
@@ -153,6 +160,12 @@ public class UserGroupProfileResource extends RESTWebService {
    * @return the JSON representation of the array with the parent groups having access the
    * application instance.
    */
+  @Operation(summary = "Gets the groups of users having the privileges to access the specified " +
+      "Silverpeas application instance.",
+      description = "In the context some groups are parents of others groups, only the parent " +
+      "groups are fetched, no their subgroups.")
+  @ApiResponse(responseCode = "200",
+      description = "The array with the parent groups having access the application instance.")
   @GET
   @Path("application/{instanceId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -209,6 +222,9 @@ public class UserGroupProfileResource extends RESTWebService {
    * @param groupPath the path of group identifiers, from the root group down to the seeked one.
    * @return the JSON representation of the user group.
    */
+  @Operation(summary = "Gets the group of users identified by the specified path.")
+  @ApiResponse(responseCode = "200", description = "The user group.",
+      content = @Content(schema = @Schema(implementation = UserGroupProfileEntity.class)))
   @GET
   @Path("{path: [0-9]+(/groups/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -234,6 +250,11 @@ public class UserGroupProfileResource extends RESTWebService {
    * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return a JSON representation of the array of the direct subgroups.
    */
+  @Operation(summary = "Gets the direct subgroups of the group of groups identified by the " +
+      "specified path.")
+  @ApiResponse(responseCode = "200",
+      description = "The direct subgroups. A JSON representation of the array of the direct " +
+      "subgroups.")
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)

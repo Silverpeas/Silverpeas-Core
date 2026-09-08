@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.web.rs.annotation;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+
 import jakarta.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
@@ -37,6 +44,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * With this annotation, for each access to a component instance that provides the web resource,
  * the user authentication is validated and then its access rights are checked.
  */
+@SecurityRequirement(name = "silverpeasCredentials")
+@SecurityRequirement(name = "silverpeasSession")
+@SecurityRequirement(name = "silverpeasAccessToken")
+@ApiResponse(responseCode = "401",
+    description = "The user isn't authenticated: the credentials are either missing or invalid.")
+@ApiResponse(responseCode = "403",
+    description = "The user isn't authorized to access the requested resource.")
 @InterceptorBinding
 @Documented
 @Target(TYPE)

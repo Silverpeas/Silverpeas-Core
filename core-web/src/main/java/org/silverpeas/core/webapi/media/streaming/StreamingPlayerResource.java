@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.media.streaming;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -33,6 +38,7 @@ import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +73,10 @@ public class StreamingPlayerResource extends RESTWebService {
    * when processing the request, a 503 HTTP code is returned.
    * @return the response to the HTTP GET request content of the asked streaming.
    */
+  @Operation(summary = "Gets the provider data of a streaming from its url.")
+  @ApiResponse(responseCode = "200", description = "Content of the asked streaming.",
+      content = @Content(schema = @Schema(implementation = StreamingProviderDataEntity.class)))
+  @NotFound
   @GET
   @Path("providerData")
   @Produces(MediaType.APPLICATION_JSON)
@@ -89,6 +99,11 @@ public class StreamingPlayerResource extends RESTWebService {
    * @return a descriptor of the renderer to use to display the streaming content.
    */
   @Path("player")
+  @Operation(summary = "Gets a view on the content with the HTML that permits to play the " +
+      "streaming.")
+  @ApiResponse(responseCode = "200",
+      description = "A descriptor of the renderer to use to display the streaming content.",
+      content = @Content(schema = @Schema(implementation = View.class)))
   @GET
   public View getPlayerContent() {
     final EmbedStreamingPlayerParams params = decode(getHttpServletRequest(), EmbedStreamingPlayerParams.class);

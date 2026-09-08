@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.i18n;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -226,6 +228,12 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     this.translations = translations;
   }
 
+  /**
+   * @implNote the setter taking a map is the one considered by the JSON and XML mappers; this
+   * convenience one is ignored to avoid any ambiguity between the two definitions of the same
+   * property.
+   */
+  @JsonIgnore
   public void setTranslations(Collection<T> translations) {
     if (translations != null && !translations.isEmpty()) {
       translations.forEach(this::addTranslation);

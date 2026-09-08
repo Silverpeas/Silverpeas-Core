@@ -24,6 +24,12 @@
 
 package org.silverpeas.core.webapi.selection;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -69,6 +75,13 @@ public class SelectionBasketResource extends RESTWebService {
    * list. An entry is a mapping between the Silverpeas resource that has been selected (and hence
    * put into the basket) and its selection context.
    */
+  @Operation(summary = "Gets all the content of the selection basket, reverse ordered by the " +
+      "time each item has been put, the last resource put at index 0.")
+  @ApiResponse(responseCode = "200",
+      description = "A reverse ordered list of basket entries. The last one put being the first " +
+      "one in the list. An entry is a mapping between the Silverpeas resource that has been " +
+      "selected (and hence put into the basket) and its selection context.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelectionBasketEntry.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<SelectionBasketEntry> getAll() {
@@ -83,6 +96,10 @@ public class SelectionBasketResource extends RESTWebService {
    * been selected and its selection context.
    * @return the new state of the basket, that is to say its updated content.
    */
+  @Operation(summary = "Puts the specified resource into the basket.",
+      description = "It will be placed atop of others items in the basket.")
+  @ApiResponse(responseCode = "200",
+      description = "The new state of the basket, that is to say its updated content.")
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
@@ -100,6 +117,13 @@ public class SelectionBasketResource extends RESTWebService {
    * basket (the last one put into the basket).
    * @return the new state of the basket, that is to say its new content without the deleted item.
    */
+  @Operation(summary = "Pops the item at the head of the basket.",
+      description = "Popping is a way to delete the first item in the basket (the last one put " +
+      "into the basket).")
+  @ApiResponse(responseCode = "200",
+      description = "The new state of the basket, that is to say its new content without the " +
+      "deleted item.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelectionBasketEntry.class))))
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   public List<SelectionBasketEntry> pop() {
@@ -117,6 +141,13 @@ public class SelectionBasketResource extends RESTWebService {
    * @param itemId the unique identifier of a Silverpeas resource placed in the basket.
    * @return the new state of the basket, that is to say its new content without the deleted item.
    */
+  @Operation(summary = "Deletes in the basket the item with the specified unique identifier.",
+      description = "If no such Silverpeas resource is found in the basket, then a " +
+      "NotFoundException is thrown.")
+  @ApiResponse(responseCode = "200",
+      description = "The new state of the basket, that is to say its new content without the " +
+      "deleted item.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelectionBasketEntry.class))))
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/item/{id}")
@@ -139,6 +170,13 @@ public class SelectionBasketResource extends RESTWebService {
    * for the head position.
    * @return the new state of the basket, that is to say its new content without the deleted item.
    */
+  @Operation(summary = "Deletes in the basket the item placed at the specified position.",
+      description = "If there is no resource at the given position in the basket, then a " +
+      "NotFoundException is thrown.")
+  @ApiResponse(responseCode = "200",
+      description = "The new state of the basket, that is to say its new content without the " +
+      "deleted item.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelectionBasketEntry.class))))
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/index/{index}")
