@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.comment;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -41,6 +47,8 @@ import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.BadRequest;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -88,6 +96,10 @@ public class CommentResource extends RESTWebService {
    * @param onCommentId the unique identifier of the comment.
    * @return the response to the HTTP GET request with the JSON representation of the asked comment.
    */
+  @Operation(summary = "Gets the specified existing comment.")
+  @ApiResponse(responseCode = "200", description = "The asked comment.",
+      content = @Content(schema = @Schema(implementation = CommentEntity.class)))
+  @NotFound
   @GET
   @Path("{commentId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -115,6 +127,9 @@ public class CommentResource extends RESTWebService {
    * @return the response to the HTTP GET request with the JSON representation of the comments on
    * the referred resource.
    */
+  @Operation(summary = "Gets all the comments on referred the resource.")
+  @ApiResponse(responseCode = "200", description = "The comments on the referred resource.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<CommentEntity> getAllComments() {
@@ -142,6 +157,11 @@ public class CommentResource extends RESTWebService {
    * @return the response to the HTTP POST request with the JSON representation of the saved
    * comment.
    */
+  @Operation(summary = "Creates a new comment and returns it with its URI identifying it in " +
+      "Silverpeas.",
+      description = "The unique identifier of the comment isn't taken into account, so if the " +
+      "comment already exist, it is then cloned with a new identifier (thus with a new URI).")
+  @ApiResponse(responseCode = "200", description = "The saved comment.")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -180,6 +200,11 @@ public class CommentResource extends RESTWebService {
    * @return the response to the HTTP PUT request with the JSON representation of the updated
    * comment.
    */
+  @Operation(summary = "Updates the comment and returns it once updated.")
+  @ApiResponse(responseCode = "200", description = "The updated comment.",
+      content = @Content(schema = @Schema(implementation = CommentEntity.class)))
+  @BadRequest
+  @NotFound
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -224,6 +249,10 @@ public class CommentResource extends RESTWebService {
    *
    * @param onCommentId the unique identifier of the comment to delete.
    */
+  @Operation(summary = "Deletes the specified existing comment.",
+      description = "If the comment doesn't exist, nothing is done, so that the HTTP DELETE " +
+      "request remains idempotent as defined in the HTTP specification.")
+  @ApiResponse(responseCode = "204", description = "The comment has been deleted.")
   @DELETE
   @Path("{commentId}")
   public void deleteComment(@PathParam("commentId") String onCommentId) {

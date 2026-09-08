@@ -24,6 +24,12 @@
 
 package org.silverpeas.core.webapi.calendar;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -52,6 +58,8 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.BadRequest;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 import org.silverpeas.core.webapi.reminder.ReminderEntity;
 
 import jakarta.ws.rs.DELETE;
@@ -109,6 +117,10 @@ public class CalendarResource extends AbstractCalendarResource {
    * calendars.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the calendars of the application.")
+  @ApiResponse(responseCode = "200", description = "The asked calendars.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEntity.class))))
+  @NotFound
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<CalendarEntity> getCalendars() {
@@ -125,6 +137,10 @@ public class CalendarResource extends AbstractCalendarResource {
    * calendar.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets a calendar represented by the given identifier.")
+  @ApiResponse(responseCode = "200", description = "The asked calendar.",
+      content = @Content(schema = @Schema(implementation = CalendarEntity.class)))
+  @NotFound
   @GET
   @Path("{calendarId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -143,6 +159,9 @@ public class CalendarResource extends AbstractCalendarResource {
    * @return the response to the HTTP POST request with the JSON representation of the created
    * calendar.
    */
+  @Operation(summary = "Creates the calendar and returns it once created.")
+  @ApiResponse(responseCode = "200", description = "The created calendar.",
+      content = @Content(schema = @Schema(implementation = CalendarEntity.class)))
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public CalendarEntity createCalendar(CalendarEntity calendarEntity) {
@@ -167,6 +186,11 @@ public class CalendarResource extends AbstractCalendarResource {
    * @return the response to the HTTP PUT request with the JSON representation of the updated
    * calendar.
    */
+  @Operation(summary = "Updates the calendar and returns it once updated.")
+  @ApiResponse(responseCode = "200", description = "The updated calendar.",
+      content = @Content(schema = @Schema(implementation = CalendarEntity.class)))
+  @BadRequest
+  @NotFound
   @PUT
   @Path("{calendarId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -193,6 +217,9 @@ public class CalendarResource extends AbstractCalendarResource {
    * returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param calendarId the identifier of the deleted calendar
    */
+  @Operation(summary = "Deletes the calendar referred by the identifier in the path.")
+  @NotFound
+  @ApiResponse(responseCode = "204", description = "The calendar has been deleted.")
   @DELETE
   @Path("{calendarId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -206,13 +233,16 @@ public class CalendarResource extends AbstractCalendarResource {
   }
 
   /**
-   * Gets the JSON representation of a calendar represented by the given identifier.
+   * Exports all the events defined in the specified calendar as an iCal file.
    * If it doesn't exist, a 404 HTTP code is returned.
    * @param calendarId the identifier of the aimed calendar
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * calendar.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Exports all the events defined in the specified calendar as an iCal file.")
+  @ApiResponse(responseCode = "200", description = "The asked calendar.")
+  @NotFound
   @GET
   @Path("{calendarId}/export/ical")
   @Produces("text/calendar")
@@ -243,6 +273,10 @@ public class CalendarResource extends AbstractCalendarResource {
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    */
+  @Operation(summary = "Loads the iCal file embedded within the HTTP request and imports the " +
+      "events in the specified calendar.")
+  @ApiResponse(responseCode = "200",
+      description = "The events have been imported into the calendar.")
   @POST
   @Path("{calendarId}/import/ical")
   @Produces(MediaType.APPLICATION_JSON)
@@ -282,6 +316,11 @@ public class CalendarResource extends AbstractCalendarResource {
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    */
+  @Operation(summary = "Permits to synchronize manually a calendar from its remote counterpart.",
+      description = "External calendar (like Google Calendar) can by imported into Silverpeas " +
+      "and then synchronized by hand.")
+  @ApiResponse(responseCode = "200", description = "The calendar once synchronized.",
+      content = @Content(schema = @Schema(implementation = CalendarEntity.class)))
   @PUT
   @Path("{calendarId}/synchronization")
   @Produces(MediaType.APPLICATION_JSON)
@@ -302,6 +341,11 @@ public class CalendarResource extends AbstractCalendarResource {
    * occurrences.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the next occurrences of the events defined in all the calendars of " +
+      "the application.")
+  @ApiResponse(responseCode = "200", description = "The asked occurrences.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEventOccurrenceEntity.class))))
+  @NotFound
   @GET
   @Path(CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/" +
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/next")
@@ -328,6 +372,11 @@ public class CalendarResource extends AbstractCalendarResource {
    * occurrences.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the occurrences of the events in all the calendars of the " +
+      "application, indexed by participant.")
+  @ApiResponse(responseCode = "200", description = "The asked occurrences.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ParticipantCalendarEventOccurrencesEntity.class))))
+  @NotFound
   @GET
   @Path(CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/" +
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART)
@@ -351,6 +400,10 @@ public class CalendarResource extends AbstractCalendarResource {
    * occurrences.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the occurrences of all of events in the given calendar.")
+  @ApiResponse(responseCode = "200", description = "The asked occurrences.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEventOccurrenceEntity.class))))
+  @NotFound
   @GET
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/" +
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART)
@@ -377,6 +430,10 @@ public class CalendarResource extends AbstractCalendarResource {
    * occurrences.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets a list of occurrence of the calendar event with the given identifier.")
+  @ApiResponse(responseCode = "200", description = "The asked occurrences.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEventOccurrenceEntity.class))))
+  @NotFound
   @GET
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART)
@@ -399,7 +456,7 @@ public class CalendarResource extends AbstractCalendarResource {
   }
 
   /**
-   * Gets the JSON representation of a calendar eventof an aimed event.
+   * Gets the JSON representation of a calendar event of an aimed event.
    * If it doesn't exist, a 404 HTTP code is returned.
    * @param calendarId the identifier of calendar the event must belong with.
    * @param eventId the identifier of the aimed event.
@@ -407,6 +464,10 @@ public class CalendarResource extends AbstractCalendarResource {
    * event.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the calendar event with the given identifier.")
+  @ApiResponse(responseCode = "200", description = "The asked event.",
+      content = @Content(schema = @Schema(implementation = CalendarEventEntity.class)))
+  @NotFound
   @GET
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -428,6 +489,9 @@ public class CalendarResource extends AbstractCalendarResource {
    * @return the response to the HTTP POST request with the JSON representation of the created
    * calendar event.
    */
+  @Operation(summary = "Creates a calendar event and returns the created event.")
+  @ApiResponse(responseCode = "200", description = "The created calendar event.",
+      content = @Content(schema = @Schema(implementation = CalendarEventEntity.class)))
   @POST
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART)
   @Produces(MediaType.APPLICATION_JSON)
@@ -470,6 +534,11 @@ public class CalendarResource extends AbstractCalendarResource {
    * occurrence.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the occurrence, with the given identifier, of the calendar event " +
+      "referred by the specified event identifier.")
+  @ApiResponse(responseCode = "200", description = "The asked occurrence.",
+      content = @Content(schema = @Schema(implementation = CalendarEventOccurrenceEntity.class)))
+  @NotFound
   @GET
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/{occurrenceId}")
@@ -488,7 +557,7 @@ public class CalendarResource extends AbstractCalendarResource {
   }
 
   /**
-   * Updates a occurrence from its JSON representation and returns the list of
+   * Updates an occurrence from its JSON representation and returns the list of
    * updated and created events.<br> If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to save the calendar, a 403 is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
@@ -499,6 +568,13 @@ public class CalendarResource extends AbstractCalendarResource {
    * @return the response to the HTTP POST request with the JSON representation of the
    * updated/created events.
    */
+  @Operation(summary = "Updates an occurrence and returns the list of updated and created events.",
+      description = "Modifying a given occurrence of a recurring event can break the recurrence " +
+      "rule of the event when the occurrence modification is used as a template for several " +
+      "occurrences of the event. Such a case can split the event in two different events at the " +
+      "time of template occurrence.")
+  @ApiResponse(responseCode = "200", description = "The updated/created events.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEventEntity.class))))
   @PUT
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/{occurrenceId}")
@@ -560,6 +636,13 @@ public class CalendarResource extends AbstractCalendarResource {
    * @return the response to the HTTP POST request with the JSON representation of an updated
    * event if any.
    */
+  @Operation(summary = "Deletes the occurrence, with the given identifier, of the event referred " +
+      "by the specified identifier and returns the updated event if any.",
+      description = "Deleting a occurrence of a recurring event will just update its recurrence " +
+      "rule by applying an exception in the recurrence rule. Deleting the single occurrence of a " +
+      "non-recurring event will delete the event itself; in this case nothing is returned.")
+  @ApiResponse(responseCode = "200", description = "An updated event if any.",
+      content = @Content(schema = @Schema(implementation = CalendarEventEntity.class)))
   @DELETE
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/{occurrenceId}")
@@ -587,6 +670,9 @@ public class CalendarResource extends AbstractCalendarResource {
    * @return the response to the HTTP POST request with the JSON representation of the
    * updated/created events.
    */
+  @Operation(summary = "Updates the participation status of an attendee about an event.")
+  @ApiResponse(responseCode = "200", description = "The updated/created events.",
+      content = @Content(schema = @Schema(implementation = CalendarEventEntity.class)))
   @PUT
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/{occurrenceId}/" +

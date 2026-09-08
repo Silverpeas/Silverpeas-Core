@@ -272,16 +272,13 @@
         </plugins>
       </build>
     </profile>
+    <!-- the documentation of the REST API is produced by a dedicated module, which gathers the
+         web resources of all the modules into a single OpenAPI document -->
     <profile>
       <id>restapi</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.shalousun</groupId>
-            <artifactId>smart-doc-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
+      <modules>
+        <module>core-restapi</module>
+      </modules>
     </profile>
   </profiles>
 

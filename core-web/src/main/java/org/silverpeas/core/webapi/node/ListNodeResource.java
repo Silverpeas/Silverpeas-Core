@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodePK;
@@ -92,6 +95,8 @@ public class ListNodeResource extends RESTWebService {
    *
    * @return the new list of node after update
    */
+  @Operation(summary = "Updates the order of the nodes in the list.")
+  @ApiResponse(responseCode = "200", description = "The list of nodes once reordered.")
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)

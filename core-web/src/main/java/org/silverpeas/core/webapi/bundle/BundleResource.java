@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.webapi.bundle;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -122,6 +125,18 @@ public class BundleResource extends RESTWebService {
    * @return an HTTP response with the asked properties or an HTTP error.
    * @throws IOException if an error occurs while accessing the resource bundle.
    */
+  @Operation(summary = "Asks for an i18n resource bundle either in the language of the current " +
+      "user in the session or in the specified language.",
+      description = "The returned bundle does not provide the general Silverpeas i18n texts. The " +
+      "resource bundle is specified by its absolute path in the classpath of the WEB service. If " +
+      "the language is specified with the name of the bundle, it will be considered in place of " +
+      "the language of the current user in the underlying WEB session. For doing, the langage " +
+      "has to be indicated as expected with localized resource bundles. If the language isn't " +
+      "supported by Silverpeas, the default language will be taken. In order to work with some " +
+      "JavaScript plugins in charge of i18n texts, the method accepts also the particular " +
+      "wildcard $$ to specify explicitly the language of the current user.")
+  @ApiResponse(responseCode = "200",
+      description = "An HTTP response with the asked properties or an HTTP error.")
   @GET
   @Path("just/{bundle: org/silverpeas/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
@@ -150,6 +165,19 @@ public class BundleResource extends RESTWebService {
    * @return an HTTP response with the asked properties or an HTTP error.
    * @throws IOException if an error occurs while accessing the resource bundle.
    */
+  @Operation(summary = "Asks for an i18n resource bundle either in the language of the current " +
+      "user in the session or in the specified language.",
+      description = "The returned bundle is a merge of both the asked i18n properties and the " +
+      "general Silverpeas i18n texts. The resource bundle is specified by its absolute path in " +
+      "the classpath of the WEB service. If the language is specified with the name of the " +
+      "bundle, it will be considered in place of the language of the current user in the " +
+      "underlying WEB session. For doing, the langage has to be indicated as expected with " +
+      "localized resource bundles. If the language isn't supported by Silverpeas, the default " +
+      "language will be taken. In order to work with some JavaScript plugins in charge of i18n " +
+      "texts, the method accepts also the particular wildcard $$ to specify explicitly the " +
+      "language of the current user.")
+  @ApiResponse(responseCode = "200",
+      description = "An HTTP response with the asked properties or an HTTP error.")
   @GET
   @Path("{bundle: org/silverpeas/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
@@ -217,6 +245,12 @@ public class BundleResource extends RESTWebService {
    * @return an HTTP response with the asked properties or an HTTP error.
    * @throws IOException if an error occurs while accessing the resource bundle.
    */
+  @Operation(summary = "Asks for a settings bundle.",
+      description = "The returned bundle is a merge of both the asked settings and the general " +
+      "Silverpeas settings. The resource bundle is specified by its absolute path in the " +
+      "classpath of the WEB service.")
+  @ApiResponse(responseCode = "200",
+      description = "An HTTP response with the asked properties or an HTTP error.")
   @GET
   @Path("settings/{bundle: org/silverpeas/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)

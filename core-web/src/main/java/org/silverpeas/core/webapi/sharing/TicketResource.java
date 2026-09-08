@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.webapi.sharing;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
@@ -52,6 +59,9 @@ import java.util.List;
 
 import static org.silverpeas.core.sharing.services.SharingServiceProvider.getSharingTicketService;
 
+@Tag(name = "My sharing tickets",
+    description = "The sharing tickets created by the authenticated user. A ticket opens a " +
+    "sharing link on one of his contributions: a folder, a publication or an attached file.")
 @WebService
 @Path(TicketResource.PATH)
 @Authenticated
@@ -71,6 +81,9 @@ public class TicketResource extends RESTWebService {
     return componentId;
   }
 
+  @Operation(summary = "Gets the sharing tickets created by the user.")
+  @ApiResponse(responseCode = "200", description = "The tickets of the user.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = TicketEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<TicketEntity> getMyTickets(@QueryParam("page") final String page) {
@@ -88,6 +101,10 @@ public class TicketResource extends RESTWebService {
     return tickets;
   }
 
+  @Operation(summary = "Creates a sharing ticket on a contribution of the user.")
+  @ApiResponse(responseCode = "200",
+      description = "The created sharing ticket, with its token and the URL to share.",
+      content = @Content(schema = @Schema(implementation = TicketEntity.class)))
   @POST
   @Path("{componentId}")
   @Consumes(MediaType.APPLICATION_JSON)

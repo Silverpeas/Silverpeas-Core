@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -38,6 +42,8 @@ import jakarta.ws.rs.core.Response;
 /**
  * A REST Web resource providing access to attachments through private mode.
  */
+@Tag(name = "Attachments",
+    description = "The files attached to the contributions and visible to the authenticated user.")
 @WebService
 @Path(AttachmentResource.PATH + "/{componentId}")
 @Authorized
@@ -50,6 +56,8 @@ public class AttachmentResource extends AbstractAttachmentResource {
     return PATH;
   }
 
+  @Operation(summary = "Downloads the content of the given attachment.")
+  @ApiResponse(responseCode = "200", description = "The content of the attachment.")
   @GET
   @Path("{id}/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)

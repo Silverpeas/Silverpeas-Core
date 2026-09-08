@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
@@ -33,6 +38,8 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.BadRequest;
+import org.silverpeas.core.web.rs.annotation.doc.Conflict;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -107,6 +114,11 @@ public class PdcClassificationResource extends RESTWebService {
    * @return a web entity representing the PdC classification of the resource. The entity is
    * serialized in JSON.
    */
+  @Operation(summary = "Gets classification on the PdC of the resource identified by the " +
+      "requested URI.", description = "The PdC classification is sent back in JSON.")
+  @ApiResponse(responseCode = "200",
+      description = "A web entity representing the PdC classification of the resource.",
+      content = @Content(schema = @Schema(implementation = PdcClassificationEntity.class)))
   @GET
   @Produces({MediaType.APPLICATION_JSON})
   public PdcClassificationEntity getPdCClassification() {
@@ -134,6 +146,11 @@ public class PdcClassificationResource extends RESTWebService {
    * @param positionId the unique identifier of the position to delete in the classification of the
    * requested resource.
    */
+  @Operation(summary = "Deletes the specified existing position by its unique identifier.",
+      description = "If the PdC position doesn't exist, nothing is done, so that the HTTP DELETE " +
+      "request remains idempotent as defined in the HTTP specification.")
+  @Conflict
+  @ApiResponse(responseCode = "204", description = "The position has been deleted.")
   @DELETE
   @Path("{positionId}")
   public void deletePdcPosition(@PathParam("positionId") int positionId) {
@@ -163,6 +180,13 @@ public class PdcClassificationResource extends RESTWebService {
    * @return the response with the status of the position adding and, in the case of a successful
    * operation, the new PdC classification of the resource resulting of the position adding.
    */
+  @Operation(summary = "Adds a new position on the PdC into the classification of the resource " +
+      "identified by the requested URI.")
+  @ApiResponse(responseCode = "200",
+      description = "The response with the status of the position adding and, in the case of a " +
+      "successful operation, the new PdC classification of the resource resulting of the " +
+      "position adding.")
+  @BadRequest
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -206,6 +230,14 @@ public class PdcClassificationResource extends RESTWebService {
    * @return the response with the status of the position update and, in the case of a successful
    * operation, the new PdC classification of the resource resulting of the position update.
    */
+  @Operation(summary = "Updates an existing position on the PdC into the classification of the " +
+      "resource identified by the requested URI.")
+  @ApiResponse(responseCode = "200",
+      description = "The response with the status of the position update and, in the case of a " +
+      "successful operation, the new PdC classification of the resource resulting of the " +
+      "position update.",
+      content = @Content(schema = @Schema(implementation = PdcClassificationEntity.class)))
+  @BadRequest
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)

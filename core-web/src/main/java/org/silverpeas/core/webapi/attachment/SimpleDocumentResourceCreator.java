@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -80,6 +83,12 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
    * identified by the <code>xRequestedWith</code> parameter).
    * @throws IOException if an error occurs while updating the document.
    */
+  @Operation(summary = "Create the document identified by the requested URI and from the content " +
+      "and some additional parameters passed within the request.",
+      description = "A SimpleDocumentUploadData is extracted from request parameters.")
+  @ApiResponse(responseCode = "200",
+      description = "An HTTP response embodied an entity in a format expected by the client " +
+      "(that is identified by the xRequestedWith parameter).")
   @POST
   @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)

@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.webapi.upload;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.annotation.WebService;
@@ -94,6 +97,9 @@ public class FileUploadResource extends RESTWebService {
    *
    * @return the result of the verification: HTTP OK.
    */
+  @Operation(summary = "Performs some verifications before starting a file upload.",
+      description = "All the verifications are checked again on the effective upload (security).")
+  @ApiResponse(responseCode = "200", description = "The result of the verification: HTTP OK.")
   @POST
   @Path("verify")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -123,6 +129,15 @@ public class FileUploadResource extends RESTWebService {
    * <li><b>iconUrl</b> : the url of the icon that represents the type of the uploaded file</li>
    * </ul>
    */
+  @Operation(summary = "Permits to upload files from multipart http request.")
+  @ApiResponse(responseCode = "200",
+      description = "The response in relation with jQuery plugins used on the client side: an " +
+      "HTML textarea tag that contains a JSON array structure. Each line of this array contains " +
+      "information of an uploaded file : uploadSessionId : the uploaded session identifier " +
+      "fullPath : the full path of the uploaded file name : the name of the uploaded file " +
+      "(without its path) size : the byte size of the uploaded file formattedSize : the " +
+      "formatted file size according to the language of user iconUrl : the url of the icon that " +
+      "represents the type of the uploaded file")
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.TEXT_HTML)
@@ -171,6 +186,16 @@ public class FileUploadResource extends RESTWebService {
    * <li><b>iconUrl</b> : the url of the icon that represents the type of the uploaded file</li>
    * </ul>
    */
+  @Operation(summary = "Permits to upload one file from http request.",
+      description = "If antivirus scanning is enabled, the file is scanned before upload.")
+  @ApiResponse(responseCode = "200",
+      description = "The response in relation with jQuery plugins used on the client side: an " +
+      "HTML textarea tag that contains a JSON array structure. Each line of this array contains " +
+      "information of an uploaded file : uploadSessionId : the uploaded session identifier " +
+      "fullPath : the full path of the uploaded file name : the name of the uploaded file " +
+      "(without its path) size : the byte size of the uploaded file formattedSize : the " +
+      "formatted file size according to the language of user iconUrl : the url of the icon that " +
+      "represents the type of the uploaded file")
   @POST
   @Consumes(MediaType.APPLICATION_OCTET_STREAM)
   @Produces(MediaType.TEXT_HTML)
@@ -409,6 +434,10 @@ public class FileUploadResource extends RESTWebService {
                 .getFileIcon(FilenameUtils.getExtension(uploadSessionFile.getServerFile().getName())));
   }
 
+  @Operation(summary = "Removes from the current upload session the given file, or all of them " +
+      "if none is specified.")
+  @ApiResponse(responseCode = "200",
+      description = "The files have been removed from the upload session.")
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   public Response delete() {

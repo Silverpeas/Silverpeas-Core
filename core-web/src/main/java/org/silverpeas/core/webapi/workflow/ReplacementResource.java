@@ -24,6 +24,11 @@
 
 package org.silverpeas.core.webapi.workflow;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.date.Period;
@@ -90,6 +95,19 @@ public class ReplacementResource extends RESTWebService {
    * </p>
    * @return a list of all replacements that are defined in the requested workflow.
    */
+  @Operation(summary = "Gets all the replacements that were created in the requested workflow.",
+      description = "The replacements can be filtered by one incumbent or by one substitute " +
+      "taking part in the replacements to returns. If both are specified, then only the " +
+      "replacements in which both of them take part are returned. For security reason, when one " +
+      "incumbent or one substitute is specified, only the replacements in which the requester is " +
+      "concerned (either as incumbent or as substitute) are returned. Unless the requester is a " +
+      "supervisor in the requested workflow, if he is neither an incumbent nor a substitute in " +
+      "any replacements, then nothing is returned. Only the supervisor of the given requested " +
+      "workflow have the rights to asks for all of the replacements in the workflow or to " +
+      "request any replacements in which a given user takes part (either as an incumbent or as a " +
+      "substitute).")
+  @ApiResponse(responseCode = "200",
+      description = "A list of all replacements that are defined in the requested workflow.")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public <T extends Replacement<T>> Collection<ReplacementEntity> getAllReplacements(
@@ -131,6 +149,15 @@ public class ReplacementResource extends RESTWebService {
    * @param replacementId the unique identifier of a replacement in the requested workflow.
    * @return ReplacementEntity representation of the replacement.
    */
+  @Operation(summary = "Gets the replacement with the specified unique identifier in the " +
+      "requested workflow.",
+      description = "If no such replacement exists in the given workflow, then an HTTP error " +
+      "Response.Status#NOT_FOUND is sent back. For security reason, unless the requester is a " +
+      "supervisor in the requested workflow, only the users concerned by the asked replacement " +
+      "(either as incumbent or as substitute) can ask for the targeted replacement.")
+  @ApiResponse(responseCode = "200",
+      description = "ReplacementEntity representation of the replacement.",
+      content = @Content(schema = @Schema(implementation = ReplacementEntity.class)))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{id}")
@@ -154,6 +181,17 @@ public class ReplacementResource extends RESTWebService {
    * @return the response with the status {@link Response.Status#CREATED} and with the entity
    * representing the newly created replacement.
    */
+  @Operation(summary = "Creates a new replacement in the given requested workflow from the " +
+      "specified entity embodied in the incoming request.",
+      description = "Be caution: the workflow identifier in the entity must match the requested " +
+      "workflow instance otherwise an HTTP error Response.Status#BAD_REQUEST is sent back. For " +
+      "security reason, unless the requester plays the role of supervisor in the requested " +
+      "workflow, he must be the incumbent of the tasks he asks for replacement. Otherwise an " +
+      "HTTP error Response.Status#FORBIDDEN is sent back. Only the supervisor can create a " +
+      "replacement between two others users in a workflow instance or for himself.")
+  @ApiResponse(responseCode = "200",
+      description = "The response with the status Response.Status#CREATED and with the entity " +
+      "representing the newly created replacement.")
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
@@ -190,6 +228,17 @@ public class ReplacementResource extends RESTWebService {
    * @param entity the new state of the replacement.
    * @return the updated replacement.
    */
+  @Operation(summary = "Updates the replacement identified by the specified unique identifier " +
+      "with the given replacement entity.",
+      description = "If no such replacement exists in the requested workflow, then an HTTP error " +
+      "Response.Status#NOT_FOUND is sent back. Only the period over which the replacement will " +
+      "occur and the substitute can be updated. If any other properties (the incumbent) are " +
+      "modified, an HTTP error Response.Status#BAD_REQUEST is sent back. For security reason, " +
+      "unless the requester plays the role of supervisor in the requested workflow, only the " +
+      "incumbent of the tasks concerned by the replacement can update a replacement. Otherwise, " +
+      "an HTTP error Response.Status#FORBIDDEN is sent back.")
+  @ApiResponse(responseCode = "200", description = "The updated replacement.",
+      content = @Content(schema = @Schema(implementation = ReplacementEntity.class)))
   @PUT
   @Path("{id}")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -220,6 +269,13 @@ public class ReplacementResource extends RESTWebService {
    * </p>
    * @param replacementId the unique identifier of a replacement in the requested workflow.
    */
+  @Operation(summary = "Deletes the replacement identified by the specified unique identifier.",
+      description = "If no such replacement exists in the requested workflow, then an HTTP error " +
+      "Response.Status#NOT_FOUND is sent back. For security reason, unless the requester plays " +
+      "the role of supervisor in the requested workflow, only the incumbent of the tasks " +
+      "concerned by the replacement or the substitute can delete a replacement. Otherwise, an " +
+      "HTTP error Response.Status#FORBIDDEN is sent back.")
+  @ApiResponse(responseCode = "204", description = "The replacement has been deleted.")
   @DELETE
   @Path("{id}")
   @Transactional

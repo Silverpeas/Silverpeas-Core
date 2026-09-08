@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
@@ -49,12 +55,18 @@ public abstract class AbstractNodeResource extends RESTWebService {
     return componentId;
   }
 
+  @Operation(summary = "Gets the root folder of the tree of folders.")
+  @ApiResponse(responseCode = "200", description = "The root folder.",
+      content = @Content(schema = @Schema(implementation = NodeEntity.class)))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getRoot() {
     return getRootNode();
   }
 
+  @Operation(summary = "Gets the folder located at the given path in the tree of folders.")
+  @ApiResponse(responseCode = "200", description = "The asked folder.",
+      content = @Content(schema = @Schema(implementation = NodeEntity.class)))
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -67,6 +79,9 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return a list of NodeEntity representing children
    */
+  @Operation(summary = "Get all children of any node of the application.")
+  @ApiResponse(responseCode = "200", description = "A list of NodeEntity representing children",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = NodeEntity.class))))
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*/children}")
   @Produces(MediaType.APPLICATION_JSON)

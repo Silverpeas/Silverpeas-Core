@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.profile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -105,6 +110,13 @@ public class UserProfileResource extends RESTWebService {
    *
    * @return The user entity corresponding to the token specified in the request.
    */
+  @Operation(summary = "Gets the profile of the user whose API token is either passed in the " +
+      "Authorization HTTP header (Bearer authentication scheme, IETF RFC 6750) or with the query " +
+      "parameter access_token (see IETF RFC 6750).",
+      description = "This endpoint works also with a basic authentication instead of a bearer one.")
+  @ApiResponse(responseCode = "200",
+      description = "The user entity corresponding to the token specified in the request.",
+      content = @Content(schema = @Schema(implementation = UserProfileEntity.class)))
   @GET
   @Path("token")
   @Produces(MediaType.APPLICATION_JSON)
@@ -146,6 +158,15 @@ public class UserProfileResource extends RESTWebService {
    * @param includeRemovedUsers the removed users should be also sent back.
    * @return the JSON serialization of the array with the user profiles that matches the query.
    */
+  @Operation(summary = "Gets the users defined in Silverpeas and that matches the specified " +
+      "optional query parameters.",
+      description = "If no query parameters are set, then all the users in Silverpeas are sent " +
+      "back. The users to sent back can be filtered by a pattern their name has to satisfy, by " +
+      "the group they must belong to, and by some pagination parameters. In the response is " +
+      "indicated as an HTTP header (named X-Silverpeas-UserSize) the real size of the users that " +
+      "matches the query. This is useful for clients that use the pagination to filter the count " +
+      "of the answered users.")
+  @ApiResponse(responseCode = "200", description = "The user profiles that matches the query.")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response getUsers(@QueryParam("id") Set<String> userIds,
@@ -222,6 +243,12 @@ public class UserProfileResource extends RESTWebService {
    * @param extended more user details (full details).
    * @return the profile of the user in a JSON representation.
    */
+  @Operation(summary = "Gets the profile on the user that is identified by the unique identifier " +
+      "referred by the URI.",
+      description = "The unique identifier in the URI accepts also the specific term me to " +
+      "refers the current user of the session within which the request is received.")
+  @ApiResponse(responseCode = "200", description = "The profile of the user.",
+      content = @Content(schema = @Schema(implementation = UserProfileEntity.class)))
   @GET
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -272,6 +299,17 @@ public class UserProfileResource extends RESTWebService {
    * @return the JSON serialization of the array with the user profiles that can access the
    * Silverpeas component and that matches the query.
    */
+  @Operation(summary = "Gets the profiles of the users that have access to the specified " +
+      "Silverpeas application and that matches the specified optional query parameters.",
+      description = "If no query parameters are set, then all the users with the rights to " +
+      "access the application are sent back. The users to sent back can be filtered by a pattern " +
+      "their name has to satisfy, by the group they must belong to, and by some pagination " +
+      "parameters. In the response is indicated as an HTTP header (named X-Silverpeas-UserSize) " +
+      "the real size of the users that matches the query. This is useful for clients that use " +
+      "the pagination to filter the count of the answered users.")
+  @ApiResponse(responseCode = "200",
+      description = "The user profiles that can access the Silverpeas application and that " +
+      "matches the query.")
   @GET
   @Path("application/{instanceId}")
   public Response getApplicationUsers(
@@ -346,6 +384,11 @@ public class UserProfileResource extends RESTWebService {
    * @param includeRemovedUsers the removed users should be also sent back.
    * @return the profile of the user in a JSON representation.
    */
+  @Operation(summary = "Gets the profile on the user that is identified by the unique identifier " +
+      "referred by the URI.",
+      description = "The unique identifier in the URI accepts also the specific term me to " +
+      "refers the current user of the session within which the request is received.")
+  @ApiResponse(responseCode = "200", description = "The profile of the user.")
   @GET
   @Path("{userId}/contacts")
   @Produces(MediaType.APPLICATION_JSON)

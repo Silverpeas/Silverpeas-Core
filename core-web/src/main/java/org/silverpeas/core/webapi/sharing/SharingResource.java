@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.sharing;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
@@ -37,6 +43,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.net.URI;
 
+@Tag(name = "Sharing",
+    description = "The contributions shared outside of Silverpeas. A sharing link carries a " +
+    "token that both identifies the link and grants access to the shared contribution, without " +
+    "any authentication nor authorization.")
 @WebService
 @Path(SharingResource.PATH + "/{token}")
 public class SharingResource extends RESTWebService {
@@ -56,6 +66,9 @@ public class SharingResource extends RESTWebService {
     return null;
   }
 
+  @Operation(summary = "Gets the contribution the given sharing link refers to.")
+  @ApiResponse(responseCode = "200", description = "The shared contribution.",
+      content = @Content(schema = @Schema(implementation = SharingEntity.class)))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public SharingEntity getSharing() {

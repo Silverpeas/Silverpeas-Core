@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.webapi.thesaurus;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.pdc.thesaurus.model.Synonym;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
@@ -48,6 +52,9 @@ import java.util.stream.Collectors;
 
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
+@Tag(name = "Thesaurus",
+    description = "The thesaurus applied on the axes of the classification plan (PdC): the " +
+    "synonyms associated with the term naming a value of an axis.")
 @WebService
 @Path(ThesaurusResource.PATH)
 @Authorized
@@ -62,6 +69,9 @@ public class ThesaurusResource extends RESTWebService {
     }
   }
 
+  @Operation(summary = "Associates synonyms with the term naming the given value of the axis.")
+  @ApiResponse(responseCode = "204",
+      description = "The synonyms have been associated with the term.")
   @POST
   @Path("/vocabulary/{vocabularyId}/axis/{axisId}/values/{valueId}/synonyms")
   @Produces(MediaType.APPLICATION_JSON)

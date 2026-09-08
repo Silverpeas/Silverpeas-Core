@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.webapi.cache;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.cache.service.VolatileIdentifierProvider;
@@ -60,6 +63,9 @@ public class VolatileCacheResource extends RESTWebService {
    * calendars.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets a new volatile identifier into the context of #componentInstanceId " +
+      "retrieved from the URI.")
+  @ApiResponse(responseCode = "200", description = "The asked calendars.")
   @GET
   @Path("new")
   @Produces(MediaType.TEXT_PLAIN)

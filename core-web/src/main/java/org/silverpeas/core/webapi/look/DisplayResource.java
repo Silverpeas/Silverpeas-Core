@@ -23,8 +23,14 @@
  */
 package org.silverpeas.core.webapi.look;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -56,6 +62,10 @@ public class DisplayResource extends AbstractLookResource {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @return the response to the HTTP GET request with the JSON representation of display context.
    */
+  @Operation(summary = "Gets the user display context.")
+  @ApiResponse(responseCode = "200", description = "Display context.",
+      content = @Content(schema = @Schema(implementation = DisplayUserContextEntity.class)))
+  @NotFound
   @GET
   @Path(LookResourceURIs.DISPLAY_USER_CONTEXT_URI_PART)
   @Produces(APPLICATION_JSON)

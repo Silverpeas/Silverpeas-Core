@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.WebResourceUri;
@@ -71,6 +77,9 @@ public class ComponentsResource extends AbstractAdminResource {
    * @return the response to the HTTP GET request with the JSON representation of the
    * ComponentInstLight.
    */
+  @Operation(summary = "Gets the existing ComponentInstLight known as 'image banks'.")
+  @ApiResponse(responseCode = "200", description = "The ComponentInstLight.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ComponentEntity.class))))
   @GET
   @Produces(APPLICATION_JSON)
   public Collection<ComponentEntity> getComponentsByFilterOrParameterValue(

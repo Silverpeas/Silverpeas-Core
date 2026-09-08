@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.webapi.subscribe;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.subscription.Subscription;
@@ -45,6 +52,11 @@ import static org.silverpeas.core.util.JSONCodec.encodeArray;
 * A REST Web resource representing a given subscription.
 * It is a web service that provides an access to a subscription referenced by its URL.
 */
+@Tag(name = "Subscriptions",
+    description = "The subscriptions to the changes occurring on the resources of Silverpeas: an " +
+    "application as a whole, or one of the contributions it contains. The type of the targeted " +
+    "resource is given by the subscription type: a publication, a calendar, a blog post, and so " +
+    "on.")
 @WebService
 @Path(SubscribeResource.PATH + "/{componentId}")
 @Authorized
@@ -52,12 +64,19 @@ public class SubscribeResource extends AbstractSubscriptionResource {
 
   static final String PATH = "subscribe";
 
+  @Operation(summary = "Subscribes the authenticated user to the changes in the given application.")
+  @ApiResponse(responseCode = "200", description = "The subscription has been done.",
+      content = @Content(array = @ArraySchema(schema = @Schema(type = "string"))))
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public String subscribeToComponent() {
     return subscribeToResource(COMPONENT, null);
   }
 
+  @Operation(summary = "Subscribes the authenticated user to the changes on the given resource " +
+      "of the application.")
+  @ApiResponse(responseCode = "200", description = "The subscription has been done.",
+      content = @Content(array = @ArraySchema(schema = @Schema(type = "string"))))
   @POST
   @Path("{subscriptionType}/{id}")
   @Produces(MediaType.APPLICATION_JSON)

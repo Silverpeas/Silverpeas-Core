@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.media;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
@@ -60,6 +65,10 @@ public class EmbedMediaPlayerResource extends RESTWebService {
    * Gets a view on the content with the embed media player.
    * @return a descriptor of the renderer to use to display the media content.
    */
+  @Operation(summary = "Gets a view on the content with the embed media player.")
+  @ApiResponse(responseCode = "200",
+      description = "A descriptor of the renderer to use to display the media content.",
+      content = @Content(schema = @Schema(implementation = View.class)))
   @GET
   public View getEmbedContent() {
     EmbedMediaPlayerParams params =

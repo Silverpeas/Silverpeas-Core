@@ -24,6 +24,12 @@
 
 package org.silverpeas.core.webapi.reminder;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.annotation.WebService;
@@ -42,6 +48,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
@@ -110,6 +117,12 @@ public class ReminderResource extends RESTWebService {
    * @see WebProcess#execute()
    */
   @Path("possibledurations/{property}")
+  @Operation(summary = "Gets the identifier list of possible of durations.",
+      description = "An identifier of a duration is the concatenation about the duration value " +
+      "and the duration unit (TimeUnit). 15MINUTE for example.")
+  @ApiResponse(responseCode = "200",
+      description = "A filled list if any, or an empty one if no trigger can be scheduled.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = String.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @SuppressWarnings("ConstantConditions")
@@ -148,6 +161,10 @@ public class ReminderResource extends RESTWebService {
    * reminders.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets a list of reminder.")
+  @ApiResponse(responseCode = "200", description = "The asked reminders.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReminderEntity.class))))
+  @NotFound
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<ReminderEntity> getReminders() {
@@ -164,6 +181,9 @@ public class ReminderResource extends RESTWebService {
    * @return the response to the HTTP POST request with the JSON representation of the created
    * reminder.
    */
+  @Operation(summary = "Creates the reminder and returns it once created.")
+  @ApiResponse(responseCode = "200", description = "The created reminder.",
+      content = @Content(schema = @Schema(implementation = ReminderEntity.class)))
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public ReminderEntity createReminder(ReminderEntity reminderEntity) {
@@ -201,6 +221,9 @@ public class ReminderResource extends RESTWebService {
    * reminder.
    */
   @Path("{id}")
+  @Operation(summary = "Updates the reminder and returns it once updated.")
+  @ApiResponse(responseCode = "200", description = "The updated reminder.",
+      content = @Content(schema = @Schema(implementation = ReminderEntity.class)))
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   public ReminderEntity updateReminder(@PathParam("id") String id, ReminderEntity reminderEntity) {
@@ -234,6 +257,8 @@ public class ReminderResource extends RESTWebService {
    * HTTP code is returned.
    * @param id a reminder identifier
    */
+  @Operation(summary = "Deletes the given reminder.")
+  @ApiResponse(responseCode = "204", description = "The reminder has been deleted.")
   @DELETE
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)

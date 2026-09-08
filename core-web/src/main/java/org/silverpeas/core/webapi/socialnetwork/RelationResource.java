@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.webapi.socialnetwork;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
@@ -42,6 +46,9 @@ import jakarta.ws.rs.core.Response;
  * The WEB resource belongs always to the current user in the session underlying at the HTTP
  * request.
  */
+@Tag(name = "Relationships",
+    description = "The relationships of the authenticated user in the social network of " +
+    "Silverpeas. A relationship is created by accepting an invitation.")
 @RequestScoped
 @Path(RelationResource.PATH)
 @Authenticated
@@ -52,6 +59,9 @@ public class RelationResource extends RESTWebService {
   @Inject
   private RelationShipService relationShipService;
 
+  @Operation(summary = "Breaks off the relationship between the authenticated user and the given " +
+      "user.")
+  @ApiResponse(responseCode = "200", description = "The relationship has been broken off.")
   @DELETE
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)

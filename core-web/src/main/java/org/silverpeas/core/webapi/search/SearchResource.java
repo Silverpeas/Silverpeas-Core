@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.search;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -60,6 +66,10 @@ public class SearchResource extends RESTWebService {
 
   static final String PATH = "search";
 
+  @Operation(summary = "Searches the contributions matching the given criteria and accessible to " +
+      "the requester.")
+  @ApiResponse(responseCode = "200", description = "The contributions matching the search criteria.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResultEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<ResultEntity> search(@QueryParam("query") String query,

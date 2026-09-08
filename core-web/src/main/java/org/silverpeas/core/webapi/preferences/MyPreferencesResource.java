@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.preferences;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
@@ -57,6 +62,9 @@ public class MyPreferencesResource extends RESTWebService {
    * @param preferences the user preferences to set.
    * @return the updated user preferences.
    */
+  @Operation(summary = "Updates the preferences of the user behind the current request.")
+  @ApiResponse(responseCode = "200", description = "The updated user preferences.",
+      content = @Content(schema = @Schema(implementation = UserPreferencesEntity.class)))
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)

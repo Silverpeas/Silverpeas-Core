@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -32,6 +37,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -93,6 +99,10 @@ public class ComponentResource extends AbstractAdminResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * ComponentInstLight.
    */
+  @Operation(summary = "Gets the specified existing ComponentInstLight.")
+  @ApiResponse(responseCode = "200", description = "The asked ComponentInstLight.",
+      content = @Content(schema = @Schema(implementation = ComponentEntity.class)))
+  @NotFound
   @GET
   @Produces(APPLICATION_JSON)
   public ComponentEntity get() {
@@ -114,6 +124,9 @@ public class ComponentResource extends AbstractAdminResource {
    * @param roles aimed roles (each one separated by comma). If empty, all roles are returned.
    * @return the JSON response to the HTTP GET request.
    */
+  @Operation(summary = "Gets users and groups roles indexed by role names.")
+  @ApiResponse(responseCode = "200", description = "The JSON response to the HTTP GET request.")
+  @NotFound
   @GET
   @Path(USERS_AND_GROUPS_ROLES_URI_PART)
   @Produces(APPLICATION_JSON)

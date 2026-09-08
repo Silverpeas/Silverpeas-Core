@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.web.rs.annotation;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+
 import jakarta.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
@@ -38,6 +45,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * If the user isn't yet authenticated, an authentication challenge is triggered with the
  * credentials from the Authenticate HTTP header of the request.
  */
+@SecurityScheme(name = "silverpeasCredentials", type = SecuritySchemeType.HTTP, scheme = "basic",
+    description = "The credentials of the user. The preferred way for a REST client as it offers " +
+        "a better scalability.")
+@SecurityScheme(name = "silverpeasSession", type = SecuritySchemeType.APIKEY,
+    in = SecuritySchemeIn.HEADER, paramName = UserPrivilegeValidation.HTTP_SESSIONKEY,
+    description = "The key of a session opened by the user, or a user token to perform the " +
+        "request without opening any session.")
+@SecurityScheme(name = "silverpeasAccessToken", type = SecuritySchemeType.APIKEY,
+    in = SecuritySchemeIn.QUERY, paramName = UserPrivilegeValidation.HTTP_ACCESS_TOKEN,
+    description = "An access token, for a token based authentication mechanism like OAuth2.")
+@SecurityRequirement(name = "silverpeasCredentials")
+@SecurityRequirement(name = "silverpeasSession")
+@SecurityRequirement(name = "silverpeasAccessToken")
+@ApiResponse(responseCode = "401",
+    description = "The user isn't authenticated: the credentials are either missing or invalid.")
 @InterceptorBinding
 @Documented
 @Target(TYPE)

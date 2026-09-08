@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.publication;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.util.SharingContext;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -68,6 +74,9 @@ public class SharedPublicationResource extends AbstractPublicationResource {
     return this.ticket.getComponentId();
   }
 
+  @Operation(summary = "Gets the publication shared through the given link.")
+  @ApiResponse(responseCode = "200", description = "The shared publication.",
+      content = @Content(schema = @Schema(implementation = PublicationEntity.class)))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public PublicationEntity getPublication() {
@@ -87,6 +96,10 @@ public class SharedPublicationResource extends AbstractPublicationResource {
     return entity;
   }
 
+  @Operation(summary = "Gets the publications located in the given folder of the shared " +
+      "contribution.")
+  @ApiResponse(responseCode = "200", description = "The shared publications.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = PublicationEntity.class))))
   @GET
   @Path("node/{node}")
   @Produces(MediaType.APPLICATION_JSON)
