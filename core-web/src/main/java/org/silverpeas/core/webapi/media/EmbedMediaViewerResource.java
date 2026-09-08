@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.media;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
@@ -73,6 +78,10 @@ public class EmbedMediaViewerResource extends RESTWebService {
    * Gets a view on the content with the embed pdf viewer.
    * @return a descriptor of the renderer to use to view the document.
    */
+  @Operation(summary = "Gets a view on the content with the embed pdf viewer.")
+  @ApiResponse(responseCode = "200",
+      description = "A descriptor of the renderer to use to view the document.",
+      content = @Content(schema = @Schema(implementation = View.class)))
   @GET
   @Path("pdf")
   public View getPdfEmbedViewer(@QueryParam("documentId") final String documentId,
@@ -97,6 +106,11 @@ public class EmbedMediaViewerResource extends RESTWebService {
   /**
    * Gets the content of the pdf. The player URI MUST have be accessed before accessing this one.
    */
+  @Operation(summary = "Gets the content of the pdf.",
+      description = "The player URI MUST have be accessed before accessing this one.")
+  @ApiResponse(responseCode = "200", description = "The content of the document to render.")
+  @ApiResponse(responseCode = "303",
+      description = "The URI of the resource serving the PDF rendition of the document.")
   @GET
   @Path("pdf/content")
   public Response getPdfContent(@QueryParam("documentId") final String documentId,
@@ -129,6 +143,10 @@ public class EmbedMediaViewerResource extends RESTWebService {
    * Gets a view on the content with the embed flowpaper viewer.
    * @return a descriptor of the renderer to use to view the document.
    */
+  @Operation(summary = "Gets a view on the content with the embed flowpaper viewer.")
+  @ApiResponse(responseCode = "200",
+      description = "A descriptor of the renderer to use to view the document.",
+      content = @Content(schema = @Schema(implementation = View.class)))
   @GET
   @Path("fp")
   public View getFlowPaperEmbedViewer(@QueryParam("documentId") final String documentId,
@@ -167,6 +185,11 @@ public class EmbedMediaViewerResource extends RESTWebService {
   /**
    * Gets the content of the swf. The player URI MUST have be accessed before accessing this one.
    */
+  @Operation(summary = "Gets the content of the swf.",
+      description = "The player URI MUST have be accessed before accessing this one.")
+  @ApiResponse(responseCode = "200", description = "The content of the document to render.")
+  @ApiResponse(responseCode = "303",
+      description = "The URI of the resource serving the PDF rendition of the document.")
   @GET
   @Path("fp/content/{documentId}/{language}/{page}")
   public Response getFlowPaperContent(@PathParam("documentId") final String documentId,

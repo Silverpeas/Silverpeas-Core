@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.webapi.publication;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -51,6 +58,10 @@ import java.util.List;
 /**
  * A REST Web resource providing access to publications through private mode.
  */
+@Tag(name = "Publications",
+    description = "The publications visible to the authenticated user, and the places where they " +
+    "are located in the tree of folders. A publication may be located at several places at once " +
+    "through aliases.")
 @WebService
 @Path(PublicationResource.PATH + "/{componentId}")
 @Authorized
@@ -71,6 +82,9 @@ public class PublicationResource extends AbstractPublicationResource {
     return componentId;
   }
 
+  @Operation(summary = "Gets the publications located in the given folder.")
+  @ApiResponse(responseCode = "200", description = "The publications the user can access.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = PublicationEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<PublicationEntity> listPublications(@QueryParam("node") String nodeId,
@@ -80,6 +94,9 @@ public class PublicationResource extends AbstractPublicationResource {
     return publications;
   }
 
+  @Operation(summary = "Removes the given link between the publication and another contribution.")
+  @ApiResponse(responseCode = "200",
+      description = "The link between the publication and the other contribution has been removed.")
   @DELETE
   @Path("{pubId}/links/{linkId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -111,6 +128,9 @@ public class PublicationResource extends AbstractPublicationResource {
     throw new WebApplicationException(Response.Status.NOT_FOUND);
   }
 
+  @Operation(summary = "Gets all the places where the given publication is located.")
+  @ApiResponse(responseCode = "200", description = "The locations of the publication.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocationEntity.class))))
   @GET
   @Path("{pubId}/locations")
   @Produces(MediaType.APPLICATION_JSON)
@@ -157,6 +177,8 @@ public class PublicationResource extends AbstractPublicationResource {
     return componentLocations;
   }
 
+  @Operation(summary = "Adds an alias of the given publication in the given folder.")
+  @ApiResponse(responseCode = "200", description = "The alias has been added into the folder.")
   @PUT
   @Path("{pubId}/locations/{nodeId}-{aliasComponentId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -180,6 +202,8 @@ public class PublicationResource extends AbstractPublicationResource {
     return Response.ok().build();
   }
 
+  @Operation(summary = "Removes the alias of the given publication from the given folder.")
+  @ApiResponse(responseCode = "200", description = "The alias has been removed from the folder.")
   @DELETE
   @Path("{pubId}/locations/{nodeId}-{aliasComponentId}")
   @Produces(MediaType.APPLICATION_JSON)

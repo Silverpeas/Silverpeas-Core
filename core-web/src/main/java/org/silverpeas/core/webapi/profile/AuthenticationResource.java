@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.profile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
@@ -71,6 +76,13 @@ public class AuthenticationResource extends RESTWebService {
    * nothing is done.
    * @return The profile of the user once authenticated.
    */
+  @Operation(summary = "Authenticates the user from his credentials passed through the " +
+      "Authorization HTTP header, opens a new HTTP session in Silverpeas in the case of a Basic " +
+      "authentication scheme, or throws a jakarta.ws.rs.WebApplicationException exception.",
+      description = "If the user has already opened a session in Silverpeas and the request " +
+      "carries the session identifier, then nothing is done.")
+  @ApiResponse(responseCode = "200", description = "The profile of the user once authenticated.",
+      content = @Content(schema = @Schema(implementation = UserProfileEntity.class)))
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public UserProfileEntity authenticate() {

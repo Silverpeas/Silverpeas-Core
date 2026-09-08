@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.webapi.util.logging;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -42,6 +49,9 @@ import java.util.List;
  * A Web resource representing a given log used by Silverpeas. It is a REST-based Web service.
  * @author mmoquillon
  */
+@Tag(name = "Logging",
+    description = "The logs of Silverpeas and the configuration of its loggers. Reserved to the " +
+    "administrators.")
 @WebService
 @Authorized
 @Path(LogResource.LOGS_PATH + "/{logName}")
@@ -55,12 +65,17 @@ public class LogResource extends AbstractLoggingResource {
   @PathParam("logName")
   private String logName;
 
+  @Operation(summary = "Gets the last records of the given log.")
+  @ApiResponse(responseCode = "200", description = "The last records of the log.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = String.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<String> getLastLogRecordsAsJson(@QueryParam("count") int count) {
     return getLastLogRecords(count);
   }
 
+  @Operation(summary = "Gets the last records of the given log, as an HTML fragment.")
+  @ApiResponse(responseCode = "200", description = "The last records of the log.")
   @GET
   @Produces(MediaType.TEXT_HTML)
   public String getLastLogRecordsAsHtml(@QueryParam("count") int count) {
@@ -68,6 +83,8 @@ public class LogResource extends AbstractLoggingResource {
         .replace("\t", new span("&#160;&#160;&#160;&#160;").toString());
   }
 
+  @Operation(summary = "Gets the last records of the given log, as plain text.")
+  @ApiResponse(responseCode = "200", description = "The last records of the log.")
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String getLastLogRecordsAsText(@QueryParam("count") int count) {
