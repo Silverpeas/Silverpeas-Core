@@ -64,6 +64,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-api</artifactId>
       <version>${project.version}</version>
@@ -281,6 +286,8 @@
           <openapi31>true</openapi31>
           <defaultResponseCode>200</defaultResponseCode>
           <!-- completes each operation with the responses common to all the endpoints -->
+          <!-- the schema resolver must read the JAXB annotations of the web entities -->
+          <modelConverterClasses>org.silverpeas.core.restapi.JaxbAwareModelResolver</modelConverterClasses>
           <filterClass>org.silverpeas.core.restapi.CommonResponsesFilter</filterClass>
           <!-- the SCIM API isn't meant to be published -->
           <ignoredRoutes>
