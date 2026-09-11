@@ -26,18 +26,15 @@ package org.silverpeas.core.util.security;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * User: Yohann Chastagnier
- * Date: 05/03/14
+ * Security global settings for Silverpeas.
+ *
+ * @author Yohann Chastagnier
  */
 public class SecuritySettings {
 
@@ -51,12 +48,9 @@ public class SecuritySettings {
   }
 
   /**
-   * Is web security mechanisms enabled?
-   * - tokens
-   * - SQL injection
-   * - XSS injection
-   * - ...
-   * @return
+   * Is web security mechanisms enabled? - tokens - SQL injection - XSS injection - ...
+   *
+   * @return true if the security mechanism is enabled, false otherwise.
    */
   private static boolean isWebProtectionEnabled() {
     return settings.getBoolean("security.web.protection", false);
@@ -64,6 +58,7 @@ public class SecuritySettings {
 
   /**
    * Is the SQL injection security mechanism enabled?
+   *
    * @return true if the security mechanism is enabled for Silverpeas, false otherwise.
    */
   public static boolean isWebSqlInjectionSecurityEnabled() {
@@ -73,6 +68,7 @@ public class SecuritySettings {
 
   /**
    * Indicates the parameters for which the SQL injection verification must be bypassed.
+   *
    * @return a regexp represented by a string.
    */
   public static String skippedParametersAboutWebSqlInjectionSecurity() {
@@ -81,6 +77,7 @@ public class SecuritySettings {
 
   /**
    * Is the XSS injection security mechanism enabled?
+   *
    * @return true if the security mechanism is enabled for Silverpeas, false otherwise.
    */
   public static boolean isWebXssInjectionSecurityEnabled() {
@@ -90,6 +87,7 @@ public class SecuritySettings {
 
   /**
    * Indicates the parameters for which the XSS injection verification must be bypassed.
+   *
    * @return a regexp represented by a string.
    */
   public static String skippedParametersAboutWebXssInjectionSecurity() {
@@ -98,6 +96,7 @@ public class SecuritySettings {
 
   /**
    * Is the security mechanism based on the synchronizer token pattern enabled?
+   *
    * @return true if the security mechanism is enabled for Silverpeas, false otherwise.
    */
   public static boolean isWebSecurityByTokensEnabled() {
@@ -105,8 +104,9 @@ public class SecuritySettings {
   }
 
   /**
-   * Is the renew of the synchronizer tokens used to protect a user session enabled?
-   * @return true if the renew of session tokens is enabled in Silverpeas, false otherwise.
+   * Is the renewal of the synchronizer tokens used to protect a user session enabled?
+   *
+   * @return true if the renewal of session tokens is enabled in Silverpeas, false otherwise.
    */
   public static boolean isSessionTokenRenewEnabled() {
     return isWebSecurityByTokensEnabled() &&
@@ -117,6 +117,7 @@ public class SecuritySettings {
    * Is the Strict Transport Security enabled? Strict Transport Security can be used only with
    * secured connections. It ensures only HTTPS connections are used and hence asks the client to
    * switch any HTTP connection to an HTTPS connection.
+   *
    * @return true of Strict Transport Security must be used, false otherwise.
    */
   public static boolean isStrictTransportSecurityEnabled() {
@@ -125,10 +126,10 @@ public class SecuritySettings {
   }
 
   /**
-   * How many seconds the client must memorize Silverpeas has to be accessed only by HTTPS.
-   * Strict Transport Security can be used only with
-   * secured connections. It ensures only HTTPS connections are used and hence asks the client to
-   * switch any HTTP connection to an HTTPS connection.
+   * How many seconds the client must memorize Silverpeas has to be accessed only by HTTPS. Strict
+   * Transport Security can be used only with secured connections. It ensures only HTTPS connections
+   * are used and hence asks the client to switch any HTTP connection to an HTTPS connection.
+   *
    * @return a number of seconds or 0 if no expiration time.
    */
   public static long getStrictTransportSecurityExpirationTime() {
@@ -136,10 +137,11 @@ public class SecuritySettings {
   }
 
   /**
-   * Gets the URL of all of the domains that are authorized to be accessed from Silverpeas. By
-   * default, if empty, only web resources coming from Silverpeas itself should be authorized.
-   * If of size one and the first value is "*", no CORS protection is enabled. Otherwise, only the
+   * Gets the URL of all the domains that are authorized to be accessed from Silverpeas. By
+   * default, if empty, only web resources coming from Silverpeas itself should be authorized. If of
+   * size one and the first value is "*", no CORS protection is enabled. Otherwise, only the
    * specified domains are authorized by the CORS protection to be accessed from Silverpeas.
+   *
    * @return a list of URI identifying the domains that are authorized to be accessed from
    * Silverpeas.
    */
@@ -156,6 +158,7 @@ public class SecuritySettings {
   /**
    * Is the content injection security mechanism enabled? That is to say is the Content Security
    * Policy enabled?
+   *
    * @return true if the Content Security Policy is enabled for Silverpeas, false otherwise.
    */
   public static boolean isWebContentInjectionSecurityEnabled() {
@@ -177,6 +180,7 @@ public class SecuritySettings {
 
   /**
    * Gets the formatted sandbox iframe attribute for external contents.
+   *
    * @return the TAG attribute.
    */
   public static String getIFrameSandboxTagAttribute() {
@@ -188,6 +192,20 @@ public class SecuritySettings {
     return tagAttribute;
   }
 
+  /**
+   * Gets the hosts from which contents are allowed to be embedded within an iframe in the data sent
+   * to Silverpeas. The Silverpeas server itself isn't among them as it is always allowed.
+   *
+   * @return a list of host names. Empty if only the Silverpeas server is allowed.
+   */
+  public static List<String> getAllowedHostsForIFrame() {
+    final String hosts = settings.getString("security.external.iframe.hosts.allowed", "");
+    return Arrays.stream(hosts.split(","))
+        .map(String::trim)
+        .filter(h -> !h.isEmpty())
+        .toList();
+  }
+
   public static Registration registration() {
     return registration;
   }
@@ -196,7 +214,7 @@ public class SecuritySettings {
 
     private static final String DEFAULT_SRC = "default-src";
     private static final String CORS = "cors";
-    private Map<String, List<String>> settings = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> settings = new ConcurrentHashMap<>();
 
     public void registerDefaultSourceInCSP(final String sourceURL) {
       register(sourceURL, DEFAULT_SRC);

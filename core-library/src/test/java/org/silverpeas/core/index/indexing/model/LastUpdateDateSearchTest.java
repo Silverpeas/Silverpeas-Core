@@ -77,7 +77,7 @@ class LastUpdateDateSearchTest {
   private IndexSearcher searcher;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     // the indexing logger is initialized at Silverpeas startup
     new IndexingLogger().init();
     IndexFileManager.configure(indexRoot.toString() + File.separator);
@@ -129,7 +129,7 @@ class LastUpdateDateSearchTest {
   private void indexContent(LocalDate lastUpdateDate) {
     FullIndexEntry indexEntry =
         new FullIndexEntry(new IndexEntryKey(COMPONENT_ID, OBJECT_TYPE, OBJECT_ID));
-    indexEntry.setCreationDate(toDate(DATE_A));
+    indexEntry.setCreationDate(toDate());
     indexEntry.setCreationUser("0");
     if (lastUpdateDate != null) {
       indexEntry.setLastModificationDate(lastUpdateDate);
@@ -146,7 +146,7 @@ class LastUpdateDateSearchTest {
     return query;
   }
 
-  private static Date toDate(LocalDate date) {
-    return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+  private static Date toDate() {
+    return Date.from(LastUpdateDateSearchTest.DATE_A.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 }

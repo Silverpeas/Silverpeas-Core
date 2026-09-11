@@ -41,5 +41,7 @@
 </c:if>
 <c:set var="sandbox" value="<%=SecuritySettings.getIFrameSandboxTagAttribute()%>"/>
 <iframe src="${url}" name="${iframeName}"
-        marginwidth="0" marginheight="0" frameborder="0" scrolling="auto"
-        webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen="true" ${sandbox}></iframe>
+        style="scroll-behavior: auto; border: 0"
+        webkitallowfullscreen="true" mozallowfullscreen="true" allow="fullscreen *"
+        ${sandbox}>
+</iframe>
