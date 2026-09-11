@@ -423,6 +423,27 @@ public class WysiwygManager implements WysiwygContentRepository {
   }
 
   /**
+   * Adds into the given index the last modification, if any, of the WYSIWYG content of the
+   * resource referred by the specified reference. The last modification of such a content is the
+   * most recent one among all the documents in which the content is stored for the given language.
+   *
+   * @param indexEntry the index of the related resource.
+   * @param pk the primary key of the container of the wysiwyg.
+   * @param language the language.
+   */
+  public void addLastModificationToIndex(FullIndexEntry indexEntry, ResourceReference pk,
+      String language) {
+    attachmentService.listDocumentsByForeignKeyAndType(pk, DocumentType.wysiwyg, language)
+        .stream()
+        .filter(d -> d.getLastUpdateDate() != null)
+        .max(Comparator.comparing(SimpleDocument::getLastUpdateDate))
+        .ifPresent(d -> {
+          indexEntry.setLastModificationDate(d.getLastUpdateDate());
+          indexEntry.setLastModificationUser(d.getUpdatedBy());
+        });
+  }
+
+  /**
    * Add all elements attached to object identified by the given index into the given index
    *
    * @param indexEntry the index of the related resource.

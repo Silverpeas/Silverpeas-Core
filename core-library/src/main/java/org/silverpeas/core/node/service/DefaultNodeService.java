@@ -26,6 +26,7 @@ package org.silverpeas.core.node.service;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -44,6 +45,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.annotation.Cacheable;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Connection;
@@ -68,6 +70,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    */
   private static final SettingBundle nodeSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
+  private static final String NODE_PREFIX = "Node_";
 
   @Inject
   private NodeDAO nodeDAO;
@@ -216,7 +219,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       List<NodeDetail> headers = nodeDAO.getAllHeaders(con, pk, sorting, level);
       NodeDetail root = nodeDAO.loadRow(con, pk);
       root.setChildrenDetails(new ArrayList<>());
-      Map<String, NodeDetail> tree = new HashMap<>(headers.size());
+      Map<String, NodeDetail> tree = HashMap.newHashMap(headers.size());
       tree.put(root.getNodePK().getId(), root);
       for (NodeDetail header : headers) {
         header.setChildrenDetails(new ArrayList<>());
@@ -270,7 +273,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     Connection con = getConnection();
     try {
       List<NodeDetail> tree = getSubTree(nodeToMove);
-      NodeDetail after = tree.get(0);
+      NodeDetail after = tree.getFirst();
       NodeDetail before = new NodeDetail(after);
       before.setNodePK(new NodePK(nodeToMove.getId(), nodeToMove.getComponentInstanceId()));
       for (int t = 0; t < tree.size(); t++) {
@@ -411,7 +414,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       // Default language = translation
       List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, nd.getId());
       if (!translations.isEmpty()) {
-        NodeI18NDetail translation = translations.get(0);
+        NodeI18NDetail translation = translations.getFirst();
         nd.setLanguage(translation.getLanguage());
         nd.setName(translation.getName());
         nd.setDescription(translation.getDescription());
@@ -437,7 +440,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     try {
       nodeDeletion.deleteNodes(pk, connection, pk1 ->
           // remove wysiwyg attached to node
-          WysiwygController.deleteWysiwygAttachments(pk1.getInstanceId(), "Node_" + pk1.getId()));
+          WysiwygController.deleteWysiwygAttachments(pk1.getInstanceId(), NODE_PREFIX + pk1.getId()));
     } catch (Exception re) {
       throw new NodeRuntimeException(re);
     } finally {
@@ -915,13 +918,13 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         new FullIndexEntry(new IndexEntryKey(nodeDetail.getNodePK().getComponentName(), "Node",
             nodeDetail.getNodePK().getId()));
 
-    final Collection<String> languages = nodeDetail.getLanguages();
-    languages.forEach(l -> {
+    nodeDetail.getLanguages().forEach(l -> {
       NodeI18NDetail translation = nodeDetail.getTranslations().get(l);
       indexEntry.setTitle(translation.getName(), l);
       indexEntry.setPreview(translation.getDescription(), l);
       if (processWysiwygContent) {
         updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), l);
+        updateIndexEntryWithWysiwygLastModification(indexEntry, nodeDetail.getNodePK(), l);
       }
     });
     return indexEntry;
@@ -929,10 +932,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
   private void updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry, NodePK nodePK,
       String language) {
-
     try {
       if (nodePK != null) {
-        String wysiwygContent = WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK
+        String wysiwygContent = WysiwygController.load(nodePK.getComponentName(), NODE_PREFIX + nodePK
             .getId(), language);
         if (wysiwygContent != null) {
           indexEntry.addTextContent(wysiwygContent);
@@ -940,6 +942,27 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       }
     } catch (Exception e) {
       // No wysiwyg associated
+    }
+  }
+
+  /**
+   * No modification is traced for nodes, so the last modification of a node is the one of its
+   * WYSIWYG content, whatever its language, if it has been modified.
+   *
+   * @param indexEntry the index entry to fill with the last modification date and author
+   * @param nodePK the identifier of the updated node
+   * @param language the language of the WYSIWYG content.
+   */
+  private void updateIndexEntryWithWysiwygLastModification(FullIndexEntry indexEntry,
+      NodePK nodePK, String language) {
+    ResourceReference wysiwygRef =
+        new ResourceReference(NODE_PREFIX + nodePK.getId(), nodePK.getComponentName());
+    try {
+      WysiwygController.addLastModificationToIndex(indexEntry, wysiwygRef, language);
+    } catch (Exception e) {
+      // unexpected error. It shouldn't break the indexing of the node
+      SilverLogger.getLogger(this).error("Unexpected error while indexing node " +
+          nodePK.asString() + " with its WYSIWYG content", e);
     }
   }
 

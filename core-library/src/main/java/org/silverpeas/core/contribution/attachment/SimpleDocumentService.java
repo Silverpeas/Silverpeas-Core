@@ -164,6 +164,11 @@ public class SimpleDocumentService
       indexEntry.setLang(language);
       indexEntry.setCreationDate(document.getCreationDate());
       indexEntry.setCreationUser(document.getCreatedBy());
+      // the last update date is set only once the document has been modified
+      if (document.getLastUpdateDate() != null) {
+        indexEntry.setLastModificationDate(document.getLastUpdateDate());
+        indexEntry.setLastModificationUser(document.getUpdatedBy());
+      }
       if (startOfVisibility != null) {
         indexEntry.setStartDate(startOfVisibility);
       }

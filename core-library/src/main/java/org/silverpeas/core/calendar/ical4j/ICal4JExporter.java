@@ -138,6 +138,8 @@ public class ICal4JExporter implements ICalendarExporter {
         });
       }
 
+      // fold length set explicitly, otherwise ical4j derives it from the global Outlook
+      // compatibility hint that is enabled by the importer
       CalendarOutputter writer = new CalendarOutputter(true, FOLD_LENGTH);
       writer.output(iCalCalendar, descriptor.getOutputStream());
     } catch (Exception e) {
@@ -324,9 +326,9 @@ public class ICal4JExporter implements ICalendarExporter {
     iCalEventAttendee.add(CuType.INDIVIDUAL);
     iCalEventAttendee.add(Rsvp.TRUE);
     convertPresenceStatus(attendee.getPresenceStatus())
-        .ifPresent(role -> iCalEventAttendee.add(role));
+        .ifPresent(iCalEventAttendee::add);
     convertParticipationStatus(participationStatus)
-        .ifPresent(partStat -> iCalEventAttendee.add(partStat));
+        .ifPresent(iCalEventAttendee::add);
     return iCalEventAttendee;
   }
 
@@ -337,14 +339,11 @@ public class ICal4JExporter implements ICalendarExporter {
    */
   private Optional<Role> convertPresenceStatus(
       org.silverpeas.core.calendar.Attendee.PresenceStatus status) {
-    switch (status) {
-      case REQUIRED:
-        return Optional.of(Role.REQ_PARTICIPANT);
-      case OPTIONAL:
-        return Optional.of(Role.OPT_PARTICIPANT);
-      default:
-        return Optional.empty();
-    }
+    return switch (status) {
+      case REQUIRED -> Optional.of(Role.REQ_PARTICIPANT);
+      case OPTIONAL -> Optional.of(Role.OPT_PARTICIPANT);
+      default -> Optional.empty();
+    };
   }
 
   /**
@@ -354,18 +353,13 @@ public class ICal4JExporter implements ICalendarExporter {
    */
   private Optional<PartStat> convertParticipationStatus(
       org.silverpeas.core.calendar.Attendee.ParticipationStatus status) {
-    switch (status) {
-      case ACCEPTED:
-        return Optional.of(PartStat.ACCEPTED);
-      case DECLINED:
-        return Optional.of(PartStat.DECLINED);
-      case TENTATIVE:
-        return Optional.of(PartStat.TENTATIVE);
-      case DELEGATED:
-        return Optional.of(PartStat.DELEGATED);
-      default:
-        return Optional.of(PartStat.NEEDS_ACTION);
-    }
+    return switch (status) {
+      case ACCEPTED -> Optional.of(PartStat.ACCEPTED);
+      case DECLINED -> Optional.of(PartStat.DECLINED);
+      case TENTATIVE -> Optional.of(PartStat.TENTATIVE);
+      case DELEGATED -> Optional.of(PartStat.DELEGATED);
+      default -> Optional.of(PartStat.NEEDS_ACTION);
+    };
   }
 
   /**
@@ -376,8 +370,8 @@ public class ICal4JExporter implements ICalendarExporter {
    */
   private boolean mustHideData(ExportDescriptor descriptor, CalendarEvent event) {
     final Object value = descriptor.getParameter(HIDE_PRIVATE_DATA);
-    final boolean required = (value instanceof Boolean && (Boolean) value) ||
-        (value instanceof String && StringUtil.getBooleanValue((String) value));
+    final boolean required = (value instanceof Boolean boolValue && boolValue) ||
+        (value instanceof String txtValue && StringUtil.getBooleanValue(txtValue));
     return required && VisibilityLevel.PRIVATE == event.getVisibilityLevel();
   }
 }
