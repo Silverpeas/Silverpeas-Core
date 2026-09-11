@@ -28,9 +28,6 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -58,7 +55,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +86,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   private NodeDeletion nodeDeletion;
   @Inject
   private NodeEventNotifier notifier;
-  @Inject
-  private AttachmentService attachmentService;
 
   @Override
   @Transactional
@@ -948,14 +942,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     ResourceReference wysiwygRef =
         new ResourceReference(NODE_PREFIX + nodePK.getId(), nodePK.getComponentName());
     try {
-      attachmentService.listDocumentsByForeignKeyAndType(wysiwygRef,
-              DocumentType.wysiwyg, language).stream()
-          .filter(d -> d.getLastUpdateDate() != null)
-          .max(Comparator.comparing(SimpleDocument::getLastUpdateDate))
-          .ifPresent(d -> {
-            indexEntry.setLastModificationDate(d.getLastUpdateDate());
-            indexEntry.setLastModificationUser(d.getUpdatedBy());
-          });
+      WysiwygController.addLastModificationToIndex(indexEntry, wysiwygRef, language);
     } catch (Exception e) {
       // unexpected error. It shouldn't break the indexing of the node
       SilverLogger.getLogger(this).error("Unexpected error while indexing node " +

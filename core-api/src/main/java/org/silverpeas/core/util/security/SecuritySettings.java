@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
@@ -188,6 +189,19 @@ public class SecuritySettings {
     return tagAttribute;
   }
 
+  /**
+   * Gets the hosts from which contents are allowed to be embedded within an iframe in the data
+   * sent to Silverpeas. The Silverpeas server itself isn't among them as it is always allowed.
+   * @return a list of host names. Empty if only the Silverpeas server is allowed.
+   */
+  public static List<String> getAllowedHostsForIFrame() {
+    final String hosts = settings.getString("security.external.iframe.hosts.allowed", "");
+    return Arrays.stream(hosts.split(","))
+        .map(String::trim)
+        .filter(h -> !h.isEmpty())
+        .collect(Collectors.toList());
+  }
+
   public static Registration registration() {
     return registration;
   }
@@ -196,7 +210,7 @@ public class SecuritySettings {
 
     private static final String DEFAULT_SRC = "default-src";
     private static final String CORS = "cors";
-    private Map<String, List<String>> settings = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> settings = new ConcurrentHashMap<>();
 
     public void registerDefaultSourceInCSP(final String sourceURL) {
       register(sourceURL, DEFAULT_SRC);

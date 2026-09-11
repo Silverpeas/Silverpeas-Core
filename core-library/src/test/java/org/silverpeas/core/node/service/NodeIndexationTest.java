@@ -33,6 +33,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEventNotifier;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.node.dao.NodeDAO;
@@ -41,6 +43,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.notification.NodeEventNotifier;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
@@ -80,6 +83,16 @@ class NodeIndexationTest {
 
   @TestManagedMock
   private AttachmentService attachmentService;
+
+  @TestManagedMock
+  private WysiwygEventNotifier wysiwygEventNotifier;
+
+  /**
+   * The WYSIWYG content of a node is accessed through the WYSIWYG manager, hence a true instance
+   * of it working upon the mocked attachment service above.
+   */
+  @TestManagedBean
+  private WysiwygManager wysiwygManager;
 
   @TestManagedMock
   private NodeDAO nodeDAO;

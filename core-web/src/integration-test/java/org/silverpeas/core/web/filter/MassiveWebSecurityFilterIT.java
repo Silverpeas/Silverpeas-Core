@@ -103,6 +103,22 @@ public class MassiveWebSecurityFilterIT {
                 true);
     }
 
+    @Test
+    public void secureAgainstXssByIFrame() {
+        assertXSS(skippedParam("<iframe src=\"https://www.evil.org/\"></iframe>"), false);
+        assertXSS(param("<iframe src=\"https://www.youtube.com/embed/xyz\"></iframe>"), false);
+        assertXSS(param("<iframe\n src=\"https://www.youtube.com/embed/xyz\"\n></iframe>"), false);
+        assertXSS(param("<iframe src=\"/silverpeas/Rkmelia/kmelia1/Main\"></iframe>"), false);
+        assertXSS(param("<iframe src=\"/silverpeas/../other/app\"></iframe>"), true);
+        assertXSS(param("<iframe src=\"/other/app\"></iframe>"), true);
+        assertXSS(param("<iframe src=\"http://www.youtube.com/embed/xyz\"></iframe>"), true);
+        assertXSS(param("<iframe src=\"https://www.evil.org/\"></iframe>"), true);
+        assertXSS(param("<iframe src=\"https://www.youtube.com/\" srcdoc=\"x\"></iframe>"), true);
+        assertXSS(param("<iframe src=\"https://www.youtube.com/\" onload=\"alert(1)\"></iframe>"),
+                true);
+        assertXSS(param("<iframe src=\"https://www.youtube.com/\"></iframe><script>"), true);
+    }
+
     private void assertXSS(URLConfigTest urlConfigTest, boolean expected) {
         performInjectionDetectionAssert(urlConfigTest, expected, "XSS");
     }

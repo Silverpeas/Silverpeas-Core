@@ -63,6 +63,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -429,6 +430,26 @@ public class WysiwygManager implements WysiwygContentRepository {
    */
   public void createUnindexedFileAndAttachment(final WysiwygContent content) {
     createFileAndAttachment(content, DocumentType.wysiwyg, false, false);
+  }
+
+  /**
+   * Adds into the given index the last modification, if any, of the WYSIWYG content of the
+   * resource referred by the specified reference. The last modification of such a content is the
+   * most recent one among all the documents in which the content is stored for the given language.
+   * @param indexEntry the index of the related resource.
+   * @param pk the primary key of the container of the wysiwyg.
+   * @param language the language.
+   */
+  public void addLastModificationToIndex(FullIndexEntry indexEntry, ResourceReference pk,
+      String language) {
+    getAttachmentService().listDocumentsByForeignKeyAndType(pk, DocumentType.wysiwyg, language)
+        .stream()
+        .filter(d -> d.getLastUpdateDate() != null)
+        .max(Comparator.comparing(SimpleDocument::getLastUpdateDate))
+        .ifPresent(d -> {
+          indexEntry.setLastModificationDate(d.getLastUpdateDate());
+          indexEntry.setLastModificationUser(d.getUpdatedBy());
+        });
   }
 
   /**

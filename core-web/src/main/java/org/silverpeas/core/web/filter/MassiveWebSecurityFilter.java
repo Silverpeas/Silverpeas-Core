@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.filter;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.jcr.webdav.WebDavProtocol;
@@ -48,6 +49,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -133,7 +135,8 @@ public class MassiveWebSecurityFilter implements Filter {
     SQL_PATTERNS.add(SQL_DELETE_PATTERN);
 
     XSS_PATTERNS = new ArrayList<>(2);
-    XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*(script|iframe|svg|math|details)"));
+    // iframes are checked apart by an IFrameChecker
+    XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*(script|svg|math|details)"));
     XSS_PATTERNS.add(Pattern.compile("\\s+on\\w+\\s*="));
   }
 
@@ -218,14 +221,22 @@ public class MassiveWebSecurityFilter implements Filter {
         // this header isn't taken in charge by all web browsers.
         httpResponse.setHeader("X-XSS-Protection", "1");
       }
-      checkRequestEntityForInjection(httpRequest);
-      checkRequestHeadersForInjection(httpRequest);
+      final IFrameChecker iframes = iframeCheckerFor(httpRequest);
+      checkRequestEntityForInjection(httpRequest, iframes);
+      checkRequestHeadersForInjection(httpRequest, iframes);
       checkRequestParametersForInjection(httpRequest, isWebSqlInjectionSecurityEnabled,
-          isWebXssInjectionSecurityEnabled);
+          isWebXssInjectionSecurityEnabled, iframes);
     }
   }
 
-  private void checkRequestEntityForInjection(final HttpRequest request)
+  private IFrameChecker iframeCheckerFor(final HttpServletRequest request) {
+    final List<String> allowedHosts = new ArrayList<>(SecuritySettings.getAllowedHostsForIFrame());
+    ofNullable(URI.create(URLUtil.getServerURL(request)).getHost()).ifPresent(allowedHosts::add);
+    return new IFrameChecker(allowedHosts, URLUtil.getApplicationURL());
+  }
+
+  private void checkRequestEntityForInjection(final HttpRequest request,
+      final IFrameChecker iframes)
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
     long start = System.currentTimeMillis();
     try {
@@ -237,7 +248,7 @@ public class MassiveWebSecurityFilter implements Filter {
         if (body.markSupported()) {
           body.mark(Integer.MAX_VALUE);
           String entity = new String(body.readAllBytes(), charset);
-          checkValueForInjection(entity, true, true);
+          checkValueForInjection(decodeJson(request, entity), true, true, iframes);
           body.reset();
         }
       }
@@ -250,9 +261,30 @@ public class MassiveWebSecurityFilter implements Filter {
     }
   }
 
+  /**
+   * Decodes the JSON escape sequences in the specified entity if it is a JSON document, so that
+   * the injection checks are performed on the text as it will be taken by Silverpeas (for
+   * example, the HTML attributes of an iframe are quoted with escaped double quotes in JSON).
+   *
+   * @param request the incoming request.
+   * @param entity the entity in the body of the request.
+   * @return the entity with its JSON escape sequences decoded or the entity itself if it isn't
+   * a JSON document or if it is malformed.
+   */
+  private static String decodeJson(final HttpRequest request, final String entity) {
+    if (request.getContentType().toLowerCase().contains("json")) {
+      try {
+        return StringEscapeUtils.unescapeJson(entity);
+      } catch (IllegalArgumentException e) {
+        return entity;
+      }
+    }
+    return entity;
+  }
+
   private void checkRequestParametersForInjection(final HttpRequest httpRequest,
       final boolean isWebSqlInjectionSecurityEnabled,
-      final boolean isWebXssInjectionSecurityEnabled)
+      final boolean isWebXssInjectionSecurityEnabled, final IFrameChecker iframes)
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
     long start = System.currentTimeMillis();
     try {
@@ -267,7 +299,7 @@ public class MassiveWebSecurityFilter implements Filter {
           continue;
         }
 
-        checkParameterValues(parameterEntry, sqlInjectionToVerify, xssInjectionToVerify);
+        checkParameterValues(parameterEntry, sqlInjectionToVerify, xssInjectionToVerify, iframes);
       }
     } finally {
       long end = System.currentTimeMillis();
@@ -276,7 +308,8 @@ public class MassiveWebSecurityFilter implements Filter {
     }
   }
 
-  private void checkRequestHeadersForInjection(final HttpRequest httpRequest)
+  private void checkRequestHeadersForInjection(final HttpRequest httpRequest,
+      final IFrameChecker iframes)
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
     long start = System.currentTimeMillis();
     try {
@@ -288,7 +321,7 @@ public class MassiveWebSecurityFilter implements Filter {
         // can perform some possible sensible treatments
         if (headerName.toLowerCase().startsWith("x-")) {
           String headerValue = httpRequest.getHeader(headerName);
-          checkValueForInjection(headerValue, true, true);
+          checkValueForInjection(headerValue, true, true, iframes);
         }
       }
     } finally {
@@ -299,16 +332,17 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   private void checkParameterValues(final Map.Entry<String, String[]> parameterEntry,
-      final boolean sqlInjectionToVerify, final boolean xssInjectionToVerify)
+      final boolean sqlInjectionToVerify, final boolean xssInjectionToVerify,
+      final IFrameChecker iframes)
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
     for (String parameterValue : parameterEntry.getValue()) {
-      checkValueForInjection(parameterValue, sqlInjectionToVerify, xssInjectionToVerify);
+      checkValueForInjection(parameterValue, sqlInjectionToVerify, xssInjectionToVerify, iframes);
     }
   }
 
   private void checkValueForInjection(String value, boolean sqlInjectionToVerify,
-      boolean xssInjectionToVerify) throws WebSqlInjectionSecurityException,
-      WebXssInjectionSecurityException {
+      boolean xssInjectionToVerify, IFrameChecker iframes)
+      throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
     Matcher patternMatcherFound;
     // Each sequence of spaces is replaced by one space
     value = value.replaceAll("\\s+", " ");
@@ -328,7 +362,8 @@ public class MassiveWebSecurityFilter implements Filter {
 
     // XSS injections?
     if (xssInjectionToVerify &&
-        findPatternMatcherFromString(XSS_PATTERNS, value, false) != null) {
+        (findPatternMatcherFromString(XSS_PATTERNS, value, false) != null ||
+            !iframes.areAllAllowedIn(value))) {
       throw new WebXssInjectionSecurityException();
     }
   }

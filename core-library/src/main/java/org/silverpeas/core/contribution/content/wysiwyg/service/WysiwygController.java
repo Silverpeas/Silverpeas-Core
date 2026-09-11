@@ -191,6 +191,18 @@ public class WysiwygController {
   }
 
   /**
+   * Adds into the given index the last modification, if any, of the WYSIWYG content of the
+   * resource referred by the specified reference.
+   * @param indexEntry the index of the related resource.
+   * @param pk the primary key of the container of the wysiwyg.
+   * @param language the language.
+   */
+  public static void addLastModificationToIndex(FullIndexEntry indexEntry, ResourceReference pk,
+      String language) {
+    getManager().addLastModificationToIndex(indexEntry, pk, language);
+  }
+
+  /**
    * Method declaration remove and recreates the file attached
    * @param textHtml String : contains the text published by the wysiwyg
    * @param componentId String : the id of component.
