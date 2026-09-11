@@ -24,9 +24,13 @@
 package org.silverpeas.core.node.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -44,6 +48,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
@@ -53,6 +58,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +82,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    */
   private static final SettingBundle nodeSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
+  private static final String NODE_PREFIX = "Node_";
 
   @Inject
   private NodeDAO nodeDAO;
@@ -83,6 +90,8 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   private NodeDeletion nodeDeletion;
   @Inject
   private NodeEventNotifier notifier;
+  @Inject
+  private AttachmentService attachmentService;
 
   @Override
   @Transactional
@@ -443,7 +452,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     try {
       nodeDeletion.deleteNodes(pk, connection, pk1 ->
           // remove wysiwyg attached to node
-          WysiwygController.deleteWysiwygAttachments(pk1.getInstanceId(), "Node_" + pk1.getId()));
+          WysiwygController.deleteWysiwygAttachments(pk1.getInstanceId(), NODE_PREFIX + pk1.getId()));
     } catch (Exception re) {
       throw new NodeRuntimeException(re);
     } finally {
@@ -554,7 +563,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * Create a new Node object
    *
    * @param nd the NodeDetail which contains data
-   * @param fatherDetail the PK of the user who have create this node
+   * @param fatherDetail the PK of the user who have created this node
    * @return the NodePK of the new Node
    * @see NodeDetail
    * @since 1.0
@@ -608,7 +617,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * Updates the node referred by the identifier of the specified node with the attributes of the
    * given node. Children of the node aren't processed.
    *
-   * @param detail the node with which its counter part in the data source has to be updated.
+   * @param detail the node with which its counterpart in the data source has to be updated.
    */
   private void updateNodeDetail(NodeDetail detail) {
     Connection con = getConnection();
@@ -626,8 +635,8 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * Updates the specified node got directly from the database with the attributes of the another
    * node. Children of the node aren't processed.
    *
-   * @param nodeToUpdate the node to update. It must represents the current state of the node and
-   * as such it has to be provided from the database.
+   * @param nodeToUpdate the node to update. It must represent the current state of the node and as
+   * such it has to be provided from the database.
    * @param newState the new state of the node.
    * @return the updated node.
    */
@@ -899,13 +908,13 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         new FullIndexEntry(new IndexEntryKey(nodeDetail.getNodePK().getComponentName(), "Node",
             nodeDetail.getNodePK().getId()));
 
-    final Collection<String> languages = nodeDetail.getLanguages();
-    languages.forEach(l -> {
+    nodeDetail.getLanguages().forEach(l -> {
       NodeI18NDetail translation = nodeDetail.getTranslations().get(l);
       indexEntry.setTitle(translation.getName(), l);
       indexEntry.setPreview(translation.getDescription(), l);
       if (processWysiwygContent) {
         updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), l);
+        updateIndexEntryWithWysiwygLastModification(indexEntry, nodeDetail.getNodePK(), l);
       }
     });
     return indexEntry;
@@ -913,10 +922,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
   private void updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry, NodePK nodePK,
       String language) {
-
     try {
       if (nodePK != null) {
-        String wysiwygContent = WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK
+        String wysiwygContent = WysiwygController.load(nodePK.getComponentName(), NODE_PREFIX + nodePK
             .getId(), language);
         if (wysiwygContent != null) {
           indexEntry.addTextContent(wysiwygContent);
@@ -924,6 +932,34 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       }
     } catch (Exception e) {
       // No wysiwyg associated
+    }
+  }
+
+  /**
+   * No modification is traced for nodes, so the last modification of a node is the one of its
+   * WYSIWYG content, whatever its language, if it has been modified.
+   *
+   * @param indexEntry the index entry to fill with the last modification date and author
+   * @param nodePK the identifier of the updated node
+   * @param language the language of the WYSIWYG content.
+   */
+  private void updateIndexEntryWithWysiwygLastModification(FullIndexEntry indexEntry,
+      NodePK nodePK, String language) {
+    ResourceReference wysiwygRef =
+        new ResourceReference(NODE_PREFIX + nodePK.getId(), nodePK.getComponentName());
+    try {
+      attachmentService.listDocumentsByForeignKeyAndType(wysiwygRef,
+              DocumentType.wysiwyg, language).stream()
+          .filter(d -> d.getLastUpdateDate() != null)
+          .max(Comparator.comparing(SimpleDocument::getLastUpdateDate))
+          .ifPresent(d -> {
+            indexEntry.setLastModificationDate(d.getLastUpdateDate());
+            indexEntry.setLastModificationUser(d.getUpdatedBy());
+          });
+    } catch (Exception e) {
+      // unexpected error. It shouldn't break the indexing of the node
+      SilverLogger.getLogger(this).error("Unexpected error while indexing node " +
+          nodePK.asString() + " with its WYSIWYG content", e);
     }
   }
 

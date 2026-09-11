@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar.ical4j;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.data.FoldingWriter;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Recur;
@@ -128,7 +129,9 @@ public class ICal4JExporter implements ICalendarExporter {
         });
       }
 
-      CalendarOutputter writer = new CalendarOutputter();
+      // fold length set explicitly, otherwise ical4j derives it from the global Outlook
+      // compatibility hint that is enabled by the importer
+      CalendarOutputter writer = new CalendarOutputter(true, FoldingWriter.REDUCED_FOLD_LENGTH);
       writer.output(iCalCalendar, descriptor.getOutputStream());
     } catch (Exception e) {
       throw new ExportException("The export of the events in iCal formatted text has failed!",
