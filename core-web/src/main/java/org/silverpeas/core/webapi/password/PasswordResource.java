@@ -35,7 +35,7 @@ import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesService;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 

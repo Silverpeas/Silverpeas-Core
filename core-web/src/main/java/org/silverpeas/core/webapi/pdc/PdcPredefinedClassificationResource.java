@@ -36,8 +36,8 @@ import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.web.rs.annotation.doc.BadRequest;
-import org.silverpeas.core.web.rs.annotation.doc.Conflict;
+import org.silverpeas.core.rs.doc.BadRequest;
+import org.silverpeas.core.rs.doc.Conflict;
 
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;

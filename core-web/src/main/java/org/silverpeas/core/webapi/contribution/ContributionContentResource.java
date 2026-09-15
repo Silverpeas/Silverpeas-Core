@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.kernel.util.StringUtil;
 
 import jakarta.ws.rs.*;

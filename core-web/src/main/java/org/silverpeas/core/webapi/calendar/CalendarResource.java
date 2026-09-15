@@ -58,8 +58,8 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.web.rs.annotation.doc.BadRequest;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.BadRequest;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.core.webapi.reminder.ReminderEntity;
 
 import jakarta.ws.rs.DELETE;
