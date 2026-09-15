@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.restapi;
+package org.silverpeas.core.rs.doc;
 
 import io.swagger.v3.core.filter.AbstractSpecFilter;
 import io.swagger.v3.core.model.ApiDescription;
@@ -39,8 +39,8 @@ import java.util.Optional;
  * Such a response cannot be brought by a meta-annotation of the web resources. At class level,
  * Swagger stops at the first meta-annotation declaring responses instead of merging them all, so a
  * second one would silently discard the responses of
- * {@code org.silverpeas.core.web.rs.annotation.Authenticated} and of
- * {@code org.silverpeas.core.web.rs.annotation.Authorized}. Hence this filter, applied once the
+ * {@link org.silverpeas.core.web.rs.annotation.Authenticated} and of
+ * {@link org.silverpeas.core.web.rs.annotation.Authorized}. Hence this filter, applied once the
  * whole specification has been figured out.
  * </p>
  * <p>

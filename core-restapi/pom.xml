@@ -56,17 +56,6 @@
   <!-- the dependencies declared provided by core-web and core-war aren't transitive, whereas
        the scan by reflection requires their classes -->
   <dependencies>
-    <!-- required to compile the filter completing the generated documentation -->
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-core-jakarta</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-api</artifactId>
@@ -307,10 +296,6 @@
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-maven-plugin-jakarta</artifactId>
         <configuration>
-          <!-- the schema resolver must read the JAXB annotations of the web entities,
-               and the filter completes each operation with the common responses -->
-          <modelConverterClasses>org.silverpeas.core.restapi.JaxbAwareModelResolver</modelConverterClasses>
-          <filterClass>org.silverpeas.core.restapi.CommonResponsesFilter</filterClass>
           <ignoredRoutes>
           <route>/domains/{domainId}/scim/.search</route>
           <route>/domains/{domainId}/scim/Bulk</route>

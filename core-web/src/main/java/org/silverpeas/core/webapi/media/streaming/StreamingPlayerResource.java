@@ -38,7 +38,7 @@ import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.web.rs.RESTWebService;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -37,7 +37,7 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
-import org.silverpeas.core.web.rs.annotation.doc.BadRequest;
+import org.silverpeas.core.rs.doc.BadRequest;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
