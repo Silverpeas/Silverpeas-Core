@@ -142,14 +142,13 @@
                 <view:arrayCellText text="${silfn:escapeHtml(subscr.name)}"/>
                 <view:arrayCellText text="${subscr.pdCPositions}"/>
                 <c:if test="${not readOnly}">
-                  <view:arrayCellText>
+                  <view:arrayCellText classes="ArrayCellActions ArrayCell">
                     <c:if test="${manageable}">
                       <fmt:message var="edit" key="EditSC"/>
                       <c:url var="editIcon" value="/util/icons/update.gif"/>
                       <c:url var="editUrl"
                              value="/RpdcSubscriptionPeas/jsp/PdcSubscription?pdcSId=${subscr.id}&path=${path}&context=${context}&scope=${requestScope.scope}"/>
                       <view:icon iconName="${editIcon}" altText="${edit}" action="${editUrl}"/>
-                      <span style="padding-left: 1em;"></span>
                       <input id="${subscr.id}" type="checkbox" name="pdcCheck" value="${subscr.id}"/>
                     </c:if>
                   </view:arrayCellText>
