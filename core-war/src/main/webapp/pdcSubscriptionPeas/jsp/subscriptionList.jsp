@@ -156,14 +156,6 @@
               </view:arrayLine>
             </view:arrayLines>
           </view:arrayPane>
-
-          <c:if test="${context == 'pdc'}">
-            <br/>
-            <view:buttonPane cssClass="center">
-              <fmt:message var="goBack" key="GML.back"/>
-              <view:button label="${goBack}" action="javascript:spAdminWindow.loadOperation(21)"/>
-            </view:buttonPane>
-          </c:if>
         </view:frame>
       </view:window>
     </form>

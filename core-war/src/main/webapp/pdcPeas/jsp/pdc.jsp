@@ -47,7 +47,6 @@
 <fmt:message var="definition" key="pdcPeas.definition"/>
 <fmt:message var="operation" key="pdcPeas.axisOperation"/>
 <fmt:message var="axisView" key="pdcPeas.viewAxis"/>
-<fmt:message var="subscriptions" key="GML.manageSubscriptions"/>
 
 <fmt:message var="iconAxis" key="pdcPeas.icoComponent" bundle="${icons}"/>
 <c:url var="iconsAxisUrl" value="${iconAxis}"/>
@@ -129,9 +128,6 @@
                       icon="${iconsAxisDeletionUrl}"
                       altText="${axisDeletion}"/>
     </c:if>
-    <view:operation
-        action="/silverpeas/RpdcSubscriptionPeas/jsp/ViewSubscriptionTaxonomy?userId=all&context=pdc&scope=${toolName}"
-        altText="${subscriptions}" />
   </view:operationPane>
   </c:if>
 
