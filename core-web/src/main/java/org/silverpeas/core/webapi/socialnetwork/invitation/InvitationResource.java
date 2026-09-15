@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.webapi.socialnetwork.invitation;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.web.rs.RESTWebService;
@@ -48,6 +55,10 @@ import static org.silverpeas.core.webapi.socialnetwork.invitation.InvitationEnti
  * the invitations belonging to another user cannot be fetched by him.
  * </p>
  */
+@Tag(name = "Invitations",
+    description = "The invitations by which the users get in touch with each other in the social " +
+    "network of Silverpeas. Accepting an invitation creates a relationship between the two " +
+    "users. An invitation is never deleted: it is kept as an history.")
 @RequestScoped
 @Path(InvitationResource.PATH)
 @Authenticated
@@ -59,6 +70,9 @@ public class InvitationResource extends RESTWebService {
   private InvitationService invitationService;
 
   @Path("inbox")
+  @Operation(summary = "Gets the invitations received by the authenticated user.")
+  @ApiResponse(responseCode = "200", description = "The received invitations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = InvitationEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<InvitationEntity> getReceivedInvitations() {
@@ -68,6 +82,9 @@ public class InvitationResource extends RESTWebService {
   }
 
   @Path("outbox")
+  @Operation(summary = "Gets the invitations sent by the authenticated user.")
+  @ApiResponse(responseCode = "200", description = "The sent invitations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = InvitationEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<InvitationEntity> getSentInvitations() {
@@ -77,6 +94,9 @@ public class InvitationResource extends RESTWebService {
   }
 
   @Path("{id}")
+  @Operation(summary = "Gets the invitation with the given identifier.")
+  @ApiResponse(responseCode = "200", description = "The asked invitation.",
+      content = @Content(schema = @Schema(implementation = InvitationEntity.class)))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public InvitationEntity getInvitation(@PathParam("id") final Integer id) {
@@ -85,6 +105,8 @@ public class InvitationResource extends RESTWebService {
     return asWebEntity(invitation, locatedAt(getUri().getAbsolutePathBuilder()));
   }
 
+  @Operation(summary = "Declines the given invitation, which is kept as an history.")
+  @ApiResponse(responseCode = "200", description = "The invitation has been declined.")
   @DELETE
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -94,6 +116,9 @@ public class InvitationResource extends RESTWebService {
     return Response.ok().build();
   }
 
+  @Operation(summary = "Accepts the given invitation, creating thus a relationship between the " +
+      "two users.")
+  @ApiResponse(responseCode = "200", description = "The invitation has been accepted.")
   @PUT
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -108,6 +133,9 @@ public class InvitationResource extends RESTWebService {
     return Response.ok().build();
   }
 
+  @Operation(summary = "Sends an invitation to another user.")
+  @ApiResponse(responseCode = "200", description = "The sent invitation.",
+      content = @Content(schema = @Schema(implementation = InvitationEntity.class)))
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)

@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.webapi.calendar;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarReference;
@@ -31,6 +34,7 @@ import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.rs.RESTWebService;
 
@@ -77,6 +81,10 @@ public class ICalendarResource extends RESTWebService {
    * calendar.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the metadata of the iCalendar export of the publicly shared " +
+      "calendar with the given identifier.")
+  @ApiResponse(responseCode = "200", description = "The asked calendar.")
+  @NotFound
   @HEAD
   @Path("public/{calendarId}")
   public Response getCalendarHead(@PathParam("calendarId") String calendarId) {
@@ -93,6 +101,10 @@ public class ICalendarResource extends RESTWebService {
    * calendar.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Exports in the iCalendar format the publicly shared calendar with the " +
+      "given identifier.")
+  @ApiResponse(responseCode = "200", description = "The asked calendar.")
+  @NotFound
   @GET
   @Path("public/{calendarId}")
   public Response getCalendar(@PathParam("calendarId") String calendarId) {
@@ -108,6 +120,10 @@ public class ICalendarResource extends RESTWebService {
    * calendars.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the metadata of the iCalendar export of the calendar privately " +
+      "shared through the given token.")
+  @ApiResponse(responseCode = "200", description = "The asked calendars.")
+  @NotFound
   @HEAD
   @Path("private/{token}")
   public Response privateExportHead(@PathParam("token") String token) {
@@ -122,6 +138,10 @@ public class ICalendarResource extends RESTWebService {
    * calendars.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Exports in the iCalendar format the calendar privately shared through " +
+      "the given token.")
+  @ApiResponse(responseCode = "200", description = "The asked calendars.")
+  @NotFound
   @GET
   @Path("private/{token}")
   public Response privateExport(@PathParam("token") String token) {

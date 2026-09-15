@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.webapi.mylinks;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.mylinks.model.CategoryDetail;
 import org.silverpeas.core.mylinks.model.LinkDetail;
@@ -59,6 +66,9 @@ import static org.silverpeas.core.webapi.mylinks.MyLinksResourceURIs.MYLINKS_BAS
  * A REST Web resource representing user favorite links. It is a web service that provides an access
  * to user links referenced by its URL.
  */
+@Tag(name = "My links",
+    description = "The favorite links of the authenticated user, and the categories in which " +
+    "they are gathered.")
 @WebService
 @Path(MyLinksResource.PATH)
 @Authenticated
@@ -81,6 +91,10 @@ public class MyLinksResource extends RESTWebService {
    * Gets the JSON representation of all user categories of favorite links. Return only categories of the current user.
    * @return the response to the HTTP GET request with the JSON representation of all user categories.
    */
+  @Operation(summary = "Gets all user categories of favorite links.",
+      description = "Return only categories of the current user.")
+  @ApiResponse(responseCode = "200", description = "All user categories.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryEntity.class))))
   @GET
   @Path("categories")
   @Produces(MediaType.APPLICATION_JSON)
@@ -95,6 +109,10 @@ public class MyLinksResource extends RESTWebService {
    * Gets the JSON representation of the user category of favorite links. Return only category of the current user.
    * @return the response to the HTTP GET request with the JSON representation of the user categories.
    */
+  @Operation(summary = "Gets the user category of favorite links.",
+      description = "Return only category of the current user.")
+  @ApiResponse(responseCode = "200", description = "The user categories.",
+      content = @Content(schema = @Schema(implementation = CategoryEntity.class)))
   @GET
   @Path("categories/{catId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -102,6 +120,9 @@ public class MyLinksResource extends RESTWebService {
     return toWebEntity(manager.getAuthorizedCategory(catId));
   }
 
+  @Operation(summary = "Adds a category of favorite links to the user.")
+  @ApiResponse(responseCode = "200", description = "The added category.",
+      content = @Content(schema = @Schema(implementation = CategoryEntity.class)))
   @POST
   @Path("categories")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -110,6 +131,9 @@ public class MyLinksResource extends RESTWebService {
     return toWebEntity(manager.createCategory(newCategory));
   }
 
+  @Operation(summary = "Updates the given category of favorite links of the user.")
+  @ApiResponse(responseCode = "200", description = "The updated category.",
+      content = @Content(schema = @Schema(implementation = CategoryEntity.class)))
   @PUT
   @Path("categories/{catId}")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -120,6 +144,8 @@ public class MyLinksResource extends RESTWebService {
     return toWebEntity(manager.updateCategory(updatedCategory));
   }
 
+  @Operation(summary = "Deletes the given category of favorite links of the user.")
+  @ApiResponse(responseCode = "200", description = "The category has been deleted.")
   @DELETE
   @Path("categories/{catId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -128,6 +154,9 @@ public class MyLinksResource extends RESTWebService {
     return Response.ok().build();
   }
 
+  @Operation(summary = "Saves the order in which the categories are presented to the user.")
+  @ApiResponse(responseCode = "200", description = "The category once moved to its new position.",
+      content = @Content(schema = @Schema(implementation = CategoryEntity.class)))
   @POST
   @Path("categories/saveLinesOrder")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -151,6 +180,9 @@ public class MyLinksResource extends RESTWebService {
    * Gets the JSON representation of the user favorite links.
    * @return the response to the HTTP GET request with the JSON representation of the user links.
    */
+  @Operation(summary = "Gets the user favorite links.")
+  @ApiResponse(responseCode = "200", description = "The user links.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = MyLinkEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<MyLinkEntity> getMyLinks() {
@@ -165,6 +197,10 @@ public class MyLinksResource extends RESTWebService {
    * Gets the JSON representation of the user favorite links. Return only link of the current user.
    * @return the response to the HTTP GET request with the JSON representation of the user links.
    */
+  @Operation(summary = "Gets the user favorite links.",
+      description = "Return only link of the current user.")
+  @ApiResponse(responseCode = "200", description = "The user links.",
+      content = @Content(schema = @Schema(implementation = MyLinkEntity.class)))
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -172,6 +208,9 @@ public class MyLinksResource extends RESTWebService {
     return toWebEntity(manager.getAuthorizedLink(linkId));
   }
 
+  @Operation(summary = "Adds a favorite link to the user.")
+  @ApiResponse(responseCode = "200", description = "The added link.",
+      content = @Content(schema = @Schema(implementation = MyLinkEntity.class)))
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
@@ -179,6 +218,9 @@ public class MyLinksResource extends RESTWebService {
     return toWebEntity(manager.createLink(newLink));
   }
 
+  @Operation(summary = "Updates the given favorite link of the user.")
+  @ApiResponse(responseCode = "200", description = "The updated link.",
+      content = @Content(schema = @Schema(implementation = MyLinkEntity.class)))
   @PUT
   @Path("{linkId}")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -189,6 +231,8 @@ public class MyLinksResource extends RESTWebService {
     return toWebEntity(manager.updateLink(updatedLink));
   }
 
+  @Operation(summary = "Deletes the given favorite link of the user.")
+  @ApiResponse(responseCode = "200", description = "The link has been deleted.")
   @DELETE
   @Path("{linkId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -197,6 +241,9 @@ public class MyLinksResource extends RESTWebService {
     return Response.ok().build();
   }
 
+  @Operation(summary = "Saves the order in which the links are presented to the user.")
+  @ApiResponse(responseCode = "200", description = "The link once moved to its new position.",
+      content = @Content(schema = @Schema(implementation = MyLinkEntity.class)))
   @POST
   @Path("saveLinesOrder")
   @Consumes(MediaType.APPLICATION_JSON)

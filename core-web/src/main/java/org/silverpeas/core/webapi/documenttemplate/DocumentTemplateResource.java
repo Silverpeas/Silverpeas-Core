@@ -24,12 +24,19 @@
 
 package org.silverpeas.core.webapi.documenttemplate;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.documenttemplate.DocumentTemplate;
 import org.silverpeas.core.documenttemplate.DocumentTemplateRestrictionFilter;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -75,6 +82,10 @@ public class DocumentTemplateResource extends RESTWebService {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * document template.
    */
+  @Operation(summary = "Gets a document template.")
+  @ApiResponse(responseCode = "200", description = "The asked document template.",
+      content = @Content(schema = @Schema(implementation = DocumentTemplateEntity.class)))
+  @NotFound
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -88,6 +99,10 @@ public class DocumentTemplateResource extends RESTWebService {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * document templates.
    */
+  @Operation(summary = "Gets a list of document template.")
+  @ApiResponse(responseCode = "200", description = "The asked document templates.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = DocumentTemplateEntity.class))))
+  @NotFound
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<DocumentTemplateEntity> listAll() {
