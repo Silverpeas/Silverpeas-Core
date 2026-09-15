@@ -194,8 +194,67 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <!-- what the Maven site brings besides the documentation of the REST API isn't used by
+               the rendering page; it is dropped before the site is published -->
+          <execution>
+            <id>strip-maven-site</id>
+            <phase>post-site</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>${project.build.directory}/site</directory>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                  <excludes>
+                    <exclude>index.html</exclude>
+                    <exclude>openapi.json</exclude>
+                    <exclude>openapi.yaml</exclude>
+                    <exclude>redoc.standalone.js</exclude>
+                  </excludes>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <!-- this module publishes the documentation of the REST API, nothing else: the reports
+               of the Maven site have no place beside it -->
+          <generateReports>false</generateReports>
+          <generateSitemap>false</generateSitemap>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
+          <!-- the static part of the OpenAPI document, of which the version is filled in here -->
+          <execution>
+            <id>filter-openapi-base</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/openapi-base</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/openapi</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
           <!-- the specification, the rendering page and the Redoc engine join the site once it
                has been generated: the index.html of Redoc must replace the one of the Maven site -->
           <execution>
@@ -278,6 +337,8 @@
         <artifactId>swagger-maven-plugin-jakarta</artifactId>
         <version>2.2.54</version>
         <configuration>
+          <!-- the document the scan completes: it carries the mandatory info section -->
+          <openapiFilePath>${project.build.directory}/openapi-base/openapi.yaml</openapiFilePath>
           <outputFileName>openapi</outputFileName>
           <outputPath>${project.build.directory}/openapi</outputPath>
           <outputFormat>JSONANDYAML</outputFormat>
