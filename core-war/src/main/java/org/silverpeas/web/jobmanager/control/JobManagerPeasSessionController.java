@@ -35,10 +35,13 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.jobmanager.JobManagerService;
 import org.silverpeas.web.jobmanager.JobManagerSettings;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.URLUtil.*;
 import static org.silverpeas.web.jobmanager.JobManagerService.LEVEL_OPERATION;
@@ -93,11 +96,10 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
       pdcServicesAdded = setManagerLevelServices(webContext, jobManagerSettings);
       jDesignerServicesCounter++;
     } else if (getUserDetail().isAccessPdcManager() && jobManagerSettings.isKMVisible()) {
-      JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
-          + getURL(CMP_PDC, null, null) + "Main", null, false);
-      JobManagerService jKM2 = new JobManagerService("22", "JKM2", LEVEL_OPERATION, webContext
-          + getURL(CMP_THESAURUS, null, null) + "Main", null, false);
-      pdcServicesAdded = setJKMServices(DEFAULT_SERVICE_ID, jKM1, jKM2);
+      JobManagerService jKM1 = newAxesService(webContext);
+      JobManagerService jKM2 = newSynonymsService(webContext);
+      JobManagerService jKM3 = newForcedSubscriptionsService(webContext);
+      pdcServicesAdded = setJKMServices(DEFAULT_SERVICE_ID, jKM1, jKM2, jKM3);
     } else if (getUserDetail().isAccessDomainManager() || !getUserManageableGroupIds().isEmpty()) {
       JobManagerService jdp = new JobManagerService("11", "JDP", LEVEL_OPERATION,
           webContext + getURL(CMP_JOBDOMAINPEAS, null, null) + MAIN_OWN_BODY_LAYOUT, null,
@@ -114,8 +116,9 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     boolean isPDCManager = isPDCManager();
 
     if (!pdcServicesAdded && isPDCManager) {
-      JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
-          + getURL(CMP_PDC, null, null) + "Main", null, false);
+      // a manager of some of the axis of the PdC can only define them: neither the synonyms nor
+      // the forced subscriptions are managed at this level
+      JobManagerService jKM1 = newAxesService(webContext);
       String[] id1 = {jKM1.getId()};
       JobManagerService jKM = new JobManagerService(Integer.toString(jDesignerServicesCounter + 1), "JKM",
           LEVEL_SERVICE, null, id1, false);
@@ -135,10 +138,9 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
         false);
 
     // initialisation des opérations du service jKM
-    JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
-        + getURL(CMP_PDC, null, null) + "Main", null, false);
-    JobManagerService jKM2 = new JobManagerService("22", "JKM2", LEVEL_OPERATION, webContext
-        + getURL(CMP_THESAURUS, null, null) + "Main", null, false);
+    JobManagerService jKM1 = newAxesService(webContext);
+    JobManagerService jKM2 = newSynonymsService(webContext);
+    JobManagerService jKM3 = newForcedSubscriptionsService(webContext);
 
     // initialisation des opérations du service jSTAT
     JobManagerService jSTAT2 = new JobManagerService("32", "JSTAT2", LEVEL_OPERATION, webContext
@@ -159,7 +161,7 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     JobManagerService jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, id2, false);
 
     if (getUserDetail().isAccessPdcManager() && jobManagerSettings.isKMVisible()) {
-      pdcServicesAdded = setJKMServices("2", jKM1, jKM2);
+      pdcServicesAdded = setJKMServices("2", jKM1, jKM2, jKM3);
     }
 
     setServices(jSTAT, jSTAT2, jSTAT3);
@@ -210,10 +212,9 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
         + "/RdocumentTemplates/jsp/Main", null, false);
 
     // initialisation des opérations du service jKM
-    JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
-        + getURL(CMP_PDC, null, null) + "Main", null, false);
-    JobManagerService jKM2 = new JobManagerService("22", "JKM2", LEVEL_OPERATION, webContext
-        + getURL(CMP_THESAURUS, null, null) + "Main", null, false);
+    JobManagerService jKM1 = newAxesService(webContext);
+    JobManagerService jKM2 = newSynonymsService(webContext);
+    JobManagerService jKM3 = newForcedSubscriptionsService(webContext);
 
     // initialisation des opérations du service jSTAT
     JobManagerService jSTAT1 = new JobManagerService("31", "JSTAT1", LEVEL_OPERATION, webContext
@@ -235,7 +236,7 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, jSTATFunctions, false);
 
     if (jobManagerSettings.isKMVisible()) {
-      pdcServicesAdded = setJKMServices("2", jKM1, jKM2);
+      pdcServicesAdded = setJKMServices("2", jKM1, jKM2, jKM3);
     }
 
     if (jobManagerSettings.isToolSpecificAuthentVisible() ||
@@ -276,13 +277,41 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     return pdcServicesAdded;
   }
 
-  private boolean setJKMServices(final String id, final JobManagerService jKM1,
-      final JobManagerService jKM2) {
-    JobManagerService jKM;
-    String[] jKMFunctions = {jKM1.getId(), jKM2.getId()};
-    jKM = new JobManagerService(id, "JKM", LEVEL_SERVICE, null, jKMFunctions, false);
-    setServices(jKM, jKM1, jKM2);
+  private boolean setJKMServices(final String id, final JobManagerService... jKMOperations) {
+    String[] jKMFunctions =
+        Stream.of(jKMOperations).map(JobManagerService::getId).toArray(String[]::new);
+    JobManagerService jKM = new JobManagerService(id, "JKM", LEVEL_SERVICE, null, jKMFunctions,
+        false);
+    setServices(jKM);
+    setServices(jKMOperations);
     return true;
+  }
+
+  /**
+   * The definition of the axis of the PdC.
+   */
+  private JobManagerService newAxesService(final String webContext) {
+    return new JobManagerService("21", "JKM1", LEVEL_OPERATION,
+        webContext + getURL(CMP_PDC, null, null) + "Main", null, false);
+  }
+
+  /**
+   * The definition of the synonyms of the values of the axis of the PdC.
+   */
+  private JobManagerService newSynonymsService(final String webContext) {
+    return new JobManagerService("22", "JKM2", LEVEL_OPERATION,
+        webContext + getURL(CMP_THESAURUS, null, null) + "Main", null, false);
+  }
+
+  /**
+   * The management of the subscriptions the managers of the PdC force on some position criteria of
+   * the PdC for one or more users or groups of users.
+   */
+  private JobManagerService newForcedSubscriptionsService(final String webContext) {
+    return new JobManagerService("23", "JKM3", LEVEL_OPERATION,
+        webContext + getURL(CMP_PDCSUBSCRIPTION, null, null) +
+            "ViewSubscriptionTaxonomy?userId=all&context=pdc&scope=" +
+            URLEncoder.encode(getString("JKM"), StandardCharsets.UTF_8), null, false);
   }
 
   private void setServices(JobManagerService... jobManagerServices) {
