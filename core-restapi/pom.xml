@@ -60,7 +60,6 @@
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-core-jakarta</artifactId>
-      <version>2.2.54</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -195,34 +194,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
-        <executions>
-          <!-- what the Maven site brings besides the documentation of the REST API isn't used by
-               the rendering page; it is dropped before the site is published -->
-          <execution>
-            <id>strip-maven-site</id>
-            <phase>post-site</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-            <configuration>
-              <excludeDefaultDirectories>true</excludeDefaultDirectories>
-              <filesets>
-                <fileset>
-                  <directory>${project.build.directory}/site</directory>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                  <excludes>
-                    <exclude>index.html</exclude>
-                    <exclude>openapi.json</exclude>
-                    <exclude>openapi.yaml</exclude>
-                    <exclude>redoc.standalone.js</exclude>
-                  </excludes>
-                </fileset>
-              </filesets>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -294,8 +265,8 @@
                 <artifactItem>
                   <groupId>org.webjars.npm</groupId>
                   <artifactId>redoc</artifactId>
-                  <version>2.5.0</version>
-                  <includes>META-INF/resources/webjars/redoc/2.5.0/bundles/redoc.standalone.js</includes>
+                  <version>${redoc.version}</version>
+                  <includes>META-INF/resources/webjars/redoc/${redoc.version}/bundles/redoc.standalone.js</includes>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/site</outputDirectory>
                   <fileMappers>
@@ -335,57 +306,31 @@
       <plugin>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-maven-plugin-jakarta</artifactId>
-        <version>2.2.54</version>
         <configuration>
-          <!-- the document the scan completes: it carries the mandatory info section -->
-          <openapiFilePath>${project.build.directory}/openapi-base/openapi.yaml</openapiFilePath>
-          <outputFileName>openapi</outputFileName>
-          <outputPath>${project.build.directory}/openapi</outputPath>
-          <outputFormat>JSONANDYAML</outputFormat>
-          <prettyPrint>true</prettyPrint>
-          <sortOutput>true</sortOutput>
-          <openapi31>true</openapi31>
-          <defaultResponseCode>200</defaultResponseCode>
-          <!-- completes each operation with the responses common to all the endpoints -->
-          <!-- the schema resolver must read the JAXB annotations of the web entities -->
+          <!-- the schema resolver must read the JAXB annotations of the web entities,
+               and the filter completes each operation with the common responses -->
           <modelConverterClasses>org.silverpeas.core.restapi.JaxbAwareModelResolver</modelConverterClasses>
           <filterClass>org.silverpeas.core.restapi.CommonResponsesFilter</filterClass>
-          <!-- the SCIM API isn't meant to be published -->
           <ignoredRoutes>
-            <route>/domains/{domainId}/scim/.search</route>
-            <route>/domains/{domainId}/scim/Bulk</route>
-            <route>/domains/{domainId}/scim/Groups</route>
-            <route>/domains/{domainId}/scim/Groups/.search</route>
-            <route>/domains/{domainId}/scim/Groups/{id}</route>
-            <route>/domains/{domainId}/scim/Me</route>
-            <route>/domains/{domainId}/scim/Schemas</route>
-            <route>/domains/{domainId}/scim/Schemas/{uri}</route>
-            <route>/domains/{domainId}/scim/ServiceProviderConfig</route>
-            <route>/domains/{domainId}/scim/ServiceProviderConfig/{name}</route>
-            <route>/domains/{domainId}/scim/Users</route>
-            <route>/domains/{domainId}/scim/Users/.search</route>
-            <route>/domains/{domainId}/scim/Users/{id}</route>
+          <route>/domains/{domainId}/scim/.search</route>
+          <route>/domains/{domainId}/scim/Bulk</route>
+          <route>/domains/{domainId}/scim/Groups</route>
+          <route>/domains/{domainId}/scim/Groups/.search</route>
+          <route>/domains/{domainId}/scim/Groups/{id}</route>
+          <route>/domains/{domainId}/scim/Me</route>
+          <route>/domains/{domainId}/scim/Schemas</route>
+          <route>/domains/{domainId}/scim/Schemas/{uri}</route>
+          <route>/domains/{domainId}/scim/ServiceProviderConfig</route>
+          <route>/domains/{domainId}/scim/ServiceProviderConfig/{name}</route>
+          <route>/domains/{domainId}/scim/Users</route>
+          <route>/domains/{domainId}/scim/Users/.search</route>
+          <route>/domains/{domainId}/scim/Users/{id}</route>
           </ignoredRoutes>
           <resourcePackages>
-            <package>org.silverpeas.core.webapi</package>
-            <package>org.silverpeas.web</package>
+          <package>org.silverpeas.core.webapi</package>
+          <package>org.silverpeas.web</package>
           </resourcePackages>
         </configuration>
-        <executions>
-          <execution>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>resolve</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-core</artifactId>
-            <version>6.2.14.Final</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
