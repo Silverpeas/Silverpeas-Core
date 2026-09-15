@@ -1,0 +1,273 @@
+# Coverity Configuration for Silverpeas Core
+# This configuration optimizes Coverity static analysis for the Maven multi-module project
+
+# Project Information
+project:
+  name: "Silverpeas-Core"
+  language: "java"
+  version: "6.5-SNAPSHOT"
+  description: "Static analysis configuration for Silverpeas Core platform"
+
+# Build Configuration
+build:
+  # Maven multi-module build command
+  command: "mvn clean compile -DskipTests=true -Dmaven.javadoc.skip=true"
+  
+  # Java compilation settings
+  java:
+    source_version: "21"
+    target_version: "21" 
+    encoding: "UTF-8"
+    
+  # Build directories to include/exclude
+  include_paths:
+    - "core-api/src/main/java"
+    - "core-library/src/main/java" 
+    - "core-services/src/main/java"
+    - "core-jcr/src/main/java"
+    - "core-rs/src/main/java"
+    - "core-web/src/main/java"
+    - "core-war/src/main/java"
+    - "core-configuration/src/main/java"
+    
+  exclude_paths:
+    - "*/target/*"
+    - "*/src/test/*"
+    - "*/src/it/*"
+    - "*/.git/*"
+    - "*/.idea/*"
+    - "*/.vscode/*"
+    - "*/node_modules/*"
+    - "*/.bridge/*"
+    - "*/.codesight/*"
+    
+  # File patterns to analyze
+  include_files:
+    - "*.java"
+    - "*.jsp"
+    - "*.xml" # For configuration analysis
+    
+  exclude_files:
+    - "*Test.java"
+    - "*Tests.java"
+    - "*TestCase.java"
+    - "*.class"
+    - "*.jar"
+    - "*.war"
+    - "*.log"
+
+# Analysis Configuration
+analysis:
+  # Intermediate directory
+  intermediate_dir: "coverity-output/idir"
+  
+  # Analysis options
+  options:
+    - "--webapp-security"
+    - "--webapp-security-preview"
+    - "--security"
+    - "--concurrency"
+    - "--enable-constraint-fpp"
+    - "--enable-fnptr"
+    - "--enable-virtual"
+    - "--ticker-mode none"
+    
+  # Strip paths for cleaner reporting
+  strip_path: true
+  
+  # Checkers configuration for Java security analysis
+  checkers:
+    # Core security checkers
+    security:
+      - "HARDCODED_CREDENTIALS"
+      - "WEAK_CRYPTOGRAPHIC_HASH"
+      - "WEAK_PASSWORD_HASH" 
+      - "CRYPTO.WEAK_HASH_FINALIZATION_JAVA"
+      - "CRYPTO.WEAK_RANDOM"
+      - "PATH_MANIPULATION"
+      - "COMMAND_INJECTION"
+      - "SQL_INJECTION"
+      - "XSS"
+      - "LDAP_INJECTION"
+      - "XPATH_INJECTION"
+      - "LOG_INJECTION"
+      - "WEAK_GUARD"
+      
+    # Quality and reliability checkers  
+    quality:
+      - "RESOURCE_LEAK"
+      - "NULL_RETURNS"
+      - "UNINIT"
+      - "DEADCODE"
+      - "STACK_USE"
+      - "INFINITE_LOOP"
+      - "DIVIDE_BY_ZERO"
+      - "ARRAY_VS_SINGLETON"
+      - "COPY_PASTE_ERROR"
+      - "IDENTICAL_BRANCHES"
+      
+    # Concurrency checkers
+    concurrency:
+      - "LOCK"
+      - "SLEEP"
+      - "ATOMICITY"
+      - "ORDER_REVERSAL"
+      - "MISSING_LOCK"
+      - "LOCK_EVASION"
+      - "RACE_CONDITION"
+      
+    # Web application security (for JSPs and servlets)
+    webapp:
+      - "XSS"
+      - "HTTP_RESPONSE_SPLITTING"
+      - "OPEN_REDIRECT"
+      - "CSRF"
+      - "SESSION_FIXATION"
+      - "UNSAFE_JNI"
+
+# Reporting Configuration  
+reporting:
+  # Output formats
+  formats:
+    - "html"
+    - "json"
+    - "text"
+    - "sarif"
+    
+  # Report paths
+  html_output: "coverity-output/html-report"
+  json_output: "coverity-output/results.json"
+  text_output: "coverity-output/defects-report.txt"
+  sarif_output: "coverity-output/results.sarif"
+  
+  # Report options
+  include_source: true
+  group_by_checker: true
+  
+  # Filtering options
+  severity_filter:
+    include: ["High", "Medium", "Low"]
+    exclude: []
+    
+  impact_filter:
+    include: ["High", "Medium", "Low"]
+    exclude: []
+
+# Integration Configuration
+integration:
+  # Coverity Connect server settings
+  server:
+    # URL and credentials should be set via environment variables
+    # COVERITY_URL, COVERITY_USERNAME, COVERITY_PASSWORD
+    commit_enabled: true
+    stream_name_pattern: "Silverpeas-Core-{branch}"
+    
+  # GitHub integration
+  github:
+    pr_comments: true
+    security_alerts: true
+    sarif_upload: true
+    
+  # Quality gates
+  quality_gates:
+    # Fail build conditions
+    fail_on_new_high: true
+    fail_on_new_medium: false  
+    max_high_issues: 0
+    max_medium_issues: 50
+    max_total_issues: 200
+
+# Performance Configuration
+performance:
+  # Analysis performance tuning
+  parallel_jobs: 4
+  memory_limit: "8G"
+  
+  # Build capture optimization  
+  build_capture:
+    incremental: true
+    cache_results: true
+    
+  # Analysis optimization
+  analysis_timeout: "180m"  # 3 hours
+  
+# Module-specific Configuration
+modules:
+  core-api:
+    priority: "high"
+    checkers:
+      additional: ["API_USAGE_ERRORS", "RESOURCE_LEAK"]
+      
+  core-library:
+    priority: "high" 
+    checkers:
+      additional: ["CONCURRENCY", "RESOURCE_LEAK"]
+      
+  core-services:
+    priority: "high"
+    checkers:
+      additional: ["SECURITY", "WEBAPP"]
+      
+  core-web:
+    priority: "high"
+    checkers:
+      additional: ["WEBAPP", "XSS", "SQL_INJECTION"]
+      
+  core-war:
+    priority: "medium"
+    checkers:
+      additional: ["WEBAPP", "CONFIGURATION_ERRORS"]
+      
+  core-jcr:
+    priority: "medium"
+    checkers:
+      additional: ["RESOURCE_LEAK", "CONCURRENCY"]
+      
+  core-rs:
+    priority: "medium"
+    checkers:
+      additional: ["WEBAPP", "API_USAGE_ERRORS"]
+      
+  core-configuration:
+    priority: "low"
+    checkers:
+      additional: ["CONFIGURATION_ERRORS"]
+
+# Environment-specific Settings
+environments:
+  ci:
+    # CI/CD specific settings
+    timeout: "180m"
+    parallel_jobs: 4
+    cache_enabled: true
+    
+  local:
+    # Local development settings  
+    timeout: "60m"
+    parallel_jobs: 2
+    interactive_mode: true
+    
+  production:
+    # Production analysis settings
+    timeout: "240m"
+    parallel_jobs: 8
+    comprehensive_analysis: true
+    all_checkers_enabled: true
+
+# Notification Configuration
+notifications:
+  # Email notifications (if configured)
+  email:
+    enabled: false
+    recipients: []
+    
+  # Webhook notifications
+  webhooks:
+    enabled: false
+    urls: []
+    
+  # Slack integration (if needed)
+  slack:
+    enabled: false
+    webhook_url: ""
+    channel: "#security"
