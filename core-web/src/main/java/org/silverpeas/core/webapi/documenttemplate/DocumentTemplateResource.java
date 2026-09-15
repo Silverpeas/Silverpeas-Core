@@ -36,7 +36,7 @@ import org.silverpeas.core.documenttemplate.DocumentTemplateRestrictionFilter;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;

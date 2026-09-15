@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

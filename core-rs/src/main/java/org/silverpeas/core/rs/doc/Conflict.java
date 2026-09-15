@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.rs.annotation.doc;
+package org.silverpeas.core.rs.doc;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -33,7 +33,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Documents that the annotated endpoint can answer a 404 (Not Found) to the requester.
+ * Documents that the annotated endpoint can answer a 409 (Conflict) to the requester.
  * <p>
  * The annotation carries nothing but documentation: it has no effect at runtime and it is read
  * only when generating the documentation of the REST API. Its purpose is to declare in a single
@@ -47,9 +47,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * </p>
  * @author Miguel Moquillon
  */
-@ApiResponse(responseCode = "404", description = "The requested resource doesn't exist.")
+@ApiResponse(responseCode = "409", description = "The request conflicts with the current state of the resource.")
 @Documented
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface NotFound {
+public @interface Conflict {
 }
