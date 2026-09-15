@@ -38,7 +38,7 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
-<fmt:message var="rootPath" key="Path"/>
+<fmt:message var="rootPath" key="Title"/>
 <fmt:message var="deleteActionLabel" key="DeleteSC"/>
 <fmt:message var="deleteIconUrl" key="icoDelete" bundle="${icons}"/>
 <fmt:message var="pdcTypeLabel" key="pdc"/>

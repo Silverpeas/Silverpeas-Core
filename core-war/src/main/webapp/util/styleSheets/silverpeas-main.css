@@ -1471,6 +1471,11 @@ Style Utilise par le ViewGenerator
   display:block;
 }
 
+.ArrayCellActions * {
+  vertical-align: middle;
+  margin-right: 0.5em;
+  display: inline-block;
+}
 
 /* pagination */
 
@@ -3798,6 +3803,7 @@ table.pdcPositionsField {
   width: 100%;
 }
 
+.sp_button[href*='selectSubscribers'],
 .simple-button {
   border-radius:var(--radius-btn-secondaire);
   border: 1px solid var(--border-color-btn-secondaire);
@@ -3806,6 +3812,11 @@ table.pdcPositionsField {
   padding:0.5em;
   background:var(--bgColor-btn-secondaire);
   display:inline-block;
+}
+
+.sp_button[href*='selectSubscribers']:hover,
+.simple-button:hover {
+  background:var(--bgColor-btn-secondaire-hover);
 }
 
 /** Css pour presentation pdc dans formsOnline **/
@@ -6939,6 +6950,24 @@ a.navigation-button {
 .fields .emptyList span {
   background: transparent url("/silverpeas/util/icons/trashcan.gif") 0 3px no-repeat;
 }
+
+
+/* PdcSubscription */
+.sp_button[href*='selectSubscribers']{
+ display: block;
+ width:fit-content;
+ margin-top: 0.5em;
+}
+
+.sp_button[href*='selectSubscribers']::before{
+  content: '';
+  display:inline-block;
+  background: transparent url("/silverpeas/util/icons/create-action/add-existing-user.png") 0 0 no-repeat;
+  width: 23px;
+  height: 23px;
+  vertical-align: middle;
+}
+
 
 /*responsive design */
 @media only screen and (max-width: 800px){

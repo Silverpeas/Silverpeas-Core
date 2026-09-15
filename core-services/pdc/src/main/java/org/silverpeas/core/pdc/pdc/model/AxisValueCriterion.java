@@ -39,11 +39,21 @@ public class AxisValueCriterion extends SearchCriteria {
   /**
    * Constructs a new criterion on the specified axis' value
    *
-   * @param axisId the unique identifier of the axis.
+   * @param axisId a sequence of characters representation of the unique identifier of the axis.
    * @param valuePath the path of the value of the axis above from the root axis value.
    */
   public AxisValueCriterion(String axisId, String valuePath) {
-    super(Integer.valueOf(axisId), valuePath);
+    super(Integer.parseInt(axisId), valuePath);
+  }
+
+  /**
+   * Constructs a new criterion on the specified axis' value
+   *
+   * @param axisId the unique identifier of the axis as an integer.
+   * @param valuePath the path of the value of the axis above from the root axis value.
+   */
+  public AxisValueCriterion(int axisId, String valuePath) {
+    super(axisId, valuePath);
   }
 
   /**

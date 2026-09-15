@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.sharing.notification;
 
+import org.jetbrains.annotations.NotNull;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
@@ -119,6 +120,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
     return FILE_SHARING_TEMPLATE_PATH;
   }
 
+  @NotNull
   @Override
   protected String getLocalizationBundlePath() {
     return "org.silverpeas.sharing.multilang.fileSharingBundle";

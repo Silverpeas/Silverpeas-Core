@@ -23,48 +23,51 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.core.notification.user.builder.AbstractResourceUserNotificationBuilder;
-import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionPositionCriteria;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+/**
+ * The base of the notifications that are sent to the subscribers of position criteria on the PdC.
+ * <p>
+ * As position criteria can be subscribed by several users, either by themselves or by a manager
+ * of the PdC that has forced the subscription for them or for their group, the notification is
+ * built for all the recipients at once. The implementations have therefore to build their message
+ * for each of the languages supported by the platform instead of for the language of a single
+ * recipient.
+ * </p>
+ */
 public abstract class AbstractPdcSubscriptionUserNotification<T>
     extends AbstractResourceUserNotificationBuilder<T> {
 
-  private final PdcSubscription pdcSubscription;
-  private final Map<Integer, String> userLanguages = new HashMap<>();
+  private final PdcSubscriptionPositionCriteria pdcResource;
+  private final Collection<String> recipientIds;
 
-  protected AbstractPdcSubscriptionUserNotification(PdcSubscription pdcSubscription, T resource) {
+  protected AbstractPdcSubscriptionUserNotification(PdcSubscriptionPositionCriteria pdcResource,
+      Collection<String> recipientIds, T resource) {
     super(resource);
-    this.pdcSubscription = pdcSubscription;
+    this.pdcResource = pdcResource;
+    this.recipientIds = List.copyOf(recipientIds);
   }
 
   @Override
-  protected String getLocalizationBundlePath() {
+  protected @NonNull String getLocalizationBundlePath() {
     return "org.silverpeas.pdcSubscription.multilang.pdcsubscription";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return Collections.singletonList(String.valueOf(pdcSubscription.getOwnerId()));
+    return recipientIds;
   }
 
-  protected String getUserLanguage(int userID) {
-    String userLanguage = userLanguages.get(userID);
-    if (StringUtil.isNotDefined(userLanguage)) {
-      userLanguage = PersonalizationServiceProvider.getPersonalizationService()
-          .getUserSettings(String.valueOf(userID)).getLanguage();
-      userLanguages.put(userID, userLanguage);
-    }
-    return userLanguage;
-  }
-
-  public PdcSubscription getPdcSubscription() {
-    return pdcSubscription;
+  /**
+   * Gets the position criteria on the PdC the notification is about.
+   * @return a {@link PdcSubscriptionPositionCriteria} instance.
+   */
+  public PdcSubscriptionPositionCriteria getPdcSubscriptionPositionCriteria() {
+    return pdcResource;
   }
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.invitation;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -41,7 +42,7 @@ public abstract class AbstractInvitationUserNotification
   }
 
   @Override
-  protected String getLocalizationBundlePath() {
+  protected @NonNull String getLocalizationBundlePath() {
     return "org.silverpeas.social.multilang.socialNetworkBundle";
   }
 
