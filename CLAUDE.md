@@ -15,7 +15,9 @@ JavaScript widgets). It is a Jakarta EE application deployed on a WildFly applic
 
 The build inherits almost everything (Java version, dependency versions, failsafe/surefire wiring,
 integration-test source dirs) from the external parent POM `org.silverpeas:silverpeas-project`, not
-from this repo. Assume Java 17 and Maven 3.9.x (as pinned in `.devcontainer/devcontainer.json`).
+from this repo. Assume Java 21 (`maven.compiler.release` in the parent POM) and Maven 3.9.x; both
+come from the `silverpeas/silverdev:latest` base image, not from `.devcontainer/devcontainer.json`,
+which pins neither.
 
 To build and test the project, use the devcontainer whenever possible. Otherwise, if a container 
 from the `silverpeas/silverdev:latest` Docker image is available on the host, starts it (if not 
@@ -39,7 +41,7 @@ the test archive.
 
 These tests also require native tools on the PATH (ffmpeg, imagemagick, ghostscript, libreoffice,
 swftools, pdf2json). Do **not** expect integration tests to run in a bare checkout — use the dev
-container (`.devcontainer/`, in which is installed WildFly 34.0.1 and these tools and provides a
+container (`.devcontainer/`, in which is installed WildFly 39.0.1 and these tools and provides a
 `wildfly start|stop|status` helper) or `silverpeas/silverdev:latest` image. The full CI command is 
 roughly: `mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci`.
 
