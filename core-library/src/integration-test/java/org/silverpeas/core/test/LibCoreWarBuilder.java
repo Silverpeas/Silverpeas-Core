@@ -135,6 +135,7 @@ public class LibCoreWarBuilder extends WarBuilder<LibCoreWarBuilder> {
         .addMavenDependencies("org.im4java:im4java")
         .addMavenDependencies("org.mnode.ical4j:ical4j")
         .addMavenDependencies("net.htmlparser.jericho:jericho-html")
+        .addMavenDependencies("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer")
         // don't forget to set up the JCR backend
         .addWebListener(SilverpeasJcrInitialization.class)
         // the imageIO drivers must be correctly loaded and then unloaded once the archive

@@ -89,6 +89,10 @@ public class WysiwygContentTransformerTest {
   @RegisterExtension
   static SettingBundleStub mailSettings = new SettingBundleStub("org.silverpeas.mail.mail");
 
+  @RegisterExtension
+  static SettingBundleStub securitySettings =
+      new SettingBundleStub("org.silverpeas.util.security");
+
   @TestManagedMock
   private AttachmentService attachmentService;
 
@@ -116,6 +120,8 @@ public class WysiwygContentTransformerTest {
     urlSettings.put("mail.mime.multipart", "relative");
     filesWithResize = new ArrayList<>();
     mailSettings.put("image.resize.min-width", "0");
+    securitySettings.put("security.external.iframe.hosts.allowed", "www.youtube.com");
+    securitySettings.put("security.external.media.hosts.allowed", "www.youtube.com");
     originalOdt = new File(Objects.requireNonNull(getClass().getResource("/" + ODT_NAME)).getPath());
     assertThat(originalOdt.exists(), is(true));
     originalImage = new File(Objects.requireNonNull(getClass().getResource("/" + IMAGE_NAME)).getPath());
@@ -247,6 +253,114 @@ public class WysiwygContentTransformerTest {
 
     assertThat(result, is(getContentOfDocumentNamed(
         "wysiwygWithFullHtmlTransformedBySanitization.txt")));
+  }
+
+  @Test
+  void sanitizeForRenderingDropsWhatCanActOnTheBrowser() {
+    assertThat(sanitizedForRendering("<script>alert(1)</script><p>text</p>"), is("<p>text</p>"));
+    assertThat(sanitizedForRendering("<img src=\"/silverpeas/x.png\" onerror=\"alert(1)\" />"),
+        is("<img src=\"/silverpeas/x.png\" />"));
+    // the event callback isn't preceded by a whitespace, which declares it all the same
+    assertThat(sanitizedForRendering("<img src=\"/silverpeas/x.png\"onerror=alert(1) />"),
+        is("<img src=\"/silverpeas/x.png\" />"));
+    assertThat(sanitizedForRendering("<a href=\"javascript:alert(1)\">a link</a>"),
+        is("<a>a link</a>"));
+    // the HTML entities are decoded by the tokenizer before the scheme is looked at
+    assertThat(sanitizedForRendering("<a href=\"&#106;avascript:alert(1)\">a link</a>"),
+        is("<a>a link</a>"));
+    // the element is dropped along with its content, but not with what follows it
+    assertThat(sanitizedForRendering("<svg onload=\"alert(1)\"><circle/></svg>after"), is("after"));
+    assertThat(sanitizedForRendering("<object><param name=\"a\"></object>after"), is("after"));
+  }
+
+  /**
+   * The WYSIWYG editor of Silverpeas is set up to accept any content, so the rendering must not
+   * apply an allow list narrower than what the users are entitled to write. In particular, the
+   * media its own plugins produce and the attributes its own scripts read have to go through.
+   */
+  @Test
+  void sanitizeForRenderingKeepsTheContentAsItIs() {
+    assertThat(sanitizedForRendering(
+            "<video controls><source src=\"/silverpeas/v.mp4\" type=\"video/mp4\"></video>"),
+        is("<video controls=\"controls\"><source src=\"/silverpeas/v.mp4\" type=\"video/mp4\" />" +
+            "</video>"));
+    assertThat(sanitizedForRendering("<audio controls src=\"/silverpeas/a.mp3\"></audio>"),
+        is("<audio controls=\"controls\" src=\"/silverpeas/a.mp3\"></audio>"));
+    assertThat(sanitizedForRendering("<pre><code class=\"language-java\">int i;</code></pre>"),
+        is("<pre><code class=\"language-java\">int i;</code></pre>"));
+    assertThat(sanitizedForRendering("<figure><figcaption>a caption</figcaption></figure>"),
+        is("<figure><figcaption>a caption</figcaption></figure>"));
+    // the userzoom and identitycard plugins carry the user id by the rel attribute, which the
+    // silverpeas-userZoom script reads back
+    assertThat(sanitizedForRendering("<span class=\"userToZoom\" rel=\"42\">John</span>"),
+        is("<span class=\"userToZoom\" rel=\"42\">John</span>"));
+    assertThat(sanitizedForRendering("<p data-sp-id=\"7\" style=\"color:red\">text</p>"),
+        is("<p data-sp-id=\"7\" style=\"color:red\">text</p>"));
+    assertThat(
+        sanitizedForRendering("<a href=\"https://www.silverpeas.org\" target=\"_blank\">a link</a>"),
+        is("<a href=\"https://www.silverpeas.org\" target=\"_blank\">a link</a>"));
+  }
+
+  /**
+   * The media obey the very rule applied to the iframes: those Silverpeas hosts itself are always
+   * allowed, the external ones have to be declared. An inlined image is carried by the content
+   * itself and is therefore kept.
+   */
+  @Test
+  void sanitizeForRenderingKeepsOnlyTheMediaReferringAnAllowedSource() {
+    assertThat(sanitizedForRendering("<img src=\"/silverpeas/x.png\" />"),
+        is("<img src=\"/silverpeas/x.png\" />"));
+    assertThat(sanitizedForRendering("<img src=\"https://www.unallowed.org/x.png\" />"), is(""));
+    assertThat(sanitizedForRendering("<img src=\"https://www.youtube.com/x.png\" />"),
+        is("<img src=\"https://www.youtube.com/x.png\" />"));
+    // the renderer escapes the equal signs of the attribute values, which the browsers decode back
+    assertThat(sanitizedForRendering("<img src=\"data:image/png;base64,iVBORw0KGgo=\" />"),
+        is("<img src=\"data:image/png;base64,iVBORw0KGgo&#61;\" />"));
+    assertThat(sanitizedForRendering("<img src=\"data:text/html;base64,PHNjcmlwdD4=\" />"), is(""));
+    assertThat(sanitizedForRendering(
+            "<video src=\"https://www.unallowed.org/v.mp4\">a fallback</video>"), is(""));
+    // the poster of a video is an image, only the attribute is dropped
+    assertThat(sanitizedForRendering(
+            "<video src=\"/silverpeas/v.mp4\" poster=\"https://www.unallowed.org/p.png\"></video>"),
+        is("<video src=\"/silverpeas/v.mp4\"></video>"));
+  }
+
+  /**
+   * Whereas the default sanitization, aimed at the contents extracted out of Silverpeas, keeps
+   * strictly the safe content.
+   */
+  @Test
+  void defaultSanitizeDropsThePresentationAttributes() {
+    String result = WysiwygContentTransformer.on("<div class=\"aClass\" id=\"anId\">text</div>")
+        .applySanitizeDirective()
+        .transform();
+    assertThat(result, is("<div>text</div>"));
+  }
+
+  /**
+   * The rendering keeps the iframes Silverpeas accepts at the very moment a content embedding them
+   * is submitted, so that sanitizing a content doesn't drop what has been legitimately stored.
+   */
+  @Test
+  void sanitizeForRenderingKeepsOnlyTheIFramesReferringAnAllowedSource() {
+    assertThat(sanitizedForRendering("<iframe src=\"https://www.youtube.com/embed/xyz\"></iframe>"),
+        is("<iframe src=\"https://www.youtube.com/embed/xyz\"></iframe>"));
+    assertThat(sanitizedForRendering("<iframe src=\"/silverpeas/Rkmelia/kmelia1/Main\"></iframe>"),
+        is("<iframe src=\"/silverpeas/Rkmelia/kmelia1/Main\"></iframe>"));
+    assertThat(sanitizedForRendering("<iframe src=\"https://www.evil.org/\"></iframe>"), is(""));
+    assertThat(sanitizedForRendering("<iframe src=\"http://www.youtube.com/embed/xyz\"></iframe>"),
+        is(""));
+    assertThat(sanitizedForRendering("<iframe src=\"/other/app\"></iframe>"), is(""));
+    assertThat(sanitizedForRendering("<iframe src=\"/silverpeas/../other/app\"></iframe>"), is(""));
+    assertThat(sanitizedForRendering("<iframe src=\"javascript:alert(1)\"></iframe>"), is(""));
+    assertThat(sanitizedForRendering("<iframe></iframe>"), is(""));
+    assertThat(
+        sanitizedForRendering("<iframe srcdoc=\"&lt;script&gt;alert(1)&lt;/script&gt;\"></iframe>"),
+        is(""));
+  }
+
+  private String sanitizedForRendering(final String content) {
+    return WysiwygContentTransformer.on(content).applySanitizeForRenderingDirective().transform();
   }
 
   @Test

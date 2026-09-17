@@ -24,18 +24,14 @@
 package org.silverpeas.core.web.filter;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.silverpeas.core.security.html.EmbeddedSourceValidator;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Checks the iframe elements present in a given text. An iframe is allowed only if it is a
@@ -55,16 +51,11 @@ final class IFrameChecker {
   private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile(
       "\\G\\s+([^\\s\"'>/=]+)(?:\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s\"'=<>`]+)))?");
   private static final Pattern TAG_END_PATTERN = Pattern.compile("\\G\\s*/?>");
-  // the lookbehind and the possessive quantifier avoid any backtracking
-  private static final Pattern TRAILING_SLASHES_PATTERN = Pattern.compile("(?<!/)/++$");
   private static final String SRC = "src";
   private static final String SRCDOC = "srcdoc";
   private static final String EVENT_HANDLER_PREFIX = "on";
 
-  private static final String PATH_TRAVERSAL = "..";
-
-  private final Set<String> allowedHosts;
-  private final String applicationPath;
+  private final EmbeddedSourceValidator sourceValidator;
 
   /**
    * Constructs a checker of iframes accepting only those referring the specified hosts or
@@ -74,10 +65,7 @@ final class IFrameChecker {
    * @param applicationPath the path of the Silverpeas application (for example /silverpeas).
    */
   IFrameChecker(final Collection<String> allowedHosts, final String applicationPath) {
-    this.allowedHosts = allowedHosts.stream()
-        .map(h -> h.toLowerCase(Locale.ROOT))
-        .collect(Collectors.toSet());
-    this.applicationPath = TRAILING_SLASHES_PATTERN.matcher(applicationPath).replaceFirst("");
+    this.sourceValidator = new EmbeddedSourceValidator(allowedHosts, applicationPath);
   }
 
   /**
@@ -128,27 +116,7 @@ final class IFrameChecker {
   }
 
   private boolean isAllowedSource(final String src) {
-    if (src == null) {
-      return false;
-    }
-    try {
-      final URI uri = new URI(StringEscapeUtils.unescapeHtml4(src));
-      if (uri.getScheme() == null && uri.getRawAuthority() == null) {
-        return isAllowedRelativeURI(uri);
-      }
-      return "https".equalsIgnoreCase(uri.getScheme()) && uri.getHost() != null &&
-          allowedHosts.contains(uri.getHost().toLowerCase(Locale.ROOT));
-    } catch (URISyntaxException e) {
-      return false;
-    }
-  }
-
-  private boolean isAllowedRelativeURI(final URI uri) {
-    // the path and the query are here decoded, so any encoded path traversal is also detected
-    final String path = uri.getPath();
-    final String query = Objects.toString(uri.getQuery(), "");
-    final boolean inApplication = !path.startsWith("/") || path.equals(applicationPath) ||
-        path.startsWith(applicationPath + "/");
-    return inApplication && !path.contains(PATH_TRAVERSAL) && !query.contains(PATH_TRAVERSAL);
+    // the source is here extracted from a raw text, so its HTML entities have still to be decoded
+    return src != null && sourceValidator.isAllowed(StringEscapeUtils.unescapeHtml4(src));
   }
 }
