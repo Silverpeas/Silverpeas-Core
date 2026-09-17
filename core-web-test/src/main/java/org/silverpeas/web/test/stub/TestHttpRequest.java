@@ -260,7 +260,7 @@ public class TestHttpRequest implements HttpServletRequest {
 
     @Override
     public String getContentType() {
-        return null;
+        return getHeader("Content-Type");
     }
 
     @Override
