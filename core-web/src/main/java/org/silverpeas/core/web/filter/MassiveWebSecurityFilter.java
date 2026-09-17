@@ -137,7 +137,11 @@ public class MassiveWebSecurityFilter implements Filter {
     XSS_PATTERNS = new ArrayList<>(2);
     // iframes are checked apart by an IFrameChecker
     XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*(script|svg|math|details)"));
-    XSS_PATTERNS.add(Pattern.compile("\\s+on\\w+\\s*="));
+    // an event callback declaration isn't necessarily preceded by a whitespace: according to the
+    // HTML tokenizer, the solidus and the closing quote of the previous attribute value both lead
+    // back to the state at which an attribute name is expected. So "<img src="x"onerror=..." does
+    // declare an onerror callback and browsers do run it.
+    XSS_PATTERNS.add(Pattern.compile("[\\s/\"']on\\w+\\s*="));
   }
 
   @Override
