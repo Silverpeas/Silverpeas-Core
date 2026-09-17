@@ -1090,6 +1090,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
   /**
    * Test of load method, of class WysiwygController.
+   * The WYSIWYG loading for readonly rendering sanitizes the saved HTML content before rendering
    */
   @Test
   public void testLoadWysiwygForDisplayOnly() throws Exception {
@@ -1109,7 +1110,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
     // Tests
     assertThat(WysiwygController.loadForReadOnly(componentId, messageId, "fr"),
-        is("<mark>FR_Content"));
+        is("<mark>FR_Content</mark>"));
     assertThat(WysiwygController.loadForReadOnly(componentId, messageId, "en"), is("EN_Content"));
   }
 

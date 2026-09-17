@@ -44,6 +44,7 @@ public class WysiwygContentRenderer extends AbstractContributionRenderer<Wysiwyg
   @Override
   public String renderView(final boolean externalApplicationContext) {
     final var transformer = WysiwygContentTransformer.on(getContent().getData())
+        .applySanitizeForRenderingDirective()
         .modifyImageUrlAccordingToHtmlSizeDirective()
         .resolveVariablesDirective();
     if (!externalApplicationContext) {

@@ -151,6 +151,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   private void displayContent(PrintWriter out, String code) {
     final WysiwygContentTransformer wysiwygContentTransformer =
         WysiwygContentTransformer.on(code)
+            .applySanitizeForRenderingDirective()
             .modifyImageUrlAccordingToHtmlSizeDirective()
             .resolveVariablesDirective()
             .applySilverpeasLinkCssDirective();
