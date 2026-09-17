@@ -28,6 +28,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageU
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.MailLinkCssApplierDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.OpenLinkOnBlankPageDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.SanitizeDirective;
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.SanitizeForRenderingDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.SilverpeasLinkCssApplierDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.VariablesReplacementDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
@@ -120,6 +121,19 @@ public class WysiwygContentTransformer {
    */
   public WysiwygContentTransformer applySanitizeDirective() {
     directives.add(new SanitizeDirective());
+    return this;
+  }
+
+  /**
+   * Applies HTML sanitize operations on a content which is about to be displayed or exported.
+   * Unlike {@link #applySanitizeDirective()}, which keeps only a restricted set of safe elements,
+   * the content is kept as it is and only what can act on the visitor's browser is dropped. As the
+   * other directives complete the content with some presentation data, this one has to be applied
+   * first.
+   * @return the instance of the current {@link WysiwygContentTransformer}.
+   */
+  public WysiwygContentTransformer applySanitizeForRenderingDirective() {
+    directives.add(new SanitizeForRenderingDirective());
     return this;
   }
 

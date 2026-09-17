@@ -490,6 +490,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.contribution.content.wysiwyg");
       addPackages(true, "org.silverpeas.core.contribution.content.renderer");
       addMavenDependencies("net.htmlparser.jericho:jericho-html");
+      addMavenDependencies("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer");
+      addAsResource("org/silverpeas/util/security.properties");
     }
     return this;
   }
