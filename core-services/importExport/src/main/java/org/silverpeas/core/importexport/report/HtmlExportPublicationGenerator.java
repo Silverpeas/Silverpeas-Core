@@ -158,8 +158,10 @@ public class HtmlExportPublicationGenerator {
         String htmlResult = formView.toString(context, dataRecord);
         htmlResult = replaceImagesPathForExport(htmlResult);
         htmlResult = replaceFilesPathForExport(htmlResult);
-        htmlResult =
-            WysiwygContentTransformer.on(htmlResult).resolveVariablesDirective().transform();
+        htmlResult = WysiwygContentTransformer.on(htmlResult)
+            .applySanitizeForRenderingDirective()
+            .resolveVariablesDirective()
+            .transform();
         return htmlResult;
       }
     } catch (Exception e) {

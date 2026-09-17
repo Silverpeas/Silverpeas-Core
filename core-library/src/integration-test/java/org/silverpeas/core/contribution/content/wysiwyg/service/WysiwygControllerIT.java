@@ -69,6 +69,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
         .addAsResource(DATABASE_CREATION_SCRIPT)
         .addAsResource(DATASET_SCRIPT)
         .addAsResource("silverpeas-oak.properties")
+        .addAsResource("org/silverpeas/util/security.properties")
         .addAsResource("org/silverpeas/util/attachment/Attachment.properties")
         .build();
   }
@@ -1089,6 +1090,8 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
   /**
    * Test of load method, of class WysiwygController.
+   * The WYSIWYG loading for readonly rendering sanitizes the saved HTML content before rendering
+   * it.
    */
   @Test
   public void testLoadWysiwygForDisplayOnly() {
@@ -1108,7 +1111,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
     // Tests
     assertThat(WysiwygController.loadForReadOnly(componentId, messageId, "fr"),
-        is("<mark>FR_Content"));
+        is("<mark>FR_Content</mark>"));
     assertThat(WysiwygController.loadForReadOnly(componentId, messageId, "en"), is("EN_Content"));
   }
 
@@ -1138,6 +1141,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
   /**
    * Test of load method, of class WysiwygController.
+   * The WYSIWYG loading sanitizes the saved HTML content before rendering it.
    */
   @Test
   public void testLoadEmptyWysiwygFRAndEmptyENWysiwyg() throws Exception {

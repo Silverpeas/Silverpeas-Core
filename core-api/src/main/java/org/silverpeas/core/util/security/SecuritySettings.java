@@ -199,7 +199,21 @@ public class SecuritySettings {
    * @return a list of host names. Empty if only the Silverpeas server is allowed.
    */
   public static List<String> getAllowedHostsForIFrame() {
-    final String hosts = settings.getString("security.external.iframe.hosts.allowed", "");
+    return getAllowedHosts("security.external.iframe.hosts.allowed", "");
+  }
+
+  /**
+   * Gets the hosts from which the media (images, videos and audios) referred by a content are
+   * allowed to be loaded when that content is rendered or exported. The Silverpeas server itself
+   * isn't among them as it is always allowed. The * value allows them all.
+   * @return a list of host names. Empty if only the Silverpeas server is allowed.
+   */
+  public static List<String> getAllowedHostsForMedia() {
+    return getAllowedHosts("security.external.media.hosts.allowed", "*");
+  }
+
+  private static List<String> getAllowedHosts(final String property, final String defaultValue) {
+    final String hosts = settings.getString(property, defaultValue);
     return Arrays.stream(hosts.split(","))
         .map(String::trim)
         .filter(h -> !h.isEmpty())
