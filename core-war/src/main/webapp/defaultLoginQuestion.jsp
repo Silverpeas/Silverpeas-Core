@@ -97,7 +97,7 @@
 
           <div class="clear"></div>
         </div>
-        <p><label><span><%=userDetail.getLoginQuestion()%></span>
+        <p><label><span><c:out value="${requestScope.userDetail.loginQuestion}"/></span>
           <input type="password" autocomplete="new-password" name="answer" id="answer"/></label></p>
 
         <div class="submit">
@@ -108,7 +108,7 @@
         </div>
       </div>
     </div>
-    <input type="hidden" name="Login" value="<%=userDetail.getLogin()%>"/>
+    <input type="hidden" name="Login" value="<c:out value="${requestScope.userDetail.login}"/>"/>
     <input type="hidden" name="DomainId" value="<%=userDetail.getDomainId()%>"/>
   </div>
 </form>
