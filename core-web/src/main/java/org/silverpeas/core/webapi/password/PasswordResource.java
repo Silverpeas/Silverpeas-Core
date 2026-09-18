@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.password;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -30,6 +35,7 @@ import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesService;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
@@ -58,8 +64,13 @@ public class PasswordResource extends AbstractPasswordResource {
    * Gets the JSON representation of password policy. If it doesn't exist, a 404 HTTP code is
    * returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
    *
-   * @return the response to the HTTP GET request with the JSON representation of the asked photo.
+   * @return the response to the HTTP GET request with the JSON representation of the password
+   * policy.
    */
+  @Operation(summary = "Gets the policy the passwords have to comply with.")
+  @ApiResponse(responseCode = "200", description = "The password policy.",
+      content = @Content(schema = @Schema(implementation = PasswordPolicyEntity.class)))
+  @NotFound
   @GET
   @Path(PasswordResourceURIs.PASSWORD_POLICY_URI_PART)
   @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -89,6 +100,11 @@ public class PasswordResource extends AbstractPasswordResource {
    *
    * @return the response to the HTTP GET request with the JSON representation of the asked photo.
    */
+  @Operation(summary = "Gets a list of errors caught by a password checking.",
+      description = "The returned list contains names of rules which are not verified.")
+  @ApiResponse(responseCode = "200", description = "The asked photo.",
+      content = @Content(schema = @Schema(implementation = PasswordCheckEntity.class)))
+  @NotFound
   @POST
   @Path(
       PasswordResourceURIs.PASSWORD_POLICY_URI_PART + "/" + PasswordResourceURIs.PASSWORD_CHECKING_URI_PART)

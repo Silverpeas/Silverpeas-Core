@@ -23,10 +23,16 @@
  */
 package org.silverpeas.core.webapi.notification;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -76,6 +82,10 @@ public class MessageResource extends AbstractMessageResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         photo.
    */
+  @Operation(summary = "Gets message container.")
+  @ApiResponse(responseCode = "200", description = "The asked photo.",
+      content = @Content(schema = @Schema(implementation = MessageContainerEntity.class)))
+  @NotFound
   @GET
   @Path("{registredKey}")
   @Produces(MediaType.APPLICATION_JSON)

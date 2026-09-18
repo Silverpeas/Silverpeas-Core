@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
@@ -32,6 +37,7 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.rs.doc.BadRequest;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -94,6 +100,18 @@ public class PdcResource extends RESTWebService {
    * @return a web entity representing the PdC ready to be used to classify a content. The entity is
    * serialized in JSON.
    */
+  @Operation(summary = "Gets the PdC configured for the Silverpeas application identified by the " +
+      "requested URI.",
+      description = "The PdC that is sent back is adapted for classifying or updating the " +
+      "classification of the resource content referred by the specified request query parameter. " +
+      "In that case, all the invariant axis of the PdC will have an invariant value set with the " +
+      "one coming from the classification of the resource. In effect, an invariant axis means " +
+      "that no other values are possible when one was already set in a position of the content " +
+      "on the axis. The PdC is sent back in JSON.")
+  @ApiResponse(responseCode = "200",
+      description = "A web entity representing the PdC ready to be used to classify a content.",
+      content = @Content(schema = @Schema(implementation = PdcEntity.class)))
+  @BadRequest
   @GET
   @Path("{componentId:[a-zA-Z]+[0-9]+}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -134,6 +152,10 @@ public class PdcResource extends RESTWebService {
    *
    * @return a web entity representing the PdC. The entity is serialized in JSON.
    */
+  @Operation(summary = "Gets the PdC.", description = "The PdC is sent back in JSON.")
+  @ApiResponse(responseCode = "200", description = "A web entity representing the PdC.",
+      content = @Content(schema = @Schema(implementation = PdcEntity.class)))
+  @BadRequest
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public PdcEntity getPdc() {

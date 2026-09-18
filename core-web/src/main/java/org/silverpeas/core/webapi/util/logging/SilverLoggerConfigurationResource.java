@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.util.logging;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.kernel.logging.LoggerConfigurationManager;
 import org.silverpeas.kernel.logging.LoggerConfigurationManager.LoggerConfiguration;
@@ -54,6 +59,9 @@ public class SilverLoggerConfigurationResource extends AbstractLoggingResource {
   @PathParam("logger")
   private String namespace;
 
+  @Operation(summary = "Changes the configuration, and hence the verbosity, of the given logger.")
+  @ApiResponse(responseCode = "200", description = "The configuration of the logger once changed.",
+      content = @Content(schema = @Schema(implementation = LoggerConfigurationEntity.class)))
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)

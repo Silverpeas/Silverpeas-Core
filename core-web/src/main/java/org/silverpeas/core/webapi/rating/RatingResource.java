@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.rating;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
@@ -82,6 +87,9 @@ public class RatingResource extends RESTWebService {
    * Gets the JSON representation of the rating associated to defined content.
    * @return the response to the HTTP GET request with the JSON representation of the rating.
    */
+  @Operation(summary = "Gets the rating associated to defined content.")
+  @ApiResponse(responseCode = "200", description = "The rating.",
+      content = @Content(schema = @Schema(implementation = RaterRatingEntity.class)))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public RaterRatingEntity getRaterRating() {
@@ -93,6 +101,9 @@ public class RatingResource extends RESTWebService {
     }
   }
 
+  @Operation(summary = "Rates the given contribution on behalf of the authenticated user.")
+  @ApiResponse(responseCode = "200", description = "The rating of the user once saved.",
+      content = @Content(schema = @Schema(implementation = RaterRatingEntity.class)))
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response saveRating(String note) {

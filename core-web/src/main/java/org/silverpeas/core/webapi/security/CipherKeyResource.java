@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.webapi.security;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.encryption.CipherKeyUpdateException;
@@ -37,7 +40,6 @@ import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -77,12 +79,6 @@ public class CipherKeyResource extends RESTWebService {
     return Administration.Constants.ADMIN_COMPONENT_ID;
   }
 
-  @GET
-  @Produces(MediaType.TEXT_PLAIN)
-  public Response getToto() {
-    return Response.ok("Toto").build();
-  }
-
   /**
    * Sets the specified cipher key to encrypt and decrypt the content in Silverpeas.
    * <p>
@@ -92,6 +88,12 @@ public class CipherKeyResource extends RESTWebService {
    * @param cipherKey the cipher key in hexadecimal.
    * @return the status of the cipher key setting.
    */
+  @Operation(summary = "Sets the specified cipher key to encrypt and decrypt the content in " +
+      "Silverpeas.",
+      description = "If a cipher key was already defined, then this new one will replace it and " +
+      "in a such case, any content that was encrypted with the previous key will be encrypted " +
+      "again but with the new key.")
+  @ApiResponse(responseCode = "200", description = "The status of the cipher key setting.")
   @PUT
   @Consumes(MediaType.TEXT_PLAIN)
   @Produces(MediaType.TEXT_PLAIN)

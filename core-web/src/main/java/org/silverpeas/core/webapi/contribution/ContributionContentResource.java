@@ -23,11 +23,17 @@
  */
 package org.silverpeas.core.webapi.contribution;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.kernel.util.StringUtil;
 
 import jakarta.ws.rs.*;
@@ -80,6 +86,10 @@ public class ContributionContentResource extends AbstractContributionResource {
    * @return the response to the HTTP GET request with the JSON representation of form
    *         informations.
    */
+  @Operation(summary = "Gets contribution template.")
+  @ApiResponse(responseCode = "200", description = "Form informations.",
+      content = @Content(schema = @Schema(implementation = FormEntity.class)))
+  @NotFound
   @GET
   @Path("form")
   @Produces(APPLICATION_JSON)
@@ -97,6 +107,10 @@ public class ContributionContentResource extends AbstractContributionResource {
    * @return the response to the HTTP GET request with the JSON representation of form
    *         informations.
    */
+  @Operation(summary = "Gets contribution template.")
+  @ApiResponse(responseCode = "200", description = "Form informations.",
+      content = @Content(schema = @Schema(implementation = FormEntity.class)))
+  @NotFound
   @GET
   @Path("form/{formId}")
   @Produces(APPLICATION_JSON)

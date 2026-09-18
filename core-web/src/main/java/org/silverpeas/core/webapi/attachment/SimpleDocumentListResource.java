@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
@@ -85,6 +91,9 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
    * @param lang the wanted language.
    * @return documents of specified resource
    */
+  @Operation(summary = "Returns documents of specified resource in the specified language")
+  @ApiResponse(responseCode = "200", description = "Documents of specified resource",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SimpleDocumentEntity.class))))
   @GET
   @Path("{lang}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -101,6 +110,9 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
    * @param lang the wanted language.
    * @return documents of specified resource
    */
+  @Operation(summary = "Returns documents of specified resource in the specified language")
+  @ApiResponse(responseCode = "200", description = "Documents of specified resource",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SimpleDocumentEntity.class))))
   @GET
   @Path("types/{type}/{lang}")
   @Produces(MediaType.APPLICATION_JSON)

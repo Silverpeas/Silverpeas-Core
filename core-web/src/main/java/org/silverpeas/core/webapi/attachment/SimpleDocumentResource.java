@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.*;
@@ -94,6 +100,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @param lang the wanted language.
    * @return the specified document in the specified lang.
    */
+  @Operation(summary = "Returns the specified document in the specified lang.")
+  @ApiResponse(responseCode = "200", description = "The specified document in the specified lang.",
+      content = @Content(schema = @Schema(implementation = SimpleDocumentEntity.class)))
   @GET
   @Path("{lang}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -107,6 +116,8 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   /**
    * Deletes the specified document.
    */
+  @Operation(summary = "Deletes the specified document.")
+  @ApiResponse(responseCode = "204", description = "The document has been deleted.")
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteDocument() {
@@ -121,6 +132,8 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    *
    * @param lang the lang of the content to be deleted.
    */
+  @Operation(summary = "Deletes the specified document.")
+  @ApiResponse(responseCode = "204", description = "The content of the document has been deleted.")
   @DELETE
   @Path("content/{lang}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -139,6 +152,11 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * identified by the <code>xRequestedWith</code> parameter).
    * @throws IOException if an error occurs while updating the document.
    */
+  @Operation(summary = "Updates the document identified by the requested URI.",
+      description = "A SimpleDocumentUploadData is extracted from request parameters.")
+  @ApiResponse(responseCode = "200",
+      description = "An HTTP response embodied an entity in a format expected by the client " +
+      "(that is identified by the xRequestedWith parameter).")
   @POST
   @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -289,6 +307,10 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    *
    * @return all the existing translation of a SimpleDocument.
    */
+  @Operation(summary = "Returns all the existing translation of a SimpleDocument.")
+  @ApiResponse(responseCode = "200",
+      description = "All the existing translation of a SimpleDocument.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SimpleDocumentEntity.class))))
   @GET
   @Path("translations")
   @Produces(MediaType.APPLICATION_JSON)
@@ -331,6 +353,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @param language the language of the document's content to get.
    * @return the content of the specified document in the specified language.
    */
+  @Operation(summary = "Returns the content of the specified document in the specified language.")
+  @ApiResponse(responseCode = "200",
+      description = "The content of the specified document in the specified language.")
   @GET
   @Path("content/{lang}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -354,6 +379,10 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise.
    */
+  @Operation(summary = "Locks the specified document for exclusive edition.")
+  @ApiResponse(responseCode = "200",
+      description = "JSON status to true if the document was locked successfully - JSON status " +
+      "to false otherwise.")
   @PUT
   @Path("lock/{lang}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -381,6 +410,10 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise.
    */
+  @Operation(summary = "Moves the specified document up in the list.")
+  @ApiResponse(responseCode = "200",
+      description = "JSON status to true if the document was locked successfully - JSON status " +
+      "to false otherwise.")
   @PUT
   @Path("moveUp")
   @Produces(MediaType.APPLICATION_JSON)
@@ -394,6 +427,10 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise.
    */
+  @Operation(summary = "Moves the specified document down in the list.")
+  @ApiResponse(responseCode = "200",
+      description = "JSON status to true if the document was locked successfully - JSON status " +
+      "to false otherwise.")
   @PUT
   @Path("moveDown")
   @Produces(MediaType.APPLICATION_JSON)
@@ -419,6 +456,10 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise.
    */
+  @Operation(summary = "Unlocks the specified document for exclusive edition.")
+  @ApiResponse(responseCode = "200",
+      description = "JSON status to true if the document was locked successfully - JSON status " +
+      "to false otherwise.")
   @POST
   @Path("unlock")
   @Produces(MediaType.APPLICATION_JSON)
@@ -454,6 +495,10 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise.
    */
+  @Operation(summary = "Changes the document version state.")
+  @ApiResponse(responseCode = "200",
+      description = "JSON status to true if the document was locked successfully - JSON status " +
+      "to false otherwise.")
   @PUT
   @Path("switchState")
   @Produces(MediaType.APPLICATION_JSON)
@@ -480,6 +525,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Forbid or allow the download of the document for readers.
    * @return JSON download state for readers. allowedDownloadForReaders = true or false.
    */
+  @Operation(summary = "Forbid or allow the download of the document for readers.")
+  @ApiResponse(responseCode = "200",
+      description = "JSON download state for readers. allowedDownloadForReaders = true or false.")
   @POST
   @Path("switchDownloadAllowedForReaders")
   @Produces(MediaType.APPLICATION_JSON)
@@ -500,6 +548,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Enable or not the display as content of an attachment.
    * @return JSON display as content state. displayableAsContent = true or false.
    */
+  @Operation(summary = "Enable or not the display as content of an attachment.")
+  @ApiResponse(responseCode = "200",
+      description = "JSON display as content state. displayableAsContent = true or false.")
   @POST
   @Path("switchDisplayAsContentEnabled")
   @Produces(MediaType.APPLICATION_JSON)
@@ -520,6 +571,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * Enable or not the simultaneous edition of an attachment.
    * @return JSON simultaneous edition state. editableSimultaneously = true or false.
    */
+  @Operation(summary = "Enable or not the simultaneous edition of an attachment.")
+  @ApiResponse(responseCode = "200",
+      description = "JSON simultaneous edition state. editableSimultaneously = true or false.")
   @POST
   @Path("switchEditSimultaneouslyEnabled")
   @Produces(MediaType.APPLICATION_JSON)
