@@ -876,20 +876,21 @@ public class ProcessInstanceImpl
       SilverLogger.getLogger(this).info("ProcessInstanceImpl.checkWysiwygData() - Field {0}",
           fieldName);
       Field updatedField = actionData.getField(fieldName);
+      if (updatedField == null) {
+        SilverLogger.getLogger(this)
+            .error("Cannot retrieve field {0} for instance id {1}", fieldName, getId());
+        continue;
+      }
       FieldTemplate tmpl = template.getFieldTemplate(fieldName);
       SilverLogger.getLogger(this).info(
           "ProcessInstanceImpl.checkWysiwygData() - FieldTemplate {0}", tmpl);
-      if ("wysiwyg".equals(tmpl.getDisplayerName()) && updatedField != null &&
-          !updatedField.isNull() &&
+      if ("wysiwyg".equals(tmpl.getDisplayerName()) && !updatedField.isNull() &&
           !updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
         PagesContext context =
             new PagesContext(DUMMY, "0", actionData.getLanguage(), false, getModelId(), DUMMY);
         context.setObjectId(getId());
         displayer.update(updatedField.getStringValue(), (TextField) updatedField, tmpl, context);
-      } else {
-        SilverLogger.getLogger(this)
-            .error("Cannot retrieve field {0} for instance id {1}", fieldName, getId());
       }
     }
   }
