@@ -26,10 +26,13 @@ package org.silverpeas.core.notification.sse;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.util.JSONCodec;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Yohann Chastagnier
@@ -86,6 +89,23 @@ class ServerEventWithWebSocketContextDispatcherTaskTest extends AbstractServerEv
       String eventStream = getSentServerMessage(mockedWebSocketContext);
       assertThat(eventStream, is("{\"name\":\"\",\"id\":0,\"data\":\"\"}"));
     });
+  }
+
+  @Test
+  void heartbeatShouldSendAPingToKeepTheWebSocketAlive() throws IOException {
+    final SilverpeasWebSocketContext4Test mockedWebSocketContext = newMockedWebSocketContext(SESSION_ID);
+    mockedWebSocketContext.sendHeartbeatIfEnabled();
+    verify(mockedWebSocketContext.getAsyncRemoteMock()).sendPing(any(ByteBuffer.class));
+    verifyNotSent(mockedWebSocketContext);
+  }
+
+  @Test
+  void heartbeatShouldSendNothingWhenWebSocketIsClosed() throws IOException {
+    final SilverpeasWebSocketContext4Test mockedWebSocketContext = newMockedWebSocketContext(SESSION_ID);
+    mockedWebSocketContext.markSendIsNotPossible();
+    mockedWebSocketContext.sendHeartbeatIfEnabled();
+    verify(mockedWebSocketContext.getAsyncRemoteMock(), never()).sendPing(any(ByteBuffer.class));
+    verifyNotSent(mockedWebSocketContext);
   }
 
   @Test

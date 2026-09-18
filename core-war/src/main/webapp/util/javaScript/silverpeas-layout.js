@@ -894,7 +894,6 @@
     }
     const __initContextError = function() {
       return {
-        lastEventId : -1,
         nbRetry : 0,
         nbRetryThreshold : 20,
         retryTimeout : 5000,
@@ -905,6 +904,10 @@
     const __context = {
       sse : undefined,
       listeners : {},
+      // the identifier of the last event received, kept out of the error context as it MUST
+      // survive to the reinitialization of this latter performed on each successful (re)connection.
+      // Otherwise the events emitted during a disconnection would never be sent again.
+      lastEventId : -1,
       error : __initContextError()
     };
     applyEventDispatchingBehaviorOn(this, {
@@ -949,8 +952,8 @@
       };
       this.connect = function(token) {
         let wsUrl = __protocole + "://" + location.host + webContext + "/ws/" + token + sseUri;
-        if (__context.error.lastEventId >= 0) {
-          wsUrl += '?Last-Event-ID=' + __context.error.lastEventId;
+        if (__context.lastEventId >= 0) {
+          wsUrl += '?Last-Event-ID=' + __context.lastEventId;
         }
         __socket = new WebSocket(wsUrl);
         __socket.addEventListener('error', function(e) {
@@ -972,7 +975,7 @@
         __socket.addEventListener('message', function(event) {
           sp.log.debug('SSE WebSocket, receiving message', event.data);
           const message = JSON.parse(event.data);
-          __context.error.lastEventId = message.id;
+          __context.lastEventId = message.id;
           __performListeners(message.name, {data : message.data});
         }, false);
       };

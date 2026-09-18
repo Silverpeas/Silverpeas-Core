@@ -258,12 +258,13 @@ abstract class AbstractServerEventDispatcherTaskTest {
     private final AtomicInteger nbIsPossibleCalls = new AtomicInteger(0);
     private final AtomicInteger nbGetAsyncRemoteCalls = new AtomicInteger(0);
     private final PrintWriter4Test messages = new PrintWriter4Test();
+    private final RemoteEndpoint.Async asyncRemoteMock;
     private boolean isSendPossible = true;
 
     SilverpeasWebSocketContext4Test(final Session wrappedInstance,
         final String sessionId, final User user) {
       super(SilverpeasServerEventContextManager.get(), wrappedInstance, sessionId, user);
-      final RemoteEndpoint.Async asyncRemoteMock = mock(RemoteEndpoint.Async.class);
+      asyncRemoteMock = mock(RemoteEndpoint.Async.class);
       when(wrappedInstance.getAsyncRemote()).thenReturn(asyncRemoteMock);
       when(asyncRemoteMock.sendObject(anyString())).then(i -> {
         nbGetAsyncRemoteCalls.incrementAndGet();
@@ -300,6 +301,10 @@ abstract class AbstractServerEventDispatcherTaskTest {
 
     public int getNbGetAsyncRemoteCalls() {
       return nbGetAsyncRemoteCalls.get();
+    }
+
+    public RemoteEndpoint.Async getAsyncRemoteMock() {
+      return asyncRemoteMock;
     }
 
     public PrintWriter4Test getMessages() {

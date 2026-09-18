@@ -120,7 +120,8 @@ public interface SilverpeasServerEventContext {
    * behavior.
    * <p>
    *   This is useful for old WEB browser implementations which do not implement entirely server
-   *   event API.
+   *   event API. This is required as well by the contexts over a communication which is closed on
+   *   inactivity, in order to keep it alive.
    * </p>
    * <p>
    *   By default, noting is performed.

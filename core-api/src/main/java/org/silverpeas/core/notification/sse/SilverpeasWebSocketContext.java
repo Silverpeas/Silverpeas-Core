@@ -27,7 +27,9 @@ import org.silverpeas.core.admin.user.model.User;
 
 import jakarta.websocket.Session;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
+import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unregisterContext;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
 
 /**
@@ -39,6 +41,12 @@ import static org.silverpeas.core.util.JSONCodec.encodeObject;
  * @author silveryocha
  */
 public class SilverpeasWebSocketContext extends AbstractServerEventContext<Session> {
+
+  /**
+   * The application data of the ping frames sent to keep the WebSocket connection alive. No data
+   * is required for such a purpose.
+   */
+  private static final byte[] PING_DATA = new byte[0];
 
   private final String requestURI;
   private boolean closed = false;
@@ -95,6 +103,32 @@ public class SilverpeasWebSocketContext extends AbstractServerEventContext<Sessi
       }
     });
     getManager().unregister(this);
+  }
+
+  /**
+   * Sends a ping frame to the client in order to keep the WebSocket connection alive.
+   * <p>
+   *   Contrary to the SSE communication over HTTP, a client never sends anything over such a
+   *   WebSocket. Without any inbound traffic, the connection is then closed as soon as a read
+   *   inactivity timeout is reached, be it the one of the WEB server (the {@code read-timeout} of
+   *   the listener for Undertow) or the one of any network device standing between the client and
+   *   the server. As a client answers a ping frame by a pong one, sending regularly such a ping
+   *   both refreshes these timeouts and detects the connections which are actually broken.
+   * </p>
+   */
+  @Override
+  public void sendHeartbeatIfEnabled() {
+    if (isSendPossible()) {
+      safeWrite(() -> {
+        try {
+          SseLogger.get().debug("send ping to {0}", this);
+          getWrappedInstance().getAsyncRemote().sendPing(ByteBuffer.wrap(PING_DATA));
+        } catch (Exception e) {
+          SseLogger.get().error(e);
+          unregisterContext(this);
+        }
+      });
+    }
   }
 
   @Override
