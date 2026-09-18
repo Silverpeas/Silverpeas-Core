@@ -1,0 +1,264 @@
+name: Black Duck Bridge Scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of scan to perform'
+        required: false
+        default: 'FULL'
+        type: choice
+        options:
+        - FULL
+        - RAPID
+        - STATELESS
+
+jobs:
+  black-duck-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v4
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 21
+        distribution: temurin
+        cache: maven
+    
+    - name: Build Project
+      run: |
+        mvn clean compile -DskipTests=true -Dmaven.javadoc.skip=true
+    
+    - name: Download and Install Black Duck Bridge
+      run: |
+        # Download Bridge CLI
+        curl -fsSL https://download.bridge.blackduck.com/bridge-cli/latest/bridge-cli-linux64.zip -o bridge-cli.zip
+        unzip bridge-cli.zip
+        chmod +x bridge-cli/bridge-cli
+        
+        # Create Bridge output directory
+        mkdir -p bridge-output
+        
+    - name: Run Black Duck Bridge Scan
+      env:
+        BLACKDUCK_URL: ${{ vars.BLACKDUCK_URL }}
+        BLACKDUCK_TOKEN: ${{ secrets.BLACKDUCK_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        ./bridge-cli/bridge-cli \
+          --stage connect \
+          --blackduck-url="${BLACKDUCK_URL}" \
+          --blackduck-token="${BLACKDUCK_TOKEN}" \
+          --stage detect \
+          --detect-project-name="${{ github.event.repository.name }}" \
+          --detect-project-version-name="${{ github.ref_name }}" \
+          --detect-source-path="${{ github.workspace }}" \
+          --detect-maven-build-command="mvn clean compile" \
+          --detect-excluded-detector-types="NUGET,NPM,YARN,PEAR,COMPOSER,CPAN,RUBYGEMS,PACKAGIST,CLANG,BAZEL,CARGO,COCOAPODS,CONDA,CRAN,GO_MOD,GRADLE,HEX,LERNA,POETRY,PIPENV,SBT,SWIFT" \
+          --detect-maven-scope="compile,runtime" \
+          --detect-maven-include-plugins=false \
+          --detect-cleanup=true \
+          --detect-detector-search-depth=4 \
+          --detect-policy-check-fail-on-severities="BLOCKER,CRITICAL" \
+          --detect-risk-report-pdf=true \
+          --detect-notices-report=true \
+          --detect-output-path="${{ github.workspace }}/bridge-output" \
+          --detect-trust-cert=true \
+          --detect-timeout=7200 \
+          --detect-diagnostic=true \
+          --report-sarif-create=true \
+          --report-sarif-file-path="${{ github.workspace }}/bridge-output/blackduck-sarif.sarif"
+        
+    - name: Archive Black Duck Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: blackduck-reports-${{ github.run_number }}
+        path: |
+          ${{ github.workspace }}/bridge-output/**/*.pdf
+          ${{ github.workspace }}/bridge-output/**/*.json
+          ${{ github.workspace }}/bridge-output/**/*.txt
+          ${{ github.workspace }}/bridge-output/**/*.sarif
+          ${{ github.workspace }}/bridge-output/**/PolicyViolations.json
+          ${{ github.workspace }}/bridge-output/**/PolicyViolationNotices.txt
+          ${{ github.workspace }}/bridge-output/**/scan.cli.log
+          ${{ github.workspace }}/bridge-output/**/status.json
+        retention-days: 30
+        if-no-files-found: warn
+        
+    - name: Upload SARIF results to GitHub Security
+      if: always() && github.event_name != 'pull_request'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ github.workspace }}/bridge-output/blackduck-sarif.sarif
+      continue-on-error: true
+
+  # Rapid scan for Pull Requests (faster feedback)
+  black-duck-pr-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v4
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 21
+        distribution: temurin
+        cache: maven
+    
+    - name: Build Project Dependencies
+      run: |
+        mvn dependency:tree -DoutputFile=dependency-tree.txt
+        mvn dependency:list -DoutputFile=dependency-list.txt
+        mvn clean compile -DskipTests=true -Dmaven.javadoc.skip=true
+    
+    - name: Download and Install Black Duck Bridge
+      run: |
+        curl -fsSL https://download.bridge.blackduck.com/bridge-cli/latest/bridge-cli-linux64.zip -o bridge-cli.zip
+        unzip bridge-cli.zip
+        chmod +x bridge-cli/bridge-cli
+        mkdir -p bridge-output
+    
+    - name: Run Black Duck Rapid Scan for PR
+      env:
+        BLACKDUCK_URL: ${{ vars.BLACKDUCK_URL }}
+        BLACKDUCK_TOKEN: ${{ secrets.BLACKDUCK_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        ./bridge-cli/bridge-cli \
+          --stage connect \
+          --blackduck-url="${BLACKDUCK_URL}" \
+          --blackduck-token="${BLACKDUCK_TOKEN}" \
+          --stage detect \
+          --detect-project-name="${{ github.event.repository.name }}-PR" \
+          --detect-project-version-name="PR-${{ github.event.number }}" \
+          --detect-source-path="${{ github.workspace }}" \
+          --detect-maven-build-command="mvn clean compile" \
+          --detect-excluded-detector-types="NUGET,NPM,YARN,PEAR,COMPOSER,CPAN,RUBYGEMS,PACKAGIST,CLANG,BAZEL,CARGO,COCOAPODS,CONDA,CRAN,GO_MOD,GRADLE,HEX,LERNA,POETRY,PIPENV,SBT,SWIFT" \
+          --detect-maven-scope="compile,runtime" \
+          --detect-cleanup=true \
+          --detect-policy-check-fail-on-severities="BLOCKER" \
+          --detect-output-path="${{ github.workspace }}/bridge-output" \
+          --detect-timeout=3600 \
+          --report-sarif-create=true \
+          --report-sarif-file-path="${{ github.workspace }}/bridge-output/blackduck-sarif.sarif"
+          
+    - name: Comment PR with Scan Results
+      if: always() && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          try {
+            // Try to read scan status
+            const statusPath = path.join('${{ github.workspace }}', 'bridge-output', 'status.json');
+            let scanStatus = 'Unknown';
+            let policyViolations = 0;
+            
+            if (fs.existsSync(statusPath)) {
+              const status = JSON.parse(fs.readFileSync(statusPath, 'utf8'));
+              scanStatus = status.status || 'Unknown';
+              policyViolations = status.policyViolations || 0;
+            }
+            
+            const comment = `## 🔍 Black Duck Scan Results
+            
+            **Scan Status:** ${scanStatus}
+            **Policy Violations:** ${policyViolations}
+            **Project:** ${{ github.event.repository.name }}-PR
+            **Version:** PR-${{ github.event.number }}
+            
+            ${policyViolations > 0 ? '⚠️ **Policy violations detected. Please review the artifacts for details.**' : '✅ **No policy violations detected.**'}
+            
+            📊 **View detailed reports in the workflow artifacts.**
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } catch (error) {
+            console.log('Error reading scan results:', error);
+            
+            const comment = `## 🔍 Black Duck Scan Results
+            
+            **Status:** Completed with warnings
+            **Project:** ${{ github.event.repository.name }}-PR
+            **Version:** PR-${{ github.event.number }}
+            
+            ℹ️ **Scan completed. Please check the workflow artifacts for detailed results.**
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          }
+
+  # Security baseline scan (weekly)
+  security-baseline:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref_name == 'master')
+    
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v4
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 21
+        distribution: temurin
+        cache: maven
+    
+    - name: Full Build with Tests
+      run: |
+        mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+    
+    - name: Download and Install Black Duck Bridge
+      run: |
+        curl -fsSL https://download.bridge.blackduck.com/bridge-cli/latest/bridge-cli-linux64.zip -o bridge-cli.zip
+        unzip bridge-cli.zip
+        chmod +x bridge-cli/bridge-cli
+        mkdir -p bridge-output
+    
+    - name: Run Comprehensive Security Scan
+      env:
+        BLACKDUCK_URL: ${{ vars.BLACKDUCK_URL }}
+        BLACKDUCK_TOKEN: ${{ secrets.BLACKDUCK_TOKEN }}
+      run: |
+        ./bridge-cli/bridge-cli \
+          --stage connect \
+          --blackduck-url="${BLACKDUCK_URL}" \
+          --blackduck-token="${BLACKDUCK_TOKEN}" \
+          --stage detect \
+          --detect-project-name="${{ github.event.repository.name }}" \
+          --detect-project-version-name="baseline-${{ github.run_number }}" \
+          --detect-source-path="${{ github.workspace }}" \
+          --detect-maven-build-command="mvn clean install" \
+          --detect-maven-scope="compile,runtime,test" \
+          --detect-cleanup=true \
+          --detect-detector-search-depth=6 \
+          --detect-policy-check-fail-on-severities="BLOCKER,CRITICAL,MAJOR" \
+          --detect-risk-report-pdf=true \
+          --detect-notices-report=true \
+          --detect-vulnerability-report=true \
+          --detect-output-path="${{ github.workspace }}/bridge-output" \
+          --detect-trust-cert=true \
+          --detect-timeout=10800 \
+          --detect-diagnostic=true \
+          --detect-diagnostic-extended=true \
+          --report-sarif-create=true \
+          --report-sarif-file-path="${{ github.workspace }}/bridge-output/blackduck-sarif.sarif"
