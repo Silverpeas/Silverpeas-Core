@@ -105,6 +105,17 @@ public class DBUtilIT {
     assertThat(actualMaxIdInUniqueIdFor("Users"), is(nextId));
   }
 
+  /**
+   * The computation of a next identifier value is performed within the transaction of the caller:
+   * asking for such a value means a resource is being created and hence the computation is part of
+   * this creation. Both have to succeed or to fail together. Don't restore here the previous
+   * expectation, in which the identifier was consumed whatever the fate of the caller's
+   * transaction: it required the computation to be performed in its own transaction, and such a
+   * nested transaction cannot be isolated from its parent one with a non-XA datasource. The
+   * identifier value was then locked by the transaction of the caller until its completion whereas
+   * a subsequent computation, getting another connection from the pool, was waiting for that very
+   * lock: a deadlock invisible to both the JVM and the DBMS.
+   */
   @Test
   public void nextUniqueIdNotUpdatedIfRollbackIsPerformed() throws SQLException {
     final String select = "SELECT firstName FROM Users WHERE id = 1";
