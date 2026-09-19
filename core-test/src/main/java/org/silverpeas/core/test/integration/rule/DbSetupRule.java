@@ -75,6 +75,22 @@ public class DbSetupRule implements TestRule {
 
   private static final String INITIAL_TABLES = "/dbsetup_default_tables.sql";
 
+  private static final String QUARTZ_TABLE_PREFIX = "QRTZ_";
+
+  /**
+   * The tables of the persistent scheduler (Quartz) to empty between two tests, ordered so that
+   * their emptying doesn't violate any of their foreign keys. They cannot be dropped as they are
+   * created only once for all the tests; nevertheless their content has to be cleared, otherwise
+   * the jobs and the triggers left by a test would be fired in the next one whereas the business
+   * data they refer to have been in the meantime wiped out by this rule. QRTZ_LOCKS isn't listed
+   * here: it is the row-based semaphore of the scheduler and Quartz manages by itself the rows it
+   * requires.
+   */
+  private static final String[] QUARTZ_TABLES =
+      {"QRTZ_FIRED_TRIGGERS", "QRTZ_SIMPLE_TRIGGERS", "QRTZ_SIMPROP_TRIGGERS", "QRTZ_CRON_TRIGGERS",
+          "QRTZ_BLOB_TRIGGERS", "QRTZ_TRIGGERS", "QRTZ_JOB_DETAILS", "QRTZ_CALENDARS",
+          "QRTZ_PAUSED_TRIGGER_GRPS", "QRTZ_SCHEDULER_STATE"};
+
   private final List<Connection> safeConnectionPool = new ArrayList<>();
 
   private final String[] sqlTableScripts;
@@ -238,15 +254,19 @@ public class DbSetupRule implements TestRule {
       try (Connection connection = getSafeConnection();
            PreparedStatement statement = connection.prepareStatement("SHOW TABLES");
            ResultSet rs = statement.executeQuery()) {
+        List<String> tableNames = new ArrayList<>();
         while (rs.next()) {
-          String tableName = rs.getString(1);
-          if (!tableName.startsWith("QRTZ_")) {
+          tableNames.add(rs.getString(1));
+        }
+        for (String tableName : tableNames) {
+          if (!tableName.toUpperCase().startsWith(QUARTZ_TABLE_PREFIX)) {
             try (PreparedStatement dropStatement = connection.prepareStatement(
                 "DROP  TABLE " + tableName + " CASCADE;")) {
               dropStatement.execute();
             }
           }
         }
+        emptyQuartzTables(connection, tableNames);
         Logger.getLogger(this.getClass().getName())
             .info("Database structure dropped successfully" + ".");
       } catch (Exception e) {
@@ -254,6 +274,25 @@ public class DbSetupRule implements TestRule {
       }
     } finally {
       closeConnectionsQuietly(description);
+    }
+  }
+
+  /**
+   * Empties the tables of the persistent scheduler so that no jobs nor triggers scheduled by a
+   * test can be fired in the next one.
+   * @param connection the connection to the database.
+   * @param existingTables the tables actually existing in the database.
+   * @throws SQLException if the emptying of one of the tables fails.
+   */
+  private void emptyQuartzTables(final Connection connection, final List<String> existingTables)
+      throws SQLException {
+    for (String tableName : QUARTZ_TABLES) {
+      if (existingTables.stream().anyMatch(t -> t.equalsIgnoreCase(tableName))) {
+        try (PreparedStatement deleteStatement = connection.prepareStatement(
+            "DELETE FROM " + tableName)) {
+          deleteStatement.execute();
+        }
+      }
     }
   }
 

@@ -61,6 +61,14 @@ public class ReminderProcess implements SchedulerEventListener {
   public void triggerFired(final SchedulerEvent anEvent) {
     final String reminderId = anEvent.getJobExecutionContext().getJobName();
     final Reminder reminder = repository.getById(reminderId);
+    if (reminder == null) {
+      // the reminder has been removed from the persistence context without its trigger having been
+      // unscheduled. As such a trigger is a one-shot one, it is dropped by the scheduler once
+      // fired, so there is nothing more to do than tracing the anomaly.
+      SilverLogger.getLogger(this)
+          .warn("The reminder {0} doesn''t exist anymore: nothing is done", reminderId);
+      return;
+    }
     reminder.triggered();
     notifyUserAbout(reminder);
     if (reminder.isSchedulable()) {
