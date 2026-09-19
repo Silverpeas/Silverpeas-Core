@@ -229,7 +229,16 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
     try {
       JobKey jobKey = JobKey.jobKey(jobName);
       if (this.quartz.checkExists(jobKey)) {
-        execute(() -> this.quartz.deleteJob(jobKey));
+        execute(() -> {
+          // the triggers are unscheduled one by one before deleting the job instead of relying
+          // only on Scheduler#deleteJob(JobKey): this last one fails when one of the triggers of
+          // the job is concurrently removed by Quartz itself, what occurs just after a job having
+          // no more firing time has been executed.
+          for (Trigger trigger : this.quartz.getTriggersOfJob(jobKey)) {
+            this.quartz.unscheduleJob(trigger.getKey());
+          }
+          return this.quartz.deleteJob(jobKey);
+        });
       }
     } catch (org.quartz.SchedulerException ex) {
       SilverLogger.getLogger(this).error("The unscheduling of the job ''{0}'' failed!",
