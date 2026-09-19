@@ -328,7 +328,10 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
     this.triggerDateTime = triggeringDateTime.toInstant();
     Scheduler scheduler = getScheduler();
     return Transaction.performInOne(() -> {
-      if (isPersisted() && isScheduledWith(scheduler)) {
+      if (isPersisted()) {
+        // whether this reminder is still scheduled or is being triggered, any previous job has to
+        // be removed from the scheduler before scheduling the new triggering rule; unscheduling a
+        // job that isn't scheduled does nothing.
         scheduler.unscheduleJob(getJobName());
       }
       ReminderRepository repository = ReminderRepository.get();

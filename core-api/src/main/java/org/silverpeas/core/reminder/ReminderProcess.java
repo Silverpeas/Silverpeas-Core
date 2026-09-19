@@ -72,7 +72,8 @@ public class ReminderProcess implements SchedulerEventListener {
     reminder.triggered();
     notifyUserAbout(reminder);
     if (reminder.isSchedulable()) {
-      Transaction.performInOne(() -> repository.save(reminder));
+      // the rescheduling persists the reminder as well, so that its triggering state and its next
+      // triggering rule become visible at once.
       reminder.schedule();
     } else if (reminder.isSystemUser()) {
       Transaction.performInOne(() -> {

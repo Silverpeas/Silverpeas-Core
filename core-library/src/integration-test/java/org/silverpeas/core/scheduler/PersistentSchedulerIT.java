@@ -95,10 +95,7 @@ public class PersistentSchedulerIT {
 
   @After
   public void tearDown() throws SchedulerException {
-    if (scheduler.isJobScheduled(JOB_NAME)) {
-      scheduler.unscheduleJob(JOB_NAME);
-    }
-
+    scheduler.unscheduleJob(JOB_NAME);
   }
 
   /**

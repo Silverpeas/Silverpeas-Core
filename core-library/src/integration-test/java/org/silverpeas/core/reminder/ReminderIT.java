@@ -66,7 +66,6 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * Integration tests on the reminders
@@ -364,7 +363,6 @@ public class ReminderIT {
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
 
-    waitForSchedulerStateUpdate();
     assertThat(reminder.isScheduled(), is(false));
 
     final DateTimeReminder afterTriggered = (DateTimeReminder) Reminder.getById(reminder.getId());
@@ -392,7 +390,6 @@ public class ReminderIT {
 
     await().pollInterval(5, SECONDS).timeout(1, MINUTES).until(isDeleted(reminder));
 
-    waitForSchedulerStateUpdate();
     assertThat(beforeTriggered.isScheduled(), is(false));
   }
 
@@ -410,7 +407,6 @@ public class ReminderIT {
     await().pollInterval(5, SECONDS).timeout(1, MINUTES).until(isTriggered(reminder));
 
     reminder = Reminder.getById(reminder.getId());
-    await().pollInterval(1, SECONDS).timeout(5, SECONDS).until(isNotScheduled(reminder));
     assertThat(reminder.isScheduled(), is(false));
     assertThat(reminder.isSchedulable(), is(false));
   }
@@ -503,14 +499,6 @@ public class ReminderIT {
 
   private Callable<Boolean> isTriggered(final Reminder reminder) {
     return () -> Reminder.getById(reminder.getId()).isTriggered();
-  }
-
-  private Callable<Boolean> isNotScheduled(final Reminder reminder) {
-    return () -> !Reminder.getById(reminder.getId()).isScheduled();
-  }
-
-  private void waitForSchedulerStateUpdate() {
-    awaitUntil(1, SECONDS);
   }
 
   /**

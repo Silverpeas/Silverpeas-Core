@@ -76,12 +76,6 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   static final String JOB_LISTENER = "listener";
 
   /**
-   * The key in the job data map that refers the scheduling status of the job. This status is
-   * explicitly set when the job is just scheduled and it is unset once its execution is triggered.
-   */
-  static final String JOB_SCHEDULED = "scheduled";
-
-  /**
    * The Quartz scheduler (the backend).
    */
   private org.quartz.Scheduler quartz;
@@ -207,7 +201,6 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
       if (isInPast(quartzTrigger)) {
         fireNow(quartzTrigger.getFinalFireTime(), theJob, listener);
       } else {
-        jobDetail.getJobDataMap().put(JOB_SCHEDULED, true);
         execute(() -> this.quartz.scheduleJob(jobDetail, quartzTrigger));
       }
       return new QuartzScheduledJob(quartzTrigger);
@@ -249,29 +242,27 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
 
   @Override
   public boolean isJobScheduled(String jobName) {
-    checkJobName(jobName);
-    try {
-      JobKey jobKey = JobKey.jobKey(jobName);
-      if (!this.quartz.checkExists(jobKey)) {
-        return false;
-      }
-      JobDetail jobDetail = this.quartz.getJobDetail(jobKey);
-      boolean isScheduled = false;
-      if (jobDetail != null) {
-        isScheduled = jobDetail.getJobDataMap().getBoolean(JOB_SCHEDULED);
-      }
-      return isScheduled;
-    } catch (org.quartz.SchedulerException e) {
-      SilverLogger.getLogger(this).warn(e);
-      return false;
-    }
+    return getPendingTrigger(jobName).isPresent();
   }
 
   public Optional<ScheduledJob> getScheduledJob(final String jobName) {
+    return getPendingTrigger(jobName).map(QuartzScheduledJob::new);
+  }
+
+  /**
+   * Gets the trigger under which a job is scheduled in Quartz with the specified name, and only if
+   * that trigger has still to be fired. Indeed, a job remains in the Quartz job store until its
+   * trigger has no more firing time; the job isn't therefore scheduled anymore as soon as its
+   * trigger won't fire again, whatever the delay taken by Quartz to actually get rid of them.
+   * @param jobName the name under which the job was scheduled.
+   * @return optionally the Quartz trigger of the job, or nothing if no job is scheduled under the
+   * specified name or if its trigger has already been fired for the last time.
+   */
+  private Optional<Trigger> getPendingTrigger(final String jobName) {
     checkJobName(jobName);
     try {
       Trigger trigger = this.quartz.getTrigger(TriggerKey.triggerKey(jobName));
-      return Optional.of(new QuartzScheduledJob(trigger));
+      return Optional.ofNullable(trigger).filter(t -> t.getNextFireTime() != null);
     } catch (org.quartz.SchedulerException e) {
       SilverLogger.getLogger(this).warn(e);
       return Optional.empty();
