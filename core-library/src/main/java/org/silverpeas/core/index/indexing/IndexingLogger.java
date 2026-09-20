@@ -42,6 +42,9 @@ public class IndexingLogger implements Initialization {
   }
 
   public static SilverLogger indexingLogger() {
+    // the logger is also set up here as the initialization of this bean isn't performed in all the
+    // applications using the indexing engine.
+    initLogger();
     return silverLogger;
   }
 

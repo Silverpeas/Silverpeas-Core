@@ -272,7 +272,9 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   @Override
   public void shutdown() throws SchedulerException {
     try {
-      if (!this.quartz.isShutdown()) {
+      // the backend is set up only at the explicit initialization of this scheduler; it is then
+      // null for an application that never asked for any scheduling.
+      if (this.quartz != null && !this.quartz.isShutdown()) {
         this.quartz.shutdown(true);
       }
     } catch (org.quartz.SchedulerException ex) {
