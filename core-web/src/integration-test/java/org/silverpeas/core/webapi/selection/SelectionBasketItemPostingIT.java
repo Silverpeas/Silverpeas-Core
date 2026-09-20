@@ -45,10 +45,10 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import java.time.Month;
 import java.time.YearMonth;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Comparator.comparing;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -246,14 +246,13 @@ public class SelectionBasketItemPostingIT extends ResourceCreationTest {
   }
 
   private PublicationDetail getPublication(int index) {
-    Collection<PublicationDetail> publications = service.getAllPublications("toto2");
+    List<PublicationDetail> publications = new ArrayList<>(service.getAllPublications("toto2"));
     assertThat(publications.size(), greaterThanOrEqualTo(index + 1));
 
-    Iterator<PublicationDetail> iterator = publications.iterator();
-    for (int i = 0; i < index; i++) {
-      iterator.next();
-    }
-    return iterator.next();
+    // the publications aren't sorted by the service, so sort them by their identifier in order a
+    // given index refers always the same publication whatever the order in which they are returned.
+    publications.sort(comparing(p -> p.getPK().getId()));
+    return publications.get(index);
   }
 
   @Override
