@@ -70,32 +70,6 @@
 
 }
 
-
-/*
-    The following style rule trigger the "hasLayout" property in
-    IE (http://msdn2.microsoft.com/en-us/library/ms533776.aspx) for a
-    MenuBar instance's <ul> element, allowing both to clear their floated
-    child <li> elements.
-*/
-
-.yuimenubar ul {
-
-    *zoom: 1;
-
-}
-
-
-/*
-    Remove the "hasLayout" trigger for submenus of MenuBar instances as it
-    is unnecessary.
-*/
-
-.yuimenubar .yuimenu ul {
-
-    *zoom: normal;
-
-}
-
 /*
     The following style rule allows a MenuBar instance's <ul> element to clear
     its floated <li> elements in Firefox, Safari and and Opera.
@@ -377,24 +351,12 @@ when one of its submenus is visible.
 
 /* MenuItem and MenuBarItem styles */
 
-.yuimenuitem {
-
-    /*
-        For IE: Used to collapse superfluous white space between <li> elements
-        that is triggered by the "display" property of the <a> elements being
-        set to "block."
-    */
-
-    *border-bottom: solid 1px #f6f7ee;
-
-}
-
 .yuimenuitemlabel,
 .yuimenuitemlabel:visited,
 .yuimenubaritemlabel,
 .yuimenubaritemlabel:visited {
 
-    font-size: 11px;
+    font-size: 1em;
     color: #000;
     text-decoration: none;
 
@@ -442,7 +404,6 @@ when one of its submenus is visible.
 .yuimenuitemlabel .helptext {
 
     margin-top: -1.1em;
-    *margin-top: -1.2em;  /* For IE*/
 
 }
 
