@@ -34,7 +34,7 @@ body {
  /* J'ai mis plus toute les NEWSMODIF */
  /*.txtlibform, .txtsublibform { enlever toutes les petites modif de font size*/
 
-  --font-size:12px;
+  --sp-font-size:12px;
 
   --color-flashy-principale:#7eb73b;
   --color-text-sur-flashy-principale:#FFF;
@@ -191,7 +191,7 @@ body {
 
 
   font-family: "Verdana", "Arial", sans-serif;
-  font-size: var(--font-size);
+  font-size: var(--sp-font-size);
   margin: 0px;
   color:var(--color-text);
 }
@@ -365,6 +365,10 @@ Definition des class de style Silverpeas
   clear:right;
   float:right;
   margin-top:1em;
+}
+
+.hautFrame:has(#backToSearch) .rightContent {
+  margin-top:calc(2em + var(--sp-font-size) );
 }
 
 .principal-content-title {
