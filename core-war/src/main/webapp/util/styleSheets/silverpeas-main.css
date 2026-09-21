@@ -1382,6 +1382,10 @@ Style Utilise par le ViewGenerator
   padding: 1em 0;
 }
 
+.hautFrame > table {
+  width: 100%;
+}
+
 /* Objet board */
 .tableBoard {
   border: 1px solid #CCC;
