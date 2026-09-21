@@ -5,6 +5,19 @@
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.security.authentication.twofactor.model;
 
@@ -26,15 +39,15 @@ public final class TwoFactorAuthentication implements Serializable {
     }
 
     private final int userId;
-    private final String encryptedSecret;
+    private final String secret;
     private final Status status;
     private final Instant createdAt;
     private final Instant updatedAt;
     private final Instant lastUsedAt;
 
-    private TwoFactorAuthentication(Builder builder) {
+    private TwoFactorAuthentication(final Builder builder) {
         this.userId = builder.userId;
-        this.encryptedSecret = builder.encryptedSecret;
+        this.secret = builder.secret;
         this.status = builder.status;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
@@ -45,8 +58,16 @@ public final class TwoFactorAuthentication implements Serializable {
         return userId;
     }
 
-    public String getEncryptedSecret() {
-        return encryptedSecret;
+    /**
+     * Gets the TOTP secret.
+     *
+     * <p>The repository is responsible for encrypting this value before
+     * persisting it.</p>
+     *
+     * @return the TOTP secret.
+     */
+    public String getSecret() {
+        return secret;
     }
 
     public Status getStatus() {
@@ -79,28 +100,28 @@ public final class TwoFactorAuthentication implements Serializable {
 
     public Builder toBuilder() {
         return builder(userId)
-                .secret(encryptedSecret)
+                .secret(secret)
                 .status(status)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .lastUsedAt(lastUsedAt);
     }
 
-    public static Builder builder(int userId) {
+    public static Builder builder(final int userId) {
         return new Builder(userId);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (!(o instanceof TwoFactorAuthentication)) {
             return false;
         }
-        TwoFactorAuthentication that = (TwoFactorAuthentication) o;
+        final TwoFactorAuthentication that = (TwoFactorAuthentication) o;
         return userId == that.userId
-                && Objects.equals(encryptedSecret, that.encryptedSecret)
+                && Objects.equals(secret, that.secret)
                 && status == that.status
                 && Objects.equals(createdAt, that.createdAt)
                 && Objects.equals(updatedAt, that.updatedAt)
@@ -109,8 +130,7 @@ public final class TwoFactorAuthentication implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, encryptedSecret, status,
-                createdAt, updatedAt, lastUsedAt);
+        return Objects.hash(userId, secret, status, createdAt, updatedAt, lastUsedAt);
     }
 
     @Override
@@ -127,37 +147,37 @@ public final class TwoFactorAuthentication implements Serializable {
     public static final class Builder {
 
         private final int userId;
-        private String encryptedSecret;
+        private String secret;
         private Status status = Status.DISABLED;
         private Instant createdAt;
         private Instant updatedAt;
         private Instant lastUsedAt;
 
-        private Builder(int userId) {
+        private Builder(final int userId) {
             this.userId = userId;
         }
 
-        public Builder secret(String encryptedSecret) {
-            this.encryptedSecret = encryptedSecret;
+        public Builder secret(final String secret) {
+            this.secret = secret;
             return this;
         }
 
-        public Builder status(Status status) {
+        public Builder status(final Status status) {
             this.status = status;
             return this;
         }
 
-        public Builder createdAt(Instant createdAt) {
+        public Builder createdAt(final Instant createdAt) {
             this.createdAt = createdAt;
             return this;
         }
 
-        public Builder updatedAt(Instant updatedAt) {
+        public Builder updatedAt(final Instant updatedAt) {
             this.updatedAt = updatedAt;
             return this;
         }
 
-        public Builder lastUsedAt(Instant lastUsedAt) {
+        public Builder lastUsedAt(final Instant lastUsedAt) {
             this.lastUsedAt = lastUsedAt;
             return this;
         }
