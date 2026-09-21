@@ -9,9 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * FLOSS exception.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,8 +35,6 @@ import java.util.Optional;
 
 /**
  * JDBC repository of native two-factor authentication configurations.
- *
- * @author Silverpeas
  */
 @Repository
 public class TwoFactorAuthenticationRepositoryImpl
@@ -55,7 +51,8 @@ public class TwoFactorAuthenticationRepositoryImpl
 
     @Override
     public Optional<TwoFactorAuthentication> get(
-            final Connection connection, final int userId) throws SQLException {
+            final Connection connection,
+            final int userId) throws SQLException {
 
         final TwoFactorAuthentication authentication = JdbcSqlQuery
                 .select(
@@ -68,18 +65,18 @@ public class TwoFactorAuthenticationRepositoryImpl
                 .from(TABLE)
                 .where(USER_ID + " = ?", userId)
                 .executeUniqueWith(connection, rs -> {
+
+                    final Timestamp createdAt = rs.getTimestamp(CREATED_AT);
+                    final Timestamp updatedAt = rs.getTimestamp(UPDATED_AT);
                     final Timestamp lastUsedAt = rs.getTimestamp(LAST_USED_AT);
 
                     return TwoFactorAuthentication.builder(userId)
-                            .secret(rs.getString(SECRET))
+                            .secret(decryptSecret(rs.getString(SECRET)))
                             .status(TwoFactorAuthentication.Status.valueOf(
                                     rs.getString(STATUS)))
-                            .createdAt(rs.getTimestamp(CREATED_AT).toInstant())
-                            .updatedAt(rs.getTimestamp(UPDATED_AT).toInstant())
-                            .lastUsedAt(
-                                    lastUsedAt == null
-                                            ? null
-                                            : lastUsedAt.toInstant())
+                            .createdAt(toInstant(createdAt))
+                            .updatedAt(toInstant(updatedAt))
+                            .lastUsedAt(toInstant(lastUsedAt))
                             .build();
                 });
 
@@ -89,40 +86,56 @@ public class TwoFactorAuthenticationRepositoryImpl
     @Override
     public void save(
             final Connection connection,
-            final TwoFactorAuthentication authentication) throws SQLException {
-
-        final Instant now = Instant.now();
+            final TwoFactorAuthentication authentication)
+            throws SQLException {
 
         final Optional<TwoFactorAuthentication> existing =
                 get(connection, authentication.getUserId());
 
-        final String encryptedSecret = encryptSecret(authentication.getEncryptedSecret());
+        final String encryptedSecret =
+                encryptSecret(authentication.getSecret());
+
+        final Instant now = Instant.now();
 
         if (existing.isPresent()) {
             JdbcSqlQuery
                     .update(TABLE)
                     .withUpdateParam(SECRET, encryptedSecret)
-                    .withUpdateParam(STATUS, authentication.getStatus().name())
+                    .withUpdateParam(
+                            STATUS,
+                            authentication.getStatus().name())
                     .withUpdateParam(UPDATED_AT, now)
-                    .withUpdateParam(LAST_USED_AT, authentication.getLastUsedAt())
-                    .where(USER_ID + " = ?", authentication.getUserId())
+                    .withUpdateParam(
+                            LAST_USED_AT,
+                            authentication.getLastUsedAt())
+                    .where(
+                            USER_ID + " = ?",
+                            authentication.getUserId())
                     .executeWith(connection);
         } else {
             JdbcSqlQuery
                     .insertInto(TABLE)
-                    .withInsertParam(USER_ID, authentication.getUserId())
+                    .withInsertParam(
+                            USER_ID,
+                            authentication.getUserId())
                     .withInsertParam(SECRET, encryptedSecret)
-                    .withInsertParam(STATUS, authentication.getStatus().name())
+                    .withInsertParam(
+                            STATUS,
+                            authentication.getStatus().name())
                     .withInsertParam(CREATED_AT, now)
                     .withInsertParam(UPDATED_AT, now)
-                    .withInsertParam(LAST_USED_AT, authentication.getLastUsedAt())
+                    .withInsertParam(
+                            LAST_USED_AT,
+                            authentication.getLastUsedAt())
                     .executeWith(connection);
         }
     }
 
     @Override
     public void delete(
-            final Connection connection, final int userId) throws SQLException {
+            final Connection connection,
+            final int userId)
+            throws SQLException {
 
         JdbcSqlQuery
                 .deleteFrom(TABLE)
@@ -134,7 +147,8 @@ public class TwoFactorAuthenticationRepositoryImpl
     public void updateLastUsedAt(
             final Connection connection,
             final int userId,
-            final Instant lastUsedAt) throws SQLException {
+            final Instant lastUsedAt)
+            throws SQLException {
 
         JdbcSqlQuery
                 .update(TABLE)
@@ -145,12 +159,17 @@ public class TwoFactorAuthenticationRepositoryImpl
     }
 
     private String encryptSecret(final String secret) {
+        if (secret == null) {
+            return null;
+        }
+
         try {
             return ContentEncryptionService.get()
                     .encryptContent(secret)[0];
         } catch (CryptoException e) {
             throw new IllegalStateException(
-                    "Unable to encrypt the two-factor authentication secret", e);
+                    "Unable to encrypt the two-factor authentication secret",
+                    e);
         }
     }
 
@@ -164,11 +183,12 @@ public class TwoFactorAuthenticationRepositoryImpl
                     .decryptContent(encryptedSecret)[0];
         } catch (CryptoException e) {
             throw new IllegalStateException(
-                    "Unable to decrypt the two-factor authentication secret", e);
+                    "Unable to decrypt the two-factor authentication secret",
+                    e);
         }
     }
 
-    private Instant getInstant(final java.sql.Timestamp timestamp) {
+    private Instant toInstant(final Timestamp timestamp) {
         return timestamp == null ? null : timestamp.toInstant();
     }
 }
