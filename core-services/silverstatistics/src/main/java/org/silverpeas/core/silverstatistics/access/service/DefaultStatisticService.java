@@ -131,10 +131,21 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   @Override
   public List<HistoryByUser> getHistoryByUser(ResourceReference resourceReference, int action,
       String objectType) {
+    return getHistoryByUser(resourceReference, action, objectType, null, null);
+  }
+
+  @Override
+  public SilverpeasList<HistoryByUser> getHistoryByUser(final ResourceReference resourceReference,
+      final int action, final String objectType, final Collection<String> excludedUserIds,
+      final PaginationPage pagination) {
     try (Connection con = getConnection()) {
       final HistoryCriteria criteria = new HistoryCriteria(action)
           .onResource(resourceReference)
-          .ofType(objectType);
+          .ofType(objectType)
+          .paginatedBy(pagination);
+      if (excludedUserIds != null) {
+        criteria.byExcludingUsers(excludedUserIds);
+      }
       return HistoryObjectDAO.findByUserByCriteria(con, criteria);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);

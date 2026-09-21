@@ -54,6 +54,21 @@ public interface StatisticService {
   List<HistoryByUser> getHistoryByUser(ResourceReference resourceReference, int action,
       String objectType);
 
+  /**
+   * Gets the users having performed the given action on the specified resource, from the most
+   * recent access to the oldest one. Each user is returned only once, with the date of its last
+   * access and its total number of accesses.
+   * @param resourceReference the reference of the resource the accesses are about.
+   * @param action the type of the performed action.
+   * @param objectType the type of the resource.
+   * @param excludedUserIds the identifiers of the users to exclude from the result, or null to
+   * exclude none of them.
+   * @param pagination the pagination to apply on the users, or null to get all of them.
+   * @return a {@link SilverpeasList} of {@link HistoryByUser}.
+   */
+  SilverpeasList<HistoryByUser> getHistoryByUser(ResourceReference resourceReference, int action,
+      String objectType, final Collection<String> excludedUserIds, PaginationPage pagination);
+
   SilverpeasList<HistoryObjectDetail> getHistoryByAction(ResourceReference resourceReference,
       int action, String objectType, final Collection<String> excludedUserIds,
       PaginationPage pagination);
