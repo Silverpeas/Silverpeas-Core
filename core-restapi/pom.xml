@@ -41,6 +41,8 @@
     <maven.test.skip>true</maven.test.skip>
     <maven.install.skip>true</maven.install.skip>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <!-- nothing of the Maven site is published beside the documentation of the REST API -->
+    <strip.maven.site.skip>false</strip.maven.site.skip>
   </properties>
 
   <!-- the documentation of the REST API is published on its own, aside from the Maven site of
