@@ -184,8 +184,10 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
     final ResultSetWrapper rsw = new ResultSetWrapper(rs);
     int startIndex = queryConf.getOffset();
     if (queryConf.isFirstResultScrolled()) {
-      rsw.next();
-      rsw.relative(startIndex - 1);
+      // scrolling to the last row to skip. An absolute scrolling is used here because a relative
+      // one requires the cursor to be on a row, which isn't the case when the result set is empty
+      // (some JDBC drivers, like the Microsoft one for SQL Server, throw then an exception).
+      rsw.absolute(startIndex);
     }
     final boolean resultCountLimited = queryConf.isResultCountLimited();
     final int lastIdx = resultCountLimited ? startIndex + queryConf.getResultLimit() - 1 : 0;

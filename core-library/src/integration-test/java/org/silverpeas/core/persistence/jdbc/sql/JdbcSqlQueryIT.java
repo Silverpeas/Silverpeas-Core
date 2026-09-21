@@ -339,6 +339,26 @@ public class JdbcSqlQueryIT {
   }
 
   @Test
+  public void selectWithAnOffsetBeyondTheSelectedRows() throws SQLException {
+    // no row at all is selected: the scrolling to the offset must not fail
+    List<Pair<Long, String>> rows = select("*").from("a_table").where("val like ?", "no_value%")
+        .orderBy("id desc")
+        .configure(config -> config.withOffset(20))
+        .configure(config -> config.withResultLimit(5))
+        .execute(new TableResultProcess(false));
+
+    assertThat(rows, is(empty()));
+
+    // fewer rows than the offset are selected
+    rows = select("*").from("a_table").where("val like ?", "%0").orderBy("id desc")
+        .configure(config -> config.withOffset(20))
+        .configure(config -> config.withResultLimit(5))
+        .execute(new TableResultProcess(false));
+
+    assertThat(rows, is(empty()));
+  }
+
+  @Test
   public void createRowUsingAppendSaveParameter() {
     assertThat(getTableLines(), hasSize(100));
     JdbcSqlQuery insertSqlQuery = JdbcSqlQuery.insertInto("a_table");
