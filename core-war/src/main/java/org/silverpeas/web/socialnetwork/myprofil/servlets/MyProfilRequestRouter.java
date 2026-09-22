@@ -320,22 +320,22 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       request.setAttribute("MenuDisplay", false);
     }
     request.setAttribute("UserSelfDeletionAccountEnabled", isUserSelfDeletionAccountEnabled());
-    request.setAttribute("twoFactorAvailable", ResourceLocator.getSettingBundle(
+    final boolean twoFactorAvailable = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings")
-        .getBoolean("twoFactorTotpEnabled", false));
-    TwoFactorAuthenticationService twoFactorService =
-        ServiceProvider.getService(TwoFactorAuthenticationService.class);
-    twoFactorService.getAuthentication(Integer.parseInt(sc.getUserId())).ifPresentOrElse(
-        authentication -> {
-          request.setAttribute("twoFactorAuthentication", authentication);
-          request.setAttribute("twoFactorEnabled", authentication.isEnabled());
-          request.setAttribute("twoFactorPending", authentication.isPending());
-        },
-        () -> {
-          request.setAttribute("twoFactorAuthentication", null);
-          request.setAttribute("twoFactorEnabled", false);
-          request.setAttribute("twoFactorPending", false);
-        });
+        .getBoolean("twoFactorTotpEnabled", false);
+    request.setAttribute("twoFactorAvailable", twoFactorAvailable);
+    request.setAttribute("twoFactorAuthentication", null);
+    request.setAttribute("twoFactorEnabled", false);
+    request.setAttribute("twoFactorPending", false);
+    if (twoFactorAvailable) {
+      TwoFactorAuthenticationService twoFactorService =
+          ServiceProvider.getService(TwoFactorAuthenticationService.class);
+      twoFactorService.getAuthentication(Integer.parseInt(sc.getUserId())).ifPresent(authentication -> {
+        request.setAttribute("twoFactorAuthentication", authentication);
+        request.setAttribute("twoFactorEnabled", authentication.isEnabled());
+        request.setAttribute("twoFactorPending", authentication.isPending());
+      });
+    }
   }
 
   private void startTwoFactor(HttpServletRequest request, MyProfilSessionController sc) {
