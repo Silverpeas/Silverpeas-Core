@@ -78,6 +78,23 @@ public class DbSetupRule implements TestRule {
 
   private static final String QUARTZ_TABLE_PREFIX = "QRTZ_";
 
+  private static final String[][] QUARTZ_CONSTRAINTS = {
+      {"QRTZ_CRON_TRIGGERS", "FK_QRTZ_CRON_TRIGGERS_QRTZ_TRIGGERS"},
+      {"QRTZ_SIMPLE_TRIGGERS", "FK_QRTZ_SIMPLE_TRIGGERS_QRTZ_TRIGGERS"},
+      {"QRTZ_SIMPROP_TRIGGERS", "FK_QRTZ_SIMPROP_TRIGGERS_QRTZ_TRIGGERS"},
+      {"QRTZ_TRIGGERS", "FK_QRTZ_TRIGGERS_QRTZ_JOB_DETAILS"},
+      {"QRTZ_CALENDARS", "PK_QRTZ_CALENDARS"},
+      {"QRTZ_CRON_TRIGGERS", "PK_QRTZ_CRON_TRIGGERS"},
+      {"QRTZ_FIRED_TRIGGERS", "PK_QRTZ_FIRED_TRIGGERS"},
+      {"QRTZ_PAUSED_TRIGGER_GRPS", "PK_QRTZ_PAUSED_TRIGGER_GRPS"},
+      {"QRTZ_SCHEDULER_STATE", "PK_QRTZ_SCHEDULER_STATE"},
+      {"QRTZ_LOCKS", "PK_QRTZ_LOCKS"},
+      {"QRTZ_JOB_DETAILS", "PK_QRTZ_JOB_DETAILS"},
+      {"QRTZ_SIMPLE_TRIGGERS", "PK_QRTZ_SIMPLE_TRIGGERS"},
+      {"QRTZ_SIMPROP_TRIGGERS", "PK_QRTZ_SIMPROP_TRIGGERS"},
+      {"QRTZ_TRIGGERS", "PK_QRTZ_TRIGGERS"}
+  };
+
   /**
    * The tables of the persistent scheduler (Quartz) to empty between two tests, ordered so that
    * their emptying doesn't violate any of their foreign keys. They cannot be dropped as they are
@@ -216,6 +233,8 @@ public class DbSetupRule implements TestRule {
       }
     }
 
+    prepareQuartzTablesForSetup();
+
     Operation preparation = Operations.sequenceOf(tableCreation, dataSetLoading);
     DataSource dataSource = DataSourceProvider.getDataSource();
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
@@ -223,6 +242,27 @@ public class DbSetupRule implements TestRule {
     Logger.getLogger(this.getClass().getName())
         .info("Database structure loaded successfully with DbSetup framework.");
 
+  }
+
+  /**
+   * PostgreSQL does not support ADD CONSTRAINT IF NOT EXISTS. Quartz tables are deliberately
+   * preserved between tests, so their constraints must be removed before the default SQL script
+   * recreates them for the next test.
+   */
+  private void prepareQuartzTablesForSetup() {
+    try (Connection connection = getSafeConnection()) {
+      if (!"PostgreSQL".equalsIgnoreCase(connection.getMetaData().getDatabaseProductName())) {
+        return;
+      }
+      for (String[] constraint : QUARTZ_CONSTRAINTS) {
+        try (PreparedStatement statement = connection.prepareStatement(
+            "ALTER TABLE " + constraint[0] + " DROP CONSTRAINT IF EXISTS " + constraint[1])) {
+          statement.execute();
+        }
+      }
+    } catch (SQLException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 
   @SuppressWarnings("ConstantConditions")
