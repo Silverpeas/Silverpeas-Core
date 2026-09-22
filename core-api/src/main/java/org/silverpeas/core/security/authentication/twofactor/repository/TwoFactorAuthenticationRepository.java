@@ -76,4 +76,25 @@ public interface TwoFactorAuthenticationRepository {
      */
     void updateLastUsedAt(Connection connection, int userId, java.time.Instant lastUsedAt)
             throws SQLException;
+
+    /**
+     * Records a failed TOTP validation and optionally locks the authentication.
+     *
+     * @param connection the database connection.
+     * @param userId the Silverpeas user identifier.
+     * @param failedAttempts the new number of failed attempts.
+     * @param lockedUntil the lock expiration, or null when the user is not locked.
+     * @throws SQLException if an error occurs while accessing the database.
+     */
+    void updateFailedAttempts(Connection connection, int userId, int failedAttempts,
+            java.time.Instant lockedUntil) throws SQLException;
+
+    /**
+     * Resets the failed TOTP attempts and removes any temporary lock.
+     *
+     * @param connection the database connection.
+     * @param userId the Silverpeas user identifier.
+     * @throws SQLException if an error occurs while accessing the database.
+     */
+    void resetFailedAttempts(Connection connection, int userId) throws SQLException;
 }
