@@ -29,6 +29,11 @@ public class TwoFactorAuthenticationResource extends RESTWebService {
     return BASE_URI;
   }
 
+  @Override
+  public String getComponentId() {
+    return "";
+  }
+
   /**
    * Generates a new set of recovery codes for the current authenticated user.
    * The generated codes are returned once; only their hashes are persisted.
@@ -37,6 +42,6 @@ public class TwoFactorAuthenticationResource extends RESTWebService {
   @Path(RECOVERY_CODES_URI_PART)
   @Produces(MediaType.APPLICATION_JSON)
   public List<String> generateRecoveryCodes() {
-    return service.generateRecoveryCodes(getUser().getId());
+    return service.generateRecoveryCodes(Integer.parseInt(getUser().getId()));
   }
 }
