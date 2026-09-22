@@ -339,6 +339,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   private void startTwoFactor(HttpServletRequest request, MyProfilSessionController sc) {
+    if (!isTwoFactorAvailable()) {
+      throwHttpForbiddenError();
+    }
     TwoFactorAuthenticationService service =
         ServiceProvider.getService(TwoFactorAuthenticationService.class);
     TwoFactorAuthentication authentication = service.startEnrollment(Integer.parseInt(sc.getUserId()));
@@ -354,6 +357,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   private void confirmTwoFactor(HttpServletRequest request, MyProfilSessionController sc) {
+    if (!isTwoFactorAvailable()) {
+      throwHttpForbiddenError();
+    }
     String code = request.getParameter("twoFactorCode");
     TwoFactorAuthenticationService service =
         ServiceProvider.getService(TwoFactorAuthenticationService.class);
@@ -365,9 +371,18 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   private void disableTwoFactor(HttpServletRequest request, MyProfilSessionController sc) {
+    if (!isTwoFactorAvailable()) {
+      throwHttpForbiddenError();
+    }
     ServiceProvider.getService(TwoFactorAuthenticationService.class)
         .disable(Integer.parseInt(sc.getUserId()));
     request.setAttribute("twoFactorMessage", "myProfile.twoFactor.disabled");
+  }
+
+  private boolean isTwoFactorAvailable() {
+    return ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings")
+        .getBoolean("twoFactorTotpEnabled", false);
   }
 
   private boolean isUserSelfDeletionAccountEnabled() {
