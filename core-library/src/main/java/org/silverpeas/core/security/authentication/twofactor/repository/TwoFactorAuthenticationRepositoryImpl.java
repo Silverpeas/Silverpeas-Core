@@ -3,8 +3,8 @@
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
@@ -27,6 +27,7 @@ import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuth
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -48,6 +49,10 @@ public class TwoFactorAuthenticationRepositoryImpl
     private static final String CREATED_AT = "createdAt";
     private static final String UPDATED_AT = "updatedAt";
     private static final String LAST_USED_AT = "lastUsedAt";
+
+    private static final int CIPHER_KEY_SIZE = 32;
+
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Override
     public Optional<TwoFactorAuthentication> get(
@@ -163,14 +168,40 @@ public class TwoFactorAuthenticationRepositoryImpl
             return null;
         }
 
+        final ContentEncryptionService encryptionService =
+                ContentEncryptionService.get();
+        ensureCipherKeyDefined(encryptionService);
+
         try {
-            return ContentEncryptionService.get()
-                    .encryptContent(secret)[0];
+            return encryptionService.encryptContent(secret)[0];
         } catch (CryptoException e) {
             throw new IllegalStateException(
                     "Unable to encrypt the two-factor authentication secret",
                     e);
         }
+    }
+
+    private void ensureCipherKeyDefined(
+            final ContentEncryptionService encryptionService) {
+        synchronized (TwoFactorAuthenticationRepositoryImpl.class) {
+            if (encryptionService.isCipherKeyDefined()) {
+                return;
+            }
+
+            try {
+                encryptionService.updateCipherKey(generateCipherKey());
+            } catch (CryptoException e) {
+                throw new IllegalStateException(
+                        "Unable to initialize the Silverpeas content encryption key",
+                        e);
+            }
+        }
+    }
+
+    private String generateCipherKey() {
+        final byte[] key = new byte[CIPHER_KEY_SIZE];
+        SECURE_RANDOM.nextBytes(key);
+        return java.util.HexFormat.of().formatHex(key);
     }
 
     private String decryptSecret(final String encryptedSecret) {
