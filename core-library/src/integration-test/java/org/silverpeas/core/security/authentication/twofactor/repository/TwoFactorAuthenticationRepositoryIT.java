@@ -22,6 +22,8 @@
 package org.silverpeas.core.security.authentication.twofactor.repository;
 
 import com.ninja_squad.dbsetup.Operations;
+import com.google.common.base.Charsets;
+import org.apache.commons.io.FileUtils;
 import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,14 +33,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.security.encryption.ContentEncryptionService;
-import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.security.encryption.cipher.Cipher;
+import org.silverpeas.core.security.encryption.cipher.CipherFactory;
+import org.silverpeas.core.security.encryption.cipher.CipherKey;
+import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
