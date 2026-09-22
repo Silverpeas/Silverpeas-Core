@@ -25,15 +25,22 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.authentication.twofactor.model.RecoveryCode;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
+import org.silverpeas.core.security.authentication.twofactor.repository.RecoveryCodeRepository;
 import org.silverpeas.core.security.authentication.twofactor.repository.TwoFactorAuthenticationRepository;
 import org.silverpeas.core.security.totp.TotpService;
 
 import java.sql.Connection;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.time.Instant;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,8 +53,16 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
             "org.silverpeas.authentication.settings.authenticationSettings");
 
+    private static final int RECOVERY_CODE_COUNT = 10;
+    private static final int RECOVERY_CODE_LENGTH = 10;
+    private static final String RECOVERY_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     @Inject
     private TwoFactorAuthenticationRepository repository;
+
+    @Inject
+    private RecoveryCodeRepository recoveryCodeRepository;
 
     @Inject
     private TotpService totpService;
@@ -59,6 +74,15 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             final TwoFactorAuthenticationRepository repository,
             final TotpService totpService) {
         this.repository = repository;
+        this.totpService = totpService;
+    }
+
+    protected TwoFactorAuthenticationServiceImpl(
+            final TwoFactorAuthenticationRepository repository,
+            final RecoveryCodeRepository recoveryCodeRepository,
+            final TotpService totpService) {
+        this.repository = repository;
+        this.recoveryCodeRepository = recoveryCodeRepository;
         this.totpService = totpService;
     }
 
@@ -191,6 +215,59 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
+    public List<String> generateRecoveryCodes(final int userId) {
+        validateUserId(userId);
+        try (Connection connection = openConnection()) {
+            final Optional<TwoFactorAuthentication> authentication =
+                    repository.get(connection, userId);
+            if (authentication.isEmpty() || !authentication.get().isEnabled()) {
+                throw new IllegalStateException(
+                        "Two-factor authentication is not enabled for user " + userId);
+            }
+
+            recoveryCodeRepository.deleteAll(connection, userId);
+            final List<String> codes = new ArrayList<>(RECOVERY_CODE_COUNT);
+            final Instant now = Instant.now();
+            for (int i = 0; i < RECOVERY_CODE_COUNT; i++) {
+                final String code = generateRecoveryCode();
+                recoveryCodeRepository.save(connection, RecoveryCode.builder(userId)
+                        .hash(hashRecoveryCode(code))
+                        .createdAt(now)
+                        .used(false)
+                        .build());
+                codes.add(code);
+            }
+            return codes;
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Unable to generate recovery codes for user " + userId, e);
+        }
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRED)
+    public boolean validateRecoveryCode(final int userId, final String code) {
+        validateUserId(userId);
+        if (code == null || code.isBlank()) {
+            return false;
+        }
+
+        try (Connection connection = openConnection()) {
+            final Optional<TwoFactorAuthentication> authentication =
+                    repository.get(connection, userId);
+            if (authentication.isEmpty() || !authentication.get().isEnabled()) {
+                return false;
+            }
+            return recoveryCodeRepository.consume(
+                    connection, hashRecoveryCode(normalizeRecoveryCode(code)), Instant.now());
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Unable to validate recovery code for user " + userId, e);
+        }
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRED)
     public void disable(final int userId) {
         validateUserId(userId);
         try (Connection connection = openConnection()) {
@@ -209,6 +286,28 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
      */
     protected Connection openConnection() throws SQLException {
         return DBUtil.openConnection();
+    }
+
+    private String generateRecoveryCode() {
+        final StringBuilder code = new StringBuilder(RECOVERY_CODE_LENGTH);
+        for (int i = 0; i < RECOVERY_CODE_LENGTH; i++) {
+            code.append(RECOVERY_CODE_ALPHABET.charAt(
+                    SECURE_RANDOM.nextInt(RECOVERY_CODE_ALPHABET.length())));
+        }
+        return code.toString();
+    }
+
+    private String normalizeRecoveryCode(final String code) {
+        return code.replaceAll("[\\s-]", "").toUpperCase(java.util.Locale.ROOT);
+    }
+
+    private String hashRecoveryCode(final String code) {
+        try {
+            return java.util.HexFormat.of().formatHex(
+                    MessageDigest.getInstance("SHA-256").digest(code.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Unable to hash recovery code", e);
+        }
     }
 
     private void validateUserId(final int userId) {
