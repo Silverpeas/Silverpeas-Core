@@ -188,8 +188,6 @@ public class AuthenticationService implements Authentication {
       result = AuthenticationResponse.error(Status.USER_ACCOUNT_BLOCKED);
     } catch (AuthenticationUserAccountDeactivatedException e) {
       result = AuthenticationResponse.error(Status.USER_ACCOUNT_DEACTIVATED);
-    } catch (AuthenticationTwoFactorRequiredException e) {
-      result = AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
     } catch (AuthenticationException ae) {
       result = AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
     }
