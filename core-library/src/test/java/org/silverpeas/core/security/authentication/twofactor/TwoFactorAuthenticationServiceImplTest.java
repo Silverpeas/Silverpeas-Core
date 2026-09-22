@@ -185,6 +185,50 @@ class TwoFactorAuthenticationServiceImplTest {
     }
 
     @Test
+    void shouldRejectAuthenticationWhenLocked() throws Exception {
+        final TwoFactorAuthentication locked =
+                authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
+                        .failedAttempts(5)
+                        .lockedUntil(Instant.now().plusSeconds(300))
+                        .build();
+        when(repository.get(connection, USER_ID)).thenReturn(Optional.of(locked));
+
+        assertFalse(service.validate(USER_ID, CODE));
+
+        verify(totpService, never()).validate(any(), any());
+        verify(repository, never()).updateFailedAttempts(any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    void shouldRecordFailedAuthenticationAttempt() throws Exception {
+        final TwoFactorAuthentication enabled =
+                authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
+                        .failedAttempts(2)
+                        .build();
+        when(repository.get(connection, USER_ID)).thenReturn(Optional.of(enabled));
+        when(totpService.validate(SECRET, CODE)).thenReturn(false);
+
+        assertFalse(service.validate(USER_ID, CODE));
+
+        verify(repository).updateFailedAttempts(connection, USER_ID, 3, null);
+    }
+
+    @Test
+    void shouldLockAfterMaximumFailedAuthenticationAttempts() throws Exception {
+        final TwoFactorAuthentication enabled =
+                authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
+                        .failedAttempts(4)
+                        .build();
+        when(repository.get(connection, USER_ID)).thenReturn(Optional.of(enabled));
+        when(totpService.validate(SECRET, CODE)).thenReturn(false);
+
+        assertFalse(service.validate(USER_ID, CODE));
+
+        verify(repository).updateFailedAttempts(
+                eq(connection), eq(USER_ID), eq(5), any(Instant.class));
+    }
+
+    @Test
     void shouldRejectInvalidAuthenticationCode() throws Exception {
         final TwoFactorAuthentication enabled =
                 authentication(TwoFactorAuthentication.Status.ENABLED);
