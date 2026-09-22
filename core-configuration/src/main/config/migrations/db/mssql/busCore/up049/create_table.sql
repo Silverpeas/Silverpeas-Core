@@ -1,7 +1,7 @@
-CREATE TABLE ST_UserTwoFactorAuthentication
+CREATE TABLE ST_User_2FA
 (
     userId     INT          NOT NULL,
-    secret     VARCHAR(512) NOT NULL,
+    secret     VARCHAR(1024) NOT NULL,
     status     VARCHAR(20)  NOT NULL,
     createdAt  DATETIME2    NOT NULL,
     updatedAt  DATETIME2    NOT NULL,
