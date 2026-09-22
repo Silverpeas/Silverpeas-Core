@@ -85,6 +85,8 @@ public class AuthenticationService implements Authentication {
   private static final String USER_LOGIN_COLUMN_NAME;
   private static final String USER_DOMAIN_COLUMN_NAME;
   private static int autoInc = 1;
+  private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
 
   @Inject
   private AdminController adminController;
@@ -233,9 +235,10 @@ public class AuthenticationService implements Authentication {
       // Password authentication has succeeded. Do not create the Silverpeas authentication
       // token before the second factor has been validated.
       final int userId = getUserId(credential);
-      if (twoFactorAuthenticationService.getAuthentication(userId)
-          .map(authentication -> authentication.isEnabled())
-          .orElse(false)) {
+      if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) &&
+          twoFactorAuthenticationService.getAuthentication(userId)
+              .map(authentication -> authentication.isEnabled())
+              .orElse(false)) {
         throw new AuthenticationTwoFactorRequiredException();
       }
 
@@ -354,6 +357,9 @@ public class AuthenticationService implements Authentication {
   public AuthenticationResponse authenticateTwoFactor(
       final String login, final String domainId, final String code) {
     try {
+      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+        return AuthenticationResponse.error(Status.BAD_LOGIN_PASSWORD);
+      }
       final AuthenticationCredential credential =
           AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
       final int userId = getUserId(credential);
