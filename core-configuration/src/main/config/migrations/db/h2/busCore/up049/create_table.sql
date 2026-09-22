@@ -5,5 +5,7 @@ CREATE TABLE ST_User_2FA
     status     VARCHAR(20)  NOT NULL,
     createdAt  TIMESTAMP    NOT NULL,
     updatedAt  TIMESTAMP    NOT NULL,
-    lastUsedAt TIMESTAMP
+    lastUsedAt TIMESTAMP,
+    failedAttempts INT NOT NULL DEFAULT 0,
+    lockedUntil TIMESTAMP
 );
