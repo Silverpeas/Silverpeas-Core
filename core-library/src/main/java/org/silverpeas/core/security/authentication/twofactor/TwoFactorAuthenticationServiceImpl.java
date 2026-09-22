@@ -32,6 +32,8 @@ import org.silverpeas.core.security.totp.TotpService;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import java.util.Optional;
 
 /**
@@ -40,6 +42,9 @@ import java.util.Optional;
 @Service
 @Transactional(Transactional.TxType.SUPPORTS)
 public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticationService {
+
+    private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
+            "org.silverpeas.authentication.settings.authenticationSettings");
 
     @Inject
     private TwoFactorAuthenticationRepository repository;
@@ -89,6 +94,8 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
                                     .orElse(now))
                             .updatedAt(now)
                             .lastUsedAt(null)
+                            .failedAttempts(0)
+                            .lockedUntil(null)
                             .build();
 
             repository.save(connection, authentication);
@@ -116,11 +123,26 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             }
 
             final TwoFactorAuthentication authentication = current.get();
+            final Instant now = Instant.now();
+            if (authentication.isLocked(now)) {
+                return false;
+            }
             if (!totpService.validate(authentication.getSecret(), code)) {
+                final int failedAttempts = authentication.getFailedAttempts() + 1;
+                final int maxAttempts = AUTHENTICATION_SETTINGS.getInteger(
+                        "twoFactorTotpMaxAttempts", 5);
+                if (failedAttempts >= maxAttempts) {
+                    final int lockDuration = AUTHENTICATION_SETTINGS.getInteger(
+                            "twoFactorTotpLockDuration", 300);
+                    repository.updateFailedAttempts(connection, userId, failedAttempts,
+                            now.plusSeconds(lockDuration));
+                } else {
+                    repository.updateFailedAttempts(connection, userId, failedAttempts, null);
+                }
                 return false;
             }
 
-            final Instant now = Instant.now();
+            repository.resetFailedAttempts(connection, userId);
             repository.save(
                     connection,
                     authentication.toBuilder()
