@@ -51,6 +51,7 @@ import java.security.Security;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -166,10 +167,11 @@ public class TwoFactorAuthenticationRepositoryIT {
             try (Connection connection = dbSetupRule.getSafeConnection()) {
                 repository.save(connection, authentication);
 
+                final Instant lockedUntil = Instant.now().plusSeconds(60).truncatedTo(ChronoUnit.MILLIS);
                 final TwoFactorAuthentication updated = authentication(UPDATED_SECRET).toBuilder()
                         .status(TwoFactorAuthentication.Status.ENABLED)
                         .failedAttempts(2)
-                        .lockedUntil(Instant.now().plusSeconds(60))
+                        .lockedUntil(lockedUntil)
                         .build();
 
                 repository.save(connection, updated);
@@ -179,7 +181,7 @@ public class TwoFactorAuthenticationRepositoryIT {
                 assertThat(stored.get().getSecret(), is(UPDATED_SECRET));
                 assertThat(stored.get().getStatus(), is(TwoFactorAuthentication.Status.ENABLED));
                 assertThat(stored.get().getFailedAttempts(), is(2));
-                assertThat(stored.get().getLockedUntil(), is(updated.getLockedUntil()));
+                assertThat(stored.get().getLockedUntil(), is(lockedUntil));
             }
             return null;
         });
