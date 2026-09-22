@@ -264,13 +264,13 @@ public class DbSetupRule implements TestRule {
       if (!"PostgreSQL".equalsIgnoreCase(connection.getMetaData().getDatabaseProductName())) {
         return sqlStatements;
       }
-      boolean quartzTableExists = false;
-      try (ResultSet rs = connection.getMetaData().getTables(
-          connection.getCatalog(), connection.getSchema(), "QRTZ_%", new String[]{"TABLE"})) {
-        quartzTableExists = rs.next();
-      }
-      if (!quartzTableExists) {
-        return sqlStatements;
+      try (PreparedStatement statement = connection.prepareStatement(
+          "SELECT 1 FROM information_schema.tables " +
+              "WHERE table_schema = current_schema() AND table_name LIKE 'qrtz_%' LIMIT 1");
+           ResultSet rs = statement.executeQuery()) {
+        if (!rs.next()) {
+          return sqlStatements;
+        }
       }
       return Stream.of(sqlStatements)
           .filter(sql -> !sql.trim().toUpperCase().startsWith("ALTER TABLE QRTZ_"))
