@@ -149,6 +149,11 @@ public class AuthenticationResponse {
      */
     PASSWORD_EMAIL_TO_CHANGE_ON_FIRST_LOGIN(ERROR_PREFIX + "PwdAndEmailMustBeChangedOnFirstLogin"),
     /**
+     * The authentication has succeeded with the password but requires a second authentication
+     * factor before the user session can be opened.
+     */
+    TWO_FACTOR_REQUIRED(ERROR_PREFIX + "TwoFactorRequired"),
+    /**
      * The authentication has failed because the account of the user in Silverpeas has been
      * blocked.
      */
