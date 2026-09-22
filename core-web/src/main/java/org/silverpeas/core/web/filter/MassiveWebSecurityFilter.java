@@ -136,7 +136,7 @@ public class MassiveWebSecurityFilter implements Filter {
     SQL_PATTERNS.add(SQL_UPDATE_PATTERN);
     SQL_PATTERNS.add(SQL_DELETE_PATTERN);
 
-    XSS_PATTERNS = new ArrayList<>(2);
+    XSS_PATTERNS = new ArrayList<>(3);
     // iframes are checked apart by an IFrameChecker
     XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*(script|svg|math|details)"));
     // an event callback declaration isn't necessarily preceded by a whitespace: according to the
@@ -149,6 +149,12 @@ public class MassiveWebSecurityFilter implements Filter {
         "[\\s/\"']on(keydown|keypress|keyup|click|dbclick|mousedown|mousemove|mouseout|mouseover" +
             "|mouseup|mousewheel|wheel|abort|error|change|blur|contextmenu|focus|input" +
             "|invalid|reset|search|select|submit|load|message)\\s*="));
+    // a scripting scheme given as the value of an attribute, such as the formaction of a button or
+    // the href of a link. The colon is written here as the browsers decode it, that is to say as
+    // the character itself or as any of the HTML entities standing for it. The data scheme is
+    // deliberately left out: the contents do embed inlined images with it.
+    XSS_PATTERNS.add(Pattern.compile(
+        "(?i)[\\s/\"'][\\w:-]+\\s*=\\s*[\"']?\\s*(?:java|vb)script\\s*(?::|&colon;|&#0*58;|&#x0*3a;)"));
   }
 
   @Override
