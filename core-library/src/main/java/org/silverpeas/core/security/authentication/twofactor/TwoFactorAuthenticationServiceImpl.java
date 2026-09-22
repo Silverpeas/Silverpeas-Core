@@ -50,6 +50,13 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     protected TwoFactorAuthenticationServiceImpl() {
     }
 
+    protected TwoFactorAuthenticationServiceImpl(
+            final TwoFactorAuthenticationRepository repository,
+            final TotpService totpService) {
+        this.repository = repository;
+        this.totpService = totpService;
+    }
+
     @Override
     public Optional<TwoFactorAuthentication> getAuthentication(final int userId) {
         validateUserId(userId);
