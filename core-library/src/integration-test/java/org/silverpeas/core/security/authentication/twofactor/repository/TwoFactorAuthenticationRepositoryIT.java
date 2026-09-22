@@ -21,6 +21,8 @@
  */
 package org.silverpeas.core.security.authentication.twofactor.repository;
 
+import java.io.File;
+
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
