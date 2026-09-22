@@ -26,7 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.silverpeas.core.security.authentication.twofactor.model.RecoveryCode;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
+import org.silverpeas.core.security.authentication.twofactor.repository.RecoveryCodeRepository;
 import org.silverpeas.core.security.authentication.twofactor.repository.TwoFactorAuthenticationRepository;
 import org.silverpeas.core.security.totp.TotpService;
 
@@ -58,6 +60,9 @@ class TwoFactorAuthenticationServiceImplTest {
     private TwoFactorAuthenticationRepository repository;
 
     @Mock
+    private RecoveryCodeRepository recoveryCodeRepository;
+
+    @Mock
     private TotpService totpService;
 
     @Mock
@@ -67,7 +72,8 @@ class TwoFactorAuthenticationServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new TestableTwoFactorAuthenticationService(repository, totpService, connection);
+        service = new TestableTwoFactorAuthenticationService(
+                repository, recoveryCodeRepository, totpService, connection);
     }
 
     @Test
@@ -259,6 +265,52 @@ class TwoFactorAuthenticationServiceImplTest {
     }
 
     @Test
+    void shouldGenerateRecoveryCodes() throws Exception {
+        when(repository.get(connection, USER_ID)).thenReturn(
+                Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
+
+        final java.util.List<String> codes = service.generateRecoveryCodes(USER_ID);
+
+        assertEquals(10, codes.size());
+        assertTrue(codes.stream().allMatch(code -> code.matches("[A-Z2-9]{10}")));
+        verify(recoveryCodeRepository).deleteAll(connection, USER_ID);
+        verify(recoveryCodeRepository, org.mockito.Mockito.times(10))
+                .save(eq(connection), any(RecoveryCode.class));
+    }
+
+    @Test
+    void shouldRejectRecoveryCodeGenerationWhenTwoFactorIsNotEnabled() throws Exception {
+        when(repository.get(connection, USER_ID)).thenReturn(
+                Optional.of(authentication(TwoFactorAuthentication.Status.PENDING)));
+
+        assertThrows(IllegalStateException.class, () -> service.generateRecoveryCodes(USER_ID));
+
+        verify(recoveryCodeRepository, never()).deleteAll(any(), anyInt());
+    }
+
+    @Test
+    void shouldValidateRecoveryCode() throws Exception {
+        when(repository.get(connection, USER_ID)).thenReturn(
+                Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
+        when(recoveryCodeRepository.consume(eq(connection), any(String.class), any(Instant.class)))
+                .thenReturn(true);
+
+        assertTrue(service.validateRecoveryCode(USER_ID, "ABCD-2345-EF"));
+
+        verify(recoveryCodeRepository).consume(eq(connection), any(String.class), any(Instant.class));
+    }
+
+    @Test
+    void shouldRejectInvalidRecoveryCode() throws Exception {
+        when(repository.get(connection, USER_ID)).thenReturn(
+                Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
+        when(recoveryCodeRepository.consume(eq(connection), any(String.class), any(Instant.class)))
+                .thenReturn(false);
+
+        assertFalse(service.validateRecoveryCode(USER_ID, "INVALID"));
+    }
+
+    @Test
     void shouldDisableAuthentication() throws Exception {
         service.disable(USER_ID);
 
@@ -311,9 +363,10 @@ class TwoFactorAuthenticationServiceImplTest {
 
         private TestableTwoFactorAuthenticationService(
                 final TwoFactorAuthenticationRepository repository,
+                final RecoveryCodeRepository recoveryCodeRepository,
                 final TotpService totpService,
                 final Connection connection) {
-            super(repository, totpService);
+            super(repository, recoveryCodeRepository, totpService);
             this.connection = connection;
         }
 
