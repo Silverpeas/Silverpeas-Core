@@ -123,31 +123,19 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             }
 
             final TwoFactorAuthentication authentication = current.get();
-            final Instant now = Instant.now();
-            if (authentication.isLocked(now)) {
-                return false;
-            }
             if (!totpService.validate(authentication.getSecret(), code)) {
-                final int failedAttempts = authentication.getFailedAttempts() + 1;
-                final int maxAttempts = AUTHENTICATION_SETTINGS.getInteger(
-                        "twoFactorTotpMaxAttempts", 5);
-                if (failedAttempts >= maxAttempts) {
-                    final int lockDuration = AUTHENTICATION_SETTINGS.getInteger(
-                            "twoFactorTotpLockDuration", 300);
-                    repository.updateFailedAttempts(connection, userId, failedAttempts,
-                            now.plusSeconds(lockDuration));
-                } else {
-                    repository.updateFailedAttempts(connection, userId, failedAttempts, null);
-                }
                 return false;
             }
 
+            final Instant now = Instant.now();
             repository.resetFailedAttempts(connection, userId);
             repository.save(
                     connection,
                     authentication.toBuilder()
                             .status(TwoFactorAuthentication.Status.ENABLED)
                             .updatedAt(now)
+                            .failedAttempts(0)
+                            .lockedUntil(null)
                             .build());
             return true;
         } catch (SQLException e) {
@@ -173,11 +161,27 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             }
 
             final TwoFactorAuthentication authentication = current.get();
+            final Instant now = Instant.now();
+            if (authentication.isLocked(now)) {
+                return false;
+            }
             if (!totpService.validate(authentication.getSecret(), code)) {
+                final int failedAttempts = authentication.getFailedAttempts() + 1;
+                final int maxAttempts = AUTHENTICATION_SETTINGS.getInteger(
+                        "twoFactorTotpMaxAttempts", 5);
+                if (failedAttempts >= maxAttempts) {
+                    final int lockDuration = AUTHENTICATION_SETTINGS.getInteger(
+                            "twoFactorTotpLockDuration", 300);
+                    repository.updateFailedAttempts(connection, userId, failedAttempts,
+                            now.plusSeconds(lockDuration));
+                } else {
+                    repository.updateFailedAttempts(connection, userId, failedAttempts, null);
+                }
                 return false;
             }
 
-            repository.updateLastUsedAt(connection, userId, Instant.now());
+            repository.resetFailedAttempts(connection, userId);
+            repository.updateLastUsedAt(connection, userId, now);
             return true;
         } catch (SQLException e) {
             throw new IllegalStateException(
