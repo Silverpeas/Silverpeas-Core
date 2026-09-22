@@ -171,6 +171,10 @@ public class AuthenticationService implements Authentication {
       result = AuthenticationResponse.error(Status.PASSWORD_TO_CHANGE);
     } catch (AuthenticationPasswordMustBeChangedOnFirstLogin e) {
       result = AuthenticationResponse.error(Status.PASSWORD_TO_CHANGE_ON_FIRST_LOGIN);
+    } catch (AuthenticationTwoFactorRequiredException e) {
+      // A valid password was provided, but the configured second factor is required.
+      // This is an intermediate authentication state, not an authentication failure.
+      result = AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
     } catch (AuthenticationUserAccountBlockedException e) {
       result = AuthenticationResponse.error(Status.USER_ACCOUNT_BLOCKED);
     } catch (AuthenticationUserAccountDeactivatedException e) {
