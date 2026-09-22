@@ -376,16 +376,12 @@ public class AuthenticationService implements Authentication {
   }
 
   private int getUserId(final AuthenticationCredential credential) throws AuthenticationException {
-    try {
-      final String userId = adminController.getUserIdByLoginAndDomain(
-          credential.getLogin(), credential.getDomainId());
-      if (!StringUtil.isInteger(userId)) {
-        throw new AuthenticationException("Unable to resolve the authenticated user");
-      }
-      return Integer.parseInt(userId);
-    } catch (AdminException e) {
-      throw new AuthenticationException(e);
+    final String userId = adminController.getUserIdByLoginAndDomain(
+        credential.getLogin(), credential.getDomainId());
+    if (!StringUtil.isInteger(userId)) {
+      throw new AuthenticationException("Unable to resolve the authenticated user");
     }
+    return Integer.parseInt(userId);
   }
 
  @Override
