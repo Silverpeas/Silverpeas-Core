@@ -40,7 +40,7 @@ import java.util.Optional;
 public class TwoFactorAuthenticationRepositoryImpl
         implements TwoFactorAuthenticationRepository {
 
-    private static final String TABLE = "ST_UserTwoFactorAuthentication";
+    private static final String TABLE = "ST_User_2FA";
 
     private static final String USER_ID = "userId";
     private static final String SECRET = "secret";
