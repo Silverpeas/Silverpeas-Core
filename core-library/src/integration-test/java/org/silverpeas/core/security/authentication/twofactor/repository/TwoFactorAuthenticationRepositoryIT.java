@@ -85,16 +85,21 @@ public class TwoFactorAuthenticationRepositoryIT {
             new TwoFactorAuthenticationRepositoryImpl();
 
     @Before
-    public void initializeEncryptionKey() {
-        Transaction.performInOne(() -> {
-            try {
-                ContentEncryptionService.get().updateCipherKey(
-                        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
-            } catch (CryptoException e) {
-                throw new IllegalStateException(e);
-            }
-            return null;
-        });
+    public void initializeEncryptionKey() throws Exception {
+        File securityDir = new File(FileRepositoryManager.getSecurityDirPath());
+        FileUtils.forceMkdir(securityDir);
+        securityDir.setWritable(true);
+        securityDir.setReadable(true);
+        securityDir.setExecutable(true);
+
+        String key = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        Cipher cast5 = CipherFactory.getFactory().getCipher(CryptographicAlgorithmName.CAST5);
+        CipherKey wrappingKey = CipherKey.aKeyFromHexText("06277d1ce530c94bd9a13a72a58342be");
+        String encryptedContent = StringUtil.asBase64(wrappingKey.getRawKey()) + " " +
+            StringUtil.asBase64(cast5.encrypt(key, wrappingKey));
+        FileUtils.writeStringToFile(
+            new File(FileRepositoryManager.getSecurityDirPath() + ".aid_key"),
+            encryptedContent, Charsets.UTF_8);
     }
 
     @Test
