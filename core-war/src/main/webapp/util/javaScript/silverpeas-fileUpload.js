@@ -945,8 +945,12 @@
 
       // Header - details
       self.setFileIcon(uploadedFileData.iconUrl);
-      $('span', $fileDetails).empty().html(uploadedFileData.name, ' - ',
-              uploadedFileData.formattedSize);
+      // the name is the one carried by the uploaded file, so it is set as a text and not as an
+      // HTML content: escaping it on the sending side only, as the upload below does, protects
+      // from nothing as the request can be forged.
+      // Note the formatted size was already not displayed: html() takes a single argument, so the
+      // two following it were silently dropped. The display is left unchanged here.
+      $('span', $fileDetails).text(uploadedFileData.name);
 
       // Body - title and description
       $fileTitle.attr('id', uploadedFileData.uploadSessionId + '-title');
