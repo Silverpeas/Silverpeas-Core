@@ -70,6 +70,8 @@ public class TwoFactorAuthenticationRepositoryIT {
     @Deployment
     public static Archive<?> createTestArchive() {
         return LibCoreWarBuilder.onWarForTestClass(TwoFactorAuthenticationRepositoryIT.class)
+                .addPackages(true, "org.silverpeas.core.security.authentication.twofactor.repository")
+                .addPackages(true, "org.silverpeas.core.security.encryption")
                 .build();
     }
 
