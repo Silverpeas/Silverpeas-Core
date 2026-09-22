@@ -390,7 +390,8 @@ public class AuthenticationService implements Authentication {
       final AuthenticationCredential credential =
           AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
       final int userId = getUserId(credential);
-      if (!twoFactorAuthenticationService.validate(userId, code)) {
+      if (!twoFactorAuthenticationService.validate(userId, code)
+          && !twoFactorAuthenticationService.validateRecoveryCode(userId, code)) {
         return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
       }
 
