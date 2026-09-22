@@ -26,7 +26,6 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,12 +78,6 @@ public class TwoFactorAuthenticationRepositoryIT {
 
     private final TwoFactorAuthenticationRepository repository =
             new TwoFactorAuthenticationRepositoryImpl();
-
-    @Before
-    public void initializeEncryptionKey() throws Exception {
-        new org.silverpeas.core.security.encryption.DefaultContentEncryptionService()
-                .updateCipherKey("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
-    }
 
     @Test
     public void shouldReturnEmptyWhenNoConfigurationExists() throws SQLException {
