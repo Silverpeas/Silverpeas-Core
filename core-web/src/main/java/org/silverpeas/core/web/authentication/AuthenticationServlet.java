@@ -75,6 +75,12 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private static final String SSO_NON_EXISTING_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
   private static final String LOGIN_ERROR_PAGE = "/Login?ErrorCode=";
   private static final int COOKIE_TIME_LIFE = 31536000;
+  private static final String TWO_FACTOR_LOGIN = "Silverpeas_TwoFactor_Login";
+  private static final String TWO_FACTOR_DOMAIN = "Silverpeas_TwoFactor_Domain";
+  private static final String TWO_FACTOR_EXPIRES_AT = "Silverpeas_TwoFactor_ExpiresAt";
+  private static final long TWO_FACTOR_TIMEOUT_MILLIS = 5 * 60 * 1000L;
+  private static final String TWO_FACTOR_CODE_PARAMETER = "TwoFactorCode";
+  private static final String TWO_FACTOR_PAGE = "/twoFactorAuthentication.jsp";
 
   @Inject
   private AuthenticationService authService;
@@ -95,6 +101,11 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   @Override
   public void doPost(HttpServletRequest servletRequest, HttpServletResponse response) {
     try {
+      if (isTwoFactorValidationRequest(servletRequest)) {
+        processTwoFactorValidation(servletRequest, response);
+        return;
+      }
+
       HttpRequest request = HttpRequest.decorate(servletRequest);
 
       final UserSessionStatus userSessionStatus = existOpenedUserSession(servletRequest);
@@ -141,7 +152,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
               authenticationParameters.getCredential());
       userCanTryAgainToLoginVerifier.clearSession(request);
 
-      if (result == null || result.getStatus().isInError()) {
+      if (result != null && result.getStatus() == Status.TWO_FACTOR_REQUIRED) {
+        startTwoFactorChallenge(request, response, authenticationParameters);
+      } else if (result == null || result.getStatus().isInError()) {
         processError(result, request, response, authenticationParameters,
             userCanTryAgainToLoginVerifier);
       } else {
@@ -152,6 +165,75 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       SilverLogger.getLogger(this).error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private boolean isTwoFactorValidationRequest(final HttpServletRequest request) {
+    return StringUtil.isDefined(request.getParameter(TWO_FACTOR_CODE_PARAMETER));
+  }
+
+  private void startTwoFactorChallenge(final HttpRequest request,
+      final HttpServletResponse response,
+      final AuthenticationParameters authenticationParameters)
+      throws ServletException, IOException {
+    final HttpSession session = request.getSession(true);
+    session.setAttribute(TWO_FACTOR_LOGIN, authenticationParameters.getLogin());
+    session.setAttribute(TWO_FACTOR_DOMAIN, authenticationParameters.getDomainId());
+    session.setAttribute(TWO_FACTOR_EXPIRES_AT,
+        System.currentTimeMillis() + TWO_FACTOR_TIMEOUT_MILLIS);
+    forward(request, response, TWO_FACTOR_PAGE);
+  }
+
+  private void processTwoFactorValidation(final HttpServletRequest request,
+      final HttpServletResponse response)
+      throws ServletException, IOException {
+    final HttpSession session = request.getSession(false);
+    if (session == null) {
+      redirectToLoginForTwoFactorFailure(request, response);
+      return;
+    }
+
+    final String login = (String) session.getAttribute(TWO_FACTOR_LOGIN);
+    final String domainId = (String) session.getAttribute(TWO_FACTOR_DOMAIN);
+    final Long expiresAt = (Long) session.getAttribute(TWO_FACTOR_EXPIRES_AT);
+    if (!StringUtil.isDefined(login) || !StringUtil.isDefined(domainId) ||
+        expiresAt == null || expiresAt < System.currentTimeMillis()) {
+      clearTwoFactorChallenge(session);
+      redirectToLoginForTwoFactorFailure(request, response);
+      return;
+    }
+
+    final AuthenticationResponse result = authService.authenticateTwoFactor(
+        login, domainId, request.getParameter(TWO_FACTOR_CODE_PARAMETER));
+    if (!result.getStatus().succeeded()) {
+      request.setAttribute("twoFactorError", true);
+      forward(request, response, TWO_FACTOR_PAGE);
+      return;
+    }
+
+    clearTwoFactorChallenge(session);
+
+    final AuthenticationParameters authenticationParameters =
+        new AuthenticationParameters(request);
+    authenticationParameters.setCredential(
+        AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
+    final UserCanTryAgainToLoginVerifier verifier =
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(
+            authenticationParameters.getCredential());
+    verifier.clearSession(request);
+    openNewSession(result.getToken(), HttpRequest.decorate(request), response,
+        authenticationParameters, verifier);
+  }
+
+  private void clearTwoFactorChallenge(final HttpSession session) {
+    session.removeAttribute(TWO_FACTOR_LOGIN);
+    session.removeAttribute(TWO_FACTOR_DOMAIN);
+    session.removeAttribute(TWO_FACTOR_EXPIRES_AT);
+  }
+
+  private void redirectToLoginForTwoFactorFailure(final HttpServletRequest request,
+      final HttpServletResponse response) throws IOException {
+    response.sendRedirect(response.encodeRedirectURL(
+        URLUtil.getFullApplicationURL(request) + LOGIN_ERROR_PAGE + Status.TWO_FACTOR_REQUIRED));
   }
 
   private void openNewSession(final String token,
