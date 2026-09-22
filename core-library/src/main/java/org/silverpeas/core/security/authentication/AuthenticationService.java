@@ -234,12 +234,13 @@ public class AuthenticationService implements Authentication {
 
       // Password authentication has succeeded. Do not create the Silverpeas authentication
       // token before the second factor has been validated.
-      final int userId = getUserId(connection, credential);
-      if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) &&
-          twoFactorAuthenticationService.getAuthentication(userId)
-              .map(authentication -> authentication.isEnabled())
-              .orElse(false)) {
-        throw new AuthenticationTwoFactorRequiredException();
+      if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+        final int userId = getUserId(connection, credential);
+        if (twoFactorAuthenticationService.getAuthentication(userId)
+            .map(authentication -> authentication.isEnabled())
+            .orElse(false)) {
+          throw new AuthenticationTwoFactorRequiredException();
+        }
       }
 
       // Generate a random key and store it in database
