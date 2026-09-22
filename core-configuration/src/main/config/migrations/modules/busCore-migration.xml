@@ -29,7 +29,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://silverpeas.org/xml/ns/migration https://www.silverpeas.org/xsd/migration.xsd">
 
-  <current version="050">
+  <current version="051">
     <script name="create_table.sql" type="sql"/>
     <script name="create_table_production.sql" type="sql"/>
     <script name="create_constraint.sql" type="sql"/>
@@ -39,6 +39,10 @@
     <script name="init.sql" type="sql"/>
     <script name="init_production.sql" type="sql"/>
   </current>
+
+  <upgrade fromVersion="050">
+    <script name="alter_table.sql" type="sql"/>
+  </upgrade>
 
   <upgrade fromVersion="049">
     <script name="create_table.sql" type="sql"/>
