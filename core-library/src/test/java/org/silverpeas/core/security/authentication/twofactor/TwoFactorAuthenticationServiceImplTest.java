@@ -222,12 +222,21 @@ class TwoFactorAuthenticationServiceImplTest {
     }
 
     @Test
-    void shouldRejectInvalidUserIdentifier() {
-        assertThrows(IllegalArgumentException.class, () -> service.getAuthentication(0));
-        assertThrows(IllegalArgumentException.class, () -> service.startEnrollment(0));
-        assertThrows(IllegalArgumentException.class, () -> service.confirmEnrollment(0, CODE));
-        assertThrows(IllegalArgumentException.class, () -> service.validate(0, CODE));
-        assertThrows(IllegalArgumentException.class, () -> service.disable(0));
+    void shouldAcceptUserIdentifierZero() throws Exception {
+        when(repository.get(connection, 0)).thenReturn(Optional.empty());
+
+        assertTrue(service.getAuthentication(0).isEmpty());
+
+        verify(repository).get(connection, 0);
+    }
+
+    @Test
+    void shouldRejectNegativeUserIdentifier() {
+        assertThrows(IllegalArgumentException.class, () -> service.getAuthentication(-1));
+        assertThrows(IllegalArgumentException.class, () -> service.startEnrollment(-1));
+        assertThrows(IllegalArgumentException.class, () -> service.confirmEnrollment(-1, CODE));
+        assertThrows(IllegalArgumentException.class, () -> service.validate(-1, CODE));
+        assertThrows(IllegalArgumentException.class, () -> service.disable(-1));
     }
 
     @Test
