@@ -290,3 +290,13 @@ userId     INT          NOT NULL,
     failedAttempts INT NOT NULL DEFAULT 0,
     lockedUntil TIMESTAMP
 );
+
+CREATE TABLE ST_User_2FA_Recovery
+(
+    id BIGSERIAL PRIMARY KEY,
+    userId INT NOT NULL,
+    hash VARCHAR(64) NOT NULL,
+    used BOOLEAN NOT NULL DEFAULT FALSE,
+    createdAt TIMESTAMP NOT NULL,
+    usedAt TIMESTAMP
+);
