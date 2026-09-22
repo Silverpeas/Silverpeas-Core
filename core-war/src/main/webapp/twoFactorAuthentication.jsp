@@ -34,6 +34,8 @@
 <view:sp-body-part>
   <form id="formTwoFactor" action="<c:url value="/AuthenticationServlet"/>" method="post"
         accept-charset="UTF-8">
+    <input type="hidden" name="Login" value="<c:out value="${sessionScope.Silverpeas_TwoFactor_Login}"/>"/>
+    <input type="hidden" name="DomainId" value="<c:out value="${sessionScope.Silverpeas_TwoFactor_Domain}"/>"/>
     <div class="page">
       <div class="titre"><fmt:message key="authentication.logon.title"/></div>
       <div id="background">
