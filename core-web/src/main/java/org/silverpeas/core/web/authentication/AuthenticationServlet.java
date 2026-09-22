@@ -177,6 +177,13 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       final HttpServletResponse response,
       final AuthenticationParameters authenticationParameters)
       throws ServletException, IOException {
+    if (authService.isTwoFactorLocked(
+        authenticationParameters.getLogin(),
+        authenticationParameters.getDomainId())) {
+      redirectToLoginForTwoFactorFailure(request, response);
+      return;
+    }
+
     final HttpSession session = request.getSession(true);
     session.setAttribute(TWO_FACTOR_LOGIN, authenticationParameters.getLogin());
     session.setAttribute(TWO_FACTOR_DOMAIN, authenticationParameters.getDomainId());
