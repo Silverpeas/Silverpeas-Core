@@ -127,6 +127,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       } else if (route == DisableTwoFactor) {
         disableTwoFactor(request, myProfilSC);
         return getDestination(MySettings.toString(), myProfilSC, request);
+      } else if (route == GenerateRecoveryCodes) {
+        generateRecoveryCodes(request, myProfilSC);
+        return getDestination(MySettings.toString(), myProfilSC, request);
       } else if (route == MyNetworks) {
         request.setAttribute("View", function);
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
@@ -377,6 +380,15 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     ServiceProvider.getService(TwoFactorAuthenticationService.class)
         .disable(Integer.parseInt(sc.getUserId()));
     request.setAttribute("twoFactorMessage", "myProfile.twoFactor.disabled");
+  }
+
+  private void generateRecoveryCodes(HttpServletRequest request, MyProfilSessionController sc) {
+    if (!isTwoFactorAvailable()) {
+      throwHttpForbiddenError();
+    }
+    List<String> recoveryCodes = ServiceProvider.getService(TwoFactorAuthenticationService.class)
+        .generateRecoveryCodes(Integer.parseInt(sc.getUserId()));
+    request.setAttribute("twoFactorRecoveryCodes", recoveryCodes);
   }
 
   private boolean isTwoFactorAvailable() {
