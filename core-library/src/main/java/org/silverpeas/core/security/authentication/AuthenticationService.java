@@ -39,6 +39,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
 import org.silverpeas.core.security.authentication.exception.*;
+import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -87,6 +88,9 @@ public class AuthenticationService implements Authentication {
 
   @Inject
   private AdminController adminController;
+
+  @Inject
+  private TwoFactorAuthenticationService twoFactorAuthenticationService;
 
   private static final Predicate<Domain> DOMAIN_WITH_AUTHENTICATION_SERVER = d -> {
     final AuthenticationServer authenticationServer =
@@ -169,6 +173,8 @@ public class AuthenticationService implements Authentication {
       result = AuthenticationResponse.error(Status.USER_ACCOUNT_BLOCKED);
     } catch (AuthenticationUserAccountDeactivatedException e) {
       result = AuthenticationResponse.error(Status.USER_ACCOUNT_DEACTIVATED);
+    } catch (AuthenticationTwoFactorRequiredException e) {
+      result = AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
     } catch (AuthenticationException ae) {
       result = AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
     }
@@ -223,6 +229,15 @@ public class AuthenticationService implements Authentication {
 
       // Authentication test
       authenticationServer.authenticate(credential);
+
+      // Password authentication has succeeded. Do not create the Silverpeas authentication
+      // token before the second factor has been validated.
+      final int userId = getUserId(credential);
+      if (twoFactorAuthenticationService.getAuthentication(userId)
+          .map(authentication -> authentication.isEnabled())
+          .orElse(false)) {
+        throw new AuthenticationTwoFactorRequiredException();
+      }
 
       // Generate a random key and store it in database
       return getAuthToken(credential);
