@@ -27,6 +27,6 @@ public enum MyProfileRoutes {
 
   Main, MyInfos, MySettings, MyInvitations, MySentInvitations, LinkToSVP, UnlinkFromSVP,
   AddLinkToSVP, PublishStatus, DoPublishStatus, UpdatePhoto, UpdateMyInfos, UpdateMySettings,
-  MyWall, MyFeed, MyNetworks, DELETE_MY_ACCOUNT;
+  MyWall, MyFeed, MyNetworks, StartTwoFactor, ConfirmTwoFactor, DisableTwoFactor, DELETE_MY_ACCOUNT;
 
 }
