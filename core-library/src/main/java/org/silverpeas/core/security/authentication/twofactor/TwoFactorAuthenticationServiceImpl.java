@@ -258,8 +258,14 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             if (authentication.isEmpty() || !authentication.get().isEnabled()) {
                 return false;
             }
-            return recoveryCodeRepository.consume(
-                    connection, hashRecoveryCode(normalizeRecoveryCode(code)), Instant.now());
+            final Instant now = Instant.now();
+            final boolean consumed = recoveryCodeRepository.consume(
+                    connection, hashRecoveryCode(normalizeRecoveryCode(code)), now);
+            if (consumed) {
+                repository.resetFailedAttempts(connection, userId);
+                repository.updateLastUsedAt(connection, userId, now);
+            }
+            return consumed;
         } catch (SQLException e) {
             throw new IllegalStateException(
                     "Unable to validate recovery code for user " + userId, e);
