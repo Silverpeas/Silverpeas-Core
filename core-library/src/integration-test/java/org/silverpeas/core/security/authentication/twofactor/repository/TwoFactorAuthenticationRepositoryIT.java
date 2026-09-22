@@ -26,6 +26,7 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,6 +79,21 @@ public class TwoFactorAuthenticationRepositoryIT {
 
     private final TwoFactorAuthenticationRepository repository =
             new TwoFactorAuthenticationRepositoryImpl();
+
+    @Before
+    public void initializeEncryptionKey() throws Exception {
+        File securityDir = new File(FileRepositoryManager.getSecurityDirPath());
+        if (!securityDir.exists()) {
+            assertThat(securityDir.mkdirs(), is(true));
+        }
+        String key = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        Cipher cast5 = CipherFactory.getFactory().getCipher(CryptographicAlgorithmName.CAST5);
+        CipherKey wrappingKey = CipherKey.aKeyFromHexText("06277d1ce530c94bd9a13a72a58342be");
+        String content = StringUtil.asBase64(wrappingKey.getRawKey()) + " " +
+            StringUtil.asBase64(cast5.encrypt(key, wrappingKey));
+        FileUtils.writeStringToFile(
+            new File(securityDir, ".aid_key"), content, Charsets.UTF_8);
+    }
 
     @Test
     public void shouldReturnEmptyWhenNoConfigurationExists() throws SQLException {
