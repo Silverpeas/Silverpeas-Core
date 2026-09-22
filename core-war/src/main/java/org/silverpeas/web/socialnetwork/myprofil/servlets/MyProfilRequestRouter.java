@@ -320,6 +320,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       request.setAttribute("MenuDisplay", false);
     }
     request.setAttribute("UserSelfDeletionAccountEnabled", isUserSelfDeletionAccountEnabled());
+    request.setAttribute("twoFactorAvailable", ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings")
+        .getBoolean("twoFactorTotpEnabled", false));
     TwoFactorAuthenticationService twoFactorService =
         ServiceProvider.getService(TwoFactorAuthenticationService.class);
     twoFactorService.getAuthentication(Integer.parseInt(sc.getUserId())).ifPresentOrElse(
