@@ -33,18 +33,18 @@ CREATE TABLE ST_User
 
 CREATE TABLE ST_Group
 (
-    id              int           NOT NULL,
-    domainId        int           NOT NULL,
-    specificId      varchar(500)  NOT NULL,
-    spaceId         varchar(500),
-    superGroupId    int,
-    name            varchar(100)  NOT NULL,
-    description     varchar(400),
-    synchroRule     varchar(2000),
-    creationDate    timestamp,
-    saveDate        timestamp,
-    state           varchar(30)  NOT NULL,
-    stateSaveDate   timestamp    NOT NULL
+    id            int          NOT NULL,
+    domainId      int          NOT NULL,
+    specificId    varchar(500) NOT NULL,
+    spaceId       varchar(500),
+    superGroupId  int,
+    name          varchar(100) NOT NULL,
+    description   varchar(400),
+    synchroRule   varchar(2000),
+    creationDate  timestamp,
+    saveDate      timestamp,
+    state         varchar(30)  NOT NULL,
+    stateSaveDate timestamp    NOT NULL
 );
 
 CREATE TABLE ST_Group_User_Rel
@@ -55,26 +55,26 @@ CREATE TABLE ST_Group_User_Rel
 
 CREATE TABLE ST_Space
 (
-    id					 int          NOT NULL,
-    domainFatherId		 int,
-    name				 varchar(100) NOT NULL,
-    description			 varchar(400),
-    createdBy			 int,
-    firstPageType		 int          NOT NULL,
-    firstPageExtraParam	 varchar(400),
-    orderNum 			 int          DEFAULT(0) NOT NULL,
-    createTime 			 varchar(20),
-    updateTime 			 varchar(20),
-    removeTime 			 varchar(20),
-    spaceStatus 		 char(1),
-    updatedBy 			 int,
-    removedBy 			 int,
-    lang			     char(2),
-    isInheritanceBlocked int	      DEFAULT(0) NOT NULL,
-    isCommunity	         smallint     DEFAULT(0) NOT NULL,
-    look			     varchar(50),
-    displaySpaceFirst	 smallint,
-    isPersonal			 smallint
+    id                   int                  NOT NULL,
+    domainFatherId       int,
+    name                 varchar(100)         NOT NULL,
+    description          varchar(400),
+    createdBy            int,
+    firstPageType        int                  NOT NULL,
+    firstPageExtraParam  varchar(400),
+    orderNum             int      DEFAULT (0) NOT NULL,
+    createTime           varchar(20),
+    updateTime           varchar(20),
+    removeTime           varchar(20),
+    spaceStatus          char(1),
+    updatedBy            int,
+    removedBy            int,
+    lang                 char(2),
+    isInheritanceBlocked int      DEFAULT (0) NOT NULL,
+    isCommunity          smallint DEFAULT (0) NOT NULL,
+    look                 varchar(50),
+    displaySpaceFirst    smallint,
+    isPersonal           smallint
 );
 
 CREATE TABLE ST_SpaceI18N
@@ -127,14 +127,14 @@ CREATE TABLE ST_Instance_Data
 
 CREATE TABLE ST_UserRole
 (
-    id          int             NOT NULL,
-    instanceId  int             NOT NULL,
-    name        varchar(100)    NULL,
-    roleName    varchar(100)    NOT NULL,
-    description varchar(400),
-    isInherited int default (0) NOT NULL,
-    objectId    int,
-    objectType  varchar(50)
+    id            int           NOT NULL,
+    instanceId    int           NOT NULL,
+    name          varchar(100)  NULL,
+    roleName      varchar(100)  NOT NULL,
+    description   varchar(400),
+    isInherited	  int	        DEFAULT(0) NOT NULL,
+    objectId	  int,
+    objectType	  varchar(50)
 );
 
 CREATE TABLE ST_UserRole_User_Rel
@@ -277,4 +277,14 @@ CREATE TABLE SB_Contribution_Tracking
     action_type        VARCHAR(20) NOT NULL,
     action_date        TIMESTAMP   NOT NULL,
     action_by          VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE ST_UserTwoFactorAuthentication
+(
+    userId     INT          NOT NULL,
+    secret     VARCHAR(512) NOT NULL,
+    status     VARCHAR(20)  NOT NULL,
+    createdAt  TIMESTAMP    NOT NULL,
+    updatedAt  TIMESTAMP    NOT NULL,
+    lastUsedAt TIMESTAMP
 );
