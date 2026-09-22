@@ -78,6 +78,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private static final String TWO_FACTOR_LOGIN = "Silverpeas_TwoFactor_Login";
   private static final String TWO_FACTOR_DOMAIN = "Silverpeas_TwoFactor_Domain";
   private static final String TWO_FACTOR_EXPIRES_AT = "Silverpeas_TwoFactor_ExpiresAt";
+  private static final String TWO_FACTOR_ATTEMPTS = "Silverpeas_TwoFactor_Attempts";
   private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
   private static final String TWO_FACTOR_CODE_PARAMETER = "TwoFactorCode";
@@ -183,6 +184,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         "twoFactorTotpChallengeLifetime", 120);
     session.setAttribute(TWO_FACTOR_EXPIRES_AT,
         System.currentTimeMillis() + challengeLifetime * 1000L);
+    session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
     forward(request, response, TWO_FACTOR_PAGE);
   }
 
@@ -208,6 +210,15 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     final AuthenticationResponse result = authService.authenticateTwoFactor(
         login, domainId, request.getParameter(TWO_FACTOR_CODE_PARAMETER));
     if (!result.getStatus().succeeded()) {
+      final int attempts = ((Integer) session.getAttribute(TWO_FACTOR_ATTEMPTS)) + 1;
+      final int maxAttempts = AUTHENTICATION_SETTINGS.getInteger(
+          "twoFactorTotpMaxAttempts", 5);
+      if (attempts >= maxAttempts) {
+        clearTwoFactorChallenge(session);
+        redirectToLoginForTwoFactorFailure(request, response);
+        return;
+      }
+      session.setAttribute(TWO_FACTOR_ATTEMPTS, attempts);
       request.setAttribute("twoFactorError", true);
       forward(request, response, TWO_FACTOR_PAGE);
       return;
@@ -231,6 +242,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     session.removeAttribute(TWO_FACTOR_LOGIN);
     session.removeAttribute(TWO_FACTOR_DOMAIN);
     session.removeAttribute(TWO_FACTOR_EXPIRES_AT);
+    session.removeAttribute(TWO_FACTOR_ATTEMPTS);
   }
 
   private void redirectToLoginForTwoFactorFailure(final HttpServletRequest request,
