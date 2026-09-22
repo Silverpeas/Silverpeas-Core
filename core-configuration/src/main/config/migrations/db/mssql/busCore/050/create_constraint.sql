@@ -83,3 +83,12 @@ ALTER TABLE ST_UserFavoriteSpaces ADD CONSTRAINT FK_UserFavoriteSpaces_1 FOREIGN
 ALTER TABLE ST_UserFavoriteSpaces ADD CONSTRAINT FK_UserFavoriteSpaces_2 FOREIGN KEY (spaceid) REFERENCES ST_Space(id);
 
 ALTER TABLE SB_Contribution_Tracking ADD CONSTRAINT PK_CONTRIBUTION_TRACKING PRIMARY KEY (id);
+
+ALTER TABLE ST_User_2FA
+    ADD CONSTRAINT PK_User_2FA
+        PRIMARY KEY (userId);
+
+ALTER TABLE ST_User_2FA
+    ADD CONSTRAINT FK_User_2FA_User
+        FOREIGN KEY (userId)
+            REFERENCES ST_User(id);
