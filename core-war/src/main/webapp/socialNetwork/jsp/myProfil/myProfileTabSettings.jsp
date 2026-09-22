@@ -152,10 +152,11 @@
     <c:choose>
       <c:when test="${requestScope['twoFactorEnabled']}">
         <p><fmt:message key="myProfile.twoFactor.enabled"/></p>
-        <form name="DisableTwoFactorForm" action="<%=MyProfileRoutes.DisableTwoFactor %>" method="post">
-          <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
-          <input type="submit" class="sp_button" value="<c:out value="${disableTwoFactorLabel}"/>"/>
-        </form>
+        <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
+        <button type="submit" class="sp_button"
+                formaction="<%=MyProfileRoutes.DisableTwoFactor %>">
+          <c:out value="${disableTwoFactorLabel}"/>
+        </button>
       </c:when>
       <c:when test="${requestScope['twoFactorPending']}">
         <p><strong><fmt:message key="myProfile.twoFactor.secret"/></strong></p>
@@ -164,19 +165,21 @@
         <p style="word-break: break-all;">
           <code><c:out value="${requestScope['twoFactorOtpAuthUri']}"/></code>
         </p>
-        <form name="ConfirmTwoFactorForm" action="<%=MyProfileRoutes.ConfirmTwoFactor %>" method="post">
-          <label for="twoFactorCode"><fmt:message key="myProfile.twoFactor.code"/></label>
-          <input id="twoFactorCode" name="twoFactorCode" type="text" inputmode="numeric"
-                 autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required="required"/>
-          <fmt:message key="myProfile.twoFactor.confirm" var="confirmTwoFactorLabel"/>
-          <input type="submit" class="sp_button" value="<c:out value="${confirmTwoFactorLabel}"/>"/>
-        </form>
+        <label for="twoFactorCode"><fmt:message key="myProfile.twoFactor.code"/></label>
+        <input id="twoFactorCode" name="twoFactorCode" type="text" inputmode="numeric"
+               autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required="required"/>
+        <fmt:message key="myProfile.twoFactor.confirm" var="confirmTwoFactorLabel"/>
+        <button type="submit" class="sp_button"
+                formaction="<%=MyProfileRoutes.ConfirmTwoFactor %>">
+          <c:out value="${confirmTwoFactorLabel}"/>
+        </button>
       </c:when>
       <c:otherwise>
-        <form name="StartTwoFactorForm" action="<%=MyProfileRoutes.StartTwoFactor %>" method="post">
-          <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
-          <input type="submit" class="sp_button" value="<c:out value="${enableTwoFactorLabel}"/>"/>
-        </form>
+        <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
+        <button type="submit" class="sp_button"
+                formaction="<%=MyProfileRoutes.StartTwoFactor %>">
+          <c:out value="${enableTwoFactorLabel}"/>
+        </button>
       </c:otherwise>
     </c:choose>
   </c:if>
