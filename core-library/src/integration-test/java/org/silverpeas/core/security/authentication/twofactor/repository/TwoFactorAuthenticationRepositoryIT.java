@@ -23,6 +23,7 @@ package org.silverpeas.core.security.authentication.twofactor.repository;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.google.common.base.Charsets;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.apache.commons.io.FileUtils;
 import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -44,9 +45,8 @@ import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuth
 import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import jakarta.transaction.Transactional;
-
 import java.io.File;
+import java.security.Security;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -94,6 +94,7 @@ public class TwoFactorAuthenticationRepositoryIT {
 
     @Before
     public void initializeEncryptionKey() throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
         File securityDir = new File(FileRepositoryManager.getSecurityDirPath());
         FileUtils.forceMkdir(securityDir);
         securityDir.setWritable(true);
@@ -118,7 +119,6 @@ public class TwoFactorAuthenticationRepositoryIT {
     }
 
     @Test
-    @Transactional
     public void shouldSaveConfiguration() throws SQLException {
         final TwoFactorAuthentication authentication = authentication(SECRET);
 
