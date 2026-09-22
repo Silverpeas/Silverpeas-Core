@@ -152,6 +152,22 @@
     <c:choose>
       <c:when test="${requestScope['twoFactorEnabled']}">
         <p><fmt:message key="myProfile.twoFactor.enabled"/></p>
+        <fmt:message key="myProfile.twoFactor.recoveryCodes" var="recoveryCodesLabel"/>
+        <button type="submit" class="sp_button"
+                formaction="<%=MyProfileRoutes.GenerateRecoveryCodes %>">
+          <c:out value="${recoveryCodesLabel}"/>
+        </button>
+        <c:if test="${not empty requestScope['twoFactorRecoveryCodes']}">
+          <div class="tableBoard" style="margin-top: 15px;">
+            <p><strong><fmt:message key="myProfile.twoFactor.recoveryCodesGenerated"/></strong></p>
+            <p><fmt:message key="myProfile.twoFactor.recoveryCodesWarning"/></p>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(140px, 1fr)); gap: 8px; max-width: 420px;">
+              <c:forEach items="${requestScope['twoFactorRecoveryCodes']}" var="recoveryCode">
+                <code><c:out value="${recoveryCode}"/></code>
+              </c:forEach>
+            </div>
+          </div>
+        </c:if>
         <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
         <button type="submit" class="sp_button"
                 formaction="<%=MyProfileRoutes.DisableTwoFactor %>">
