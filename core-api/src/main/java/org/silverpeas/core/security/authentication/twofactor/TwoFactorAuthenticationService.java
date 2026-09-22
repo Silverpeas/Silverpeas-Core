@@ -23,6 +23,7 @@ package org.silverpeas.core.security.authentication.twofactor;
 
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -71,6 +72,26 @@ public interface TwoFactorAuthenticationService {
      * @return true if the code is valid for the enabled configuration.
      */
     boolean validate(int userId, String code);
+
+    /**
+     * Generates a new set of recovery codes for an enabled user.
+     *
+     * <p>The returned clear-text codes are only available at generation time.
+     * Their hashes are persisted instead.</p>
+     *
+     * @param userId the Silverpeas user identifier.
+     * @return the generated recovery codes.
+     */
+    List<String> generateRecoveryCodes(int userId);
+
+    /**
+     * Validates and consumes one recovery code for an enabled user.
+     *
+     * @param userId the Silverpeas user identifier.
+     * @param code the recovery code entered by the user.
+     * @return true if the code was valid and has been consumed.
+     */
+    boolean validateRecoveryCode(int userId, String code);
 
     /**
      * Disables two-factor authentication for a user.
