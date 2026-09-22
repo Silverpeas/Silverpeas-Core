@@ -44,6 +44,8 @@ import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuth
 import org.silverpeas.core.test.LibCoreWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
+import jakarta.transaction.Transactional;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -116,6 +118,7 @@ public class TwoFactorAuthenticationRepositoryIT {
     }
 
     @Test
+    @Transactional
     public void shouldSaveConfiguration() throws SQLException {
         final TwoFactorAuthentication authentication = authentication(SECRET);
 
@@ -133,6 +136,7 @@ public class TwoFactorAuthenticationRepositoryIT {
     }
 
     @Test
+    @Transactional
     public void shouldEncryptSecretWhenSaving() throws SQLException {
         final TwoFactorAuthentication authentication = authentication(SECRET);
 
@@ -151,6 +155,7 @@ public class TwoFactorAuthenticationRepositoryIT {
     }
 
     @Test
+    @Transactional
     public void shouldUpdateExistingConfiguration() throws SQLException {
         final TwoFactorAuthentication authentication = authentication(SECRET);
 
@@ -175,6 +180,7 @@ public class TwoFactorAuthenticationRepositoryIT {
     }
 
     @Test
+    @Transactional
     public void shouldPersistLastUsedAt() throws SQLException {
         final Instant lastUsedAt = Instant.parse("2026-09-22T08:00:00Z");
 
@@ -189,6 +195,7 @@ public class TwoFactorAuthenticationRepositoryIT {
     }
 
     @Test
+    @Transactional
     public void shouldDeleteConfiguration() throws SQLException {
         try (Connection connection = dbSetupRule.getSafeConnection()) {
             repository.save(connection, authentication(SECRET));
