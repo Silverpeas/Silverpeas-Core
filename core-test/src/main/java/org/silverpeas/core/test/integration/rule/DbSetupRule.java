@@ -13,6 +13,10 @@
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
+ * You should have received a copy of the text describing the FLOSS exception,
+ * and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -252,11 +256,11 @@ public class DbSetupRule implements TestRule {
   private void cleanUpDataSource(Description description) {
     try {
       try (Connection connection = getSafeConnection();
-           PreparedStatement statement = connection.prepareStatement("SHOW TABLES");
-           ResultSet rs = statement.executeQuery()) {
+           ResultSet rs = connection.getMetaData().getTables(
+               connection.getCatalog(), connection.getSchema(), "%", new String[]{"TABLE"})) {
         List<String> tableNames = new ArrayList<>();
         while (rs.next()) {
-          tableNames.add(rs.getString(1));
+          tableNames.add(rs.getString("TABLE_NAME"));
         }
         for (String tableName : tableNames) {
           if (!tableName.toUpperCase().startsWith(QUARTZ_TABLE_PREFIX)) {
@@ -373,7 +377,7 @@ public class DbSetupRule implements TestRule {
     if (theCurrentRuleInstance == null) {
       String message =
           "Calling getSafeConnection method requires that the test must use directly DbSetupRule " +
-              "or extends DataSetTest.\n";
+          "or extends DataSetTest.\n";
       message += "Maybe is the method called from a Thread instantiated from a Test method. " +
           "Please call instead getSafeConnectionFromDifferentThread method if it is the case.";
       Logger.getLogger(DbSetupRule.class.getName()).severe(message);
@@ -407,8 +411,8 @@ public class DbSetupRule implements TestRule {
   }
 
   /**
-   * Gets the actual data set in the database so that you can check information persisted in the
-   * data source according to the operations that were performed in the behaviour of the test.
+   * Gets the actual data set in the database so that you can check information persisted in
+   * the data source according to the operations that were performed in the behaviour of the test.
    * @param connection a connection to the database
    * @return the actual data set.
    */
