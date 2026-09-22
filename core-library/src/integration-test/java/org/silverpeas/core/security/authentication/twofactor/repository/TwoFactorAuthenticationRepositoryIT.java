@@ -26,10 +26,17 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.security.encryption.cipher.Cipher;
+import org.silverpeas.core.security.encryption.cipher.CipherFactory;
+import org.silverpeas.core.security.encryption.cipher.CipherKey;
+import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.kernel.util.StringUtil;
+
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.test.LibCoreWarBuilder;
@@ -83,16 +90,15 @@ public class TwoFactorAuthenticationRepositoryIT {
     @Before
     public void initializeEncryptionKey() throws Exception {
         File securityDir = new File(FileRepositoryManager.getSecurityDirPath());
-        if (!securityDir.exists()) {
-            assertThat(securityDir.mkdirs(), is(true));
-        }
+        FileUtils.forceMkdir(securityDir);
         String key = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
         Cipher cast5 = CipherFactory.getFactory().getCipher(CryptographicAlgorithmName.CAST5);
         CipherKey wrappingKey = CipherKey.aKeyFromHexText("06277d1ce530c94bd9a13a72a58342be");
         String content = StringUtil.asBase64(wrappingKey.getRawKey()) + " " +
             StringUtil.asBase64(cast5.encrypt(key, wrappingKey));
         FileUtils.writeStringToFile(
-            new File(securityDir, ".aid_key"), content, Charsets.UTF_8);
+            new File(FileRepositoryManager.getSecurityDirPath() + ".aid_key"),
+            content, "UTF-8");
     }
 
     @Test
