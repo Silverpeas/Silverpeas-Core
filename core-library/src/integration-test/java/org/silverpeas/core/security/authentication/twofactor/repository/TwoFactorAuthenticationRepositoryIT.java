@@ -120,102 +120,98 @@ public class TwoFactorAuthenticationRepositoryIT {
     }
 
     @Test
-    public void shouldSaveConfiguration() throws SQLException {\n      Transaction.performInOne(() -> {
-                final TwoFactorAuthentication authentication = authentication(SECRET);
+    public void shouldSaveConfiguration() throws SQLException {
+        Transaction.performInOne(() -> {
+            final TwoFactorAuthentication authentication = authentication(SECRET);
 
-                try (Connection connection = dbSetupRule.getSafeConnection()) {
-                    repository.save(connection, authentication);
+            try (Connection connection = dbSetupRule.getSafeConnection()) {
+                repository.save(connection, authentication);
 
-                    final Optional<TwoFactorAuthentication> stored = repository.get(connection, USER_ID);
-                    assertThat(stored.isPresent(), is(true));
-                    assertThat(stored.get().getUserId(), is(USER_ID));
-                    assertThat(stored.get().getSecret(), is(SECRET));
-                    assertThat(stored.get().getStatus(), is(TwoFactorAuthentication.Status.PENDING));
-                    assertThat(stored.get().getFailedAttempts(), is(0));
-                    assertThat(stored.get().getLockedUntil(), nullValue());
-                }
-            
-        return null;
-      });}
-
+                final Optional<TwoFactorAuthentication> stored = repository.get(connection, USER_ID);
+                assertThat(stored.isPresent(), is(true));
+                assertThat(stored.get().getUserId(), is(USER_ID));
+                assertThat(stored.get().getSecret(), is(SECRET));
+                assertThat(stored.get().getStatus(), is(TwoFactorAuthentication.Status.PENDING));
+                assertThat(stored.get().getFailedAttempts(), is(0));
+                assertThat(stored.get().getLockedUntil(), nullValue());
+            }
+            return null;
+        });
+    }
     @Test
-    @Transactional
-    public void shouldEncryptSecretWhenSaving() throws SQLException {\n      Transaction.performInOne(() -> {
-                final TwoFactorAuthentication authentication = authentication(SECRET);
+    public void shouldEncryptSecretWhenSaving() throws SQLException {
+        Transaction.performInOne(() -> {
+            final TwoFactorAuthentication authentication = authentication(SECRET);
 
-                try (Connection connection = dbSetupRule.getSafeConnection()) {
-                    repository.save(connection, authentication);
+            try (Connection connection = dbSetupRule.getSafeConnection()) {
+                repository.save(connection, authentication);
 
-                    final String storedSecret = JdbcSqlQuery
-                            .select("secret")
-                            .from("ST_User_2FA")
-                            .where("userId = ?", USER_ID)
-                            .executeUniqueWith(connection, rs -> rs.getString("secret"));
+                final String storedSecret = JdbcSqlQuery
+                        .select("secret")
+                        .from("ST_User_2FA")
+                        .where("userId = ?", USER_ID)
+                        .executeUniqueWith(connection, rs -> rs.getString("secret"));
 
-                    assertThat(storedSecret, is(not(SECRET)));
-                    assertThat(storedSecret, is(not(nullValue())));
-                }
-            
-        return null;
-      });}
-
+                assertThat(storedSecret, is(not(SECRET)));
+                assertThat(storedSecret, is(not(nullValue())));
+            }
+            return null;
+        });
+    }
     @Test
-    @Transactional
-    public void shouldUpdateExistingConfiguration() throws SQLException {\n      Transaction.performInOne(() -> {
-                final TwoFactorAuthentication authentication = authentication(SECRET);
+    public void shouldUpdateExistingConfiguration() throws SQLException {
+        Transaction.performInOne(() -> {
+            final TwoFactorAuthentication authentication = authentication(SECRET);
 
-                try (Connection connection = dbSetupRule.getSafeConnection()) {
-                    repository.save(connection, authentication);
+            try (Connection connection = dbSetupRule.getSafeConnection()) {
+                repository.save(connection, authentication);
 
-                    final TwoFactorAuthentication updated = authentication(UPDATED_SECRET).toBuilder()
-                            .status(TwoFactorAuthentication.Status.ENABLED)
-                            .failedAttempts(2)
-                            .lockedUntil(Instant.now().plusSeconds(60))
-                            .build();
+                final TwoFactorAuthentication updated = authentication(UPDATED_SECRET).toBuilder()
+                        .status(TwoFactorAuthentication.Status.ENABLED)
+                        .failedAttempts(2)
+                        .lockedUntil(Instant.now().plusSeconds(60))
+                        .build();
 
-                    repository.save(connection, updated);
+                repository.save(connection, updated);
 
-                    final Optional<TwoFactorAuthentication> stored = repository.get(connection, USER_ID);
-                    assertThat(stored.isPresent(), is(true));
-                    assertThat(stored.get().getSecret(), is(UPDATED_SECRET));
-                    assertThat(stored.get().getStatus(), is(TwoFactorAuthentication.Status.ENABLED));
-                    assertThat(stored.get().getFailedAttempts(), is(2));
-                    assertThat(stored.get().getLockedUntil(), is(updated.getLockedUntil()));
-                }
-            
-        return null;
-      });}
-
+                final Optional<TwoFactorAuthentication> stored = repository.get(connection, USER_ID);
+                assertThat(stored.isPresent(), is(true));
+                assertThat(stored.get().getSecret(), is(UPDATED_SECRET));
+                assertThat(stored.get().getStatus(), is(TwoFactorAuthentication.Status.ENABLED));
+                assertThat(stored.get().getFailedAttempts(), is(2));
+                assertThat(stored.get().getLockedUntil(), is(updated.getLockedUntil()));
+            }
+            return null;
+        });
+    }
     @Test
-    @Transactional
-    public void shouldPersistLastUsedAt() throws SQLException {\n      Transaction.performInOne(() -> {
-                final Instant lastUsedAt = Instant.parse("2026-09-22T08:00:00Z");
+    public void shouldPersistLastUsedAt() throws SQLException {
+        Transaction.performInOne(() -> {
+            final Instant lastUsedAt = Instant.parse("2026-09-22T08:00:00Z");
 
-                try (Connection connection = dbSetupRule.getSafeConnection()) {
-                    repository.save(connection, authentication(SECRET));
-                    repository.updateLastUsedAt(connection, USER_ID, lastUsedAt);
+            try (Connection connection = dbSetupRule.getSafeConnection()) {
+                repository.save(connection, authentication(SECRET));
+                repository.updateLastUsedAt(connection, USER_ID, lastUsedAt);
 
-                    final Optional<TwoFactorAuthentication> stored = repository.get(connection, USER_ID);
-                    assertThat(stored.isPresent(), is(true));
-                    assertThat(stored.get().getLastUsedAt(), is(lastUsedAt));
-                }
-            
-        return null;
-      });}
-
+                final Optional<TwoFactorAuthentication> stored = repository.get(connection, USER_ID);
+                assertThat(stored.isPresent(), is(true));
+                assertThat(stored.get().getLastUsedAt(), is(lastUsedAt));
+            }
+            return null;
+        });
+    }
     @Test
-    @Transactional
-    public void shouldDeleteConfiguration() throws SQLException {\n      Transaction.performInOne(() -> {
-                try (Connection connection = dbSetupRule.getSafeConnection()) {
-                    repository.save(connection, authentication(SECRET));
-                    repository.delete(connection, USER_ID);
+    public void shouldDeleteConfiguration() throws SQLException {
+        Transaction.performInOne(() -> {
+            try (Connection connection = dbSetupRule.getSafeConnection()) {
+                repository.save(connection, authentication(SECRET));
+                repository.delete(connection, USER_ID);
 
-                    assertThat(repository.get(connection, USER_ID), is(Optional.empty()));
-                }
-            
-        return null;
-      });}
-
+                assertThat(repository.get(connection, USER_ID), is(Optional.empty()));
+            }
+            return null;
+        });
+    }
     private TwoFactorAuthentication authentication(final String secret) {
         return TwoFactorAuthentication.builder(USER_ID)
                 .secret(secret)
