@@ -44,6 +44,8 @@ public final class TwoFactorAuthentication implements Serializable {
     private final Instant createdAt;
     private final Instant updatedAt;
     private final Instant lastUsedAt;
+    private final int failedAttempts;
+    private final Instant lockedUntil;
 
     private TwoFactorAuthentication(final Builder builder) {
         this.userId = builder.userId;
@@ -52,6 +54,8 @@ public final class TwoFactorAuthentication implements Serializable {
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
         this.lastUsedAt = builder.lastUsedAt;
+        this.failedAttempts = builder.failedAttempts;
+        this.lockedUntil = builder.lockedUntil;
     }
 
     public int getUserId() {
@@ -86,6 +90,22 @@ public final class TwoFactorAuthentication implements Serializable {
         return lastUsedAt;
     }
 
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+
+    public Instant getLockedUntil() {
+        return lockedUntil;
+    }
+
+    public boolean isLocked() {
+        return isLocked(Instant.now());
+    }
+
+    public boolean isLocked(final Instant now) {
+        return lockedUntil != null && lockedUntil.isAfter(now);
+    }
+
     public boolean isEnabled() {
         return status == Status.ENABLED;
     }
@@ -104,7 +124,9 @@ public final class TwoFactorAuthentication implements Serializable {
                 .status(status)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .lastUsedAt(lastUsedAt);
+                .lastUsedAt(lastUsedAt)
+                .failedAttempts(failedAttempts)
+                .lockedUntil(lockedUntil);
     }
 
     public static Builder builder(final int userId) {
@@ -121,16 +143,19 @@ public final class TwoFactorAuthentication implements Serializable {
         }
         final TwoFactorAuthentication that = (TwoFactorAuthentication) o;
         return userId == that.userId
+                && failedAttempts == that.failedAttempts
                 && Objects.equals(secret, that.secret)
                 && status == that.status
                 && Objects.equals(createdAt, that.createdAt)
                 && Objects.equals(updatedAt, that.updatedAt)
-                && Objects.equals(lastUsedAt, that.lastUsedAt);
+                && Objects.equals(lastUsedAt, that.lastUsedAt)
+                && Objects.equals(lockedUntil, that.lockedUntil);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, secret, status, createdAt, updatedAt, lastUsedAt);
+        return Objects.hash(userId, secret, status, createdAt, updatedAt, lastUsedAt,
+                failedAttempts, lockedUntil);
     }
 
     @Override
@@ -141,6 +166,8 @@ public final class TwoFactorAuthentication implements Serializable {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", lastUsedAt=" + lastUsedAt +
+                ", failedAttempts=" + failedAttempts +
+                ", lockedUntil=" + lockedUntil +
                 '}';
     }
 
@@ -152,6 +179,8 @@ public final class TwoFactorAuthentication implements Serializable {
         private Instant createdAt;
         private Instant updatedAt;
         private Instant lastUsedAt;
+        private int failedAttempts;
+        private Instant lockedUntil;
 
         private Builder(final int userId) {
             this.userId = userId;
@@ -179,6 +208,16 @@ public final class TwoFactorAuthentication implements Serializable {
 
         public Builder lastUsedAt(final Instant lastUsedAt) {
             this.lastUsedAt = lastUsedAt;
+            return this;
+        }
+
+        public Builder failedAttempts(final int failedAttempts) {
+            this.failedAttempts = failedAttempts;
+            return this;
+        }
+
+        public Builder lockedUntil(final Instant lockedUntil) {
+            this.lockedUntil = lockedUntil;
             return this;
         }
 
