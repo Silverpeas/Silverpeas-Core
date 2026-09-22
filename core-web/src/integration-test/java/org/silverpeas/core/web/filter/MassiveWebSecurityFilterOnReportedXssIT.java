@@ -153,6 +153,32 @@ public class MassiveWebSecurityFilterOnReportedXssIT {
   }
 
   /**
+   * A scripting scheme given as the value of an attribute runs as well as an event callback does,
+   * and doesn't hold any on prefix. The colon introducing it can moreover be written as an HTML
+   * entity, which the browsers decode. This is the form reported by the CVE-2026-78741 against the
+   * name of an uploaded file.
+   */
+  @Test
+  public void scriptingSchemesAreDetectedInTheAttributeValues() {
+    assertBlocked(injection("<form><button formaction=javascript:alert(1)>CLICKME"));
+    assertBlocked(injection("<form><button formaction=javascript&colon;alert(1)>CLICKME"));
+    assertBlocked(injection("<a href=\"javascript:alert(1)\">a link</a>"));
+    assertBlocked(injection("<a href=' JavaScript&#58;alert(1)'>a link</a>"));
+    assertBlocked(injection("<a href=\"javascript&#x3A;alert(1)\">a link</a>"));
+    assertBlocked(injection("<iframe src=vbscript:msgbox(1)>"));
+  }
+
+  /**
+   * The data scheme is deliberately left out of the detection above: the contents do embed their
+   * images with it, and a mere mention of a scripting scheme in a text declares nothing.
+   */
+  @Test
+  public void theInlinedImagesAndThePlainTextsArentTakenForScriptingSchemes() {
+    assertNotBlocked(injection("<img src=\"data:image/png;base64,iVBORw0KGgo=\"/>"));
+    assertNotBlocked(injection("the javascript: scheme is explained in this page"));
+  }
+
+  /**
    * The detection expects one of the characters after which the HTML tokenizer does await an
    * attribute name. A character which never plays such a role, like the question mark or the
    * ampersand of a query string, doesn't make an event callback out of the text that follows.
