@@ -78,7 +78,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private static final String TWO_FACTOR_LOGIN = "Silverpeas_TwoFactor_Login";
   private static final String TWO_FACTOR_DOMAIN = "Silverpeas_TwoFactor_Domain";
   private static final String TWO_FACTOR_EXPIRES_AT = "Silverpeas_TwoFactor_ExpiresAt";
-  private static final long TWO_FACTOR_TIMEOUT_MILLIS = 5 * 60 * 1000L;
+  private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
   private static final String TWO_FACTOR_CODE_PARAMETER = "TwoFactorCode";
   private static final String TWO_FACTOR_PAGE = "/twoFactorAuthentication.jsp";
 
@@ -178,8 +179,10 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     final HttpSession session = request.getSession(true);
     session.setAttribute(TWO_FACTOR_LOGIN, authenticationParameters.getLogin());
     session.setAttribute(TWO_FACTOR_DOMAIN, authenticationParameters.getDomainId());
+    final int challengeLifetime = AUTHENTICATION_SETTINGS.getInteger(
+        "twoFactorTotpChallengeLifetime", 120);
     session.setAttribute(TWO_FACTOR_EXPIRES_AT,
-        System.currentTimeMillis() + TWO_FACTOR_TIMEOUT_MILLIS);
+        System.currentTimeMillis() + challengeLifetime * 1000L);
     forward(request, response, TWO_FACTOR_PAGE);
   }
 
