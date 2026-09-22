@@ -50,13 +50,25 @@
           <c:if test="${requestScope.twoFactorError}">
             <p class="error"><fmt:message key="authentication.logon.twoFactor.invalidCode"/></p>
           </c:if>
-          <p>
+          <p id="totpMode">
             <label>
               <span><fmt:message key="authentication.logon.twoFactor.code"/></span>
               <input type="text" name="TwoFactorCode" id="TwoFactorCode"
                      inputmode="numeric" autocomplete="one-time-code"
                      maxlength="6" pattern="[0-9]{6}" autofocus/>
             </label>
+          </p>
+          <p id="recoveryMode" style="display:none">
+            <label>
+              <span><fmt:message key="authentication.logon.twoFactor.recoveryCode"/></span>
+              <input type="text" id="RecoveryCode"
+                     inputmode="text" autocomplete="off"
+                     maxlength="12" pattern="[A-Za-z0-9-]{10,12}"/>
+            </label>
+          </p>
+          <p>
+            <a href="#" id="useRecoveryCode"><fmt:message key="authentication.logon.twoFactor.useRecoveryCode"/></a>
+            <a href="#" id="useTotpCode" style="display:none"><fmt:message key="authentication.logon.twoFactor.useTotpCode"/></a>
           </p>
           <p>
             <input type="submit" value="<fmt:message key="authentication.logon.twoFactor.submit"/>"/>
