@@ -271,6 +271,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     public void disable(final int userId) {
         validateUserId(userId);
         try (Connection connection = openConnection()) {
+            recoveryCodeRepository.deleteAll(connection, userId);
             repository.delete(connection, userId);
         } catch (SQLException e) {
             throw new IllegalStateException(
