@@ -396,7 +396,7 @@ public class AuthenticationService implements Authentication {
     try {
       final Integer userId = query.executeUniqueWith(connection,
           row -> row.getInt(USER_ID_COLUMN_NAME));
-      if (userId == null || userId <= 0) {
+      if (userId == null || userId < 0) {
         throw new AuthenticationException("Unable to resolve the authenticated user");
       }
       return userId;
