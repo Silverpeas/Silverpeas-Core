@@ -137,6 +137,50 @@
     </tr>
   </table>
   <br/>
+  <c:if test="${requestScope['twoFactorAvailable']}">
+    <hr/>
+    <h3><fmt:message key="myProfile.twoFactor.title"/></h3>
+    <p><fmt:message key="myProfile.twoFactor.description"/></p>
+
+    <c:if test="${not empty requestScope['twoFactorMessage']}">
+      <p class="txtlibform"><fmt:message key="${requestScope['twoFactorMessage']}"/></p>
+    </c:if>
+    <c:if test="${not empty requestScope['twoFactorError']}">
+      <p class="txtlibform"><fmt:message key="${requestScope['twoFactorError']}"/></p>
+    </c:if>
+
+    <c:choose>
+      <c:when test="${requestScope['twoFactorEnabled']}">
+        <p><fmt:message key="myProfile.twoFactor.enabled"/></p>
+        <form name="DisableTwoFactorForm" action="<%=MyProfileRoutes.DisableTwoFactor %>" method="post">
+          <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
+          <input type="submit" class="sp_button" value="<c:out value="${disableTwoFactorLabel}"/>"/>
+        </form>
+      </c:when>
+      <c:when test="${requestScope['twoFactorPending']}">
+        <p><strong><fmt:message key="myProfile.twoFactor.secret"/></strong></p>
+        <p><code><c:out value="${requestScope['twoFactorAuthentication'].secret}"/></code></p>
+        <p><fmt:message key="myProfile.twoFactor.authenticatorUri"/></p>
+        <p style="word-break: break-all;">
+          <code><c:out value="${requestScope['twoFactorOtpAuthUri']}"/></code>
+        </p>
+        <form name="ConfirmTwoFactorForm" action="<%=MyProfileRoutes.ConfirmTwoFactor %>" method="post">
+          <label for="twoFactorCode"><fmt:message key="myProfile.twoFactor.code"/></label>
+          <input id="twoFactorCode" name="twoFactorCode" type="text" inputmode="numeric"
+                 autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required="required"/>
+          <fmt:message key="myProfile.twoFactor.confirm" var="confirmTwoFactorLabel"/>
+          <input type="submit" class="sp_button" value="<c:out value="${confirmTwoFactorLabel}"/>"/>
+        </form>
+      </c:when>
+      <c:otherwise>
+        <form name="StartTwoFactorForm" action="<%=MyProfileRoutes.StartTwoFactor %>" method="post">
+          <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
+          <input type="submit" class="sp_button" value="<c:out value="${enableTwoFactorLabel}"/>"/>
+        </form>
+      </c:otherwise>
+    </c:choose>
+  </c:if>
+
   <fmt:message key="GML.validate" var="validate"/>
   <fmt:message key="GML.cancel" var="cancel"/>
   <center>
