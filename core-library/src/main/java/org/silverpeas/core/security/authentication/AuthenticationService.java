@@ -352,6 +352,30 @@ public class AuthenticationService implements Authentication {
   }
 
  /**
+  * Checks whether the TOTP authentication of the specified user is temporarily locked.
+  *
+  * @param login the user login.
+  * @param domainId the user domain identifier.
+  * @return true when the configured second factor is locked.
+  */
+  public boolean isTwoFactorLocked(final String login, final String domainId) {
+    try {
+      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+        return false;
+      }
+      final AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+      final int userId = getUserId(credential);
+      return twoFactorAuthenticationService.getAuthentication(userId)
+          .map(authentication -> authentication.isEnabled() && authentication.isLocked())
+          .orElse(false);
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).warn(e);
+      return false;
+    }
+  }
+
+ /**
   * Completes a pending local authentication with the second factor.
   *
   * <p>No password is accepted by this method. The caller must already have authenticated
