@@ -345,6 +345,30 @@ public class AuthenticationService implements Authentication {
     onPasswordAndEmailChanged(credential, email);
   }
 
+ /**
+  * Completes a pending local authentication with the second factor.
+  *
+  * <p>No password is accepted by this method. The caller must already have authenticated
+  * the user with the password and keep the pending authentication state server-side.</p>
+  */
+  public AuthenticationResponse authenticateTwoFactor(
+      final String login, final String domainId, final String code) {
+    try {
+      final AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+      final int userId = getUserId(credential);
+      if (!twoFactorAuthenticationService.validate(userId, code)) {
+        return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+      }
+
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
+      return AuthenticationResponse.succeed(getAuthToken(credential));
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).warn(e);
+      return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+    }
+  }
+
  @Override
   public String getAuthToken(AuthenticationCredential credential) {
     String authKey = generateTokenFor(credential.getLogin());
