@@ -49,6 +49,8 @@ public class TwoFactorAuthenticationRepositoryImpl
     private static final String CREATED_AT = "createdAt";
     private static final String UPDATED_AT = "updatedAt";
     private static final String LAST_USED_AT = "lastUsedAt";
+    private static final String FAILED_ATTEMPTS = "failedAttempts";
+    private static final String LOCKED_UNTIL = "lockedUntil";
 
     private static final int CIPHER_KEY_SIZE = 32;
 
@@ -66,7 +68,9 @@ public class TwoFactorAuthenticationRepositoryImpl
                                 STATUS + ", " +
                                 CREATED_AT + ", " +
                                 UPDATED_AT + ", " +
-                                LAST_USED_AT)
+                                LAST_USED_AT + ", " +
+                                FAILED_ATTEMPTS + ", " +
+                                LOCKED_UNTIL)
                 .from(TABLE)
                 .where(USER_ID + " = ?", userId)
                 .executeUniqueWith(connection, rs -> {
@@ -74,6 +78,7 @@ public class TwoFactorAuthenticationRepositoryImpl
                     final Timestamp createdAt = rs.getTimestamp(CREATED_AT);
                     final Timestamp updatedAt = rs.getTimestamp(UPDATED_AT);
                     final Timestamp lastUsedAt = rs.getTimestamp(LAST_USED_AT);
+                    final Timestamp lockedUntil = rs.getTimestamp(LOCKED_UNTIL);
 
                     return TwoFactorAuthentication.builder(userId)
                             .secret(decryptSecret(rs.getString(SECRET)))
@@ -82,6 +87,8 @@ public class TwoFactorAuthenticationRepositoryImpl
                             .createdAt(toInstant(createdAt))
                             .updatedAt(toInstant(updatedAt))
                             .lastUsedAt(toInstant(lastUsedAt))
+                            .failedAttempts(rs.getInt(FAILED_ATTEMPTS))
+                            .lockedUntil(toInstant(lockedUntil))
                             .build();
                 });
 
@@ -113,6 +120,8 @@ public class TwoFactorAuthenticationRepositoryImpl
                     .withUpdateParam(
                             LAST_USED_AT,
                             authentication.getLastUsedAt())
+                    .withUpdateParam(FAILED_ATTEMPTS, authentication.getFailedAttempts())
+                    .withUpdateParam(LOCKED_UNTIL, authentication.getLockedUntil())
                     .where(
                             USER_ID + " = ?",
                             authentication.getUserId())
@@ -132,6 +141,8 @@ public class TwoFactorAuthenticationRepositoryImpl
                     .withInsertParam(
                             LAST_USED_AT,
                             authentication.getLastUsedAt())
+                    .withInsertParam(FAILED_ATTEMPTS, authentication.getFailedAttempts())
+                    .withInsertParam(LOCKED_UNTIL, authentication.getLockedUntil())
                     .executeWith(connection);
         }
     }
@@ -158,6 +169,30 @@ public class TwoFactorAuthenticationRepositoryImpl
         JdbcSqlQuery
                 .update(TABLE)
                 .withUpdateParam(LAST_USED_AT, lastUsedAt)
+                .withUpdateParam(UPDATED_AT, Instant.now())
+                .where(USER_ID + " = ?", userId)
+                .executeWith(connection);
+    }
+
+    @Override
+    public void updateFailedAttempts(final Connection connection, final int userId,
+            final int failedAttempts, final Instant lockedUntil) throws SQLException {
+        JdbcSqlQuery
+                .update(TABLE)
+                .withUpdateParam(FAILED_ATTEMPTS, failedAttempts)
+                .withUpdateParam(LOCKED_UNTIL, lockedUntil)
+                .withUpdateParam(UPDATED_AT, Instant.now())
+                .where(USER_ID + " = ?", userId)
+                .executeWith(connection);
+    }
+
+    @Override
+    public void resetFailedAttempts(final Connection connection, final int userId)
+            throws SQLException {
+        JdbcSqlQuery
+                .update(TABLE)
+                .withUpdateParam(FAILED_ATTEMPTS, 0)
+                .withUpdateParam(LOCKED_UNTIL, null)
                 .withUpdateParam(UPDATED_AT, Instant.now())
                 .where(USER_ID + " = ?", userId)
                 .executeWith(connection);
