@@ -6,45 +6,45 @@ CREATE TABLE ST_AccessLevel
 
 CREATE TABLE ST_User
 (
-    id                            INT                 NOT NULL,
-    domainId                      INT                 NOT NULL,
-    specificId                    VARCHAR(500)        NOT NULL,
+    id                            INT                   NOT NULL,
+    domainId                      INT                   NOT NULL,
+    specificId                    VARCHAR(500)          NOT NULL,
     firstName                     VARCHAR(100),
-    lastName                      VARCHAR(100)        NOT NULL,
+    lastName                      VARCHAR(100)          NOT NULL,
     email                         VARCHAR(100),
-    login                         VARCHAR(100)        NOT NULL,
+    login                         VARCHAR(100)          NOT NULL,
     loginMail                     VARCHAR(100),
-    accessLevel                   CHAR(1) DEFAULT 'U' NOT NULL,
+    accessLevel                   CHAR(1) DEFAULT 'U'   NOT NULL,
     loginquestion                 VARCHAR(200),
     loginanswer                   VARCHAR(200),
     creationDate                  TIMESTAMP,
     saveDate                      TIMESTAMP,
-    version                       INT     DEFAULT 0   NOT NULL,
+    version                       INT     DEFAULT 0     NOT NULL,
     tosAcceptanceDate             TIMESTAMP,
     lastLoginDate                 TIMESTAMP,
-    nbSuccessfulLoginAttempts     INT     DEFAULT 0   NOT NULL,
+    nbSuccessfulLoginAttempts     INT     DEFAULT 0     NOT NULL,
     lastLoginCredentialUpdateDate TIMESTAMP,
     expirationDate                TIMESTAMP,
-    state                         VARCHAR(30)         NOT NULL,
-    stateSaveDate                 TIMESTAMP           NOT NULL,
+    state                         VARCHAR(30)           NOT NULL,
+    stateSaveDate                 TIMESTAMP             NOT NULL,
     notifManualReceiverLimit      INT,
-    sensitiveData                 INT     DEFAULT 0   NOT NULL
+    sensitiveData                 BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE ST_Group
 (
-    id            int          NOT NULL,
-    domainId      int          NOT NULL,
-    specificId    varchar(500) NOT NULL,
-    spaceId       varchar(500),
-    superGroupId  int,
-    name          varchar(100) NOT NULL,
-    description   varchar(400),
-    synchroRule   varchar(2000),
-    creationDate  timestamp,
-    saveDate      timestamp,
-    state         varchar(30)  NOT NULL,
-    stateSaveDate timestamp    NOT NULL
+    id              int           NOT NULL,
+    domainId        int           NOT NULL,
+    specificId      varchar(500)  NOT NULL,
+    spaceId         varchar(500),
+    superGroupId    int,
+    name            varchar(100)  NOT NULL,
+    description     varchar(400),
+    synchroRule     varchar(2000),
+    creationDate    timestamp,
+    saveDate        timestamp,
+    state           varchar(30)  NOT NULL,
+    stateSaveDate   timestamp    NOT NULL
 );
 
 CREATE TABLE ST_Group_User_Rel
@@ -55,14 +55,14 @@ CREATE TABLE ST_Group_User_Rel
 
 CREATE TABLE ST_Space
 (
-    id				     int           NOT NULL,
+    id					 int          NOT NULL,
     domainFatherId		 int,
-    name			     varchar(100)  NOT NULL,
+    name				 varchar(100) NOT NULL,
     description			 varchar(400),
     createdBy			 int,
-    firstPageType		 int           NOT NULL,
+    firstPageType		 int          NOT NULL,
     firstPageExtraParam	 varchar(400),
-    orderNum 			 int           DEFAULT (0) NOT NULL,
+    orderNum 			 int          DEFAULT(0) NOT NULL,
     createTime 			 varchar(20),
     updateTime 			 varchar(20),
     removeTime 			 varchar(20),
@@ -70,11 +70,11 @@ CREATE TABLE ST_Space
     updatedBy 			 int,
     removedBy 			 int,
     lang			     char(2),
-    isInheritanceBlocked int	       DEFAULT(0) NOT NULL,
-    isCommunity	         int           DEFAULT(0) NOT NULL,
+    isInheritanceBlocked int	      DEFAULT(0) NOT NULL,
+    isCommunity	         smallint     DEFAULT(0) NOT NULL,
     look			     varchar(50),
-    displaySpaceFirst	 int,
-    isPersonal			 int
+    displaySpaceFirst	 smallint,
+    isPersonal			 smallint
 );
 
 CREATE TABLE ST_SpaceI18N
@@ -134,7 +134,7 @@ CREATE TABLE ST_UserRole
     description varchar(400),
     isInherited int default (0) NOT NULL,
     objectId    int,
-    objectType  char(1)
+    objectType  varchar(50)
 );
 
 CREATE TABLE ST_UserRole_User_Rel
@@ -262,9 +262,9 @@ CREATE TABLE st_instance_modelused
 
 CREATE TABLE ST_UserFavoriteSpaces
 (
-    id      int NOT NULL,
-    userid  int NOT NULL,
-    spaceid int NOT NULL
+    id      INT NOT NULL,
+    userid  INT NOT NULL,
+    spaceid INT NOT NULL
 );
 
 CREATE TABLE SB_Contribution_Tracking
@@ -277,4 +277,14 @@ CREATE TABLE SB_Contribution_Tracking
     action_type        VARCHAR(20) NOT NULL,
     action_date        TIMESTAMP   NOT NULL,
     action_by          VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE ST_UserTwoFactorAuthentication
+(
+    userId     INT          NOT NULL,
+    secret     VARCHAR(512) NOT NULL,
+    status     VARCHAR(20)  NOT NULL,
+    createdAt  TIMESTAMP    NOT NULL,
+    updatedAt  TIMESTAMP    NOT NULL,
+    lastUsedAt TIMESTAMP
 );
