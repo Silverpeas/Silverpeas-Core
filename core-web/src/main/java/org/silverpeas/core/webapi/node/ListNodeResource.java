@@ -101,7 +101,10 @@ public class ListNodeResource extends RESTWebService {
       //Update list Node
       List<NodePK> nodePKs = new ArrayList<NodePK>();
       for (NodeEntity nodeEntity : newListNode) {
-        nodePKs.add(nodeEntity.toNodePK());
+        // the nodes to sort are the ones of the component instance the user has been checked to
+        // administrate, so the instance is taken from the URL: taking it from the request body,
+        // which the entity carries, would let sort the nodes of any other component instance
+        nodePKs.add(new NodePK(nodeEntity.getAttr().getId(), getComponentId()));
       }
       getNodeService().sortNodes(nodePKs);
     }
