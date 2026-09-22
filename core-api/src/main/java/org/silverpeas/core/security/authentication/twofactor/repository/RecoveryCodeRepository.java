@@ -47,7 +47,16 @@ public interface RecoveryCodeRepository {
      * @param usedAt the date at which the code was consumed.
      * @throws SQLException if an error occurs while accessing the database.
      */
-    void markUsed(Connection connection, long id, Instant usedAt) throws SQLException;
+    /**
+     * Atomically consumes an unused recovery code.
+     *
+     * @param connection the database connection.
+     * @param hash the hash of the recovery code.
+     * @param usedAt the date at which the code was consumed.
+     * @return true if an unused code was consumed.
+     * @throws SQLException if an error occurs while accessing the database.
+     */
+    boolean consume(Connection connection, String hash, Instant usedAt) throws SQLException;
 
     /**
      * Deletes all recovery codes of a user.
