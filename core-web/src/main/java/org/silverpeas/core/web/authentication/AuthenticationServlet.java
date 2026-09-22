@@ -228,8 +228,14 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
     final AuthenticationParameters authenticationParameters =
         new AuthenticationParameters(request);
-    authenticationParameters.setCredential(
-        AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
+    try {
+      authenticationParameters.setCredential(
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
+    } catch (AuthenticationException e) {
+      clearTwoFactorChallenge(session);
+      redirectToLoginForTwoFactorFailure(request, response);
+      return;
+    }
     final UserCanTryAgainToLoginVerifier verifier =
         AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(
             authenticationParameters.getCredential());
