@@ -234,7 +234,7 @@ public class AuthenticationService implements Authentication {
 
       // Password authentication has succeeded. Do not create the Silverpeas authentication
       // token before the second factor has been validated.
-      final int userId = getUserId(credential);
+      final int userId = getUserId(connection, credential);
       if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) &&
           twoFactorAuthenticationService.getAuthentication(userId)
               .map(authentication -> authentication.isEnabled())
@@ -375,13 +375,41 @@ public class AuthenticationService implements Authentication {
     }
   }
 
-  private int getUserId(final AuthenticationCredential credential) throws AuthenticationException {
-    final String userId = adminController.getUserIdByLoginAndDomain(
-        credential.getLogin(), credential.getDomainId());
-    if (!StringUtil.isInteger(userId)) {
-      throw new AuthenticationException("Unable to resolve the authenticated user");
+  private int getUserId(final Connection connection,
+      final AuthenticationCredential credential) throws AuthenticationException {
+    final String domainId = credential.getDomainId();
+    if (!StringUtil.isInteger(domainId)) {
+      throw new AuthenticationException("Unable to resolve the user domain");
     }
-    return Integer.parseInt(userId);
+
+    final JdbcSqlQuery query = JdbcSqlQuery.select(USER_ID_COLUMN_NAME)
+        .from(USER_TABLE_NAME)
+        .where(USER_DOMAIN_COLUMN_NAME + " = ?", Integer.parseInt(domainId));
+
+    if (credential.loginIgnoreCase()) {
+      query.and("lower(" + USER_LOGIN_COLUMN_NAME + ") = lower(?)", credential.getLogin());
+    } else {
+      query.and(USER_LOGIN_COLUMN_NAME + " = ?", credential.getLogin());
+    }
+
+    try {
+      final Integer userId = query.executeUniqueWith(connection,
+          row -> row.getInt(USER_ID_COLUMN_NAME));
+      if (userId == null || userId <= 0) {
+        throw new AuthenticationException("Unable to resolve the authenticated user");
+      }
+      return userId;
+    } catch (SQLException e) {
+      throw new AuthenticationException("Unable to resolve the authenticated user", e);
+    }
+  }
+
+  private int getUserId(final AuthenticationCredential credential) throws AuthenticationException {
+    try (Connection connection = openConnection()) {
+      return getUserId(connection, credential);
+    } catch (SQLException e) {
+      throw new AuthenticationException("Unable to resolve the authenticated user", e);
+    }
   }
 
  @Override
