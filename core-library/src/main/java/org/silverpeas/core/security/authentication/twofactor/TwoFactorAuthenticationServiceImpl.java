@@ -186,8 +186,8 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     }
 
     private void validateUserId(final int userId) {
-        if (userId <= 0) {
-            throw new IllegalArgumentException("The user identifier must be greater than zero");
+        if (userId < 0) {
+            throw new IllegalArgumentException("The user identifier must not be negative");
         }
     }
 }
