@@ -1,0 +1,1 @@
+CREATE INDEX IDX_User_2FA_Recovery_User ON ST_User_2FA_Recovery (userId);
