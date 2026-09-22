@@ -53,7 +53,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     @Override
     public Optional<TwoFactorAuthentication> getAuthentication(final int userId) {
         validateUserId(userId);
-        try (Connection connection = DBUtil.openConnection()) {
+        try (Connection connection = openConnection()) {
             return repository.get(connection, userId);
         } catch (SQLException e) {
             throw new IllegalStateException(
@@ -65,7 +65,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     @Transactional(Transactional.TxType.REQUIRED)
     public TwoFactorAuthentication startEnrollment(final int userId) {
         validateUserId(userId);
-        try (Connection connection = DBUtil.openConnection()) {
+        try (Connection connection = openConnection()) {
             final Optional<TwoFactorAuthentication> current =
                     repository.get(connection, userId);
             if (current.isPresent() && current.get().isEnabled()) {
@@ -101,7 +101,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             return false;
         }
 
-        try (Connection connection = DBUtil.openConnection()) {
+        try (Connection connection = openConnection()) {
             final Optional<TwoFactorAuthentication> current =
                     repository.get(connection, userId);
             if (current.isEmpty() || !current.get().isPending()) {
@@ -136,7 +136,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             return false;
         }
 
-        try (Connection connection = DBUtil.openConnection()) {
+        try (Connection connection = openConnection()) {
             final Optional<TwoFactorAuthentication> current =
                     repository.get(connection, userId);
             if (current.isEmpty() || !current.get().isEnabled()) {
@@ -160,12 +160,22 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     @Transactional(Transactional.TxType.REQUIRED)
     public void disable(final int userId) {
         validateUserId(userId);
-        try (Connection connection = DBUtil.openConnection()) {
+        try (Connection connection = openConnection()) {
             repository.delete(connection, userId);
         } catch (SQLException e) {
             throw new IllegalStateException(
                     "Unable to disable two-factor authentication for user " + userId, e);
         }
+    }
+
+    /**
+     * Opens the database connection used by this service.
+     *
+     * <p>The method is protected to allow unit tests to provide an isolated
+     * connection without mocking the static database utility.</p>
+     */
+    protected Connection openConnection() throws SQLException {
+        return DBUtil.openConnection();
     }
 
     private void validateUserId(final int userId) {
