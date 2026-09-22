@@ -52,14 +52,15 @@ public class RecoveryCodeRepositoryImpl implements RecoveryCodeRepository {
     }
 
     @Override
-    public void markUsed(final Connection connection, final long id, final Instant usedAt)
+    public boolean consume(final Connection connection, final String hash, final Instant usedAt)
             throws SQLException {
-        JdbcSqlQuery
+        final long count = JdbcSqlQuery
                 .update(TABLE)
                 .withUpdateParam("used", true)
                 .withUpdateParam("usedAt", usedAt)
-                .where("id = ?", id)
+                .where("hash = ? AND used = ?", hash, false)
                 .executeWith(connection);
+        return count == 1;
     }
 
     @Override
