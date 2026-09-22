@@ -77,5 +77,37 @@
       </div>
     </div>
   </form>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var totpMode = document.getElementById('totpMode');
+      var recoveryMode = document.getElementById('recoveryMode');
+      var totpCode = document.getElementById('TwoFactorCode');
+      var recoveryCode = document.getElementById('RecoveryCode');
+      var useRecoveryCode = document.getElementById('useRecoveryCode');
+      var useTotpCode = document.getElementById('useTotpCode');
+
+      useRecoveryCode.addEventListener('click', function (event) {
+        event.preventDefault();
+        totpMode.style.display = 'none';
+        recoveryMode.style.display = '';
+        useRecoveryCode.style.display = 'none';
+        useTotpCode.style.display = '';
+        totpCode.removeAttribute('name');
+        recoveryCode.setAttribute('name', 'TwoFactorCode');
+        recoveryCode.focus();
+      });
+
+      useTotpCode.addEventListener('click', function (event) {
+        event.preventDefault();
+        recoveryMode.style.display = 'none';
+        totpMode.style.display = '';
+        useTotpCode.style.display = 'none';
+        useRecoveryCode.style.display = '';
+        recoveryCode.removeAttribute('name');
+        totpCode.setAttribute('name', 'TwoFactorCode');
+        totpCode.focus();
+      });
+    });
+  </script>
 </view:sp-body-part>
 </view:sp-page>
