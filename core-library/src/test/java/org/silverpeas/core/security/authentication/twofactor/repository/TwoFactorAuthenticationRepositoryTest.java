@@ -9,13 +9,13 @@
 package org.silverpeas.core.security.authentication.twofactor.repository;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.sql.Connection;
@@ -42,15 +42,16 @@ class TwoFactorAuthenticationRepositoryTest {
     private static final String JDBC_URL =
             "jdbc:h2:mem:twofactor_repository;DB_CLOSE_DELAY=-1;MODE=PostgreSQL";
 
-    @TestedBean
     private TwoFactorAuthenticationRepositoryImpl repository;
 
     private ContentEncryptionService encryptionService;
 
+    @RegisterExtension
     private final FieldMocker fieldMocker = new FieldMocker();
 
     @BeforeEach
     void setUp() throws SQLException, CryptoException {
+        repository = new TwoFactorAuthenticationRepositoryImpl();
         encryptionService =
                 fieldMocker.mockField(repository, ContentEncryptionService.class, "encryptionService");
         when(encryptionService.isCipherKeyDefined()).thenReturn(true);
