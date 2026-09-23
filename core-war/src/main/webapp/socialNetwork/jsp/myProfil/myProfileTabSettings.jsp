@@ -181,6 +181,14 @@
         <p style="word-break: break-all;">
           <code><c:out value="${requestScope['twoFactorOtpAuthUri']}"/></code>
         </p>
+        <div class="tableBoard" style="margin-top: 15px; text-align: center;">
+          <p><strong><fmt:message key="myProfile.twoFactor.qrCode"/></strong></p>
+          <p><fmt:message key="myProfile.twoFactor.qrCodeDescription"/></p>
+          <img src="${pageContext.request.contextPath}/services/two-factor/qrcode"
+               width="256" height="256"
+               alt="<fmt:message key='myProfile.twoFactor.qrCodeAlt'/>"
+               style="image-rendering: pixelated;"/>
+        </div>
         <label for="twoFactorCode"><fmt:message key="myProfile.twoFactor.code"/></label>
         <input id="twoFactorCode" name="twoFactorCode" type="text" inputmode="numeric"
                autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required="required"/>
