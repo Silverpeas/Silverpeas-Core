@@ -44,7 +44,7 @@ class TwoFactorAuthenticationRepositoryTest {
             "jdbc:h2:mem:twofactor_repository;DB_CLOSE_DELAY=-1;MODE=PostgreSQL";
 
     @TestedBean
-    private TwoFactorAuthenticationRepository repository;
+    private TwoFactorAuthenticationRepositoryImpl repository;
 
     @TestManagedMock
     private ContentEncryptionService encryptionService;
