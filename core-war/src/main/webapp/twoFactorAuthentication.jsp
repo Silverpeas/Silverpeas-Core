@@ -29,7 +29,8 @@
 <view:sp-page>
 <view:sp-head-part minimalSilverpeasScriptEnv="true">
   <link rel="icon" href="<c:url value="/favicon.ico"/>" />
-  <meta name="viewport" content="initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" type="text/css" href="<c:url value="/util/styleSheets/twoFactorAuthentication.css"/>"/>
 </view:sp-head-part>
 <view:sp-body-part>
   <form id="formTwoFactor" action="<c:url value="/AuthenticationServlet"/>" method="post"
@@ -40,13 +41,19 @@
       <div class="titre"><fmt:message key="authentication.logon.title"/></div>
       <div id="background">
         <div class="cadre">
-          <div id="header" style="display: table; width: 100%">
-            <div class="information" style="display: table-cell; width: 100%; text-align: right">
+          <div id="header">
+            <div class="lock-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="10" width="16" height="10" rx="2"></rect>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+              </svg>
+            </div>
+            <div class="information">
               <fmt:message key="authentication.logon.twoFactor.title"/>
             </div>
             <div class="clear"></div>
           </div>
-          <div class="two-factor-introduction">
+          <div id="introduction" class="two-factor-introduction">
             <p><fmt:message key="authentication.logon.twoFactor.instructions"/></p>
           </div>
           <c:if test="${requestScope.twoFactorError}">
@@ -57,7 +64,7 @@
               <span><fmt:message key="authentication.logon.twoFactor.code"/></span>
               <input type="text" name="TwoFactorCode" id="TwoFactorCode"
                      inputmode="numeric" autocomplete="one-time-code"
-                     maxlength="6" pattern="[0-9]{6}" autofocus/>
+                     maxlength="6" pattern="[0-9]{6}" placeholder="000000" autofocus/>
             </label>
           </p>
           <p id="recoveryMode" class="two-factor-code-field" style="display:none">
@@ -65,7 +72,7 @@
               <span><fmt:message key="authentication.logon.twoFactor.recoveryCode"/></span>
               <input type="text" id="RecoveryCode"
                      inputmode="text" autocomplete="off"
-                     maxlength="12" pattern="[A-Za-z0-9-]{10,12}"/>
+                     maxlength="12" pattern="[A-Za-z0-9-]{10,12}" placeholder="xxxx-xxxx-xx"/>
             </label>
           </p>
           <div class="submit">
@@ -92,9 +99,11 @@
       var recoveryCode = document.getElementById('RecoveryCode');
       var useRecoveryCode = document.getElementById('useRecoveryCode');
       var useTotpCode = document.getElementById('useTotpCode');
+      var introduction = document.getElementById('introduction')
 
       useRecoveryCode.addEventListener('click', function (event) {
         event.preventDefault();
+        introduction.style.display = 'none';
         totpMode.style.display = 'none';
         recoveryMode.style.display = '';
         useRecoveryCode.style.display = 'none';
@@ -106,6 +115,7 @@
 
       useTotpCode.addEventListener('click', function (event) {
         event.preventDefault();
+        introduction.style.display = '';
         recoveryMode.style.display = 'none';
         totpMode.style.display = '';
         useTotpCode.style.display = 'none';
