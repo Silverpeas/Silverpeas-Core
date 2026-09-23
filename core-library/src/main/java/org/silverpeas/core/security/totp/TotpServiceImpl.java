@@ -60,6 +60,7 @@ public class TotpServiceImpl implements TotpService {
     private final int digits;
     private final int period;
     private final int validationWindow;
+    private final String issuer;
 
     public TotpServiceImpl() {
         SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS);
@@ -68,6 +69,7 @@ public class TotpServiceImpl implements TotpService {
         this.period = getPositiveInt(settings, "twoFactorTotpPeriod", DEFAULT_PERIOD);
         this.validationWindow =
                 getNonNegativeInt(settings, "twoFactorTotpValidationWindow", DEFAULT_WINDOW);
+        this.issuer = getString(settings, "twoFactorTotpIssuer", "Silverpeas");
     }
 
     @Override
@@ -148,6 +150,14 @@ public class TotpServiceImpl implements TotpService {
     }
 
     @Override
+    public String buildOtpAuthUri(final String secret) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalArgumentException("TOTP secret must not be empty");
+        }
+        return buildOtpAuthUri(secret, issuer, null);
+    }
+
+    @Override
     public String buildOtpAuthUri(
             final String secret,
             final String issuer,
@@ -161,18 +171,22 @@ public class TotpServiceImpl implements TotpService {
             throw new IllegalArgumentException("TOTP issuer must not be empty");
         }
 
-        if (account == null || account.isBlank()) {
-            throw new IllegalArgumentException("TOTP account must not be empty");
-        }
+        /*
+         * For the configured application URI, the account is deliberately
+         * omitted so authenticator applications display only the issuer.
+         * The three-argument method keeps the generic RFC-compatible form.
+         */
+        final String label = account == null || account.isBlank()
+                ? issuer
+                : issuer + ":" + account;
 
         /*
-         * The label is issuer:account.
+         * URI encoding is deliberately performed independently for the label
+         * and issuer parameters.
          *
          * URI encoding is deliberately performed independently for the label
          * and issuer parameters.
          */
-        final String label = issuer + ":" + account;
-
         return "otpauth://totp/"
                 + encode(label)
                 + "?secret="
@@ -241,6 +255,18 @@ public class TotpServiceImpl implements TotpService {
         return URLEncoder.encode(value, UTF_8)
                 .replace("+", "%20")
                 .replace("%7E", "~");
+    }
+
+    private String getString(
+            final SettingBundle settings,
+            final String key,
+            final String defaultValue) {
+        try {
+            final String value = settings.getString(key);
+            return value != null && !value.isBlank() ? value.trim() : defaultValue;
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     private int getPositiveInt(
