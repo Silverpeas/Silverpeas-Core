@@ -46,11 +46,13 @@
             </div>
             <div class="clear"></div>
           </div>
-          <p><fmt:message key="authentication.logon.twoFactor.instructions"/></p>
+          <div class="two-factor-introduction">
+            <p><fmt:message key="authentication.logon.twoFactor.instructions"/></p>
+          </div>
           <c:if test="${requestScope.twoFactorError}">
             <p class="error"><fmt:message key="authentication.logon.twoFactor.invalidCode"/></p>
           </c:if>
-          <p id="totpMode">
+          <p id="totpMode" class="two-factor-code-field">
             <label>
               <span><fmt:message key="authentication.logon.twoFactor.code"/></span>
               <input type="text" name="TwoFactorCode" id="TwoFactorCode"
@@ -58,7 +60,7 @@
                      maxlength="6" pattern="[0-9]{6}" autofocus/>
             </label>
           </p>
-          <p id="recoveryMode" style="display:none">
+          <p id="recoveryMode" class="two-factor-code-field" style="display:none">
             <label>
               <span><fmt:message key="authentication.logon.twoFactor.recoveryCode"/></span>
               <input type="text" id="RecoveryCode"
@@ -66,12 +68,17 @@
                      maxlength="12" pattern="[A-Za-z0-9-]{10,12}"/>
             </label>
           </p>
-          <p>
+          <div class="submit">
+            <p>
+              <input type="submit" style="width:0; height:0; border:0; padding:0"/>
+              <a href="#" class="<%=submitClass%>" onclick="document.getElementById('formTwoFactor').submit(); return false;">
+                <span><span><fmt:message key="authentication.logon.twoFactor.submit"/></span></span>
+              </a>
+            </p>
+          </div>
+          <p class="two-factor-switch">
             <a href="#" id="useRecoveryCode"><fmt:message key="authentication.logon.twoFactor.useRecoveryCode"/></a>
             <a href="#" id="useTotpCode" style="display:none"><fmt:message key="authentication.logon.twoFactor.useTotpCode"/></a>
-          </p>
-          <p>
-            <input type="submit" value="<fmt:message key="authentication.logon.twoFactor.submit"/>"/>
           </p>
         </div>
       </div>
