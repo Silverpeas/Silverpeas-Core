@@ -154,7 +154,19 @@ public class TotpServiceImpl implements TotpService {
         if (secret == null || secret.isBlank()) {
             throw new IllegalArgumentException("TOTP secret must not be empty");
         }
-        return buildOtpAuthUri(secret, issuer, null);
+        return buildOtpAuthUriWithIssuer(secret, issuer);
+    }
+
+    private String buildOtpAuthUriWithIssuer(
+            final String secret, final String issuer) {
+        final String encodedLabel = URLEncoder.encode(issuer, StandardCharsets.UTF_8);
+        final String encodedIssuer = URLEncoder.encode(issuer, StandardCharsets.UTF_8);
+        return "otpauth://totp/" + encodedLabel
+                + "?secret=" + secret
+                + "&issuer=" + encodedIssuer
+                + "&algorithm=" + algorithm
+                + "&digits=" + digits
+                + "&period=" + period;
     }
 
     @Override
