@@ -183,14 +183,11 @@ public class TotpServiceImpl implements TotpService {
             throw new IllegalArgumentException("TOTP issuer must not be empty");
         }
 
-        /*
-         * For the configured application URI, the account is deliberately
-         * omitted so authenticator applications display only the issuer.
-         * The three-argument method keeps the generic RFC-compatible form.
-         */
-        final String label = account == null || account.isBlank()
-                ? issuer
-                : issuer + ":" + account;
+        if (account == null || account.isBlank()) {
+            throw new IllegalArgumentException("TOTP account must not be empty");
+        }
+
+        final String label = issuer + ":" + account;
 
         /*
          * URI encoding is deliberately performed independently for the label
