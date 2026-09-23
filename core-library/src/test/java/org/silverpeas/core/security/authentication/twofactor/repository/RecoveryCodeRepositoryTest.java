@@ -11,6 +11,8 @@ package org.silverpeas.core.security.authentication.twofactor.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.authentication.twofactor.model.RecoveryCode;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,6 +27,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
+@EnableSilverTestEnv(context = JEETestContext.class)
 class RecoveryCodeRepositoryTest {
 
     private static final int USER_ID = 42;
