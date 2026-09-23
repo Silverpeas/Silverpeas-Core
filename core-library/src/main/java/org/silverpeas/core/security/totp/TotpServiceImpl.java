@@ -164,7 +164,7 @@ public class TotpServiceImpl implements TotpService {
         return "otpauth://totp/" + encodedLabel
                 + "?secret=" + secret
                 + "&issuer=" + encodedIssuer
-                + "&algorithm=" + algorithm
+                + "&algorithm=SHA1"
                 + "&digits=" + digits
                 + "&period=" + period;
     }
