@@ -61,8 +61,7 @@ public class TwoFactorAuthenticationResource extends RESTWebService {
     if (authentication.isDisabled()) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    final String uri = totpService.buildOtpAuthUri(
-        authentication.getSecret(), "Silverpeas", getUser().getId());
+    final String uri = totpService.buildOtpAuthUri(authentication.getSecret());
     final byte[] png = qrCodeGenerator.generate(uri, 256);
     return Response.ok(png, "image/png")
         .header("Cache-Control", "no-store, no-cache, must-revalidate")
