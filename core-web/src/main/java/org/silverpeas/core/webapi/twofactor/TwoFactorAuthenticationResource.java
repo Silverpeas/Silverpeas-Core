@@ -58,7 +58,7 @@ public class TwoFactorAuthenticationResource extends RESTWebService {
     final int userId = Integer.parseInt(getUser().getId());
     final TwoFactorAuthentication authentication = service.getAuthentication(userId)
         .orElseThrow(() -> new IllegalStateException("Two-factor authentication is not configured"));
-    if (authentication.isDisabled()) {
+    if (!authentication.isPending()) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     final String uri = totpService.buildOtpAuthUri(authentication.getSecret());
