@@ -247,6 +247,21 @@ class TotpServiceImplTest {
                         + "&period=30"));
     }
 
+
+    @Test
+    void shouldGenerateConfiguredApplicationOnlyOtpAuthUri() {
+        String uri = service.buildOtpAuthUri(SECRET);
+
+        assertThat(
+                uri,
+                is("otpauth://totp/Silverpeas"
+                        + "?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
+                        + "&issuer=Silverpeas"
+                        + "&algorithm=SHA1"
+                        + "&digits=6"
+                        + "&period=30"));
+    }
+
     @Test
     void shouldEncodeOtpAuthUriLabelAndIssuerParameters() {
         String uri = service.buildOtpAuthUri(
