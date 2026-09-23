@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestedBean;
@@ -49,7 +50,7 @@ class TwoFactorAuthenticationRepositoryTest {
     private ContentEncryptionService encryptionService;
 
     @BeforeEach
-    void setUp() throws SQLException {
+    void setUp() throws SQLException, CryptoException {
         when(encryptionService.isCipherKeyDefined()).thenReturn(true);
         when(encryptionService.encryptContent(anyString()))
                 .thenAnswer(invocation -> new String[]{"encrypted:" + invocation.getArgument(0)});
