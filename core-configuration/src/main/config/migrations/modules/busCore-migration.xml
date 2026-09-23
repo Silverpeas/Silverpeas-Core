@@ -43,6 +43,7 @@
   <upgrade fromVersion="049">
     <script name="create_table.sql" type="sql"/>
     <script name="create_constraint.sql" type="sql"/>
+    <script name="create_index.sql" type="sql"/>
   </upgrade>
 
   <upgrade fromVersion="034">
