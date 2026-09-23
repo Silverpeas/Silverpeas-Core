@@ -31,7 +31,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.any;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class TwoFactorAuthenticationRepositoryTest {
@@ -51,14 +52,16 @@ class TwoFactorAuthenticationRepositoryTest {
     @BeforeEach
     void setUp() throws SQLException, CryptoException {
         when(encryptionService.isCipherKeyDefined()).thenReturn(true);
-        when(encryptionService.encryptContent(SECRET))
-                .thenReturn(new String[]{"encrypted:" + SECRET});
-        when(encryptionService.encryptContent(UPDATED_SECRET))
-                .thenReturn(new String[]{"encrypted:" + UPDATED_SECRET});
-        when(encryptionService.decryptContent("encrypted:" + SECRET))
-                .thenReturn(new String[]{SECRET});
-        when(encryptionService.decryptContent("encrypted:" + UPDATED_SECRET))
-                .thenReturn(new String[]{UPDATED_SECRET});
+        doAnswer(invocation -> {
+            String[] content = invocation.getArgument(0);
+            return new String[]{"encrypted:" + content[0]};
+        }).when(encryptionService).encryptContent((String[]) any());
+
+        doAnswer(invocation -> {
+            String[] content = invocation.getArgument(0);
+            return new String[]{content[0].substring("encrypted:".length())};
+        }).when(encryptionService).decryptContent((String[]) any());
+
         try (Connection connection = connection(); Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS ST_User_2FA (" +
                     "userId INT NOT NULL PRIMARY KEY, secret VARCHAR(1024) NOT NULL, " +
