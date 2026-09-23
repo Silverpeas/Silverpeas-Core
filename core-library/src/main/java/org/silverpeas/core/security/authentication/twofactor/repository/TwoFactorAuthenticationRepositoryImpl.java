@@ -183,6 +183,58 @@ public class TwoFactorAuthenticationRepositoryImpl
         }
     }
 
+    private String encryptSecret(final String secret) {
+        if (secret == null) {
+            return null;
+        }
+
+        ensureCipherKeyDefined();
+
+        try {
+            return encryptionService.encryptContent(secret)[0];
+        } catch (CryptoException e) {
+            throw new IllegalStateException(
+                    "Unable to encrypt the two-factor authentication secret",
+                    e);
+        }
+    }
+
+    private void ensureCipherKeyDefined() {
+        synchronized (TwoFactorAuthenticationRepositoryImpl.class) {
+            if (encryptionService.isCipherKeyDefined()) {
+                return;
+            }
+
+            try {
+                encryptionService.updateCipherKey(generateCipherKey());
+            } catch (CryptoException e) {
+                throw new IllegalStateException(
+                        "Unable to initialize the Silverpeas content encryption key",
+                        e);
+            }
+        }
+    }
+
+    private String generateCipherKey() {
+        final byte[] key = new byte[CIPHER_KEY_SIZE];
+        SECURE_RANDOM.nextBytes(key);
+        return java.util.HexFormat.of().formatHex(key);
+    }
+
+    private String decryptSecret(final String encryptedSecret) {
+        if (encryptedSecret == null) {
+            return null;
+        }
+
+        try {
+            return encryptionService.decryptContent(encryptedSecret)[0];
+        } catch (CryptoException e) {
+            throw new IllegalStateException(
+                    "Unable to decrypt the two-factor authentication secret",
+                    e);
+        }
+    }
+
     private Instant toInstant(final Timestamp timestamp) {
         return timestamp == null ? null : timestamp.toInstant();
     }
