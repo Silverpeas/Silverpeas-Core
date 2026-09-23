@@ -3043,6 +3043,21 @@ button.link {
   display: inline-block;
   padding: 1em 0;
 }
+
+.twoFA_button {
+  background: var(--bgColor-btn-secondaire);
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--border-color-btn-secondaire);
+  color: var(--color-text-btn-secondaire);
+  font-size: 1em;
+  padding: 0.5em 1em;
+  display: inline-block;
+}
+
+div#publicProfileContenu > div#settings > form > p.twoFA_infos
+  padding-top: 1em;
+}
+
 /*- [ myProfile END ] --------------------------- */
 
 /*- [ publicProfile BEGIN ] --------------------------- */
