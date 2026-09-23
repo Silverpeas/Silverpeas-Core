@@ -71,7 +71,7 @@
           <div class="submit">
             <p>
               <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-              <a href="#" class="<%=submitClass%>" onclick="document.getElementById('formTwoFactor').submit(); return false;">
+              <a href="#" class="submit" onclick="document.getElementById('formTwoFactor').submit(); return false;">
                 <span><span><fmt:message key="authentication.logon.twoFactor.submit"/></span></span>
               </a>
             </p>
