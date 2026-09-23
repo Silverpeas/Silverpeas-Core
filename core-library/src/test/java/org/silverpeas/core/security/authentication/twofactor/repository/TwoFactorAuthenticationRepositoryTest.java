@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
@@ -32,7 +32,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class TwoFactorAuthenticationRepositoryTest {
@@ -46,11 +45,14 @@ class TwoFactorAuthenticationRepositoryTest {
     @TestedBean
     private TwoFactorAuthenticationRepositoryImpl repository;
 
-    @TestManagedMock
     private ContentEncryptionService encryptionService;
+
+    private final FieldMocker fieldMocker = new FieldMocker();
 
     @BeforeEach
     void setUp() throws SQLException, CryptoException {
+        encryptionService =
+                fieldMocker.mockField(repository, ContentEncryptionService.class, "encryptionService");
         when(encryptionService.isCipherKeyDefined()).thenReturn(true);
         when(encryptionService.encryptContent(SECRET))
                 .thenReturn(new String[]{"encrypted:" + SECRET});
