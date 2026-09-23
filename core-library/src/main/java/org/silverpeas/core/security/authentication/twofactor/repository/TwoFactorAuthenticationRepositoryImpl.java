@@ -22,13 +22,15 @@
 package org.silverpeas.core.security.authentication.twofactor.repository;
 
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
+import jakarta.inject.Inject;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -56,205 +58,141 @@ public class TwoFactorAuthenticationRepositoryImpl
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
+    @Inject
+    private ContentEncryptionService encryptionService;
+
     @Override
     public Optional<TwoFactorAuthentication> get(
             final Connection connection,
             final int userId) throws SQLException {
 
-        final TwoFactorAuthentication authentication = JdbcSqlQuery
-                .select(
-                        USER_ID + ", " +
-                                SECRET + ", " +
-                                STATUS + ", " +
-                                CREATED_AT + ", " +
-                                UPDATED_AT + ", " +
-                                LAST_USED_AT + ", " +
-                                FAILED_ATTEMPTS + ", " +
-                                LOCKED_UNTIL)
-                .from(TABLE)
-                .where(USER_ID + " = ?", userId)
-                .executeUniqueWith(connection, rs -> {
+        final String sql =
+                "SELECT userId, secret, status, createdAt, updatedAt, lastUsedAt, " +
+                        "failedAttempts, lockedUntil FROM " + TABLE + " WHERE userId = ?";
 
-                    final Timestamp createdAt = rs.getTimestamp(CREATED_AT);
-                    final Timestamp updatedAt = rs.getTimestamp(UPDATED_AT);
-                    final Timestamp lastUsedAt = rs.getTimestamp(LAST_USED_AT);
-                    final Timestamp lockedUntil = rs.getTimestamp(LOCKED_UNTIL);
-
-                    return TwoFactorAuthentication.builder(userId)
-                            .secret(decryptSecret(rs.getString(SECRET)))
-                            .status(TwoFactorAuthentication.Status.valueOf(
-                                    rs.getString(STATUS)))
-                            .createdAt(toInstant(createdAt))
-                            .updatedAt(toInstant(updatedAt))
-                            .lastUsedAt(toInstant(lastUsedAt))
-                            .failedAttempts(rs.getInt(FAILED_ATTEMPTS))
-                            .lockedUntil(toInstant(lockedUntil))
-                            .build();
-                });
-
-        return Optional.ofNullable(authentication);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(TwoFactorAuthentication.builder(userId)
+                        .secret(decryptSecret(rs.getString(SECRET)))
+                        .status(TwoFactorAuthentication.Status.valueOf(rs.getString(STATUS)))
+                        .createdAt(toInstant(rs.getTimestamp(CREATED_AT)))
+                        .updatedAt(toInstant(rs.getTimestamp(UPDATED_AT)))
+                        .lastUsedAt(toInstant(rs.getTimestamp(LAST_USED_AT)))
+                        .failedAttempts(rs.getInt(FAILED_ATTEMPTS))
+                        .lockedUntil(toInstant(rs.getTimestamp(LOCKED_UNTIL)))
+                        .build());
+            }
+        }
     }
 
     @Override
     public void save(
             final Connection connection,
-            final TwoFactorAuthentication authentication)
-            throws SQLException {
+            final TwoFactorAuthentication authentication) throws SQLException {
 
-        final Optional<TwoFactorAuthentication> existing =
-                get(connection, authentication.getUserId());
-
-        final String encryptedSecret =
-                encryptSecret(authentication.getSecret());
-
+        final String encryptedSecret = encryptSecret(authentication.getSecret());
         final Instant now = Instant.now();
 
-        if (existing.isPresent()) {
-            JdbcSqlQuery
-                    .update(TABLE)
-                    .withUpdateParam(SECRET, encryptedSecret)
-                    .withUpdateParam(
-                            STATUS,
-                            authentication.getStatus().name())
-                    .withUpdateParam(UPDATED_AT, now)
-                    .withUpdateParam(
-                            LAST_USED_AT,
-                            authentication.getLastUsedAt())
-                    .withUpdateParam(FAILED_ATTEMPTS, authentication.getFailedAttempts())
-                    .withUpdateParam(LOCKED_UNTIL, authentication.getLockedUntil())
-                    .where(
-                            USER_ID + " = ?",
-                            authentication.getUserId())
-                    .executeWith(connection);
+        if (get(connection, authentication.getUserId()).isPresent()) {
+            final String sql =
+                    "UPDATE " + TABLE + " SET secret = ?, status = ?, updatedAt = ?, " +
+                            "lastUsedAt = ?, failedAttempts = ?, lockedUntil = ? WHERE userId = ?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, encryptedSecret);
+                statement.setString(2, authentication.getStatus().name());
+                statement.setTimestamp(3, Timestamp.from(now));
+                setTimestamp(statement, 4, authentication.getLastUsedAt());
+                statement.setInt(5, authentication.getFailedAttempts());
+                setTimestamp(statement, 6, authentication.getLockedUntil());
+                statement.setInt(7, authentication.getUserId());
+                statement.executeUpdate();
+            }
         } else {
-            JdbcSqlQuery
-                    .insertInto(TABLE)
-                    .withInsertParam(
-                            USER_ID,
-                            authentication.getUserId())
-                    .withInsertParam(SECRET, encryptedSecret)
-                    .withInsertParam(
-                            STATUS,
-                            authentication.getStatus().name())
-                    .withInsertParam(CREATED_AT, now)
-                    .withInsertParam(UPDATED_AT, now)
-                    .withInsertParam(
-                            LAST_USED_AT,
-                            authentication.getLastUsedAt())
-                    .withInsertParam(FAILED_ATTEMPTS, authentication.getFailedAttempts())
-                    .withInsertParam(LOCKED_UNTIL, authentication.getLockedUntil())
-                    .executeWith(connection);
+            final String sql =
+                    "INSERT INTO " + TABLE +
+                            " (userId, secret, status, createdAt, updatedAt, lastUsedAt, " +
+                            "failedAttempts, lockedUntil) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, authentication.getUserId());
+                statement.setString(2, encryptedSecret);
+                statement.setString(3, authentication.getStatus().name());
+                statement.setTimestamp(4, Timestamp.from(now));
+                statement.setTimestamp(5, Timestamp.from(now));
+                setTimestamp(statement, 6, authentication.getLastUsedAt());
+                statement.setInt(7, authentication.getFailedAttempts());
+                setTimestamp(statement, 8, authentication.getLockedUntil());
+                statement.executeUpdate();
+            }
         }
     }
 
     @Override
-    public void delete(
-            final Connection connection,
-            final int userId)
-            throws SQLException {
-
-        JdbcSqlQuery
-                .deleteFrom(TABLE)
-                .where(USER_ID + " = ?", userId)
-                .executeWith(connection);
+    public void delete(final Connection connection, final int userId) throws SQLException {
+        try (PreparedStatement statement =
+                     connection.prepareStatement("DELETE FROM " + TABLE + " WHERE userId = ?")) {
+            statement.setInt(1, userId);
+            statement.executeUpdate();
+        }
     }
 
     @Override
     public void updateLastUsedAt(
             final Connection connection,
             final int userId,
-            final Instant lastUsedAt)
-            throws SQLException {
-
-        JdbcSqlQuery
-                .update(TABLE)
-                .withUpdateParam(LAST_USED_AT, lastUsedAt)
-                .withUpdateParam(UPDATED_AT, Instant.now())
-                .where(USER_ID + " = ?", userId)
-                .executeWith(connection);
+            final Instant lastUsedAt) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE " + TABLE + " SET lastUsedAt = ?, updatedAt = ? WHERE userId = ?")) {
+            setTimestamp(statement, 1, lastUsedAt);
+            statement.setTimestamp(2, Timestamp.from(Instant.now()));
+            statement.setInt(3, userId);
+            statement.executeUpdate();
+        }
     }
 
     @Override
-    public void updateFailedAttempts(final Connection connection, final int userId,
-            final int failedAttempts, final Instant lockedUntil) throws SQLException {
-        JdbcSqlQuery
-                .update(TABLE)
-                .withUpdateParam(FAILED_ATTEMPTS, failedAttempts)
-                .withUpdateParam(LOCKED_UNTIL, lockedUntil)
-                .withUpdateParam(UPDATED_AT, Instant.now())
-                .where(USER_ID + " = ?", userId)
-                .executeWith(connection);
+    public void updateFailedAttempts(
+            final Connection connection,
+            final int userId,
+            final int failedAttempts,
+            final Instant lockedUntil) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE " + TABLE +
+                        " SET failedAttempts = ?, lockedUntil = ?, updatedAt = ? WHERE userId = ?")) {
+            statement.setInt(1, failedAttempts);
+            setTimestamp(statement, 2, lockedUntil);
+            statement.setTimestamp(3, Timestamp.from(Instant.now()));
+            statement.setInt(4, userId);
+            statement.executeUpdate();
+        }
     }
 
     @Override
-    public void resetFailedAttempts(final Connection connection, final int userId)
-            throws SQLException {
-        JdbcSqlQuery
-                .update(TABLE)
-                .withUpdateParam(FAILED_ATTEMPTS, 0)
-                .withUpdateParam(LOCKED_UNTIL, null)
-                .withUpdateParam(UPDATED_AT, Instant.now())
-                .where(USER_ID + " = ?", userId)
-                .executeWith(connection);
-    }
-
-    private String encryptSecret(final String secret) {
-        if (secret == null) {
-            return null;
-        }
-
-        final ContentEncryptionService encryptionService =
-                ContentEncryptionService.get();
-        ensureCipherKeyDefined(encryptionService);
-
-        try {
-            return encryptionService.encryptContent(secret)[0];
-        } catch (CryptoException e) {
-            throw new IllegalStateException(
-                    "Unable to encrypt the two-factor authentication secret",
-                    e);
-        }
-    }
-
-    private void ensureCipherKeyDefined(
-            final ContentEncryptionService encryptionService) {
-        synchronized (TwoFactorAuthenticationRepositoryImpl.class) {
-            if (encryptionService.isCipherKeyDefined()) {
-                return;
-            }
-
-            try {
-                encryptionService.updateCipherKey(generateCipherKey());
-            } catch (CryptoException e) {
-                throw new IllegalStateException(
-                        "Unable to initialize the Silverpeas content encryption key",
-                        e);
-            }
-        }
-    }
-
-    private String generateCipherKey() {
-        final byte[] key = new byte[CIPHER_KEY_SIZE];
-        SECURE_RANDOM.nextBytes(key);
-        return java.util.HexFormat.of().formatHex(key);
-    }
-
-    private String decryptSecret(final String encryptedSecret) {
-        if (encryptedSecret == null) {
-            return null;
-        }
-
-        try {
-            return ContentEncryptionService.get()
-                    .decryptContent(encryptedSecret)[0];
-        } catch (CryptoException e) {
-            throw new IllegalStateException(
-                    "Unable to decrypt the two-factor authentication secret",
-                    e);
+    public void resetFailedAttempts(
+            final Connection connection,
+            final int userId) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE " + TABLE +
+                        " SET failedAttempts = 0, lockedUntil = NULL, updatedAt = ? WHERE userId = ?")) {
+            statement.setTimestamp(1, Timestamp.from(Instant.now()));
+            statement.setInt(2, userId);
+            statement.executeUpdate();
         }
     }
 
     private Instant toInstant(final Timestamp timestamp) {
         return timestamp == null ? null : timestamp.toInstant();
     }
+    private void setTimestamp(final PreparedStatement statement, final int index,
+            final Instant value) throws SQLException {
+        if (value == null) {
+            statement.setTimestamp(index, null);
+        } else {
+            statement.setTimestamp(index, Timestamp.from(value));
+        }
+    }
+
 }
