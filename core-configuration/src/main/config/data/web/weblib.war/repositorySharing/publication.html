@@ -57,7 +57,7 @@
           $("#breadcrumb .validityInfo .expiration").html(d.toLocaleString());
         }
         if (sharing.securityCode) {
-          openSecurityCodeDialog(token, function() {
+          openSecurityCodeDialog(token, baseURL, function() {
             displayPublication();
           });
           } else {
