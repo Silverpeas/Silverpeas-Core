@@ -66,6 +66,14 @@ public class EmbedMediaViewerResource extends RESTWebService {
   static final String PATH = "media/viewer/embed";
   private static final String PDF_VIEWER_CACHE_PREFIX = "PdfEmbedMediaViewer_";
 
+  /**
+   * Duration, in seconds, of inactivity after which the right to get the content of a pdf from
+   * its viewer expires. The viewer doesn't fetch the content in a single shot: it can ask for
+   * byte ranges of the document, and several viewers can be opened at once in a same page, so
+   * the access has to stay valid as long as the viewer is actually using it.
+   */
+  private static final int PDF_VIEWER_ACCESS_IDLE_DURATION = 60;
+
   @Inject
   private ViewService viewService;
 
@@ -88,7 +96,8 @@ public class EmbedMediaViewerResource extends RESTWebService {
       getHttpServletRequest().setAttribute("contentUrl", getUri().getRequestUriBuilder().path("content").build());
       setCommonRequestViewerAttributes(resource);
       final String cacheKey = PDF_VIEWER_CACHE_PREFIX + documentId + "@" + language;
-      ((Cache) getApplicationCacheAccessor().getCache()).put(cacheKey, true, 10, 0);
+      getApplicationCacheAccessor().getCache()
+          .put(cacheKey, true, 0, PDF_VIEWER_ACCESS_IDLE_DURATION);
       return new View("/media/jsp/pdf/viewer.jsp");
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -109,7 +118,9 @@ public class EmbedMediaViewerResource extends RESTWebService {
       @QueryParam("language") final String language) {
     try {
       final String cacheKey = PDF_VIEWER_CACHE_PREFIX + documentId + "@" + language;
-      final boolean playerAccessed = getApplicationCacheAccessor().getCache().remove(cacheKey) != null;
+      // the access is kept alive by this very reading, so that the viewer can ask again for the
+      // content, by byte ranges for example
+      final boolean playerAccessed = getApplicationCacheAccessor().getCache().get(cacheKey) != null;
       if (!playerAccessed) {
         return Response.seeOther(getUri().getAbsoluteWebResourcePathBuilder()
                                          .path("pdf")
