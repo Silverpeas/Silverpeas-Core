@@ -50,14 +50,16 @@
                         if (val.hasOwnProperty(keyMore)) {
                           nodeToUpdate.push({
                             element : sp.element.querySelector('.' + keyMore, $userCard),
-                            textValue : val[keyMore].unescapeHTML()
+                            textValue : typeof val[keyMore] === 'string' ?
+                                val[keyMore].unescapeHTML() : val[keyMore]
                           });
                         }
                       }
                     } else {
                       nodeToUpdate.push({
                         element : sp.element.querySelector('.' + key, $userCard),
-                        textValue : user[key].unescapeHTML()
+                        textValue : typeof user[key] === 'string' ?
+                            user[key].unescapeHTML() : user[key]
                       });
                     }
                   }
