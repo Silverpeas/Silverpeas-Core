@@ -57,21 +57,10 @@
           $("#breadcrumb .validityInfo .expiration").html(d.toLocaleString());
         }
         if (sharing.securityCode) {
-                            openSecurityCodeDialog(token, function() {
-                              displayPublication();
-                            });
-                          } else {
-                            input.value = "";
-                          }
-                        });
-              },
-              "Annuler": function() {
-                $(this).dialog("close");
-              }
-            }
+          openSecurityCodeDialog(token, function() {
+            displayPublication();
           });
-        } else {
-          // get publication and display it
+          } else {
           displayPublication();
         }
       }, 'json');
