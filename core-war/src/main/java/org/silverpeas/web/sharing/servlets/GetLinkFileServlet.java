@@ -55,8 +55,10 @@ public class GetLinkFileServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
     RestRequest rest = new RestRequest(request, "myFile");
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
+    String securityCode = request.getHeader("X-Verification-Code");
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(keyFile);
-    if (ticket != null && ticket.isValid()) {
+    boolean securityCodeValid = ticket != null && ticket.checkSecurityCode(securityCode);
+    if (ticket != null && ticket.isValid() && securityCodeValid) {
       // recherche des infos sur le fichier...
       SimpleDocument document = null;
       if (ticket instanceof SimpleFileTicket) {
@@ -85,6 +87,10 @@ public class GetLinkFileServlet extends HttpServlet {
       } else {
         sendBackInvalidTicket(request, response);
       }
+    } else if (ticket != null && securityCodeValid) {
+      sendBackInvalidTicket(request, response);
+    } else if (ticket != null) {
+      sendBackInvalidSecurityCode(request, response);
     } else {
       sendBackInvalidTicket(request, response);
     }
@@ -94,5 +100,10 @@ public class GetLinkFileServlet extends HttpServlet {
       throws IOException, ServletException {
     getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp")
         .forward(req, resp);
+  }
+  private void sendBackInvalidSecurityCode(final HttpServletRequest req, final HttpServletResponse resp)
+          throws IOException, ServletException {
+    getServletContext().getRequestDispatcher("/sharing/jsp/invalidSecuriyCode.jsp")
+            .forward(req, resp);
   }
 }

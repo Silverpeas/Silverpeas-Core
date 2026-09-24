@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -34,7 +33,6 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
-import java.util.Date;
 
 /**
  * Ticket for attached files.
@@ -48,28 +46,42 @@ public class SimpleFileTicket extends Ticket {
     this.sharedObjectType = FILE_TYPE;
   }
 
-  public SimpleFileTicket(int sharedObjectId, String componentId, UserDetail creator,
-      Date creationDate, Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
+  private SimpleFileTicket(TicketDetail detail) {
+    super(detail);
     this.sharedObjectType = FILE_TYPE;
   }
 
-  public SimpleFileTicket(int sharedObjectId, String componentId, String creatorId,
-      Date creationDate, Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
-    this.sharedObjectType = FILE_TYPE;
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static Builder builder(TicketDetail detail) {
+    return new Builder(detail);
+  }
+
+  public static class Builder extends Ticket.Builder<Builder> {
+    private Builder() {
+    }
+
+    private Builder(TicketDetail detail) {
+      super(detail);
+    }
+
+    @Override
+    protected Builder self() {
+      return this;
+    }
+
+    @Override
+    public SimpleFileTicket build() {
+      return new SimpleFileTicket(buildDetail(FILE_TYPE));
+    }
   }
 
   @Override
   @Transient
   public ShareableAccessControl getAccessControl() {
     return new SimpleFileAccessControl(this);
-  }
-
-  public SimpleFileTicket(String key, int sharedObjectId, String componentId, UserDetail creator,
-      Date creationDate, Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
-    setId(key);
   }
 
   @Override

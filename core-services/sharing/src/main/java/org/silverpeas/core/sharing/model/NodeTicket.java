@@ -33,7 +33,6 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
-import java.util.Date;
 
 /**
  *
@@ -44,10 +43,36 @@ import java.util.Date;
 public class NodeTicket extends Ticket {
   private static final long serialVersionUID = 8560572170859334369L;
 
-  public NodeTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
+  private NodeTicket(TicketDetail detail) {
+    super(detail);
     this.sharedObjectType = NODE_TYPE;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static Builder builder(TicketDetail detail) {
+    return new Builder(detail);
+  }
+
+  public static class Builder extends Ticket.Builder<Builder> {
+    private Builder() {
+    }
+
+    private Builder(TicketDetail detail) {
+      super(detail);
+    }
+
+    @Override
+    protected Builder self() {
+      return this;
+    }
+
+    @Override
+    public NodeTicket build() {
+      return new NodeTicket(buildDetail(NODE_TYPE));
+    }
   }
 
   protected NodeTicket() {

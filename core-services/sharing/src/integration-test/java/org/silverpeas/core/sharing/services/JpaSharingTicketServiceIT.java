@@ -120,8 +120,15 @@ public class JpaSharingTicketServiceIT {
   @Transactional
   public void deleteTicketsForSharedObject() {
     String key = "965e985d-c711-47b3-a467-62779505965e";
-    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
-        new Date(1330988399000L), -1);
+    Ticket expResult = SimpleFileTicket.builder()
+          .setToken(key)
+          .setSharedObjectId(5)
+          .setComponentId("kmelia2")
+          .setCreatorId(creator.getId())
+          .setCreationDate(new Date(1330972778622L))
+          .setEndDate(new Date(1330988399000L))
+          .setNbAccessMax(-1)
+          .build();
     expResult.setNbAccess(1);
     Ticket result = service.getTicket(key);
     assertThat(result, is(expResult));
@@ -151,8 +158,14 @@ public class JpaSharingTicketServiceIT {
   @Test
   @Transactional
   public void createTicket() {
-    Ticket ticket = new SimpleFileTicket(5, "kmelia2", creator, new Date(1330972778622L),
-        new Date(1330988399000L), -1);
+    Ticket ticket = SimpleFileTicket.builder()
+          .setSharedObjectId(5)
+          .setComponentId("kmelia2")
+          .setCreatorId(creator.getId())
+          .setCreationDate(new Date(1330972778622L))
+          .setEndDate(new Date(1330988399000L))
+          .setNbAccessMax(-1)
+          .build();
     String key = service.createTicket(ticket);
     assertThat(key, is(notNullValue()));
     ticket.setToken(key);
@@ -186,8 +199,15 @@ public class JpaSharingTicketServiceIT {
   public void updateTicket() {
     String key = "965e985d-c711-47b3-a467-62779505965e";
     final Ticket result = Transaction.performInOne(() -> {
-      Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
-          new Date(1330988399000L), -1);
+      Ticket expResult = SimpleFileTicket.builder()
+          .setToken(key)
+          .setSharedObjectId(5)
+          .setComponentId("kmelia2")
+          .setCreatorId(creator.getId())
+          .setCreationDate(new Date(1330972778622L))
+          .setEndDate(new Date(1330988399000L))
+          .setNbAccessMax(-1)
+          .build();
       expResult.setNbAccess(1);
       Ticket ticketToUpdate = service.getTicket(key);
       assertThat(ticketToUpdate, is(expResult));
@@ -212,8 +232,15 @@ public class JpaSharingTicketServiceIT {
   public void deleteTicket() {
     Transaction.performInOne(() -> {
       String key = "965e985d-c711-47b3-a467-62779505965e";
-      Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
-          new Date(1330988399000L), -1);
+      Ticket expResult = SimpleFileTicket.builder()
+          .setToken(key)
+          .setSharedObjectId(5)
+          .setComponentId("kmelia2")
+          .setCreatorId(creator.getId())
+          .setCreationDate(new Date(1330972778622L))
+          .setEndDate(new Date(1330988399000L))
+          .setNbAccessMax(-1)
+          .build();
       expResult.setNbAccess(1);
       Ticket result = service.getTicket(key);
       assertThat(result, is(expResult));
@@ -227,7 +254,14 @@ public class JpaSharingTicketServiceIT {
   private Pair<Ticket, List<DownloadDetail>> createExpectedTicketWithOneDownload() {
     String key = "965e985d-c711-47b3-a467-62779505965e";
     Ticket existingTicket =
-        new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330971989028L), null, -1);
+        SimpleFileTicket.builder()
+        .setToken(key)
+        .setSharedObjectId(5)
+        .setComponentId("kmelia2")
+        .setCreatorId(creator.getId())
+        .setCreationDate(new Date(1330971989028L))
+        .setNbAccessMax(-1)
+        .build();
     existingTicket.setNbAccess(1);
     DownloadDetail downloadDetail =
         new DownloadDetail(existingTicket, new Date(1330972518889L), "127.0.0.1");
