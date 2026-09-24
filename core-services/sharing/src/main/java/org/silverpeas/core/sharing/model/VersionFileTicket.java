@@ -35,7 +35,6 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
-import java.util.Date;
 
 /**
  * Ticket for files with versions.
@@ -45,10 +44,45 @@ import java.util.Date;
 public class VersionFileTicket extends Ticket {
   private static final long serialVersionUID = 7046398587440076818L;
 
-  public VersionFileTicket(int sharedObjectId, String componentId, String creatorId,
-                           Date creationDate, Date endDate, int nbAccessMax, String securityCode) {
-    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax, securityCode);
+  private VersionFileTicket(TicketDetail detail) {
+    super(detail);
     this.sharedObjectType = VERSION_TYPE;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static Builder builder(TicketDetail detail) {
+    return new Builder(detail);
+  }
+
+  public static class Builder extends Ticket.Builder<Builder> {
+    private Builder() {
+    }
+
+    private Builder(TicketDetail detail) {
+      super();
+      this.detail.setSharedObjectId(detail.getSharedObjectId())
+          .setComponentId(detail.getComponentId())
+          .setCreatorId(detail.getCreatorId())
+          .setCreationDate(detail.getCreationDate())
+          .setEndDate(detail.getEndDate())
+          .setNbAccessMax(detail.getNbAccessMax())
+          .setSecurityCode(detail.getSecurityCode())
+          .setSharedObjectType(detail.getSharedObjectType())
+          .setToken(detail.getToken());
+    }
+
+    @Override
+    protected Builder self() {
+      return this;
+    }
+
+    @Override
+    public VersionFileTicket build() {
+      return new VersionFileTicket(buildDetail(VERSION_TYPE));
+    }
   }
 
   protected VersionFileTicket() {
