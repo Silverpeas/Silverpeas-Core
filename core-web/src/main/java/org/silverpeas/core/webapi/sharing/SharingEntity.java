@@ -29,7 +29,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.web.rs.WebEntity;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 
 public class SharingEntity implements WebEntity {
 
@@ -60,7 +60,8 @@ public class SharingEntity implements WebEntity {
       this.expiration = Long.toString(ticket.getEndDate().getTime());
     }
     this.creationDate = Long.toString(ticket.getCreationDate().getTime());
-    this.user = UserDetail.getById(ticket.getCreatorId()).getDisplayedName();
+    User user = User.getById(ticket.getCreatorId());
+    this.user = user != null ? user.getDisplayedName() : "";
     this.securityCode = asSecurityCode(ticket);
   }
 
