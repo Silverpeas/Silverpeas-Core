@@ -61,16 +61,7 @@ public class NodeTicket extends Ticket {
     }
 
     private Builder(TicketDetail detail) {
-      super();
-      this.detail.setSharedObjectId(detail.getSharedObjectId())
-          .setComponentId(detail.getComponentId())
-          .setCreatorId(detail.getCreatorId())
-          .setCreationDate(detail.getCreationDate())
-          .setEndDate(detail.getEndDate())
-          .setNbAccessMax(detail.getNbAccessMax())
-          .setSecurityCode(detail.getSecurityCode())
-          .setSharedObjectType(detail.getSharedObjectType())
-          .setToken(detail.getToken());
+      super(detail);
     }
 
     @Override
