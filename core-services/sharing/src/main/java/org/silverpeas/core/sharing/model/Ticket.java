@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.sharing.model;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.OrderBy;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
