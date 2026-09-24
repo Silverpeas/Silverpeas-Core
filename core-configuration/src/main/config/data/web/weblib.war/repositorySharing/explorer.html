@@ -64,21 +64,10 @@
 							$("#breadcrumb .validityInfo .expiration").html(d.toLocaleString());
 						}
 						if (sharing.securityCode) {
-													  openSecurityCodeDialog(token, function() {
-													    loadTreeview(sharing.webApplicationRootUri);
-													  });
-													} else {
-														input.value = "";
-													}
-												});
-									},
-									"Annuler": function() {
-										$(this).dialog("close");
-									}
-								}
+							openSecurityCodeDialog(token, function() {
+							  loadTreeview(sharing.webApplicationRootUri);
 							});
-						} else {
-							//$("#uri").val(sharing.webApplicationRootUri);
+							} else {
 							loadTreeview(sharing.webApplicationRootUri);
 						}
 					}, 'json');
