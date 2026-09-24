@@ -11,7 +11,7 @@ function bytesToSize(bytes, precision) {
   }
   return bytes.toFixed(precision) + " " + sizes[posttxt];
 }
-function openSecurityCodeDialog(token, onSuccess) {
+function openSecurityCodeDialog(token, baseURL, onSuccess) {
   var dialog = document.getElementById("securityDialog");
   dialog.innerHTML = '<div id="securityCheck"><span>' + window.i18n.prop("sharing.security.code") +
       '</span><input type="text" id="securityCode" name="securityCode"/></div>';
@@ -25,8 +25,7 @@ function openSecurityCodeDialog(token, onSuccess) {
         click: function() {
           var currentDialog = this;
           var code = document.getElementById("securityCode").value;
-          var uri = window.location.protocol + "//" + window.location.host +
-              "/silverpeas/services/sharing/" + token + "/check";
+          var uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
           fetch(uri, {
             method: "GET",
             headers: { "X-Verification-Code": code }
