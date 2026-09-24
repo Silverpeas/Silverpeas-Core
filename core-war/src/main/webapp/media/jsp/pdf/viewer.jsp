@@ -75,6 +75,11 @@
     };
     window.SP_PDF_VIEWER_DEFERRED = sp.promise.deferred();
     parent.document.addEventListener('webviewerloaded', function(e) {
+      if (e.detail.source !== window) {
+        // all the viewers of a same page register their listener on the parent document, so each
+        // one has to handle only the event dispatched by its own viewer
+        return;
+      }
       ['PDFViewerApplication', 'PDFViewerApplicationOptions'].forEach(function(varName) {
         if (window[varName]) {
           delete window[varName];
