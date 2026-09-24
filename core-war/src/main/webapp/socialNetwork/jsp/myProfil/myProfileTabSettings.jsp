@@ -137,6 +137,77 @@
     </tr>
   </table>
   <br/>
+  <c:if test="${requestScope['twoFactorAvailable']}">
+    <hr/>
+    <h3><fmt:message key="myProfile.twoFactor.title"/></h3>
+    <p><fmt:message key="myProfile.twoFactor.description"/></p>
+
+    <c:if test="${not empty requestScope['twoFactorMessage']}">
+      <p class="txtlibform"><fmt:message key="${requestScope['twoFactorMessage']}"/></p>
+    </c:if>
+    <c:if test="${not empty requestScope['twoFactorError']}">
+      <p class="txtlibform"><fmt:message key="${requestScope['twoFactorError']}"/></p>
+    </c:if>
+
+    <c:choose>
+      <c:when test="${requestScope['twoFactorEnabled']}">
+        <p><fmt:message key="myProfile.twoFactor.enabled"/></p>
+        <fmt:message key="myProfile.twoFactor.recoveryCodes" var="recoveryCodesLabel"/>
+        <button type="submit" class="twoFA_button"
+                formaction="<%=MyProfileRoutes.GenerateRecoveryCodes %>">
+          <c:out value="${recoveryCodesLabel}"/>
+        </button>
+        <c:if test="${not empty requestScope['twoFactorRecoveryCodes']}">
+          <div class="tableBoard" style="margin-top: 15px;">
+            <p><strong><fmt:message key="myProfile.twoFactor.recoveryCodesGenerated"/></strong></p>
+            <p><fmt:message key="myProfile.twoFactor.recoveryCodesWarning"/></p>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(140px, 1fr)); gap: 8px; max-width: 420px;">
+              <c:forEach items="${requestScope['twoFactorRecoveryCodes']}" var="recoveryCode">
+                <code><c:out value="${recoveryCode}"/></code>
+              </c:forEach>
+            </div>
+          </div>
+        </c:if>
+        <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
+        <button type="submit" class="twoFA_button"
+                formaction="<%=MyProfileRoutes.DisableTwoFactor %>">
+          <c:out value="${disableTwoFactorLabel}"/>
+        </button>
+      </c:when>
+      <c:when test="${requestScope['twoFactorPending']}">
+        <p class="twoFA_infos"><strong><fmt:message key="myProfile.twoFactor.secret"/></strong></p>
+        <p class="twoFA_infos"><code><c:out value="${requestScope['twoFactorAuthentication'].secret}"/></code></p>
+        <p class="twoFA_infos"><fmt:message key="myProfile.twoFactor.authenticatorUri"/></p>
+        <p class="twoFA_infos" style="word-break: break-all;">
+          <code><c:out value="${requestScope['twoFactorOtpAuthUri']}"/></code>
+        </p>
+        <div class="tableBoard" style="margin-top: 15px; text-align: center;">
+          <p><strong><fmt:message key="myProfile.twoFactor.qrCode"/></strong></p>
+          <p><fmt:message key="myProfile.twoFactor.qrCodeDescription"/></p>
+          <img src="${pageContext.request.contextPath}/services/two-factor/qrcode"
+               width="256" height="256"
+               alt="<fmt:message key='myProfile.twoFactor.qrCodeAlt'/>"
+               style="image-rendering: pixelated;"/>
+        </div>
+        <label for="twoFactorCode"><fmt:message key="myProfile.twoFactor.code"/></label>
+        <input id="twoFactorCode" name="twoFactorCode" type="text" inputmode="numeric"
+               autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required="required"/>
+        <fmt:message key="myProfile.twoFactor.confirm" var="confirmTwoFactorLabel"/>
+        <button type="submit" class="twoFA_button"
+                formaction="<%=MyProfileRoutes.ConfirmTwoFactor %>">
+          <c:out value="${confirmTwoFactorLabel}"/>
+        </button>
+      </c:when>
+      <c:otherwise>
+        <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
+        <button type="submit" class="twoFA_button"
+                formaction="<%=MyProfileRoutes.StartTwoFactor %>">
+          <c:out value="${enableTwoFactorLabel}"/>
+        </button>
+      </c:otherwise>
+    </c:choose>
+  </c:if>
+
   <fmt:message key="GML.validate" var="validate"/>
   <fmt:message key="GML.cancel" var="cancel"/>
   <center>

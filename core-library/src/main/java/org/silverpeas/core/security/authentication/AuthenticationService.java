@@ -39,6 +39,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
 import org.silverpeas.core.security.authentication.exception.*;
+import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -84,9 +85,14 @@ public class AuthenticationService implements Authentication {
   private static final String USER_LOGIN_COLUMN_NAME;
   private static final String USER_DOMAIN_COLUMN_NAME;
   private static int autoInc = 1;
+  private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
 
   @Inject
   private AdminController adminController;
+
+  @Inject
+  private TwoFactorAuthenticationService twoFactorAuthenticationService;
 
   private static final Predicate<Domain> DOMAIN_WITH_AUTHENTICATION_SERVER = d -> {
     final AuthenticationServer authenticationServer =
@@ -165,6 +171,10 @@ public class AuthenticationService implements Authentication {
       result = AuthenticationResponse.error(Status.PASSWORD_TO_CHANGE);
     } catch (AuthenticationPasswordMustBeChangedOnFirstLogin e) {
       result = AuthenticationResponse.error(Status.PASSWORD_TO_CHANGE_ON_FIRST_LOGIN);
+    } catch (AuthenticationTwoFactorRequiredException e) {
+      // A valid password was provided, but the configured second factor is required.
+      // This is an intermediate authentication state, not an authentication failure.
+      result = AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
     } catch (AuthenticationUserAccountBlockedException e) {
       result = AuthenticationResponse.error(Status.USER_ACCOUNT_BLOCKED);
     } catch (AuthenticationUserAccountDeactivatedException e) {
@@ -223,6 +233,17 @@ public class AuthenticationService implements Authentication {
 
       // Authentication test
       authenticationServer.authenticate(credential);
+
+      // Password authentication has succeeded. Do not create the Silverpeas authentication
+      // token before the second factor has been validated.
+      if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+        final int userId = getUserId(connection, credential);
+        if (twoFactorAuthenticationService.getAuthentication(userId)
+            .map(authentication -> authentication.isEnabled())
+            .orElse(false)) {
+          throw new AuthenticationTwoFactorRequiredException();
+        }
+      }
 
       // Generate a random key and store it in database
       return getAuthToken(credential);
@@ -328,6 +349,95 @@ public class AuthenticationService implements Authentication {
 
     // Treatments on password change
     onPasswordAndEmailChanged(credential, email);
+  }
+
+ /**
+  * Checks whether the TOTP authentication of the specified user is temporarily locked.
+  *
+  * @param login the user login.
+  * @param domainId the user domain identifier.
+  * @return true when the configured second factor is locked.
+  */
+  public boolean isTwoFactorLocked(final String login, final String domainId) {
+    try {
+      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+        return false;
+      }
+      final AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+      final int userId = getUserId(credential);
+      return twoFactorAuthenticationService.getAuthentication(userId)
+          .map(authentication -> authentication.isEnabled() && authentication.isLocked())
+          .orElse(false);
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).warn(e);
+      return false;
+    }
+  }
+
+ /**
+  * Completes a pending local authentication with the second factor.
+  *
+  * <p>No password is accepted by this method. The caller must already have authenticated
+  * the user with the password and keep the pending authentication state server-side.</p>
+  */
+  public AuthenticationResponse authenticateTwoFactor(
+      final String login, final String domainId, final String code) {
+    try {
+      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+        return AuthenticationResponse.error(Status.BAD_LOGIN_PASSWORD);
+      }
+      final AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+      final int userId = getUserId(credential);
+      if (!twoFactorAuthenticationService.validate(userId, code)
+          && !twoFactorAuthenticationService.validateRecoveryCode(userId, code)) {
+        return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+      }
+
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
+      return AuthenticationResponse.succeed(getAuthToken(credential));
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).warn(e);
+      return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+    }
+  }
+
+  private int getUserId(final Connection connection,
+      final AuthenticationCredential credential) throws AuthenticationException {
+    final String domainId = credential.getDomainId();
+    if (!StringUtil.isInteger(domainId)) {
+      throw new AuthenticationException("Unable to resolve the user domain");
+    }
+
+    final JdbcSqlQuery query = JdbcSqlQuery.select(USER_ID_COLUMN_NAME)
+        .from(USER_TABLE_NAME)
+        .where(USER_DOMAIN_COLUMN_NAME + " = ?", Integer.parseInt(domainId));
+
+    if (credential.loginIgnoreCase()) {
+      query.and("lower(" + USER_LOGIN_COLUMN_NAME + ") = lower(?)", credential.getLogin());
+    } else {
+      query.and(USER_LOGIN_COLUMN_NAME + " = ?", credential.getLogin());
+    }
+
+    try {
+      final Integer userId = query.executeUniqueWith(connection,
+          row -> row.getInt(USER_ID_COLUMN_NAME));
+      if (userId == null || userId < 0) {
+        throw new AuthenticationException("Unable to resolve the authenticated user");
+      }
+      return userId;
+    } catch (SQLException e) {
+      throw new AuthenticationException("Unable to resolve the authenticated user", e);
+    }
+  }
+
+  private int getUserId(final AuthenticationCredential credential) throws AuthenticationException {
+    try (Connection connection = openConnection()) {
+      return getUserId(connection, credential);
+    } catch (SQLException e) {
+      throw new AuthenticationException("Unable to resolve the authenticated user", e);
+    }
   }
 
  @Override

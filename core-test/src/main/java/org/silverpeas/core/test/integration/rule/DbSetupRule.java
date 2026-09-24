@@ -13,6 +13,7 @@
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -215,6 +216,7 @@ public class DbSetupRule implements TestRule {
       }
     }
 
+
     Operation preparation = Operations.sequenceOf(tableCreation, dataSetLoading);
     DataSource dataSource = DataSourceProvider.getDataSource();
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
@@ -237,6 +239,9 @@ public class DbSetupRule implements TestRule {
                 IOUtils.copy(sqlScriptInput, sqlScriptContent, StandardCharsets.UTF_8);
                 if (sqlScriptContent.toString() != null && !sqlScriptContent.toString().isEmpty()) {
                   String[] sql = sqlScriptContent.toString().split(";");
+                  if (INITIAL_TABLES.equals(s)) {
+                    sql = filterExistingQuartzConstraints(sql);
+                  }
                   statements.add(Operations.sql(sql));
                 }
               }
@@ -249,14 +254,40 @@ public class DbSetupRule implements TestRule {
     return Operations.sequenceOf(statements);
   }
 
+  /**
+   * The default SQL script contains Quartz constraints with an IF NOT EXISTS clause for
+   * databases supporting it. PostgreSQL does not support that syntax. Quartz tables are kept
+   * between tests, so when they already exist we must not replay their constraint statements.
+   */
+  private String[] filterExistingQuartzConstraints(String[] sqlStatements) {
+    try (Connection connection = getSafeConnection()) {
+      if (!"PostgreSQL".equalsIgnoreCase(connection.getMetaData().getDatabaseProductName())) {
+        return sqlStatements;
+      }
+      try (PreparedStatement statement = connection.prepareStatement(
+          "SELECT 1 FROM information_schema.tables " +
+              "WHERE table_schema = current_schema() AND table_name LIKE 'qrtz_%' LIMIT 1");
+           ResultSet rs = statement.executeQuery()) {
+        if (!rs.next()) {
+          return sqlStatements;
+        }
+      }
+      return Stream.of(sqlStatements)
+          .filter(sql -> !sql.trim().toUpperCase().startsWith("ALTER TABLE QRTZ_"))
+          .toArray(String[]::new);
+    } catch (SQLException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
   private void cleanUpDataSource(Description description) {
     try {
       try (Connection connection = getSafeConnection();
-           PreparedStatement statement = connection.prepareStatement("SHOW TABLES");
-           ResultSet rs = statement.executeQuery()) {
+           ResultSet rs = connection.getMetaData().getTables(
+               connection.getCatalog(), connection.getSchema(), "%", new String[]{"TABLE"})) {
         List<String> tableNames = new ArrayList<>();
         while (rs.next()) {
-          tableNames.add(rs.getString(1));
+          tableNames.add(rs.getString("TABLE_NAME"));
         }
         for (String tableName : tableNames) {
           if (!tableName.toUpperCase().startsWith(QUARTZ_TABLE_PREFIX)) {
@@ -373,7 +404,7 @@ public class DbSetupRule implements TestRule {
     if (theCurrentRuleInstance == null) {
       String message =
           "Calling getSafeConnection method requires that the test must use directly DbSetupRule " +
-              "or extends DataSetTest.\n";
+          "or extends DataSetTest.\n";
       message += "Maybe is the method called from a Thread instantiated from a Test method. " +
           "Please call instead getSafeConnectionFromDifferentThread method if it is the case.";
       Logger.getLogger(DbSetupRule.class.getName()).severe(message);
@@ -407,8 +438,8 @@ public class DbSetupRule implements TestRule {
   }
 
   /**
-   * Gets the actual data set in the database so that you can check information persisted in the
-   * data source according to the operations that were performed in the behaviour of the test.
+   * Gets the actual data set in the database so that you can check information persisted in
+   * the data source according to the operations that were performed in the behaviour of the test.
    * @param connection a connection to the database
    * @return the actual data set.
    */
