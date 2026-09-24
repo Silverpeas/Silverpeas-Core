@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.OrderBy;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
@@ -101,7 +100,15 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   }
 
   public abstract static class Builder<B extends Builder<B>> {
-    protected final TicketDetail.Builder detail = TicketDetail.builder();
+    protected final TicketDetail.Builder detail;
+
+    protected Builder() {
+      this.detail = TicketDetail.builder();
+    }
+
+    protected Builder(TicketDetail detail) {
+      this.detail = TicketDetail.builder(detail);
+    }
 
     protected abstract B self();
 
