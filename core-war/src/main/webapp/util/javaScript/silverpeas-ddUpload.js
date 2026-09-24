@@ -579,9 +579,12 @@ const dragAndDropUploadEnabled = window.File;
 
     let sendFile = function() {
 
+      // the full path is URI-encoded as HTTP headers can carry only ISO-8859-1 characters
+      // (file names with accents are in NFD form on Mac OS, and combining diacritics are not
+      // Latin-1 characters)
       let headers = {
         "Content-Type" : 'application/octet-stream',
-        "X-FULL-PATH" : file.fullPath.escapeHTML()
+        "X-FULL-PATH" : encodeURIComponent(file.fullPath)
       };
 
       if (this.uploadSessionId) {

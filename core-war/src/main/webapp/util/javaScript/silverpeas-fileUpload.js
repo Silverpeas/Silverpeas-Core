@@ -756,7 +756,8 @@
         xhr.setRequestHeader('X-COMPONENT-INSTANCE-ID', uploadContext.options.componentInstanceId);
       }
       xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-      xhr.setRequestHeader('X-FULL-PATH', file.name.escapeHTML());
+      // the file name is URI-encoded as HTTP headers can carry only ISO-8859-1 characters
+      xhr.setRequestHeader('X-FULL-PATH', encodeURIComponent(file.name));
       xhr.send(file);
     };
 
