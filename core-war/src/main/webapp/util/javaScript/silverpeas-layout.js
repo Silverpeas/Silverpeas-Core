@@ -956,9 +956,9 @@
           wsUrl += '?Last-Event-ID=' + __context.lastEventId;
         }
         __socket = new WebSocket(wsUrl);
-        __socket.addEventListener('error', function(e) {
-          sp.log.error(e);
-          __context.sse.__spErrorHandler(e);
+        __socket.addEventListener('error', function() {
+          // always followed by a close event, which is in charge of the reconnection
+          sp.log.debug('SSE WebSocket, error on ' + wsUrl);
         }, false);
         __socket.addEventListener('open', function(e) {
           sp.log.debug(e);
@@ -966,7 +966,8 @@
         }, false);
         __socket.addEventListener('close', function(e) {
           if (!__closedManually) {
-            sp.log.warning(e);
+            sp.log.warning('SSE WebSocket, connection closed (code=' + e.code +
+                (e.reason ? ', reason=' + e.reason : '') + ')');
             __context.sse.__spErrorHandler(e);
           } else {
             sp.log.debug(e);
