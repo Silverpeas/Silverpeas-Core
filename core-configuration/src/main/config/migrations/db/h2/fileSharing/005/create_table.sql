@@ -10,7 +10,8 @@ CREATE TABLE sb_filesharing_ticket
 	nbAccessMax INTEGER NOT NULL,
 	nbAccess INTEGER NULL,
 	keyfile	VARCHAR(255) NOT NULL,
-  shared_object_type VARCHAR(255) NOT NULL
+  shared_object_type VARCHAR(255) NOT NULL,
+  securitycode VARCHAR(50)
 );
 
 CREATE TABLE sb_filesharing_history
