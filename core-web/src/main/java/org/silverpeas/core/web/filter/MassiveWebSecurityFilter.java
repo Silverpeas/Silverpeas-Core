@@ -34,6 +34,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.jcr.webdav.WebDavProtocol;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.SilverpeasWebResource;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -325,12 +327,32 @@ public class MassiveWebSecurityFilter implements Filter {
         if (headerName.toLowerCase().startsWith("x-")) {
           String headerValue = httpRequest.getHeader(headerName);
           checkValueForInjection(headerValue, true, true, iframes);
+          // some of our custom headers carry an URI-encoded value (a file name for example) so
+          // that non Latin-1 characters can be transferred: the decoded value has to be checked too
+          String decodedHeaderValue = decodeSafely(headerValue);
+          if (!decodedHeaderValue.equals(headerValue)) {
+            checkValueForInjection(decodedHeaderValue, true, true, iframes);
+          }
         }
       }
     } finally {
       long end = System.currentTimeMillis();
       logger.debug("Massive Web Security Verify on request parameters: " +
           DurationFormatUtils.formatDurationHMS(end - start));
+    }
+  }
+
+  /**
+   * Decodes the specified URI-encoded value. If the value isn't a valid URI-encoded string (for
+   * example with a '%' not followed by two hexadecimal digits), it is returned as such.
+   * @param value the value to decode.
+   * @return the decoded value or the value itself if it cannot be decoded.
+   */
+  private static String decodeSafely(final String value) {
+    try {
+      return URLDecoder.decode(value, Charsets.UTF_8);
+    } catch (IllegalArgumentException e) {
+      return value;
     }
   }
 

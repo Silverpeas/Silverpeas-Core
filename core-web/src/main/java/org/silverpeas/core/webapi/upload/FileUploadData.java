@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.upload;
 
-import org.owasp.encoder.Encode;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -31,6 +31,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.io.File;
+import java.net.URLDecoder;
 import java.time.LocalDateTime;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -81,6 +82,12 @@ public class FileUploadData {
 
   /**
    * Initializes an instance from the request directly. (OCTET STREAM UPLOAD)
+   * <p>
+   * The full path of the file is expected to be URI-encoded in the {@code X-FULL-PATH} header:
+   * HTTP headers can only carry ISO-8859-1 characters, so any non-Latin-1 character in a file name
+   * (for example the combining diacritics of the NFD form used by Mac OS filesystems) cannot be
+   * transferred raw. The decoded path is then normalized to the NFC form.
+   * </p>
    * @param request the current http request.
    * @return a new initialized instance.
    */
@@ -89,7 +96,7 @@ public class FileUploadData {
     if (StringUtil.isNotDefined(brutFullPath)) {
       brutFullPath = "";
     }
-    String fullPath = StringUtil.normalize(brutFullPath);
+    String fullPath = StringUtil.normalize(URLDecoder.decode(brutFullPath, Charsets.UTF_8));
     return new FileUploadData(request.getHeader(X_UPLOAD_SESSION), fullPath,
         request.getHeader(X_COMPONENT_INSTANCE_ID));
   }
