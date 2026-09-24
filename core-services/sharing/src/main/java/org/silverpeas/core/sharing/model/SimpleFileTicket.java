@@ -48,28 +48,45 @@ public class SimpleFileTicket extends Ticket {
     this.sharedObjectType = FILE_TYPE;
   }
 
-  public SimpleFileTicket(int sharedObjectId, String componentId, UserDetail creator,
-                          Date creationDate, Date endDate, int nbAccessMax, String securityCode) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax, securityCode);
+  private SimpleFileTicket(TicketDetail detail) {
+    super(detail);
     this.sharedObjectType = FILE_TYPE;
   }
 
-  public SimpleFileTicket(int sharedObjectId, String componentId, String creatorId,
-                          Date creationDate, Date endDate, int nbAccessMax, String securityCode) {
-    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax, securityCode);
-    this.sharedObjectType = FILE_TYPE;
+  public static Builder builder() {
+    return new Builder();
   }
 
-  @Override
-  @Transient
-  public ShareableAccessControl getAccessControl() {
-    return new SimpleFileAccessControl(this);
+  public static Builder builder(TicketDetail detail) {
+    return new Builder(detail);
   }
 
-  public SimpleFileTicket(String key, int sharedObjectId, String componentId, UserDetail creator,
-                          Date creationDate, Date endDate, int nbAccessMax, String securityCode) {
-    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax, securityCode);
-    setId(key);
+  public static class Builder extends Ticket.Builder<Builder> {
+    private Builder() {
+    }
+
+    private Builder(TicketDetail detail) {
+      super();
+      this.detail.setSharedObjectId(detail.getSharedObjectId())
+          .setComponentId(detail.getComponentId())
+          .setCreatorId(detail.getCreatorId())
+          .setCreationDate(detail.getCreationDate())
+          .setEndDate(detail.getEndDate())
+          .setNbAccessMax(detail.getNbAccessMax())
+          .setSecurityCode(detail.getSecurityCode())
+          .setSharedObjectType(detail.getSharedObjectType())
+          .setToken(detail.getToken());
+    }
+
+    @Override
+    protected Builder self() {
+      return this;
+    }
+
+    @Override
+    public SimpleFileTicket build() {
+      return new SimpleFileTicket(buildDetail(FILE_TYPE));
+    }
   }
 
   @Override
