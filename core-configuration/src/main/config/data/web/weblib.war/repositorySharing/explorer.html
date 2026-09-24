@@ -164,10 +164,10 @@
 										recordsperpage: nbPublicationsPerPage,
 										datacontainer: 'publicationsList',
 										dataelement: 'li.publication',
-										next: 'Next',
-										prev: 'Prev',
-										first: 'First',
-										last: 'Last',
+										next: window.i18n.prop("pagination.next"),
+										prev: window.i18n.prop("pagination.prev"),
+										first: window.i18n.prop("pagination.first"),
+										last: window.i18n.prop("pagination.last"),
 										theme: 'black' });
 								} else {
 									$('#pagination').hide();
