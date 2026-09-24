@@ -33,7 +33,6 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
-import java.util.Date;
 
 /**
  *
