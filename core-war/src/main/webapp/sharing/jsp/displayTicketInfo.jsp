@@ -62,15 +62,14 @@
     <div class="sp_buttonPane">
       <a id="downloadLink" class="sp_button" target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message key="sharing.downloadLink"/></a>
     </div>
-  </view:sp-body-part>
-</view:sp-page>
-
 <div id="securityDialog" style="display:none;">
   <div id="securityCheck">
     <span><fmt:message key="sharing.security.code"/></span>
     <input type="text" id="securityCode" name="securityCode"/>
   </div>
 </div>
+  </view:sp-body-part>
+</view:sp-page>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
