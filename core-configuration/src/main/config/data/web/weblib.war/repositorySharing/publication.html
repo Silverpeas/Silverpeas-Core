@@ -57,27 +57,9 @@
           $("#breadcrumb .validityInfo .expiration").html(d.toLocaleString());
         }
         if (sharing.securityCode) {
-          $("#securityDialog").dialog({
-            modal: true,        // bloque le reste de la page
-            title: "Code de sécurité",
-            width: 400,
-            buttons: {
-              "OK": function() {
-                const input = document.getElementById("securityCode");
-                const code = input.value;
-                uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
-                fetch(uri, {
-                  method: 'GET',
-                  headers: {
-                    'X-Verification-Code': code
-                  }
-                })
-                        .then(response => response.json())
-                        .then(result => {
-                          if (result) {
-                            $(this).dialog("close");
-                            // get publication and display it
-                            displayPublication();
+                            openSecurityCodeDialog(token, function() {
+                              displayPublication();
+                            });
                           } else {
                             input.value = "";
                           }
@@ -172,6 +154,7 @@
           name : 'messages', path : 'bundle/', mode : 'map'
         });
 
+        $("#sharingTitle").html(window.i18n.prop("sharing.title"));
         $("#expirationLabel").html(window.i18n.prop("expiration"));
         $(".expiration").html(window.i18n.prop("expiration.unlimited"));
         $("#download-link").attr("title", window.i18n.prop("download.a.title"));
@@ -238,15 +221,10 @@
 </head>
 <body>
 
-<div id="securityDialog" style="display:none;">
-  <div id="securityCheck">
-    <span>Code de sécurité</span>
-    <input type="text" id="securityCode" name="securityCode"/>
-  </div>
-</div>
+<div id="securityDialog" style="display:none;"></div>
 
 <div id="header">
-  <h1>Gestion documentaire électronique partagée</h1>
+  <h1 id="sharingTitle"></h1>
 </div>
 <div id="breadcrumb" style="display: none">
     <span class="sharingBy">
@@ -273,12 +251,12 @@
     <div id="richContent">
 
     </div>
-    <a title="Télécharger les fichiers sélectionnés" id="download-link" href="#">Télécharger</a>
+    <a title="" id="download-link" href="#"></a>
   </div>
 </div>
-<div id="downloadZip-dialog" title="T&eacute;l&eacute;charger vos fichiers" style="display:none">
+<div id="downloadZip-dialog" title="" style="display:none">
   <p>
-    <a href="" target="_blank">Cliquez sur le lien pour t&eacute;l&eacute;charger le ZIP</a> - <span
+    <a href="" target="_blank"></a> - <span
           id="zipSize"></span>
   </p>
 </div>
