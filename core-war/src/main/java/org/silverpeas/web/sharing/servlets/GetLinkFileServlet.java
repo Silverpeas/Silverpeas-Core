@@ -57,7 +57,8 @@ public class GetLinkFileServlet extends HttpServlet {
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
     String securityCode = request.getHeader("X-Verification-Code");
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(keyFile);
-    if (ticket != null && ticket.isValid() && ticket.checkSecurityCode(securityCode)) {
+    boolean securityCodeValid = ticket != null && ticket.checkSecurityCode(securityCode);
+    if (ticket != null && ticket.isValid() && securityCodeValid) {
       // recherche des infos sur le fichier...
       SimpleDocument document = null;
       if (ticket instanceof SimpleFileTicket) {
@@ -86,12 +87,12 @@ public class GetLinkFileServlet extends HttpServlet {
       } else {
         sendBackInvalidTicket(request, response);
       }
+    } else if (ticket != null && securityCodeValid) {
+      sendBackInvalidTicket(request, response);
+    } else if (ticket != null) {
+      sendBackInvalidSecurityCode(request, response);
     } else {
-      if (ticket.checkSecurityCode(securityCode)) {
-        sendBackInvalidTicket(request, response);
-      } else {
-        sendBackInvalidSecurityCode(request, response);
-      }
+      sendBackInvalidTicket(request, response);
     }
   }
 
