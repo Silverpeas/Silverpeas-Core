@@ -734,6 +734,9 @@ public class JavascriptPluginInclusion {
         .add("p.w.s", PDF_VIEWER_BASE + "/core/pdf.worker.min.js")
         .add("p.s.b.s", PDF_VIEWER_BASE + "/core/pdf.sandbox.min.js")
         .add("p.c.p", PDF_VIEWER_BASE + "/cmaps/")
+        .add("p.s.f.p", PDF_VIEWER_BASE + "/standard_fonts/")
+        .add("p.wa.p", PDF_VIEWER_BASE + "/wasm/")
+        .add("p.ic.p", PDF_VIEWER_BASE + "/iccs/")
         .produce()));
     xhtml.addElement(link(PDF_VIEWER_BASE + "/viewer.min.css"));
     xhtml.addElement(link(PDF_VIEWER_BASE + "/sp-viewer.css"));

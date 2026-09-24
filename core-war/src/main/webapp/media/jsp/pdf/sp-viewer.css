@@ -49,17 +49,17 @@ body {
 }
 
 #viewerContainer,
-#thumbnailView {
+#thumbnailsView {
   background-color: var(--sp-viewer-bg-color);
 }
 
-#sidebarContent,
-#toolbarSidebar,
-#toolbarContainer, .findbar, .secondaryToolbar, #secondaryToolbarButtonContainer {
+#viewsManagerContent,
+#viewsManagerHeader,
+#toolbarContainer, #findbar, #secondaryToolbar, #secondaryToolbarButtonContainer {
   background-color: var(--sp-viewer-dark-bg-color);
 }
 
-.secondaryToolbar {
+#secondaryToolbar {
   padding: 0;
 }
 

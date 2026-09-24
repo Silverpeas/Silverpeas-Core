@@ -62,3 +62,48 @@ This is the Silverpeas page responsible for starting and configuring the PDF vie
 user's context. Please consult GIT history on the file to identify all the modifications performed
 into `<script>` module.
 
+## From 4.0.379 to 6.3.289
+
+Another considerable gap. The two manual modifications of `viewer.min.js` described above are still
+required, at the very same places (`GenericL10n.#createBundle` for the L10N one, `webViewerLoad` for
+the viewer starting one). Beware that the upstream `webViewerLoad` now provides only `source` into
+the custom event detail.
+
+### New resource folders
+
+Two folders have to be copied in addition to the previous ones: `wasm` (JBIG2/OpenJPEG/QCMS decoders
+and the QuickJS sandbox used by the PDF scripting) and `iccs` (ICC color profiles). Their location,
+as the one of `standard_fonts`, is given to the viewer through new `PdfViewerSettings` entries
+(`p.wa.p`, `p.ic.p` and `p.s.f.p`) set by `JavascriptPluginInclusion#includePdfViewer`, and then
+applied as the `wasmUrl`, `iccUrl` and `standardFontDataUrl` viewer options. Without them the viewer
+resolves those paths relatively to `viewer.jsp` and fails to fetch them.
+
+### HTML restructuring
+
+The whole markup of the toolbars has been reworked:
+
+* the left sidebar (`#sidebarContainer`, `#toolbarSidebar`, `#sidebarContent`, `#thumbnailView`, …)
+  is replaced by the *views manager* (`#viewsManager`, `#viewsManagerContent`, `#thumbnailsView`, …)
+  which is now nested into `#toolbarViewerLeft`;
+* most of the buttons have been renamed with a `Button` suffix (`#viewFind` → `#viewFindButton`,
+  `#zoomOut` → `#zoomOutButton`, `#print` → `#printButton`, `#download` → `#downloadButton`,
+  `#secondaryToolbarToggle` → `#secondaryToolbarToggleButton`, …), the former identifier being now
+  the one of the wrapping `div.toolbarButtonWithContainer`;
+* the editor buttons are each wrapped with their own parameters toolbar into
+  `#editorModeButtons`;
+* `#viewer-alert`, `#editorUndoBar` and the signature/comment dialogs are new;
+* `#fileInput` has been dropped, the viewer creates it by itself.
+
+`sp-viewer.css` has been adapted accordingly.
+
+### Hiding the edition tools
+
+Removing the editor buttons one by one from the viewer configuration isn't necessary anymore: the
+`annotationEditorMode` option set to `-1` (`AnnotationEditorType.DISABLE`) makes the viewer hide
+`#editorModeButtons` and `#editorModeSeparator` by itself.
+
+### L10N locale
+
+The `locale` viewer option has been replaced by `localeProperties`, an object whose `lang` property
+carries the language.
+
