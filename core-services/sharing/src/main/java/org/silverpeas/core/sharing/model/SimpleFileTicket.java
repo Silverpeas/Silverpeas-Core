@@ -80,6 +80,12 @@ public class SimpleFileTicket extends Ticket {
 
   @Override
   @Transient
+  public ShareableAccessControl getAccessControl() {
+    return new SimpleFileAccessControl(this);
+  }
+
+  @Override
+  @Transient
   @SuppressWarnings("unchecked")
   public ShareableResource<SimpleDocument> getResource() {
     SimpleDocumentPK pk = new SimpleDocumentPK(null, getComponentId());
