@@ -197,8 +197,10 @@ public class PublicationsTypeManager {
     try {
       wysiwygText = WysiwygController.load(componentId, pubId, language);
       wysiwygText = HtmlExportPublicationGenerator.replaceImagesPathForExport(wysiwygText);
-      wysiwygText =
-          WysiwygContentTransformer.on(wysiwygText).resolveVariablesDirective().transform();
+      wysiwygText = WysiwygContentTransformer.on(wysiwygText)
+          .applySanitizeForRenderingDirective()
+          .resolveVariablesDirective()
+          .transform();
       if (wysiwygText == null) {
         wysiwygText = ""; // To avoid exception in createFile below
       }

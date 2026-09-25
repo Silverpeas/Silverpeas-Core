@@ -74,6 +74,28 @@ public class HttpUtil {
    * @return a {@link HttpClient} instance.
    */
   public static HttpClient httpClient(final SSLContext sslContext) {
+    return httpClientBuilder(sslContext).build();
+  }
+
+  /**
+   * Centralizing the getting of an HTTP client builder configured with proxy host and proxy port if
+   * any. Unlike {@link #httpClient()}, the caller gets the builder and can hence complete the
+   * configuration, with a connection timeout or a redirection policy of its own for example.
+   * @return a {@link HttpClient.Builder} instance.
+   */
+  public static HttpClient.Builder httpClientBuilder() {
+    return httpClientBuilder(null);
+  }
+
+  /**
+   * Centralizing the getting of an HTTP client builder configured with proxy host and proxy port if
+   * any and with the acceptance of optional given SSL context. Unlike
+   * {@link #httpClient(SSLContext)}, the caller gets the builder and can hence complete the
+   * configuration, with a connection timeout or a redirection policy of its own for example.
+   * @param sslContext an optional SSL context.
+   * @return a {@link HttpClient.Builder} instance.
+   */
+  public static HttpClient.Builder httpClientBuilder(final SSLContext sslContext) {
     HttpClient.Builder builder = HttpClient.newBuilder().followRedirects(NORMAL);
     if (sslContext != null) {
       builder = builder.sslContext(sslContext);
@@ -83,7 +105,7 @@ public class HttpUtil {
     if (StringUtil.isDefined(proxyHost) && StringUtil.isInteger(proxyPort)) {
       builder = builder.proxy(ProxySelector.of(new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort))));
     }
-    return builder.build();
+    return builder;
   }
 
   /**
